@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Collections\TList;
 use Prado\Exceptions\TInvalidDataTypeException;
 
@@ -36,11 +37,12 @@ class TCacheDependencyList extends TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a dependency instance
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof ICacheDependency)
-			parent::insertAt($index,$item);
-		else
+		if ($item instanceof ICacheDependency) {
+			parent::insertAt($index, $item);
+		} else {
 			throw new TInvalidDataTypeException('cachedependencylist_cachedependency_required');
+		}
 	}
 }

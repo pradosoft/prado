@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
@@ -37,15 +38,15 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getDataField()
 	{
-		return $this->getViewState('DataField','');
+		return $this->getViewState('DataField', '');
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the column
+	 * @param string $value the field name from the data source to bind to the column
 	 */
 	public function setDataField($value)
 	{
-		$this->setViewState('DataField',$value,'');
+		$this->setViewState('DataField', $value, '');
 	}
 
 	/**
@@ -53,15 +54,15 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getDataFormatString()
 	{
-		return $this->getViewState('DataFormatString','');
+		return $this->getViewState('DataFormatString', '');
 	}
 
 	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
+	 * @param string $value the formatting string used to control how the bound data will be displayed.
 	 */
 	public function setDataFormatString($value)
 	{
-		$this->setViewState('DataFormatString',$value,'');
+		$this->setViewState('DataFormatString', $value, '');
 	}
 
 	/**
@@ -69,15 +70,15 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
-	 * @param string static text to be displayed in the column.
+	 * @param string $value static text to be displayed in the column.
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -85,15 +86,15 @@ class TLiteralColumn extends TDataGridColumn
 	 */
 	public function getEncode()
 	{
-		return $this->getViewState('Encode',false);
+		return $this->getViewState('Encode', false);
 	}
 
 	/**
-	 * @param boolean  whether the rendered text should be HTML-encoded.
+	 * @param boolean $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{
-		$this->setViewState('Encode',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -103,22 +104,21 @@ class TLiteralColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::EditItem || $itemType===TListItemType::SelectedItem)
-		{
-			if($this->getDataField()!=='')
-			{
-				$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::EditItem || $itemType === TListItemType::SelectedItem) {
+			if ($this->getDataField() !== '') {
+				$cell->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 			} else {
-				$text=$this->getText();
-				if($this->getEncode())
-					$text=THttpUtility::htmlEncode($text);
+				$text = $this->getText();
+				if ($this->getEncode()) {
+					$text = THttpUtility::htmlEncode($text);
+				}
 				$cell->setText($text);
 			}
+		} else {
+			parent::initializeCell($cell, $columnIndex, $itemType);
 		}
-		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -126,21 +126,21 @@ class TLiteralColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
-		$item=$sender->getNamingContainer();
-		$data=$item->getData();
-		$formatString=$this->getDataFormatString();
-		if(($field=$this->getDataField())!=='')
-			$value=$this->formatDataValue($formatString,$this->getDataFieldValue($data,$field));
-		else
-			$value=$this->formatDataValue($formatString,$data);
-		if($sender instanceof TTableCell)
-		{
-			if($this->getEncode())
-				$value=THttpUtility::htmlEncode($value);
+		$item = $sender->getNamingContainer();
+		$data = $item->getData();
+		$formatString = $this->getDataFormatString();
+		if (($field = $this->getDataField()) !== '') {
+			$value = $this->formatDataValue($formatString, $this->getDataFieldValue($data, $field));
+		} else {
+			$value = $this->formatDataValue($formatString, $data);
+		}
+		if ($sender instanceof TTableCell) {
+			if ($this->getEncode()) {
+				$value = THttpUtility::htmlEncode($value);
+			}
 			$sender->setText($value);
 		}
 	}
 }
-

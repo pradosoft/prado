@@ -50,32 +50,29 @@ use Prado\TApplication;
  */
 class TDataSourceConfig extends \Prado\TModule
 {
-	private $_connID='';
+	private $_connID = '';
 	private $_conn;
-	private $_connClass='System.Data.TDbConnection';
+	private $_connClass = 'System.Data.TDbConnection';
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
-	 * @param TXmlDocument xml configuration.
+	 * @param TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-		{
-			if(isset($xml['database']) && is_array($xml['database']))
-			{
-				$db=$this->getDbConnection();
-				foreach($xml['database'] as $name=>$value)
-					$db->setSubProperty($name,$value);
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+			if (isset($xml['database']) && is_array($xml['database'])) {
+				$db = $this->getDbConnection();
+				foreach ($xml['database'] as $name => $value) {
+					$db->setSubProperty($name, $value);
+				}
 			}
-		}
-		else
-		{
-			if($prop=$xml->getElementByTagName('database'))
-			{
-				$db=$this->getDbConnection();
-				foreach($prop->getAttributes() as $name=>$value)
-					$db->setSubproperty($name,$value);
+		} else {
+			if ($prop = $xml->getElementByTagName('database')) {
+				$db = $this->getDbConnection();
+				foreach ($prop->getAttributes() as $name => $value) {
+					$db->setSubproperty($name, $value);
+				}
 			}
 		}
 	}
@@ -84,11 +81,11 @@ class TDataSourceConfig extends \Prado\TModule
 	 * The module ID of another TDataSourceConfig. The {@link getDbConnection DbConnection}
 	 * property of this configuration will equal to {@link getDbConnection DbConnection}
 	 * of the given TDataSourceConfig module.
-	 * @param string module ID.
+	 * @param string $value module ID.
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -107,12 +104,12 @@ class TDataSourceConfig extends \Prado\TModule
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn===null)
-		{
-			if($this->_connID!=='')
+		if ($this->_conn === null) {
+			if ($this->_connID !== '') {
 				$this->_conn = $this->findConnectionByID($this->getConnectionID());
-			else
+			} else {
 				$this->_conn = Prado::createComponent($this->getConnectionClass());
+			}
 		}
 		return $this->_conn;
 	}
@@ -140,14 +137,15 @@ class TDataSourceConfig extends \Prado\TModule
 	 * {@link setConnectionClass ConnectionClass} property must be set before
 	 * calling {@link getDbConnection} if you wish to create the connection using the
 	 * given class name.
-	 * @param string Database connection class name.
+	 * @param string $value Database connection class name.
 	 * @throws TConfigurationException when database connection is already established.
 	 */
 	public function setConnectionClass($value)
 	{
-		if($this->_conn!==null)
+		if ($this->_conn !== null) {
 			throw new TConfigurationException('datasource_dbconnection_exists', $value);
-		$this->_connClass=$value;
+		}
+		$this->_connClass = $value;
 	}
 
 	/**
@@ -159,11 +157,12 @@ class TDataSourceConfig extends \Prado\TModule
 	protected function findConnectionByID($id)
 	{
 		$conn = $this->getApplication()->getModule($id);
-		if($conn instanceof TDbConnection)
+		if ($conn instanceof TDbConnection) {
 			return $conn;
-		else if($conn instanceof TDataSourceConfig)
+		} elseif ($conn instanceof TDataSourceConfig) {
 			return $conn->getDbConnection();
-		else
-			throw new TConfigurationException('datasource_dbconnection_invalid',$id);
+		} else {
+			throw new TConfigurationException('datasource_dbconnection_invalid', $id);
+		}
 	}
 }

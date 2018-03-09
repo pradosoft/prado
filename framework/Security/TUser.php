@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+
 use Prado\TPropertyValue;
 
 /**
@@ -36,7 +37,7 @@ class TUser extends \Prado\TComponent implements IUser
 	/**
 	 * @var boolean whether user state is changed
 	 */
-	private $_stateChanged=false;
+	private $_stateChanged = false;
 	/**
 	 * @var IUserManager user manager
 	 */
@@ -48,8 +49,8 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function __construct(IUserManager $manager)
 	{
-		$this->_state=array();
-		$this->_manager=$manager;
+		$this->_state = [];
+		$this->_manager = $manager;
 		$this->setName($manager->getGuestName());
 	}
 
@@ -66,15 +67,15 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getName()
 	{
-		return $this->getState('Name','');
+		return $this->getState('Name', '');
 	}
 
 	/**
-	 * @param string username
+	 * @param string $value username
 	 */
 	public function setName($value)
 	{
-		$this->setState('Name',$value,'');
+		$this->setState('Name', $value, '');
 	}
 
 	/**
@@ -82,20 +83,19 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getIsGuest()
 	{
-		return $this->getState('IsGuest',true);
+		return $this->getState('IsGuest', true);
 	}
 
 	/**
-	 * @param boolean if the user is a guest
+	 * @param boolean $value if the user is a guest
 	 */
 	public function setIsGuest($value)
 	{
-		if($isGuest=TPropertyValue::ensureBoolean($value))
-		{
+		if ($isGuest = TPropertyValue::ensureBoolean($value)) {
 			$this->setName($this->_manager->getGuestName());
-			$this->setRoles(array());
+			$this->setRoles([]);
 		}
-		$this->setState('IsGuest',$isGuest);
+		$this->setState('IsGuest', $isGuest);
 	}
 
 	/**
@@ -103,7 +103,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return $this->getState('Roles',array());
+		return $this->getState('Roles', []);
 	}
 
 	/**
@@ -111,29 +111,30 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setRoles($value)
 	{
-		if(is_array($value))
-			$this->setState('Roles',$value,array());
-		else
-		{
-			$roles=array();
-			foreach(explode(',',$value) as $role)
-			{
-				if(($role=trim($role))!=='')
-					$roles[]=$role;
+		if (is_array($value)) {
+			$this->setState('Roles', $value, []);
+		} else {
+			$roles = [];
+			foreach (explode(',', $value) as $role) {
+				if (($role = trim($role)) !== '') {
+					$roles[] = $role;
+				}
 			}
-			$this->setState('Roles',$roles,array());
+			$this->setState('Roles', $roles, []);
 		}
 	}
 
 	/**
-	 * @param string role to be tested. Note, role is case-insensitive.
+	 * @param string $role role to be tested. Note, role is case-insensitive.
 	 * @return boolean whether the user is of this role
 	 */
 	public function isInRole($role)
 	{
-		foreach($this->getRoles() as $r)
-			if(strcasecmp($role,$r)===0)
+		foreach ($this->getRoles() as $r) {
+			if (strcasecmp($role, $r) === 0) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -146,15 +147,17 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param string user data that is serialized and restored from session
+	 * @param string $data user data that is serialized and restored from session
 	 * @return IUser the user object
 	 */
 	public function loadFromString($data)
 	{
-		if(!empty($data))
-			$this->_state=unserialize($data);
-		if(!is_array($this->_state))
-			$this->_state=array();
+		if (!empty($data)) {
+			$this->_state = unserialize($data);
+		}
+		if (!is_array($this->_state)) {
+			$this->_state = [];
+		}
 		return $this;
 	}
 
@@ -171,9 +174,9 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
-	protected function getState($key,$defaultValue=null)
+	protected function getState($key, $defaultValue = null)
 	{
-		return isset($this->_state[$key])?$this->_state[$key]:$defaultValue;
+		return isset($this->_state[$key]) ? $this->_state[$key] : $defaultValue;
 	}
 
 	/**
@@ -190,13 +193,14 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @param mixed default value. If $value===$defaultValue, the variable will be removed from persistent storage.
 	 * @see getState
 	 */
-	protected function setState($key,$value,$defaultValue=null)
+	protected function setState($key, $value, $defaultValue = null)
 	{
-		if($value===$defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_state[$key]);
-		else
-			$this->_state[$key]=$value;
-		$this->_stateChanged=true;
+		} else {
+			$this->_state[$key] = $value;
+		}
+		$this->_stateChanged = true;
 	}
 
 	/**
@@ -208,11 +212,10 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param boolean whether user session state is changed
+	 * @param boolean $value whether user session state is changed
 	 */
 	public function setStateChanged($value)
 	{
-		$this->_stateChanged=TPropertyValue::ensureBoolean($value);
+		$this->_stateChanged = TPropertyValue::ensureBoolean($value);
 	}
 }
-

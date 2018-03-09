@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\THiddenField;
 
-
 /**
  * TActiveHiddenField class
  *
@@ -27,7 +26,7 @@ use Prado\Web\UI\WebControls\THiddenField;
  */
 class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, IActiveControl
 {
-    /**
+	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the
 	 * adapter appropriately by, for example, by calling this constructor.
@@ -56,25 +55,27 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 
 	/**
 	 * Client-side Value property can only be updated after the OnLoad stage.
-	 * @param string text content for the hidden field
+	 * @param string $value text content for the hidden field
 	 */
 	public function setValue($value)
 	{
-		if(parent::getValue() === $value)
+		if (parent::getValue() === $value) {
 			return;
+		}
 
 		parent::setValue($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
+		}
 	}
 
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -84,7 +85,7 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -116,9 +117,10 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 }
-

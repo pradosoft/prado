@@ -24,7 +24,7 @@ interface IModule
 {
 	/**
 	 * Initializes the module.
-	 * @param TXmlElement the configuration for the module
+	 * @param TXmlElement $config the configuration for the module
 	 */
 	public function init($config);
 	/**
@@ -32,7 +32,7 @@ interface IModule
 	 */
 	public function getID();
 	/**
-	 * @param string ID of the module
+	 * @param string $id ID of the module
 	 */
 	public function setID($id);
 }

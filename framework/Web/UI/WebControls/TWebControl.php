@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
@@ -40,7 +41,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 *	@var boolean ensures the inclusion the id in the tag rendering.
 	 */
-	private $_ensureid=false;
+	private $_ensureid = false;
 
 	/**
 	 *	@var TWebControlDecorator this render things before and after both the open and close tag
@@ -52,7 +53,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Subclasses can override getEnsureId or just set this property.  eg. If your subclass
 	 * control does work with javascript and your class wants to flag that it requires an id
 	 * to operate properly.  Once set to true, it stays that way.
-	 * @param boolean pass true to enable enforcement of the tag attribute id.
+	 * @param boolean $value pass true to enable enforcement of the tag attribute id.
 	 */
 	public function setEnsureId($value)
 	{
@@ -70,10 +71,11 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * @return TWebControlDecorator
 	 */
-	public function getDecorator($create=true)
+	public function getDecorator($create = true)
 	{
-		if($create && !$this->_decorator)
+		if ($create && !$this->_decorator) {
 			$this->_decorator = new TWebControlDecorator($this);
+		}
 		return $this->_decorator;
 	}
 
@@ -88,10 +90,12 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		$this->setAccessKey($control->getAccessKey());
 		$this->setToolTip($control->getToolTip());
 		$this->setTabIndex($control->getTabIndex());
-		if(!$control->getEnabled())
+		if (!$control->getEnabled()) {
 			$this->setEnabled(false);
-		if($control->getHasAttributes())
+		}
+		if ($control->getHasAttributes()) {
 			$this->getAttributes()->copyFrom($control->getAttributes());
+		}
 	}
 
 	/**
@@ -99,21 +103,22 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getAccessKey()
 	{
-		return $this->getViewState('AccessKey','');
+		return $this->getViewState('AccessKey', '');
 	}
 
 	/**
 	 * Sets the access key of the control.
 	 * Only one-character string can be set, or an exception will be raised.
 	 * Pass in an empty string if you want to disable access key.
-	 * @param string the access key to be set
+	 * @param string $value the access key to be set
 	 * @throws TInvalidDataValueException if the access key is specified with more than one character
 	 */
 	public function setAccessKey($value)
 	{
-		if(strlen($value)>1)
-			throw new TInvalidDataValueException('webcontrol_accesskey_invalid',get_class($this),$value);
-		$this->setViewState('AccessKey',$value,'');
+		if (strlen($value) > 1) {
+			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', get_class($this), $value);
+		}
+		$this->setViewState('AccessKey', $value, '');
 	}
 
 	/**
@@ -121,14 +126,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBackColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getBackColor();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the background color of the control
+	 * @param string $value the background color of the control
 	 */
 	public function setBackColor($value)
 	{
@@ -140,14 +146,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getBorderColor();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the border color of the control
+	 * @param string $value the border color of the control
 	 */
 	public function setBorderColor($value)
 	{
@@ -159,14 +166,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getBorderStyle();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the border style of the control
+	 * @param string $value the border style of the control
 	 */
 	public function setBorderStyle($value)
 	{
@@ -178,14 +186,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getBorderWidth()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getBorderWidth();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the border width of the control
+	 * @param string $value the border width of the control
 	 */
 	public function setBorderWidth($value)
 	{
@@ -205,14 +214,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getForeColor()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getForeColor();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the foreground color of the control
+	 * @param string $value the foreground color of the control
 	 */
 	public function setForeColor($value)
 	{
@@ -224,14 +234,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getHeight()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getHeight();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 * @param TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplay($value)
 	{
@@ -247,7 +258,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param string the css class of the control
+	 * @param string $value the css class of the control
 	 */
 	public function setCssClass($value)
 	{
@@ -259,14 +270,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getCssClass()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getCssClass();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the height of the control
+	 * @param string $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -278,7 +290,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getHasStyle()
 	{
-		return $this->getViewState('Style',null)!==null;
+		return $this->getViewState('Style', null) !== null;
 	}
 
 	/**
@@ -296,12 +308,11 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style;
-		else
-		{
-			$style=$this->createStyle();
-			$this->setViewState('Style',$style,null);
+		} else {
+			$style = $this->createStyle();
+			$this->setViewState('Style', $style, null);
 			return $style;
 		}
 	}
@@ -309,15 +320,16 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the css style string of the control.
 	 * The style string will be prefixed to the styles set via other control properties (e.g. Height, Width).
-	 * @param string the css style string
+	 * @param string $value the css style string
 	 * @throws TInvalidDataValueException if the parameter is not a string
 	 */
 	public function setStyle($value)
 	{
-		if(is_string($value))
+		if (is_string($value)) {
 			$this->getStyle()->setCustomStyle($value);
-		else
-			throw new TInvalidDataValueException('webcontrol_style_invalid',get_class($this));
+		} else {
+			throw new TInvalidDataValueException('webcontrol_style_invalid', get_class($this));
+		}
 	}
 
 	/**
@@ -333,17 +345,17 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getTabIndex()
 	{
-		return $this->getViewState('TabIndex',0);
+		return $this->getViewState('TabIndex', 0);
 	}
 
 	/**
 	 * Sets the tab index of the control.
 	 * Pass 0 if you want to disable tab index.
-	 * @param integer the tab index to be set
+	 * @param integer $value the tab index to be set
 	 */
 	public function setTabIndex($value)
 	{
-		$this->setViewState('TabIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -362,17 +374,17 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getToolTip()
 	{
-		return $this->getViewState('ToolTip','');
+		return $this->getViewState('ToolTip', '');
 	}
 
 	/**
 	 * Sets the tooltip of the control.
 	 * Pass an empty string if you want to disable tooltip.
-	 * @param string the tooltip to be set
+	 * @param string $value the tooltip to be set
 	 */
 	public function setToolTip($value)
 	{
-		$this->setViewState('ToolTip',$value,'');
+		$this->setViewState('ToolTip', $value, '');
 	}
 
 	/**
@@ -380,14 +392,15 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	public function getWidth()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style->getWidth();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
-	 * @param string the width of the control
+	 * @param string $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -399,11 +412,13 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * If your subclass overrides the onPreRender method be sure to call
 	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
 	 * among other things.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
-	public function onPreRender($param) {
-		if($decorator = $this->getDecorator(false))
+	public function onPreRender($param)
+	{
+		if ($decorator = $this->getDecorator(false)) {
 			$decorator->instantiate();
+		}
 
 		parent::onPreRender($param);
 	}
@@ -413,26 +428,32 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * By default, the method will render 'id', 'accesskey', 'disabled',
 	 * 'tabindex', 'title' and all custom attributes.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getID()!=='' || $this->getEnsureId())
-			$writer->addAttribute('id',$this->getClientID());
-		if(($accessKey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accessKey);
-		if(!$this->getEnabled())
-			$writer->addAttribute('disabled','disabled');
-		if(($tabIndex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',"$tabIndex");
-		if(($toolTip=$this->getToolTip())!=='')
-			$writer->addAttribute('title',$toolTip);
-		if($style=$this->getViewState('Style',null))
+		if ($this->getID() !== '' || $this->getEnsureId()) {
+			$writer->addAttribute('id', $this->getClientID());
+		}
+		if (($accessKey = $this->getAccessKey()) !== '') {
+			$writer->addAttribute('accesskey', $accessKey);
+		}
+		if (!$this->getEnabled()) {
+			$writer->addAttribute('disabled', 'disabled');
+		}
+		if (($tabIndex = $this->getTabIndex()) > 0) {
+			$writer->addAttribute('tabindex', "$tabIndex");
+		}
+		if (($toolTip = $this->getToolTip()) !== '') {
+			$writer->addAttribute('title', $toolTip);
+		}
+		if ($style = $this->getViewState('Style', null)) {
 			$style->addAttributesToRender($writer);
-		if($this->getHasAttributes())
-		{
-			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+		}
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
+				$writer->addAttribute($name, $value);
+			}
 		}
 	}
 
@@ -443,7 +464,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * - {@link renderBeginTag}
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -454,11 +475,11 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
-		if($decorator = $this->getDecorator(false)) {
+		if ($decorator = $this->getDecorator(false)) {
 			$decorator->renderPreTagText($writer);
 			$this->addAttributesToRender($writer);
 			$writer->renderBeginTag($this->getTagName());
@@ -473,7 +494,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -482,15 +503,16 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{
-		if($decorator = $this->getDecorator(false)) {
+		if ($decorator = $this->getDecorator(false)) {
 			$decorator->renderPostContentsText($writer);
 			$writer->renderEndTag();
 			$decorator->renderPostTagText($writer);
-		} else
+		} else {
 			$writer->renderEndTag($writer);
+		}
 	}
 }

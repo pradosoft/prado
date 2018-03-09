@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Collections\TList;
 use Prado\Collections\TMap;
 use Prado\Data\SqlMap\DataMapper\TInvalidPropertyException;
@@ -62,11 +63,11 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string a unique identifier for the <parameterMap>.
+	 * @param string $value a unique identifier for the <parameterMap>.
 	 */
 	public function setID($value)
 	{
-		$this->_ID=$value;
+		$this->_ID = $value;
 	}
 
 	/**
@@ -86,7 +87,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of another <parameterMap> upon which to base this TParameterMap.
+	 * @param string $value name of another <parameterMap> upon which to base this TParameterMap.
 	 */
 	public function setExtends($value)
 	{
@@ -100,12 +101,13 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	public function getProperty($index)
 	{
-		if(is_string($index))
+		if (is_string($index)) {
 			return $this->_propertyMap->itemAt($index);
-		else if(is_int($index))
+		} elseif (is_int($index)) {
 			return $this->_properties->itemAt($index);
-		else
+		} else {
 			throw new TSqlMapException('sqlmap_index_must_be_string_or_int', $index);
+		}
 	}
 
 	/**
@@ -144,15 +146,17 @@ class TParameterMap extends \Prado\TComponent
 	 */
 	public function getPropertyValue($registry, $property, $parameterValue)
 	{
-		$value = $this->getObjectValue($parameterValue,$property);
+		$value = $this->getObjectValue($parameterValue, $property);
 
-		if(($handler=$this->createTypeHandler($property, $registry))!==null)
+		if (($handler = $this->createTypeHandler($property, $registry)) !== null) {
 			$value = $handler->getParameter($value);
+		}
 
-		$value = $this->nullifyDefaultValue($property,$value);
+		$value = $this->nullifyDefaultValue($property, $value);
 
-		if(($type = $property->getType())!==null)
+		if (($type = $property->getType()) !== null) {
 			$value = $registry->convertToType($type, $value);
+		}
 
 		return $value;
 	}
@@ -160,16 +164,17 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
-	 * @param TParameterProperty parameter property
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
+	 * @param TParameterProperty $property parameter property
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($property, $registry)
 	{
-		$type=$property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
-		$handler=$registry->getTypeHandler($type);
-		if($handler===null && $property->getTypeHandler())
+		$type = $property->getTypeHandler() ? $property->getTypeHandler() : $property->getType();
+		$handler = $registry->getTypeHandler($type);
+		if ($handler === null && $property->getTypeHandler()) {
 			$handler = Prado::createComponent($type);
+		}
 		return $handler;
 	}
 
@@ -180,14 +185,11 @@ class TParameterMap extends \Prado\TComponent
 	 * @return mixed property value.
 	 * @throws TSqlMapException if property access is invalid.
 	 */
-	protected function getObjectValue($object,$property)
+	protected function getObjectValue($object, $property)
 	{
-		try
-		{
+		try {
 			return TPropertyAccess::get($object, $property->getProperty());
-		}
-		catch (TInvalidPropertyException $e)
-		{
+		} catch (TInvalidPropertyException $e) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_get_property_for_parameter',
 				$this->getID(),
@@ -200,16 +202,16 @@ class TParameterMap extends \Prado\TComponent
 	/**
 	 * When the actual value matches the {@link NullValue TParameterProperty::setNullValue()},
 	 * set the current value to null.
-	 * @param TParameterProperty parameter property.
-	 * @param mixed current property value
+	 * @param TParameterProperty $property parameter property.
+	 * @param mixed $value current property value
 	 * @return mixed null if NullValue matches currrent value.
 	 */
-	protected function nullifyDefaultValue($property,$value)
+	protected function nullifyDefaultValue($property, $value)
 	{
-		if(($nullValue = $property->getNullValue())!==null)
-		{
-			if($nullValue === $value)
+		if (($nullValue = $property->getNullValue()) !== null) {
+			if ($nullValue === $value) {
 				$value = null;
+			}
 		}
 		return $value;
 	}

@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TMultiView;
 
-
 /**
  * TActiveMultiView class.
  *
@@ -34,9 +33,9 @@ use Prado\Web\UI\WebControls\TMultiView;
 class TActiveMultiView extends TMultiView implements IActiveControl
 {
 	/**
-	* Creates a new callback control, sets the adapter to
-	* TActiveControlAdapter.
-	*/
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -44,44 +43,45 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	* @return TBaseActiveControl standard active control options.
-	*/
+	 * @return TBaseActiveControl standard active control options.
+	 */
 	public function getActiveControl()
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
 	/**
-	* Returns the id of the surrounding container (span).
-	* @return string container id
-	*/
+	 * Returns the id of the surrounding container (span).
+	 * @return string container id
+	 */
 	protected function getContainerID()
 	{
-		return $this->ClientID.'_Container';
+		return $this->ClientID . '_Container';
 	}
 
 	/**
-	* Renders the TActiveMultiView.
-	* If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
-	* Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
-	* @param THtmlWriter writer for the rendering purpose
-	*/
+	 * Renders the TActiveMultiView.
+	 * If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
+	 * Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 */
 	public function render($writer)
 	{
-		if($this->getHasPreRendered()) {
+		if ($this->getHasPreRendered()) {
 			$this->renderMultiView($writer);
-			if($this->getActiveControl()->canUpdateClientSide())
-				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(),$writer);
+			if ($this->getActiveControl()->canUpdateClientSide()) {
+				$this->getPage()->getCallbackClient()->replaceContent($this->getContainerID(), $writer);
+			}
+		} else {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
-		else
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
 	}
 
 	/**
-	* Renders the TActiveMultiView by writing a span tag with the container id obtained from {@link getContainerID()}
-	* which will be called by the replacement method of the client script to update it's content.
-	* @param $writer THtmlWriter writer for the rendering purpose
-	*/
+	 * Renders the TActiveMultiView by writing a span tag with the container id obtained from {@link getContainerID()}
+	 * which will be called by the replacement method of the client script to update it's content.
+	 * @param $writer $writer THtmlWriter writer for the rendering purpose
+	 */
 	protected function renderMultiView($writer)
 	{
 		$writer->addAttribute('id', $this->getContainerID());
@@ -91,24 +91,26 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	* @param integer the zero-based index of the current view in the view collection. -1 if no active view.
-	* @throws TInvalidDataValueException if the view index is invalid
-	*/
+	 * @param integer $value the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @throws TInvalidDataValueException if the view index is invalid
+	 */
 	public function setActiveViewIndex($value)
 	{
 		parent::setActiveViewIndex($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
-	* @param TView the view to be activated
-	* @throws TInvalidOperationException if the view is not in the view collection
-	*/
+	 * @param TView $value the view to be activated
+	 * @throws TInvalidOperationException if the view is not in the view collection
+	 */
 	public function setActiveView($value)
 	{
 		parent::setActiveView($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
+		}
 	}
 }

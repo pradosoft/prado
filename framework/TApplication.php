@@ -10,6 +10,7 @@
  */
 
 namespace Prado;
+
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TConfigurationException;
@@ -95,15 +96,15 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Page service ID
 	 */
-	const PAGE_SERVICE_ID='page';
+	const PAGE_SERVICE_ID = 'page';
 	/**
 	 * Application configuration file name
 	 */
-	const CONFIG_FILE_XML='application.xml';
+	const CONFIG_FILE_XML = 'application.xml';
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT_XML='.xml';
+	const CONFIG_FILE_EXT_XML = '.xml';
 	/**
 	 * Configuration file type, application.xml and config.xml
 	 */
@@ -111,11 +112,11 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Application configuration file name
 	 */
-	const CONFIG_FILE_PHP='application.php';
+	const CONFIG_FILE_PHP = 'application.php';
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT_PHP='.php';
+	const CONFIG_FILE_EXT_PHP = '.php';
 	/**
 	 * Configuration file type, application.php and config.php
 	 */
@@ -123,20 +124,20 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Runtime directory name
 	 */
-	const RUNTIME_PATH='runtime';
+	const RUNTIME_PATH = 'runtime';
 	/**
 	 * Config cache file
 	 */
-	const CONFIGCACHE_FILE='config.cache';
+	const CONFIGCACHE_FILE = 'config.cache';
 	/**
 	 * Global data file
 	 */
-	const GLOBAL_FILE='global.cache';
+	const GLOBAL_FILE = 'global.cache';
 
 	/**
 	 * @var array list of events that define application lifecycles
 	 */
-	private static $_steps=array(
+	private static $_steps = [
 		'onBeginRequest',
 		'onLoadState',
 		'onLoadStateComplete',
@@ -150,7 +151,7 @@ class TApplication extends \Prado\TComponent
 		'onSaveStateComplete',
 		'onPreFlushOutput',
 		'flushOutput'
-	);
+	];
 
 	/**
 	 * @var string application ID
@@ -163,7 +164,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var boolean whether the request is completed
 	 */
-	private $_requestCompleted=false;
+	private $_requestCompleted = false;
 	/**
 	 * @var integer application state
 	 */
@@ -179,11 +180,11 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var array list of loaded application modules
 	 */
-	private $_modules=array();
+	private $_modules = [];
 	/**
 	 * @var array list of application modules yet to be loaded
 	 */
-	private $_lazyModules=array();
+	private $_lazyModules = [];
 	/**
 	 * @var \Prado\Collections\TMap list of application parameters
 	 */
@@ -211,11 +212,11 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var boolean if any global state is changed during the current request
 	 */
-	private $_stateChanged=false;
+	private $_stateChanged = false;
 	/**
 	 * @var array global variables (persistent across sessions, requests)
 	 */
-	private $_globals=array();
+	private $_globals = [];
 	/**
 	 * @var string cache file
 	 */
@@ -267,7 +268,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * @var TApplicationMode application mode
 	 */
-	private $_mode=TApplicationMode::Debug;
+	private $_mode = TApplicationMode::Debug;
 
 	/**
 	 * @var string Customizable page service ID
@@ -292,22 +293,23 @@ class TApplication extends \Prado\TComponent
 	 * @param boolean whether to cache application configuration. Defaults to true.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
-	public function __construct($basePath='protected',$cacheConfig=true, $configType=self::CONFIG_TYPE_XML)
+	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
 	{
 		// register application as a singleton
 		Prado::setApplication($this);
 		$this->setConfigurationType($configType);
 		$this->resolvePaths($basePath);
 
-		if($cacheConfig)
-			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
+		if ($cacheConfig) {
+			$this->_cacheFile = $this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
+		}
 
 		// generates unique ID by hashing the runtime path
-		$this->_uniqueID=md5($this->_runtimePath);
-		$this->_parameters=new \Prado\Collections\TMap;
-		$this->_services=array($this->getPageServiceID()=>array('TPageService',array(),null));
+		$this->_uniqueID = md5($this->_runtimePath);
+		$this->_parameters = new \Prado\Collections\TMap;
+		$this->_services = [$this->getPageServiceID() => ['TPageService', [], null]];
 
-		Prado::setPathOfAlias('Application',$this->_basePath);
+		Prado::setPathOfAlias('Application', $this->_basePath);
 	}
 
 	/**
@@ -323,39 +325,36 @@ class TApplication extends \Prado\TComponent
 	protected function resolvePaths($basePath)
 	{
 		// determine configuration path and file
-		if(empty($basePath) || ($basePath=realpath($basePath))===false)
-			throw new TConfigurationException('application_basepath_invalid',$basePath);
-		if(is_dir($basePath) && is_file($basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName()))
-			$configFile=$basePath.DIRECTORY_SEPARATOR.$this->getConfigurationFileName();
-		else if(is_file($basePath))
-		{
-			$configFile=$basePath;
-			$basePath=dirname($configFile);
+		if (empty($basePath) || ($basePath = realpath($basePath)) === false) {
+			throw new TConfigurationException('application_basepath_invalid', $basePath);
 		}
-		else
-			$configFile=null;
+		if (is_dir($basePath) && is_file($basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName())) {
+			$configFile = $basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName();
+		} elseif (is_file($basePath)) {
+			$configFile = $basePath;
+			$basePath = dirname($configFile);
+		} else {
+			$configFile = null;
+		}
 
 		// determine runtime path
-		$runtimePath=$basePath.DIRECTORY_SEPARATOR.self::RUNTIME_PATH;
-		if(is_writable($runtimePath))
-		{
-			if($configFile!==null)
-			{
-				$runtimePath.=DIRECTORY_SEPARATOR.basename($configFile).'-'.Prado::getVersion();
-				if(!is_dir($runtimePath))
-				{
-					if(@mkdir($runtimePath)===false)
-						throw new TConfigurationException('application_runtimepath_failed',$runtimePath);
+		$runtimePath = $basePath . DIRECTORY_SEPARATOR . self::RUNTIME_PATH;
+		if (is_writable($runtimePath)) {
+			if ($configFile !== null) {
+				$runtimePath .= DIRECTORY_SEPARATOR . basename($configFile) . '-' . Prado::getVersion();
+				if (!is_dir($runtimePath)) {
+					if (@mkdir($runtimePath) === false) {
+						throw new TConfigurationException('application_runtimepath_failed', $runtimePath);
+					}
 					@chmod($runtimePath, PRADO_CHMOD); //make it deletable
 				}
 				$this->setConfigurationFile($configFile);
 			}
 			$this->setBasePath($basePath);
 			$this->setRuntimePath($runtimePath);
+		} else {
+			throw new TConfigurationException('application_runtimepath_invalid', $runtimePath);
 		}
-		else
-			throw new TConfigurationException('application_runtimepath_invalid',$runtimePath);
-
 	}
 
 	/**
@@ -365,26 +364,24 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function run()
 	{
-		try
-		{
+		try {
 			$this->initApplication();
-			$n=count(self::$_steps);
-			$this->_step=0;
-			$this->_requestCompleted=false;
-			while($this->_step<$n)
-			{
-				if($this->_mode===TApplicationMode::Off)
-					throw new THttpException(503,'application_unavailable');
-				if($this->_requestCompleted)
+			$n = count(self::$_steps);
+			$this->_step = 0;
+			$this->_requestCompleted = false;
+			while ($this->_step < $n) {
+				if ($this->_mode === TApplicationMode::Off) {
+					throw new THttpException(503, 'application_unavailable');
+				}
+				if ($this->_requestCompleted) {
 					break;
-				$method=self::$_steps[$this->_step];
-				Prado::trace("Executing $method()",'Prado\TApplication');
+				}
+				$method = self::$_steps[$this->_step];
+				Prado::trace("Executing $method()", 'Prado\TApplication');
 				$this->$method();
 				$this->_step++;
 			}
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			$this->onError($e);
 		}
 		$this->onEndRequest();
@@ -397,7 +394,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function completeRequest()
 	{
-		$this->_requestCompleted=true;
+		$this->_requestCompleted = true;
 	}
 
 	/**
@@ -412,13 +409,13 @@ class TApplication extends \Prado\TComponent
 	 * Returns a global value.
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
-	 * @param string the name of the value to be returned
-	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
+	 * @param string $key the name of the value to be returned
+	 * @param mixed $defaultValue the default value. If $key is not found, $defaultValue will be returned
 	 * @return mixed the global value corresponding to $key
 	 */
-	public function getGlobalState($key,$defaultValue=null)
+	public function getGlobalState($key, $defaultValue = null)
 	{
-		return isset($this->_globals[$key])?$this->_globals[$key]:$defaultValue;
+		return isset($this->_globals[$key]) ? $this->_globals[$key] : $defaultValue;
 	}
 
 	/**
@@ -431,26 +428,28 @@ class TApplication extends \Prado\TComponent
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
 	 * @param boolean wheter to force an immediate GlobalState save. defaults to false
 	 */
-	public function setGlobalState($key,$value,$defaultValue=null,$forceSave=false)
+	public function setGlobalState($key, $value, $defaultValue = null, $forceSave = false)
 	{
-		$this->_stateChanged=true;
-		if($value===$defaultValue)
+		$this->_stateChanged = true;
+		if ($value === $defaultValue) {
 			unset($this->_globals[$key]);
-		else
-			$this->_globals[$key]=$value;
-		if($forceSave)
+		} else {
+			$this->_globals[$key] = $value;
+		}
+		if ($forceSave) {
 			$this->saveGlobals();
+		}
 	}
 
 	/**
 	 * Clears a global value.
 	 *
 	 * The value cleared will no longer be available in this request and the following requests.
-	 * @param string the name of the value to be cleared
+	 * @param string $key the name of the value to be cleared
 	 */
 	public function clearGlobalState($key)
 	{
-		$this->_stateChanged=true;
+		$this->_stateChanged = true;
 		unset($this->_globals[$key]);
 	}
 
@@ -462,7 +461,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function loadGlobals()
 	{
-		$this->_globals=$this->getApplicationStatePersister()->load();
+		$this->_globals = $this->getApplicationStatePersister()->load();
 	}
 
 	/**
@@ -471,9 +470,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function saveGlobals()
 	{
-		if($this->_stateChanged)
-		{
-			$this->_stateChanged=false;
+		if ($this->_stateChanged) {
+			$this->_stateChanged = false;
 			$this->getApplicationStatePersister()->save($this->_globals);
 		}
 	}
@@ -487,11 +485,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string application ID
+	 * @param string $value application ID
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -503,11 +501,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string page service ID
+	 * @param string $value page service ID
 	 */
 	public function setPageServiceID($value)
 	{
-		$this->_pageServiceID=$value;
+		$this->_pageServiceID = $value;
 	}
 
 	/**
@@ -527,11 +525,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TApplicationMode application mode
+	 * @param TApplicationMode $value application mode
 	 */
 	public function setMode($value)
 	{
-		$this->_mode=TPropertyValue::ensureEnum($value,'\Prado\TApplicationMode');
+		$this->_mode = TPropertyValue::ensureEnum($value, '\Prado\TApplicationMode');
 	}
 
 	/**
@@ -543,11 +541,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the directory containing the application configuration file
+	 * @param string $value the directory containing the application configuration file
 	 */
 	public function setBasePath($value)
 	{
-		$this->_basePath=$value;
+		$this->_basePath = $value;
 	}
 
 	/**
@@ -559,11 +557,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the application configuration file (absolute path)
+	 * @param string $value the application configuration file (absolute path)
 	 */
 	public function setConfigurationFile($value)
 	{
-		$this->_configFile=$value;
+		$this->_configFile = $value;
 	}
 
 	/**
@@ -574,8 +572,8 @@ class TApplication extends \Prado\TComponent
 		return $this->_configType;
 	}
 
- 	/**
- 	 * @param string the application configuration type. 'xml' and 'php' are valid values
+	/**
+	 * @param string $value the application configuration type. 'xml' and 'php' are valid values
 	 */
 	public function setConfigurationType($value)
 	{
@@ -587,10 +585,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getConfigurationFileExt()
 	{
-		if($this->_configFileExt===null)
-		{
-			switch($this->_configType)
-			{
+		if ($this->_configFileExt === null) {
+			switch ($this->_configType) {
 				case TApplication::CONFIG_TYPE_PHP:
 					$this->_configFileExt = TApplication::CONFIG_FILE_EXT_PHP;
 					break;
@@ -607,10 +603,8 @@ class TApplication extends \Prado\TComponent
 	public function getConfigurationFileName()
 	{
 		static $fileName;
-		if($fileName == null)
-		{
-			switch($this->_configType)
-			{
+		if ($fileName == null) {
+			switch ($this->_configType) {
 				case TApplication::CONFIG_TYPE_PHP:
 					$fileName = TApplication::CONFIG_FILE_PHP;
 					break;
@@ -630,15 +624,16 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the directory storing cache data and application-level persistent data. (absolute path)
+	 * @param string $value the directory storing cache data and application-level persistent data. (absolute path)
 	 */
 	public function setRuntimePath($value)
 	{
-		$this->_runtimePath=$value;
-		if($this->_cacheFile)
-			$this->_cacheFile=$this->_runtimePath.DIRECTORY_SEPARATOR.self::CONFIGCACHE_FILE;
+		$this->_runtimePath = $value;
+		if ($this->_cacheFile) {
+			$this->_cacheFile = $this->_runtimePath . DIRECTORY_SEPARATOR . self::CONFIGCACHE_FILE;
+		}
 		// generates unique ID by hashing the runtime path
-		$this->_uniqueID=md5($this->_runtimePath);
+		$this->_uniqueID = md5($this->_runtimePath);
 	}
 
 	/**
@@ -650,11 +645,11 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IService the currently requested service
+	 * @param IService $value the currently requested service
 	 */
 	public function setService($value)
 	{
-		$this->_service=$value;
+		$this->_service = $value;
 	}
 
 	/**
@@ -663,12 +658,13 @@ class TApplication extends \Prado\TComponent
 	 * @param string ID of the module
 	 * @param IModule module object or null if the module has not been loaded yet
 	 */
-	public function setModule($id, IModule $module=null)
+	public function setModule($id, IModule $module = null)
 	{
-		if(isset($this->_modules[$id]))
-			throw new TConfigurationException('application_moduleid_duplicated',$id);
-		else
-			$this->_modules[$id]=$module;
+		if (isset($this->_modules[$id])) {
+			throw new TConfigurationException('application_moduleid_duplicated', $id);
+		} else {
+			$this->_modules[$id] = $module;
+		}
 	}
 
 	/**
@@ -676,12 +672,12 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getModule($id)
 	{
-		if(!array_key_exists($id, $this->_modules))
+		if (!array_key_exists($id, $this->_modules)) {
 			return null;
+		}
 
 		// force loading of a lazy module
-		if($this->_modules[$id]===null)
-		{
+		if ($this->_modules[$id] === null) {
 			$module = $this->internalLoadModule($id, true);
 			$module[0]->init($module[1]);
 		}
@@ -715,9 +711,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getRequest()
 	{
-		if(!$this->_request)
-		{
-			$this->_request=new \Prado\Web\THttpRequest;
+		if (!$this->_request) {
+			$this->_request = new \Prado\Web\THttpRequest;
 			$this->_request->init(null);
 		}
 		return $this->_request;
@@ -728,7 +723,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setRequest(THttpRequest $request)
 	{
-		$this->_request=$request;
+		$this->_request = $request;
 	}
 
 	/**
@@ -736,9 +731,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getResponse()
 	{
-		if(!$this->_response)
-		{
-			$this->_response=new THttpResponse;
+		if (!$this->_response) {
+			$this->_response = new THttpResponse;
 			$this->_response->init(null);
 		}
 		return $this->_response;
@@ -749,7 +743,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setResponse(THttpResponse $response)
 	{
-		$this->_response=$response;
+		$this->_response = $response;
 	}
 
 	/**
@@ -757,9 +751,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getSession()
 	{
-		if(!$this->_session)
-		{
-			$this->_session=new THttpSession;
+		if (!$this->_session) {
+			$this->_session = new THttpSession;
 			$this->_session->init(null);
 		}
 		return $this->_session;
@@ -770,7 +763,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setSession(THttpSession $session)
 	{
-		$this->_session=$session;
+		$this->_session = $session;
 	}
 
 	/**
@@ -778,9 +771,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getErrorHandler()
 	{
-		if(!$this->_errorHandler)
-		{
-			$this->_errorHandler=new TErrorHandler;
+		if (!$this->_errorHandler) {
+			$this->_errorHandler = new TErrorHandler;
 			$this->_errorHandler->init(null);
 		}
 		return $this->_errorHandler;
@@ -791,7 +783,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setErrorHandler(TErrorHandler $handler)
 	{
-		$this->_errorHandler=$handler;
+		$this->_errorHandler = $handler;
 	}
 
 	/**
@@ -799,9 +791,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getSecurityManager()
 	{
-		if(!$this->_security)
-		{
-			$this->_security=new TSecurityManager;
+		if (!$this->_security) {
+			$this->_security = new TSecurityManager;
 			$this->_security->init(null);
 		}
 		return $this->_security;
@@ -812,7 +803,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setSecurityManager(TSecurityManager $sm)
 	{
-		$this->_security=$sm;
+		$this->_security = $sm;
 	}
 
 	/**
@@ -820,9 +811,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getAssetManager()
 	{
-		if(!$this->_assetManager)
-		{
-			$this->_assetManager=new TAssetManager;
+		if (!$this->_assetManager) {
+			$this->_assetManager = new TAssetManager;
 			$this->_assetManager->init(null);
 		}
 		return $this->_assetManager;
@@ -833,7 +823,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setAssetManager(TAssetManager $value)
 	{
-		$this->_assetManager=$value;
+		$this->_assetManager = $value;
 	}
 
 	/**
@@ -841,9 +831,8 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getApplicationStatePersister()
 	{
-		if(!$this->_statePersister)
-		{
-			$this->_statePersister=new TApplicationStatePersister;
+		if (!$this->_statePersister) {
+			$this->_statePersister = new TApplicationStatePersister;
 			$this->_statePersister->init(null);
 		}
 		return $this->_statePersister;
@@ -854,7 +843,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setApplicationStatePersister(IStatePersister $persister)
 	{
-		$this->_statePersister=$persister;
+		$this->_statePersister = $persister;
 	}
 
 	/**
@@ -870,7 +859,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setCache(\Prado\Caching\ICache $cache)
 	{
-		$this->_cache=$cache;
+		$this->_cache = $cache;
 	}
 
 	/**
@@ -886,18 +875,17 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setUser(\Prado\Security\IUser $user)
 	{
-		$this->_user=$user;
+		$this->_user = $user;
 	}
 
 	/**
 	 * @param boolean whether to create globalization if it does not exist
 	 * @return TGlobalization globalization module
 	 */
-	public function getGlobalization($createIfNotExists=true)
+	public function getGlobalization($createIfNotExists = true)
 	{
-		if($this->_globalization===null && $createIfNotExists)
-		{
-			$this->_globalization=new TGlobalization;
+		if ($this->_globalization === null && $createIfNotExists) {
+			$this->_globalization = new TGlobalization;
 			$this->_globalization->init(null);
 		}
 		return $this->_globalization;
@@ -908,7 +896,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setGlobalization(\Prado\I18N\TGlobalization $glob)
 	{
-		$this->_globalization=$glob;
+		$this->_globalization = $glob;
 	}
 
 	/**
@@ -916,8 +904,9 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getAuthorizationRules()
 	{
-		if($this->_authRules===null)
-			$this->_authRules=new \Prado\Security\TAuthorizationRuleCollection;
+		if ($this->_authRules === null) {
+			$this->_authRules = new \Prado\Security\TAuthorizationRuleCollection;
+		}
 		return $this->_authRules;
 	}
 
@@ -926,99 +915,105 @@ class TApplication extends \Prado\TComponent
 		return '\Prado\TApplicationConfiguration';
 	}
 
-	protected function internalLoadModule($id, $force=false)
+	protected function internalLoadModule($id, $force = false)
 	{
-		list($moduleClass, $initProperties, $configElement)=$this->_lazyModules[$id];
-		if(isset($initProperties['lazy']) && $initProperties['lazy'] && !$force)
-		{
-			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})",'\Prado\TApplication');
+		list($moduleClass, $initProperties, $configElement) = $this->_lazyModules[$id];
+		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
+			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", '\Prado\TApplication');
 			$this->setModule($id, null);
 			return null;
 		}
 
-		Prado::trace("Loading module $id ({$moduleClass})",'\Prado\TApplication');
-		$module=Prado::createComponent($moduleClass);
-		foreach($initProperties as $name=>$value)
-		{
-			if($name==='lazy') continue;
-			$module->setSubProperty($name,$value);
+		Prado::trace("Loading module $id ({$moduleClass})", '\Prado\TApplication');
+		$module = Prado::createComponent($moduleClass);
+		foreach ($initProperties as $name => $value) {
+			if ($name === 'lazy') {
+				continue;
+			}
+			$module->setSubProperty($name, $value);
 		}
-		$this->setModule($id,$module);
+		$this->setModule($id, $module);
 		// keep the key to avoid reuse of the old module id
-		$this->_lazyModules[$id]=null;
+		$this->_lazyModules[$id] = null;
 
-		return array($module,$configElement);
+		return [$module, $configElement];
 	}
 	/**
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
 	 * @param boolean whether the configuration is specified within a service.
 	 */
-	public function applyConfiguration($config,$withinService=false)
+	public function applyConfiguration($config, $withinService = false)
 	{
-		if($config->getIsEmpty())
+		if ($config->getIsEmpty()) {
 			return;
-
-		// set path aliases and using namespaces
-		foreach($config->getAliases() as $alias=>$path)
-			Prado::setPathOfAlias($alias,$path);
-		foreach($config->getUsings() as $using)
-			Prado::using($using);
-
-		// set application properties
-		if(!$withinService)
-		{
-			foreach($config->getProperties() as $name=>$value)
-				$this->setSubProperty($name,$value);
 		}
 
-		if(empty($this->_services))
-			$this->_services=array($this->getPageServiceID()=>array('Prado\Web\Services\TPageService',array(),null));
+		// set path aliases and using namespaces
+		foreach ($config->getAliases() as $alias => $path) {
+			Prado::setPathOfAlias($alias, $path);
+		}
+		foreach ($config->getUsings() as $using) {
+			Prado::using($using);
+		}
+
+		// set application properties
+		if (!$withinService) {
+			foreach ($config->getProperties() as $name => $value) {
+				$this->setSubProperty($name, $value);
+			}
+		}
+
+		if (empty($this->_services)) {
+			$this->_services = [$this->getPageServiceID() => ['Prado\Web\Services\TPageService', [], null]];
+		}
 
 		// load parameters
-		foreach($config->getParameters() as $id=>$parameter)
-		{
-			if(is_array($parameter))
-			{
-				$component=Prado::createComponent($parameter[0]);
-				foreach($parameter[1] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				$this->_parameters->add($id,$component);
+		foreach ($config->getParameters() as $id => $parameter) {
+			if (is_array($parameter)) {
+				$component = Prado::createComponent($parameter[0]);
+				foreach ($parameter[1] as $name => $value) {
+					$component->setSubProperty($name, $value);
+				}
+				$this->_parameters->add($id, $component);
+			} else {
+				$this->_parameters->add($id, $parameter);
 			}
-			else
-				$this->_parameters->add($id,$parameter);
 		}
 
 		// load and init modules specified in app config
-		$modules=array();
-		foreach($config->getModules() as $id=>$moduleConfig)
-		{
-			if(!is_string($id))
-				$id='_module'.count($this->_lazyModules);
-			$this->_lazyModules[$id]=$moduleConfig;
-			if($module = $this->internalLoadModule($id))
-				$modules[]=$module;
+		$modules = [];
+		foreach ($config->getModules() as $id => $moduleConfig) {
+			if (!is_string($id)) {
+				$id = '_module' . count($this->_lazyModules);
+			}
+			$this->_lazyModules[$id] = $moduleConfig;
+			if ($module = $this->internalLoadModule($id)) {
+				$modules[] = $module;
+			}
 		}
-		foreach($modules as $module)
+		foreach ($modules as $module) {
 			$module[0]->init($module[1]);
+		}
 
 		// load service
-		foreach($config->getServices() as $serviceID=>$serviceConfig)
-			$this->_services[$serviceID]=$serviceConfig;
+		foreach ($config->getServices() as $serviceID => $serviceConfig) {
+			$this->_services[$serviceID] = $serviceConfig;
+		}
 
 		// external configurations
-		foreach($config->getExternalConfigurations() as $filePath=>$condition)
-		{
-			if($condition!==true)
-				$condition=$this->evaluateExpression($condition);
-			if($condition)
-			{
-				if(($path=Prado::getPathOfNamespace($filePath,$this->getConfigurationFileExt()))===null || !is_file($path))
-					throw new TConfigurationException('application_includefile_invalid',$filePath);
-				$cn=$this->getApplicationConfigurationClass();
-				$c=new $cn;
+		foreach ($config->getExternalConfigurations() as $filePath => $condition) {
+			if ($condition !== true) {
+				$condition = $this->evaluateExpression($condition);
+			}
+			if ($condition) {
+				if (($path = Prado::getPathOfNamespace($filePath, $this->getConfigurationFileExt())) === null || !is_file($path)) {
+					throw new TConfigurationException('application_includefile_invalid', $filePath);
+				}
+				$cn = $this->getApplicationConfigurationClass();
+				$c = new $cn;
 				$c->loadFromFile($path);
-				$this->applyConfiguration($c,$withinService);
+				$this->applyConfiguration($c, $withinService);
 			}
 		}
 	}
@@ -1034,25 +1029,25 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function initApplication()
 	{
-		Prado::trace('Initializing application','Prado\TApplication');
+		Prado::trace('Initializing application', 'Prado\TApplication');
 
-		if($this->_configFile!==null)
-		{
-			if($this->_cacheFile===null || @filemtime($this->_cacheFile)<filemtime($this->_configFile))
-			{
-				$config=new TApplicationConfiguration;
+		if ($this->_configFile !== null) {
+			if ($this->_cacheFile === null || @filemtime($this->_cacheFile) < filemtime($this->_configFile)) {
+				$config = new TApplicationConfiguration;
 				$config->loadFromFile($this->_configFile);
-				if($this->_cacheFile!==null)
-					file_put_contents($this->_cacheFile,serialize($config),LOCK_EX);
+				if ($this->_cacheFile !== null) {
+					file_put_contents($this->_cacheFile, serialize($config), LOCK_EX);
+				}
+			} else {
+				$config = unserialize(file_get_contents($this->_cacheFile));
 			}
-			else
-				$config=unserialize(file_get_contents($this->_cacheFile));
 
-			$this->applyConfiguration($config,false);
+			$this->applyConfiguration($config, false);
 		}
 
-		if(($serviceID=$this->getRequest()->resolveRequest(array_keys($this->_services)))===null)
-			$serviceID=$this->getPageServiceID();
+		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->_services))) === null) {
+			$serviceID = $this->getPageServiceID();
+		}
 
 		$this->startService($serviceID);
 	}
@@ -1061,51 +1056,53 @@ class TApplication extends \Prado\TComponent
 	 * Starts the specified service.
 	 * The service instance will be created. Its properties will be initialized
 	 * and the configurations will be applied, if any.
-	 * @param string service ID
+	 * @param string $serviceID service ID
 	 */
 	public function startService($serviceID)
 	{
-		if(isset($this->_services[$serviceID]))
-		{
-			list($serviceClass,$initProperties,$configElement)=$this->_services[$serviceID];
-			$service=Prado::createComponent($serviceClass);
-			if(!($service instanceof IService))
-				throw new THttpException(500,'application_service_invalid',$serviceClass);
-			if(!$service->getEnabled())
-				throw new THttpException(500,'application_service_unavailable',$serviceClass);
+		if (isset($this->_services[$serviceID])) {
+			list($serviceClass, $initProperties, $configElement) = $this->_services[$serviceID];
+			$service = Prado::createComponent($serviceClass);
+			if (!($service instanceof IService)) {
+				throw new THttpException(500, 'application_service_invalid', $serviceClass);
+			}
+			if (!$service->getEnabled()) {
+				throw new THttpException(500, 'application_service_unavailable', $serviceClass);
+			}
 			$service->setID($serviceID);
 			$this->setService($service);
 
-			foreach($initProperties as $name=>$value)
-				$service->setSubProperty($name,$value);
+			foreach ($initProperties as $name => $value) {
+				$service->setSubProperty($name, $value);
+			}
 
-			if($configElement!==null)
-			{
-				$config=new TApplicationConfiguration;
-				if($this->getConfigurationType()==self::CONFIG_TYPE_PHP)
-					$config->loadFromPhp($configElement,$this->getBasePath());
-				else
-					$config->loadFromXml($configElement,$this->getBasePath());
-				$this->applyConfiguration($config,true);
+			if ($configElement !== null) {
+				$config = new TApplicationConfiguration;
+				if ($this->getConfigurationType() == self::CONFIG_TYPE_PHP) {
+					$config->loadFromPhp($configElement, $this->getBasePath());
+				} else {
+					$config->loadFromXml($configElement, $this->getBasePath());
+				}
+				$this->applyConfiguration($config, true);
 			}
 
 			$service->init($configElement);
+		} else {
+			throw new THttpException(500, 'application_service_unknown', $serviceID);
 		}
-		else
-			throw new THttpException(500,'application_service_unknown',$serviceID);
 	}
 
 	/**
 	 * Raises OnError event.
 	 * This method is invoked when an exception is raised during the lifecycles
 	 * of the application.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onError($param)
 	{
-		Prado::log($param->getMessage(),TLogger::ERROR,'Prado\TApplication');
-		$this->raiseEvent('OnError',$this,$param);
-		$this->getErrorHandler()->handleError($this,$param);
+		Prado::log($param->getMessage(), TLogger::ERROR, 'Prado\TApplication');
+		$this->raiseEvent('OnError', $this, $param);
+		$this->getErrorHandler()->handleError($this, $param);
 	}
 
 	/**
@@ -1117,7 +1114,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onBeginRequest()
 	{
-		$this->raiseEvent('OnBeginRequest',$this,null);
+		$this->raiseEvent('OnBeginRequest', $this, null);
 	}
 
 	/**
@@ -1126,7 +1123,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onAuthentication()
 	{
-		$this->raiseEvent('OnAuthentication',$this,null);
+		$this->raiseEvent('OnAuthentication', $this, null);
 	}
 
 	/**
@@ -1135,7 +1132,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onAuthenticationComplete()
 	{
-		$this->raiseEvent('OnAuthenticationComplete',$this,null);
+		$this->raiseEvent('OnAuthenticationComplete', $this, null);
 	}
 
 	/**
@@ -1144,7 +1141,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onAuthorization()
 	{
-		$this->raiseEvent('OnAuthorization',$this,null);
+		$this->raiseEvent('OnAuthorization', $this, null);
 	}
 
 	/**
@@ -1153,7 +1150,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onAuthorizationComplete()
 	{
-		$this->raiseEvent('OnAuthorizationComplete',$this,null);
+		$this->raiseEvent('OnAuthorizationComplete', $this, null);
 	}
 
 	/**
@@ -1163,7 +1160,7 @@ class TApplication extends \Prado\TComponent
 	public function onLoadState()
 	{
 		$this->loadGlobals();
-		$this->raiseEvent('OnLoadState',$this,null);
+		$this->raiseEvent('OnLoadState', $this, null);
 	}
 
 	/**
@@ -1172,7 +1169,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onLoadStateComplete()
 	{
-		$this->raiseEvent('OnLoadStateComplete',$this,null);
+		$this->raiseEvent('OnLoadStateComplete', $this, null);
 	}
 
 	/**
@@ -1181,7 +1178,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onPreRunService()
 	{
-		$this->raiseEvent('OnPreRunService',$this,null);
+		$this->raiseEvent('OnPreRunService', $this, null);
 	}
 
 	/**
@@ -1189,8 +1186,9 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function runService()
 	{
-		if($this->_service)
+		if ($this->_service) {
 			$this->_service->run();
+		}
 	}
 
 	/**
@@ -1199,7 +1197,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onSaveState()
 	{
-		$this->raiseEvent('OnSaveState',$this,null);
+		$this->raiseEvent('OnSaveState', $this, null);
 		$this->saveGlobals();
 	}
 
@@ -1209,7 +1207,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onSaveStateComplete()
 	{
-		$this->raiseEvent('OnSaveStateComplete',$this,null);
+		$this->raiseEvent('OnSaveStateComplete', $this, null);
 	}
 
 	/**
@@ -1218,12 +1216,12 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onPreFlushOutput()
 	{
-		$this->raiseEvent('OnPreFlushOutput',$this,null);
+		$this->raiseEvent('OnPreFlushOutput', $this, null);
 	}
 
 	/**
 	 * Flushes output to client side.
-	 * @param boolean whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushOutput($continueBuffering = true)
 	{
@@ -1238,6 +1236,6 @@ class TApplication extends \Prado\TComponent
 	{
 		$this->flushOutput(false); // flush all remaining content in the buffer
 		$this->saveGlobals();  // save global state
-		$this->raiseEvent('OnEndRequest',$this,null);
+		$this->raiseEvent('OnEndRequest', $this, null);
 	}
 }

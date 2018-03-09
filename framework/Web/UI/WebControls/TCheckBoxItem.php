@@ -11,7 +11,8 @@
 
 namespace Prado\Web\UI\WebControls;
 
-class TCheckBoxItem extends TCheckBox {
+class TCheckBoxItem extends TCheckBox
+{
 	/**
 	 * Override client implementation to avoid emitting the javascript
 	 */

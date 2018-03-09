@@ -30,11 +30,11 @@ class TControlAdapter extends \Prado\TApplicationComponent
 
 	/**
 	 * Constructor.
-	 * @param TControl the control to which the adapter is attached
+	 * @param TControl $control the control to which the adapter is attached
 	 */
 	public function __construct($control)
 	{
-		$this->_control=$control;
+		$this->_control = $control;
 	}
 
 	/**
@@ -50,7 +50,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	 */
 	public function getPage()
 	{
-		return $this->_control?$this->_control->getPage():null;
+		return $this->_control ? $this->_control->getPage() : null;
 	}
 
 	/**
@@ -83,7 +83,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the control enters 'OnInit' stage.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -93,7 +93,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the control enters 'OnLoad' stage.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoad($param)
 	{
@@ -103,7 +103,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the control enters 'OnPreRender' stage.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param)
 	{
@@ -113,7 +113,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the control enters 'OnUnload' stage.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUnload($param)
 	{
@@ -123,7 +123,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the control renders itself.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -133,11 +133,10 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	/**
 	 * Renders the control's children.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderChildren($writer)
 	{
 		$this->_control->renderChildren($writer);
 	}
 }
-

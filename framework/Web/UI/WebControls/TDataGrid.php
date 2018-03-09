@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Collections\TList;
 use Prado\Collections\TPagedDataSource;
 use Prado\TPropertyValue;
@@ -149,56 +150,56 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Command name that TDataGrid understands.
 	 */
-	const CMD_SELECT='Select';
-	const CMD_EDIT='Edit';
-	const CMD_UPDATE='Update';
-	const CMD_DELETE='Delete';
-	const CMD_CANCEL='Cancel';
-	const CMD_SORT='Sort';
-	const CMD_PAGE='Page';
-	const CMD_PAGE_NEXT='Next';
-	const CMD_PAGE_PREV='Previous';
-	const CMD_PAGE_FIRST='First';
-	const CMD_PAGE_LAST='Last';
+	const CMD_SELECT = 'Select';
+	const CMD_EDIT = 'Edit';
+	const CMD_UPDATE = 'Update';
+	const CMD_DELETE = 'Delete';
+	const CMD_CANCEL = 'Cancel';
+	const CMD_SORT = 'Sort';
+	const CMD_PAGE = 'Page';
+	const CMD_PAGE_NEXT = 'Next';
+	const CMD_PAGE_PREV = 'Previous';
+	const CMD_PAGE_FIRST = 'First';
+	const CMD_PAGE_LAST = 'Last';
 
 	/**
 	 * @var TDataGridColumnCollection manually created column collection
 	 */
-	private $_columns=null;
+	private $_columns;
 	/**
 	 * @var TDataGridColumnCollection automatically created column collection
 	 */
-	private $_autoColumns=null;
+	private $_autoColumns;
 	/**
 	 * @var TList all columns including both manually and automatically created columns
 	 */
-	private $_allColumns=null;
+	private $_allColumns;
 	/**
 	 * @var TDataGridItemCollection datagrid item collection
 	 */
-	private $_items=null;
+	private $_items;
 	/**
 	 * @var TDataGridItem header item
 	 */
-	private $_header=null;
+	private $_header;
 	/**
 	 * @var TDataGridItem footer item
 	 */
-	private $_footer=null;
+	private $_footer;
 	/**
 	 * @var TPagedDataSource paged data source object
 	 */
-	private $_pagedDataSource=null;
-	private $_topPager=null;
-	private $_bottomPager=null;
+	private $_pagedDataSource;
+	private $_topPager;
+	private $_bottomPager;
 	/**
 	 * @var ITemplate template used when empty data is bounded
 	 */
-	private $_emptyTemplate=null;
+	private $_emptyTemplate;
 	/**
 	 * @var boolean whether empty template is effective
 	 */
-	private $_useEmptyTemplate=false;
+	private $_useEmptyTemplate = false;
 
 	/**
 	 * @return string tag name (table) of the datagrid
@@ -219,14 +220,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Adds objects parsed in template to datagrid.
 	 * Datagrid columns are added into {@link getColumns Columns} collection.
-	 * @param mixed object parsed in template
+	 * @param mixed $object object parsed in template
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TDataGridColumn)
+		if ($object instanceof TDataGridColumn) {
 			$this->getColumns()->add($object);
-		else
-			parent::addParsedObject($object);  // this is needed by EmptyTemplate
+		} else {
+			parent::addParsedObject($object);
+		}  // this is needed by EmptyTemplate
 	}
 
 	/**
@@ -234,8 +236,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getColumns()
 	{
-		if(!$this->_columns)
-			$this->_columns=new TDataGridColumnCollection($this);
+		if (!$this->_columns) {
+			$this->_columns = new TDataGridColumnCollection($this);
+		}
 		return $this->_columns;
 	}
 
@@ -244,8 +247,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getAutoColumns()
 	{
-		if(!$this->_autoColumns)
-			$this->_autoColumns=new TDataGridColumnCollection($this);
+		if (!$this->_autoColumns) {
+			$this->_autoColumns = new TDataGridColumnCollection($this);
+		}
 		return $this->_autoColumns;
 	}
 
@@ -254,8 +258,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getItems()
 	{
-		if(!$this->_items)
-			$this->_items=new TDataGridItemCollection;
+		if (!$this->_items) {
+			$this->_items = new TDataGridItemCollection;
+		}
 		return $this->_items;
 	}
 
@@ -264,7 +269,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getItemCount()
 	{
-		return $this->_items?$this->_items->getCount():0;
+		return $this->_items ? $this->_items->getCount() : 0;
 	}
 
 	/**
@@ -286,7 +291,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param string the URL of the background image for the datagrid
+	 * @param string $value the URL of the background image for the datagrid
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -298,10 +303,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getItemStyle()
 	{
-		if(($style=$this->getViewState('ItemStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('ItemStyle',$style,null);
+		if (($style = $this->getViewState('ItemStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('ItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -311,10 +315,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getAlternatingItemStyle()
 	{
-		if(($style=$this->getViewState('AlternatingItemStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('AlternatingItemStyle',$style,null);
+		if (($style = $this->getViewState('AlternatingItemStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('AlternatingItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -324,10 +327,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getSelectedItemStyle()
 	{
-		if(($style=$this->getViewState('SelectedItemStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('SelectedItemStyle',$style,null);
+		if (($style = $this->getViewState('SelectedItemStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('SelectedItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -337,10 +339,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getEditItemStyle()
 	{
-		if(($style=$this->getViewState('EditItemStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('EditItemStyle',$style,null);
+		if (($style = $this->getViewState('EditItemStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('EditItemStyle', $style, null);
 		}
 		return $style;
 	}
@@ -350,10 +351,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getHeaderStyle()
 	{
-		if(($style=$this->getViewState('HeaderStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('HeaderStyle',$style,null);
+		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
 	}
@@ -363,10 +363,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getFooterStyle()
 	{
-		if(($style=$this->getViewState('FooterStyle',null))===null)
-		{
-			$style=new TTableItemStyle;
-			$this->setViewState('FooterStyle',$style,null);
+		if (($style = $this->getViewState('FooterStyle', null)) === null) {
+			$style = new TTableItemStyle;
+			$this->setViewState('FooterStyle', $style, null);
 		}
 		return $style;
 	}
@@ -376,10 +375,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getPagerStyle()
 	{
-		if(($style=$this->getViewState('PagerStyle',null))===null)
-		{
-			$style=new TDataGridPagerStyle;
-			$this->setViewState('PagerStyle',$style,null);
+		if (($style = $this->getViewState('PagerStyle', null)) === null) {
+			$style = new TDataGridPagerStyle;
+			$this->setViewState('PagerStyle', $style, null);
 		}
 		return $style;
 	}
@@ -390,10 +388,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getTableHeadStyle()
 	{
-		if(($style=$this->getViewState('TableHeadStyle',null))===null)
-		{
-			$style=new TStyle;
-			$this->setViewState('TableHeadStyle',$style,null);
+		if (($style = $this->getViewState('TableHeadStyle', null)) === null) {
+			$style = new TStyle;
+			$this->setViewState('TableHeadStyle', $style, null);
 		}
 		return $style;
 	}
@@ -404,10 +401,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getTableBodyStyle()
 	{
-		if(($style=$this->getViewState('TableBodyStyle',null))===null)
-		{
-			$style=new TStyle;
-			$this->setViewState('TableBodyStyle',$style,null);
+		if (($style = $this->getViewState('TableBodyStyle', null)) === null) {
+			$style = new TStyle;
+			$this->setViewState('TableBodyStyle', $style, null);
 		}
 		return $style;
 	}
@@ -418,10 +414,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getTableFootStyle()
 	{
-		if(($style=$this->getViewState('TableFootStyle',null))===null)
-		{
-			$style=new TStyle;
-			$this->setViewState('TableFootStyle',$style,null);
+		if (($style = $this->getViewState('TableFootStyle', null)) === null) {
+			$style = new TStyle;
+			$this->setViewState('TableFootStyle', $style, null);
 		}
 		return $style;
 	}
@@ -431,15 +426,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getCaption()
 	{
-		return $this->getViewState('Caption','');
+		return $this->getViewState('Caption', '');
 	}
 
 	/**
-	 * @param string caption for the datagrid
+	 * @param string $value caption for the datagrid
 	 */
 	public function setCaption($value)
 	{
-		$this->setViewState('Caption',$value,'');
+		$this->setViewState('Caption', $value, '');
 	}
 
 	/**
@@ -447,15 +442,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign',TTableCaptionAlign::NotSet);
+		return $this->getViewState('CaptionAlign', TTableCaptionAlign::NotSet);
 	}
 
 	/**
-	 * @param TTableCaptionAlign datagrid caption alignment. Valid values include
+	 * @param TTableCaptionAlign $value datagrid caption alignment. Valid values include
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'TPrado\\Web\\UI\\WebControls\\TableCaptionAlign'),TTableCaptionAlign::NotSet);
+		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, 'TPrado\\Web\\UI\\WebControls\\TableCaptionAlign'), TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -495,12 +490,13 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getSelectedItem()
 	{
-		$index=$this->getSelectedItemIndex();
-		$items=$this->getItems();
-		if($index>=0 && $index<$items->getCount())
+		$index = $this->getSelectedItemIndex();
+		$items = $this->getItems();
+		if ($index >= 0 && $index < $items->getCount()) {
 			return $items->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -509,7 +505,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getSelectedItemIndex()
 	{
-		return $this->getViewState('SelectedItemIndex',-1);
+		return $this->getViewState('SelectedItemIndex', -1);
 	}
 
 	/**
@@ -517,28 +513,28 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
-	 * @param integer the selected item index
+	 * @param integer $value the selected item index
 	 */
 	public function setSelectedItemIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
-		if(($current=$this->getSelectedItemIndex())!==$value)
-		{
-			$this->setViewState('SelectedItemIndex',$value,-1);
-			$items=$this->getItems();
-			$itemCount=$items->getCount();
-			if($current>=0 && $current<$itemCount)
-			{
-				$item=$items->itemAt($current);
-				if($item->getItemType()!==TListItemType::EditItem)
-					$item->setItemType($current%2?TListItemType::AlternatingItem:TListItemType::Item);
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		if (($current = $this->getSelectedItemIndex()) !== $value) {
+			$this->setViewState('SelectedItemIndex', $value, -1);
+			$items = $this->getItems();
+			$itemCount = $items->getCount();
+			if ($current >= 0 && $current < $itemCount) {
+				$item = $items->itemAt($current);
+				if ($item->getItemType() !== TListItemType::EditItem) {
+					$item->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
+				}
 			}
-			if($value>=0 && $value<$itemCount)
-			{
-				$item=$items->itemAt($value);
-				if($item->getItemType()!==TListItemType::EditItem)
+			if ($value >= 0 && $value < $itemCount) {
+				$item = $items->itemAt($value);
+				if ($item->getItemType() !== TListItemType::EditItem) {
 					$item->setItemType(TListItemType::SelectedItem);
+				}
 			}
 		}
 	}
@@ -548,12 +544,13 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getEditItem()
 	{
-		$index=$this->getEditItemIndex();
-		$items=$this->getItems();
-		if($index>=0 && $index<$items->getCount())
+		$index = $this->getEditItemIndex();
+		$items = $this->getItems();
+		if ($index >= 0 && $index < $items->getCount()) {
 			return $items->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -562,28 +559,30 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getEditItemIndex()
 	{
-		return $this->getViewState('EditItemIndex',-1);
+		return $this->getViewState('EditItemIndex', -1);
 	}
 
 	/**
 	 * Edits an item by its index in {@link getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
-	 * @param integer the edit item index
+	 * @param integer $value the edit item index
 	 */
 	public function setEditItemIndex($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
-		if(($current=$this->getEditItemIndex())!==$value)
-		{
-			$this->setViewState('EditItemIndex',$value,-1);
-			$items=$this->getItems();
-			$itemCount=$items->getCount();
-			if($current>=0 && $current<$itemCount)
-				$items->itemAt($current)->setItemType($current%2?TListItemType::AlternatingItem:TListItemType::Item);
-			if($value>=0 && $value<$itemCount)
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		if (($current = $this->getEditItemIndex()) !== $value) {
+			$this->setViewState('EditItemIndex', $value, -1);
+			$items = $this->getItems();
+			$itemCount = $items->getCount();
+			if ($current >= 0 && $current < $itemCount) {
+				$items->itemAt($current)->setItemType($current % 2 ? TListItemType::AlternatingItem : TListItemType::Item);
+			}
+			if ($value >= 0 && $value < $itemCount) {
 				$items->itemAt($value)->setItemType(TListItemType::EditItem);
+			}
 		}
 	}
 
@@ -592,15 +591,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getAllowSorting()
 	{
-		return $this->getViewState('AllowSorting',false);
+		return $this->getViewState('AllowSorting', false);
 	}
 
 	/**
-	 * @param boolean whether sorting is enabled
+	 * @param boolean $value whether sorting is enabled
 	 */
 	public function setAllowSorting($value)
 	{
-		$this->setViewState('AllowSorting',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AllowSorting', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -608,15 +607,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getAutoGenerateColumns()
 	{
-		return $this->getViewState('AutoGenerateColumns',true);
+		return $this->getViewState('AutoGenerateColumns', true);
 	}
 
 	/**
-	 * @param boolean whether datagrid columns should be automatically generated
+	 * @param boolean $value whether datagrid columns should be automatically generated
 	 */
 	public function setAutoGenerateColumns($value)
 	{
-		$this->setViewState('AutoGenerateColumns',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AutoGenerateColumns', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -624,15 +623,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getShowHeader()
 	{
-		return $this->getViewState('ShowHeader',true);
+		return $this->getViewState('ShowHeader', true);
 	}
 
 	/**
-	 * @param boolean whether the header should be displayed
+	 * @param boolean $value whether the header should be displayed
 	 */
 	public function setShowHeader($value)
 	{
-		$this->setViewState('ShowHeader',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowHeader', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -640,15 +639,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function getShowFooter()
 	{
-		return $this->getViewState('ShowFooter',false);
+		return $this->getViewState('ShowFooter', false);
 	}
 
 	/**
-	 * @param boolean whether the footer should be displayed
+	 * @param boolean $value whether the footer should be displayed
 	 */
 	public function setShowFooter($value)
 	{
-		$this->setViewState('ShowFooter',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowFooter', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -660,15 +659,16 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param ITemplate the template applied when no data is bound to the datagrid
+	 * @param ITemplate $value the template applied when no data is bound to the datagrid
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
-		if($value instanceof ITemplate || $value===null)
-			$this->_emptyTemplate=$value;
-		else
-			throw new TInvalidDataTypeException('datagrid_template_required','EmptyTemplate');
+		if ($value instanceof ITemplate || $value === null) {
+			$this->_emptyTemplate = $value;
+		} else {
+			throw new TInvalidDataTypeException('datagrid_template_required', 'EmptyTemplate');
+		}
 	}
 
 	/**
@@ -680,61 +680,48 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof TDataGridCommandEventParameter)
-		{
+		if ($param instanceof TDataGridCommandEventParameter) {
 			$this->onItemCommand($param);
-			$command=$param->getCommandName();
-			if(strcasecmp($command,self::CMD_SELECT)===0)
-			{
+			$command = $param->getCommandName();
+			if (strcasecmp($command, self::CMD_SELECT) === 0) {
 				$this->setSelectedItemIndex($param->getItem()->getItemIndex());
 				$this->onSelectedIndexChanged($param);
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_EDIT)===0)
-			{
+			} elseif (strcasecmp($command, self::CMD_EDIT) === 0) {
 				$this->onEditCommand($param);
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_DELETE)===0)
-			{
+			} elseif (strcasecmp($command, self::CMD_DELETE) === 0) {
 				$this->onDeleteCommand($param);
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_UPDATE)===0)
-			{
+			} elseif (strcasecmp($command, self::CMD_UPDATE) === 0) {
 				$this->onUpdateCommand($param);
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_CANCEL)===0)
-			{
+			} elseif (strcasecmp($command, self::CMD_CANCEL) === 0) {
 				$this->onCancelCommand($param);
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_SORT)===0)
-			{
-				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender,$param));
+			} elseif (strcasecmp($command, self::CMD_SORT) === 0) {
+				$this->onSortCommand(new TDataGridSortCommandEventParameter($sender, $param));
 				return true;
-			}
-			else if(strcasecmp($command,self::CMD_PAGE)===0)
-			{
-				$p=$param->getCommandParameter();
-				if(strcasecmp($p,self::CMD_PAGE_NEXT)===0)
-					$pageIndex=$this->getCurrentPageIndex()+1;
-				else if(strcasecmp($p,self::CMD_PAGE_PREV)===0)
-					$pageIndex=$this->getCurrentPageIndex()-1;
-				else if(strcasecmp($p,self::CMD_PAGE_FIRST)===0)
-					$pageIndex=0;
-				else if(strcasecmp($p,self::CMD_PAGE_LAST)===0)
-					$pageIndex=$this->getPageCount()-1;
-				else
-					$pageIndex=TPropertyValue::ensureInteger($p)-1;
-				$this->onPageIndexChanged(new TDataGridPageChangedEventParameter($sender,$pageIndex));
+			} elseif (strcasecmp($command, self::CMD_PAGE) === 0) {
+				$p = $param->getCommandParameter();
+				if (strcasecmp($p, self::CMD_PAGE_NEXT) === 0) {
+					$pageIndex = $this->getCurrentPageIndex() + 1;
+				} elseif (strcasecmp($p, self::CMD_PAGE_PREV) === 0) {
+					$pageIndex = $this->getCurrentPageIndex() - 1;
+				} elseif (strcasecmp($p, self::CMD_PAGE_FIRST) === 0) {
+					$pageIndex = 0;
+				} elseif (strcasecmp($p, self::CMD_PAGE_LAST) === 0) {
+					$pageIndex = $this->getPageCount() - 1;
+				} else {
+					$pageIndex = TPropertyValue::ensureInteger($p) - 1;
+				}
+				$this->onPageIndexChanged(new TDataGridPageChangedEventParameter($sender, $pageIndex));
 				return true;
 			}
 		}
@@ -745,108 +732,108 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>cancel</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onCancelCommand($param)
 	{
-		$this->raiseEvent('OnCancelCommand',$this,$param);
+		$this->raiseEvent('OnCancelCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>delete</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onDeleteCommand($param)
 	{
-		$this->raiseEvent('OnDeleteCommand',$this,$param);
+		$this->raiseEvent('OnDeleteCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>edit</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onEditCommand($param)
 	{
-		$this->raiseEvent('OnEditCommand',$this,$param);
+		$this->raiseEvent('OnEditCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{
-		$this->raiseEvent('OnItemCommand',$this,$param);
+		$this->raiseEvent('OnItemCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnSortCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>sort</b> command name.
-	 * @param TDataGridSortCommandEventParameter event parameter
+	 * @param TDataGridSortCommandEventParameter $param event parameter
 	 */
 	public function onSortCommand($param)
 	{
-		$this->raiseEvent('OnSortCommand',$this,$param);
+		$this->raiseEvent('OnSortCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>update</b> command name.
-	 * @param TDataGridCommandEventParameter event parameter
+	 * @param TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onUpdateCommand($param)
 	{
-		$this->raiseEvent('OnUpdateCommand',$this,$param);
+		$this->raiseEvent('OnUpdateCommand', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked right after a datagrid item is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridItemEventParameter event parameter
+	 * @param TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
-		$this->raiseEvent('OnItemCreated',$this,$param);
+		$this->raiseEvent('OnItemCreated', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnPagerCreated</b> event.
 	 * This method is invoked right after a datagrid pager is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridPagerEventParameter event parameter
+	 * @param TDataGridPagerEventParameter $param event parameter
 	 */
 	public function onPagerCreated($param)
 	{
-		$this->raiseEvent('OnPagerCreated',$this,$param);
+		$this->raiseEvent('OnPagerCreated', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked for each datagrid item after it performs
 	 * databinding.
-	 * @param TDataGridItemEventParameter event parameter
+	 * @param TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
-		$this->raiseEvent('OnItemDataBound',$this,$param);
+		$this->raiseEvent('OnItemDataBound', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This method is invoked when current page is changed.
-	 * @param TDataGridPageChangedEventParameter event parameter
+	 * @param TDataGridPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
-		$this->raiseEvent('OnPageIndexChanged',$this,$param);
+		$this->raiseEvent('OnPageIndexChanged', $this, $param);
 	}
 
 	/**
@@ -856,30 +843,32 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function saveState()
 	{
 		parent::saveState();
-		if(!$this->getEnableViewState(true))
+		if (!$this->getEnableViewState(true)) {
 			return;
-		if($this->_items)
-			$this->setViewState('ItemCount',$this->_items->getCount(),0);
-		else
+		}
+		if ($this->_items) {
+			$this->setViewState('ItemCount', $this->_items->getCount(), 0);
+		} else {
 			$this->clearViewState('ItemCount');
-		if($this->_autoColumns)
-		{
-			$state=array();
-			foreach($this->_autoColumns as $column)
-				$state[]=$column->saveState();
-			$this->setViewState('AutoColumns',$state,array());
 		}
-		else
+		if ($this->_autoColumns) {
+			$state = [];
+			foreach ($this->_autoColumns as $column) {
+				$state[] = $column->saveState();
+			}
+			$this->setViewState('AutoColumns', $state, []);
+		} else {
 			$this->clearViewState('AutoColumns');
-		if($this->_columns)
-		{
-			$state=array();
-			foreach($this->_columns as $column)
-				$state[]=$column->saveState();
-			$this->setViewState('Columns',$state,array());
 		}
-		else
+		if ($this->_columns) {
+			$state = [];
+			foreach ($this->_columns as $column) {
+				$state[] = $column->saveState();
+			}
+			$this->setViewState('Columns', $state, []);
+		} else {
 			$this->clearViewState('Columns');
+		}
 	}
 
 	/**
@@ -889,29 +878,25 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function loadState()
 	{
 		parent::loadState();
-		if(!$this->getEnableViewState(true))
+		if (!$this->getEnableViewState(true)) {
 			return;
-		if(!$this->getIsDataBound())
-		{
-			$state=$this->getViewState('AutoColumns',array());
-			if(!empty($state))
-			{
-				$this->_autoColumns=new TDataGridColumnCollection($this);
-				foreach($state as $st)
-				{
-					$column=new $this->AutoGenerateColumnName;
+		}
+		if (!$this->getIsDataBound()) {
+			$state = $this->getViewState('AutoColumns', []);
+			if (!empty($state)) {
+				$this->_autoColumns = new TDataGridColumnCollection($this);
+				foreach ($state as $st) {
+					$column = new $this->AutoGenerateColumnName;
 					$column->loadState($st);
 					$this->_autoColumns->add($column);
 				}
+			} else {
+				$this->_autoColumns = null;
 			}
-			else
-				$this->_autoColumns=null;
-			$state=$this->getViewState('Columns',array());
-			if($this->_columns && $this->_columns->getCount()===count($state))
-			{
-				$i=0;
-				foreach($this->_columns as $column)
-				{
+			$state = $this->getViewState('Columns', []);
+			if ($this->_columns && $this->_columns->getCount() === count($state)) {
+				$i = 0;
+				foreach ($this->_columns as $column) {
 					$column->loadState($state[$i]);
 					$i++;
 				}
@@ -927,11 +912,11 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	{
 		$this->getControls()->clear();
 		$this->getItems()->clear();
-		$this->_header=null;
-		$this->_footer=null;
-		$this->_topPager=null;
-		$this->_bottomPager=null;
-		$this->_useEmptyTemplate=false;
+		$this->_header = null;
+		$this->_footer = null;
+		$this->_topPager = null;
+		$this->_bottomPager = null;
+		$this->_useEmptyTemplate = false;
 	}
 
 	/**
@@ -941,52 +926,51 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	{
 		$this->reset();
 
-		$allowPaging=$this->getAllowPaging();
+		$allowPaging = $this->getAllowPaging();
 
-		$itemCount=$this->getViewState('ItemCount',0);
-		$dsIndex=$this->getViewState('DataSourceIndex',0);
+		$itemCount = $this->getViewState('ItemCount', 0);
+		$dsIndex = $this->getViewState('DataSourceIndex', 0);
 
-		$columns=new TList($this->getColumns());
+		$columns = new TList($this->getColumns());
 		$columns->mergeWith($this->_autoColumns);
-		$this->_allColumns=$columns;
+		$this->_allColumns = $columns;
 
-		$items=$this->getItems();
+		$items = $this->getItems();
 
-		if($columns->getCount())
-		{
-			foreach($columns as $column)
+		if ($columns->getCount()) {
+			foreach ($columns as $column) {
 				$column->initialize();
-			$selectedIndex=$this->getSelectedItemIndex();
-			$editIndex=$this->getEditItemIndex();
-			for($index=0;$index<$itemCount;++$index)
-			{
-				if($index===0)
-				{
-					if($allowPaging)
-						$this->_topPager=$this->createPager();
-					$this->_header=$this->createItemInternal(-1,-1,TListItemType::Header,false,null,$columns);
+			}
+			$selectedIndex = $this->getSelectedItemIndex();
+			$editIndex = $this->getEditItemIndex();
+			for ($index = 0;$index < $itemCount;++$index) {
+				if ($index === 0) {
+					if ($allowPaging) {
+						$this->_topPager = $this->createPager();
+					}
+					$this->_header = $this->createItemInternal(-1, -1, TListItemType::Header, false, null, $columns);
 				}
-				if($index===$editIndex)
-					$itemType=TListItemType::EditItem;
-				else if($index===$selectedIndex)
-					$itemType=TListItemType::SelectedItem;
-				else if($index % 2)
-					$itemType=TListItemType::AlternatingItem;
-				else
-					$itemType=TListItemType::Item;
-				$items->add($this->createItemInternal($index,$dsIndex,$itemType,false,null,$columns));
+				if ($index === $editIndex) {
+					$itemType = TListItemType::EditItem;
+				} elseif ($index === $selectedIndex) {
+					$itemType = TListItemType::SelectedItem;
+				} elseif ($index % 2) {
+					$itemType = TListItemType::AlternatingItem;
+				} else {
+					$itemType = TListItemType::Item;
+				}
+				$items->add($this->createItemInternal($index, $dsIndex, $itemType, false, null, $columns));
 				$dsIndex++;
 			}
-			if($index>0)
-			{
-				$this->_footer=$this->createItemInternal(-1,-1,TListItemType::Footer,false,null,$columns);
-				if($allowPaging)
-					$this->_bottomPager=$this->createPager();
+			if ($index > 0) {
+				$this->_footer = $this->createItemInternal(-1, -1, TListItemType::Footer, false, null, $columns);
+				if ($allowPaging) {
+					$this->_bottomPager = $this->createPager();
+				}
 			}
 		}
-		if(!$dsIndex && $this->_emptyTemplate!==null)
-		{
-			$this->_useEmptyTemplate=true;
+		if (!$dsIndex && $this->_emptyTemplate !== null) {
+			$this->_useEmptyTemplate = true;
 			$this->_emptyTemplate->instantiateIn($this);
 		}
 	}
@@ -995,74 +979,73 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Performs databinding to populate datagrid items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable the bound data
+	 * @param Traversable $data the bound data
 	 */
 	protected function performDataBinding($data)
 	{
 		$this->reset();
-		$keys=$this->getDataKeys();
+		$keys = $this->getDataKeys();
 		$keys->clear();
-		$keyField=$this->getDataKeyField();
+		$keyField = $this->getDataKeyField();
 
 		// get all columns
-		if($this->getAutoGenerateColumns())
-		{
-			$columns=new TList($this->getColumns());
-			$autoColumns=$this->createAutoColumns($data);
+		if ($this->getAutoGenerateColumns()) {
+			$columns = new TList($this->getColumns());
+			$autoColumns = $this->createAutoColumns($data);
 			$columns->mergeWith($autoColumns);
+		} else {
+			$columns = $this->getColumns();
 		}
-		else
-			$columns=$this->getColumns();
-		$this->_allColumns=$columns;
+		$this->_allColumns = $columns;
 
-		$items=$this->getItems();
+		$items = $this->getItems();
 
-		$index=0;
-		$allowPaging=$this->getAllowPaging() && ($data instanceof TPagedDataSource);
-		$dsIndex=$allowPaging?$data->getFirstIndexInPage():0;
-		$this->setViewState('DataSourceIndex',$dsIndex,0);
-		if($columns->getCount())
-		{
-			foreach($columns as $column)
+		$index = 0;
+		$allowPaging = $this->getAllowPaging() && ($data instanceof TPagedDataSource);
+		$dsIndex = $allowPaging ? $data->getFirstIndexInPage() : 0;
+		$this->setViewState('DataSourceIndex', $dsIndex, 0);
+		if ($columns->getCount()) {
+			foreach ($columns as $column) {
 				$column->initialize();
+			}
 
-			$selectedIndex=$this->getSelectedItemIndex();
-			$editIndex=$this->getEditItemIndex();
-			foreach($data as $key=>$row)
-			{
-				if($keyField!=='')
-					$keys->add($this->getDataFieldValue($row,$keyField));
-				else
+			$selectedIndex = $this->getSelectedItemIndex();
+			$editIndex = $this->getEditItemIndex();
+			foreach ($data as $key => $row) {
+				if ($keyField !== '') {
+					$keys->add($this->getDataFieldValue($row, $keyField));
+				} else {
 					$keys->add($key);
-				if($index===0)
-				{
-					if($allowPaging)
-						$this->_topPager=$this->createPager();
-					$this->_header=$this->createItemInternal(-1,-1,TListItemType::Header,true,null,$columns);
 				}
-				if($index===$editIndex)
-					$itemType=TListItemType::EditItem;
-				else if($index===$selectedIndex)
-					$itemType=TListItemType::SelectedItem;
-				else if($index % 2)
-					$itemType=TListItemType::AlternatingItem;
-				else
-					$itemType=TListItemType::Item;
-				$items->add($this->createItemInternal($index,$dsIndex,$itemType,true,$row,$columns));
+				if ($index === 0) {
+					if ($allowPaging) {
+						$this->_topPager = $this->createPager();
+					}
+					$this->_header = $this->createItemInternal(-1, -1, TListItemType::Header, true, null, $columns);
+				}
+				if ($index === $editIndex) {
+					$itemType = TListItemType::EditItem;
+				} elseif ($index === $selectedIndex) {
+					$itemType = TListItemType::SelectedItem;
+				} elseif ($index % 2) {
+					$itemType = TListItemType::AlternatingItem;
+				} else {
+					$itemType = TListItemType::Item;
+				}
+				$items->add($this->createItemInternal($index, $dsIndex, $itemType, true, $row, $columns));
 				$index++;
 				$dsIndex++;
 			}
-			if($index>0)
-			{
-				$this->_footer=$this->createItemInternal(-1,-1,TListItemType::Footer,true,null,$columns);
-				if($allowPaging)
-					$this->_bottomPager=$this->createPager();
+			if ($index > 0) {
+				$this->_footer = $this->createItemInternal(-1, -1, TListItemType::Footer, true, null, $columns);
+				if ($allowPaging) {
+					$this->_bottomPager = $this->createPager();
+				}
 			}
 		}
-		$this->setViewState('ItemCount',$index,0);
-		if(!$dsIndex && $this->_emptyTemplate!==null)
-		{
-			$this->_useEmptyTemplate=true;
+		$this->setViewState('ItemCount', $index, 0);
+		if (!$dsIndex && $this->_emptyTemplate !== null) {
+			$this->_useEmptyTemplate = true;
 			$this->_emptyTemplate->instantiateIn($this);
 			$this->dataBindChildren();
 		}
@@ -1074,39 +1057,36 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	private function groupCells()
 	{
-		if(($columns=$this->_allColumns)===null)
+		if (($columns = $this->_allColumns) === null) {
 			return;
-		$items=$this->getItems();
-		foreach($columns as $id=>$column)
-		{
-			if(!$column->getEnableCellGrouping())
+		}
+		$items = $this->getItems();
+		foreach ($columns as $id => $column) {
+			if (!$column->getEnableCellGrouping()) {
 				continue;
-			$prevCell=null;
-			$prevCellText=null;
-			foreach($items as $item)
-			{
-				$itemType=$item->getItemType();
-				$cell=$item->getCells()->itemAt($id);
-				if(!$cell->getVisible())
+			}
+			$prevCell = null;
+			$prevCellText = null;
+			foreach ($items as $item) {
+				$itemType = $item->getItemType();
+				$cell = $item->getCells()->itemAt($id);
+				if (!$cell->getVisible()) {
 					continue;
-				if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
-				{
-					if(($cellText=$this->getCellText($cell))==='')
-					{
-						$prevCell=null;
-						$prevCellText=null;
+				}
+				if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem) {
+					if (($cellText = $this->getCellText($cell)) === '') {
+						$prevCell = null;
+						$prevCellText = null;
 						continue;
 					}
-					if($prevCell===null || $prevCellText!==$cellText)
-					{
-						$prevCell=$cell;
-						$prevCellText=$cellText;
-					}
-					else
-					{
-						if(($rowSpan=$prevCell->getRowSpan())===0)
-							$rowSpan=1;
-						$prevCell->setRowSpan($rowSpan+1);
+					if ($prevCell === null || $prevCellText !== $cellText) {
+						$prevCell = $cell;
+						$prevCellText = $cellText;
+					} else {
+						if (($rowSpan = $prevCell->getRowSpan()) === 0) {
+							$rowSpan = 1;
+						}
+						$prevCell->setRowSpan($rowSpan + 1);
 						$cell->setVisible(false);
 					}
 				}
@@ -1116,13 +1096,12 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	private function getCellText($cell)
 	{
-		if(($data=$cell->getText())==='' && $cell->getHasControls())
-		{
-			$controls=$cell->getControls();
-			foreach($controls as $control)
-			{
-				if($control instanceof \Prado\IDataRenderer)
+		if (($data = $cell->getText()) === '' && $cell->getHasControls()) {
+			$controls = $cell->getControls();
+			foreach ($controls as $control) {
+				if ($control instanceof \Prado\IDataRenderer) {
 					return $control->getData();
+				}
 			}
 		}
 		return $data;
@@ -1134,26 +1113,23 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @param TListItemType item type
 	 * @return TDataGridItem created data list item
 	 */
-	protected function createItem($itemIndex,$dataSourceIndex,$itemType)
+	protected function createItem($itemIndex, $dataSourceIndex, $itemType)
 	{
-		return new TDataGridItem($itemIndex,$dataSourceIndex,$itemType);
+		return new TDataGridItem($itemIndex, $dataSourceIndex, $itemType);
 	}
 
-	private function createItemInternal($itemIndex,$dataSourceIndex,$itemType,$dataBind,$dataItem,$columns)
+	private function createItemInternal($itemIndex, $dataSourceIndex, $itemType, $dataBind, $dataItem, $columns)
 	{
-		$item=$this->createItem($itemIndex,$dataSourceIndex,$itemType);
-		$this->initializeItem($item,$columns);
-		$param=new TDataGridItemEventParameter($item);
-		if($dataBind)
-		{
+		$item = $this->createItem($itemIndex, $dataSourceIndex, $itemType);
+		$this->initializeItem($item, $columns);
+		$param = new TDataGridItemEventParameter($item);
+		if ($dataBind) {
 			$item->setData($dataItem);
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);
 			$item->dataBind();
 			$this->onItemDataBound($param);
-		}
-		else
-		{
+		} else {
 			$this->onItemCreated($param);
 			$this->getControls()->add($item);
 		}
@@ -1165,28 +1141,29 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @param TDataGrid datagrid item to be initialized
 	 * @param TDataGridColumnCollection datagrid columns to be used to initialize the cells in the item
 	 */
-	protected function initializeItem($item,$columns)
+	protected function initializeItem($item, $columns)
 	{
-		$cells=$item->getCells();
-		$itemType=$item->getItemType();
-		$index=0;
-		foreach($columns as $column)
-		{
-			if($itemType===TListItemType::Header)
-				$cell=new TTableHeaderCell;
-			else
-				$cell=new TTableCell;
-			if(($id=$column->getID())!=='')
-				$item->registerObject($id,$cell);
+		$cells = $item->getCells();
+		$itemType = $item->getItemType();
+		$index = 0;
+		foreach ($columns as $column) {
+			if ($itemType === TListItemType::Header) {
+				$cell = new TTableHeaderCell;
+			} else {
+				$cell = new TTableCell;
+			}
+			if (($id = $column->getID()) !== '') {
+				$item->registerObject($id, $cell);
+			}
 			$cells->add($cell);
-			$column->initializeCell($cell,$index,$itemType);
+			$column->initializeCell($cell, $index, $itemType);
 			$index++;
 		}
 	}
 
 	protected function createPager()
 	{
-		$pager=new TDataGridPager($this);
+		$pager = new TDataGridPager($this);
 		$this->buildPager($pager);
 		$this->onPagerCreated(new TDataGridPagerEventParameter($pager));
 		$this->getControls()->add($pager);
@@ -1195,12 +1172,11 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds the pager content based on pager style.
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildPager($pager)
 	{
-		switch($this->getPagerStyle()->getMode())
-		{
+		switch ($this->getPagerStyle()->getMode()) {
 			case TDataGridPagerMode::NextPrev:
 				$this->buildNextPrevPager($pager);
 				break;
@@ -1223,24 +1199,21 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($pager,$buttonType,$enabled,$text,$commandName,$commandParameter)
+	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
-		if($buttonType===TDataGridPagerButtonType::LinkButton)
-		{
-			if($enabled)
-				$button=new TLinkButton;
-			else
-			{
-				$button=new TLabel;
+		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
+			if ($enabled) {
+				$button = new TLinkButton;
+			} else {
+				$button = new TLabel;
 				$button->setText($text);
 				return $button;
 			}
-		}
-		else
-		{
-			$button=new TButton;
-			if(!$enabled)
+		} else {
+			$button = new TButton;
+			if (!$enabled) {
 				$button->setEnabled(false);
+			}
 		}
 		$button->setText($text);
 		$button->setCommandName($commandName);
@@ -1251,58 +1224,48 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a next-prev pager
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNextPrevPager($pager)
 	{
-		$style=$this->getPagerStyle();
-		$buttonType=$style->getButtonType();
-		$controls=$pager->getControls();
-		$currentPageIndex=$this->getCurrentPageIndex();
-		if($currentPageIndex===0)
-		{
-			if(($text=$style->getFirstPageText())!=='')
-			{
-				$label=$this->createPagerButton($pager,$buttonType,false,$text,'','');
+		$style = $this->getPagerStyle();
+		$buttonType = $style->getButtonType();
+		$controls = $pager->getControls();
+		$currentPageIndex = $this->getCurrentPageIndex();
+		if ($currentPageIndex === 0) {
+			if (($text = $style->getFirstPageText()) !== '') {
+				$label = $this->createPagerButton($pager, $buttonType, false, $text, '', '');
 				$controls->add($label);
 				$controls->add("\n");
 			}
 
-			$label=$this->createPagerButton($pager,$buttonType,false,$style->getPrevPageText(),'','');
+			$label = $this->createPagerButton($pager, $buttonType, false, $style->getPrevPageText(), '', '');
 			$controls->add($label);
-		}
-		else
-		{
-			if(($text=$style->getFirstPageText())!=='')
-			{
-				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+		} else {
+			if (($text = $style->getFirstPageText()) !== '') {
+				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_FIRST);
 				$controls->add($button);
 				$controls->add("\n");
 			}
 
-			$button=$this->createPagerButton($pager,$buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,self::CMD_PAGE_PREV);
+			$button = $this->createPagerButton($pager, $buttonType, true, $style->getPrevPageText(), self::CMD_PAGE, self::CMD_PAGE_PREV);
 			$controls->add($button);
 		}
 		$controls->add("\n");
-		if($currentPageIndex===$this->getPageCount()-1)
-		{
-			$label=$this->createPagerButton($pager,$buttonType,false,$style->getNextPageText(),'','');
+		if ($currentPageIndex === $this->getPageCount() - 1) {
+			$label = $this->createPagerButton($pager, $buttonType, false, $style->getNextPageText(), '', '');
 			$controls->add($label);
-			if(($text=$style->getLastPageText())!=='')
-			{
+			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
-				$label=$this->createPagerButton($pager,$buttonType,false,$text,'','');
+				$label = $this->createPagerButton($pager, $buttonType, false, $text, '', '');
 				$controls->add($label);
 			}
-		}
-		else
-		{
-			$button=$this->createPagerButton($pager,$buttonType,true,$style->getNextPageText(),self::CMD_PAGE,self::CMD_PAGE_NEXT);
+		} else {
+			$button = $this->createPagerButton($pager, $buttonType, true, $style->getNextPageText(), self::CMD_PAGE, self::CMD_PAGE_NEXT);
 			$controls->add($button);
-			if(($text=$style->getLastPageText())!=='')
-			{
+			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
-				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_LAST);
 				$controls->add($button);
 			}
 		}
@@ -1310,71 +1273,64 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a numeric pager
-	 * @param TDataGridPager the container for the pager
+	 * @param TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNumericPager($pager)
 	{
-		$style=$this->getPagerStyle();
-		$buttonType=$style->getButtonType();
-		$controls=$pager->getControls();
-		$pageCount=$this->getPageCount();
-		$pageIndex=$this->getCurrentPageIndex()+1;
-		$maxButtonCount=$style->getPageButtonCount();
-		$buttonCount=$maxButtonCount>$pageCount?$pageCount:$maxButtonCount;
-		$startPageIndex=1;
-		$endPageIndex=$buttonCount;
-		if($pageIndex>$endPageIndex)
-		{
-			$startPageIndex=((int)(($pageIndex-1)/$maxButtonCount))*$maxButtonCount+1;
-			if(($endPageIndex=$startPageIndex+$maxButtonCount-1)>$pageCount)
-				$endPageIndex=$pageCount;
-			if($endPageIndex-$startPageIndex+1<$maxButtonCount)
-			{
-				if(($startPageIndex=$endPageIndex-$maxButtonCount+1)<1)
-					$startPageIndex=1;
+		$style = $this->getPagerStyle();
+		$buttonType = $style->getButtonType();
+		$controls = $pager->getControls();
+		$pageCount = $this->getPageCount();
+		$pageIndex = $this->getCurrentPageIndex() + 1;
+		$maxButtonCount = $style->getPageButtonCount();
+		$buttonCount = $maxButtonCount > $pageCount ? $pageCount : $maxButtonCount;
+		$startPageIndex = 1;
+		$endPageIndex = $buttonCount;
+		if ($pageIndex > $endPageIndex) {
+			$startPageIndex = ((int) (($pageIndex - 1) / $maxButtonCount)) * $maxButtonCount + 1;
+			if (($endPageIndex = $startPageIndex + $maxButtonCount - 1) > $pageCount) {
+				$endPageIndex = $pageCount;
+			}
+			if ($endPageIndex - $startPageIndex + 1 < $maxButtonCount) {
+				if (($startPageIndex = $endPageIndex - $maxButtonCount + 1) < 1) {
+					$startPageIndex = 1;
+				}
 			}
 		}
 
-		if($startPageIndex>1)
-		{
-			if(($text=$style->getFirstPageText())!=='')
-			{
-				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_FIRST);
+		if ($startPageIndex > 1) {
+			if (($text = $style->getFirstPageText()) !== '') {
+				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_FIRST);
 				$controls->add($button);
 				$controls->add("\n");
 			}
-			$prevPageIndex=$startPageIndex-1;
-			$button=$this->createPagerButton($pager,$buttonType,true,$style->getPrevPageText(),self::CMD_PAGE,"$prevPageIndex");
+			$prevPageIndex = $startPageIndex - 1;
+			$button = $this->createPagerButton($pager, $buttonType, true, $style->getPrevPageText(), self::CMD_PAGE, "$prevPageIndex");
 			$controls->add($button);
 			$controls->add("\n");
 		}
 
-		for($i=$startPageIndex;$i<=$endPageIndex;++$i)
-		{
-			if($i===$pageIndex)
-			{
-				$label=$this->createPagerButton($pager,$buttonType,false,"$i",'','');
+		for ($i = $startPageIndex;$i <= $endPageIndex;++$i) {
+			if ($i === $pageIndex) {
+				$label = $this->createPagerButton($pager, $buttonType, false, "$i", '', '');
 				$controls->add($label);
-			}
-			else
-			{
-				$button=$this->createPagerButton($pager,$buttonType,true,"$i",self::CMD_PAGE,"$i");
+			} else {
+				$button = $this->createPagerButton($pager, $buttonType, true, "$i", self::CMD_PAGE, "$i");
 				$controls->add($button);
 			}
-			if($i<$endPageIndex)
+			if ($i < $endPageIndex) {
 				$controls->add("\n");
+			}
 		}
 
-		if($pageCount>$endPageIndex)
-		{
+		if ($pageCount > $endPageIndex) {
 			$controls->add("\n");
-			$nextPageIndex=$endPageIndex+1;
-			$button=$this->createPagerButton($pager,$buttonType,true,$style->getNextPageText(),self::CMD_PAGE,"$nextPageIndex");
+			$nextPageIndex = $endPageIndex + 1;
+			$button = $this->createPagerButton($pager, $buttonType, true, $style->getNextPageText(), self::CMD_PAGE, "$nextPageIndex");
 			$controls->add($button);
-			if(($text=$style->getLastPageText())!=='')
-			{
+			if (($text = $style->getLastPageText()) !== '') {
 				$controls->add("\n");
-				$button=$this->createPagerButton($pager,$buttonType,true,$text,self::CMD_PAGE,self::CMD_PAGE_LAST);
+				$button = $this->createPagerButton($pager, $buttonType, true, $text, self::CMD_PAGE, self::CMD_PAGE_LAST);
 				$controls->add($button);
 			}
 		}
@@ -1382,29 +1338,25 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Automatically generates datagrid columns based on datasource schema
-	 * @param Traversable data source bound to the datagrid
+	 * @param Traversable $dataSource data source bound to the datagrid
 	 * @return TDataGridColumnCollection
 	 */
 	protected function createAutoColumns($dataSource)
 	{
-		if(!$dataSource)
+		if (!$dataSource) {
 			return null;
-		$autoColumns=$this->getAutoColumns();
+		}
+		$autoColumns = $this->getAutoColumns();
 		$autoColumns->clear();
-		foreach($dataSource as $row)
-		{
-			foreach($row as $key=>$value)
-			{
-				$column=new $this->AutoGenerateColumnName;
-				if(is_string($key))
-				{
+		foreach ($dataSource as $row) {
+			foreach ($row as $key => $value) {
+				$column = new $this->AutoGenerateColumnName;
+				if (is_string($key)) {
 					$column->setHeaderText($key);
 					$column->setDataField($key);
 					$column->setSortExpression($key);
 					$autoColumns->add($column);
-				}
-				else
-				{
+				} else {
 					$column->setHeaderText(TListItemType::Item);
 					$column->setDataField($key);
 					$column->setSortExpression(TListItemType::Item);
@@ -1429,131 +1381,134 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	protected function applyItemStyles()
 	{
-		$itemStyle=$this->getViewState('ItemStyle',null);
+		$itemStyle = $this->getViewState('ItemStyle', null);
 
-		$alternatingItemStyle=$this->getViewState('AlternatingItemStyle',null);
-		if($itemStyle!==null)
-		{
-			if($alternatingItemStyle===null)
-				$alternatingItemStyle=$itemStyle;
-			else
+		$alternatingItemStyle = $this->getViewState('AlternatingItemStyle', null);
+		if ($itemStyle !== null) {
+			if ($alternatingItemStyle === null) {
+				$alternatingItemStyle = $itemStyle;
+			} else {
 				$alternatingItemStyle->mergeWith($itemStyle);
+			}
 		}
 
-		$selectedItemStyle=$this->getViewState('SelectedItemStyle',null);
+		$selectedItemStyle = $this->getViewState('SelectedItemStyle', null);
 
-		$editItemStyle=$this->getViewState('EditItemStyle',null);
-		if($selectedItemStyle!==null)
-		{
-			if($editItemStyle===null)
-				$editItemStyle=$selectedItemStyle;
-			else
+		$editItemStyle = $this->getViewState('EditItemStyle', null);
+		if ($selectedItemStyle !== null) {
+			if ($editItemStyle === null) {
+				$editItemStyle = $selectedItemStyle;
+			} else {
 				$editItemStyle->mergeWith($selectedItemStyle);
+			}
 		}
 
-		$headerStyle=$this->getViewState('HeaderStyle',null);
-		$footerStyle=$this->getViewState('FooterStyle',null);
-		$pagerStyle=$this->getViewState('PagerStyle',null);
-		$separatorStyle=$this->getViewState('SeparatorStyle',null);
+		$headerStyle = $this->getViewState('HeaderStyle', null);
+		$footerStyle = $this->getViewState('FooterStyle', null);
+		$pagerStyle = $this->getViewState('PagerStyle', null);
+		$separatorStyle = $this->getViewState('SeparatorStyle', null);
 
-		foreach($this->getControls() as $index=>$item)
-		{
-			if(!($item instanceof TDataGridItem) && !($item instanceof TDataGridPager))
+		foreach ($this->getControls() as $index => $item) {
+			if (!($item instanceof TDataGridItem) && !($item instanceof TDataGridPager)) {
 				continue;
-			$itemType=$item->getItemType();
-			switch($itemType)
-			{
+			}
+			$itemType = $item->getItemType();
+			switch ($itemType) {
 				case TListItemType::Header:
-					if($headerStyle)
+					if ($headerStyle) {
 						$item->getStyle()->mergeWith($headerStyle);
-					if(!$this->getShowHeader())
+					}
+					if (!$this->getShowHeader()) {
 						$item->setVisible(false);
+					}
 					break;
 				case TListItemType::Footer:
-					if($footerStyle)
+					if ($footerStyle) {
 						$item->getStyle()->mergeWith($footerStyle);
-					if(!$this->getShowFooter())
+					}
+					if (!$this->getShowFooter()) {
 						$item->setVisible(false);
+					}
 					break;
 				case TListItemType::Separator:
-					if($separatorStyle)
+					if ($separatorStyle) {
 						$item->getStyle()->mergeWith($separatorStyle);
+					}
 					break;
 				case TListItemType::Item:
-					if($itemStyle)
+					if ($itemStyle) {
 						$item->getStyle()->mergeWith($itemStyle);
+					}
 					break;
 				case TListItemType::AlternatingItem:
-					if($alternatingItemStyle)
+					if ($alternatingItemStyle) {
 						$item->getStyle()->mergeWith($alternatingItemStyle);
+					}
 					break;
 				case TListItemType::SelectedItem:
-					if($selectedItemStyle)
+					if ($selectedItemStyle) {
 						$item->getStyle()->mergeWith($selectedItemStyle);
-					if($index % 2==1)
-					{
-						if($itemStyle)
-							$item->getStyle()->mergeWith($itemStyle);
 					}
-					else
-					{
-						if($alternatingItemStyle)
+					if ($index % 2 == 1) {
+						if ($itemStyle) {
+							$item->getStyle()->mergeWith($itemStyle);
+						}
+					} else {
+						if ($alternatingItemStyle) {
 							$item->getStyle()->mergeWith($alternatingItemStyle);
+						}
 					}
 					break;
 				case TListItemType::EditItem:
-					if($editItemStyle)
+					if ($editItemStyle) {
 						$item->getStyle()->mergeWith($editItemStyle);
-					if($index % 2==1)
-					{
-						if($itemStyle)
-							$item->getStyle()->mergeWith($itemStyle);
 					}
-					else
-					{
-						if($alternatingItemStyle)
+					if ($index % 2 == 1) {
+						if ($itemStyle) {
+							$item->getStyle()->mergeWith($itemStyle);
+						}
+					} else {
+						if ($alternatingItemStyle) {
 							$item->getStyle()->mergeWith($alternatingItemStyle);
+						}
 					}
 					break;
 				case TListItemType::Pager:
-					if($pagerStyle)
-					{
+					if ($pagerStyle) {
 						$item->getStyle()->mergeWith($pagerStyle);
-						if($index===0)
-						{
-							if($pagerStyle->getPosition()===TDataGridPagerPosition::Bottom || !$pagerStyle->getVisible())
+						if ($index === 0) {
+							if ($pagerStyle->getPosition() === TDataGridPagerPosition::Bottom || !$pagerStyle->getVisible()) {
 								$item->setVisible(false);
-						}
-						else
-						{
-							if($pagerStyle->getPosition()===TDataGridPagerPosition::Top || !$pagerStyle->getVisible())
+							}
+						} else {
+							if ($pagerStyle->getPosition() === TDataGridPagerPosition::Top || !$pagerStyle->getVisible()) {
 								$item->setVisible(false);
+							}
 						}
 					}
 					break;
 				default:
 					break;
 			}
-			if($this->_columns && $itemType!==TListItemType::Pager)
-			{
-				$n=$this->_columns->getCount();
-				$cells=$item->getCells();
-				for($i=0;$i<$n;++$i)
-				{
-					$cell=$cells->itemAt($i);
-					$column=$this->_columns->itemAt($i);
-					if(!$column->getVisible())
+			if ($this->_columns && $itemType !== TListItemType::Pager) {
+				$n = $this->_columns->getCount();
+				$cells = $item->getCells();
+				for ($i = 0;$i < $n;++$i) {
+					$cell = $cells->itemAt($i);
+					$column = $this->_columns->itemAt($i);
+					if (!$column->getVisible()) {
 						$cell->setVisible(false);
-					else
-					{
-						if($itemType===TListItemType::Header)
-							$style=$column->getHeaderStyle(false);
-						else if($itemType===TListItemType::Footer)
-							$style=$column->getFooterStyle(false);
-						else
-							$style=$column->getItemStyle(false);
-						if($style!==null)
+					} else {
+						if ($itemType === TListItemType::Header) {
+							$style = $column->getHeaderStyle(false);
+						} elseif ($itemType === TListItemType::Footer) {
+							$style = $column->getFooterStyle(false);
+						} else {
+							$style = $column->getItemStyle(false);
+						}
+						if ($style !== null) {
 							$cell->getStyle()->mergeWith($style);
+						}
 					}
 				}
 			}
@@ -1562,15 +1517,15 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the openning tag for the datagrid control which will render table caption if present.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($caption=$this->getCaption())!=='')
-		{
-			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
-				$writer->addAttribute('align',strtolower($align));
+		if (($caption = $this->getCaption()) !== '') {
+			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
+				$writer->addAttribute('align', strtolower($align));
+			}
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();
@@ -1579,35 +1534,30 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the datagrid.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$this->groupCells();
-			if($this->_useEmptyTemplate)
-			{
-				$control=new TWebControl;
+			if ($this->_useEmptyTemplate) {
+				$control = new TWebControl;
 				$control->setID($this->getClientID());
 				$control->copyBaseAttributes($this);
-				if($this->getHasStyle())
+				if ($this->getHasStyle()) {
 					$control->getStyle()->copyFrom($this->getStyle());
+				}
 				$control->renderBeginTag($writer);
 				$this->renderContents($writer);
 				$control->renderEndTag($writer);
-			}
-			else if($this->getViewState('ItemCount',0)>0)
-			{
+			} elseif ($this->getViewState('ItemCount', 0) > 0) {
 				$this->applyItemStyles();
-				if($this->_topPager)
-				{
+				if ($this->_topPager) {
 					$this->_topPager->renderControl($writer);
 					$writer->writeLine();
 				}
 				$this->renderTable($writer);
-				if($this->_bottomPager)
-				{
+				if ($this->_bottomPager) {
 					$writer->writeLine();
 					$this->_bottomPager->renderControl($writer);
 				}
@@ -1617,33 +1567,35 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the tabular data.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function renderTable($writer)
 	{
 		$this->renderBeginTag($writer);
-		if($this->_header && $this->_header->getVisible())
-		{
+		if ($this->_header && $this->_header->getVisible()) {
 			$writer->writeLine();
-			if($style=$this->getViewState('TableHeadStyle',null))
+			if ($style = $this->getViewState('TableHeadStyle', null)) {
 				$style->addAttributesToRender($writer);
+			}
 			$writer->renderBeginTag('thead');
 			$this->_header->render($writer);
 			$writer->renderEndTag();
 		}
 		$writer->writeLine();
-		if($style=$this->getViewState('TableBodyStyle',null))
+		if ($style = $this->getViewState('TableBodyStyle', null)) {
 			$style->addAttributesToRender($writer);
+		}
 		$writer->renderBeginTag('tbody');
-		foreach($this->getItems() as $item)
+		foreach ($this->getItems() as $item) {
 			$item->renderControl($writer);
+		}
 		$writer->renderEndTag();
 
-		if($this->_footer && $this->_footer->getVisible())
-		{
+		if ($this->_footer && $this->_footer->getVisible()) {
 			$writer->writeLine();
-			if($style=$this->getViewState('TableFootStyle',null))
+			if ($style = $this->getViewState('TableFootStyle', null)) {
 				$style->addAttributesToRender($writer);
+			}
 			$writer->renderBeginTag('tfoot');
 			$this->_footer->render($writer);
 			$writer->renderEndTag();

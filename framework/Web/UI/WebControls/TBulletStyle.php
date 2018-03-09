@@ -22,15 +22,15 @@ namespace Prado\Web\UI\WebControls;
  */
 class TBulletStyle extends \Prado\TEnumerable
 {
-	const NotSet='NotSet';
-	const None='None';
-	const Numbered='Numbered';
-	const LowerAlpha='LowerAlpha';
-	const UpperAlpha='UpperAlpha';
-	const LowerRoman='LowerRoman';
-	const UpperRoman='UpperRoman';
-	const Disc='Disc';
-	const Circle='Circle';
-	const Square='Square';
-	const CustomImage='CustomImage';
+	const NotSet = 'NotSet';
+	const None = 'None';
+	const Numbered = 'Numbered';
+	const LowerAlpha = 'LowerAlpha';
+	const UpperAlpha = 'UpperAlpha';
+	const LowerRoman = 'LowerRoman';
+	const UpperRoman = 'UpperRoman';
+	const Disc = 'Disc';
+	const Circle = 'Circle';
+	const Square = 'Square';
+	const CustomImage = 'CustomImage';
 }

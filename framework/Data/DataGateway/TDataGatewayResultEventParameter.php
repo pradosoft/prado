@@ -25,10 +25,10 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	private $_command;
 	private $_result;
 
-	public function __construct($command,$result)
+	public function __construct($command, $result)
 	{
-		$this->_command=$command;
-		$this->_result=$result;
+		$this->_command = $command;
+		$this->_result = $result;
 	}
 
 	/**
@@ -48,10 +48,10 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed change the result returned by the gateway.
+	 * @param mixed $value change the result returned by the gateway.
 	 */
 	public function setResult($value)
 	{
-		$this->_result=$value;
+		$this->_result = $value;
 	}
 }

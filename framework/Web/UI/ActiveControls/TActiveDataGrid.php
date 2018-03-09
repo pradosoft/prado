@@ -21,7 +21,6 @@ use Prado\Web\UI\WebControls\TDataGrid;
 use Prado\Web\UI\WebControls\TDataGridPagerButtonType;
 use Prado\Web\UI\WebControls\TLabel;
 
-
 /**
  * TActiveDataGrid class
  *
@@ -48,12 +47,13 @@ use Prado\Web\UI\WebControls\TLabel;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
-class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable {
+class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
+{
 
   /**
    * @var string the tag used to render the surrounding container
    */
-  protected $_surroundingTag='div';
+	protected $_surroundingTag = 'div';
 
 	/**
 	 * @return string Name of the class used in AutoGenerateColumns mode
@@ -64,10 +64,11 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	* Creates a new callback control, sets the adapter to
-	* TActiveControlAdapter.
-	*/
-	public function __construct() {
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter.
+	 */
+	public function __construct()
+	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
@@ -75,7 +76,8 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	/**
 	 * @return TBaseActiveControl standard active control options.
 	 */
-	public function getActiveControl() {
+	public function getActiveControl()
+	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
@@ -84,13 +86,14 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * In addition, the render method of all connected pagers is called so they
 	 * get updated when the data source is changed. Also the datagrid registers
 	 * itself for rendering in order to get it's content replaced on client side.
-	 * @param Traversable|array|string data source object
+	 * @param Traversable|array|string $value data source object
 	 */
-	public function setDataSource($value) {
+	public function setDataSource($value)
+	{
 		parent::setDataSource($value);
-		if($this->getActiveControl()->canUpdateClientSide()) {
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->renderPager();
-			$this->getPage()->getAdapter()->registerControlToRender($this,$this->getResponse()->createHtmlWriter());
+			$this->getPage()->getAdapter()->registerControlToRender($this, $this->getResponse()->createHtmlWriter());
 		}
 	}
 
@@ -98,24 +101,27 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Gets the tag used to render the surrounding container. Defaults to 'div'.
 	 * @return string container tag
 	 */
-	public function getSurroundingTag() {
-	  return $this->_surroundingTag;
+	public function getSurroundingTag()
+	{
+		return $this->_surroundingTag;
 	}
 
 	/**
 	 * Sets the tag used to render the surrounding container.
 	 * @param string $value container tag
 	 */
-	public function setSurroundingTag($value) {
-    $this->_surroundingTag=TPropertyValue::ensureString($value);
+	public function setSurroundingTag($value)
+	{
+		$this->_surroundingTag = TPropertyValue::ensureString($value);
 	}
 
 	/**
 	 * Returns the id of the surrounding container.
 	 * @return string container id
 	 */
-	public function getSurroundingTagID() {
-		return $this->getClientID().'_Container';
+	public function getSurroundingTagID()
+	{
+		return $this->getClientID() . '_Container';
 	}
 
 	/**
@@ -132,20 +138,21 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($pager,$buttonType,$enabled,$text,$commandName,$commandParameter) {
-		if($buttonType===TDataGridPagerButtonType::LinkButton) {
-			if($enabled)
-				$button=new TActiveLinkButton;
-			else {
-				$button=new TLabel;
+	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)
+	{
+		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
+			if ($enabled) {
+				$button = new TActiveLinkButton;
+			} else {
+				$button = new TLabel;
 				$button->setText($text);
 				return $button;
 			}
-		}
-		else {
-			$button=new TActiveButton;
-			if(!$enabled)
+		} else {
+			$button = new TActiveButton;
+			if (!$enabled) {
 				$button->setEnabled(false);
+			}
 		}
 		$button->setText($text);
 		$button->setCommandName($commandName);
@@ -159,7 +166,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 
 	protected function createPager()
 	{
-		$pager=new TActiveDataGridPager($this);
+		$pager = new TActiveDataGridPager($this);
 		$this->buildPager($pager);
 		$this->onPagerCreated(new TActiveDataGridPagerEventParameter($pager));
 		$this->getControls()->add($pager);
@@ -170,15 +177,17 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderDataGrid()} method which will do the rendering of the datagrid.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
-	public function render($writer) {
-		if($this->getHasPreRendered()) {
+	public function render($writer)
+	{
+		if ($this->getHasPreRendered()) {
 			$this->renderDataGrid($writer);
-			if($this->getActiveControl()->canUpdateClientSide()) $this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(),$writer);
-		}
-		else {
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			if ($this->getActiveControl()->canUpdateClientSide()) {
+				$this->getPage()->getCallbackClient()->replaceContent($this->getSurroundingTagId(), $writer);
+			}
+		} else {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
 
@@ -187,12 +196,13 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * the datagrid for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */
-	private function renderPager() {
-		$pager=$this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
-		foreach($pager as $item) {
-			if($item->ControlToPaginate==$this->ID) {
-				$writer=$this->getResponse()->createHtmlWriter();
-				$this->getPage()->getAdapter()->registerControlToRender($item,$writer);
+	private function renderPager()
+	{
+		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
+		foreach ($pager as $item) {
+			if ($item->ControlToPaginate == $this->ID) {
+				$writer = $this->getResponse()->createHtmlWriter();
+				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}
 		}
 	}
@@ -201,11 +211,12 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid by writing a {@link getSurroundingTag()} with the container id obtained
 	 * from {@link getSurroundingTagId()} which will be called by the replacement method of the client
 	 * script to update it's content.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
-	private function renderDataGrid($writer) {
-	  $writer->addAttribute('id',$this->getSurroundingTagID());
-	  $writer->renderBeginTag($this->getSurroundingTag());
+	private function renderDataGrid($writer)
+	{
+		$writer->addAttribute('id', $this->getSurroundingTagID());
+		$writer->renderBeginTag($this->getSurroundingTag());
 		parent::render($writer);
 		$writer->renderEndTag();
 	}

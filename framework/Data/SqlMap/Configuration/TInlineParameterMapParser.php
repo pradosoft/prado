@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Data\SqlMap\DataMapper\TSqlMapUndefinedException;
 
 /**
@@ -32,22 +33,21 @@ class TInlineParameterMapParser
 
 	/**
 	 * Parse the sql text for inline parameters.
-	 * @param string sql text
-	 * @param array file and node details for exception message.
+	 * @param string $sqlText sql text
+	 * @param array $scope file and node details for exception message.
 	 * @return array 'sql' and 'parameters' name value pairs.
 	 */
 	public function parse($sqlText, $scope)
 	{
-		$matches = array();
-		$mappings = array();
+		$matches = [];
+		$mappings = [];
 		preg_match_all(self::PARAMETER_TOKEN_REGEXP, $sqlText, $matches);
 
-		for($i = 0, $k=count($matches[1]); $i<$k; $i++)
-		{
+		for ($i = 0, $k = count($matches[1]); $i < $k; $i++) {
 			$mappings[] = $this->parseMapping($matches[1][$i], $scope);
 			$sqlText = str_replace($matches[0][$i], '?', $sqlText);
 		}
-		return array('sql'=>$sqlText, 'parameters'=>$mappings);
+		return ['sql' => $sqlText, 'parameters' => $mappings];
 	}
 
 	/**
@@ -61,20 +61,22 @@ class TInlineParameterMapParser
 		$mapping = new TParameterProperty;
 		$properties = explode(',', $token);
 		$mapping->setProperty(trim(array_shift($properties)));
-		foreach($properties as $property)
-		{
-			$prop = explode('=',$property);
-			$name = trim($prop[0]); $value=trim($prop[1]);
-			if($mapping->canSetProperty($name))
-				$mapping->{'set'.$name}($value);
-			else
-			{
+		foreach ($properties as $property) {
+			$prop = explode('=', $property);
+			$name = trim($prop[0]);
+			$value = trim($prop[1]);
+			if ($mapping->canSetProperty($name)) {
+				$mapping->{'set' . $name}($value);
+			} else {
 				throw new TSqlMapUndefinedException(
 						'sqlmap_undefined_property_inline_map',
-						$name, $scope['file'], $scope['node'], $token);
+						$name,
+					$scope['file'],
+					$scope['node'],
+					$token
+				);
 			}
 		}
 		return $mapping;
 	}
 }
-

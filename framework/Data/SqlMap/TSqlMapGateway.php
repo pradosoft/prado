@@ -14,7 +14,6 @@ namespace Prado\Data\SqlMap;
 use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
 use Prado\Prado;
 
-
 /**
  * DataMapper client, a fascade to provide access the rest of the DataMapper
  * framework. It provides three core functions:
@@ -38,7 +37,7 @@ class TSqlMapGateway extends \Prado\TComponent
 
 	public function __construct($manager)
 	{
-		$this->_manager=$manager;
+		$this->_manager = $manager;
 	}
 
 	/**
@@ -64,12 +63,12 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input
 	 * data for the WHERE clause parameter(s) of the SELECT statement.
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param mixed An object of the type to be returned.
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param mixed $result An object of the type to be returned.
 	 * @return object A single result object populated with the result set data.
 	 */
-	public function queryForObject($statementName, $parameter=null, $result=null)
+	public function queryForObject($statementName, $parameter = null, $result = null)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeQueryForObject($this->getDbConnection(), $parameter, $result);
@@ -90,10 +89,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param int The maximum number of rows to return.
 	 * @return TList A List of result objects.
 	 */
-	public function queryForList($statementName, $parameter=null, $result=null, $skip=-1, $max=-1)
+	public function queryForList($statementName, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return $statement->executeQueryForList($this->getDbConnection(),$parameter, $result, $skip, $max);
+		return $statement->executeQueryForList($this->getDbConnection(), $parameter, $result, $skip, $max);
 	}
 
 	/**
@@ -111,7 +110,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param int The maximum number of rows to return.
 	 * @return TList A List of result objects.
 	 */
-	public function queryWithRowDelegate($statementName, $delegate, $parameter=null, $result=null, $skip=-1, $max=-1)
+	public function queryWithRowDelegate($statementName, $delegate, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeQueryForList($this->getDbConnection(), $parameter, $result, $skip, $max, $delegate);
@@ -121,13 +120,13 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Executes the SQL and retuns a subset of the results in a dynamic
 	 * TPagedList that can be used to automatically scroll through results
 	 * from a database table.
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param integer The maximum number of objects to store in each page.
-	 * @param integer The number of the page to initially load into the list.
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param integer $pageSize The maximum number of objects to store in each page.
+	 * @param integer $page The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
-	public function queryForPagedList($statementName, $parameter=null, $pageSize=10, $page=0)
+	public function queryForPagedList($statementName, $parameter = null, $pageSize = 10, $page = 0)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return new TSqlMapPagedList($statement, $parameter, $pageSize, null, $page);
@@ -148,10 +147,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param integer The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
-	public function queryForPagedListWithRowDelegate($statementName,$delegate, $parameter=null, $pageSize=10, $page=0)
+	public function queryForPagedListWithRowDelegate($statementName, $delegate, $parameter = null, $pageSize = 10, $page = 0)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
-		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate,$page);
+		return new TSqlMapPagedList($statement, $parameter, $pageSize, $delegate, $page);
 	}
 
 
@@ -167,7 +166,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param string The property of the result object to be used as the value.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
-	public function queryForMap($statementName, $parameter=null, $keyProperty=null, $valueProperty=null, $skip=-1, $max=-1)
+	public function queryForMap($statementName, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty, $skip, $max);
@@ -186,7 +185,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param string The property of the result object to be used as the value.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
-	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter=null, $keyProperty=null, $valueProperty=null, $skip=-1, $max=-1)
+	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeQueryForMap($this->getDbConnection(), $parameter, $keyProperty, $valueProperty, $skip, $max, $delegate);
@@ -208,7 +207,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * This might be automatically generated by the RDBMS,
 	 * or selected from a sequence table or other source.
 	 */
-	public function insert($statementName, $parameter=null)
+	public function insert($statementName, $parameter = null)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeInsert($this->getDbConnection(), $parameter);
@@ -223,11 +222,11 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input data for the
 	 * UPDATE values as well as the WHERE clause parameter(s).
 	 *
-	 * @param string The name of the statement to execute.
-	 * @param mixed The parameter object.
+	 * @param string $statementName The name of the statement to execute.
+	 * @param mixed $parameter The parameter object.
 	 * @return integer The number of rows effected.
 	 */
-	public function update($statementName, $parameter=null)
+	public function update($statementName, $parameter = null)
 	{
 		$statement = $this->getSqlMapManager()->getMappedStatement($statementName);
 		return $statement->executeUpdate($this->getDbConnection(), $parameter);
@@ -235,11 +234,11 @@ class TSqlMapGateway extends \Prado\TComponent
 
 	/**
 	 * Executes a Sql DELETE statement.  Delete returns the number of rows effected.
-	 * @param string The name of the statement to execute.
-	 * @param mixed The parameter object.
+	 * @param string $statementName The name of the statement to execute.
+	 * @param mixed $parameter The parameter object.
 	 * @return integer The number of rows effected.
 	 */
-	public function delete($statementName, $parameter=null)
+	public function delete($statementName, $parameter = null)
 	{
 		return $this->update($statementName, $parameter);
 	}
@@ -253,11 +252,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandler new type handler.
+	 * @param TSqlMapTypeHandler $typeHandler new type handler.
 	 */
 	public function registerTypeHandler($typeHandler)
 	{
 		$this->getSqlMapManager()->getTypeHandlers()->registerTypeHandler($typeHandler);
 	}
 }
-

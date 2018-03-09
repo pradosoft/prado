@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -65,16 +66,16 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function getClientValidationFunction()
 	{
-		return $this->getViewState('ClientValidationFunction','');
+		return $this->getViewState('ClientValidationFunction', '');
 	}
 
 	/**
 	 * Sets the name of the custom client-side script function used for validation.
-	 * @param string the script function name
+	 * @param string $value the script function name
 	 */
 	public function setClientValidationFunction($value)
 	{
-		$this->setViewState('ClientValidationFunction',$value,'');
+		$this->setViewState('ClientValidationFunction', $value, '');
 	}
 
 	/**
@@ -85,8 +86,9 @@ class TCustomValidator extends TBaseValidator
 	public function evaluateIsValid()
 	{
 		$value = '';
-		if($this->getValidationTarget()!==null)
-			$value=$this->getValidationValue($this->getValidationTarget());
+		if ($this->getValidationTarget() !== null) {
+			$value = $this->getValidationValue($this->getValidationTarget());
+		}
 		return $this->onServerValidate($value);
 	}
 
@@ -96,13 +98,13 @@ class TCustomValidator extends TBaseValidator
 	 * The method also allows derived classes to handle the event without attaching a delegate.
 	 * <b>Note</b> The derived classes should call parent implementation
 	 * to ensure the <b>OnServerValidate</b> event is raised.
-	 * @param string the value to be validated
+	 * @param string $value the value to be validated
 	 * @return boolean whether the value is valid
 	 */
 	public function onServerValidate($value)
 	{
-		$param=new TServerValidateEventParameter($value,true);
-		$this->raiseEvent('OnServerValidate',$this,$param);
+		$param = new TServerValidateEventParameter($value, true);
+		$this->raiseEvent('OnServerValidate', $this, $param);
 		return $param->getIsValid();
 	}
 
@@ -111,12 +113,13 @@ class TCustomValidator extends TBaseValidator
 	 */
 	public function getValidationTarget()
 	{
-		if(($id=$this->getControlToValidate())!=='' && ($control=$this->findControl($id))!==null)
+		if (($id = $this->getControlToValidate()) !== '' && ($control = $this->findControl($id)) !== null) {
 			return $control;
-		else if(($id=$this->getControlToValidate())!=='')
-			throw new TInvalidDataTypeException('basevalidator_validatable_required',get_class($this));
-		else
+		} elseif (($id = $this->getControlToValidate()) !== '') {
+			throw new TInvalidDataTypeException('basevalidator_validatable_required', get_class($this));
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -125,9 +128,10 @@ class TCustomValidator extends TBaseValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options=parent::getClientScriptOptions();
-		if(($clientJs=$this->getClientValidationFunction())!=='')
-			$options['ClientValidationFunction']=$clientJs;
+		$options = parent::getClientScriptOptions();
+		if (($clientJs = $this->getClientValidationFunction()) !== '') {
+			$options['ClientValidationFunction'] = $clientJs;
+		}
 		return $options;
 	}
 
@@ -137,7 +141,8 @@ class TCustomValidator extends TBaseValidator
 	 */
 	protected function registerClientScriptValidator()
 	{
-		if($this->getClientValidationFunction()!=='')
+		if ($this->getClientValidationFunction() !== '') {
 			parent::registerClientScriptValidator();
+		}
 	}
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\IO\TTextWriter;
 
 /**
@@ -27,7 +28,7 @@ class TOutputCacheTextWriterMulti extends TTextWriter
 {
 	protected $_writers;
 
-	public function __construct(Array $writers)
+	public function __construct(array $writers)
 	{
 		//parent::__construct();
 		$this->_writers = $writers;
@@ -35,14 +36,16 @@ class TOutputCacheTextWriterMulti extends TTextWriter
 
 	public function write($s)
 	{
-		foreach($this->_writers as $writer)
+		foreach ($this->_writers as $writer) {
 			$writer->write($s);
+		}
 	}
 
 	public function flush()
 	{
-		foreach($this->_writers as $writer)
+		foreach ($this->_writers as $writer) {
 			$s = $writer->flush();
+		}
 		return $s;
 	}
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TNotSupportedException;
 
 /**
@@ -28,12 +29,12 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 
 	public function getViewNames()
 	{
-		return array();
+		return [];
 	}
 
 	public function onDataSourceChanged($param)
 	{
-		$this->raiseEvent('OnDataSourceChanged',$this,$param);
+		$this->raiseEvent('OnDataSourceChanged', $this, $param);
 	}
 
 	public function focus()
@@ -61,7 +62,7 @@ abstract class TDataSourceControl extends \Prado\Web\UI\TControl implements IDat
 		throw new TNotSupportedException('datasourcecontrol_skinid_unsupported');
 	}
 
-	public function getVisible($checkParents=true)
+	public function getVisible($checkParents = true)
 	{
 		return false;
 	}

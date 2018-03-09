@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
@@ -39,12 +40,12 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d=array();
+	private $_d = [];
 	/**
 	 * number of items
 	 * @var integer
 	 */
-	private $_c=0;
+	private $_c = 0;
 
 	/**
 	 * Constructor.
@@ -52,10 +53,11 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null)
+	public function __construct($data = null)
 	{
-		if($data!==null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 	}
 
 	/**
@@ -69,22 +71,20 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Copies iterable data into the stack.
 	 * Note, existing data in the list will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
+		if (is_array($data) || ($data instanceof \Traversable)) {
 			$this->clear();
-			foreach($data as $item)
-			{
-				$this->_d[]=$item;
+			foreach ($data as $item) {
+				$this->_d[] = $item;
 				++$this->_c;
 			}
-		}
-		else if($data!==null)
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('stack_data_not_iterable');
+		}
 	}
 
 	/**
@@ -92,17 +92,17 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function clear()
 	{
-		$this->_c=0;
-		$this->_d=array();
+		$this->_c = 0;
+		$this->_d = [];
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return boolean whether the stack contains the item
 	 */
 	public function contains($item)
 	{
-		return array_search($item,$this->_d,true)!==false;
+		return array_search($item, $this->_d, true) !== false;
 	}
 
 	/**
@@ -113,10 +113,11 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function peek()
 	{
-		if($this->_c===0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('stack_empty');
-		else
-			return $this->_d[$this->_c-1];
+		} else {
+			return $this->_d[$this->_c - 1];
+		}
 	}
 
 	/**
@@ -126,10 +127,9 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function pop()
 	{
-		if($this->_c===0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('stack_empty');
-		else
-		{
+		} else {
 			--$this->_c;
 			return array_pop($this->_d);
 		}
@@ -137,7 +137,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Pushes an item into the stack.
-	 * @param mixed the item to be pushed into the stack
+	 * @param mixed $item the item to be pushed into the stack
 	 */
 	public function push($item)
 	{
@@ -152,7 +152,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**

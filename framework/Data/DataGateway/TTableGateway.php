@@ -19,7 +19,6 @@ use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-
 /**
  * TTableGateway class provides several find methods to get data from the database
  * and update, insert, and delete methods.
@@ -90,19 +89,20 @@ class TTableGateway extends \Prado\TComponent
 	 * @param string|TDbTableInfo table or view name or table information.
 	 * @param TDbConnection database connection.
 	 */
-	public function __construct($table,$connection)
+	public function __construct($table, $connection)
 	{
-		$this->_connection=$connection;
-		if(is_string($table))
+		$this->_connection = $connection;
+		if (is_string($table)) {
 			$this->setTableName($table);
-		else if($table instanceof TDbTableInfo)
+		} elseif ($table instanceof TDbTableInfo) {
 			$this->setTableInfo($table);
-		else
+		} else {
 			throw new TDbException('dbtablegateway_invalid_table_info');
+		}
 	}
 
 	/**
-	 * @param TDbTableInfo table or view information.
+	 * @param TDbTableInfo $tableInfo table or view information.
 	 */
 	protected function setTableInfo($tableInfo)
 	{
@@ -112,7 +112,7 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Sets up the command builder for the given table.
-	 * @param string table or view name.
+	 * @param string $tableName table or view name.
 	 */
 	protected function setTableName($tableName)
 	{
@@ -131,13 +131,13 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommandBuilder database specific command builder.
+	 * @param TDbCommandBuilder $builder database specific command builder.
 	 */
 	protected function initCommandBuilder($builder)
 	{
 		$this->_command = new TDataGatewayCommand($builder);
-		$this->_command->OnCreateCommand[] = array($this, 'onCreateCommand');
-		$this->_command->OnExecuteCommand[] = array($this, 'onExecuteCommand');
+		$this->_command->OnCreateCommand[] = [$this, 'onCreateCommand'];
+		$this->_command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
 	}
 
 	/**
@@ -185,27 +185,27 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Execute arbituary sql command with binding parameters.
-	 * @param string SQL query string.
-	 * @param array binding parameters, positional or named.
+	 * @param string $sql SQL query string.
+	 * @param array $parameters binding parameters, positional or named.
 	 * @return array query results.
 	 */
-	public function findBySql($sql, $parameters=array())
+	public function findBySql($sql, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($sql,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getCriteria($sql, $parameters, $args);
 		return $this->getCommand()->findBySql($criteria);
 	}
 
 	/**
 	 * Execute arbituary sql command with binding parameters.
-	 * @param string SQL query string.
-	 * @param array binding parameters, positional or named.
+	 * @param string $sql SQL query string.
+	 * @param array $parameters binding parameters, positional or named.
 	 * @return TDbDataReader query results.
 	 */
-	public function findAllBySql($sql, $parameters=array())
+	public function findAllBySql($sql, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($sql,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getCriteria($sql, $parameters, $args);
 		return $this->getCommand()->findAllBySql($criteria);
 	}
 
@@ -222,28 +222,29 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->find($criteria); //the 2nd parameter for find() is ignored.
 	 * </code>
 	 *
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
+	 * @param mixed $parameters parameter values.
 	 * @return array matching record object.
 	 */
-	public function find($criteria, $parameters=array())
+	public function find($criteria, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getCriteria($criteria, $parameters, $args);
 		return $this->getCommand()->find($criteria);
 	}
 
 	/**
 	 * Accepts same parameters as find(), but returns TDbDataReader instead.
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
+	 * @param mixed $parameters parameter values.
 	 * @return TDbDataReader matching records.
 	 */
-	public function findAll($criteria=null, $parameters=array())
+	public function findAll($criteria = null, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		if($criteria!==null)
-			$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		if ($criteria !== null) {
+			$criteria = $this->getCriteria($criteria, $parameters, $args);
+		}
 		return $this->getCommand()->findAll($criteria);
 	}
 
@@ -256,13 +257,14 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->findByPk(array($key1,$key2,...));
 	 * </code>
 	 *
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return array matching record.
 	 */
 	public function findByPk($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->findByPk($keys);
 	}
 
@@ -280,13 +282,14 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
 	 * $table->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
 	 * </code>
-	 * @param mixed primary keys
+	 * @param mixed $keys primary keys
 	 * @return TDbDataReader data reader.
 	 */
 	public function findAllByPks($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->findAllByPk($keys);
 	}
 
@@ -297,14 +300,14 @@ class TTableGateway extends \Prado\TComponent
 	 * <code>
 	 * $table->delete('age > ? AND location = ?', $age, $location);
 	 * </code>
-	 * @param string delete condition.
-	 * @param array condition parameters.
+	 * @param string $criteria delete condition.
+	 * @param array $parameters condition parameters.
 	 * @return integer number of records deleted.
 	 */
-	public function deleteAll($criteria, $parameters=array())
+	public function deleteAll($criteria, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		$criteria = $this->getCriteria($criteria, $parameters, $args);
 		return $this->getCommand()->delete($criteria);
 	}
 
@@ -328,13 +331,14 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
 	 * </code>
 	 *
-	 * @param mixed primary key values.
+	 * @param mixed $keys primary key values.
 	 * @return int number of records deleted.
 	 */
 	public function deleteByPk($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->getCommand()->deleteByPk($keys);
 	}
 
@@ -343,22 +347,24 @@ class TTableGateway extends \Prado\TComponent
 	 */
 	public function deleteAllByPks($keys)
 	{
-		if(func_num_args() > 1)
+		if (func_num_args() > 1) {
 			$keys = func_get_args();
+		}
 		return $this->deleteByPk($keys);
 	}
 
 	/**
 	 * Find the number of records.
-	 * @param string|TSqlCriteria SQL condition or criteria object.
-	 * @param mixed parameter values.
+	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
+	 * @param mixed $parameters parameter values.
 	 * @return int number of records.
 	 */
-	public function count($criteria=null,$parameters=array())
+	public function count($criteria = null, $parameters = [])
 	{
-		$args = func_num_args() > 1 ? array_slice(func_get_args(),1) : null;
-		if($criteria!==null)
-			$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 1 ? array_slice(func_get_args(), 1) : null;
+		if ($criteria !== null) {
+			$criteria = $this->getCriteria($criteria, $parameters, $args);
+		}
 		return $this->getCommand()->count($criteria);
 	}
 
@@ -371,15 +377,15 @@ class TTableGateway extends \Prado\TComponent
 	 * <code>
 	 * $gateway->update($data, 'age > ? AND location = ?', $age, $location);
 	 * </code>
-	 * @param array new record data.
-	 * @param string update condition
-	 * @param array additional binding name-value pairs.
+	 * @param array $data new record data.
+	 * @param string $criteria update condition
+	 * @param array $parameters additional binding name-value pairs.
 	 * @return integer number of records updated.
 	 */
-	public function update($data, $criteria, $parameters=array())
+	public function update($data, $criteria, $parameters = [])
 	{
-		$args = func_num_args() > 2 ? array_slice(func_get_args(),2) : null;
-		$criteria = $this->getCriteria($criteria,$parameters, $args);
+		$args = func_num_args() > 2 ? array_slice(func_get_args(), 2) : null;
+		$criteria = $this->getCriteria($criteria, $parameters, $args);
 		return $this->getCommand()->update($data, $criteria);
 	}
 
@@ -407,22 +413,21 @@ class TTableGateway extends \Prado\TComponent
 	 * Create a new TSqlCriteria object from a string $criteria. The $args
 	 * are additional parameters and are used in place of the $parameters
 	 * if $parameters is not an array and $args is an arrary.
-	 * @param string|TSqlCriteria sql criteria
-	 * @param mixed parameters passed by the user.
-	 * @param array additional parameters obtained from function_get_args().
+	 * @param string|TSqlCriteria $criteria sql criteria
+	 * @param mixed $parameters parameters passed by the user.
+	 * @param array $args additional parameters obtained from function_get_args().
 	 * @return TSqlCriteria criteria object.
 	 */
 	protected function getCriteria($criteria, $parameters, $args)
 	{
-		if(is_string($criteria))
-		{
+		if (is_string($criteria)) {
 			$useArgs = !is_array($parameters) && is_array($args);
-			return new TSqlCriteria($criteria,$useArgs ? $args : $parameters);
-		}
-		else if($criteria instanceof TSqlCriteria)
+			return new TSqlCriteria($criteria, $useArgs ? $args : $parameters);
+		} elseif ($criteria instanceof TSqlCriteria) {
 			return $criteria;
-		else
+		} else {
 			throw new TDbException('dbtablegateway_invalid_criteria');
+		}
 	}
 
 	/**
@@ -454,25 +459,26 @@ class TTableGateway extends \Prado\TComponent
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
 	 * if method name starts with "findAllBy"
 	 */
-	public function __call($method,$args)
+	public function __call($method, $args)
 	{
-		$delete =false;
-		if($findOne = substr(strtolower($method),0,6)==='findby')
-			$condition = $method[6]==='_' ? substr($method,7) : substr($method,6);
-		else if(substr(strtolower($method),0,9)==='findallby')
-			$condition = $method[9]==='_' ? substr($method,10) : substr($method,9);
-		else if($delete = substr(strtolower($method),0,8)==='deleteby')
-			$condition = $method[8]==='_' ? substr($method,9) : substr($method,8);
-		else if($delete = substr(strtolower($method),0,11)==='deleteallby')
-			$condition = $method[11]==='_' ? substr($method,12) : substr($method,11);
-		else
+		$delete = false;
+		if ($findOne = substr(strtolower($method), 0, 6) === 'findby') {
+			$condition = $method[6] === '_' ? substr($method, 7) : substr($method, 6);
+		} elseif (substr(strtolower($method), 0, 9) === 'findallby') {
+			$condition = $method[9] === '_' ? substr($method, 10) : substr($method, 9);
+		} elseif ($delete = substr(strtolower($method), 0, 8) === 'deleteby') {
+			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
+		} elseif ($delete = substr(strtolower($method), 0, 11) === 'deleteallby') {
+			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
+		} else {
 			return null;
+		}
 
 		$criteria = $this->getCommand()->createCriteriaFromString($method, $condition, $args);
-		if($delete)
+		if ($delete) {
 			return $this->deleteAll($criteria);
-		else
+		} else {
 			return $findOne ? $this->find($criteria) : $this->findAll($criteria);
+		}
 	}
 }
-

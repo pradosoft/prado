@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TDataGridPagerEventParameter;
 
 /**
@@ -31,6 +32,6 @@ class TActiveDataGridPagerEventParameter extends TDataGridPagerEventParameter
 	 */
 	public function __construct(TActiveDataGridPager $pager)
 	{
-		$this->_pager=$pager;
+		$this->_pager = $pager;
 	}
 }

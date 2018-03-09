@@ -16,6 +16,7 @@
  */
 
 namespace Prado\I18N\core;
+
 use Prado\Exceptions\TException;
 
 /**
@@ -27,5 +28,4 @@ use Prado\Exceptions\TException;
  */
 class TMessageSourceIOException extends TException
 {
-
 }

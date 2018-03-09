@@ -24,7 +24,7 @@ interface ITextWriter
 {
 	/**
 	 * Writes a string.
-	 * @param string string to be written
+	 * @param string $str string to be written
 	 */
 	public function write($str);
 	/**

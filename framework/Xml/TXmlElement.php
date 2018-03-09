@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Xml;
+
 use \Prado\TPropertyValue;
 use \Prado\Collections\TList;
 use \Prado\Collections\TMap;
@@ -34,27 +35,27 @@ class TXmlElement extends \Prado\TComponent
 	/**
 	 * @var TXmlElement parent of this element
 	 */
-	private $_parent=null;
+	private $_parent;
 	/**
 	 * @var string tag-name of this element
 	 */
-	private $_tagName='unknown';
+	private $_tagName = 'unknown';
 	/**
 	 * @var string text enclosed between opening and closing tags of this element
 	 */
-	private $_value='';
+	private $_value = '';
 	/**
 	 * @var TXmlElementList list of child elements of this element
 	 */
-	private $_elements=null;
+	private $_elements;
 	/**
 	 * @var TMap attributes of this element
 	 */
-	private $_attributes=null;
+	private $_attributes;
 
 	/**
 	 * Constructor.
-	 * @param string tag-name for this element
+	 * @param string $tagName tag-name for this element
 	 */
 	public function __construct($tagName)
 	{
@@ -70,11 +71,11 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TXmlElement parent element of this element
+	 * @param TXmlElement $parent parent element of this element
 	 */
 	public function setParent($parent)
 	{
-		$this->_parent=$parent;
+		$this->_parent = $parent;
 	}
 
 	/**
@@ -86,11 +87,11 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string tag-name of this element
+	 * @param string $tagName tag-name of this element
 	 */
 	public function setTagName($tagName)
 	{
-		$this->_tagName=$tagName;
+		$this->_tagName = $tagName;
 	}
 
 	/**
@@ -102,11 +103,11 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string text enclosed between opening and closing tag of this element
+	 * @param string $value text enclosed between opening and closing tag of this element
 	 */
 	public function setValue($value)
 	{
-		$this->_value=TPropertyValue::ensureString($value);
+		$this->_value = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -114,7 +115,7 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getHasElement()
 	{
-		return $this->_elements!==null && $this->_elements->getCount()>0;
+		return $this->_elements !== null && $this->_elements->getCount() > 0;
 	}
 
 	/**
@@ -122,7 +123,7 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getHasAttribute()
 	{
-		return $this->_attributes!==null && $this->_attributes->getCount()>0;
+		return $this->_attributes !== null && $this->_attributes->getCount() > 0;
 	}
 
 	/**
@@ -130,19 +131,20 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($this->_attributes!==null)
+		if ($this->_attributes !== null) {
 			return $this->_attributes->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
 	 * @param string attribute name
 	 * @param string attribute value
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
-		$this->getAttributes()->add($name,TPropertyValue::ensureString($value));
+		$this->getAttributes()->add($name, TPropertyValue::ensureString($value));
 	}
 
 	/**
@@ -150,8 +152,9 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElements()
 	{
-		if(!$this->_elements)
-			$this->_elements=new TXmlElementList($this);
+		if (!$this->_elements) {
+			$this->_elements = new TXmlElementList($this);
+		}
 		return $this->_elements;
 	}
 
@@ -160,8 +163,9 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if(!$this->_attributes)
-			$this->_attributes=new TMap;
+		if (!$this->_attributes) {
+			$this->_attributes = new TMap;
+		}
 		return $this->_attributes;
 	}
 
@@ -170,11 +174,12 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElementByTagName($tagName)
 	{
-		if($this->_elements)
-		{
-			foreach($this->_elements as $element)
-				if($element->_tagName===$tagName)
+		if ($this->_elements) {
+			foreach ($this->_elements as $element) {
+				if ($element->_tagName === $tagName) {
 					return $element;
+				}
+			}
 		}
 		return null;
 	}
@@ -184,12 +189,13 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElementsByTagName($tagName)
 	{
-		$list=new TList;
-		if($this->_elements)
-		{
-			foreach($this->_elements as $element)
-				if($element->_tagName===$tagName)
+		$list = new TList;
+		if ($this->_elements) {
+			foreach ($this->_elements as $element) {
+				if ($element->_tagName === $tagName) {
 					$list->add($element);
+				}
+			}
 		}
 		return $list;
 	}
@@ -197,33 +203,29 @@ class TXmlElement extends \Prado\TComponent
 	/**
 	 * @return string string representation of this element
 	 */
-	public function toString($indent=0)
+	public function toString($indent = 0)
 	{
-		$attr='';
-		if($this->_attributes!==null)
-		{
-			foreach($this->_attributes as $name=>$value)
-			{
-				$value=$this->xmlEncode($value);
-				$attr.=" $name=\"$value\"";
+		$attr = '';
+		if ($this->_attributes !== null) {
+			foreach ($this->_attributes as $name => $value) {
+				$value = $this->xmlEncode($value);
+				$attr .= " $name=\"$value\"";
 			}
 		}
-		$prefix=str_repeat(' ',$indent*4);
-		if($this->getHasElement())
-		{
-			$str=$prefix."<{$this->_tagName}$attr>\n";
-			foreach($this->getElements() as $element)
-				$str.=$element->toString($indent+1)."\n";
-			$str.=$prefix."</{$this->_tagName}>";
+		$prefix = str_repeat(' ', $indent * 4);
+		if ($this->getHasElement()) {
+			$str = $prefix . "<{$this->_tagName}$attr>\n";
+			foreach ($this->getElements() as $element) {
+				$str .= $element->toString($indent + 1) . "\n";
+			}
+			$str .= $prefix . "</{$this->_tagName}>";
 			return $str;
+		} elseif (($value = $this->getValue()) !== '') {
+			$value = $this->xmlEncode($value);
+			return $prefix . "<{$this->_tagName}$attr>$value</{$this->_tagName}>";
+		} else {
+			return $prefix . "<{$this->_tagName}$attr />";
 		}
-		else if(($value=$this->getValue())!=='')
-		{
-			$value=$this->xmlEncode($value);
-			return $prefix."<{$this->_tagName}$attr>$value</{$this->_tagName}>";
-		}
-		else
-			return $prefix."<{$this->_tagName}$attr />";
 	}
 
 	/**
@@ -246,13 +248,13 @@ class TXmlElement extends \Prado\TComponent
 
 	private function xmlEncode($str)
 	{
-		return strtr($str,array(
-			'>'=>'&gt;',
-			'<'=>'&lt;',
-			'&'=>'&amp;',
-			'"'=>'&quot;',
-			"\r"=>'&#xD;',
-			"\t"=>'&#x9;',
-			"\n"=>'&#xA;'));
+		return strtr($str, [
+			'>' => '&gt;',
+			'<' => '&lt;',
+			'&' => '&amp;',
+			'"' => '&quot;',
+			"\r" => '&#xD;',
+			"\t" => '&#x9;',
+			"\n" => '&#xA;']);
 	}
 }

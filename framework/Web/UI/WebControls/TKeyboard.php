@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
@@ -47,14 +48,14 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getForControl()
 	{
-		return $this->getViewState('ForControl','');
+		return $this->getViewState('ForControl', '');
 	}
 
 	/**
 	 * Sets the ID path of the {@link TTextBox} control.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the keyboard's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setForControl($value)
 	{
@@ -70,7 +71,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether the keyboard should be hidden when the textbox is not in focus.
+	 * @param boolean $value whether the keyboard should be hidden when the textbox is not in focus.
 	 */
 	public function setAutoHide($value)
 	{
@@ -89,7 +90,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets a value indicating the CSS class name for the keyboard <div> element.
 	 * Note, if you change this property, make sure you also supply a customized CSS file
 	 * by specifying {@link setCssUrl CssUrl} which uses the new CSS class name for styling.
-	 * @param string the CSS class name for the keyboard <div> element.
+	 * @param string $value the CSS class name for the keyboard <div> element.
 	 */
 	public function setKeyboardCssClass($value)
 	{
@@ -105,7 +106,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the URL for the CSS file to customize the appearance of the keyboard.
+	 * @param string $value the URL for the CSS file to customize the appearance of the keyboard.
 	 */
 	public function setCssUrl($value)
 	{
@@ -115,13 +116,12 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getPage()->getClientSupportsJavaScript())
-		{
+		if ($this->getPage()->getClientSupportsJavaScript()) {
 			$this->registerStyleSheet();
 			$this->registerClientScript();
 		}
@@ -130,13 +130,14 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional TKeyboard specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if($this->getPage()->getClientSupportsJavaScript())
-			$writer->addAttribute('id',$this->getClientID());
+		if ($this->getPage()->getClientSupportsJavaScript()) {
+			$writer->addAttribute('id', $this->getClientID());
+		}
 	}
 
 	/**
@@ -146,9 +147,10 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function registerStyleSheet()
 	{
-		if(($url=$this->getCssUrl())==='')
-			$url=$this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'keyboard.css');
-		$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		if (($url = $this->getCssUrl()) === '') {
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'keyboard.css');
+		}
+		$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	}
 
 	/**
@@ -156,11 +158,11 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function registerClientScript()
 	{
-		$options=TJavaScript::encode($this->getClientOptions());
-		$className=$this->getClientClassName();
-		$cs=$this->getPage()->getClientScript();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('keyboard');
-		$cs->registerEndScript('prado:'.$this->getClientID(), "new $className($options);");
+		$cs->registerEndScript('prado:' . $this->getClientID(), "new $className($options);");
 	}
 
 	/**
@@ -176,17 +178,18 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function getClientOptions()
 	{
-		if(($forControl=$this->getForControl())==='')
+		if (($forControl = $this->getForControl()) === '') {
 			throw new TConfigurationException('keyboard_forcontrol_required');
-	    if(($target=$this->findControl($forControl))===null)
-	        throw new TConfigurationException('keyboard_forcontrol_invalid',$forControl);
+		}
+		if (($target = $this->findControl($forControl)) === null) {
+			throw new TConfigurationException('keyboard_forcontrol_invalid', $forControl);
+		}
 
-	    $options['ID'] = $this->getClientID();
-	    $options['ForControl'] = $target->getClientID();
-	    $options['AutoHide'] = $this->getAutoHide();
-	    $options['CssClass'] = $this->getKeyboardCssClass();
+		$options['ID'] = $this->getClientID();
+		$options['ForControl'] = $target->getClientID();
+		$options['AutoHide'] = $this->getAutoHide();
+		$options['CssClass'] = $this->getKeyboardCssClass();
 
-	    return $options;
+		return $options;
 	}
 }
-

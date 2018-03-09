@@ -37,39 +37,39 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @var array lookup table for level names
 	 */
-	protected static $_levelNames=array(
-		TLogger::DEBUG=>'Debug',
-		TLogger::INFO=>'Info',
-		TLogger::NOTICE=>'Notice',
-		TLogger::WARNING=>'Warning',
-		TLogger::ERROR=>'Error',
-		TLogger::ALERT=>'Alert',
-		TLogger::FATAL=>'Fatal'
-	);
+	protected static $_levelNames = [
+		TLogger::DEBUG => 'Debug',
+		TLogger::INFO => 'Info',
+		TLogger::NOTICE => 'Notice',
+		TLogger::WARNING => 'Warning',
+		TLogger::ERROR => 'Error',
+		TLogger::ALERT => 'Alert',
+		TLogger::FATAL => 'Fatal'
+	];
 	/**
 	 * @var array lookup table for level values
 	 */
-	protected static $_levelValues=array(
-		'debug'=>TLogger::DEBUG,
-		'info'=>TLogger::INFO,
-		'notice'=>TLogger::NOTICE,
-		'warning'=>TLogger::WARNING,
-		'error'=>TLogger::ERROR,
-		'alert'=>TLogger::ALERT,
-		'fatal'=>TLogger::FATAL
-	);
+	protected static $_levelValues = [
+		'debug' => TLogger::DEBUG,
+		'info' => TLogger::INFO,
+		'notice' => TLogger::NOTICE,
+		'warning' => TLogger::WARNING,
+		'error' => TLogger::ERROR,
+		'alert' => TLogger::ALERT,
+		'fatal' => TLogger::FATAL
+	];
 	/**
 	 * @var integer log level filter (bits)
 	 */
-	private $_levels=null;
+	private $_levels;
 	/**
 	 * @var array log category filter
 	 */
-	private $_categories=null;
+	private $_categories;
 
 	/**
 	 * Initializes the route.
-	 * @param TXmlElement configurations specified in {@link TLogRouter}.
+	 * @param TXmlElement $config configurations specified in {@link TLogRouter}.
 	 */
 	public function init($config)
 	{
@@ -90,17 +90,16 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function setLevels($levels)
 	{
-		if(is_integer($levels))
-			$this->_levels=$levels;
-		else
-		{
-			$this->_levels=null;
-			$levels=strtolower($levels);
-			foreach(explode(',',$levels) as $level)
-			{
-				$level=trim($level);
-				if(isset(self::$_levelValues[$level]))
-					$this->_levels|=self::$_levelValues[$level];
+		if (is_int($levels)) {
+			$this->_levels = $levels;
+		} else {
+			$this->_levels = null;
+			$levels = strtolower($levels);
+			foreach (explode(',', $levels) as $level) {
+				$level = trim($level);
+				if (isset(self::$_levelValues[$level])) {
+					$this->_levels |= self::$_levelValues[$level];
+				}
 			}
 		}
 	}
@@ -114,53 +113,52 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param array|string list of categories to be looked for. If the value is a string,
+	 * @param array|string $categories list of categories to be looked for. If the value is a string,
 	 * it is assumed to be comma-separated category names.
 	 */
 	public function setCategories($categories)
 	{
-		if(is_array($categories))
-			$this->_categories=$categories;
-		else
-		{
-			$this->_categories=null;
-			foreach(explode(',',$categories) as $category)
-			{
-				if(($category=trim($category))!=='')
-					$this->_categories[]=$category;
+		if (is_array($categories)) {
+			$this->_categories = $categories;
+		} else {
+			$this->_categories = null;
+			foreach (explode(',', $categories) as $category) {
+				if (($category = trim($category)) !== '') {
+					$this->_categories[] = $category;
+				}
 			}
 		}
 	}
 
 	/**
-	 * @param integer level value
+	 * @param integer $level level value
 	 * @return string level name
 	 */
 	protected function getLevelName($level)
 	{
-		return isset(self::$_levelNames[$level])?self::$_levelNames[$level]:'Unknown';
+		return isset(self::$_levelNames[$level]) ? self::$_levelNames[$level] : 'Unknown';
 	}
 
 	/**
-	 * @param string level name
+	 * @param string $level level name
 	 * @return integer level value
 	 */
 	protected function getLevelValue($level)
 	{
-		return isset(self::$_levelValues[$level])?self::$_levelValues[$level]:0;
+		return isset(self::$_levelValues[$level]) ? self::$_levelValues[$level] : 0;
 	}
 
 	/**
 	 * Formats a log message given different fields.
-	 * @param string message content
-	 * @param integer message level
-	 * @param string message category
-	 * @param integer timestamp
+	 * @param string $message message content
+	 * @param integer $level message level
+	 * @param string $category message category
+	 * @param integer $time timestamp
 	 * @return string formatted message
 	 */
-	protected function formatLogMessage($message,$level,$category,$time)
+	protected function formatLogMessage($message, $level, $category, $time)
 	{
-		return @date('M d H:i:s',$time).' ['.$this->getLevelName($level).'] ['.$category.'] '.$message."\n";
+		return @date('M d H:i:s', $time) . ' [' . $this->getLevelName($level) . '] [' . $category . '] ' . $message . "\n";
 	}
 
 	/**
@@ -169,9 +167,10 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	public function collectLogs(TLogger $logger)
 	{
-		$logs=$logger->getLogs($this->getLevels(),$this->getCategories());
-		if(!empty($logs))
+		$logs = $logger->getLogs($this->getLevels(), $this->getCategories());
+		if (!empty($logs)) {
 			$this->processLogs($logs);
+		}
 	}
 
 	/**

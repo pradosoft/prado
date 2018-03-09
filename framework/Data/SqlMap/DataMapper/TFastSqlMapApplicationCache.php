@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+
 use Prado\Caching\ICache;
 use Prado\Prado;
 
@@ -25,17 +26,17 @@ use Prado\Prado;
 
 class TFastSqlMapApplicationCache implements ICache
 {
-	protected $_cacheModel=null;
-	protected $_cache=null;
+	protected $_cacheModel;
+	protected $_cache;
 
-	public function __construct($cacheModel=null)
+	public function __construct($cacheModel = null)
 	{
 		$this->_cacheModel = $cacheModel;
 	}
 
 	protected function getBaseKeyKeyName()
 	{
-		return 'SqlMapCacheBaseKey::'.$this->_cacheModel->getId();
+		return 'SqlMapCacheBaseKey::' . $this->_cacheModel->getId();
 	}
 
 	protected function getBaseKey()
@@ -43,17 +44,16 @@ class TFastSqlMapApplicationCache implements ICache
 		$cache = $this->getCache();
 		$keyname = $this->getBaseKeyKeyName();
 		$basekey = $cache->get($keyname);
-		if (!$basekey)
-		{
+		if (!$basekey) {
 			$basekey = DxUtil::generateRandomHash(8);
-			$cache->set($keyname,$basekey);
+			$cache->set($keyname, $basekey);
 		}
 		return $basekey;
 	}
 
 	protected function getCacheKey($key)
 	{
-		return $this->getBaseKey().'###'.$key;
+		return $this->getBaseKey() . '###' . $key;
 	}
 
 	public function delete($key)
@@ -72,19 +72,20 @@ class TFastSqlMapApplicationCache implements ICache
 		return $result === false ? null : $result;
 	}
 
-	public function set($key, $value,$expire=0,$dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
-		$this->getCache()->set($this->getCacheKey($key), $value, $expire,$dependency);
+		$this->getCache()->set($this->getCacheKey($key), $value, $expire, $dependency);
 	}
 
 	protected function getCache()
 	{
-		if (!$this->_cache)
+		if (!$this->_cache) {
 			$this->_cache = Prado::getApplication()->getCache();
+		}
 		return $this->_cache;
 	}
 
-	public function add($id,$value,$expire=0,$dependency=null)
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

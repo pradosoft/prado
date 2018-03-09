@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+
 use Prado\Data\SqlMap\Configuration\TSimpleDynamicParser;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
@@ -22,7 +23,7 @@ use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
  */
 class TSimpleDynamicSql extends TStaticSql
 {
-	private $_mappings=array();
+	private $_mappings = [];
 
 	public function __construct($mappings)
 	{
@@ -31,12 +32,10 @@ class TSimpleDynamicSql extends TStaticSql
 
 	public function replaceDynamicParameter($sql, $parameter)
 	{
-		foreach($this->_mappings as $property)
-		{
+		foreach ($this->_mappings as $property) {
 			$value = TPropertyAccess::get($parameter, $property);
-			$sql = preg_replace('/'.TSimpleDynamicParser::DYNAMIC_TOKEN.'/', str_replace('$', '\$', $value), $sql, 1);
+			$sql = preg_replace('/' . TSimpleDynamicParser::DYNAMIC_TOKEN . '/', str_replace('$', '\$', $value), $sql, 1);
 		}
 		return $sql;
 	}
 }
-

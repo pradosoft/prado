@@ -23,15 +23,15 @@ class TWizardStepNavigationTemplate extends TWizardNavigationTemplate
 {
 	/**
 	 * Instantiates the template.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{
-		$previousButton=$this->createNavigationButton($this->getWizard()->getStepPreviousButtonStyle(),false,TWizard::CMD_PREVIOUS);
-		$nextButton=$this->createNavigationButton($this->getWizard()->getStepNextButtonStyle(),true,TWizard::CMD_NEXT);
-		$cancelButton=$this->createNavigationButton($this->getWizard()->getCancelButtonStyle(),false,TWizard::CMD_CANCEL);
+		$previousButton = $this->createNavigationButton($this->getWizard()->getStepPreviousButtonStyle(), false, TWizard::CMD_PREVIOUS);
+		$nextButton = $this->createNavigationButton($this->getWizard()->getStepNextButtonStyle(), true, TWizard::CMD_NEXT);
+		$cancelButton = $this->createNavigationButton($this->getWizard()->getCancelButtonStyle(), false, TWizard::CMD_CANCEL);
 
-		$controls=$parent->getControls();
+		$controls = $parent->getControls();
 		$controls->add($previousButton);
 		$controls->add("\n");
 		$controls->add($nextButton);

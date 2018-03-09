@@ -26,11 +26,11 @@ interface IPostBackDataHandler
 	 * Loads user input data.
 	 * The implementation of this function can use $values[$key] to get the user input
 	 * data that are meant for the particular control.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values);
+	public function loadPostData($key, $values);
 	/**
 	 * Raises postdata changed event.
 	 * The implementation of this function should raise appropriate event(s) (e.g. OnTextChanged)

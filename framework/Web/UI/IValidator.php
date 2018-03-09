@@ -34,7 +34,7 @@ interface IValidator
 	 */
 	public function getIsValid();
 	/**
-	 * @param boolean whether the validator validates successfully
+	 * @param boolean $value whether the validator validates successfully
 	 */
 	public function setIsValid($value);
 	/**
@@ -42,7 +42,7 @@ interface IValidator
 	 */
 	public function getErrorMessage();
 	/**
-	 * @param string error message for the validation
+	 * @param string $value error message for the validation
 	 */
 	public function setErrorMessage($value);
 }

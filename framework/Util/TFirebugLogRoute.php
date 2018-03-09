@@ -24,7 +24,7 @@ namespace Prado\Util;
  */
 class TFirebugLogRoute extends TBrowserLogRoute
 {
-	protected function renderHeader ()
+	protected function renderHeader()
 	{
 		$string = <<<EOD
 
@@ -39,21 +39,21 @@ EOD;
 		return $string;
 	}
 
-	protected function renderMessage ($log, $info)
+	protected function renderMessage($log, $info)
 	{
 		$logfunc = $this->getFirebugLoggingFunction($log[1]);
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
 		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
-		$msg = "[{$total}] [{$delta}] ".$msg; // Add time spent and cumulated time spent
+		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
 
 		return $string;
 	}
 
 
-	protected function renderFooter ()
+	protected function renderFooter()
 	{
 		$string = <<<EOD
 
@@ -67,8 +67,7 @@ EOD;
 
 	protected function getFirebugLoggingFunction($level)
 	{
-		switch ($level)
-		{
+		switch ($level) {
 			case TLogger::DEBUG:
 			case TLogger::INFO:
 			case TLogger::NOTICE:
@@ -83,5 +82,4 @@ EOD;
 				return 'console.log';
 		}
 	}
-
 }

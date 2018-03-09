@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Statements;
+
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
@@ -30,15 +31,15 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	/**
 	 * @var array object graph as tree
 	 */
-	private $_tree = array();
+	private $_tree = [];
 	/**
 	 * @var array tree node values
 	 */
-	private $_entries = array();
+	private $_entries = [];
 	/**
 	 * @var array resulting object collection
 	 */
-	private $_list = array();
+	private $_list = [];
 
 	/**
 	 * @return boolean true if the graph is empty
@@ -54,27 +55,26 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param string new node id
 	 * @param mixed node value
 	 */
-	public function add($parent, $node, $object='')
+	public function add($parent, $node, $object = '')
 	{
-		if(isset($this->_entries[$parent]) && ($this->_entries[$parent]!==null)
-			&& isset($this->_entries[$node]) && ($this->_entries[$node]!==null))
-		{
+		if (isset($this->_entries[$parent]) && ($this->_entries[$parent] !== null)
+			&& isset($this->_entries[$node]) && ($this->_entries[$node] !== null)) {
 			$this->_entries[$node] = $object;
 			return;
 		}
 		$this->_entries[$node] = $object;
-		if(empty($parent))
-		{
-			if(isset($this->_entries[$node]))
+		if (empty($parent)) {
+			if (isset($this->_entries[$node])) {
 				return;
-			$this->_tree[$node] = array();
+			}
+			$this->_tree[$node] = [];
 		}
 		$found = $this->addNode($this->_tree, $parent, $node);
-		if(!$found && !empty($parent))
-		{
-			$this->_tree[$parent] = array();
-			if(!isset($this->_entries[$parent]) || $object !== '')
+		if (!$found && !empty($parent)) {
+			$this->_tree[$parent] = [];
+			if (!isset($this->_entries[$parent]) || $object !== '') {
 				$this->_entries[$parent] = $object;
+			}
 			$this->addNode($this->_tree, $parent, $node);
 		}
 	}
@@ -90,17 +90,13 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	{
 		$found = false;
 		reset($childs);
-		for($i = 0, $k = count($childs); $i < $k; $i++)
-		{
+		for ($i = 0, $k = count($childs); $i < $k; $i++) {
 			$key = key($childs);
 			next($childs);
-			if($key == $parent)
-			{
+			if ($key == $parent) {
 				$found = true;
-				$childs[$key][$node] = array();
-			}
-			else
-			{
+				$childs[$key][$node] = [];
+			} else {
 				$found = $found || $this->addNode($childs[$key], $parent, $node);
 			}
 		}
@@ -112,8 +108,9 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 */
 	public function collect()
 	{
-		while(count($this->_tree) > 0)
+		while (count($this->_tree) > 0) {
 			$this->collectChildren(null, $this->_tree);
+		}
 		return $this->getCollection();
 	}
 
@@ -124,9 +121,11 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	protected function hasChildren(&$nodes)
 	{
 		$hasChildren = false;
-		foreach($nodes as $node)
-			if(count($node) != 0)
+		foreach ($nodes as $node) {
+			if (count($node) != 0) {
 				return true;
+			}
+		}
 		return $hasChildren;
 	}
 
@@ -138,20 +137,19 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	protected function collectChildren($parent, &$nodes)
 	{
 		$noChildren = !$this->hasChildren($nodes);
-		$childs = array();
-		for(reset($nodes); $key = key($nodes);)
-		{
+		$childs = [];
+		for (reset($nodes); $key = key($nodes);) {
 			next($nodes);
-			if($noChildren)
-			{
+			if ($noChildren) {
 				$childs[] = $key;
 				unset($nodes[$key]);
-			}
-			else
+			} else {
 				$this->collectChildren($key, $nodes[$key]);
+			}
 		}
-		if(count($childs) > 0)
+		if (count($childs) > 0) {
 			$this->onChildNodesVisited($parent, $childs);
+		}
 	}
 
 	/**
@@ -161,30 +159,34 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 */
 	protected function onChildNodesVisited($parent, $nodes)
 	{
-		if(empty($parent) || empty($this->_entries[$parent]))
+		if (empty($parent) || empty($this->_entries[$parent])) {
 			return;
+		}
 
 		$parentObject = $this->_entries[$parent]['object'];
 		$property = $this->_entries[$nodes[0]]['property'];
 
 		$list = TPropertyAccess::get($parentObject, $property);
 
-		foreach($nodes as $node)
-		{
-			if($list instanceof TList)
+		foreach ($nodes as $node) {
+			if ($list instanceof TList) {
 				$parentObject->{$property}[] = $this->_entries[$node]['object'];
-			else if(is_array($list))
+			} elseif (is_array($list)) {
 				$list[] = $this->_entries[$node]['object'];
-			else
+			} else {
 				throw new TSqlMapExecutionException(
-					'sqlmap_property_must_be_list');
+					'sqlmap_property_must_be_list'
+				);
+			}
 		}
 
-		if(is_array($list))
+		if (is_array($list)) {
 			TPropertyAccess::set($parentObject, $property, $list);
+		}
 
-		if($this->_entries[$parent]['property'] === null)
+		if ($this->_entries[$parent]['property'] === null) {
 			$this->_list[] = $parentObject;
+		}
 	}
 
 	/**
@@ -197,10 +199,17 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = __CLASS__;
-		if (!count($this->_tree)) $exprops[] = "\0$cn\0_tree";
-		if (!count($this->_entries)) $exprops[] = "\0$cn\0_entries";
-		if (!count($this->_list)) $exprops[] = "\0$cn\0_list";
-		return array_diff(parent::__sleep(),$exprops);
+		$exprops = [];
+		$cn = __CLASS__;
+		if (!count($this->_tree)) {
+			$exprops[] = "\0$cn\0_tree";
+		}
+		if (!count($this->_entries)) {
+			$exprops[] = "\0$cn\0_entries";
+		}
+		if (!count($this->_list)) {
+			$exprops[] = "\0$cn\0_list";
+		}
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }

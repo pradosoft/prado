@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -46,16 +47,16 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d=array();
+	private $_d = [];
 	/**
 	 * number of items
 	 * @var integer
 	 */
-	private $_c=0;
+	private $_c = 0;
 	/**
 	 * @var boolean whether this list is read-only
 	 */
-	private $_r=false;
+	private $_r = false;
 
 	/**
 	 * Constructor.
@@ -64,10 +65,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data = null, $readOnly = false)
 	{
-		if($data!==null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 		$this->setReadOnly($readOnly);
 	}
 
@@ -80,11 +82,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @param boolean whether this list is read-only or not
+	 * @param boolean $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
-		$this->_r=TPropertyValue::ensureBoolean($value);
+		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -94,7 +96,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**
@@ -124,10 +126,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function itemAt($index)
 	{
-		if($index>=0 && $index<$this->_c)
+		if ($index >= 0 && $index < $this->_c) {
 			return $this->_d[$index];
-		else
-			throw new TInvalidDataValueException('list_index_invalid',$index);
+		} else {
+			throw new TInvalidDataValueException('list_index_invalid', $index);
+		}
 	}
 
 	/**
@@ -138,8 +141,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function add($item)
 	{
-		$this->insertAt($this->_c,$item);
-		return $this->_c-1;
+		$this->insertAt($this->_c, $item);
+		return $this->_c - 1;
 	}
 
 	/**
@@ -151,22 +154,20 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if(!$this->_r)
-		{
-			if($index===$this->_c)
-				$this->_d[$this->_c++]=$item;
-			else if($index>=0 && $index<$this->_c)
-			{
-				array_splice($this->_d,$index,0,array($item));
+		if (!$this->_r) {
+			if ($index === $this->_c) {
+				$this->_d[$this->_c++] = $item;
+			} elseif ($index >= 0 && $index < $this->_c) {
+				array_splice($this->_d, $index, 0, [$item]);
 				$this->_c++;
+			} else {
+				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
-			else
-				throw new TInvalidDataValueException('list_index_invalid',$index);
+		} else {
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -180,18 +181,16 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function remove($item)
 	{
-		if(!$this->_r)
-		{
-			if(($index=$this->indexOf($item))>=0)
-			{
+		if (!$this->_r) {
+			if (($index = $this->indexOf($item)) >= 0) {
 				$this->removeAt($index);
 				return $index;
-			}
-			else
+			} else {
 				throw new TInvalidDataValueException('list_item_inexistent');
+			}
+		} else {
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -203,25 +202,22 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function removeAt($index)
 	{
-		if(!$this->_r)
-		{
-			if($index>=0 && $index<$this->_c)
-			{
+		if (!$this->_r) {
+			if ($index >= 0 && $index < $this->_c) {
 				$this->_c--;
-				if($index===$this->_c)
+				if ($index === $this->_c) {
 					return array_pop($this->_d);
-				else
-				{
-					$item=$this->_d[$index];
-					array_splice($this->_d,$index,1);
+				} else {
+					$item = $this->_d[$index];
+					array_splice($this->_d, $index, 1);
 					return $item;
 				}
+			} else {
+				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
-			else
-				throw new TInvalidDataValueException('list_index_invalid',$index);
+		} else {
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -230,29 +226,31 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function clear()
 	{
-		for($i=$this->_c-1;$i>=0;--$i)
+		for ($i = $this->_c - 1;$i >= 0;--$i) {
 			$this->removeAt($i);
+		}
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return boolean whether the list contains the item
 	 */
 	public function contains($item)
 	{
-		return $this->indexOf($item)>=0;
+		return $this->indexOf($item) >= 0;
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return integer the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
 	{
-		if(($index=array_search($item,$this->_d,true))===false)
+		if (($index = array_search($item, $this->_d, true)) === false) {
 			return -1;
-		else
+		} else {
 			return $index;
+		}
 	}
 
 	/**
@@ -266,17 +264,17 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertBefore($baseitem, $item)
 	{
-		if(!$this->_r)
-		{
-			if(($index = $this->indexOf($baseitem)) == -1)
+		if (!$this->_r) {
+			if (($index = $this->indexOf($baseitem)) == -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
+			}
 
 			$this->insertAt($index, $item);
 
 			return $index;
+		} else {
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -290,17 +288,17 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertAfter($baseitem, $item)
 	{
-		if(!$this->_r)
-		{
-			if(($index = $this->indexOf($baseitem)) == -1)
+		if (!$this->_r) {
+			if (($index = $this->indexOf($baseitem)) == -1) {
 				throw new TInvalidDataValueException('list_item_inexistent');
+			}
 
 			$this->insertAt($index + 1, $item);
 
 			return $index + 1;
+		} else {
+			throw new TInvalidOperationException('list_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('list_readonly',get_class($this));
 	}
 
 	/**
@@ -314,48 +312,49 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Copies iterable data into the list.
 	 * Note, existing data in the list will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
-			if($this->_c>0)
+		if (is_array($data) || ($data instanceof \Traversable)) {
+			if ($this->_c > 0) {
 				$this->clear();
-			foreach($data as $item)
+			}
+			foreach ($data as $item) {
 				$this->add($item);
-		}
-		else if($data!==null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		}
 	}
 
 	/**
 	 * Merges iterable data into the map.
 	 * New data will be appended to the end of the existing data.
-	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
-			foreach($data as $item)
+		if (is_array($data) || ($data instanceof \Traversable)) {
+			foreach ($data as $item) {
 				$this->add($item);
-		}
-		else if($data!==null)
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('list_data_not_iterable');
+		}
 	}
 
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to check on
+	 * @param integer $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
 	{
-		return ($offset>=0 && $offset<$this->_c);
+		return ($offset >= 0 && $offset < $this->_c);
 	}
 
 	/**
@@ -376,21 +375,20 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param integer the offset to set item
 	 * @param mixed the item value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
-		if($offset===null || $offset===$this->_c)
-			$this->insertAt($this->_c,$item);
-		else
-		{
+		if ($offset === null || $offset === $this->_c) {
+			$this->insertAt($this->_c, $item);
+		} else {
 			$this->removeAt($offset);
-			$this->insertAt($offset,$item);
+			$this->insertAt($offset, $item);
 		}
 	}
 
 	/**
 	 * Unsets the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to unset item
+	 * @param integer $offset the offset to unset item
 	 */
 	public function offsetUnset($offset)
 	{

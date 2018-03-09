@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Xml;
+
 use Prado\Exceptions\TIOException;
 
 /**
@@ -77,7 +78,7 @@ class TXmlDocument extends TXmlElement
 	 * @param string version of this XML document
 	 * @param string encoding of this XML document
 	 */
-	public function __construct($version='1.0',$encoding='')
+	public function __construct($version = '1.0', $encoding = '')
 	{
 		parent::__construct('');
 		$this->setVersion($version);
@@ -93,11 +94,11 @@ class TXmlDocument extends TXmlElement
 	}
 
 	/**
-	 * @param string version of this XML document
+	 * @param string $version version of this XML document
 	 */
 	public function setVersion($version)
 	{
-		$this->_version=$version;
+		$this->_version = $version;
 	}
 
 	/**
@@ -109,11 +110,11 @@ class TXmlDocument extends TXmlElement
 	}
 
 	/**
-	 * @param string encoding of this XML document
+	 * @param string $encoding encoding of this XML document
 	 */
 	public function setEncoding($encoding)
 	{
-		$this->_encoding=$encoding;
+		$this->_encoding = $encoding;
 	}
 
 	/**
@@ -124,60 +125,63 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function loadFromFile($file)
 	{
-		if(($str=@file_get_contents($file))!==false)
+		if (($str = @file_get_contents($file)) !== false) {
 			return $this->loadFromString($str);
-		else
-			throw new TIOException('xmldocument_file_read_failed',$file);
+		} else {
+			throw new TIOException('xmldocument_file_read_failed', $file);
+		}
 	}
 
 	/**
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
-	 * @param string the XML string
+	 * @param string $string the XML string
 	 * @return boolean whether the XML string is parsed successfully
 	 */
 	public function loadFromString($string)
 	{
 		// TODO: since PHP 5.1, we can get parsing errors and throw them as exception
-		$doc=new \DOMDocument();
-		if($doc->loadXML($string)===false)
+		$doc = new \DOMDocument();
+		if ($doc->loadXML($string) === false) {
 			return false;
+		}
 
 		$this->setEncoding($doc->encoding);
 		$this->setVersion($doc->xmlVersion);
 
-		$element=$doc->documentElement;
+		$element = $doc->documentElement;
 		$this->setTagName($element->tagName);
 		$this->setValue($element->nodeValue);
-		$elements=$this->getElements();
-		$attributes=$this->getAttributes();
+		$elements = $this->getElements();
+		$attributes = $this->getAttributes();
 		$elements->clear();
 		$attributes->clear();
 
 		static $bSimpleXml;
-		if($bSimpleXml === null)
-			$bSimpleXml = (boolean)function_exists('simplexml_load_string');
+		if ($bSimpleXml === null) {
+			$bSimpleXml = (boolean) function_exists('simplexml_load_string');
+		}
 
-		if($bSimpleXml)
-		{
+		if ($bSimpleXml) {
 			$simpleDoc = simplexml_load_string($string);
 			$docNamespaces = $simpleDoc->getDocNamespaces(false);
 			$simpleDoc = null;
-			foreach($docNamespaces as $prefix => $uri)
-			{
- 				if($prefix === '')
-   					$attributes->add('xmlns', $uri);
-   				else
-   					$attributes->add('xmlns:'.$prefix, $uri);
+			foreach ($docNamespaces as $prefix => $uri) {
+				if ($prefix === '') {
+					$attributes->add('xmlns', $uri);
+				} else {
+					$attributes->add('xmlns:' . $prefix, $uri);
+				}
 			}
 		}
 
-		foreach($element->attributes as $name=>$attr)
-			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') .$name,$attr->value);
-		foreach($element->childNodes as $child)
-		{
-			if($child instanceof \DOMElement)
+		foreach ($element->attributes as $name => $attr) {
+			$attributes->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
+		}
+		foreach ($element->childNodes as $child) {
+			if ($child instanceof \DOMElement) {
 				$elements->add($this->buildElement($child));
+			}
 		}
 
 		return true;
@@ -185,18 +189,17 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Saves this XML document as an XML file.
-	 * @param string the name of the file to be stored with XML output
+	 * @param string $file the name of the file to be stored with XML output
 	 * @throws TIOException if the file cannot be written
 	 */
 	public function saveToFile($file)
 	{
-		if(($fw=fopen($file,'w'))!==false)
-		{
-			fwrite($fw,$this->saveToString());
+		if (($fw = fopen($file, 'w')) !== false) {
+			fwrite($fw, $this->saveToString());
 			fclose($fw);
+		} else {
+			throw new TIOException('xmldocument_file_write_failed', $file);
 		}
-		else
-			throw new TIOException('xmldocument_file_write_failed',$file);
 	}
 
 	/**
@@ -205,9 +208,9 @@ class TXmlDocument extends TXmlElement
 	 */
 	public function saveToString()
 	{
-		$version=empty($this->_version)?' version="1.0"':' version="'.$this->_version.'"';
-		$encoding=empty($this->_encoding)?'':' encoding="'.$this->_encoding.'"';
-		return "<?xml{$version}{$encoding}?>\n".$this->toString(0);
+		$version = empty($this->_version) ? ' version="1.0"' : ' version="' . $this->_version . '"';
+		$encoding = empty($this->_encoding) ? '' : ' encoding="' . $this->_encoding . '"';
+		return "<?xml{$version}{$encoding}?>\n" . $this->toString(0);
 	}
 
 	/**
@@ -232,20 +235,21 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Recursively converts DOM XML nodes into TXmlElement
-	 * @param DOMXmlNode the node to be converted
+	 * @param DOMXmlNode $node the node to be converted
 	 * @return TXmlElement the converted TXmlElement
 	 */
 	protected function buildElement($node)
 	{
-		$element=new TXmlElement($node->tagName);
+		$element = new TXmlElement($node->tagName);
 		$element->setValue($node->nodeValue);
-		foreach($node->attributes as $name=>$attr)
-			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name,$attr->value);
+		foreach ($node->attributes as $name => $attr) {
+			$element->getAttributes()->add(($attr->prefix === '' ? '' : $attr->prefix . ':') . $name, $attr->value);
+		}
 
-		foreach($node->childNodes as $child)
-		{
-			if($child instanceof \DOMElement)
+		foreach ($node->childNodes as $child) {
+			if ($child instanceof \DOMElement) {
 				$element->getElements()->add($this->buildElement($child));
+			}
 		}
 		return $element;
 	}

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord\Exceptions;
+
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -27,11 +28,12 @@ class TActiveRecordException extends TDbException
 	 */
 	protected function getErrorMessageFile()
 	{
-		$lang=Prado::getPreferredLanguage();
-		$path = dirname(__FILE__);
-		$msgFile=$path.'/messages-'.$lang.'.txt';
-		if(!is_file($msgFile))
-			$msgFile=$path.'/messages.txt';
+		$lang = Prado::getPreferredLanguage();
+		$path = __DIR__;
+		$msgFile = $path . '/messages-' . $lang . '.txt';
+		if (!is_file($msgFile)) {
+			$msgFile = $path . '/messages.txt';
+		}
 		return $msgFile;
 	}
 }

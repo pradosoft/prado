@@ -29,9 +29,9 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTableCaptionAlign extends \Prado\TEnumerable
 {
-	const NotSet='NotSet';
-	const Top='Top';
-	const Bottom='Bottom';
-	const Left='Left';
-	const Right='Right';
+	const NotSet = 'NotSet';
+	const Top = 'Top';
+	const Bottom = 'Bottom';
+	const Left = 'Left';
+	const Right = 'Right';
 }

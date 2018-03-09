@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\IO\TTextWriter;
 
 /**
@@ -39,8 +40,8 @@ class TCallbackResponseWriter extends TTextWriter
 	 */
 	public function __construct()
 	{
-	  	parent::__construct();
-		$this->_boundary = sprintf('%x',crc32(uniqid(null, true)));
+		parent::__construct();
+		$this->_boundary = sprintf('%x', crc32(uniqid(null, true)));
 	}
 
 	/**
@@ -52,7 +53,7 @@ class TCallbackResponseWriter extends TTextWriter
 	}
 
 	/**
-	 * @param string boundary identifier.
+	 * @param string $value boundary identifier.
 	 */
 	public function setBoundary($value)
 	{
@@ -67,8 +68,9 @@ class TCallbackResponseWriter extends TTextWriter
 	public function flush()
 	{
 		$content = parent::flush();
-		if(empty($content))
+		if (empty($content)) {
 			return "";
-		return '<!--'.$this->getBoundary().'-->'.$content.'<!--//'.$this->getBoundary().'-->';
+		}
+		return '<!--' . $this->getBoundary() . '-->' . $content . '<!--//' . $this->getBoundary() . '-->';
 	}
 }

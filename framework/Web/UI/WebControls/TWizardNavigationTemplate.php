@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\ITemplate;
 
@@ -26,11 +27,11 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 
 	/**
 	 * Constructor.
-	 * @param TWizard the wizard owning this template
+	 * @param TWizard $wizard the wizard owning this template
 	 */
 	public function __construct($wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -44,7 +45,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	/**
 	 * Instantiates the template.
 	 * Derived classes should override this method.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{
@@ -59,22 +60,21 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 * @param string command name for the button's OnCommand event
 	 * @throws TInvalidDataValueException if the button type is not recognized
 	 */
-	protected function createNavigationButton($buttonStyle,$causesValidation,$commandName)
+	protected function createNavigationButton($buttonStyle, $causesValidation, $commandName)
 	{
-		switch($buttonStyle->getButtonType())
-		{
+		switch ($buttonStyle->getButtonType()) {
 			case TWizardNavigationButtonType::Button:
-				$button=new TButton;
+				$button = new TButton;
 				break;
 			case TWizardNavigationButtonType::Link:
-				$button=new TLinkButton;
+				$button = new TLinkButton;
 				break;
 			case TWizardNavigationButtonType::Image:
-				$button=new TImageButton;
+				$button = new TImageButton;
 				$button->setImageUrl($buttonStyle->getImageUrl());
 				break;
 			default:
-				throw new TInvalidDataValueException('wizard_buttontype_unknown',$buttonStyle->getButtonType());
+				throw new TInvalidDataValueException('wizard_buttontype_unknown', $buttonStyle->getButtonType());
 		}
 		$button->setText($buttonStyle->getButtonText());
 		$button->setCausesValidation($causesValidation);

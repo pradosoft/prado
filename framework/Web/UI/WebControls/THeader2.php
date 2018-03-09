@@ -23,7 +23,8 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.2a
  */
 
-class THeader2 extends THtmlElement {
+class THeader2 extends THtmlElement
+{
 
 	/**
 	 * @return string tag name
@@ -32,5 +33,4 @@ class THeader2 extends THtmlElement {
 	{
 		return 'h2';
 	}
-
 }

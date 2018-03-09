@@ -32,7 +32,7 @@ class TStatements extends \Prado\Web\UI\TControl
 	/**
 	 * @var string PHP statements
 	 */
-	private $_s='';
+	private $_s = '';
 
 	/**
 	 * @return string the statements to be executed
@@ -43,21 +43,21 @@ class TStatements extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string the PHP statements to be executed
+	 * @param string $value the PHP statements to be executed
 	 */
 	public function setStatements($value)
 	{
-		$this->_s=$value;
+		$this->_s = $value;
 	}
 
 	/**
 	 * Renders the evaluation result of the statements.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		if($this->_s!=='')
+		if ($this->_s !== '') {
 			$writer->write($this->evaluateStatements($this->_s));
+		}
 	}
 }
-

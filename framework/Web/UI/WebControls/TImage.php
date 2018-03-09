@@ -37,23 +37,25 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Adds attributes related to an HTML image element to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('src',$this->getImageUrl());
-		$writer->addAttribute('alt',$this->getAlternateText());
-		if(($desc=$this->getDescriptionUrl())!=='')
-			$writer->addAttribute('longdesc',$desc);
-		if(($align=$this->getImageAlign())!=='')
-			$writer->addAttribute('align',$align);
+		$writer->addAttribute('src', $this->getImageUrl());
+		$writer->addAttribute('alt', $this->getAlternateText());
+		if (($desc = $this->getDescriptionUrl()) !== '') {
+			$writer->addAttribute('longdesc', $desc);
+		}
+		if (($align = $this->getImageAlign()) !== '') {
+			$writer->addAttribute('align', $align);
+		}
 		parent::addAttributesToRender($writer);
 	}
 
 	/**
 	 * Renders the body content of the image.
 	 * Nothing to be rendered within image tags.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -64,16 +66,16 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getAlternateText()
 	{
-		return $this->getViewState('AlternateText','');
+		return $this->getViewState('AlternateText', '');
 	}
 
 	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
-	 * @param string the alternative text
+	 * @param string $value the alternative text
 	 */
 	public function setAlternateText($value)
 	{
-		$this->setViewState('AlternateText',$value,'');
+		$this->setViewState('AlternateText', $value, '');
 	}
 
 	/**
@@ -81,7 +83,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getImageAlign()
 	{
-		return $this->getViewState('ImageAlign','');
+		return $this->getViewState('ImageAlign', '');
 	}
 
 	/**
@@ -89,11 +91,11 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign',$value,'');
+		$this->setViewState('ImageAlign', $value, '');
 	}
 
 	/**
@@ -101,15 +103,15 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
-	 * @param string the URL of the image file
+	 * @param string $value the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -143,15 +145,14 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getDescriptionUrl()
 	{
-		return $this->getViewState('DescriptionUrl','');
+		return $this->getViewState('DescriptionUrl', '');
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
-		$this->setViewState('DescriptionUrl',$value,'');
+		$this->setViewState('DescriptionUrl', $value, '');
 	}
 }
-

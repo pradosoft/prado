@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 
@@ -54,7 +55,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	/**
 	 * Renders body content.
 	 * This method overrides parent implementation by removing malicious code from the body content
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -65,7 +66,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 
 	/**
 	 * Use HTMLPurifier to remove malicous content from HTML.
-	 * @param string HTML content
+	 * @param string $text HTML content
 	 * @return string safer HTML content
 	 */
 	protected function parseSafeHtml($text)
@@ -74,4 +75,3 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 		return $purifier->purify($text);
 	}
 }
-

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+
 use Prado\Exceptions\TException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
@@ -65,14 +66,15 @@ class TTranslateParameter extends TControl
 	 */
 	public function getKey()
 	{
-		if(empty($this->key))
+		if (empty($this->key)) {
 			throw new TException('The Key property must be specified.');
+		}
 		return $this->key;
 	}
 
 	/**
 	 * Set the parameter substitution key.
-	 * @param string substitution key.
+	 * @param string $value substitution key.
 	 */
 	public function setKey($value)
 	{
@@ -81,7 +83,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean trim or not.
+	 * @param boolean $value trim or not.
 	 */
 	public function setTrim($value)
 	{
@@ -113,12 +115,12 @@ class TTranslateParameter extends TControl
 	public function getParameter()
 	{
 		$value = $this->getValue();
-		if(strlen($value) > 0)
+		if (strlen($value) > 0) {
 			return $value;
+		}
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
 		$this->renderControl($htmlWriter);
 		return $this->getTrim() ?
 			trim($htmlWriter->flush()) : $htmlWriter->flush();
 	}
 }
-

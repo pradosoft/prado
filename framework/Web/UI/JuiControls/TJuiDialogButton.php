@@ -63,10 +63,11 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function getPostBackOptions()
 	{
-		return array(
+		return [
 			'text' => $this->getText(),
-			'click' => new TJavaScriptLiteral("function(){new Prado.Callback('".$this->getUniqueID()."', 'onClick');}"
-			)) ;
+			'click' => new TJavaScriptLiteral(
+				"function(){new Prado.Callback('" . $this->getUniqueID() . "', 'onClick');}"
+			)] ;
 	}
 
 	/**
@@ -74,22 +75,22 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
 	 * Raises the OnClick event
 	 * @param object $params event parameters
 	 */
-	public function onClick ($params)
+	public function onClick($params)
 	{
 		$this->raiseEvent('OnClick', $this, $params);
 	}
@@ -97,12 +98,12 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	/**
 	 * Raises callback event.
 	 * raises the appropriate event(s) (e.g. OnClick)
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		if($param->CallbackParameter === 'onClick')
+		if ($param->CallbackParameter === 'onClick') {
 			$this->onClick($param);
+		}
 	}
-
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\UI\TClientSideOptions;
 use Prado\Web\UI\TControl;
@@ -54,7 +55,7 @@ class TCallbackClientSide extends TClientSideOptions
 {
 	/**
 	 * Returns javascript statement enclosed within a javascript function.
-	 * @param string javascript statement
+	 * @param string $javascript javascript statement
 	 * @return string javascript statement wrapped in a javascript function
 	 */
 	protected function ensureFunction($javascript)
@@ -63,7 +64,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code to be executed before a request is dispatched.
+	 * @param string $javascript javascript code to be executed before a request is dispatched.
 	 */
 	public function setOnPreDispatch($javascript)
 	{
@@ -87,7 +88,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onUninitialized event.
+	 * @param string $javascript javascript code for client-side onUninitialized event.
 	 */
 	public function setOnUninitialized($javascript)
 	{
@@ -103,7 +104,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onLoading event.
+	 * @param string $javascript javascript code for client-side onLoading event.
 	 */
 	public function setOnLoading($javascript)
 	{
@@ -119,7 +120,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onLoaded event.
+	 * @param string $javascript javascript code for client-side onLoaded event.
 	 */
 	public function setOnLoaded($javascript)
 	{
@@ -134,7 +135,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onInteractive event.
+	 * @param string $javascript javascript code for client-side onInteractive event.
 	 */
 	public function setOnInteractive($javascript)
 	{
@@ -149,7 +150,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onComplete event.
+	 * @param string $javascript javascript code for client-side onComplete event.
 	 */
 	public function setOnComplete($javascript)
 	{
@@ -164,7 +165,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onSuccess event.
+	 * @param string $javascript javascript code for client-side onSuccess event.
 	 */
 	public function setOnSuccess($javascript)
 	{
@@ -180,7 +181,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onFailure event.
+	 * @param string $javascript javascript code for client-side onFailure event.
 	 */
 	public function setOnFailure($javascript)
 	{
@@ -196,7 +197,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string javascript code for client-side onException event.
+	 * @param string $javascript javascript code for client-side onException event.
 	 */
 	public function setOnException($javascript)
 	{
@@ -213,7 +214,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param boolean true to post the inputs of the form with callback
+	 * @param boolean $value true to post the inputs of the form with callback
 	 * requests. Default is to post the inputs.
 	 */
 	public function setPostState($value)
@@ -230,7 +231,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param integer callback request timeout
+	 * @param integer $value callback request timeout
 	 */
 	public function setRequestTimeOut($value)
 	{
@@ -240,7 +241,7 @@ class TCallbackClientSide extends TClientSideOptions
 	/**
 	 * Set to true to enable the callback response to enable the viewstate
 	 * update. This will automatically set HasPrority to true.
-	 * @param boolean true enables the callback response to update the
+	 * @param boolean $value true enables the callback response to update the
 	 * viewstate.
 	 */
 	public function setEnablePageStateUpdate($value)
@@ -256,7 +257,7 @@ class TCallbackClientSide extends TClientSideOptions
 	public function getEnablePageStateUpdate()
 	{
 		$option = $this->getOption('EnablePageStateUpdate');
-		return ($option===null) ? true : $option;
+		return ($option === null) ? true : $option;
 	}
 
 	/**
@@ -268,12 +269,13 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string post back target ID
+	 * @param string $value post back target ID
 	 */
 	public function setPostBackTarget($value)
 	{
-		if($value instanceof TControl)
+		if ($value instanceof TControl) {
 			$value = $value->getUniqueID();
+		}
 		$this->setOption('EventTarget', $value);
 	}
 
@@ -286,11 +288,10 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param string post back event parameter.
+	 * @param string $value post back event parameter.
 	 */
 	public function setPostBackParameter($value)
 	{
 		$this->setOption('EventParameter', $value);
 	}
 }
-

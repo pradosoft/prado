@@ -27,7 +27,7 @@ interface IUser
 	 */
 	public function getName();
 	/**
-	 * @param string username
+	 * @param string $value username
 	 */
 	public function setName($value);
 	/**
@@ -35,7 +35,7 @@ interface IUser
 	 */
 	public function getIsGuest();
 	/**
-	 * @param boolean if the user is a guest
+	 * @param boolean $value if the user is a guest
 	 */
 	public function setIsGuest($value);
 	/**
@@ -47,7 +47,7 @@ interface IUser
 	 */
 	public function setRoles($value);
 	/**
-	 * @param string role to be tested
+	 * @param string $role role to be tested
 	 * @return boolean whether the user is of this role
 	 */
 	public function isInRole($role);
@@ -56,7 +56,7 @@ interface IUser
 	 */
 	public function saveToString();
 	/**
-	 * @param string user data that is serialized and restored from session
+	 * @param string $string user data that is serialized and restored from session
 	 * @return IUser the user object
 	 */
 	public function loadFromString($string);

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Collections\TAttributeCollection;
 use Prado\TPropertyValue;
 
@@ -26,20 +27,20 @@ use Prado\TPropertyValue;
  */
 abstract class THotSpot extends \Prado\TComponent
 {
-	private $_viewState=array();
+	private $_viewState = [];
 
 	/**
 	 * Returns a viewstate value.
 	 *
 	 * This function is very useful in defining getter functions for component properties
 	 * that must be kept in viewstate.
-	 * @param string the name of the viewstate value to be returned
-	 * @param mixed the default value. If $key is not found in viewstate, $defaultValue will be returned
+	 * @param string $key the name of the viewstate value to be returned
+	 * @param mixed $defaultValue the default value. If $key is not found in viewstate, $defaultValue will be returned
 	 * @return mixed the viewstate value corresponding to $key
 	 */
-	protected function getViewState($key,$defaultValue=null)
+	protected function getViewState($key, $defaultValue = null)
 	{
-		return isset($this->_viewState[$key])?$this->_viewState[$key]:$defaultValue;
+		return isset($this->_viewState[$key]) ? $this->_viewState[$key] : $defaultValue;
 	}
 
 	/**
@@ -52,12 +53,13 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param mixed the viewstate value to be set
 	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
-	protected function setViewState($key,$value,$defaultValue=null)
+	protected function setViewState($key, $value, $defaultValue = null)
 	{
-		if($value===$defaultValue)
+		if ($value === $defaultValue) {
 			unset($this->_viewState[$key]);
-		else
-			$this->_viewState[$key]=$value;
+		} else {
+			$this->_viewState[$key] = $value;
+		}
 	}
 
 	/**
@@ -74,15 +76,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAccessKey()
 	{
-		return $this->getViewState('AccessKey','');
+		return $this->getViewState('AccessKey', '');
 	}
 
 	/**
-	 * @param string the access key that allows you to quickly navigate to the HotSpot region.
+	 * @param string $value the access key that allows you to quickly navigate to the HotSpot region.
 	 */
 	public function setAccessKey($value)
 	{
-		$this->setViewState('AccessKey',TPropertyValue::ensureString($value),'');
+		$this->setViewState('AccessKey', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -90,15 +92,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAlternateText()
 	{
-		return $this->getViewState('AlternateText','');
+		return $this->getViewState('AlternateText', '');
 	}
 
 	/**
-	 * @param string the alternate text to display for a HotSpot object.
+	 * @param string $value the alternate text to display for a HotSpot object.
 	 */
 	public function setAlternateText($value)
 	{
-		$this->setViewState('AlternateText',TPropertyValue::ensureString($value),'');
+		$this->setViewState('AlternateText', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -106,15 +108,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHotSpotMode()
 	{
-		return $this->getViewState('HotSpotMode',THotSpotMode::NotSet);
+		return $this->getViewState('HotSpotMode', THotSpotMode::NotSet);
 	}
 
 	/**
-	 * @param THotSpotMode the behavior of a HotSpot object when it is clicked.
+	 * @param THotSpotMode $value the behavior of a HotSpot object when it is clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
-		$this->setViewState('HotSpotMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THotSpotMode'),THotSpotMode::NotSet);
+		$this->setViewState('HotSpotMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THotSpotMode'), THotSpotMode::NotSet);
 	}
 
 	/**
@@ -122,15 +124,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
-	 * @param string the URL to navigate to when a HotSpot object is clicked.
+	 * @param string $value the URL to navigate to when a HotSpot object is clicked.
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('NavigateUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -138,15 +140,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getPostBackValue()
 	{
-		return $this->getViewState('PostBackValue','');
+		return $this->getViewState('PostBackValue', '');
 	}
 
 	/**
-	 * @param string a value that is post back when the HotSpot is clicked.
+	 * @param string $value a value that is post back when the HotSpot is clicked.
 	 */
 	public function setPostBackValue($value)
 	{
-		$this->setViewState('PostBackValue',TPropertyValue::ensureString($value),'');
+		$this->setViewState('PostBackValue', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -154,15 +156,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getTabIndex()
 	{
-		return $this->getViewState('TabIndex',0);
+		return $this->getViewState('TabIndex', 0);
 	}
 
 	/**
-	 * @param integer the tab index of the HotSpot region.
+	 * @param integer $value the tab index of the HotSpot region.
 	 */
 	public function setTabIndex($value)
 	{
-		$this->setViewState('TabIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -170,15 +172,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this hotspot will cause input validation
+	 * @param boolean $value whether postback event trigger by this hotspot will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -186,15 +188,15 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group of validators which the hotspot causes validation upon postback
+	 * @param string $value the group of validators which the hotspot causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -203,16 +205,16 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
-	 * @param string  the target window or frame to display the new page when the HotSpot region
+	 * @param string $value the target window or frame to display the new page when the HotSpot region
 	 * is clicked.
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Target', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -220,10 +222,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getHasAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes',null))
-			return $attributes->getCount()>0;
-		else
+		if ($attributes = $this->getViewState('Attributes', null)) {
+			return $attributes->getCount() > 0;
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -234,12 +237,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttributes()
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes;
-		else
-		{
-			$attributes=new TAttributeCollection;
-			$this->setViewState('Attributes',$attributes,null);
+		} else {
+			$attributes = new TAttributeCollection;
+			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
 		}
 	}
@@ -249,10 +251,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function hasAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->contains($name);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -260,10 +263,11 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function getAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -271,22 +275,23 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param string attribute name
 	 * @param string value of the attribute
 	 */
-	public function setAttribute($name,$value)
+	public function setAttribute($name, $value)
 	{
-		$this->getAttributes()->add($name,$value);
+		$this->getAttributes()->add($name, $value);
 	}
 
 	/**
 	 * Removes the named attribute.
-	 * @param string the name of the attribute to be removed.
+	 * @param string $name the name of the attribute to be removed.
 	 * @return string attribute value removed, null if attribute does not exist.
 	 */
 	public function removeAttribute($name)
 	{
-		if($attributes=$this->getViewState('Attributes',null))
+		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes->remove($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -295,29 +300,32 @@ abstract class THotSpot extends \Prado\TComponent
 	 */
 	public function render($writer)
 	{
-		$writer->addAttribute('shape',$this->getShape());
-		$writer->addAttribute('coords',$this->getCoordinates());
-		if(($mode=$this->getHotSpotMode())===THotSpotMode::NotSet)
-			$mode=THotSpotMode::Navigate;
-		if($mode===THotSpotMode::Navigate)
-		{
-			$writer->addAttribute('href',$this->getNavigateUrl());
-			if(($target=$this->getTarget())!=='')
-				$writer->addAttribute('target',$target);
+		$writer->addAttribute('shape', $this->getShape());
+		$writer->addAttribute('coords', $this->getCoordinates());
+		if (($mode = $this->getHotSpotMode()) === THotSpotMode::NotSet) {
+			$mode = THotSpotMode::Navigate;
 		}
-		else if($mode===THotSpotMode::Inactive)
-			$writer->addAttribute('nohref','true');
-		$text=$this->getAlternateText();
-		$writer->addAttribute('title',$text);
-		$writer->addAttribute('alt',$text);
-		if(($accessKey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accessKey);
-		if(($tabIndex=$this->getTabIndex())!==0)
-			$writer->addAttribute('tabindex',"$tabIndex");
-		if($this->getHasAttributes())
-		{
-			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+		if ($mode === THotSpotMode::Navigate) {
+			$writer->addAttribute('href', $this->getNavigateUrl());
+			if (($target = $this->getTarget()) !== '') {
+				$writer->addAttribute('target', $target);
+			}
+		} elseif ($mode === THotSpotMode::Inactive) {
+			$writer->addAttribute('nohref', 'true');
+		}
+		$text = $this->getAlternateText();
+		$writer->addAttribute('title', $text);
+		$writer->addAttribute('alt', $text);
+		if (($accessKey = $this->getAccessKey()) !== '') {
+			$writer->addAttribute('accesskey', $accessKey);
+		}
+		if (($tabIndex = $this->getTabIndex()) !== 0) {
+			$writer->addAttribute('tabindex', "$tabIndex");
+		}
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
+				$writer->addAttribute($name, $value);
+			}
 		}
 		$writer->renderBeginTag('area');
 		$writer->renderEndTag();

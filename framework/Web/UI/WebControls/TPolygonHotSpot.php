@@ -38,7 +38,7 @@ class TPolygonHotSpot extends THotSpot
 	 */
 	public function getCoordinates()
 	{
-		return $this->getViewState('Coordinates','');
+		return $this->getViewState('Coordinates', '');
 	}
 
 	/**
@@ -48,6 +48,6 @@ class TPolygonHotSpot extends THotSpot
 	 */
 	public function setCoordinates($value)
 	{
-		$this->setViewState('Coordinates',$value,'');
+		$this->setViewState('Coordinates', $value, '');
 	}
 }

@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+
 use Prado\Exceptions\THttpException;
 
 /**
@@ -25,70 +26,65 @@ use Prado\Exceptions\THttpException;
  */
 class TJsonRpcProtocol extends TRpcProtocol
 {
-	protected $_id=null;
-	protected $_specificationVersion=1.0;
+	protected $_id;
+	protected $_specificationVersion = 1.0;
 
 	/**
 	 * Handles the RPC request
-	 * @param string $requestPayload
+	 * @param string $requestPayload $requestPayload
 	 * @return string JSON RPC response
 	 */
 	public function callMethod($requestPayload)
 	{
-		try
-		{
+		try {
 			$_request = $this->decode($requestPayload);
 
-			if(isset($_request['jsonrpc']))
-			{
-				$this->_specificationVersion=$_request['jsonrpc'];
-				if($this->_specificationVersion > 2.0)
+			if (isset($_request['jsonrpc'])) {
+				$this->_specificationVersion = $_request['jsonrpc'];
+				if ($this->_specificationVersion > 2.0) {
 					throw new TRpcException('Unsupported specification version', '-32600');
+				}
 			}
 
-			if(isset($_request['id']))
-				$this->_id=$_request['id'];
+			if (isset($_request['id'])) {
+				$this->_id = $_request['id'];
+			}
 
-			if(!isset($_request['method']))
-					throw new TRpcException('Missing request method', '-32600');
+			if (!isset($_request['method'])) {
+				throw new TRpcException('Missing request method', '-32600');
+			}
 
-			if(!isset($_request['params']))
-				$parameters = array();
-			else
+			if (!isset($_request['params'])) {
+				$parameters = [];
+			} else {
 				$parameters = $_request['params'];
+			}
 
-			if(!is_array($parameters))
-				$parameters = array($parameters);
+			if (!is_array($parameters)) {
+				$parameters = [$parameters];
+			}
 
 			// a request without an id is a notification that doesn't need a response
-			if($this->_id !== null)
-			{
-				if($this->_specificationVersion==2.0)
-				{
-					return $this->encode(array(
+			if ($this->_id !== null) {
+				if ($this->_specificationVersion == 2.0) {
+					return $this->encode([
 						'jsonrpc' => '2.0',
 						'id' => $this->_id,
 						'result' => $this->callApiMethod($_request['method'], $parameters),
-					));
+					]);
 				} else {
-					return $this->encode(array(
+					return $this->encode([
 						'id' => $this->_id,
 						'result' => $this->callApiMethod($_request['method'], $_request['params']),
 						'error' => null
-					));
+					]);
 				}
 			}
-		}
-		catch(TRpcException $e)
-		{
+		} catch (TRpcException $e) {
 			return $this->createErrorResponse($e);
-		}
-		catch(THttpException $e)
-		{
+		} catch (THttpException $e) {
 			throw $e;
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			return $this->createErrorResponse(new TRpcException('An internal error occured', '-32603'));
 		}
 	}
@@ -100,26 +96,25 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		if($this->_specificationVersion==2.0)
-		{
-			return $this->encode(array(
+		if ($this->_specificationVersion == 2.0) {
+			return $this->encode([
 				'id' => $this->_id,
 				'result' => null,
-				'error'=> array(
+				'error' => [
 					'code' => $exception->getCode(),
-					'message'=> $exception->getMessage(),
+					'message' => $exception->getMessage(),
 					'data' => null,
-					)
-			));
+					]
+			]);
 		} else {
-			return $this->encode(array(
+			return $this->encode([
 				'id' => $this->_id,
-				'error'=> array(
+				'error' => [
 					'code' => $exception->getCode(),
-					'message'=> $exception->getMessage(),
+					'message' => $exception->getMessage(),
 					'data' => null,
-					)
-			));			
+					]
+			]);
 		}
 	}
 
@@ -135,7 +130,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Decodes JSON encoded data into PHP data
-	 * @param string $data in JSON format
+	 * @param string $data $data in JSON format
 	 * @return array PHP data
 	 */
 	public function decode($data)
@@ -147,21 +142,22 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Encodes PHP data into JSON data
-	 * @param mixed PHP data
+	 * @param mixed $data PHP data
 	 * @return string JSON encoded PHP data
 	 */
 	public function encode($data)
 	{
 		$s = json_encode($data);
 		self::checkJsonError();
-		return $s;		
+		return $s;
 	}
 
 	private static function checkJsonError()
 	{
 		$errnum = json_last_error();
-		if($errnum != JSON_ERROR_NONE)
+		if ($errnum != JSON_ERROR_NONE) {
 			throw new \Exception("JSON error: $msg", $err);
+		}
 	}
 
 	/**
@@ -173,8 +169,9 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function callApiMethod($methodName, $parameters)
 	{
-		if(!isset($this->rpcMethods[$methodName]))
-			throw new TRpcException('Method "'.$methodName.'" not found', '-32601');
+		if (!isset($this->rpcMethods[$methodName])) {
+			throw new TRpcException('Method "' . $methodName . '" not found', '-32601');
+		}
 
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}

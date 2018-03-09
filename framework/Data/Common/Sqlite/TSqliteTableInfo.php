@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TSqliteTableInfo class provides additional table information for PostgreSQL database.
  *
@@ -28,12 +27,12 @@ use Prado\Prado;
 class TSqliteTableInfo extends TDbTableInfo
 {
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TSqliteCommandBuilder($connection,$this);
+		return new TSqliteCommandBuilder($connection, $this);
 	}
 
 	/**
@@ -41,7 +40,6 @@ class TSqliteTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		return "'".$this->getTableName()."'";
+		return "'" . $this->getTableName() . "'";
 	}
 }
-

@@ -26,7 +26,7 @@ abstract class TRpcProtocol
 	/**
 	 * @var array containing the mapping from RPC method names to the actual handlers
 	 */
-	protected $rpcMethods = array();
+	protected $rpcMethods = [];
 
 	// abstracts
 
@@ -45,8 +45,7 @@ abstract class TRpcProtocol
 	 */
 	abstract public function createErrorResponse(TRpcException $exception);
 	/**
-	 * @param response
-	 * Sets the needed headers for the response (eg: content-type, charset)
+	 * @param response $response * Sets the needed headers for the response (eg: content-type, charset)
 	 * @abstract
 	 */
 	abstract public function createResponseHeaders($response);
@@ -85,14 +84,17 @@ abstract class TRpcProtocol
 	 */
 	public function callApiMethod($methodName, $parameters)
 	{
-		if(!isset($this->rpcMethods[$methodName]))
-			throw new TRpcException('Method "'.$methodName.'" not found');
+		if (!isset($this->rpcMethods[$methodName])) {
+			throw new TRpcException('Method "' . $methodName . '" not found');
+		}
 
-		if($parameters === null)
-			$parameters = array();
+		if ($parameters === null) {
+			$parameters = [];
+		}
 
-		if(!is_array($parameters))
-			$parameters = array($parameters);
+		if (!is_array($parameters)) {
+			$parameters = [$parameters];
+		}
 		return call_user_func_array($this->rpcMethods[$methodName]['method'], $parameters);
 	}
 }

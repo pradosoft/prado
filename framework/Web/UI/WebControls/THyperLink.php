@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\Web\THttpUtility;
 
@@ -44,37 +45,38 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes related to a hyperlink element to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$isEnabled=$this->getEnabled(true);
-		if($this->getEnabled() && !$isEnabled)
-			$writer->addAttribute('disabled','disabled');
+		$isEnabled = $this->getEnabled(true);
+		if ($this->getEnabled() && !$isEnabled) {
+			$writer->addAttribute('disabled', 'disabled');
+		}
 		parent::addAttributesToRender($writer);
-		if(($url=$this->getNavigateUrl())!=='' && $isEnabled)
-			$writer->addAttribute('href',$url);
-		if(($target=$this->getTarget())!=='')
-			$writer->addAttribute('target',$target);
+		if (($url = $this->getNavigateUrl()) !== '' && $isEnabled) {
+			$writer->addAttribute('href', $url);
+		}
+		if (($target = $this->getTarget()) !== '') {
+			$writer->addAttribute('target', $target);
+		}
 	}
 
 	/**
 	 * Renders the body content of the hyperlink.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
-		if(($imageUrl=$this->getImageUrl())==='')
-		{
-			if(($text=$this->getText())!=='')
+		if (($imageUrl = $this->getImageUrl()) === '') {
+			if (($text = $this->getText()) !== '') {
 				$writer->write(THttpUtility::htmlEncode($text));
-			else if($this->getHasControls())
+			} elseif ($this->getHasControls()) {
 				parent::renderContents($writer);
-			else
+			} else {
 				$writer->write(THttpUtility::htmlEncode($this->getNavigateUrl()));
-		}
-		else
-		{
+			}
+		} else {
 			$this->createImage($imageUrl)->renderControl($writer);
 		}
 	}
@@ -82,23 +84,28 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Gets the TImage for rendering the ImageUrl property. This is not for
 	 * creating dynamic images.
-	 * @param string image url.
+	 * @param string $imageUrl image url.
 	 * @return TImage image control for rendering.
 	 */
 	protected function createImage($imageUrl)
 	{
-		$image= new TImage;
+		$image = new TImage;
 		$image->setImageUrl($imageUrl);
-		if(($width=$this->getImageWidth())!=='')
+		if (($width = $this->getImageWidth()) !== '') {
 			$image->setWidth($width);
-		if(($height=$this->getImageHeight())!=='')
+		}
+		if (($height = $this->getImageHeight()) !== '') {
 			$image->setHeight($height);
-		if(($toolTip=$this->getToolTip())!=='')
+		}
+		if (($toolTip = $this->getToolTip()) !== '') {
 			$image->setToolTip($toolTip);
-		if(($text=$this->getText())!=='')
+		}
+		if (($text = $this->getText()) !== '') {
 			$image->setAlternateText($text);
-		if(($align=$this->getImageAlign())!=='')
+		}
+		if (($align = $this->getImageAlign()) !== '') {
 			$image->setImageAlign($align);
+		}
 		$image->setBorderWidth('0');
 		return $image;
 	}
@@ -108,16 +115,16 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text caption of the THyperLink.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -125,7 +132,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageAlign()
 	{
-		return $this->getViewState('ImageAlign','');
+		return $this->getViewState('ImageAlign', '');
 	}
 
 	/**
@@ -133,11 +140,11 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign',$value,'');
+		$this->setViewState('ImageAlign', $value, '');
 	}
 
 	/**
@@ -145,16 +152,16 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageHeight()
 	{
-		return $this->getViewState('ImageHeight','');
+		return $this->getViewState('ImageHeight', '');
 	}
 
 	/**
 	 * Sets the height of the image in the THyperLink
-	 * @param string height of the image in the THyperLink
+	 * @param string $value height of the image in the THyperLink
 	 */
 	public function setImageHeight($value)
 	{
-		$this->setViewSTate('ImageHeight',$value,'');
+		$this->setViewSTate('ImageHeight', $value, '');
 	}
 
 	/**
@@ -162,16 +169,16 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
 	 * Sets the location of image file of the THyperLink.
-	 * @param string the image file location
+	 * @param string $value the image file location
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -179,16 +186,16 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageWidth()
 	{
-		return $this->getViewState('ImageWidth','');
+		return $this->getViewState('ImageWidth', '');
 	}
 
 	/**
 	 * Sets the width of the image in the THyperLink
-	 * @param string width of the image
+	 * @param string $value width of the image
 	 */
 	public function setImageWidth($value)
 	{
-		$this->setViewState('ImageWidth',$value,'');
+		$this->setViewState('ImageWidth', $value, '');
 	}
 
 	/**
@@ -196,16 +203,16 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',$value,'');
+		$this->setViewState('NavigateUrl', $value, '');
 	}
 
 	/**
@@ -239,16 +246,15 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the THyperLink component is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',$value,'');
+		$this->setViewState('Target', $value, '');
 	}
 }
-

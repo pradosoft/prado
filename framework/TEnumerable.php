@@ -38,30 +38,36 @@ namespace Prado;
  */
 class TEnumerable implements \Iterator
 {
-	private $_enums=array();
+	private $_enums = [];
 
-	public function __construct() {
-		$reflection=new \ReflectionClass($this);
-		$this->_enums=$reflection->getConstants();
+	public function __construct()
+	{
+		$reflection = new \ReflectionClass($this);
+		$this->_enums = $reflection->getConstants();
 	}
 
-	public function current() {
+	public function current()
+	{
 		return current($this->_enums);
 	}
 
-	public function key() {
+	public function key()
+	{
 		return key($this->_enums);
 	}
 
-	public function next() {
+	public function next()
+	{
 		return next($this->_enums);
 	}
 
-	public function rewind() {
+	public function rewind()
+	{
 		reset($this->_enums);
 	}
 
-	public function valid() {
-		return $this->current()!==false;
+	public function valid()
+	{
+		return $this->current() !== false;
 	}
 }

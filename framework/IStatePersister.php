@@ -30,7 +30,7 @@ interface IStatePersister
 	public function load();
 	/**
 	 * Saves state into a persistent storage.
-	 * @param mixed the state to be saved
+	 * @param mixed $state the state to be saved
 	 */
 	public function save($state);
 }

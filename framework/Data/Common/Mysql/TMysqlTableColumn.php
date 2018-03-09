@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mysql;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a Mysql database table.
  *
@@ -27,11 +26,11 @@ use Prado\Prado;
  */
 class TMysqlTableColumn extends TDbTableColumn
 {
-	private static $types = array(
-		'integer' => array('bit', 'tinyint', 'smallint', 'mediumint', 'int', 'integer', 'bigint'),
-		'boolean' => array('boolean', 'bool'),
-		'float' => array('float', 'double', 'double precision', 'decimal', 'dec', 'numeric', 'fixed')
-		);
+	private static $types = [
+		'integer' => ['bit', 'tinyint', 'smallint', 'mediumint', 'int', 'integer', 'bigint'],
+		'boolean' => ['boolean', 'bool'],
+		'float' => ['float', 'double', 'double precision', 'decimal', 'dec', 'numeric', 'fixed']
+		];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
@@ -39,13 +38,14 @@ class TMysqlTableColumn extends TDbTableColumn
 	 */
 	public function getPHPType()
 	{
-		$dbtype = trim(str_replace(array('unsigned', 'zerofill'),array('','',),strtolower($this->getDbType())));
-		if($dbtype==='tinyint' && $this->getColumnSize()===1)
+		$dbtype = trim(str_replace(['unsigned', 'zerofill'], ['', '', ], strtolower($this->getDbType())));
+		if ($dbtype === 'tinyint' && $this->getColumnSize() === 1) {
 			return 'boolean';
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
+		}
+		foreach (self::$types as $type => $dbtypes) {
+			if (in_array($dbtype, $dbtypes)) {
 				return $type;
+			}
 		}
 		return 'string';
 	}
@@ -71,4 +71,3 @@ class TMysqlTableColumn extends TDbTableColumn
 		return $this->getInfo('DbTypeValues');
 	}
 }
-

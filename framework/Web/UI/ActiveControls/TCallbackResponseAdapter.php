@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\THttpResponseAdapter;
 
 /**
@@ -32,13 +33,13 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	/**
 	 * @var TCallbackResponseWriter[] list of writers.
 	 */
-	private $_writers=array();
+	private $_writers = [];
 	/**
 	 * @var mixed callback response data.
 	 */
 	private $_data;
 
-	private $_redirectUrl=null;
+	private $_redirectUrl;
 
 	/**
 	 * Returns a new instance of THtmlWriter.
@@ -46,11 +47,11 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 * @param string writer class name.
 	 * @param THttpResponse http response handler.
 	 */
-	public function createNewHtmlWriter($type,$response)
+	public function createNewHtmlWriter($type, $response)
 	{
 		$writer = new TCallbackResponseWriter();
 		$this->_writers[] = $writer;
-		return parent::createNewHtmlWriter($type,$writer);
+		return parent::createNewHtmlWriter($type, $writer);
 	}
 
 	/**
@@ -58,13 +59,14 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 */
 	public function flushContent()
 	{
-		foreach($this->_writers as $writer)
+		foreach ($this->_writers as $writer) {
 			echo $writer->flush();
+		}
 		parent::flushContent();
 	}
 
 	/**
-	 * @param mixed callback response data.
+	 * @param mixed $data callback response data.
 	 */
 	public function setResponseData($data)
 	{
@@ -81,13 +83,14 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 
 	/**
 	 * Delay the redirect until we process the rest of the page.
-	 * @param string new url to redirect to.
+	 * @param string $url new url to redirect to.
 	 */
 	public function httpRedirect($url)
 	{
-		if($url[0]==='/')
-			$url=$this->getRequest()->getBaseUrl().$url;
-		$this->_redirectUrl=str_replace('&amp;','&',$url);
+		if ($url[0] === '/') {
+			$url = $this->getRequest()->getBaseUrl() . $url;
+		}
+		$this->_redirectUrl = str_replace('&amp;', '&', $url);
 	}
 
 	/**

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\UI\TControl;
 use Prado\Web\UI\INamingContainer;
@@ -38,13 +39,13 @@ class TContent extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingCo
 	 * This method is invoked after the control is instantiated on a template.
 	 * This overrides the parent implementation by registering the content control
 	 * to the template owner control.
-	 * @param TControl potential parent of this control
+	 * @param TControl $parent potential parent of this control
 	 */
 	public function createdOnTemplate($parent)
 	{
-		if(($id=$this->getID())==='')
+		if (($id = $this->getID()) === '') {
 			throw new TConfigurationException('content_id_required');
-		$this->getTemplateControl()->registerContent($id,$this);
+		}
+		$this->getTemplateControl()->registerContent($id, $this);
 	}
 }
-

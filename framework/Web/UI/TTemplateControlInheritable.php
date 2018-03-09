@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -39,18 +40,18 @@ class TTemplateControlInheritable extends TTemplateControl
 	 *
 	 * @return void
 	 * @throws TConfigurationException if a template control directive is invalid
-	 */	
+	 */
 	public function createChildControls()
 	{
-		if(null === ($_template = $this->getTemplate())) {
+		if (null === ($_template = $this->getTemplate())) {
 			return $this->doCreateChildControlsFor(get_class($this));
 		}
 
-		foreach($_template->getDirective() as $_name => $_value) {
-			if(!is_string($_value)) {
+		foreach ($_template->getDirective() as $_name => $_value) {
+			if (!is_string($_value)) {
 				throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
 			}
-			
+
 			$this->setSubProperty($_name, $_value);
 		}
 
@@ -60,12 +61,12 @@ class TTemplateControlInheritable extends TTemplateControl
 	/**
 	 * This method creates the cild controls for the given class
 	 *
-	 * @param string $parentClass The class to generate the child controls for
+	 * @param string $parentClass $parentClass The class to generate the child controls for
 	 * @return void
 	 */
 	public function doCreateChildControlsFor($parentClass)
 	{
-		if(false !== ($_parentClass = get_parent_class($parentClass)) && 'TTemplateControl' != $_parentClass) {
+		if (false !== ($_parentClass = get_parent_class($parentClass)) && 'TTemplateControl' != $_parentClass) {
 			$this->doCreateChildControlsFor($_parentClass);
 		}
 
@@ -81,19 +82,19 @@ class TTemplateControlInheritable extends TTemplateControl
 	 */
 	public function doTemplateForClass($parentClass)
 	{
-		if(null !== ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName($parentClass))) {
-			foreach($_template->getDirective() as $_name => $_value) {
-				if(!is_string($_value)) {
+		if (null !== ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName($parentClass))) {
+			foreach ($_template->getDirective() as $_name => $_value) {
+				if (!is_string($_value)) {
 					throw new TConfigurationException('templatecontrol_directive_invalid', get_class(this), $_name);
 				}
-				
+
 				$this->setSubProperty($_name, $_value);
 			}
 
 			$_template->instantiateIn($this);
 		}
 	}
-	
+
 	// getter/setter
 
 	/**
@@ -104,7 +105,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 */
 	public function getIsSourceTemplateControl()
 	{
-		if(null !== ($_template = $this->getTemplate())) {
+		if (null !== ($_template = $this->getTemplate())) {
 			return $_template->getIsSourceTemplate();
 		}
 

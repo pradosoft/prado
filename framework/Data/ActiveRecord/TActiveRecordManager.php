@@ -14,7 +14,6 @@ namespace Prado\Data\ActiveRecord;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TActiveRecordManager provides the default DB connection,
  * default active record gateway, and table meta data inspector.
@@ -45,7 +44,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
 
 	private $_gateway;
-	private $_meta=array();
+	private $_meta = [];
 	private $_connection;
 
 	private $_cache;
@@ -67,19 +66,19 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param ICache application cache
+	 * @param ICache $value application cache
 	 */
 	public function setCache($value)
 	{
-		$this->_cache=$value;
+		$this->_cache = $value;
 	}
 
 	/**
-	 * @param TDbConnection default database connection
+	 * @param TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -93,13 +92,14 @@ class TActiveRecordManager extends \Prado\TComponent
 	/**
 	 * @return TActiveRecordManager static instance of record manager.
 	 */
-	public static function getInstance($self=null)
+	public static function getInstance($self = null)
 	{
 		static $instance;
-		if($self!==null)
-			$instance=$self;
-		else if($instance===null)
+		if ($self !== null) {
+			$instance = $self;
+		} elseif ($instance === null) {
 			$instance = new self;
+		}
 		return $instance;
 	}
 
@@ -108,7 +108,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	 */
 	public function getRecordGateway()
 	{
-		if($this->_gateway === null) {
+		if ($this->_gateway === null) {
 			$this->_gateway = $this->createRecordGateway();
 		}
 		return $this->_gateway;
@@ -129,7 +129,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	public function setGatewayClass($value)
 	{
 		$this->_gateway = null;
-		$this->_gatewayClass = (string)$value;
+		$this->_gatewayClass = (string) $value;
 	}
 
 	/**
@@ -152,8 +152,7 @@ class TActiveRecordManager extends \Prado\TComponent
 
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
-	 * @param TActiveRecordInvalidFinderResult
-	 * @since 3.1.5
+	 * @param TActiveRecordInvalidFinderResult $value * @since 3.1.5
 	 * @see getInvalidFinderResult
 	 */
 	public function setInvalidFinderResult($value)

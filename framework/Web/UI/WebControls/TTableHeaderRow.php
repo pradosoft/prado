@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidOperationException;
 
 /**
@@ -32,7 +33,7 @@ class TTableHeaderRow extends TTableRow
 	}
 
 	/**
-	 * @param string location of a row in a table.
+	 * @param string $value location of a row in a table.
 	 * @throws TInvalidOperationException if this method is invoked
 	 */
 	public function setTableSection($value)
@@ -40,4 +41,3 @@ class TTableHeaderRow extends TTableRow
 		throw new TInvalidOperationException('tableheaderrow_tablesection_readonly');
 	}
 }
-

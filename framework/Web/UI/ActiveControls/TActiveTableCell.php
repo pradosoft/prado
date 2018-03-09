@@ -19,7 +19,6 @@ use Prado\Prado;
 use Prado\Web\UI\WebControls\TTableCell;
 use Prado\Web\UI\WebControls\TTableRow;
 
-
 /**
  * TActiveTableCell class.
  *
@@ -55,8 +54,8 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 {
 
 	/**
-	* @var TTable parent row control containing the cell
-	*/
+	 * @var TTable parent row control containing the cell
+	 */
 	private $_row;
 
 	/**
@@ -65,7 +64,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	public function __construct()
 	{
 		parent::__construct();
-			$this->setAdapter(new TActiveControlAdapter($this));
+		$this->setAdapter(new TActiveControlAdapter($this));
 	}
 
 	/**
@@ -98,7 +97,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * {@link TActiveTableCellEventParameter} containing the zero-based index of the
 	 * TActiveTableCell.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -112,7 +111,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * 'OnCellSelected' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TActiveTableCellEventParameter event parameter to be passed to the event handlers
+	 * @param TActiveTableCellEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCellSelected($param)
 	{
@@ -123,14 +122,15 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
 	 * {@link onCellSelected OnCellSelected} event is set.
-	 * @param THtmlWriter the writer responsible for rendering
+	 * @param THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
 		$writer->addAttribute('id', $this->getClientID());
-		if ($this->hasEventHandler('OnCellSelected'))
+		if ($this->hasEventHandler('OnCellSelected')) {
 			$this->getActiveControl()->registerCallbackClientScript($this->getClientClassName(), $this->getPostBackOptions());
+		}
 	}
 
 	/**
@@ -138,24 +138,23 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * called before the OnPreRender event, such as when render() is called during
 	 * a callback event handler, the rendering is defered until OnPreRender event
 	 * is raised.
-	 * @param THtmlWriter html writer
+	 * @param THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{
-		if ($this->getHasPreRendered())
-		{
+		if ($this->getHasPreRendered()) {
 			parent::render($writer);
-			if ($this->getActiveControl()->canUpdateClientSide())
+			if ($this->getActiveControl()->canUpdateClientSide()) {
 				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
-		}
-		else {
+			}
+		} else {
 			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 			// If we update a TActiveTableCell on callback, we shouldn't update all childs,
 			// because the whole content will be replaced by the parent.
-			if ($this->getHasControls())
-			{
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control)
+			if ($this->getHasControls()) {
+				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
 					$control->getActiveControl()->setEnableUpdate(false);
+				}
 			}
 		}
 	}
@@ -180,8 +179,11 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 */
 	public function getCellIndex()
 	{
-		foreach ($this->getRow()->getCells() as $key => $row)
-			if ($row == $this) return $key;
+		foreach ($this->getRow()->getCells() as $key => $row) {
+			if ($row == $this) {
+				return $key;
+			}
+		}
 		throw new TConfigurationException('tactivetablecell_control_notincollection', get_class($this), $this->getUniqueID());
 	}
 
@@ -192,17 +194,17 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 */
 	public function getRow()
 	{
-		if ($this->_row === null)
-		{
+		if ($this->_row === null) {
 			$row = $this->getParent();
-			while (!($row instanceof TTableRow) && $row !== null)
-			{
+			while (!($row instanceof TTableRow) && $row !== null) {
 				$row = $row->getParent();
 			}
-			if ($row instanceof TTableRow) $this->_row = $row;
-			else throw new TConfigurationException('tactivetablecell_control_outoftable', get_class($this), $this->getUniqueID());
+			if ($row instanceof TTableRow) {
+				$this->_row = $row;
+			} else {
+				throw new TConfigurationException('tactivetablecell_control_outoftable', get_class($this), $this->getUniqueID());
+			}
 		}
 		return $this->_row;
 	}
-
 }

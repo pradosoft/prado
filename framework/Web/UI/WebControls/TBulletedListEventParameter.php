@@ -30,11 +30,11 @@ class TBulletedListEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param integer index of the item clicked
+	 * @param integer $index index of the item clicked
 	 */
 	public function __construct($index)
 	{
-		$this->_index=$index;
+		$this->_index = $index;
 	}
 
 	/**

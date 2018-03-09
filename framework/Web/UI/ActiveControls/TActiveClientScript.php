@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TClientScript;
 
 /**
@@ -40,18 +41,17 @@ class TActiveClientScript extends TClientScript
 {
 	/**
 	 * Renders the custom script file.
-	 * @param THtmLWriter the renderer
+	 * @param THtmLWriter $writer the renderer
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
-		if(($scriptUrl = $this->getScriptUrl())!=='')
-		{
-			if($this->getPage()->getIsCallback())
-			{
+		if (($scriptUrl = $this->getScriptUrl()) !== '') {
+			if ($this->getPage()->getIsCallback()) {
 				$cs = $this->getPage()->getClientScript();
-				$uniqueid=$this->ClientID.'_custom';
-				if(!$cs->isScriptFileRegistered($uniqueid))
+				$uniqueid = $this->ClientID . '_custom';
+				if (!$cs->isScriptFileRegistered($uniqueid)) {
 					$cs->registerScriptFile($uniqueid, $scriptUrl);
+				}
 			} else {
 				$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
 			}
@@ -60,15 +60,13 @@ class TActiveClientScript extends TClientScript
 
 	/**
 	 * Registers the body content as javascript.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function renderCustomScript($writer)
 	{
-		if($this->getHasControls())
-		{
-			if($this->getPage()->getIsCallback())
-			{
-				$extWriter= $this->getPage()->getResponse()->createHtmlWriter();
+		if ($this->getHasControls()) {
+			if ($this->getPage()->getIsCallback()) {
+				$extWriter = $this->getPage()->getResponse()->createHtmlWriter();
 				$extWriter->write("/*<![CDATA[*/\n");
 				$this->renderChildren($extWriter);
 				$extWriter->write("\n/*]]>*/");

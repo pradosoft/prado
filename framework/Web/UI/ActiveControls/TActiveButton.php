@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TButton;
 
-
 /**
  * TActiveButton is the active control counter part to TButton.
  *
@@ -71,9 +70,9 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 * method first. It will raise {@link onClick OnClick} event first
 	 * and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->raisePostBackEvent($param);
 		$this->onCallback($param);
@@ -84,7 +83,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -94,16 +93,18 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	/**
 	 * Updates the button text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'value', $value);
+		}
 	}
 
 	/**
@@ -121,9 +122,11 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
@@ -134,4 +137,3 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 		return 'Prado.WebUI.TActiveButton';
 	}
 }
-

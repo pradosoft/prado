@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -28,21 +29,21 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	 * the value to be validated
 	 * @var string
 	 */
-	private $_value='';
+	private $_value = '';
 	/**
 	 * whether the value is valid
 	 * @var boolean
 	 */
-	private $_isValid=true;
+	private $_isValid = true;
 
 	/**
 	 * Constructor.
 	 * @param string property value to be validated
 	 * @param boolean whether the value is valid
 	 */
-	public function __construct($value,$isValid)
+	public function __construct($value, $isValid)
 	{
-		$this->_value=$value;
+		$this->_value = $value;
 		$this->setIsValid($isValid);
 	}
 
@@ -63,10 +64,10 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether the value is valid
+	 * @param boolean $value whether the value is valid
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 }

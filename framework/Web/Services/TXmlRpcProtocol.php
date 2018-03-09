@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+
 use Prado\Exceptions\THttpException;
 
 /**
@@ -57,32 +58,25 @@ class TXmlRpcProtocol extends TRpcProtocol
 	{
 		parent::addMethod($methodName, $methodDetails);
 
-		xmlrpc_server_register_method($this->_xmlrpcServer, $methodName, array($this, 'callApiMethod'));
+		xmlrpc_server_register_method($this->_xmlrpcServer, $methodName, [$this, 'callApiMethod']);
 	}
 
 	// methods
 
 	/**
 	 * Handles the RPC request
-	 * @param string $requestPayload
+	 * @param string $requestPayload $requestPayload
 	 * @return string XML RPC response
 	 */
 	public function callMethod($requestPayload)
 	{
-		try
-		{
+		try {
 			return xmlrpc_server_call_method($this->_xmlrpcServer, $requestPayload, null);
-		}
-		catch(TRpcException $e)
-		{
+		} catch (TRpcException $e) {
 			return $this->createErrorResponse($e);
-		}
-		catch(THttpException $e)
-		{
+		} catch (THttpException $e) {
 			throw $e;
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			return $this->createErrorResponse(new TRpcException('An internal error occured'));
 		}
 	}
@@ -94,10 +88,10 @@ class TXmlRpcProtocol extends TRpcProtocol
 	 */
 	public function createErrorResponse(TRpcException $exception)
 	{
-		return $this->encode(array(
+		return $this->encode([
 			'faultCode' => $exception->getCode(),
 			'faultString' => $exception->getMessage()
-		));
+		]);
 	}
 
 	/**
@@ -112,7 +106,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Decodes XML encoded data into PHP data
-	 * @param string $data in XML format
+	 * @param string $data $data in XML format
 	 * @return array PHP data
 	 */
 	public function decode($data)
@@ -122,7 +116,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Encodes PHP data into XML data
-	 * @param mixed PHP data
+	 * @param mixed $data PHP data
 	 * @return string XML encoded PHP data
 	 */
 	public function encode($data)

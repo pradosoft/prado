@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\TPropertyValue;
 
 /**
@@ -40,7 +41,7 @@ use Prado\TPropertyValue;
  */
 class TAttributeCollection extends TMap
 {
-	private $_caseSensitive=false;
+	private $_caseSensitive = false;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -51,8 +52,9 @@ class TAttributeCollection extends TMap
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_caseSensitive===false)
+		if ($this->_caseSensitive === false) {
 			$exprops[] = "\0Prado\Collections\TAttributeCollection\0_caseSensitive";
+		}
 	}
 
 	/**
@@ -65,7 +67,7 @@ class TAttributeCollection extends TMap
 	 */
 	public function __get($name)
 	{
-		return $this->contains($name)?$this->itemAt($name):parent::__get($name);
+		return $this->contains($name) ? $this->itemAt($name) : parent::__get($name);
 	}
 
 	/**
@@ -76,9 +78,9 @@ class TAttributeCollection extends TMap
 	 * @param mixed the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
-		$this->add($name,$value);
+		$this->add($name, $value);
 	}
 
 	/**
@@ -90,22 +92,22 @@ class TAttributeCollection extends TMap
 	}
 
 	/**
-	 * @param boolean whether the keys are case-sensitive.
+	 * @param boolean $value whether the keys are case-sensitive.
 	 */
 	public function setCaseSensitive($value)
 	{
-		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
+		$this->_caseSensitive = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
 	 * Returns the item with the specified key.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
 	{
-		return parent::itemAt($this->_caseSensitive?$key:strtolower($key));
+		return parent::itemAt($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 
@@ -115,38 +117,38 @@ class TAttributeCollection extends TMap
 	 * @param mixed key
 	 * @param mixed value
 	 */
-	public function add($key,$value)
+	public function add($key, $value)
 	{
-		parent::add($this->_caseSensitive?$key:strtolower($key),$value);
+		parent::add($this->_caseSensitive ? $key : strtolower($key), $value);
 	}
 
 	/**
 	 * Removes an item from the map by its key.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key of the item to be removed
+	 * @param mixed $key the key of the item to be removed
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
 	{
-		return parent::remove($this->_caseSensitive?$key:strtolower($key));
+		return parent::remove($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 	/**
 	 * Returns whether the specified is in the map.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
-		return parent::contains($this->_caseSensitive?$key:strtolower($key));
+		return parent::contains($this->_caseSensitive ? $key : strtolower($key));
 	}
 
 	/**
 	 * Determines whether a property is defined.
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property is defined
 	 */
 	public function hasProperty($name)
@@ -158,7 +160,7 @@ class TAttributeCollection extends TMap
 	 * Determines whether a property can be read.
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean whether the property can be read
 	 */
 	public function canGetProperty($name)
@@ -170,7 +172,7 @@ class TAttributeCollection extends TMap
 	 * Determines whether a property can be set.
 	 * This method overrides parent implementation by always returning true
 	 * because you can always add a new value to the collection.
-	 * @param string the property name
+	 * @param string $name the property name
 	 * @return boolean true
 	 */
 	public function canSetProperty($name)
@@ -178,4 +180,3 @@ class TAttributeCollection extends TMap
 		return true;
 	}
 }
-

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
@@ -59,28 +60,28 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Default number of rows (for MultiLine text box)
 	 */
-	const DEFAULT_ROWS=4;
+	const DEFAULT_ROWS = 4;
 	/**
 	 * Default number of columns (for MultiLine text box)
 	 */
-	const DEFAULT_COLUMNS=20;
+	const DEFAULT_COLUMNS = 20;
 	/**
 	 * @var mixed safe text parser
 	 */
-	private static $_safeTextParser=null;
+	private static $_safeTextParser = null;
 	/**
 	 * @var string safe textbox content with javascript stripped off
 	 */
 	private $_safeText;
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * @return string tag name of the textbox
 	 */
 	protected function getTagName()
 	{
-		return ($this->getTextMode()==='MultiLine')?'textarea':'input';
+		return ($this->getTextMode() === 'MultiLine') ? 'textarea' : 'input';
 	}
 
 	/**
@@ -88,129 +89,132 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional textbox specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		if(($uid=$this->getUniqueID())!=='')
-			$writer->addAttribute('name',$uid);
-		if(($textMode=$this->getTextMode())===TTextBoxMode::MultiLine)
-		{
-			if(($rows=$this->getRows())<=0)
-				$rows=self::DEFAULT_ROWS;
-			if(($cols=$this->getColumns())<=0)
-				$cols=self::DEFAULT_COLUMNS;
-			$writer->addAttribute('rows',"$rows");
-			$writer->addAttribute('cols',"$cols");
-			if(!$this->getWrap())
-				$writer->addAttribute('wrap','off');
+		if (($uid = $this->getUniqueID()) !== '') {
+			$writer->addAttribute('name', $uid);
 		}
-		else
-		{
-			switch($textMode)
-			{
+		if (($textMode = $this->getTextMode()) === TTextBoxMode::MultiLine) {
+			if (($rows = $this->getRows()) <= 0) {
+				$rows = self::DEFAULT_ROWS;
+			}
+			if (($cols = $this->getColumns()) <= 0) {
+				$cols = self::DEFAULT_COLUMNS;
+			}
+			$writer->addAttribute('rows', "$rows");
+			$writer->addAttribute('cols', "$cols");
+			if (!$this->getWrap()) {
+				$writer->addAttribute('wrap', 'off');
+			}
+		} else {
+			switch ($textMode) {
 				case TTextBoxMode::Password:
-					$writer->addAttribute('type','password');
+					$writer->addAttribute('type', 'password');
 					break;
 				case TTextBoxMode::Color:
-					$writer->addAttribute('type','color');
+					$writer->addAttribute('type', 'color');
 					break;
 				case TTextBoxMode::Date:
-					$writer->addAttribute('type','date');
+					$writer->addAttribute('type', 'date');
 					break;
 				case TTextBoxMode::Datetime:
-					$writer->addAttribute('type','datetime');
+					$writer->addAttribute('type', 'datetime');
 					break;
 				case TTextBoxMode::DatetimeLocal:
-					$writer->addAttribute('type','datetime-local');
+					$writer->addAttribute('type', 'datetime-local');
 					break;
 				case TTextBoxMode::Email:
-					$writer->addAttribute('type','email');
+					$writer->addAttribute('type', 'email');
 					break;
 				case TTextBoxMode::Month:
-					$writer->addAttribute('type','month');
+					$writer->addAttribute('type', 'month');
 					break;
 				case TTextBoxMode::Number:
-					$writer->addAttribute('type','number');
+					$writer->addAttribute('type', 'number');
 					break;
 				case TTextBoxMode::Range:
-					$writer->addAttribute('type','range');
+					$writer->addAttribute('type', 'range');
 					break;
 				case TTextBoxMode::Search:
-					$writer->addAttribute('type','search');
+					$writer->addAttribute('type', 'search');
 					break;
 				case TTextBoxMode::Tel:
-					$writer->addAttribute('type','tel');
+					$writer->addAttribute('type', 'tel');
 					break;
 				case TTextBoxMode::Time:
-					$writer->addAttribute('type','time');
+					$writer->addAttribute('type', 'time');
 					break;
 				case TTextBoxMode::Url:
-					$writer->addAttribute('type','url');
+					$writer->addAttribute('type', 'url');
 					break;
 				case TTextBoxMode::Week:
-					$writer->addAttribute('type','week');
+					$writer->addAttribute('type', 'week');
 					break;
 				case TTextBoxMode::SingleLine:
 				default:
-					$writer->addAttribute('type','text');
+					$writer->addAttribute('type', 'text');
 					break;
 			}
 
-			if(($text=$this->getText())!=='' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword()))
-				$writer->addAttribute('value',$text);
+			if (($text = $this->getText()) !== '' && ($textMode !== TTextBoxMode::Password || $this->getPersistPassword())) {
+				$writer->addAttribute('value', $text);
+			}
 
-			if(($act=$this->getAutoCompleteType())!=='None')
-			{
-				if($act==='Disabled')
-					$writer->addAttribute('autocomplete','off');
-				else if($act==='Search')
-					$writer->addAttribute('vcard_name','search');
-				else if($act==='HomeCountryRegion')
-					$writer->addAttribute('vcard_name','HomeCountry');
-				else if($act==='BusinessCountryRegion')
-					$writer->addAttribute('vcard_name','BusinessCountry');
-				else
-				{
-					if(strpos($act,'Business')===0)
-						$act='Business'.'.'.substr($act,8);
-					else if(strpos($act,'Home')===0)
-						$act='Home'.'.'.substr($act,4);
-					$writer->addAttribute('vcard_name','vCard.'.$act);
+			if (($act = $this->getAutoCompleteType()) !== 'None') {
+				if ($act === 'Disabled') {
+					$writer->addAttribute('autocomplete', 'off');
+				} elseif ($act === 'Search') {
+					$writer->addAttribute('vcard_name', 'search');
+				} elseif ($act === 'HomeCountryRegion') {
+					$writer->addAttribute('vcard_name', 'HomeCountry');
+				} elseif ($act === 'BusinessCountryRegion') {
+					$writer->addAttribute('vcard_name', 'BusinessCountry');
+				} else {
+					if (strpos($act, 'Business') === 0) {
+						$act = 'Business' . '.' . substr($act, 8);
+					} elseif (strpos($act, 'Home') === 0) {
+						$act = 'Home' . '.' . substr($act, 4);
+					}
+					$writer->addAttribute('vcard_name', 'vCard.' . $act);
 				}
 			}
 
-			if(($cols=$this->getColumns())>0)
-				$writer->addAttribute('size',"$cols");
-			if(($maxLength=$this->getMaxLength())>0)
-				$writer->addAttribute('maxlength',"$maxLength");
+			if (($cols = $this->getColumns()) > 0) {
+				$writer->addAttribute('size', "$cols");
+			}
+			if (($maxLength = $this->getMaxLength()) > 0) {
+				$writer->addAttribute('maxlength', "$maxLength");
+			}
 		}
-		if($this->getReadOnly())
-			$writer->addAttribute('readonly','readonly');
-		$isEnabled=$this->getEnabled(true);
-		if(!$isEnabled && $this->getEnabled())  // in this case parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
-		if($isEnabled
+		if ($this->getReadOnly()) {
+			$writer->addAttribute('readonly', 'readonly');
+		}
+		$isEnabled = $this->getEnabled(true);
+		if (!$isEnabled && $this->getEnabled()) {  // in this case parent will not render 'disabled'
+			$writer->addAttribute('disabled', 'disabled');
+		}
+		if ($isEnabled
 			&& $this->getEnableClientScript()
-			&& ( $this->getAutoPostBack() || $textMode===TTextBoxMode::SingleLine)
-			&& $page->getClientSupportsJavaScript())
-		{
+			&& ($this->getAutoPostBack() || $textMode === TTextBoxMode::SingleLine)
+			&& $page->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 		parent::addAttributesToRender($writer);
@@ -221,9 +225,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -254,22 +258,22 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		$value=$values[$key];
-		if($this->getAutoTrim())
-			$value=trim($value);
-		if(!$this->getReadOnly() && $this->getText()!==$value)
-		{
-			$this->setText($value);
-			return $this->_dataChanged=true;
+		$value = $values[$key];
+		if ($this->getAutoTrim()) {
+			$value = trim($value);
 		}
-		else
+		if (!$this->getReadOnly() && $this->getText() !== $value) {
+			$this->setText($value);
+			return $this->_dataChanged = true;
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -299,14 +303,14 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -315,11 +319,11 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onTextChanged($param)
 	{
-		$this->raiseEvent('OnTextChanged',$this,$param);
+		$this->raiseEvent('OnTextChanged', $this, $param);
 	}
 
 	/**
@@ -331,31 +335,34 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onTextChanged(null);
 	}
 
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getTextMode()==='MultiLine')
+		if ($this->getTextMode() === 'MultiLine') {
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
+		}
 	}
 
 	/**
 	 * Renders an additional line-break after the opening tag when it
 	 * is in MultiLine text mode.
-	 * @param THtmlWriter the writer used for the rendering purpose^M
+	 * @param THtmlWriter $writer the writer used for the rendering purpose^M
 	 */
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if($this->getTextMode()==='MultiLine')
+		if ($this->getTextMode() === 'MultiLine') {
 			$writer->write("\n");
+		}
 	}
 
 	/**
@@ -363,37 +370,37 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getAutoCompleteType()
 	{
-		return $this->getViewState('AutoCompleteType',TTextBoxAutoCompleteType::None);
+		return $this->getViewState('AutoCompleteType', TTextBoxAutoCompleteType::None);
 	}
 
 	/**
-	 * @param TTextBoxAutoCompleteType the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
+	 * @param TTextBoxAutoCompleteType $value the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
 	 * @throws TInvalidDataValueException if the input parameter is not a valid AutoComplete type
 	 */
 	public function setAutoCompleteType($value)
 	{
-		$this->setViewState('AutoCompleteType',TPropertyValue::ensureEnum($value,'TTextBoxAutoCompleteType'),TTextBoxAutoCompleteType::None);
+		$this->setViewState('AutoCompleteType', TPropertyValue::ensureEnum($value, 'TTextBoxAutoCompleteType'), TTextBoxAutoCompleteType::None);
 	}
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user modifies the text in the TTextBox control and
-     * then tabs out of the component. Defaults to false.
+	 * will occur whenever the user modifies the text in the TTextBox control and
+	 * then tabs out of the component. Defaults to false.
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',false);
+		return $this->getViewState('AutoPostBack', false);
 	}
 
 	/**
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the text in the TTextBox control and then tabs out of the component.
-	 * @param boolean the value indicating if postback automatically
+	 * @param boolean $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -401,16 +408,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getAutoTrim()
 	{
-		return $this->getViewState('AutoTrim',false);
+		return $this->getViewState('AutoTrim', false);
 	}
 
 	/**
 	 * Sets the value indicating if the input text should be trimmed spaces
-	 * @param boolean the value indicating if the input text should be trimmed spaces
+	 * @param boolean $value the value indicating if the input text should be trimmed spaces
 	 */
 	public function setAutoTrim($value)
 	{
-		$this->setViewState('AutoTrim',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('AutoTrim', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -418,15 +425,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this text box will cause input validation.
+	 * @param boolean $value whether postback event trigger by this text box will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -434,16 +441,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getColumns()
 	{
-		return $this->getViewState('Columns',0);
+		return $this->getViewState('Columns', 0);
 	}
 
 	/**
 	 * Sets the display width of the text box in characters.
-	 * @param integer the display width, set it 0 to clear the setting
+	 * @param integer $value the display width, set it 0 to clear the setting
 	 */
 	public function setColumns($value)
 	{
-		$this->setViewState('Columns',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Columns', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -451,16 +458,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getMaxLength()
 	{
-		return $this->getViewState('MaxLength',0);
+		return $this->getViewState('MaxLength', 0);
 	}
 
 	/**
 	 * Sets the maximum number of characters allowed in the text box.
-	 * @param integer the maximum length,  set it 0 to clear the setting
+	 * @param integer $value the maximum length,  set it 0 to clear the setting
 	 */
 	public function setMaxLength($value)
 	{
-		$this->setViewState('MaxLength',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('MaxLength', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -468,15 +475,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
-	 * @param boolean whether the textbox is read only
+	 * @param boolean $value whether the textbox is read only
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -484,16 +491,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getRows()
 	{
-		return $this->getViewState('Rows',self::DEFAULT_ROWS);
+		return $this->getViewState('Rows', self::DEFAULT_ROWS);
 	}
 
 	/**
 	 * Sets the number of rows displayed in a multiline text box.
-	 * @param integer the number of rows
+	 * @param integer $value the number of rows
 	 */
 	public function setRows($value)
 	{
-		$this->setViewState('Rows',TPropertyValue::ensureInteger($value),self::DEFAULT_ROWS);
+		$this->setViewState('Rows', TPropertyValue::ensureInteger($value), self::DEFAULT_ROWS);
 	}
 
 	/**
@@ -501,15 +508,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getPersistPassword()
 	{
-		return $this->getViewState('PersistPassword',false);
+		return $this->getViewState('PersistPassword', false);
 	}
 
 	/**
-	 * @param boolean whether password should be displayed in the textbox during postback. This property only applies when TextMode='Password'.
+	 * @param boolean $value whether password should be displayed in the textbox during postback. This property only applies when TextMode='Password'.
 	 */
 	public function setPersistPassword($value)
 	{
-		$this->setViewState('PersistPassword',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('PersistPassword', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -517,16 +524,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text content of the TTextBox control.
-	 * @param string the text content
+	 * @param string $value the text content
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 		$this->_safeText = null;
 	}
 
@@ -561,8 +568,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getSafeText()
 	{
-		if($this->_safeText===null)
-			$this->_safeText=$this->getSafeTextParser()->purify($this->getText());
+		if ($this->_safeText === null) {
+			$this->_safeText = $this->getSafeTextParser()->purify($this->getText());
+		}
 		return $this->_safeText;
 	}
 
@@ -571,8 +579,9 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function getSafeTextParser()
 	{
-		if(!self::$_safeTextParser)
-			self::$_safeTextParser= new \HTMLPurifier($this->getConfig());
+		if (!self::$_safeTextParser) {
+			self::$_safeTextParser = new \HTMLPurifier($this->getConfig());
+		}
 		return self::$_safeTextParser;
 	}
 
@@ -581,17 +590,17 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getTextMode()
 	{
-		return $this->getViewState('TextMode',TTextBoxMode::SingleLine);
+		return $this->getViewState('TextMode', TTextBoxMode::SingleLine);
 	}
 
 	/**
 	 * Sets the behavior mode of the TTextBox component.
-	 * @param TTextBoxMode the text mode
+	 * @param TTextBoxMode $value the text mode
 	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)
 	{
-		$this->setViewState('TextMode',TPropertyValue::ensureEnum($value,'TTextBoxMode'),TTextBoxMode::SingleLine);
+		$this->setViewState('TextMode', TPropertyValue::ensureEnum($value, 'TTextBoxMode'), TTextBoxMode::SingleLine);
 	}
 
 	/**
@@ -599,15 +608,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group of validators which the text box causes validation upon postback
+	 * @param string $value the group of validators which the text box causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -615,16 +624,16 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getWrap()
 	{
-		return $this->getViewState('Wrap',true);
+		return $this->getViewState('Wrap', true);
 	}
 
 	/**
 	 * Sets the value indicating whether the text content wraps within a multiline text box.
-	 * @param boolean whether the text content wraps within a multiline text box.
+	 * @param boolean $value whether the text content wraps within a multiline text box.
 	 */
 	public function setWrap($value)
 	{
-		$this->setViewState('Wrap',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('Wrap', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -633,7 +642,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)
 	{
-	  $this->setViewState('Config', $value, null);
+		$this->setViewState('Config', $value, null);
 	}
 
 	/**
@@ -641,7 +650,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function getConfig()
 	{
-	  $config = $this->getViewState('Config', null);
-	  return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
+		$config = $this->getViewState('Config', null);
+		return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
 	}
 }

@@ -52,9 +52,9 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	/**
 	 * Include css library to the current page. The current supported
 	 * libraries are: "jquery-ui", "bootstrap" and all the split
-	 * jquery.ui.componentname libraries. 
+	 * jquery.ui.componentname libraries.
 	 *
-	 * @param string comma delimited list of css libraries to include.
+	 * @param string $value comma delimited list of css libraries to include.
 	 * @since 3.3.1
 	 */
 	public function setPradoStyles($value)
@@ -63,7 +63,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string URL to the stylesheet file
+	 * @param string $value URL to the stylesheet file
 	 */
 	public function setStyleSheetUrl($value)
 	{
@@ -83,50 +83,49 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	 */
 	public function getMediaType()
 	{
-		return $this->getViewState('MediaType','');
+		return $this->getViewState('MediaType', '');
 	}
 
 	/**
-	 * @param string media type of the CSS (such as 'print', 'screen', etc.). If empty, it means the CSS applies to all media types.
+	 * @param string $value media type of the CSS (such as 'print', 'screen', etc.). If empty, it means the CSS applies to all media types.
 	 */
 	public function setMediaType($value)
 	{
-		$this->setViewState('MediaType',$value,'');
+		$this->setViewState('MediaType', $value, '');
 	}
 
 	/**
 	 * Registers the stylesheet file and content to be rendered.
 	 * This method overrides the parent implementation and is invoked right before rendering.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
 		$cs = $this->getPage()->getClientScript();
 
 		$styles = preg_split('/,|\s+/', $this->getPradoStyles());
-		foreach($styles as $style)
-		{
-			if(($style = trim($style))!=='')
+		foreach ($styles as $style) {
+			if (($style = trim($style)) !== '') {
 				$cs->registerPradoStyle($style);
+			}
 		}
 
-		if(($url=$this->getStyleSheetUrl())!=='')
-			$cs->registerStyleSheetFile($url,$url,$this->getMediaType());
+		if (($url = $this->getStyleSheetUrl()) !== '') {
+			$cs->registerStyleSheetFile($url, $url, $this->getMediaType());
+		}
 	}
 
 	/**
 	 * Renders the control.
 	 * This method overrides the parent implementation and renders nothing.
-	 * @param ITextWriter writer
+	 * @param ITextWriter $writer writer
 	 */
 	public function render($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$writer->write("<style type=\"text/css\">\n/*<![CDATA[*/\n");
 			$this->renderChildren($writer);
 			$writer->write("\n/*]]>*/\n</style>\n");
 		}
 	}
 }
-

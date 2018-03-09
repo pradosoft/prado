@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -75,7 +76,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var TUrlMappingPattern[] list of patterns.
 	 */
-	protected $_patterns=array();
+	protected $_patterns = [];
 	/**
 	 * @var TUrlMappingPattern matched pattern.
 	 */
@@ -83,45 +84,45 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @var string external configuration file
 	 */
-	private $_configFile=null;
+	private $_configFile;
 	/**
 	 * @var boolean whether to enable custom contructUrl
 	 */
-	private $_customUrl=false;
+	private $_customUrl = false;
 	/**
 	 * @var array rules for constructing URLs
 	 */
-	protected $_constructRules=array();
+	protected $_constructRules = [];
 
-	private $_urlPrefix='';
+	private $_urlPrefix = '';
 
-	private $_defaultMappingClass='System.Web.TUrlMappingPattern';
+	private $_defaultMappingClass = 'System.Web.TUrlMappingPattern';
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $config configuration for this module, can be null
 	 * @throws TConfigurationException if module is configured in the global scope.
 	 */
 	public function init($config)
 	{
 		parent::init($config);
-		if($this->getRequest()->getRequestResolved())
+		if ($this->getRequest()->getRequestResolved()) {
 			throw new TConfigurationException('urlmapping_global_required');
-		if($this->_configFile!==null)
+		}
+		if ($this->_configFile !== null) {
 			$this->loadConfigFile();
+		}
 		$this->loadUrlMappings($config);
-		if($this->_urlPrefix==='')
-		{
-			$request=$this->getRequest();
-			if($request->getUrlFormat()===THttpRequestUrlFormat::HiddenPath)
-			{
-				$this->_urlPrefix=dirname($request->getApplicationUrl());
+		if ($this->_urlPrefix === '') {
+			$request = $this->getRequest();
+			if ($request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) {
+				$this->_urlPrefix = dirname($request->getApplicationUrl());
 			} else {
-				$this->_urlPrefix=$request->getApplicationUrl();
+				$this->_urlPrefix = $request->getApplicationUrl();
 			}
 		}
-		$this->_urlPrefix=rtrim($this->_urlPrefix,'/');
+		$this->_urlPrefix = rtrim($this->_urlPrefix, '/');
 	}
 
 	/**
@@ -130,22 +131,18 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected function loadConfigFile()
 	{
-		if(is_file($this->_configFile))
-		{
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-			{
+		if (is_file($this->_configFile)) {
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$config = include $this->_configFile;
 				$this->loadUrlMappings($dom);
-			}
-			else
-			{
-				$dom=new TXmlDocument;
+			} else {
+				$dom = new TXmlDocument;
 				$dom->loadFromFile($this->_configFile);
 				$this->loadUrlMappings($dom);
 			}
+		} else {
+			throw new TConfigurationException('urlmapping_configfile_inexistent', $this->_configFile);
 		}
-		else
-			throw new TConfigurationException('urlmapping_configfile_inexistent',$this->_configFile);
 	}
 
 	/**
@@ -164,12 +161,12 @@ class TUrlMapping extends TUrlManager
 	 * Sets a value indicating whether to enable custom constructUrl.
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
-	 * @param boolean whether to enable custom constructUrl.
+	 * @param boolean $value whether to enable custom constructUrl.
 	 * @since 3.1.1
 	 */
 	public function setEnableCustomUrl($value)
 	{
-		$this->_customUrl=TPropertyValue::ensureBoolean($value);
+		$this->_customUrl = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -188,7 +185,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setUrlPrefix($value)
 	{
-		$this->_urlPrefix=$value;
+		$this->_urlPrefix = $value;
 	}
 
 	/**
@@ -206,8 +203,9 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function setConfigFile($value)
 	{
-		if(($this->_configFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null)
-			throw new TConfigurationException('urlmapping_configfile_invalid',$value);
+		if (($this->_configFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null) {
+			throw new TConfigurationException('urlmapping_configfile_invalid', $value);
+		}
 	}
 
 	/**
@@ -223,76 +221,78 @@ class TUrlMapping extends TUrlManager
 	 * Sets the default class of URL mapping patterns.
 	 * When a URL matching pattern does not specify "class" attribute, it will default to the class
 	 * specified by this property. You may use either a class name or a namespace format of class (if the class needs to be included first.)
-	 * @param string the default class of URL mapping patterns.
+	 * @param string $value the default class of URL mapping patterns.
 	 * @since 3.1.1
 	 */
 	public function setDefaultMappingClass($value)
 	{
-		$this->_defaultMappingClass=$value;
+		$this->_defaultMappingClass = $value;
 	}
 
 	/**
 	 * Load and configure each url mapping pattern.
-	 * @param mixed configuration node
+	 * @param mixed $config configuration node
 	 * @throws TConfigurationException if specific pattern class is invalid
 	 */
 	protected function loadUrlMappings($config)
 	{
 		$defaultClass = $this->getDefaultMappingClass();
 
-		if(is_array($config))
-		{
-			if(isset($config['urls']) && is_array($config['urls']))
-			{
-				foreach($config['urls'] as $url)
-				{
-					$class=isset($url['class'])?$url['class']:$defaultClass;
-					$properties = isset($url['properties'])?$url['properties']:array();
-					$this->buildUrlMapping($class,$properties,$url);
+		if (is_array($config)) {
+			if (isset($config['urls']) && is_array($config['urls'])) {
+				foreach ($config['urls'] as $url) {
+					$class = isset($url['class']) ? $url['class'] : $defaultClass;
+					$properties = isset($url['properties']) ? $url['properties'] : [];
+					$this->buildUrlMapping($class, $properties, $url);
 				}
 			}
-		}
-		else
-		{
-			foreach($config->getElementsByTagName('url') as $url)
-			{
-				$properties=$url->getAttributes();
-				if(($class=$properties->remove('class'))===null)
-					$class=$defaultClass;
-				$this->buildUrlMapping($class,$properties,$url);
+		} else {
+			foreach ($config->getElementsByTagName('url') as $url) {
+				$properties = $url->getAttributes();
+				if (($class = $properties->remove('class')) === null) {
+					$class = $defaultClass;
+				}
+				$this->buildUrlMapping($class, $properties, $url);
 			}
 		}
 	}
 
 	private function buildUrlMapping($class, $properties, $url)
 	{
-		$pattern=Prado::createComponent($class,$this);
-		if(!($pattern instanceof TUrlMappingPattern))
+		$pattern = Prado::createComponent($class, $this);
+		if (!($pattern instanceof TUrlMappingPattern)) {
 			throw new TConfigurationException('urlmapping_urlmappingpattern_required');
-		foreach($properties as $name=>$value)
-			$pattern->setSubproperty($name,$value);
+		}
+		foreach ($properties as $name => $value) {
+			$pattern->setSubproperty($name, $value);
+		}
 
-		if($url instanceof TXmlElement) {
+		if ($url instanceof TXmlElement) {
 			$text = $url -> getValue();
-			if($text) {
+			if ($text) {
 				$text = preg_replace('/(\s+)/S', '', $text);
-				if(($regExp = $pattern->getRegularExpression()) !== '')
-				trigger_error(sPrintF('%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
+				if (($regExp = $pattern->getRegularExpression()) !== '') {
+					trigger_error(
+					sPrintF(
+					'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
 				get_class($pattern),
 				$regExp,
 				$pattern->getServiceID(),
 				$pattern->getServiceParameter(),
-				$text),
-				E_USER_NOTICE);
+				$text
+				),
+				E_USER_NOTICE
+				);
+				}
 				$pattern->setRegularExpression($text);
 			}
 		}
 
-		$this->_patterns[]=$pattern;
+		$this->_patterns[] = $pattern;
 		$pattern->init($url);
 
-		$key=$pattern->getServiceID().':'.$pattern->getServiceParameter();
-		$this->_constructRules[$key][]=$pattern;
+		$key = $pattern->getServiceID() . ':' . $pattern->getServiceParameter();
+		$this->_constructRules[$key][] = $pattern;
 	}
 
 	/**
@@ -305,21 +305,20 @@ class TUrlMapping extends TUrlManager
 	 */
 	public function parseUrl()
 	{
-		$request=$this->getRequest();
-		foreach($this->_patterns as $pattern)
-		{
-			$matches=$pattern->getPatternMatches($request);
-			if(count($matches)>0)
-			{
-				$this->_matched=$pattern;
-				$params=array();
-				foreach($matches as $key=>$value)
-				{
-					if(is_string($key))
-						$params[$key]=$value;
+		$request = $this->getRequest();
+		foreach ($this->_patterns as $pattern) {
+			$matches = $pattern->getPatternMatches($request);
+			if (count($matches) > 0) {
+				$this->_matched = $pattern;
+				$params = [];
+				foreach ($matches as $key => $value) {
+					if (is_string($key)) {
+						$params[$key] = $value;
+					}
 				}
-				if (!$pattern->getIsWildCardPattern())
-					$params[$pattern->getServiceID()]=$pattern->getServiceParameter();
+				if (!$pattern->getIsWildCardPattern()) {
+					$params[$pattern->getServiceID()] = $pattern->getServiceParameter();
+				}
 				return $params;
 			}
 		}
@@ -350,36 +349,31 @@ class TUrlMapping extends TUrlManager
 	 * @see parseUrl
 	 * @since 3.1.1
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
+	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if($this->_customUrl)
-		{
-			if(!(is_array($getItems) || ($getItems instanceof \Traversable)))
-				$getItems=array();
-			$key=$serviceID.':'.$serviceParam;
-			$wildCardKey = ($pos=strrpos($serviceParam,'.'))!==false ?
-				$serviceID.':'.substr($serviceParam,0,$pos).'.*' : $serviceID.':*';
-			if(isset($this->_constructRules[$key]))
-			{
-				foreach($this->_constructRules[$key] as $rule)
-				{
-					if($rule->supportCustomUrl($getItems))
-						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
-				}
+		if ($this->_customUrl) {
+			if (!(is_array($getItems) || ($getItems instanceof \Traversable))) {
+				$getItems = [];
 			}
-			elseif(isset($this->_constructRules[$wildCardKey]))
-			{
-				foreach($this->_constructRules[$wildCardKey] as $rule)
-				{
-					if($rule->supportCustomUrl($getItems))
-					{
-						$getItems['*']= $pos ? substr($serviceParam,$pos+1) : $serviceParam;
-						return $rule->constructUrl($getItems,$encodeAmpersand,$encodeGetItems);
+			$key = $serviceID . ':' . $serviceParam;
+			$wildCardKey = ($pos = strrpos($serviceParam, '.')) !== false ?
+				$serviceID . ':' . substr($serviceParam, 0, $pos) . '.*' : $serviceID . ':*';
+			if (isset($this->_constructRules[$key])) {
+				foreach ($this->_constructRules[$key] as $rule) {
+					if ($rule->supportCustomUrl($getItems)) {
+						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
+					}
+				}
+			} elseif (isset($this->_constructRules[$wildCardKey])) {
+				foreach ($this->_constructRules[$wildCardKey] as $rule) {
+					if ($rule->supportCustomUrl($getItems)) {
+						$getItems['*'] = $pos ? substr($serviceParam, $pos + 1) : $serviceParam;
+						return $rule->constructUrl($getItems, $encodeAmpersand, $encodeGetItems);
 					}
 				}
 			}
 		}
-		return parent::constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
+		return parent::constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
 	}
 
 	/**

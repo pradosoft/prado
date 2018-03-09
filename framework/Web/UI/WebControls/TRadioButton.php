@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -50,11 +51,11 @@ class TRadioButton extends TCheckBox
 	/**
 	 * @param array list of radio buttons that are on the current page hierarchy
 	 */
-	private static $_activeButtons=array();
+	private static $_activeButtons = [];
 	/**
 	 * @var integer number of radio buttons created
 	 */
-	private static $_buttonCount=0;
+	private static $_buttonCount = 0;
 	/**
 	 * @var integer global ID of this radiobutton
 	 */
@@ -62,11 +63,11 @@ class TRadioButton extends TCheckBox
 	/**
 	 * @var string previous UniqueID (used to calculate UniqueGroup)
 	 */
-	private $_previousUniqueID=null;
+	private $_previousUniqueID;
 	/**
 	 * @var string the name used to fetch radiobutton post data
 	 */
-	private $_uniqueGroupName=null;
+	private $_uniqueGroupName;
 
 	/**
 	 * Constructor.
@@ -82,18 +83,18 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Registers the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
 		parent::onInit($param);
-		self::$_activeButtons[$this->_globalID]=$this;
+		self::$_activeButtons[$this->_globalID] = $this;
 	}
 
 	/**
 	 * Unregisters the radio button groupings. If overriding onInit method,
 	 * ensure to call parent implemenation.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUnLoad($param)
 	{
@@ -104,26 +105,24 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		$uniqueGroupName=$this->getUniqueGroupName();
-		$value=isset($values[$uniqueGroupName])?$values[$uniqueGroupName]:null;
-		if($value!==null && $value===$this->getValueAttribute())
-		{
-			if(!$this->getChecked())
-			{
+		$uniqueGroupName = $this->getUniqueGroupName();
+		$value = isset($values[$uniqueGroupName]) ? $values[$uniqueGroupName] : null;
+		if ($value !== null && $value === $this->getValueAttribute()) {
+			if (!$this->getChecked()) {
 				$this->setChecked(true);
 				return true;
-			}
-			else
+			} else {
 				return false;
-		}
-		else if($this->getChecked())
+			}
+		} elseif ($this->getChecked()) {
 			$this->setChecked(false);
+		}
 		return false;
 	}
 
@@ -132,19 +131,19 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getGroupName()
 	{
-		return $this->getViewState('GroupName','');
+		return $this->getViewState('GroupName', '');
 	}
 
 	/**
 	 * Sets the name of the group that the radio button belongs to.
 	 * The group is unique among the control's naming container.
-	 * @param string the group name
+	 * @param string $value the group name
 	 * @see setUniqueGroupName
 	 */
 	public function setGroupName($value)
 	{
-		$this->setViewState('GroupName',$value,'');
-		$this->_uniqueGroupName=null;
+		$this->setViewState('GroupName', $value, '');
+		$this->_uniqueGroupName = null;
 	}
 
 	/**
@@ -152,25 +151,24 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getUniqueGroupName()
 	{
-		if(($groupName=$this->getViewState('UniqueGroupName',''))!=='')
+		if (($groupName = $this->getViewState('UniqueGroupName', '')) !== '') {
 			return $groupName;
-		else if(($uniqueID=$this->getUniqueID())!==$this->_previousUniqueID || $this->_uniqueGroupName===null)
-		{
-			$groupName=$this->getGroupName();
-			$this->_previousUniqueID=$uniqueID;
-			if($uniqueID!=='')
-			{
-				if(($pos=strrpos($uniqueID,\Prado\Web\UI\TControl::ID_SEPARATOR))!==false)
-				{
-					if($groupName!=='')
-						$groupName=substr($uniqueID,0,$pos+1).$groupName;
-					else if($this->getNamingContainer() instanceof TRadioButtonList)
-						$groupName=substr($uniqueID,0,$pos);
+		} elseif (($uniqueID = $this->getUniqueID()) !== $this->_previousUniqueID || $this->_uniqueGroupName === null) {
+			$groupName = $this->getGroupName();
+			$this->_previousUniqueID = $uniqueID;
+			if ($uniqueID !== '') {
+				if (($pos = strrpos($uniqueID, \Prado\Web\UI\TControl::ID_SEPARATOR)) !== false) {
+					if ($groupName !== '') {
+						$groupName = substr($uniqueID, 0, $pos + 1) . $groupName;
+					} elseif ($this->getNamingContainer() instanceof TRadioButtonList) {
+						$groupName = substr($uniqueID, 0, $pos);
+					}
 				}
-				if($groupName==='')
-					$groupName=$uniqueID;
+				if ($groupName === '') {
+					$groupName = $uniqueID;
+				}
 			}
-			$this->_uniqueGroupName=$groupName;
+			$this->_uniqueGroupName = $groupName;
 		}
 		return $this->_uniqueGroupName;
 	}
@@ -188,12 +186,12 @@ class TRadioButton extends TCheckBox
 	 * it will group all appropriate radio buttons on the whole page hierarchy.
 	 * Note, when both {@link setUniqueGroupName UniqueGroupName} and
 	 * {@link setGroupName GroupName}, the former takes precedence.
-	 * @param string the group name
+	 * @param string $value the group name
 	 * @see setGroupName
 	 */
 	public function setUniqueGroupName($value)
 	{
-		$this->setViewState('UniqueGroupName',$value,'');
+		$this->setViewState('UniqueGroupName', $value, '');
 	}
 
 	/**
@@ -205,11 +203,11 @@ class TRadioButton extends TCheckBox
 	public function getRadioButtonsInGroup()
 	{
 		$group = $this->getUniqueGroupName();
-		$buttons = array();
-		foreach(self::$_activeButtons as $control)
-		{
-			if($control->getUniqueGroupName() === $group)
+		$buttons = [];
+		foreach (self::$_activeButtons as $control) {
+			if ($control->getUniqueGroupName() === $group) {
 				$buttons[] = $control;
+			}
 		}
 		return $buttons;
 	}
@@ -219,10 +217,11 @@ class TRadioButton extends TCheckBox
 	 */
 	protected function getValueAttribute()
 	{
-		if(($value=parent::getValueAttribute())==='')
+		if (($value = parent::getValueAttribute()) === '') {
 			return $this->getUniqueID();
-		else
+		} else {
 			return $value;
+		}
 	}
 
 	/**
@@ -230,15 +229,15 @@ class TRadioButton extends TCheckBox
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -247,35 +246,41 @@ class TRadioButton extends TCheckBox
 	 * @param string checkbox id
 	 * @param string onclick js
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		if($clientID!=='')
-			$writer->addAttribute('id',$clientID);
-		$writer->addAttribute('type','radio');
-		$writer->addAttribute('name',$this->getUniqueGroupName());
-		$writer->addAttribute('value',$this->getValueAttribute());
-		if(!empty($onclick))
-			$writer->addAttribute('onclick',$onclick);
-		if($this->getChecked())
-			$writer->addAttribute('checked','checked');
-		if(!$this->getEnabled(true))
-			$writer->addAttribute('disabled','disabled');
+		if ($clientID !== '') {
+			$writer->addAttribute('id', $clientID);
+		}
+		$writer->addAttribute('type', 'radio');
+		$writer->addAttribute('name', $this->getUniqueGroupName());
+		$writer->addAttribute('value', $this->getValueAttribute());
+		if (!empty($onclick)) {
+			$writer->addAttribute('onclick', $onclick);
+		}
+		if ($this->getChecked()) {
+			$writer->addAttribute('checked', 'checked');
+		}
+		if (!$this->getEnabled(true)) {
+			$writer->addAttribute('disabled', 'disabled');
+		}
 
-		$page=$this->getPage();
-		if($this->getEnabled(true)
+		$page = $this->getPage();
+		if ($this->getEnabled(true)
 			&& $this->getEnableClientScript()
 			&& $this->getAutoPostBack()
-			&& $page->getClientSupportsJavaScript())
-		{
+			&& $page->getClientSupportsJavaScript()) {
 			$this->renderClientControlScript($writer);
 		}
 
-		if(($accesskey=$this->getAccessKey())!=='')
-			$writer->addAttribute('accesskey',$accesskey);
-		if(($tabindex=$this->getTabIndex())>0)
-			$writer->addAttribute('tabindex',"$tabindex");
-		if($attributes=$this->getViewState('InputAttributes',null))
+		if (($accesskey = $this->getAccessKey()) !== '') {
+			$writer->addAttribute('accesskey', $accesskey);
+		}
+		if (($tabindex = $this->getTabIndex()) > 0) {
+			$writer->addAttribute('tabindex', "$tabindex");
+		}
+		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			$writer->addAttributes($attributes);
+		}
 		$writer->renderBeginTag('input');
 		$writer->renderEndTag();
 	}
@@ -286,7 +291,7 @@ class TRadioButton extends TCheckBox
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -299,4 +304,3 @@ class TRadioButton extends TCheckBox
 		return 'Prado.WebUI.TRadioButton';
 	}
 }
-

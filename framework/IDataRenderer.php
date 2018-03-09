@@ -29,7 +29,7 @@ interface IDataRenderer
 	public function getData();
 
 	/**
-	 * @param mixed the data to be bound to this object
+	 * @param mixed $value the data to be bound to this object
 	 */
 	public function setData($value);
 }

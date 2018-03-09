@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TRadioButton;
 
@@ -65,9 +66,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -77,7 +78,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -87,34 +88,40 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	/**
 	 * Updates the button text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update(
-				$this->getDefaultLabelID(), $value);
+				$this->getDefaultLabelID(),
+				$value
+			);
+		}
 	}
 
 	/**
 	 * Checks the radio button.
 	 * Updates radio button checked state on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param boolean whether the radio button is to be checked or not.
+	 * @param boolean $value whether the radio button is to be checked or not.
 	 */
 	public function setChecked($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		if(parent::getChecked() === $value)
+		if (parent::getChecked() === $value) {
 			return;
+		}
 
 		parent::setChecked($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->check($this, $value);
+		}
 	}
 
 	/**
@@ -131,12 +138,15 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
 	 *
 	 */
-	protected function renderInputTag($writer,$clientID,$onclick)
+	protected function renderInputTag($writer, $clientID, $onclick)
 	{
-		parent::renderInputTag($writer,$clientID,$onclick);
-		if ($this->getAutoPostBack())
+		parent::renderInputTag($writer, $clientID, $onclick);
+		if ($this->getAutoPostBack()) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
+		}
 	}
 
 	/**
@@ -164,7 +174,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * @param string radio button id
 	 * @param string label text
 	 */
-	protected function renderLabel($writer,$clientID,$text)
+	protected function renderLabel($writer, $clientID, $text)
 	{
 		$writer->addAttribute('id', $this->getDefaultLabelID());
 		parent::renderLabel($writer, $clientID, $text);
@@ -175,10 +185,10 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 */
 	protected function getDefaultLabelID()
 	{
-		if($attributes=$this->getViewState('LabelAttributes',null))
+		if ($attributes = $this->getViewState('LabelAttributes', null)) {
 			return $this->getLabelAttributes()->itemAt('id');
-		else
-			return $this->getClientID().'_label';
+		} else {
+			return $this->getClientID() . '_label';
+		}
 	}
 }
-

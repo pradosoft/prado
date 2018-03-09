@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\DataGateway;
+
 use Prado\Exceptions\TDbException;
 
 /**
@@ -39,7 +40,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 {
 	private $_builder;
 	/**
-	 * @param TDbCommandBuilder database specific database command builder.
+	 * @param TDbCommandBuilder $builder database specific database command builder.
 	 */
 	public function __construct($builder)
 	{
@@ -68,7 +69,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Executes a delete command.
-	 * @param TSqlCriteria delete conditions and parameters.
+	 * @param TSqlCriteria $criteria delete conditions and parameters.
 	 * @return integer number of records affected.
 	 */
 	public function delete($criteria)
@@ -76,38 +77,38 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$command = $this->getBuilder()->createDeleteCommand($where, $parameters);
-		$this->onCreateCommand($command,$criteria);
+		$this->onCreateCommand($command, $criteria);
 		$command->prepare();
 		return $command->execute();
 	}
 	/**
 	 * Updates the table with new data.
-	 * @param array date for update.
-	 * @param TSqlCriteria update conditions and parameters.
+	 * @param array $data date for update.
+	 * @param TSqlCriteria $criteria update conditions and parameters.
 	 * @return integer number of records affected.
 	 */
 	public function update($data, $criteria)
 	{
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
-		$command = $this->getBuilder()->createUpdateCommand($data,$where, $parameters);
-		$this->onCreateCommand($command,$criteria);
+		$command = $this->getBuilder()->createUpdateCommand($data, $where, $parameters);
+		$this->onCreateCommand($command, $criteria);
 		$command->prepare();
 		return $this->onExecuteCommand($command, $command->execute());
 	}
 	/**
-	 * @param array update for update
-	 * @param array primary key-value name pairs.
+	 * @param array $data update for update
+	 * @param array $keys primary key-value name pairs.
 	 * @return integer number of records affected.
 	 */
 	public function updateByPk($data, $keys)
 	{
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
+		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
 		return $this->update($data, new TSqlCriteria($where, $parameters));
 	}
 	/**
 	 * Find one record matching the critera.
-	 * @param TSqlCriteria find conditions and parameters.
+	 * @param TSqlCriteria $criteria find conditions and parameters.
 	 * @return array matching record.
 	 */
 	public function find($criteria)
@@ -117,7 +118,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Find one or more matching records.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAll($criteria)
@@ -127,156 +128,167 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbCommand.
 	 */
 	protected function getFindCommand($criteria)
 	{
-		if($criteria===null)
+		if ($criteria === null) {
 			return $this->getBuilder()->createFindCommand();
+		}
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$ordering = $criteria->getOrdersBy();
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
 		$select = $criteria->getSelect();
-		$command = $this->getBuilder()->createFindCommand($where,$parameters,$ordering,$limit,$offset,$select);
+		$command = $this->getBuilder()->createFindCommand($where, $parameters, $ordering, $limit, $offset, $select);
 		$this->onCreateCommand($command, $criteria);
 		return $command;
 	}
 	/**
-	 * @param mixed primary key value, or composite key values as array.
+	 * @param mixed $keys primary key value, or composite key values as array.
 	 * @return array matching record.
 	 */
 	public function findByPk($keys)
 	{
-		if($keys===null)
+		if ($keys === null) {
 			return null;
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array)$keys);
+		}
+		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$parameters));
+		$this->onCreateCommand($command, new TSqlCriteria($where, $parameters));
 		return $this->onExecuteCommand($command, $command->queryRow());
 	}
 	/**
-	 * @param array multiple primary key values or composite value arrays
+	 * @param array $keys multiple primary key values or composite value arrays
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAllByPk($keys)
 	{
-		$where = $this->getCompositeKeyCondition((array)$keys);
+		$where = $this->getCompositeKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createFindCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
-		return $this->onExecuteCommand($command,$command->query());
+		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
+		return $this->onExecuteCommand($command, $command->query());
 	}
-	public function findAllByIndex($criteria,$fields,$values)
+	public function findAllByIndex($criteria, $fields, $values)
 	{
-		$index = $this->getIndexKeyCondition($this->getTableInfo(),$fields,$values);
-		if(strlen($where = $criteria->getCondition())>0)
+		$index = $this->getIndexKeyCondition($this->getTableInfo(), $fields, $values);
+		if (strlen($where = $criteria->getCondition()) > 0) {
 			$criteria->setCondition("({$index}) AND ({$where})");
-		else
+		} else {
 			$criteria->setCondition($index);
+		}
 		$command = $this->getFindCommand($criteria);
 		$this->onCreateCommand($command, $criteria);
-		return $this->onExecuteCommand($command,$command->query());
+		return $this->onExecuteCommand($command, $command->query());
 	}
 
 	/**
-	 * @param array multiple primary key values or composite value arrays
+	 * @param array $keys multiple primary key values or composite value arrays
 	 * @return integer number of rows affected.
 	 */
 	public function deleteByPk($keys)
 	{
-		if(count($keys)==0)
+		if (count($keys) == 0) {
 			return 0;
-		$where = $this->getCompositeKeyCondition((array)$keys);
+		}
+		$where = $this->getCompositeKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createDeleteCommand($where);
-		$this->onCreateCommand($command, new TSqlCriteria($where,$keys));
+		$this->onCreateCommand($command, new TSqlCriteria($where, $keys));
 		$command->prepare();
-		return $this->onExecuteCommand($command,$command->execute());
+		return $this->onExecuteCommand($command, $command->execute());
 	}
 
-	public function getIndexKeyCondition($table,$fields,$values)
+	public function getIndexKeyCondition($table, $fields, $values)
 	{
-		if (!count($values))
+		if (!count($values)) {
 			return 'FALSE';
-		$columns = array();
+		}
+		$columns = [];
 		$tableName = $table->getTableFullName();
-		foreach($fields as $field)
-			$columns[] = $tableName.'.'.$table->getColumn($field)->getColumnName();
-		return '('.implode(', ',$columns).') IN '.$this->quoteTuple($values);
+		foreach ($fields as $field) {
+			$columns[] = $tableName . '.' . $table->getColumn($field)->getColumnName();
+		}
+		return '(' . implode(', ', $columns) . ') IN ' . $this->quoteTuple($values);
 	}
 
 	/**
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
-	 * @param array values for IN predicate
-	 * @param string SQL string for primary keys IN a list.
+	 * @param array $values values for IN predicate
+	 * @param string $values SQL string for primary keys IN a list.
 	 */
 	protected function getCompositeKeyCondition($values)
 	{
 		$primary = $this->getTableInfo()->getPrimaryKeys();
 		$count = count($primary);
-		if($count===0)
-		{
-			throw new TDbException('dbtablegateway_no_primary_key_found',
-				$this->getTableInfo()->getTableFullName());
+		if ($count === 0) {
+			throw new TDbException(
+				'dbtablegateway_no_primary_key_found',
+				$this->getTableInfo()->getTableFullName()
+			);
 		}
-		if(!is_array($values) || count($values) === 0)
-		{
-			throw new TDbException('dbtablegateway_missing_pk_values',
-				$this->getTableInfo()->getTableFullName());
+		if (!is_array($values) || count($values) === 0) {
+			throw new TDbException(
+				'dbtablegateway_missing_pk_values',
+				$this->getTableInfo()->getTableFullName()
+			);
 		}
-		if($count>1 && (!isset($values[0]) || !is_array($values[0])))
-			$values = array($values);
-		if($count > 1 && count($values[0]) !== $count)
-		{
-			throw new TDbException('dbtablegateway_pk_value_count_mismatch',
-				$this->getTableInfo()->getTableFullName());
+		if ($count > 1 && (!isset($values[0]) || !is_array($values[0]))) {
+			$values = [$values];
 		}
-		return $this->getIndexKeyCondition($this->getTableInfo(),$primary, $values);
+		if ($count > 1 && count($values[0]) !== $count) {
+			throw new TDbException(
+				'dbtablegateway_pk_value_count_mismatch',
+				$this->getTableInfo()->getTableFullName()
+			);
+		}
+		return $this->getIndexKeyCondition($this->getTableInfo(), $primary, $values);
 	}
 
 	/**
 	 * @param TDbConnection database connection.
-	 * @param array values
+	 * @param array $array values
 	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
 	 */
 	protected function quoteTuple($array)
 	{
 		$conn = $this->getDbConnection();
-		$data = array();
-		foreach($array as $k=>$v)
+		$data = [];
+		foreach ($array as $k => $v) {
 			$data[] = is_array($v) ? $this->quoteTuple($v) : $conn->quoteString($v);
-		return '('.implode(', ', $data).')';
+		}
+		return '(' . implode(', ', $data) . ')';
 	}
 
 	/**
 	 * Create the condition and parameters for find by primary.
-	 * @param array primary key values
+	 * @param array $values primary key values
 	 * @return array tuple($where, $parameters)
 	 */
 	protected function getPrimaryKeyCondition($values)
 	{
 		$primary = $this->getTableInfo()->getPrimaryKeys();
-		if(count($primary)===0)
-		{
-			throw new TDbException('dbtablegateway_no_primary_key_found',
-				$this->getTableInfo()->getTableFullName());
+		if (count($primary) === 0) {
+			throw new TDbException(
+				'dbtablegateway_no_primary_key_found',
+				$this->getTableInfo()->getTableFullName()
+			);
 		}
-		$criteria=array();
-		$bindings=array();
+		$criteria = [];
+		$bindings = [];
 		$i = 0;
-		foreach($primary as $key)
-		{
+		foreach ($primary as $key) {
 			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
-			$criteria[] = $column.' = :'.$key;
-			$bindings[$key] = isset($values[$key])?$values[$key]:$values[$i++];
+			$criteria[] = $column . ' = :' . $key;
+			$bindings[$key] = isset($values[$key]) ? $values[$key] : $values[$i++];
 		}
-		return array(implode(' AND ', $criteria), $bindings);
+		return [implode(' AND ', $criteria), $bindings];
 	}
 
 	/**
 	 * Find one matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findBySql($criteria)
@@ -287,7 +299,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Find zero or more matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbDataReader record reader.
 	 */
 	public function findAllBySql($criteria)
@@ -298,7 +310,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Build sql command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return TDbCommand command corresponding to the criteria.
 	 */
 	protected function getSqlCommand($criteria)
@@ -307,10 +319,12 @@ class TDataGatewayCommand extends \Prado\TComponent
 		$ordering = $criteria->getOrdersBy();
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
-		if(count($ordering) > 0)
+		if (count($ordering) > 0) {
 			$sql = $this->getBuilder()->applyOrdering($sql, $ordering);
-		if($limit>=0 || $offset>=0)
+		}
+		if ($limit >= 0 || $offset >= 0) {
 			$sql = $this->getBuilder()->applyLimitOffset($sql, $limit, $offset);
+		}
 		$command = $this->getBuilder()->createCommand($sql);
 		$this->getBuilder()->bindArrayValues($command, $criteria->getParameters()->toArray());
 		$this->onCreateCommand($command, $criteria);
@@ -318,21 +332,22 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlCriteria $criteria
+	 * @param TSqlCriteria $criteria $criteria
 	 * @return integer number of records.
 	 */
 	public function count($criteria)
 	{
-		if($criteria===null)
-			return (int)$this->getBuilder()->createCountCommand()->queryScalar();
+		if ($criteria === null) {
+			return (int) $this->getBuilder()->createCountCommand()->queryScalar();
+		}
 		$where = $criteria->getCondition();
 		$parameters = $criteria->getParameters()->toArray();
 		$ordering = $criteria->getOrdersBy();
 		$limit = $criteria->getLimit();
 		$offset = $criteria->getOffset();
-		$command = $this->getBuilder()->createCountCommand($where,$parameters,$ordering,$limit,$offset);
+		$command = $this->getBuilder()->createCountCommand($where, $parameters, $ordering, $limit, $offset);
 		$this->onCreateCommand($command, $criteria);
-		return $this->onExecuteCommand($command, (int)$command->queryScalar());
+		return $this->onExecuteCommand($command, (int) $command->queryScalar());
 	}
 
 	/**
@@ -344,11 +359,10 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function insert($data)
 	{
-		$command=$this->getBuilder()->createInsertCommand($data);
-		$this->onCreateCommand($command, new TSqlCriteria(null,$data));
+		$command = $this->getBuilder()->createInsertCommand($data);
+		$this->onCreateCommand($command, new TSqlCriteria(null, $data));
 		$command->prepare();
-		if($this->onExecuteCommand($command, $command->execute()) > 0)
-		{
+		if ($this->onExecuteCommand($command, $command->execute()) > 0) {
 			$value = $this->getLastInsertId();
 			return $value !== null ? $value : true;
 		}
@@ -366,50 +380,56 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string __call method name
-	 * @param string criteria conditions
-	 * @param array method arguments
+	 * @param string $method __call method name
+	 * @param string $condition criteria conditions
+	 * @param array $args method arguments
 	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)
 	{
 		$fields = $this->extractMatchingConditions($method, $condition);
-		$args=count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
-		if(count($fields)>count($args))
-		{
-			throw new TDbException('dbtablegateway_mismatch_args_exception',
-				$method,count($fields),count($args));
+		$args = count($args) === 1 && is_array($args[0]) ? $args[0] : $args;
+		if (count($fields) > count($args)) {
+			throw new TDbException(
+				'dbtablegateway_mismatch_args_exception',
+				$method,
+				count($fields),
+				count($args)
+			);
 		}
-		return new TSqlCriteria(implode(' ',$fields), $args);
+		return new TSqlCriteria(implode(' ', $fields), $args);
 	}
 
 	/**
 	 * Calculates the AND/OR condition from dynamic method substrings using
 	 * table meta data, allows for any AND-OR combinations.
-	 * @param string dynamic method name
-	 * @param string dynamic method search criteria
+	 * @param string $method dynamic method name
+	 * @param string $condition dynamic method search criteria
 	 * @return array search condition substrings
 	 */
 	protected function extractMatchingConditions($method, $condition)
 	{
 		$table = $this->getTableInfo();
 		$columns = $table->getLowerCaseColumnNames();
-		$regexp = '/('.implode('|', array_keys($columns)).')(and|_and_|or|_or_)?/i';
-		$matches = array();
-		if(!preg_match_all($regexp, strtolower($condition), $matches,PREG_SET_ORDER))
-		{
-			throw new TDbException('dbtablegateway_mismatch_column_name',
-				$method, implode(', ', $columns), $table->getTableFullName());
+		$regexp = '/(' . implode('|', array_keys($columns)) . ')(and|_and_|or|_or_)?/i';
+		$matches = [];
+		if (!preg_match_all($regexp, strtolower($condition), $matches, PREG_SET_ORDER)) {
+			throw new TDbException(
+				'dbtablegateway_mismatch_column_name',
+				$method,
+				implode(', ', $columns),
+				$table->getTableFullName()
+			);
 		}
 
-		$fields = array();
-		foreach($matches as $match)
-		{
+		$fields = [];
+		foreach ($matches as $match) {
 			$key = $columns[$match[1]];
 			$column = $table->getColumn($key)->getColumnName();
 			$sql = $column . ' = ? ';
-			if(count($match) > 2)
+			if (count($match) > 2) {
 				$sql .= strtoupper(str_replace('_', '', $match[2]));
+			}
 			$fields[] = $sql;
 		}
 		return $fields;
@@ -425,7 +445,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function onCreateCommand($command, $criteria)
 	{
-		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command,$criteria));
+		$this->raiseEvent('OnCreateCommand', $this, new TDataGatewayEventParameter($command, $criteria));
 	}
 
 	/**

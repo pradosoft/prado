@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
@@ -40,12 +41,12 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d=array();
+	private $_d = [];
 	/**
 	 * number of items
 	 * @var integer
 	 */
-	private $_c=0;
+	private $_c = 0;
 
 	/**
 	 * Constructor.
@@ -53,10 +54,11 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null)
+	public function __construct($data = null)
 	{
-		if($data!==null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 	}
 
 	/**
@@ -70,22 +72,20 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Copies iterable data into the queue.
 	 * Note, existing data in the list will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || ($data instanceof \Traversable))
-		{
+		if (is_array($data) || ($data instanceof \Traversable)) {
 			$this->clear();
-			foreach($data as $item)
-			{
-				$this->_d[]=$item;
+			foreach ($data as $item) {
+				$this->_d[] = $item;
 				++$this->_c;
 			}
-		}
-		else if($data!==null)
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('queue_data_not_iterable');
+		}
 	}
 
 	/**
@@ -93,17 +93,17 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function clear()
 	{
-		$this->_c=0;
-		$this->_d=array();
+		$this->_c = 0;
+		$this->_d = [];
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return boolean whether the queue contains the item
 	 */
 	public function contains($item)
 	{
-		return array_search($item,$this->_d,true)!==false;
+		return array_search($item, $this->_d, true) !== false;
 	}
 
 	/**
@@ -114,10 +114,11 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function peek()
 	{
-		if($this->_c===0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('queue_empty');
-		else
+		} else {
 			return $this->_d[0];
+		}
 	}
 
 	/**
@@ -127,10 +128,9 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function dequeue()
 	{
-		if($this->_c===0)
+		if ($this->_c === 0) {
 			throw new TInvalidOperationException('queue_empty');
-		else
-		{
+		} else {
 			--$this->_c;
 			return array_shift($this->_d);
 		}
@@ -138,7 +138,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Adds an object to the end of the queue.
-	 * @param mixed the item to be appended into the queue
+	 * @param mixed $item the item to be appended into the queue
 	 */
 	public function enqueue($item)
 	{
@@ -153,7 +153,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**

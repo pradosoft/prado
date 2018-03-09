@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\ITemplate;
@@ -48,22 +49,23 @@ use Prado\Web\UI\ITemplate;
  */
 class TConditional extends \Prado\Web\UI\TControl
 {
-	private $_condition='true';
+	private $_condition = 'true';
 	private $_trueTemplate;
 	private $_falseTemplate;
-	private $_creatingChildren=false;
+	private $_creatingChildren = false;
 
 	/**
 	 * Processes an object that is created during parsing template.
 	 * This method overrides the parent implementation by removing
 	 * all contents enclosed in the template tag.
-	 * @param string|TComponent text string or component parsed and instantiated in template
+	 * @param string|TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
 	{
-		if($this->_creatingChildren)
+		if ($this->_creatingChildren) {
 			parent::addParsedObject($object);
+		}
 	}
 
 	/**
@@ -73,24 +75,21 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function createChildControls()
 	{
-		$this->_creatingChildren=true;
-		$result=true;
-		try
-		{
-			$result=$this->getTemplateControl()->evaluateExpression($this->_condition);
+		$this->_creatingChildren = true;
+		$result = true;
+		try {
+			$result = $this->getTemplateControl()->evaluateExpression($this->_condition);
+		} catch (\Exception $e) {
+			throw new TInvalidDataValueException('conditional_condition_invalid', $this->_condition, $e->getMessage());
 		}
-		catch(\Exception $e)
-		{
-			throw new TInvalidDataValueException('conditional_condition_invalid',$this->_condition,$e->getMessage());
+		if ($result) {
+			if ($this->_trueTemplate) {
+				$this->_trueTemplate->instantiateIn($this->getTemplateControl(), $this);
+			}
+		} elseif ($this->_falseTemplate) {
+			$this->_falseTemplate->instantiateIn($this->getTemplateControl(), $this);
 		}
-		if($result)
-		{
-			if($this->_trueTemplate)
-				$this->_trueTemplate->instantiateIn($this->getTemplateControl(),$this);
-		}
-		else if($this->_falseTemplate)
-			$this->_falseTemplate->instantiateIn($this->getTemplateControl(),$this);
-		$this->_creatingChildren=false;
+		$this->_creatingChildren = false;
 	}
 
 	/**
@@ -104,11 +103,11 @@ class TConditional extends \Prado\Web\UI\TControl
 	/**
 	 * Sets the PHP expression to be evaluated for conditionally displaying content.
 	 * The context of the expression is the template control containing TConditional.
-	 * @param string the PHP expression used for determining which template to use.
+	 * @param string $value the PHP expression used for determining which template to use.
 	 */
 	public function setCondition($value)
 	{
-		$this->_condition=TPropertyValue::ensureString($value);
+		$this->_condition = TPropertyValue::ensureString($value);
 	}
 
 	/**
@@ -124,7 +123,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setTrueTemplate(ITemplate $value)
 	{
-		$this->_trueTemplate=$value;
+		$this->_trueTemplate = $value;
 	}
 
 	/**
@@ -140,7 +139,6 @@ class TConditional extends \Prado\Web\UI\TControl
 	 */
 	public function setFalseTemplate(ITemplate $value)
 	{
-		$this->_falseTemplate=$value;
+		$this->_falseTemplate = $value;
 	}
 }
-

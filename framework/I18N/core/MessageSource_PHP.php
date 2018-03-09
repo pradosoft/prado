@@ -50,36 +50,35 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Constructor.
-	 * @param string the directory where the messages are stored.
+	 * @param string $source the directory where the messages are stored.
 	 * @see MessageSource::factory();
 	 */
-	function __construct($source)
+	public function __construct($source)
 	{
-		$this->source = (string)$source;
+		$this->source = (string) $source;
 	}
 
 	/**
 	 * Load the messages from a PHP file.
-	 * @param string PHP file.
+	 * @param string $filename PHP file.
 	 * @return array of messages.
 	 */
 	protected function &loadData($filename)
 	{
 		//load it.
-		if(false === ($php = include($filename))) {
+		if (false === ($php = include($filename))) {
 			return false;
 		}
 
 		$translationUnit = $php['trans-unit'];
 
-		$translations = array();
+		$translations = [];
 
-		foreach($translationUnit as $k => $unit)
-		{
-			$source = (string)$unit['source'];
-			$translations[$source][] = (string)$unit['target'];
-			$translations[$source][] = (string)$k;
-			$translations[$source][] = array_key_exists('note', $unit) ? (string)$unit['note'] : '';
+		foreach ($translationUnit as $k => $unit) {
+			$source = (string) $unit['source'];
+			$translations[$source][] = (string) $unit['target'];
+			$translations[$source][] = (string) $k;
+			$translations[$source][] = array_key_exists('note', $unit) ? (string) $unit['note'] : '';
 		}
 
 		return $translations;
@@ -88,7 +87,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Get the last modified unix-time for this particular catalogue+variant.
 	 * Just use the file modified time.
-	 * @param string catalogue+variant
+	 * @param string $source catalogue+variant
 	 * @return int last modified in unix-time format.
 	 */
 	protected function getLastModified($source)
@@ -99,17 +98,17 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Get the PHP file for a specific message catalogue and cultural
 	 * variant.
-	 * @param string message catalogue
+	 * @param string $variant message catalogue
 	 * @return string full path to the PHP file.
 	 */
 	protected function getSource($variant)
 	{
-		return $this->source.'/'.$variant;
+		return $this->source . '/' . $variant;
 	}
 
 	/**
 	 * Determin if the PHP file source is valid.
-	 * @param string PHP file
+	 * @param string $source PHP file
 	 * @return boolean true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
@@ -119,27 +118,25 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Get all the variants of a particular catalogue.
-	 * @param string catalogue name
+	 * @param string $catalogue catalogue name
 	 * @return array list of all variants for this catalogue.
 	 */
 	protected function getCatalogueList($catalogue)
 	{
-		$variants = explode('_',$this->culture);
-		$source = $catalogue.$this->dataExt;
-		$catalogues = array($source);
+		$variants = explode('_', $this->culture);
+		$source = $catalogue . $this->dataExt;
+		$catalogues = [$source];
 		$variant = null;
 
-		for($i = 0, $k = count($variants); $i < $k; ++$i)
-		{
-			if(isset($variants[$i]{0}))
-			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $catalogue.$this->dataSeparator.$variant.$this->dataExt;
+		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
+			if (isset($variants[$i]{0})) {
+				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
+				$catalogues[] = $catalogue . $this->dataSeparator . $variant . $this->dataExt;
 			}
 		}
 
 		$byDir = $this->getCatalogueByDir($catalogue);
-		return array_merge($byDir,array_reverse($catalogues));
+		return array_merge($byDir, array_reverse($catalogues));
 	}
 
 	/**
@@ -151,16 +148,14 @@ class MessageSource_PHP extends MessageSource
 	 */
 	private function getCatalogueByDir($catalogue)
 	{
-		$variants = explode('_',$this->culture);
-		$catalogues = array();
+		$variants = explode('_', $this->culture);
+		$catalogues = [];
 		$variant = null;
 
-		for($i = 0, $k = count($variants); $i < $k; ++$i)
-		{
-			if(isset($variants[$i]{0}))
-			{
-				$variant .= ($variant)?'_'.$variants[$i]:$variants[$i];
-				$catalogues[] = $variant.'/'.$catalogue.$this->dataExt;
+		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
+			if (isset($variants[$i]{0})) {
+				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
+				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
 		}
 
@@ -184,32 +179,29 @@ class MessageSource_PHP extends MessageSource
 	 * E.g. array('messages','en_AU')
 	 * @return array list of catalogues
 	 */
-	protected function getCatalogues($dir=null,$variant=null)
+	protected function getCatalogues($dir = null, $variant = null)
 	{
-		$dir = $dir?$dir:$this->source;
+		$dir = $dir ? $dir : $this->source;
 		$files = scandir($dir);
-		$catalogue = array();
+		$catalogue = [];
 
-		foreach($files as $file)
-		{
-			if(is_dir($dir.'/'.$file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/',$file)) {
+		foreach ($files as $file) {
+			if (is_dir($dir . '/' . $file) && preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
 				$catalogue = array_merge(
 					$catalogue,
-					$this->getCatalogues($dir.'/'.$file, $file)
+					$this->getCatalogues($dir . '/' . $file, $file)
 				);
 			}
 
-			$pos = strpos($file,$this->dataExt);
-			if($pos >0 && substr($file, -1*strlen($this->dataExt)) == $this->dataExt)
-			{
-				$name = substr($file,0,$pos);
-				$dot = strrpos($name,$this->dataSeparator);
+			$pos = strpos($file, $this->dataExt);
+			if ($pos > 0 && substr($file, -1 * strlen($this->dataExt)) == $this->dataExt) {
+				$name = substr($file, 0, $pos);
+				$dot = strrpos($name, $this->dataSeparator);
 				$culture = $variant;
 				$cat = $name;
 
-				if(is_int($dot))
-				{
-					$culture = substr($name, $dot+1, strlen($name));
+				if (is_int($dot)) {
+					$culture = substr($name, $dot + 1, strlen($name));
 					$cat = substr($name, 0, $dot);
 				}
 
@@ -230,17 +222,16 @@ class MessageSource_PHP extends MessageSource
 	 * @see update()
 	 * @see delete()
 	 */
-	private function getVariants($catalogue='messages')
+	private function getVariants($catalogue = 'messages')
 	{
-		if($catalogue === null) {
+		if ($catalogue === null) {
 			$catalogue = 'messages';
 		}
 
-		foreach($this->getCatalogueList($catalogue) as $variant)
-		{
+		foreach ($this->getCatalogueList($catalogue) as $variant) {
 			$file = $this->getSource($variant);
-			if(is_file($file)) {
-				return array($variant, $file);
+			if (is_file($file)) {
+				return [$variant, $file];
 			}
 		}
 		return false;
@@ -251,11 +242,13 @@ class MessageSource_PHP extends MessageSource
 		$php['info']['date'] = @date('Y-m-d\TH:i:s\Z');
 
 		//save it and clear the cache for this variant
-		if(false === file_put_contents($filename, "<?php\nreturn " . var_export($php, true) . ';'))
+		if (false === file_put_contents($filename, "<?php\nreturn " . var_export($php, true) . ';')) {
 			return false;
+		}
 
-		if(!empty($this->cache))
+		if (!empty($this->cache)) {
 			$this->cache->clean($variant, $this->culture);
+		}
 
 		return true;
 	}
@@ -267,22 +260,22 @@ class MessageSource_PHP extends MessageSource
 	 * @param string the catalogue to add to
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
-	public function save($catalogue='messages')
+	public function save($catalogue = 'messages')
 	{
 		$messages = $this->untranslated;
-		if(count($messages) <= 0) {
+		if (count($messages) <= 0) {
 			return false;
 		}
 
 		$variants = $this->getVariants($catalogue);
 
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			list($variant, $filename) = $this->createMessageTemplate($catalogue);
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to save to file {$filename}, file must be writable.");
 		}
 
@@ -290,12 +283,11 @@ class MessageSource_PHP extends MessageSource
 		$php = include($filename);
 
 		//for each message add it to the XML file using DOM
-		foreach($messages as $message)
-		{
-			$php['trans-unit'][]= array(
+		foreach ($messages as $message) {
+			$php['trans-unit'][] = [
 				'source' => $message,
 				'target' => '',
-			);
+			];
 		}
 
 		return $this->internalSaveFile($php, $filename, $variant);
@@ -303,23 +295,23 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Update the translation.
-	 * @param string the source string.
-	 * @param string the new translation string.
-	 * @param string comments
-	 * @param string the catalogue to save to.
+	 * @param string $text the source string.
+	 * @param string $target the new translation string.
+	 * @param string $comments comments
+	 * @param string $catalogue the catalogue to save to.
 	 * @return boolean true if translation was updated, false otherwise.
 	 */
-	public function update($text, $target, $comments, $catalogue='messages')
+	public function update($text, $target, $comments, $catalogue = 'messages')
 	{
 		$variants = $this->getVariants($catalogue);
 
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			return false;
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to update file {$filename}, file must be writable.");
 		}
 
@@ -327,13 +319,12 @@ class MessageSource_PHP extends MessageSource
 		$php = include($filename);
 
 		//for each of the existin units
-		foreach($php['trans-unit'] as $k => $unit)
-		{
-			if($unit['source'] == $text)
-			{
+		foreach ($php['trans-unit'] as $k => $unit) {
+			if ($unit['source'] == $text) {
 				$php['trans-unit'][$k]['target'] = $target;
-				if(!empty($comments))
+				if (!empty($comments)) {
 					$php['trans-unit'][$k]['note'] = $comments;
+				}
 
 				break;
 			}
@@ -344,20 +335,20 @@ class MessageSource_PHP extends MessageSource
 
 	/**
 	 * Delete a particular message from the specified catalogue.
-	 * @param string the source message to delete.
-	 * @param string the catalogue to delete from.
+	 * @param string $message the source message to delete.
+	 * @param string $catalogue the catalogue to delete from.
 	 * @return boolean true if deleted, false otherwise.
 	 */
-	public function delete($message, $catalogue='messages')
+	public function delete($message, $catalogue = 'messages')
 	{
 		$variants = $this->getVariants($catalogue);
-		if($variants) {
+		if ($variants) {
 			list($variant, $filename) = $variants;
 		} else {
 			return false;
 		}
 
-		if(is_writable($filename) == false) {
+		if (is_writable($filename) == false) {
 			throw new TIOException("Unable to modify file {$filename}, file must be writable.");
 		}
 
@@ -365,10 +356,8 @@ class MessageSource_PHP extends MessageSource
 		$php = include($filename);
 
 		//for each of the existin units
-		foreach($php['trans-unit'] as $k => $unit)
-		{
-			if($unit['source'] == $message)
-			{
+		foreach ($php['trans-unit'] as $k => $unit) {
+			if ($unit['source'] == $message) {
 				unset($php['trans-unit'][$k]);
 				return $this->internalSaveFile($php, $filename, $variant);
 			}
@@ -379,28 +368,28 @@ class MessageSource_PHP extends MessageSource
 
 	protected function createMessageTemplate($catalogue)
 	{
-		if($catalogue === null) {
+		if ($catalogue === null) {
 			$catalogue = 'messages';
 		}
-		
+
 		$variants = $this->getCatalogueList($catalogue);
 		$variant = array_shift($variants);
 		$file = $this->getSource($variant);
 		$dir = dirname($file);
 
-		if(!is_dir($dir)) {
+		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir,PRADO_CHMOD);
+			@chmod($dir, PRADO_CHMOD);
 		}
 
-		if(!is_dir($dir)) {
+		if (!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");
 		}
-		
+
 		file_put_contents($file, $this->getTemplate($catalogue));
 		chmod($file, PRADO_CHMOD);
 
-		return array($variant, $file);
+		return [$variant, $file];
 	}
 
 	protected function getTemplate($catalogue)

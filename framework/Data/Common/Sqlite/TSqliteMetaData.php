@@ -18,7 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-
 /**
  * TSqliteMetaData loads SQLite database table and column information.
  *
@@ -38,7 +37,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -48,7 +47,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -58,7 +57,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column alias
+	 * @param string $name $name column alias
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -68,41 +67,43 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $tableName table name.
 	 * @return TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($tableName)
 	{
-		$tableName = str_replace("'",'',$tableName);
+		$tableName = str_replace("'", '', $tableName);
 		$this->getDbConnection()->setActive(true);
 		$table = $this->getDbConnection()->quoteString($tableName);
 		$sql = "PRAGMA table_info({$table})";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$foreign = $this->getForeignKeys($table);
-		$index=0;
-		$columns=array();
-		$primary=array();
-		foreach($command->query() as $col)
-		{
+		$index = 0;
+		$columns = [];
+		$primary = [];
+		foreach ($command->query() as $col) {
 			$col['index'] = $index++;
 			$column = $this->processColumn($col, $foreign);
 			$columns[$col['name']] = $column;
-			if($column->getIsPrimaryKey())
+			if ($column->getIsPrimaryKey()) {
 				$primary[] = $col['name'];
+			}
 		}
 		$info['TableName'] = $tableName;
-		if($this->getIsView($tableName))
+		if ($this->getIsView($tableName)) {
 			$info['IsView'] = true;
-		if(count($columns)===0)
+		}
+		if (count($columns) === 0) {
 			throw new TDbException('dbmetadata_invalid_table_view', $tableName);
+		}
 		$class = $this->getTableInfoClass();
-		$tableInfo = new $class($info,$primary,$foreign);
+		$tableInfo = new $class($info, $primary, $foreign);
 		$tableInfo->getColumns()->copyFrom($columns);
 		return $tableInfo;
 	}
 
 	/**
-	 * @param string table name.
+	 * @param string $tableName table name.
 	 * @return boolean true if the table is a view.
 	 */
 	protected function getIsView($tableName)
@@ -111,49 +112,51 @@ class TSqliteMetaData extends TDbMetaData
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar()) === 1;
+		return (int) ($command->queryScalar()) === 1;
 	}
 
 	/**
-	 * @param array column information.
-	 * @param array foreign key details.
+	 * @param array $col column information.
+	 * @param array $foreign foreign key details.
 	 * @return TSqliteTableColumn column details.
 	 */
 	protected function processColumn($col, $foreign)
 	{
 		$columnId = $col['name']; //use column name as column Id
 
-		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnName'] = '"' . $columnId . '"'; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
 
-		if($col['notnull']!=='99')
+		if ($col['notnull'] !== '99') {
 			$info['AllowNull'] = true;
+		}
 
-		if($col['pk']==='1')
+		if ($col['pk'] === '1') {
 			$info['IsPrimaryKey'] = true;
-		if($this->isForeignKeyColumn($columnId, $foreign))
+		}
+		if ($this->isForeignKeyColumn($columnId, $foreign)) {
 			$info['IsForeignKey'] = true;
+		}
 
-		if($col['dflt_value']!==null)
+		if ($col['dflt_value'] !== null) {
 			$info['DefaultValue'] = $col['dflt_value'];
+		}
 
 		$type = strtolower($col['type']);
-		$info['AutoIncrement'] = $type==='integer' && $col['pk']==='1';
+		$info['AutoIncrement'] = $type === 'integer' && $col['pk'] === '1';
 
 		$info['DbType'] = $type;
-		$match=array();
-		if(is_int($pos=strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match))
-		{
+		$match = [];
+		if (is_int($pos = strpos($type, '(')) && preg_match('/\((.*)\)/', $type, $match)) {
 			$ps = explode(',', $match[1]);
-			if(count($ps)===2)
-			{
-				$info['NumericPrecision'] = intval($ps[0]);
-				$info['NumericScale'] = intval($ps[1]);
+			if (count($ps) === 2) {
+				$info['NumericPrecision'] = (int) ($ps[0]);
+				$info['NumericScale'] = (int) ($ps[1]);
+			} else {
+				$info['ColumnSize'] = (int) ($match[1]);
 			}
-			else
-				$info['ColumnSize']=intval($match[1]);
-			$info['DbType'] = substr($type,0,$pos);
+			$info['DbType'] = substr($type, 0, $pos);
 		}
 
 		return new TSqliteTableColumn($info);
@@ -162,16 +165,15 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 *
 	 *
-	 * @param string quoted table name.
+	 * @param string $table quoted table name.
 	 * @return array foreign key details.
 	 */
 	protected function getForeignKeys($table)
 	{
 		$sql = "PRAGMA foreign_key_list({$table})";
 		$command = $this->getDbConnection()->createCommand($sql);
-		$fkeys = array();
-		foreach($command->query() as $col)
-		{
+		$fkeys = [];
+		foreach ($command->query() as $col) {
 			$fkeys[$col['table']]['keys'][$col['from']] = $col['to'];
 			$fkeys[$col['table']]['table'] = $col['table'];
 		}
@@ -179,28 +181,28 @@ class TSqliteMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string column name.
-	 * @param array foreign key column names.
+	 * @param string $columnId column name.
+	 * @param array $foreign foreign key column names.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $foreign)
 	{
-		foreach($foreign as $fk)
-		{
-			if(in_array($columnId, array_keys($fk['keys'])))
+		foreach ($foreign as $fk) {
+			if (in_array($columnId, array_keys($fk['keys']))) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-        /**
+	/**
 	 * Returns all table names in the database.
 	 * @param string $schema the schema of the tables. This is not used for sqlite database.
 	 * @return array all table names in the database.
 	 */
-	public function findTableNames($schema='')
+	public function findTableNames($schema = '')
 	{
-		$sql="SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
+		$sql = "SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'";
 		return $this->getDbConnection()->createCommand($sql)->queryColumn();
 	}
 }

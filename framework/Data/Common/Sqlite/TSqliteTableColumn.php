@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Sqlite;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a PostgreSQL database table.
  *
@@ -30,7 +29,7 @@ class TSqliteTableColumn extends TDbTableColumn
 	/**
 	 * @TODO add sqlite types.
 	 */
-	private static $types = array();
+	private static $types = [];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
@@ -39,10 +38,10 @@ class TSqliteTableColumn extends TDbTableColumn
 	public function getPHPType()
 	{
 		$dbtype = strtolower($this->getDbType());
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
+		foreach (self::$types as $type => $dbtypes) {
+			if (in_array($dbtype, $dbtypes)) {
 				return $type;
+			}
 		}
 		return 'string';
 	}
@@ -63,4 +62,3 @@ class TSqliteTableColumn extends TDbTableColumn
 		return $this->getAutoIncrement();
 	}
 }
-

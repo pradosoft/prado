@@ -1,6 +1,7 @@
 <?php
 
 namespace Prado\Data\SqlMap\DataMapper;
+
 use Prado\Exceptions\TException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -24,31 +25,32 @@ class TSqlMapException extends TException
 	public function __construct($errorMessage)
 	{
 		$this->setErrorCode($errorMessage);
-		$errorMessage=$this->translateErrorMessage($errorMessage);
-		$args=func_get_args();
+		$errorMessage = $this->translateErrorMessage($errorMessage);
+		$args = func_get_args();
 		array_shift($args);
-		$n=count($args);
-		$tokens=array();
-		for($i=0;$i<$n;++$i)
-		{
-			if($args[$i] instanceof SimpleXMLElement)
-				$tokens['{'.$i.'}']=$this->implodeNode($args[$i]);
-			else
-				$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
+		$n = count($args);
+		$tokens = [];
+		for ($i = 0;$i < $n;++$i) {
+			if ($args[$i] instanceof SimpleXMLElement) {
+				$tokens['{' . $i . '}'] = $this->implodeNode($args[$i]);
+			} else {
+				$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+			}
 		}
-		parent::__construct(strtr($errorMessage,$tokens));
+		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
 	/**
-	 * @param SimpleXmlElement node
+	 * @param SimpleXmlElement $node node
 	 * @return string tag name and attribute names and values.
 	 */
 	protected function implodeNode($node)
 	{
-		$attributes=array();
-		foreach($node->attributes() as $k=>$v)
-			$attributes[]=$k.'="'.(string)$v.'"';
-		return '<'.$node->getName().' '.implode(' ',$attributes).'>';
+		$attributes = [];
+		foreach ($node->attributes() as $k => $v) {
+			$attributes[] = $k . '="' . (string) $v . '"';
+		}
+		return '<' . $node->getName() . ' ' . implode(' ', $attributes) . '>';
 	}
 
 	/**
@@ -56,11 +58,12 @@ class TSqlMapException extends TException
 	 */
 	protected function getErrorMessageFile()
 	{
-		$lang=Prado::getPreferredLanguage();
-		$dir=dirname(__FILE__);
-		$msgFile=$dir.'/messages-'.$lang.'.txt';
-		if(!is_file($msgFile))
-			$msgFile=$dir.'/messages.txt';
+		$lang = Prado::getPreferredLanguage();
+		$dir = __DIR__;
+		$msgFile = $dir . '/messages-' . $lang . '.txt';
+		if (!is_file($msgFile)) {
+			$msgFile = $dir . '/messages.txt';
+		}
 		return $msgFile;
 	}
 }

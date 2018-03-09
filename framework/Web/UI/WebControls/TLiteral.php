@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
@@ -40,16 +41,16 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the static text of the TLiteral
-	 * @param string the text to be set
+	 * @param string $value the text to be set
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -83,32 +84,31 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 */
 	public function getEncode()
 	{
-		return $this->getViewState('Encode',false);
+		return $this->getViewState('Encode', false);
 	}
 
 	/**
-	 * @param boolean  whether the rendered text should be HTML-encoded.
+	 * @param boolean $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{
-		$this->setViewState('Encode',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('Encode', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
 	 * Renders the literal control.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		if(($text=$this->getText())!=='')
-		{
-			if($this->getEncode())
+		if (($text = $this->getText()) !== '') {
+			if ($this->getEncode()) {
 				$writer->write(THttpUtility::htmlEncode($text));
-			else
+			} else {
 				$writer->write($text);
-		}
-		else
+			}
+		} else {
 			parent::render($writer);
+		}
 	}
 }
-

@@ -12,6 +12,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Caching\ICache;
 use Prado\Exceptions\TConfigurationException;
 
@@ -44,29 +45,30 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TCacheHttpSession extends THttpSession
 {
-	private $_prefix='session';
-	private $_cacheModuleID='';
+	private $_prefix = 'session';
+	private $_cacheModuleID = '';
 	private $_cache;
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule.
 	 * It reads the CacheModule property.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
-    public function init($config)
-    {
-		if($this->_cacheModuleID==='')
+	public function init($config)
+	{
+		if ($this->_cacheModuleID === '') {
 			throw new TConfigurationException('cachesession_cachemoduleid_required');
-		else if(($cache=$this->getApplication()->getModule($this->_cacheModuleID))===null)
-			throw new TConfigurationException('cachesession_cachemodule_inexistent',$this->_cacheModuleID);
-		else if($cache instanceof ICache)
-			$this->_cache=$cache;
-		else
-			throw new TConfigurationException('cachesession_cachemodule_invalid',$this->_cacheModuleID);
+		} elseif (($cache = $this->getApplication()->getModule($this->_cacheModuleID)) === null) {
+			throw new TConfigurationException('cachesession_cachemodule_inexistent', $this->_cacheModuleID);
+		} elseif ($cache instanceof ICache) {
+			$this->_cache = $cache;
+		} else {
+			throw new TConfigurationException('cachesession_cachemodule_invalid', $this->_cacheModuleID);
+		}
 		$this->setUseCustomStorage(true);
 		parent::init($config);
-    }
+	}
 
 	/**
 	 * @return string the ID of the cache module.
@@ -77,11 +79,11 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-	 * @param string the ID of the cache module.
+	 * @param string $value the ID of the cache module.
 	 */
 	public function setCacheModuleID($value)
 	{
-		$this->_cacheModuleID=$value;
+		$this->_cacheModuleID = $value;
 	}
 
 	/**
@@ -94,34 +96,34 @@ class TCacheHttpSession extends THttpSession
 
 	/**
 	 * Session read handler.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return string the session data
 	 */
 	public function _read($id)
 	{
-	    return (string)$this->_cache->get($this->calculateKey($id));
+		return (string) $this->_cache->get($this->calculateKey($id));
 	}
 
 	/**
 	 * Session write handler.
-	 * @param string session ID
-	 * @param string session data
+	 * @param string $id session ID
+	 * @param string $data session data
 	 * @return boolean whether session write is successful
 	 */
-	public function _write($id,$data)
+	public function _write($id, $data)
 	{
-		return $this->_cache->set($this->calculateKey($id),$data,$this->getTimeout());
+		return $this->_cache->set($this->calculateKey($id), $data, $this->getTimeout());
 	}
 
 	/**
 	 * Session destroy handler.
 	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param string session ID
+	 * @param string $id session ID
 	 * @return boolean whether session is destroyed successfully
 	 */
 	public function _destroy($id)
 	{
-	    return $this->_cache->delete($this->calculateKey($id));
+		return $this->_cache->delete($this->calculateKey($id));
 	}
 
 	/**
@@ -129,24 +131,23 @@ class TCacheHttpSession extends THttpSession
 	 */
 	public function getKeyPrefix()
 	{
-	    return $this->_prefix;
+		return $this->_prefix;
 	}
 
 	/**
-     * @param string prefix of session variable name to avoid conflict with other cache data
-     */
+	 * @param string $value prefix of session variable name to avoid conflict with other cache data
+	 */
 	public function setKeyPrefix($value)
 	{
-	    $this->_prefix=$value;
+		$this->_prefix = $value;
 	}
 
 	/**
-	 * @param string session variable name
+	 * @param string $id session variable name
 	 * @return string a safe cache key associated with the session variable name
 	 */
 	protected function calculateKey($id)
 	{
-	    return $this->_prefix.':'.$id;
+		return $this->_prefix . ':' . $id;
 	}
 }
-

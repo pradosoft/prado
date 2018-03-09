@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TStyle;
 
 /**
@@ -24,34 +25,38 @@ use Prado\Web\UI\WebControls\TStyle;
 class TStyleDiff extends TViewStateDiff
 {
 	/**
-	 * @param TStyle control style
+	 * @param TStyle $obj control style
 	 * @return array all the style properties combined.
 	 */
 	protected function getCombinedStyle($obj)
 	{
-		if(!($obj instanceof TStyle))
-			return array();
+		if (!($obj instanceof TStyle)) {
+			return [];
+		}
 		$style = $obj->getStyleFields();
-		$style = array_merge($style,$this->getStyleFromString($obj->getCustomStyle()));
-		if($obj->hasFont())
+		$style = array_merge($style, $this->getStyleFromString($obj->getCustomStyle()));
+		if ($obj->hasFont()) {
 			$style = array_merge($style, $this->getStyleFromString($obj->getFont()->toString()));
+		}
 		return $style;
 	}
 
 	/**
-	 * @param string CSS custom style string.
-	 * @param array CSS style as name-value array.
+	 * @param string $string CSS custom style string.
+	 * @param array $string CSS style as name-value array.
 	 */
 	protected function getStyleFromString($string)
 	{
-		$style = array();
-		if(!is_string($string)) return $style;
+		$style = [];
+		if (!is_string($string)) {
+			return $style;
+		}
 
-		foreach(explode(';',$string) as $sub)
-		{
-			$arr=explode(':',$sub);
-			if(isset($arr[1]) && trim($arr[0])!=='')
+		foreach (explode(';', $string) as $sub) {
+			$arr = explode(':', $sub);
+			if (isset($arr[1]) && trim($arr[0]) !== '') {
 				$style[trim($arr[0])] = trim($arr[1]);
+			}
 		}
 		return $style;
 	}
@@ -61,13 +66,10 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	protected function getCssClassDiff()
 	{
-		if($this->_old===null)
-		{
-			return ($this->_new!==null) && $this->_new->hasCssClass()
+		if ($this->_old === null) {
+			return ($this->_new !== null) && $this->_new->hasCssClass()
 						? $this->_new->getCssClass() : null;
-		}
-		else
-		{
+		} else {
 			return $this->_old->getCssClass() !== $this->_new->getCssClass() ?
 				$this->_new->getCssClass() : null;
 		}
@@ -80,7 +82,8 @@ class TStyleDiff extends TViewStateDiff
 	{
 		$diff = array_diff_assoc(
 					$this->getCombinedStyle($this->_new),
-					$this->getCombinedStyle($this->_old));
+					$this->getCombinedStyle($this->_old)
+		);
 		return count($diff) > 0 ? $diff : null;
 	}
 
@@ -89,16 +92,16 @@ class TStyleDiff extends TViewStateDiff
 	 */
 	public function getDifference()
 	{
-		if($this->_new===null)
+		if ($this->_new === null) {
 			return $this->_null;
-		else
-		{
+		} else {
 			$css = $this->getCssClassDiff();
 			$style = $this->getStyleDiff();
-			if(($css!==null) || ($style!==null))
-				return array('CssClass' => $css, 'Style' => $style);
-			else
+			if (($css !== null) || ($style !== null)) {
+				return ['CssClass' => $css, 'Style' => $style];
+			} else {
 				$this->_null;
+			}
 		}
 	}
 }

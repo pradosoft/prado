@@ -20,7 +20,7 @@ namespace Prado\Web\UI\WebControls;
  * - SingleLine: the textbox will be a regular single line input
  * - MultiLine: the textbox will be a textarea allowing multiple line input
  * - Password: the textbox will hide user input like a password input box
- * 
+ *
  * Html5 declares new types that will degrade as plain textboxes on unsupported browsers:
  * - Color: a color picker can show up in the input field.
  * - Date: a date picker can show up in the input field.
@@ -44,20 +44,20 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTextBoxMode extends \Prado\TEnumerable
 {
-	const SingleLine='SingleLine';
-	const MultiLine='MultiLine';
-	const Password='Password';
-	const Color='Color';
-	const Date='Date';
-	const Datetime='Datetime';
-	const DatetimeLocal='DatetimeLocal';
-	const Email='Email';
-	const Month='Month';
-	const Number='Number';
-	const Range='Range';
-	const Search='Search';
-	const Tel='Tel';
-	const Time='Time';
-	const Url='Url';
-	const Week='Week';
+	const SingleLine = 'SingleLine';
+	const MultiLine = 'MultiLine';
+	const Password = 'Password';
+	const Color = 'Color';
+	const Date = 'Date';
+	const Datetime = 'Datetime';
+	const DatetimeLocal = 'DatetimeLocal';
+	const Email = 'Email';
+	const Month = 'Month';
+	const Number = 'Number';
+	const Range = 'Range';
+	const Search = 'Search';
+	const Tel = 'Tel';
+	const Time = 'Time';
+	const Url = 'Url';
+	const Week = 'Week';
 }

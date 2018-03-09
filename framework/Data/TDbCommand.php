@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data;
+
 use Exception;
 use PDO;
 use PDOStatement;
@@ -44,17 +45,17 @@ use Prado\Prado;
 class TDbCommand extends \Prado\TComponent
 {
 	private $_connection;
-	private $_text='';
-	private $_statement=null;
+	private $_text = '';
+	private $_statement;
 
 	/**
 	 * Constructor.
 	 * @param TDbConnection the database connection
 	 * @param string the SQL statement to be executed
 	 */
-	public function __construct(TDbConnection $connection,$text)
+	public function __construct(TDbConnection $connection, $text)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 		$this->setText($text);
 	}
 
@@ -63,7 +64,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-		return array_diff(parent::__sleep(),array("\0TDbCommand\0_statement"));
+		return array_diff(parent::__sleep(), ["\0TDbCommand\0_statement"]);
 	}
 
 	/**
@@ -77,11 +78,11 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Specifies the SQL statement to be executed.
 	 * Any previous execution will be terminated or cancel.
-	 * @param string the SQL statement to be executed
+	 * @param string $value the SQL statement to be executed
 	 */
 	public function setText($value)
 	{
-		$this->_text=$value;
+		$this->_text = $value;
 		$this->cancel();
 	}
 
@@ -111,15 +112,11 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function prepare()
 	{
-		if($this->_statement==null)
-		{
-			try
-			{
-				$this->_statement=$this->getConnection()->getPdoInstance()->prepare($this->getText());
-			}
-			catch(Exception $e)
-			{
-				throw new TDbException('dbcommand_prepare_failed',$e->getMessage(),$this->getText());
+		if ($this->_statement == null) {
+			try {
+				$this->_statement = $this->getConnection()->getPdoInstance()->prepare($this->getText());
+			} catch (Exception $e) {
+				throw new TDbException('dbcommand_prepare_failed', $e->getMessage(), $this->getText());
 			}
 		}
 	}
@@ -129,7 +126,7 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function cancel()
 	{
-		$this->_statement=null;
+		$this->_statement = null;
 	}
 
 	/**
@@ -145,15 +142,16 @@ class TDbCommand extends \Prado\TComponent
 	 * @param int length of the data type
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
-	public function bindParameter($name, &$value, $dataType=null, $length=null)
+	public function bindParameter($name, &$value, $dataType = null, $length = null)
 	{
 		$this->prepare();
-		if($dataType===null)
-			$this->_statement->bindParam($name,$value);
-		else if($length===null)
-			$this->_statement->bindParam($name,$value,$dataType);
-		else
-			$this->_statement->bindParam($name,$value,$dataType,$length);
+		if ($dataType === null) {
+			$this->_statement->bindParam($name, $value);
+		} elseif ($length === null) {
+			$this->_statement->bindParam($name, $value, $dataType);
+		} else {
+			$this->_statement->bindParam($name, $value, $dataType, $length);
+		}
 	}
 
 	/**
@@ -166,13 +164,14 @@ class TDbCommand extends \Prado\TComponent
 	 * @param int SQL data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindValue.php
 	 */
-	public function bindValue($name, $value, $dataType=null)
+	public function bindValue($name, $value, $dataType = null)
 	{
 		$this->prepare();
-		if($dataType===null)
-			$this->_statement->bindValue($name,$value);
-		else
-			$this->_statement->bindValue($name,$value,$dataType);
+		if ($dataType === null) {
+			$this->_statement->bindValue($name, $value);
+		} else {
+			$this->_statement->bindValue($name, $value, $dataType);
+		}
 	}
 
 	/**
@@ -184,21 +183,17 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function execute()
 	{
-		try
-		{
+		try {
 			// Do not trace because it will remain even in Performance mode
 			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
-			{
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 				return $this->_statement->rowCount();
-			}
-			else
+			} else {
 				return $this->getConnection()->getPdoInstance()->exec($this->getText());
-		}
-		catch(Exception $e)
-		{
-			throw new TDbException('dbcommand_execute_failed',$e->getMessage(),$this->getDebugStatementText());
+			}
+		} catch (Exception $e) {
+			throw new TDbException('dbcommand_execute_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -221,18 +216,16 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function query()
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
+			} else {
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
 			return new TDbDataReader($this);
-		}
-		catch(Exception $e)
-		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+		} catch (Exception $e) {
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -244,22 +237,20 @@ class TDbCommand extends \Prado\TComponent
 	 * @return array the first row of the query result, false if no result.
 	 * @throws TDbException execution failed
 	 */
-	public function queryRow($fetchAssociative=true)
+	public function queryRow($fetchAssociative = true)
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
-			$result=$this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+			} else {
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
+			$result = $this->_statement->fetch($fetchAssociative ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 			$this->_statement->closeCursor();
 			return $result;
-		}
-		catch(Exception $e)
-		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+		} catch (Exception $e) {
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -272,23 +263,22 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function queryScalar()
 	{
-		try
-		{
+		try {
 			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'Prado\Data');
-			if($this->_statement instanceof PDOStatement)
+			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
-			else
-				$this->_statement=$this->getConnection()->getPdoInstance()->query($this->getText());
-			$result=$this->_statement->fetchColumn();
+			} else {
+				$this->_statement = $this->getConnection()->getPdoInstance()->query($this->getText());
+			}
+			$result = $this->_statement->fetchColumn();
 			$this->_statement->closeCursor();
-			if(is_resource($result) && get_resource_type($result)==='stream')
+			if (is_resource($result) && get_resource_type($result) === 'stream') {
 				return stream_get_contents($result);
-			else
+			} else {
 				return $result;
-		}
-		catch(Exception $e)
-		{
-			throw new TDbException('dbcommand_query_failed',$e->getMessage(),$this->getDebugStatementText());
+			}
+		} catch (Exception $e) {
+			throw new TDbException('dbcommand_query_failed', $e->getMessage(), $this->getDebugStatementText());
 		}
 	}
 
@@ -302,11 +292,11 @@ class TDbCommand extends \Prado\TComponent
 	 */
 	public function queryColumn()
 	{
-		$rows=$this->query()->readAll();
-		$column=array();
-		foreach($rows as $row)
-			$column[]=current($row);
+		$rows = $this->query()->readAll();
+		$column = [];
+		foreach ($rows as $row) {
+			$column[] = current($row);
+		}
 		return $column;
 	}
 }
-

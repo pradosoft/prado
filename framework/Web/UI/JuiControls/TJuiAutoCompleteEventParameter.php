@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
 /**
@@ -25,15 +26,15 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  */
 class TJuiAutoCompleteEventParameter extends TCallbackEventParameter
 {
-	private $_selectedIndex=-1;
+	private $_selectedIndex = -1;
 
 	/**
 	 * Creates a new TCallbackEventParameter.
 	 */
-	public function __construct($response, $parameter, $index=-1)
+	public function __construct($response, $parameter, $index = -1)
 	{
 		parent::__construct($response, $parameter);
-		$this->_selectedIndex=$index;
+		$this->_selectedIndex = $index;
 	}
 
 	/**

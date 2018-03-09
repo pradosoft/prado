@@ -25,7 +25,8 @@ namespace Prado\Util;
  * @package Prado\Util
  * @since 3.2.3
  */
-interface IInstanceCheck {
+interface IInstanceCheck
+{
 	/**
 	 * The method checks $this or, if needed, the parameter $instance is of type
 	 * class.  In the case of a Class Behavior, the instance to which the behavior
@@ -36,5 +37,5 @@ interface IInstanceCheck {
 	 * @return boolean|null if the this or the instance is of type class.  When null, no information could be derived and
 	 * the default mechanisms take over.
 	 */
-	public function isinstanceof($class,$instance=null);
+	public function isinstanceof($class, $instance = null);
 }

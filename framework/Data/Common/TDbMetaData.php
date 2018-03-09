@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;
@@ -30,20 +31,20 @@ use Prado\Prado;
  */
 abstract class TDbMetaData extends \Prado\TComponent
 {
-	private $_tableInfoCache=array();
+	private $_tableInfoCache = [];
 	private $_connection;
 
 	/**
 	 * @var array
 	 */
-	protected static $delimiterIdentifier = array('[', ']', '"', '`', "'");
+	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $conn database connection.
 	 */
 	public function __construct($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -56,15 +57,14 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * Obtain database specific TDbMetaData class using the driver name of the database connection.
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $conn database connection.
 	 * @return TDbMetaData database specific TDbMetaData.
 	 */
 	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = $conn->getDriverName();
-		switch(strtolower($driver))
-		{
+		switch (strtolower($driver)) {
 			case 'pgsql':
 				return new TPgsqlMetaData($conn);
 			case 'mysqli':
@@ -82,7 +82,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 //			case 'ibm':
 //				return new TIbmDb2MetaData($conn);
 			default:
-				throw new TDbException('ar_invalid_database_driver',$driver);
+				throw new TDbException('ar_invalid_database_driver', $driver);
 		}
 	}
 
@@ -91,13 +91,12 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * @param string table or view name
 	 * @return TDbTableInfo table information.
 	 */
-	public function getTableInfo($tableName=null)
+	public function getTableInfo($tableName = null)
 	{
-		$key = $tableName===null?$this->getDbConnection()->getConnectionString():$tableName;
-		if(!isset($this->_tableInfoCache[$key]))
-		{
+		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
+		if (!isset($this->_tableInfoCache[$key])) {
 			$class = $this->getTableInfoClass();
-			$tableInfo = $tableName===null ? new $class : $this->createTableInfo($tableName);
+			$tableInfo = $tableName === null ? new $class : $this->createTableInfo($tableName);
 			$this->_tableInfoCache[$key] = $tableInfo;
 		}
 		return $this->_tableInfoCache[$key];
@@ -108,7 +107,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * @param string table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
-	public function createCommandBuilder($tableName=null)
+	public function createCommandBuilder($tableName = null)
 	{
 		return $this->getTableInfo($tableName)->createCommandBuilder($this->getDbConnection());
 	}
@@ -131,7 +130,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * Quotes a table name for use in a query.
 	 * @param string $name table name
 	 * @param string $lft left delimiter
-	 * @param string $rgt right delimiter
+	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -142,11 +141,13 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$rgt = $lft = isset($args[1]) ? $args[1] : '';
 		$rgt = isset($args[2]) ? $args[2] : $rgt;
 
-		if(strpos($name, '.')===false)
+		if (strpos($name, '.') === false) {
 			return $lft . $name . $rgt;
-		$names=explode('.', $name);
-		foreach($names as &$n)
+		}
+		$names = explode('.', $name);
+		foreach ($names as &$n) {
 			$n = $lft . $n . $rgt;
+		}
 		return implode('.', $names);
 	}
 
@@ -154,7 +155,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * Quotes a column name for use in a query.
 	 * @param string $name column name
 	 * @param string $lft left delimiter
-	 * @param string $rgt right delimiter
+	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -170,7 +171,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * Quotes a column alias for use in a query.
 	 * @param string $name column alias
 	 * @param string $lft left delimiter
-	 * @param string $rgt right delimiter
+	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -182,7 +183,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
 
-        /**
+	/**
 	 * Returns all table names in the database.
 	 * This method should be overridden by child classes in order to support this feature
 	 * because the default implementation simply throws an exception.
@@ -190,6 +191,5 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * If not empty, the returned table names will be prefixed with the schema name.
 	 * @return array all table names in the database.
 	 */
-	abstract public function findTableNames($schema='');
+	abstract public function findTableNames($schema = '');
 }
-

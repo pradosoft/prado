@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Prado;
 use Prado\Web\UI\TControl;
 
@@ -39,8 +40,9 @@ class TCallbackOptions extends TControl
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientSide===null)
+		if ($this->_clientSide === null) {
 			$this->_clientSide = $this->createClientSide();
+		}
 		return $this->_clientSide;
 	}
 
@@ -52,4 +54,3 @@ class TCallbackOptions extends TControl
 		return new TCallbackClientSide;
 	}
 }
-

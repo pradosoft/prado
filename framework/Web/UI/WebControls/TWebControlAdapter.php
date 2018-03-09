@@ -29,7 +29,7 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 	 * Renders the control to which the adapter is attached.
 	 * It calls {@link renderBeginTag}, {@link renderContents} and
 	 * {@link renderEndTag} in order.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -41,7 +41,7 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 	/**
 	 * Renders the openning tag for the attached control.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -51,7 +51,7 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 	/**
 	 * Renders the body contents within the attached control tag.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -61,11 +61,10 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 	/**
 	 * Renders the closing tag for the attached control.
 	 * Default implementation calls the attached control's corresponding method.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{
 		$this->getControl()->renderEndTag($writer);
 	}
 }
-

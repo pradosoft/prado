@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -33,17 +34,20 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($scope=$this->getScope())!==TTableHeaderScope::NotSet)
-			$writer->addAttribute('scope',$scope===TTableHeaderScope::Row?'row':'col');
-		if(($text=$this->getAbbreviatedText())!=='')
-			$writer->addAttribute('abbr',$text);
-		if(($text=$this->getCategoryText())!=='')
-			$writer->addAttribute('axis',$text);
+		if (($scope = $this->getScope()) !== TTableHeaderScope::NotSet) {
+			$writer->addAttribute('scope', $scope === TTableHeaderScope::Row ? 'row' : 'col');
+		}
+		if (($text = $this->getAbbreviatedText()) !== '') {
+			$writer->addAttribute('abbr', $text);
+		}
+		if (($text = $this->getCategoryText()) !== '') {
+			$writer->addAttribute('axis', $text);
+		}
 	}
 
 	/**
@@ -51,15 +55,15 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getScope()
 	{
-		return $this->getViewState('Scope',TTableHeaderScope::NotSet);
+		return $this->getViewState('Scope', TTableHeaderScope::NotSet);
 	}
 
 	/**
-	 * @param TTableHeaderScope the scope of the cells that the header cell applies to.
+	 * @param TTableHeaderScope $value the scope of the cells that the header cell applies to.
 	 */
 	public function setScope($value)
 	{
-		$this->setViewState('Scope',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableHeaderScope'),TTableHeaderScope::NotSet);
+		$this->setViewState('Scope', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableHeaderScope'), TTableHeaderScope::NotSet);
 	}
 
 	/**
@@ -67,15 +71,15 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getAbbreviatedText()
 	{
-		return $this->getViewState('AbbreviatedText','');
+		return $this->getViewState('AbbreviatedText', '');
 	}
 
 	/**
-	 * @param string  the abbr attribute of the HTML th element
+	 * @param string $value the abbr attribute of the HTML th element
 	 */
 	public function setAbbreviatedText($value)
 	{
-		$this->setViewState('AbbreviatedText',$value,'');
+		$this->setViewState('AbbreviatedText', $value, '');
 	}
 
 	/**
@@ -83,14 +87,14 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function getCategoryText()
 	{
-		return $this->getViewState('CategoryText','');
+		return $this->getViewState('CategoryText', '');
 	}
 
 	/**
-	 * @param string the axis attribute of the HTML th element
+	 * @param string $value the axis attribute of the HTML th element
 	 */
 	public function setCategoryText($value)
 	{
-		$this->setViewState('CategoryText',$value,'');
+		$this->setViewState('CategoryText', $value, '');
 	}
 }

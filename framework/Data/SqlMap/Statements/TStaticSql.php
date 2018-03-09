@@ -28,9 +28,8 @@ class TStaticSql extends \Prado\TComponent
 		$this->_preparedStatement = $factory->prepare();
 	}
 
-	public function getPreparedStatement($parameter=null)
+	public function getPreparedStatement($parameter = null)
 	{
 		return $this->_preparedStatement;
 	}
 }
-

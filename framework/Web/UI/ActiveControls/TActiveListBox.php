@@ -11,7 +11,6 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
-
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TListBox;
 
@@ -67,7 +66,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 */
 	protected function createListItemCollection()
 	{
-		$collection  = new TActiveListItemCollection;
+		$collection = new TActiveListItemCollection;
 		$collection->setControl($this);
 		return $collection;
 	}
@@ -86,18 +85,19 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * Sets the selection mode of the list control (Single, Multiple)
 	 * on the client-side if the  {@link setEnableUpdate EnableUpdate}
 	 * property is set to true.
-	 * @param string the selection mode
+	 * @param string $value the selection mode
 	 */
 	public function setSelectionMode($value)
 	{
-		if(parent::getSelectionMode() === $value)
+		if (parent::getSelectionMode() === $value) {
 			return;
+		}
 
 		parent::setSelectionMode($value);
 		$multiple = $this->getIsMultiSelect();
-		$id = $this->getUniqueID(); $multi_id = $id.'[]';
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		$id = $this->getUniqueID();
+		$multi_id = $id . '[]';
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$client->setAttribute($this, 'multiple', $multiple ? 'multiple' : false);
 			$client->setAttribute($this, 'name', $multiple ? $multi_id : $id);
@@ -108,9 +108,9 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -120,7 +120,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -151,10 +151,12 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
-		if ($this->getAutoPostBack())
+		$writer->addAttribute('id', $this->getClientID());
+		if ($this->getAutoPostBack()) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
+		}
 	}
 }
-

@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLinkButton;
 
-
 /**
  * TActiveLinkButton is the active control counter part to TLinkButton.
  *
@@ -72,9 +71,9 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback}
 	 * event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->raisePostBackEvent($param);
 		$this->onCallback($param);
@@ -85,7 +84,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -95,16 +94,18 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	/**
 	 * Updates the link text on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
@@ -122,36 +123,37 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 
-		if($this->getEnabled(true))
-		{
+		if ($this->getEnabled(true)) {
 			$this->getActiveControl()->registerCallbackClientScript(
-				$this->getClientClassName(), $this->getPostBackOptions());
+				$this->getClientClassName(),
+				$this->getPostBackOptions()
+			);
 		}
 	}
 
 	/**
 	 * Ensures that the anchor is rendered correctly when its Enabled property
 	 * changes in a callback
-	 * @param bool enabled
+	 * @param bool $value enabled
 	 */
 	public function setEnabled($value)
 	{
-		if(parent::getEnabled() === $value)
+		if (parent::getEnabled() === $value) {
 			return;
+		}
 
 		parent::setEnabled($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
-			if($this->getEnabled(true))
-			{
-				$nop = "javascript:;//".$this->getClientID();
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			if ($this->getEnabled(true)) {
+				$nop = "javascript:;//" . $this->getClientID();
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $nop);
 
 				$this->getActiveControl()->registerCallbackClientScript(
-					$this->getClientClassName(), $this->getPostBackOptions());
-
+					$this->getClientClassName(),
+					$this->getPostBackOptions()
+				);
 			} else {
 				$this->getPage()->getCallbackClient()->setAttribute($this, 'href', false);
 			}
@@ -166,4 +168,3 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 		return 'Prado.WebUI.TActiveLinkButton';
 	}
 }
-

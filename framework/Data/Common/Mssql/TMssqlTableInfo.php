@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TMssqlTableInfo class provides additional table information for Mssql database.
  *
@@ -49,16 +48,15 @@ class TMssqlTableInfo extends TDbTableInfo
 	public function getTableFullName()
 	{
 		//MSSQL alway returns the catalog, schem and table names.
-		return '['.$this->getCatalogName().'].['.$this->getSchemaName().'].['.$this->getTableName().']';
+		return '[' . $this->getCatalogName() . '].[' . $this->getSchemaName() . '].[' . $this->getTableName() . ']';
 	}
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TMssqlCommandBuilder($connection,$this);
+		return new TMssqlCommandBuilder($connection, $this);
 	}
 }
-

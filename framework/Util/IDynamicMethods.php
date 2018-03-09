@@ -25,5 +25,5 @@ namespace Prado\Util;
  */
 interface IDynamicMethods
 {
-	public function __dycall($method,$args);
+	public function __dycall($method, $args);
 }

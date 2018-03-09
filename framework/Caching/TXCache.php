@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -44,22 +45,24 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TXCache extends TCache
 {
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement configuration for this module, can be null
-    * @throws TConfigurationException if xcache extension is not installed or not started, check your php.ini
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if xcache extension is not installed or not started, check your php.ini
+	 */
 	public function init($config)
 	{
-		if(!function_exists('xcache_isset'))
+		if (!function_exists('xcache_isset')) {
 			throw new TConfigurationException('xcache_extension_required');
+		}
 
-		$enabled = (int)ini_get('xcache.cacher') !== 0;
-		$var_size = (int)ini_get('xcache.var_size');
+		$enabled = (int) ini_get('xcache.cacher') !== 0;
+		$var_size = (int) ini_get('xcache.var_size');
 
-		if(!($enabled && $var_size > 0))
+		if (!($enabled && $var_size > 0)) {
 			throw new TConfigurationException('xcache_extension_not_enabled');
+		}
 
 		parent::init($config);
 	}
@@ -67,7 +70,7 @@ class TXCache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -79,34 +82,34 @@ class TXCache extends TCache
 	 * Stores a value identified by a key in cache.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key,$value,$expire)
+	protected function setValue($key, $value, $expire)
 	{
-		return xcache_set($key,$value,$expire);
+		return xcache_set($key, $value, $expire);
 	}
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key,$value,$expire)
+	protected function addValue($key, $value, $expire)
 	{
-		return !xcache_isset($key) ? $this->setValue($key,$value,$expire) : false;
+		return !xcache_isset($key) ? $this->setValue($key, $value, $expire) : false;
 	}
 
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)
@@ -120,12 +123,11 @@ class TXCache extends TCache
 	 */
 	public function flush()
 	{
-		for($i=0, $max=xcache_count(XC_TYPE_VAR); $i<$max; $i++)
-		{
-			if(xcache_clear_cache(XC_TYPE_VAR, $i)===false)
+		for ($i = 0, $max = xcache_count(XC_TYPE_VAR); $i < $max; $i++) {
+			if (xcache_clear_cache(XC_TYPE_VAR, $i) === false) {
 				return false;
+			}
 		}
 		return true;
 	}
 }
-

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data;
+
 use PDO;
 use Prado\Exceptions\TDbException;
 
@@ -39,9 +40,9 @@ use Prado\Exceptions\TDbException;
 class TDbDataReader extends \Prado\TComponent implements \Iterator
 {
 	private $_statement;
-	private $_closed=false;
+	private $_closed = false;
 	private $_row;
-	private $_index=-1;
+	private $_index = -1;
 
 	/**
 	 * Constructor.
@@ -49,7 +50,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function __construct(TDbCommand $command)
 	{
-		$this->_statement=$command->getPdoStatement();
+		$this->_statement = $command->getPdoStatement();
 		$this->_statement->setFetchMode(PDO::FETCH_ASSOC);
 	}
 
@@ -64,12 +65,13 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * @param int Data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php
 	 */
-	public function bindColumn($column, &$value, $dataType=null)
+	public function bindColumn($column, &$value, $dataType = null)
 	{
-		if($dataType===null)
-			$this->_statement->bindColumn($column,$value);
-		else
-			$this->_statement->bindColumn($column,$value,$dataType);
+		if ($dataType === null) {
+			$this->_statement->bindColumn($column, $value);
+		} else {
+			$this->_statement->bindColumn($column, $value, $dataType);
+		}
 	}
 
 	/**
@@ -77,8 +79,8 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function setFetchMode($mode)
 	{
-		$params=func_get_args();
-		call_user_func_array(array($this->_statement,'setFetchMode'),$params);
+		$params = func_get_args();
+		call_user_func_array([$this->_statement, 'setFetchMode'], $params);
 	}
 
 	/**
@@ -92,7 +94,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Returns a single column from the next row of a result set.
-	 * @param int zero-based column index
+	 * @param int $columnIndex zero-based column index
 	 * @return mixed|false the column of the current row, false if no more row available
 	 */
 	public function readColumn($columnIndex)
@@ -102,13 +104,13 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Returns a single column from the next row of a result set.
-	 * @param string class name of the object to be created and populated
-	 * @param array list of column names whose values are to be passed as parameters in the constructor of the class being created
+	 * @param string $className class name of the object to be created and populated
+	 * @param array $fields list of column names whose values are to be passed as parameters in the constructor of the class being created
 	 * @return mixed|false the populated object, false if no more row of data available
 	 */
-	public function readObject($className,$fields)
+	public function readObject($className, $fields)
 	{
-		return $this->_statement->fetchObject($className,$fields);
+		return $this->_statement->fetchObject($className, $fields);
 	}
 
 	/**
@@ -138,7 +140,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	public function close()
 	{
 		$this->_statement->closeCursor();
-		$this->_closed=true;
+		$this->_closed = true;
 	}
 
 	/**
@@ -175,13 +177,12 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function rewind()
 	{
-		if($this->_index<0)
-		{
-			$this->_row=$this->_statement->fetch();
-			$this->_index=0;
-		}
-		else
+		if ($this->_index < 0) {
+			$this->_row = $this->_statement->fetch();
+			$this->_index = 0;
+		} else {
 			throw new TDbException('dbdatareader_rewind_invalid');
+		}
 	}
 
 	/**
@@ -210,7 +211,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function next()
 	{
-		$this->_row=$this->_statement->fetch();
+		$this->_row = $this->_statement->fetch();
 		$this->_index++;
 	}
 
@@ -221,7 +222,6 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 */
 	public function valid()
 	{
-		return $this->_row!==false;
+		return $this->_row !== false;
 	}
 }
-

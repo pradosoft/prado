@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -58,15 +59,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getDisplay()
 	{
-		return $this->getViewState('Display',TValidationSummaryDisplayStyle::Fixed);
+		return $this->getViewState('Display', TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle the style of displaying the error messages
+	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayStyle'),TValidationSummaryDisplayStyle::Fixed);
+		$this->setViewState('Display', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayStyle'), TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
@@ -74,16 +75,16 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHeaderText()
 	{
-		return $this->getViewState('HeaderText','');
+		return $this->getViewState('HeaderText', '');
 	}
 
 	/**
 	 * Sets the header text to be displayed at the top of the summary
-	 * @param string the header text
+	 * @param string $value the header text
 	 */
 	public function setHeaderText($value)
 	{
-		$this->setViewState('HeaderText',$value,'');
+		$this->setViewState('HeaderText', $value, '');
 	}
 
 	/**
@@ -91,15 +92,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getDisplayMode()
 	{
-		return $this->getViewState('DisplayMode',TValidationSummaryDisplayMode::BulletList);
+		return $this->getViewState('DisplayMode', TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayMode the mode of displaying error messages
+	 * @param TValidationSummaryDisplayMode $value the mode of displaying error messages
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayMode'),TValidationSummaryDisplayMode::BulletList);
+		$this->setViewState('DisplayMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayMode'), TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**
@@ -107,15 +108,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
-	 * @param boolean whether the TValidationSummary component updates itself using client-side script.
+	 * @param boolean $value whether the TValidationSummary component updates itself using client-side script.
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -123,15 +124,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowMessageBox()
 	{
-		return $this->getViewState('ShowMessageBox',false);
+		return $this->getViewState('ShowMessageBox', false);
 	}
 
 	/**
-	 * @param boolean whether the validation summary is displayed in a message box.
+	 * @param boolean $value whether the validation summary is displayed in a message box.
 	 */
 	public function setShowMessageBox($value)
 	{
-		$this->setViewState('ShowMessageBox',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowMessageBox', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -139,15 +140,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowSummary()
 	{
-		return $this->getViewState('ShowSummary',true);
+		return $this->getViewState('ShowSummary', true);
 	}
 
 	/**
-	 * @param boolean whether the validation summary is displayed inline.
+	 * @param boolean $value whether the validation summary is displayed inline.
 	 */
 	public function setShowSummary($value)
 	{
-		$this->setViewState('ShowSummary',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowSummary', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -155,15 +156,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getScrollToSummary()
 	{
-		return $this->getViewState('ScrollToSummary',true);
+		return $this->getViewState('ScrollToSummary', true);
 	}
 
 	/**
-	 * @param boolean whether scroll summary into viewport or not.
+	 * @param boolean $value whether scroll summary into viewport or not.
 	 */
 	public function setScrollToSummary($value)
 	{
-		$this->setViewState('ScrollToSummary',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ScrollToSummary', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -171,15 +172,15 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getShowAnchor()
 	{
-		return $this->getViewState('ShowAnchor',false);
+		return $this->getViewState('ShowAnchor', false);
 	}
 
 	/**
-	 * @param boolean whether the validation summary should be anchored.
+	 * @param boolean $value whether the validation summary should be anchored.
 	 */
 	public function setShowAnchor($value)
 	{
-		$this->setViewState('ShowAnchor',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ShowAnchor', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -193,7 +194,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the summary to auto-update on the client-side
-	 * @param boolean true for automatic summary updates.
+	 * @param boolean $value true for automatic summary updates.
 	 */
 	public function setAutoUpdate($value)
 	{
@@ -205,29 +206,29 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group which this validator belongs to
+	 * @param string $value the group which this validator belongs to
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	protected function addAttributesToRender($writer)
 	{
-		$display=$this->getDisplay();
-		$visible=$this->getEnabled(true) && count($this->getErrorMessages()) > 0;
-		if(!$visible)
-		{
-			if($display===TValidationSummaryDisplayStyle::None || $display===TValidationSummaryDisplayStyle::Dynamic)
-				$writer->addStyleAttribute('display','none');
-			else
-				$writer->addStyleAttribute('visibility','hidden');
+		$display = $this->getDisplay();
+		$visible = $this->getEnabled(true) && count($this->getErrorMessages()) > 0;
+		if (!$visible) {
+			if ($display === TValidationSummaryDisplayStyle::None || $display === TValidationSummaryDisplayStyle::Dynamic) {
+				$writer->addStyleAttribute('display', 'none');
+			} else {
+				$writer->addStyleAttribute('visibility', 'hidden');
+			}
 		}
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -237,16 +238,16 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function renderJsSummary()
 	{
-		if(!$this->getEnabled(true) || !$this->getEnableClientScript())
+		if (!$this->getEnabled(true) || !$this->getEnableClientScript()) {
 			return;
+		}
 		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('validator');
 
 		//need to register the validation manager is validation summary is alone.
-		$formID=$this->getPage()->getForm()->getClientID();
+		$formID = $this->getPage()->getForm()->getClientID();
 		$scriptKey = "TBaseValidator:$formID";
-		if($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey))
-		{
+		if ($this->getEnableClientScript() && !$cs->isEndScriptRegistered($scriptKey)) {
 			$manager['FormID'] = $formID;
 			$options = TJavaScript::encode($manager);
 			$cs->registerPradoScript('validator');
@@ -254,7 +255,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 		}
 
 
-		$options=TJavaScript::encode($this->getClientScriptOptions());
+		$options = TJavaScript::encode($this->getClientScriptOptions());
 		$script = "new Prado.WebUI.TValidationSummary({$options});";
 		$cs->registerEndScript($this->getClientID(), $script);
 	}
@@ -267,21 +268,24 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		$options['ID'] = $this->getClientID();
 		$options['FormID'] = $this->getPage()->getForm()->getClientID();
-		if($this->getShowMessageBox())
-			$options['ShowMessageBox']=true;
-		if(!$this->getShowSummary())
-			$options['ShowSummary']=false;
+		if ($this->getShowMessageBox()) {
+			$options['ShowMessageBox'] = true;
+		}
+		if (!$this->getShowSummary()) {
+			$options['ShowSummary'] = false;
+		}
 
-		$options['ScrollToSummary']=$this->getScrollToSummary();
-		$options['HeaderText']=$this->getHeaderText();
-		$options['DisplayMode']=$this->getDisplayMode();
+		$options['ScrollToSummary'] = $this->getScrollToSummary();
+		$options['HeaderText'] = $this->getHeaderText();
+		$options['DisplayMode'] = $this->getDisplayMode();
 
 		$options['Refresh'] = $this->getAutoUpdate();
-		$options['ValidationGroup'] =  $this->getValidationGroup();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['Display'] = $this->getDisplay();
 
-		if($this->_clientSide!==null)
-			$options = array_merge($options,$this->_clientSide->getOptions()->toArray());
+		if ($this->_clientSide !== null) {
+			$options = array_merge($options, $this->_clientSide->getOptions()->toArray());
+		}
 
 		return $options;
 	}
@@ -292,8 +296,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientSide===null)
+		if ($this->_clientSide === null) {
 			$this->_clientSide = $this->createClientScript();
+		}
 		return $this->_clientSide;
 	}
 
@@ -311,13 +316,13 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function getErrorMessages()
 	{
-		$validators=$this->getPage()->getValidators($this->getValidationGroup());
-		$messages = array();
-		foreach($validators as $validator)
-		{
-			if(!$validator->getIsValid() && ($msg=$validator->getErrorMessage())!=='')
+		$validators = $this->getPage()->getValidators($this->getValidationGroup());
+		$messages = [];
+		foreach ($validators as $validator) {
+			if (!$validator->getIsValid() && ($msg = $validator->getErrorMessage()) !== '') {
 				//$messages[] = $validator->getAnchoredMessage($msg);
 				$messages[] = $msg;
+			}
 		}
 		return $messages;
 	}
@@ -329,11 +334,9 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	public function renderContents($writer)
 	{
 		$this->renderJsSummary();
-		if($this->getShowSummary())
-		{
+		if ($this->getShowSummary()) {
 //		    $this->setStyle('display:block');
-			switch($this->getDisplayMode())
-			{
+			switch ($this->getDisplayMode()) {
 				case TValidationSummaryDisplayMode::SimpleList:
 					$this->renderList($writer);
 					break;
@@ -353,53 +356,56 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Render the validation summary as a simple list.
 	 * @param array list of messages
-	 * @param string the header text
+	 * @param string $writer the header text
 	 * @return string summary list
 	 */
 	protected function renderList($writer)
 	{
-		$header=$this->getHeaderText();
-		$messages=$this->getErrorMessages();
+		$header = $this->getHeaderText();
+		$messages = $this->getErrorMessages();
 		$content = '';
-		if(strlen($header))
-			$content.= $header."<br/>\n";
-		foreach($messages as $message)
-			$content.="$message<br/>\n";
+		if (strlen($header)) {
+			$content .= $header . "<br/>\n";
+		}
+		foreach ($messages as $message) {
+			$content .= "$message<br/>\n";
+		}
 		$writer->write($content);
 	}
 
 	/**
 	 * Render the validation summary as a paragraph.
 	 * @param array list of messages
-	 * @param string the header text
+	 * @param string $writer the header text
 	 * @return string summary paragraph
 	 */
 	protected function renderSingleParagraph($writer)
 	{
-		$header=$this->getHeaderText();
-		$messages=$this->getErrorMessages();
+		$header = $this->getHeaderText();
+		$messages = $this->getErrorMessages();
 		$content = $header;
-		foreach($messages as $message)
-			$content.= ' '.$message;
+		foreach ($messages as $message) {
+			$content .= ' ' . $message;
+		}
 		$writer->write($content);
 	}
 
 	/**
 	 * Render the validation summary as a bullet list.
 	 * @param array list of messages
-	 * @param string the header text
+	 * @param string $writer the header text
 	 * @return string summary bullet list
 	 */
 	protected function renderBulletList($writer)
 	{
-		$header=$this->getHeaderText();
-		$messages=$this->getErrorMessages();
+		$header = $this->getHeaderText();
+		$messages = $this->getErrorMessages();
 		$content = $header;
-		if(count($messages)>0)
-		{
+		if (count($messages) > 0) {
 			$content .= "<ul>\n";
-			foreach($messages as $message)
-				$content.= '<li>'.$message."</li>\n";
+			foreach ($messages as $message) {
+				$content .= '<li>' . $message . "</li>\n";
+			}
 			$content .= "</ul>\n";
 		}
 		$writer->write($content);
@@ -407,7 +413,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary header text only.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderHeaderOnly($writer)
 	{

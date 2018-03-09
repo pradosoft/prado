@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Exceptions\TConfigurationException;
@@ -60,310 +61,314 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
-    const ChallengeFieldName = 'g-recaptcha-response';
-    private $_widgetId=0;
-    private $_isValid=true;
+	const ChallengeFieldName = 'g-recaptcha-response';
+	private $_widgetId = 0;
+	private $_isValid = true;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->setAdapter(new TActiveControlAdapter($this));
-    }
-    public function getActiveControl()
-    {
-        return $this->getAdapter()->getBaseActiveControl();
-    }
-    public function getClientSide()
-    {
-        return $this->getAdapter()->getBaseActiveControl()->getClientSide();
-    }
-    public function getClientClassName()
-    {
-        return 'Prado.WebUI.TReCaptcha2';
-    }
-    public function getTagName()
-    {
-        return 'div';
-    }
-    /**
-     * Returns true if this control validated successfully.
-     * Defaults to true.
-     * @return bool wether this control validated successfully.
-     */
-    public function getIsValid()
-    {
-        return $this->_isValid;
-    }
-    /**
-     * @param bool wether this control is valid.
-     */
-    public function setIsValid($value)
-    {
-        $this->_isValid=TPropertyValue::ensureBoolean($value);
-    }
-    public function getValidationPropertyValue()
-    {
-        return $this->Request[$this->getResponseFieldName()];
-    }
-    public function getResponseFieldName()
-    {
-        $captchas = $this->Page->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
-        $cont = 0;
-        $responseFieldName = self::ChallengeFieldName;
-        foreach ($captchas as $captcha)
-        {
-            if ($this->getClientID() == $captcha->ClientID)
-            {
-                $responseFieldName .= ($cont > 0) ? '-'.$cont : '';
-            }
-            $cont++;
-        }
-        return $responseFieldName;
-    }
-    /**
-     * Returns your site key.
-     * @return string.
-     */
-    public function getSiteKey()
-    {
-        return $this->getViewState('SiteKey');
-    }
-    /**
-     * @param string your site key.
-     */
-    public function setSiteKey($value)
-    {
-        $this->setViewState('SiteKey', TPropertyValue::ensureString($value));
-    }
-    /**
-     * Returns your secret key.
-     * @return string.
-     */
-    public function getSecretKey()
-    {
-        return $this->getViewState('SecretKey');
-    }
-    /**
-     * @param string your secret key.
-     */
-    public function setSecretKey($value)
-    {
-        $this->setViewState('SecretKey', TPropertyValue::ensureString($value));
-    }
-    /**
-     * Returns your language.
-     * @return string.
-     */
-    public function getLanguage()
-    {
-        return $this->getViewState('Language', 'en');
-    }
-    /**
-     * @param string your language.
-     */
-    public function setLanguage($value)
-    {
-        $this->setViewState('Language', TPropertyValue::ensureString($value), 'en');
-    }
-    /**
-     * Returns the color theme of the widget.
-     * @return string.
-     */
-    public function getTheme()
-    {
-        return $this->getViewState('Theme', 'light');
-    }
-    /**
-     * The color theme of the widget.
-     * Default: light
-     * @param string the color theme of the widget.
-     */
-    public function setTheme($value)
-    {
-        $this->setViewState('Theme', TPropertyValue::ensureString($value), 'light');
-    }
-    /**
-     * Returns the type of CAPTCHA to serve.
-     * @return string.
-     */
-    public function getType()
-    {
-        return $this->getViewState('Type', 'image');
-    }
-    /**
-     * The type of CAPTCHA to serve.
-     * Default: image
-     * @param string the type of CAPTCHA to serve.
-     */
-    public function setType($value)
-    {
-        $this->setViewState('Type', TPropertyValue::ensureString($value), 'image');
-    }
-    /**
-     * Returns the size of the widget.
-     * @return string.
-     */
-    public function getSize()
-    {
-        return $this->getViewState('Size', 'normal');
-    }
-    /**
-     * The size of the widget.
-     * Default: normal
-     * @param string the size of the widget.
-     */
-    public function setSize($value)
-    {
-        $this->setViewState('Size', TPropertyValue::ensureString($value), 'normal');
-    }
-    /**
-     * Returns the tabindex of the widget and challenge.
-     * If other elements in your page use tabindex, it should be set to make user navigation easier.
-     * @return string.
-     */
-    public function getTabIndex()
-    {
-        return $this->getViewState('TabIndex', 0);
-    }
-    /**
-     * The tabindex of the widget and challenge.
-     * If other elements in your page use tabindex, it should be set to make user navigation easier.
-     * Default: 0
-     * @param string the tabindex of the widget and challenge.
-     */
-    public function setTabIndex($value)
-    {
-        $this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
-    }
-    /**
-     * Resets the reCAPTCHA widget.
-     * Optional widget ID, defaults to the first widget created if unspecified.
-     */
-    public function reset()
-    {
-        $this->Page->CallbackClient->callClientFunction('grecaptcha.reset',array(array($this->WidgetId)));
-    }
-    /**
-     * Gets the response for the reCAPTCHA widget.
-     */
-    public function getResponse()
-    {
-        return $this->getViewState('Response', '');
-    }
-    public function setResponse($value)
-    {
-        $this->setViewState('Response', TPropertyValue::ensureString($value), '');
-    }
-    public function getWidgetId()
-    {
-        return $this->getViewState('WidgetId', 0);
-    }
-    public function setWidgetId($value)
-    {
-        $this->setViewState('WidgetId', TPropertyValue::ensureInteger($value), 0);
-    }
-    protected function getClientOptions()
-    {
-        $options['ID'] = $this->getClientID();
-        $options['EventTarget'] = $this->getUniqueID();
-        $options['FormID'] = $this->Page->getForm()->getClientID();
-        $options['onCallback'] = $this->hasEventHandler('OnCallback');
-        $options['onCallbackExpired'] = $this->hasEventHandler('OnCallbackExpired');
-        $options['options']['sitekey'] = $this->getSiteKey();
-        if ($theme = $this->getTheme()) $options['options']['theme'] = $theme;
-        if ($type = $this->getType()) $options['options']['type'] = $type;
-        if ($size = $this->getSize()) $options['options']['size'] = $size;
-        if ($tabIndex = $this->getTabIndex()) $options['options']['tabindex'] = $tabIndex;
+	public function __construct()
+	{
+		parent::__construct();
+		$this->setAdapter(new TActiveControlAdapter($this));
+	}
+	public function getActiveControl()
+	{
+		return $this->getAdapter()->getBaseActiveControl();
+	}
+	public function getClientSide()
+	{
+		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+	}
+	public function getClientClassName()
+	{
+		return 'Prado.WebUI.TReCaptcha2';
+	}
+	public function getTagName()
+	{
+		return 'div';
+	}
+	/**
+	 * Returns true if this control validated successfully.
+	 * Defaults to true.
+	 * @return bool wether this control validated successfully.
+	 */
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+	/**
+	 * @param bool $value wether this control is valid.
+	 */
+	public function setIsValid($value)
+	{
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
+	}
+	public function getValidationPropertyValue()
+	{
+		return $this->Request[$this->getResponseFieldName()];
+	}
+	public function getResponseFieldName()
+	{
+		$captchas = $this->Page->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
+		$cont = 0;
+		$responseFieldName = self::ChallengeFieldName;
+		foreach ($captchas as $captcha) {
+			if ($this->getClientID() == $captcha->ClientID) {
+				$responseFieldName .= ($cont > 0) ? '-' . $cont : '';
+			}
+			$cont++;
+		}
+		return $responseFieldName;
+	}
+	/**
+	 * Returns your site key.
+	 * @return string.
+	 */
+	public function getSiteKey()
+	{
+		return $this->getViewState('SiteKey');
+	}
+	/**
+	 * @param string $value your site key.
+	 */
+	public function setSiteKey($value)
+	{
+		$this->setViewState('SiteKey', TPropertyValue::ensureString($value));
+	}
+	/**
+	 * Returns your secret key.
+	 * @return string.
+	 */
+	public function getSecretKey()
+	{
+		return $this->getViewState('SecretKey');
+	}
+	/**
+	 * @param string $value your secret key.
+	 */
+	public function setSecretKey($value)
+	{
+		$this->setViewState('SecretKey', TPropertyValue::ensureString($value));
+	}
+	/**
+	 * Returns your language.
+	 * @return string.
+	 */
+	public function getLanguage()
+	{
+		return $this->getViewState('Language', 'en');
+	}
+	/**
+	 * @param string $value your language.
+	 */
+	public function setLanguage($value)
+	{
+		$this->setViewState('Language', TPropertyValue::ensureString($value), 'en');
+	}
+	/**
+	 * Returns the color theme of the widget.
+	 * @return string.
+	 */
+	public function getTheme()
+	{
+		return $this->getViewState('Theme', 'light');
+	}
+	/**
+	 * The color theme of the widget.
+	 * Default: light
+	 * @param string $value the color theme of the widget.
+	 */
+	public function setTheme($value)
+	{
+		$this->setViewState('Theme', TPropertyValue::ensureString($value), 'light');
+	}
+	/**
+	 * Returns the type of CAPTCHA to serve.
+	 * @return string.
+	 */
+	public function getType()
+	{
+		return $this->getViewState('Type', 'image');
+	}
+	/**
+	 * The type of CAPTCHA to serve.
+	 * Default: image
+	 * @param string $value the type of CAPTCHA to serve.
+	 */
+	public function setType($value)
+	{
+		$this->setViewState('Type', TPropertyValue::ensureString($value), 'image');
+	}
+	/**
+	 * Returns the size of the widget.
+	 * @return string.
+	 */
+	public function getSize()
+	{
+		return $this->getViewState('Size', 'normal');
+	}
+	/**
+	 * The size of the widget.
+	 * Default: normal
+	 * @param string $value the size of the widget.
+	 */
+	public function setSize($value)
+	{
+		$this->setViewState('Size', TPropertyValue::ensureString($value), 'normal');
+	}
+	/**
+	 * Returns the tabindex of the widget and challenge.
+	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
+	 * @return string.
+	 */
+	public function getTabIndex()
+	{
+		return $this->getViewState('TabIndex', 0);
+	}
+	/**
+	 * The tabindex of the widget and challenge.
+	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
+	 * Default: 0
+	 * @param string $value the tabindex of the widget and challenge.
+	 */
+	public function setTabIndex($value)
+	{
+		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
+	}
+	/**
+	 * Resets the reCAPTCHA widget.
+	 * Optional widget ID, defaults to the first widget created if unspecified.
+	 */
+	public function reset()
+	{
+		$this->Page->CallbackClient->callClientFunction('grecaptcha.reset', [[$this->WidgetId]]);
+	}
+	/**
+	 * Gets the response for the reCAPTCHA widget.
+	 */
+	public function getResponse()
+	{
+		return $this->getViewState('Response', '');
+	}
+	public function setResponse($value)
+	{
+		$this->setViewState('Response', TPropertyValue::ensureString($value), '');
+	}
+	public function getWidgetId()
+	{
+		return $this->getViewState('WidgetId', 0);
+	}
+	public function setWidgetId($value)
+	{
+		$this->setViewState('WidgetId', TPropertyValue::ensureInteger($value), 0);
+	}
+	protected function getClientOptions()
+	{
+		$options['ID'] = $this->getClientID();
+		$options['EventTarget'] = $this->getUniqueID();
+		$options['FormID'] = $this->Page->getForm()->getClientID();
+		$options['onCallback'] = $this->hasEventHandler('OnCallback');
+		$options['onCallbackExpired'] = $this->hasEventHandler('OnCallbackExpired');
+		$options['options']['sitekey'] = $this->getSiteKey();
+		if ($theme = $this->getTheme()) {
+			$options['options']['theme'] = $theme;
+		}
+		if ($type = $this->getType()) {
+			$options['options']['type'] = $type;
+		}
+		if ($size = $this->getSize()) {
+			$options['options']['size'] = $size;
+		}
+		if ($tabIndex = $this->getTabIndex()) {
+			$options['options']['tabindex'] = $tabIndex;
+		}
 
-        return $options;
-    }
-    protected function registerClientScript()
-    {
-        $id         = $this->getClientID();
-        $options    = TJavaScript::encode($this->getClientOptions());
-        $className  = $this->getClientClassName();
-        $cs         = $this->Page->ClientScript;
-        $code       = "new $className($options);";
+		return $options;
+	}
+	protected function registerClientScript()
+	{
+		$id = $this->getClientID();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->Page->ClientScript;
+		$code = "new $className($options);";
 
-        $cs->registerPradoScript('ajax');
-        $cs->registerEndScript("grecaptcha:$id", $code);
-    }
-    public function validate()
-    {
-        $value = $this->getValidationPropertyValue();
-        if($value === null || empty($value))
-            return false;
+		$cs->registerPradoScript('ajax');
+		$cs->registerEndScript("grecaptcha:$id", $code);
+	}
+	public function validate()
+	{
+		$value = $this->getValidationPropertyValue();
+		if ($value === null || empty($value)) {
+			return false;
+		}
 
-        return true;
-    }
-    /**
-     * Checks for API keys
-     * @param mixed event parameter
-     */
-    public function onPreRender($param)
-    {
-        parent::onPreRender($param);
+		return true;
+	}
+	/**
+	 * Checks for API keys
+	 * @param mixed $param event parameter
+	 */
+	public function onPreRender($param)
+	{
+		parent::onPreRender($param);
 
-        if("" == $this->getSiteKey())
-            throw new TConfigurationException('recaptcha_publickey_unknown');
-        if("" == $this->getSecretKey())
-            throw new TConfigurationException('recaptcha_privatekey_unknown');
+		if ("" == $this->getSiteKey()) {
+			throw new TConfigurationException('recaptcha_publickey_unknown');
+		}
+		if ("" == $this->getSecretKey()) {
+			throw new TConfigurationException('recaptcha_privatekey_unknown');
+		}
 
-        // need to register captcha fields so they will be sent postback
-        $this->Page->registerRequiresPostData($this->getResponseFieldName());
-        $this->Page->ClientScript->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
-    }
-    protected function addAttributesToRender($writer)
-    {
-        $writer->addAttribute('id',$this->getClientID());
-        parent::addAttributesToRender($writer);
-    }
-    public function raiseCallbackEvent($param)
-    {
-        $params = $param->getCallbackParameter();
-        if ($params instanceof stdClass)
-        {
-            $callback = property_exists($params, 'onCallback');
-            $callbackExpired = property_exists($params, 'onCallbackExpired');
+		// need to register captcha fields so they will be sent postback
+		$this->Page->registerRequiresPostData($this->getResponseFieldName());
+		$this->Page->ClientScript->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
+	}
+	protected function addAttributesToRender($writer)
+	{
+		$writer->addAttribute('id', $this->getClientID());
+		parent::addAttributesToRender($writer);
+	}
+	public function raiseCallbackEvent($param)
+	{
+		$params = $param->getCallbackParameter();
+		if ($params instanceof stdClass) {
+			$callback = property_exists($params, 'onCallback');
+			$callbackExpired = property_exists($params, 'onCallbackExpired');
 
-            if ($callback)
-            {
-                $this->WidgetId = $params->widgetId;
-                $this->Response = $params->response;
-                $this->Page->CallbackClient->jQuery($params->responseField, 'text',array($params->response));
+			if ($callback) {
+				$this->WidgetId = $params->widgetId;
+				$this->Response = $params->response;
+				$this->Page->CallbackClient->jQuery($params->responseField, 'text', [$params->response]);
 
-                if ($params->onCallback)
-                {
-                    $this->onCallback($param);
-                }
-            }
+				if ($params->onCallback) {
+					$this->onCallback($param);
+				}
+			}
 
-            if ($callbackExpired)
-            {
-                $this->Response = '';
-                $this->reset();
+			if ($callbackExpired) {
+				$this->Response = '';
+				$this->reset();
 
-                if ($params->onCallbackExpired)
-                {
-                    $this->onCallbackExpired($param);
-                }
-            }
-        }
-    }
+				if ($params->onCallbackExpired) {
+					$this->onCallbackExpired($param);
+				}
+			}
+		}
+	}
 
-    public function onCallback($param)
-    {
-        $this->raiseEvent('OnCallback', $this, $param);
-    }
+	public function onCallback($param)
+	{
+		$this->raiseEvent('OnCallback', $this, $param);
+	}
 
-    public function onCallbackExpired($param)
-    {
-        $this->raiseEvent('OnCallbackExpired', $this, $param);
-    }
+	public function onCallbackExpired($param)
+	{
+		$this->raiseEvent('OnCallbackExpired', $this, $param);
+	}
 
-    public function render($writer)
-    {
-        $this->registerClientScript();
-        parent::render($writer);
-    }
+	public function render($writer)
+	{
+		$this->registerClientScript();
+		parent::render($writer);
+	}
 }

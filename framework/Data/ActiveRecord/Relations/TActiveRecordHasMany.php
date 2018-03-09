@@ -16,7 +16,6 @@ namespace Prado\Data\ActiveRecord\Relations;
  */
 use Prado\Prado;
 
-
 /**
  * Implements TActiveRecord::HAS_MANY relationship between the source object having zero or
  * more foreign objects. Consider the <b>entity</b> relationship between a Team and a Player.
@@ -82,8 +81,8 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 		$fields = array_keys($fkeys);
 
 		$indexValues = $this->getIndexValues($properties, $results);
-		$fkObjects = $this->findForeignObjects($fields,$indexValues);
-		$this->populateResult($results,$properties,$fkObjects,$fields);
+		$fkObjects = $this->findForeignObjects($fields, $indexValues);
+		$this->populateResult($results, $properties, $fkObjects, $fields);
 	}
 
 	/**
@@ -104,19 +103,17 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObjects = &$obj->{$this->getContext()->getProperty()};
-		$success=true;
-		if(($total = count($fkObjects))> 0)
-		{
+		$success = true;
+		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();
 			$fkeys = $this->findForeignKeys($fkObjects[0], $source);
-			for($i=0;$i<$total;$i++)
-			{
-				foreach($fkeys as $fKey => $srcKey)
+			for ($i = 0;$i < $total;$i++) {
+				foreach ($fkeys as $fKey => $srcKey) {
 					$fkObjects[$i]->setColumnValue($fKey, $source->getColumnValue($srcKey));
+				}
 				$success = $fkObjects[$i]->save() && $success;
 			}
 		}
 		return $success;
 	}
 }
-

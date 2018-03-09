@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\UI\IPostBackEventHandler;
 
@@ -58,12 +59,12 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	/**
 	 * @var integer x coordinate that the image is being clicked at
 	 */
-	private $_x=0;
+	private $_x = 0;
 	/**
 	 * @var integer y coordinate that the image is being clicked at
 	 */
-	private $_y=0;
-	private $_dataChanged=false;
+	private $_y = 0;
+	private $_dataChanged = false;
 
 	/**
 	 * @return string tag name of the button
@@ -78,36 +79,37 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		$writer->addAttribute('type','image');
-		if(($uniqueID=$this->getUniqueID())!=='')
-			$writer->addAttribute('name',$uniqueID);
-		if($this->getEnabled(true))
-		{
-			if($this->getEnableClientScript() && $this->needPostBackScript())
-				$this->renderClientControlScript($writer);
+		$writer->addAttribute('type', 'image');
+		if (($uniqueID = $this->getUniqueID()) !== '') {
+			$writer->addAttribute('name', $uniqueID);
 		}
-		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
+		if ($this->getEnabled(true)) {
+			if ($this->getEnableClientScript() && $this->needPostBackScript()) {
+				$this->renderClientControlScript($writer);
+			}
+		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
+			$writer->addAttribute('disabled', 'disabled');
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -116,9 +118,9 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	protected function renderClientControlScript($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
@@ -136,21 +138,20 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	protected function canCauseValidation()
 	{
-		if($this->getCausesValidation())
-		{
-			$group=$this->getValidationGroup();
-			return $this->getPage()->getValidators($group)->getCount()>0;
-		}
-		else
+		if ($this->getCausesValidation()) {
+			$group = $this->getValidationGroup();
+			return $this->getPage()->getValidators($group)->getCount() > 0;
+		} else {
 			return false;
+		}
 	}
 
 	/**
-	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 * @param boolean $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
-		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -187,20 +188,20 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	/**
 	 * This method checks if the TImageButton is clicked and loads the coordinates of the clicking position.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		$uid=$this->getUniqueID();
-		if(isset($values["{$uid}_x"]) && isset($values["{$uid}_y"]))
-		{
-			$this->_x=intval($values["{$uid}_x"]);
-			$this->_y=intval($values["{$uid}_y"]);
-			if($this->getPage()->getPostBackEventTarget()===null)
+		$uid = $this->getUniqueID();
+		if (isset($values["{$uid}_x"]) && isset($values["{$uid}_y"])) {
+			$this->_x = (int) ($values["{$uid}_x"]);
+			$this->_y = (int) ($values["{$uid}_y"]);
+			if ($this->getPage()->getPostBackEventTarget() === null) {
 				$this->getPage()->setPostBackEventTarget($this);
-			$this->_dataChanged=true;
+			}
+			$this->_dataChanged = true;
 		}
 		return false;
 	}
@@ -218,11 +219,11 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param TImageClickEventParameter event parameter to be passed to the event handlers
+	 * @param TImageClickEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
-		$this->raiseEvent('OnClick',$this,$param);
+		$this->raiseEvent('OnClick', $this, $param);
 	}
 
 	/**
@@ -230,12 +231,12 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{
-		$this->raiseEvent('OnCommand',$this,$param);
-		$this->raiseBubbleEvent($this,$param);
+		$this->raiseEvent('OnCommand', $this, $param);
+		$this->raiseBubbleEvent($this, $param);
 	}
 
 	/**
@@ -245,14 +246,15 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter the event parameter
+	 * @param TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
-		$this->onClick(new TImageClickEventParameter($this->_x,$this->_y));
-		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		}
+		$this->onClick(new TImageClickEventParameter($this->_x, $this->_y));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}
 
 	/**
@@ -270,15 +272,15 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by this button will cause input validation
+	 * @param boolean $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -286,15 +288,15 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function getCommandName()
 	{
-		return $this->getViewState('CommandName','');
+		return $this->getViewState('CommandName', '');
 	}
 
 	/**
-	 * @param string the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
-		$this->setViewState('CommandName',$value,'');
+		$this->setViewState('CommandName', $value, '');
 	}
 
 	/**
@@ -302,15 +304,15 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function getCommandParameter()
 	{
-		return $this->getViewState('CommandParameter','');
+		return $this->getViewState('CommandParameter', '');
 	}
 
 	/**
-	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{
-		$this->setViewState('CommandParameter',$value,'');
+		$this->setViewState('CommandParameter', $value, '');
 	}
 
 	/**
@@ -318,15 +320,15 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string $value the group of validators which the button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -338,7 +340,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 */
 	public function setText($value)
 	{
@@ -350,7 +352,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * This is necessary because an image button, when postback, does not have
 	 * direct mapping between post data and the image button name.
 	 * This method overrides the parent implementation and is invoked before render.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -361,7 +363,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	/**
 	 * Renders the body content enclosed between the control tag.
 	 * This overrides the parent implementation with nothing to be rendered.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

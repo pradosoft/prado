@@ -18,7 +18,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TTimeTriggeredCallback class.
  *
@@ -44,21 +43,23 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @param float seconds between callback requests, must be a positive number, default is 1 second.
+	 * @param float $value seconds between callback requests, must be a positive number, default is 1 second.
 	 */
 	public function setInterval($value)
 	{
 		$interval = TPropertyValue::ensureFloat($value);
-		if($interval <= 0)
+		if ($interval <= 0) {
 			throw new TConfigurationException('callback_interval_be_positive', $this->getID());
+		}
 
-		if($this->getInterval() === $value)
+		if ($this->getInterval() === $value) {
 			return;
+		}
 
 		$this->setViewState('Interval', $interval, 1);
-		if ($this->getActiveControl()->canUpdateClientSide()){
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
-			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', array($this, $interval));
+			$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.setTimerInterval', [$this, $interval]);
 		}
 	}
 
@@ -68,7 +69,7 @@ class TTimeTriggeredCallback extends TCallback
 	public function startTimer()
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.start', array($this));
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.start', [$this]);
 	}
 
 	/**
@@ -77,16 +78,19 @@ class TTimeTriggeredCallback extends TCallback
 	public function stopTimer()
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.stop', array($this));
+		$client->callClientFunction('Prado.WebUI.TTimeTriggeredCallback.stop', [$this]);
 	}
 
 	/**
-	 * @param boolean true to start the timer when page loads.
+	 * @param boolean $value true to start the timer when page loads.
 	 */
 	public function setStartTimerOnLoad($value)
 	{
-		$this->setViewState('StartTimerOnLoad',
-				TPropertyValue::ensureBoolean($value), false);
+		$this->setViewState(
+			'StartTimerOnLoad',
+				TPropertyValue::ensureBoolean($value),
+			false
+		);
 	}
 
 	/**
@@ -103,21 +107,23 @@ class TTimeTriggeredCallback extends TCallback
 	protected function getTriggerOptions()
 	{
 		$options['ID'] = $this->getClientID();
-		$options['EventTarget']= $this->getUniqueID();
+		$options['EventTarget'] = $this->getUniqueID();
 		$options['Interval'] = $this->getInterval();
 		return $options;
 	}
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTriggerOptions());
-		if($this->getStartTimerOnLoad()){
+			$this->getClientClassName(),
+			$this->getTriggerOptions()
+		);
+		if ($this->getStartTimerOnLoad()) {
 			$id = $this->getClientID();
 			$code = "Prado.WebUI.TTimeTriggeredCallback.start('{$id}');";
 			$cs = $this->getPage()->getClientScript();

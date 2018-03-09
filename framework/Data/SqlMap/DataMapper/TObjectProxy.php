@@ -37,15 +37,16 @@ class TObjectProxy
 	/**
 	 * Relay the method call to the handler object (if able to be handled), otherwise
 	 * it calls the proxied object's method.
-	 * @param string method name called
-	 * @param array method arguments
+	 * @param string $method method name called
+	 * @param array $params method arguments
 	 * @return mixed method return value.
 	 */
-	public function __call($method,$params)
+	public function __call($method, $params)
 	{
-		if($this->_handler->hasMethod($method))
+		if ($this->_handler->hasMethod($method)) {
 			return $this->_handler->intercept($method, $params);
-		else
-			return call_user_func_array(array($this->_object, $method), $params);
+		} else {
+			return call_user_func_array([$this->_object, $method], $params);
+		}
 	}
 }

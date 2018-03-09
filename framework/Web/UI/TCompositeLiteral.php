@@ -23,38 +23,37 @@ namespace Prado\Web\UI;
  */
 class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBindable
 {
-	const TYPE_EXPRESSION=0;
-	const TYPE_STATEMENTS=1;
-	const TYPE_DATABINDING=2;
-	private $_container=null;
-	private $_items=array();
-	private $_expressions=array();
-	private $_statements=array();
-	private $_bindings=array();
+	const TYPE_EXPRESSION = 0;
+	const TYPE_STATEMENTS = 1;
+	const TYPE_DATABINDING = 2;
+	private $_container;
+	private $_items = [];
+	private $_expressions = [];
+	private $_statements = [];
+	private $_bindings = [];
 
 	/**
 	 * Constructor.
-	 * @param array list of items to be represented by TCompositeLiteral
+	 * @param array $items list of items to be represented by TCompositeLiteral
 	 */
 	public function __construct($items)
 	{
-		$this->_items=array();
-		$this->_expressions=array();
-		$this->_statements=array();
-		foreach($items as $id=>$item)
-		{
-			if(is_array($item))
-			{
-				if($item[0]===self::TYPE_EXPRESSION)
-					$this->_expressions[$id]=$item[1];
-				else if($item[0]===self::TYPE_STATEMENTS)
-					$this->_statements[$id]=$item[1];
-				else if($item[0]===self::TYPE_DATABINDING)
-					$this->_bindings[$id]=$item[1];
-				$this->_items[$id]='';
+		$this->_items = [];
+		$this->_expressions = [];
+		$this->_statements = [];
+		foreach ($items as $id => $item) {
+			if (is_array($item)) {
+				if ($item[0] === self::TYPE_EXPRESSION) {
+					$this->_expressions[$id] = $item[1];
+				} elseif ($item[0] === self::TYPE_STATEMENTS) {
+					$this->_statements[$id] = $item[1];
+				} elseif ($item[0] === self::TYPE_DATABINDING) {
+					$this->_bindings[$id] = $item[1];
+				}
+				$this->_items[$id] = '';
+			} else {
+				$this->_items[$id] = $item;
 			}
-			else
-				$this->_items[$id]=$item;
 		}
 	}
 
@@ -71,7 +70,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function setContainer(\Prado\TComponent $value)
 	{
-		$this->_container=$value;
+		$this->_container = $value;
 	}
 
 	/**
@@ -79,11 +78,13 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function evaluateDynamicContent()
 	{
-		$context=$this->_container===null?$this:$this->_container;
-		foreach($this->_expressions as $id=>$expression)
-			$this->_items[$id]=$context->evaluateExpression($expression);
-		foreach($this->_statements as $id=>$statement)
-			$this->_items[$id]=$context->evaluateStatements($statement);
+		$context = $this->_container === null ? $this : $this->_container;
+		foreach ($this->_expressions as $id => $expression) {
+			$this->_items[$id] = $context->evaluateExpression($expression);
+		}
+		foreach ($this->_statements as $id => $statement) {
+			$this->_items[$id] = $context->evaluateStatements($statement);
+		}
 	}
 
 	/**
@@ -92,9 +93,10 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function dataBind()
 	{
-		$context=$this->_container===null?$this:$this->_container;
-		foreach($this->_bindings as $id=>$binding)
-			$this->_items[$id]=$context->evaluateExpression($binding);
+		$context = $this->_container === null ? $this : $this->_container;
+		foreach ($this->_bindings as $id => $binding) {
+			$this->_items[$id] = $context->evaluateExpression($binding);
+		}
 	}
 
 	/**
@@ -104,6 +106,6 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	 */
 	public function render($writer)
 	{
-		$writer->write(implode('',$this->_items));
+		$writer->write(implode('', $this->_items));
 	}
 }

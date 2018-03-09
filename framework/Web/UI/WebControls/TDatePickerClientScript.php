@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\TClientSideOptions;
 
 /**
@@ -32,7 +33,7 @@ class TDatePickerClientScript extends TClientSideOptions
 {
 	/**
 	 * Javascript code to execute when the date picker's date is changed.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnDateChanged($javascript)
 	{

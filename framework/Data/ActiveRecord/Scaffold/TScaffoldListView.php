@@ -22,7 +22,6 @@ use Prado\Web\UI\WebControls\IItemDataRenderer;
 use Prado\Web\UI\WebControls\TListItemType;
 use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
 
-
 /**
  * TScaffoldListView displays a list of Active Records.
  *
@@ -52,7 +51,7 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  * Parameters property of TActiveRecordCriteria.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldListView extends TScaffoldBase
@@ -63,13 +62,12 @@ class TScaffoldListView extends TScaffoldBase
 	protected function initializeSort()
 	{
 		$table = $this->getTableInfo();
-		$sorts = array('Sort By', str_repeat('-',15));
-		$headers = array();
-		foreach($table->getColumns() as $name=>$colum)
-		{
+		$sorts = ['Sort By', str_repeat('-', 15)];
+		$headers = [];
+		foreach ($table->getColumns() as $name => $colum) {
 			$fname = ucwords(str_replace('_', ' ', $name));
-			$sorts[$name.' ASC'] = $fname .' Ascending';
-			$sorts[$name.' DESC'] = $fname .' Descending';
+			$sorts[$name . ' ASC'] = $fname . ' Ascending';
+			$sorts[$name . ' DESC'] = $fname . ' Descending';
 			$headers[] = $fname ;
 		}
 		$this->_sort->setDataSource($sorts);
@@ -84,8 +82,7 @@ class TScaffoldListView extends TScaffoldBase
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if(!$this->getPage()->getIsPostBack() || $this->getViewState('CurrentClass')!=$this->getRecordClass())
-		{
+		if (!$this->getPage()->getIsPostBack() || $this->getViewState('CurrentClass') != $this->getRecordClass()) {
 			$this->initializeSort();
 			$this->setViewState('CurrentClass', $this->getRecordClass());
 		}
@@ -112,24 +109,26 @@ class TScaffoldListView extends TScaffoldBase
 	{
 		$total = $this->_list->getVirtualItemCount();
 		$limit = $this->_list->getPageSize();
-		$offset = $this->_list->getCurrentPageIndex()*$limit;
-		if($offset + $limit > $total)
+		$offset = $this->_list->getCurrentPageIndex() * $limit;
+		if ($offset + $limit > $total) {
 			$limit = $total - $offset;
-		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
-		if($limit > 0)
-		{
-			$criteria->setLimit($limit);
-			if($offset <= $total)
-				$criteria->setOffset($offset);
 		}
-		$order = explode(' ',$this->_sort->getSelectedValue(), 2);
-		if(is_array($order) && count($order) === 2)
+		$criteria = new TActiveRecordCriteria($this->getSearchCondition(), $this->getSearchParameters());
+		if ($limit > 0) {
+			$criteria->setLimit($limit);
+			if ($offset <= $total) {
+				$criteria->setOffset($offset);
+			}
+		}
+		$order = explode(' ', $this->_sort->getSelectedValue(), 2);
+		if (is_array($order) && count($order) === 2) {
 			$criteria->OrdersBy[$order[0]] = $order[1];
+		}
 		return $criteria;
 	}
 
 	/**
-	 * @param string search condition, the SQL string after the WHERE clause.
+	 * @param string $value search condition, the SQL string after the WHERE clause.
 	 */
 	public function setSearchCondition($value)
 	{
@@ -145,11 +144,11 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param array search parameters
+	 * @param array $value search parameters
 	 */
 	public function setSearchParameters($value)
 	{
-		$this->setViewState('SearchParameters', TPropertyValue::ensureArray($value),array());
+		$this->setViewState('SearchParameters', TPropertyValue::ensureArray($value), []);
 	}
 
 	/**
@@ -157,7 +156,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	public function getSearchParameters()
 	{
-		return $this->getViewState('SearchParameters', array());
+		return $this->getViewState('SearchParameters', []);
 	}
 
 	/**
@@ -165,8 +164,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		switch(strtolower($param->getCommandName()))
-		{
+		switch (strtolower($param->getCommandName())) {
 			case 'delete':
 				return $this->deleteRecord($sender, $param);
 			case 'edit':
@@ -181,10 +179,8 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function initializeEdit($sender, $param)
 	{
-		if(($ctrl=$this->getEditViewControl())!==null)
-		{
-			if($param instanceof TRepeaterCommandEventParameter)
-			{
+		if (($ctrl = $this->getEditViewControl()) !== null) {
+			if ($param instanceof TRepeaterCommandEventParameter) {
 				$pk = $param->getItem()->getCustomData();
 				$ctrl->setRecordPk($pk);
 				$ctrl->initializeEditForm();
@@ -197,8 +193,7 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function deleteRecord($sender, $param)
 	{
-		if($param instanceof TRepeaterCommandEventParameter)
-		{
+		if ($param instanceof TRepeaterCommandEventParameter) {
 			$pk = $param->getItem()->getCustomData();
 			$this->getRecordFinder()->deleteByPk($pk);
 		}
@@ -210,11 +205,11 @@ class TScaffoldListView extends TScaffoldBase
 	protected function listItemCreated($sender, $param)
 	{
 		$item = $param->getItem();
-		if($item instanceof IItemDataRenderer)
-		{
+		if ($item instanceof IItemDataRenderer) {
 			$type = $item->getItemType();
-			if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
+			if ($type == TListItemType::Item || $type == TListItemType::AlternatingItem) {
 				$this->populateField($sender, $param);
+			}
 		}
 	}
 
@@ -225,11 +220,9 @@ class TScaffoldListView extends TScaffoldBase
 	protected function populateField($sender, $param)
 	{
 		$item = $param->getItem();
-		if(($data = $item->getData()) !== null)
-		{
+		if (($data = $item->getData()) !== null) {
 			$item->setCustomData($this->getRecordPkValues($data));
-			if(($prop = $item->findControl('_properties'))!==null)
-			{
+			if (($prop = $item->findControl('_properties')) !== null) {
 				$item->_properties->setDataSource($this->getRecordPropertyValues($data));
 				$item->_properties->dataBind();
 			}
@@ -289,7 +282,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string TScaffoldEditView control ID for editing selected Active Record.
+	 * @param string $value TScaffoldEditView control ID for editing selected Active Record.
 	 */
 	public function setEditViewID($value)
 	{
@@ -301,13 +294,12 @@ class TScaffoldListView extends TScaffoldBase
 	 */
 	protected function getEditViewControl()
 	{
-		if(($id=$this->getEditViewID())!==null)
-		{
+		if (($id = $this->getEditViewID()) !== null) {
 			$ctrl = $this->getParent()->findControl($id);
-			if($ctrl===null)
+			if ($ctrl === null) {
 				throw new TConfigurationException('scaffold_unable_to_find_edit_view', $id);
+			}
 			return $ctrl;
 		}
 	}
 }
-

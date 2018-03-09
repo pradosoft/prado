@@ -22,7 +22,6 @@ use Prado\Web\UI\WebControls\TPagerButtonType;
 use Prado\Web\UI\WebControls\TPagerMode;
 use Prado\Web\UI\WebControls\TWebControl;
 
-
 /**
  * TActivePager is the active control counter part of TPager.
  *
@@ -69,10 +68,10 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
 
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -82,7 +81,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 
 	public function onCallback($param)
@@ -96,19 +95,19 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	protected function buildListPager()
 	{
-		$list=new TActiveDropDownList;
+		$list = new TActiveDropDownList;
 
 		$list->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
 
 		$this->getControls()->add($list);
-		$list->setDataSource(range(1,$this->getPageCount()));
+		$list->setDataSource(range(1, $this->getPageCount()));
 		$list->dataBind();
 		$list->setSelectedIndex($this->getCurrentPageIndex());
 		$list->setAutoPostBack(true);
-		$list->attachEventHandler('OnSelectedIndexChanged',array($this,'listIndexChanged'));
-		$list->attachEventHandler('OnCallback', array($this, 'handleCallback'));
+		$list->attachEventHandler('OnSelectedIndexChanged', [$this, 'listIndexChanged']);
+		$list->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 	}
 
 	/**
@@ -123,38 +122,33 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
-	protected function createPagerButton($buttonType,$enabled,$text,$commandName,$commandParameter)
+	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
 	{
-		if($buttonType===TPagerButtonType::LinkButton)
-		{
-			if($enabled)
-				$button=new TActiveLinkButton;
-			else
-			{
-				$button=new TLabel;
+		if ($buttonType === TPagerButtonType::LinkButton) {
+			if ($enabled) {
+				$button = new TActiveLinkButton;
+			} else {
+				$button = new TLabel;
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
-		}
-		else if($buttonType===TPagerButtonType::ImageButton)
-		{
+		} elseif ($buttonType === TPagerButtonType::ImageButton) {
 			$button = new TActiveImageButton;
-			$button->setImageUrl($this->getPageImageUrl($text,$commandName));
-			if($enabled)
+			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
+			if ($enabled) {
 				$button->Visible = true;
-			else
+			} else {
 				$button->Visible = false;
-		}
-		else
-		{
-			$button=new TActiveButton;
-			if(!$enabled)
+			}
+		} else {
+			$button = new TActiveButton;
+			if (!$enabled) {
 				$button->setEnabled(false);
+			}
 		}
 
-		if($buttonType===TPagerButtonType::ImageButton)
-		{
+		if ($buttonType === TPagerButtonType::ImageButton) {
 			$button->ImageUrl = $text;
 		}
 
@@ -164,7 +158,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$button->setCausesValidation(false);
 		$button->setCssClass($this->getButtonCssClass());
 
-		$button->attachEventHandler('OnCallback', array($this, 'handleCallback'));
+		$button->attachEventHandler('OnCallback', [$this, 'handleCallback']);
 		$button->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
@@ -179,15 +173,13 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param mixed $sender
 	 * @param TCallbackEventParameter $param
 	 */
-	public function handleCallback ($sender,$param)
+	public function handleCallback($sender, $param)
 	{
 		// Update all the buttons pagers attached to the same control.
 		// Dropdown pagers doesn't need to be re-rendered.
-		$controlToPaginate=$this->getControlToPaginate();
-		foreach ($this->getNamingContainer()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false) as $control)
-		{
-			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate()===$controlToPaginate)
-			{
+		$controlToPaginate = $this->getControlToPaginate();
+		foreach ($this->getNamingContainer()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false) as $control) {
+			if ($control->getMode() !== TPagerMode::DropDownList && $control->getControlToPaginate() === $controlToPaginate) {
 				$control->render($param->getNewWriter());
 				// FIXME : With some very fast machine, the getNewWriter() consecutive calls are in the same microsecond, resulting
 				// of getting the same boundaries in ajax response. Wait 1 microsecond to avoid this.
@@ -198,19 +190,16 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$this->onCallback($param);
 	}
 
-	public function render ($writer)
+	public function render($writer)
 	{
-		if($this->getHasPreRendered())
-		{
-			$this->setDisplay(($this->getPageCount()==1)?TDisplayStyle::None:TDisplayStyle::Dynamic);
+		if ($this->getHasPreRendered()) {
+			$this->setDisplay(($this->getPageCount() == 1) ? TDisplayStyle::None : TDisplayStyle::Dynamic);
 			TWebControl::render($writer);
-			if($this->getActiveControl()->canUpdateClientSide())
-				$this->getPage()->getCallbackClient()->replaceContent($this,$writer);
-		}
-		else
-		{
-			$this->getPage()->getAdapter()->registerControlToRender($this,$writer);
+			if ($this->getActiveControl()->canUpdateClientSide()) {
+				$this->getPage()->getCallbackClient()->replaceContent($this, $writer);
+			}
+		} else {
+			$this->getPage()->getAdapter()->registerControlToRender($this, $writer);
 		}
 	}
 }
-

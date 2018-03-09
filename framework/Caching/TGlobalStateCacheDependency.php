@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Prado;
 
 /**
@@ -31,7 +32,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 
 	/**
 	 * Constructor.
-	 * @param string the name of the global state
+	 * @param string $name the name of the global state
 	 */
 	public function __construct($name)
 	{
@@ -47,13 +48,13 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param string the name of the global state
+	 * @param string $value the name of the global state
 	 * @see TApplication::setGlobalState
 	 */
 	public function setStateName($value)
 	{
-		$this->_stateName=$value;
-		$this->_stateValue=Prado::getApplication()->getGlobalState($value);
+		$this->_stateName = $value;
+		$this->_stateValue = Prado::getApplication()->getGlobalState($value);
 	}
 
 	/**
@@ -63,6 +64,6 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->_stateValue!==Prado::getApplication()->getGlobalState($this->_stateName);
+		return $this->_stateValue !== Prado::getApplication()->getGlobalState($this->_stateName);
 	}
 }

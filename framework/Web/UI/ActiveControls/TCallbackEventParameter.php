@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\THttpResponse;
 
 /**
@@ -70,7 +71,7 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed callback response data.
+	 * @param mixed $value callback response data.
 	 */
 	public function setResponseData($value)
 	{
@@ -85,4 +86,3 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 		return $this->_response->getAdapter()->getResponseData();
 	}
 }
-

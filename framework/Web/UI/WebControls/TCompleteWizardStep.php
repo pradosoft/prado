@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidOperationException;
 
 /**
@@ -32,7 +33,7 @@ class TCompleteWizardStep extends TWizardStep
 	}
 
 	/**
-	 * @param string the wizard step type.
+	 * @param string $value the wizard step type.
 	 * @throws TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setStepType($value)

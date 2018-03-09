@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -39,7 +40,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	/**
 	 * @var boolean whether to continue buffering of output
 	 */
-	private $_continueBuffering=true;
+	private $_continueBuffering = true;
 
 
 	/**
@@ -60,7 +61,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean sets whether buffering of output can continue after this point
+	 * @param boolean $value sets whether buffering of output can continue after this point
 	 */
 	public function setContinueBuffering($value)
 	{
@@ -69,18 +70,16 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 
 	/**
 	 * Flushes the output of all completely rendered controls to the client.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
-//$writer->write('<!-- flush -->');
+		//$writer->write('<!-- flush -->');
 		// ajax responses can't be parsed by the client side before loaded and returned completely,
 		// so don't bother with flushing output somewhere mid-page if refreshing in a callback
-		if (!$this->Page->IsCallback)
-		{
+		if (!$this->Page->IsCallback) {
 			$this->Page->flushWriter();
 //			$this->Application->flushOutput($this->ContinueBuffering);
 		}
 	}
 }
-

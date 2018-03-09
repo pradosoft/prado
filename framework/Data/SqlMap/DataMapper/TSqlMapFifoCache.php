@@ -36,12 +36,11 @@ class TSqlMapFifoCache extends TSqlMapCache
 	 * @param string cache key
 	 * @param mixed value to cache.
 	 */
-	public function set($key, $value,$expire=0,$dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
-		if($this->_keyList->getCount() > $this->_cacheSize)
-		{
+		if ($this->_keyList->getCount() > $this->_cacheSize) {
 			$oldestKey = $this->_keyList->removeAt(0);
 			$this->_cache->remove($oldestKey);
 		}

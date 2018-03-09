@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -35,7 +36,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 */
 	public function __construct(TWizard $wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -46,26 +47,25 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TWizardStep)
-		{
-			parent::insertAt($index,$item);
-			$this->_wizard->getMultiView()->getViews()->insertAt($index,$item);
+		if ($item instanceof TWizardStep) {
+			parent::insertAt($index, $item);
+			$this->_wizard->getMultiView()->getViews()->insertAt($index, $item);
 			$this->_wizard->addedWizardStep($item);
-		}
-		else
+		} else {
 			throw new TInvalidDataTypeException('wizardstepcollection_wizardstep_required');
+		}
 	}
 
 	/**
 	 * Removes an item at the specified position.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
-		$step=parent::removeAt($index);
+		$step = parent::removeAt($index);
 		$this->_wizard->getMultiView()->getViews()->remove($step);
 		$this->_wizard->removedWizardStep($step);
 		return $step;

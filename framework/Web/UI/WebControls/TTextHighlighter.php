@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
@@ -59,7 +60,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param string language (case-insensitive) whose syntax is to be used for highlighting.
+	 * @param string $value language (case-insensitive) whose syntax is to be used for highlighting.
 	 * If a language is not supported, it will be displayed as plain text.
 	 */
 	public function setLanguage($value)
@@ -76,7 +77,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean whether to show line numbers in the highlighted result.
+	 * @param boolean $value whether to show line numbers in the highlighted result.
 	 */
 	public function setShowLineNumbers($value)
 	{
@@ -92,7 +93,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean true to show the "Copy Code" link.
+	 * @param boolean $value true to show the "Copy Code" link.
 	 */
 	public function setEnableCopyCode($value)
 	{
@@ -108,7 +109,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param style of syntax highlightning
+	 * @param style $value of syntax highlightning
 	 */
 	public function setSyntaxStyle($value)
 	{
@@ -124,7 +125,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param integer tab size
+	 * @param integer $value tab size
 	 */
 	public function setTabSize($value)
 	{
@@ -140,7 +141,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
+	 * @param boolean $value wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
 	 */
 	public function setEncodeHtml($value)
 	{
@@ -150,7 +151,7 @@ class TTextHighlighter extends TWebControl
 	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function onPreRender($writer)
 	{
@@ -163,11 +164,12 @@ class TTextHighlighter extends TWebControl
 	 */
 	protected function registerStyleSheet()
 	{
-		$cs=$this->getPage()->getClientScript();
-		$cssFile=Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.'.$this->getSyntaxStyle(),'.css');
-		$cssKey='prado:TTextHighlighter:'.$cssFile;
-		if(!$cs->isStyleSheetFileRegistered($cssKey))
+		$cs = $this->getPage()->getClientScript();
+		$cssFile = Prado::getPathOfNamespace('Vendor.bower-asset.highlightjs.styles.' . $this->getSyntaxStyle(), '.css');
+		$cssKey = 'prado:TTextHighlighter:' . $cssFile;
+		if (!$cs->isStyleSheetFileRegistered($cssKey)) {
 			$cs->registerStyleSheetFile($cssKey, $this->publishFilePath($cssFile));
+		}
 	}
 
 	/**
@@ -176,7 +178,7 @@ class TTextHighlighter extends TWebControl
 	 */
 	protected function getTextHighlightOptions()
 	{
-		$options = array();
+		$options = [];
 		$options['ID'] = $this->getClientID();
 		$options['tabsize'] = str_repeat(' ', $this->getTabSize());
 		$options['copycode'] = $this->getEnableCopyCode();
@@ -187,7 +189,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -195,7 +197,7 @@ class TTextHighlighter extends TWebControl
 		$writer->addAttribute('id', $this->getClientID());
 		parent::renderBeginTag($writer);
 
-		$writer->addAttribute('id', $this->getClientID().'_code');
+		$writer->addAttribute('id', $this->getClientID() . '_code');
 		$writer->addAttribute('class', $this->getLanguage());
 		$writer->renderBeginTag('code');
 	}
@@ -204,12 +206,11 @@ class TTextHighlighter extends TWebControl
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getEncodeHtml())
-		{
+		if ($this->getEncodeHtml()) {
 			$escapedWriter = new TTextHighlighterWriter($writer);
 			parent::renderChildren($escapedWriter);
 		} else {
@@ -219,7 +220,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{
@@ -234,7 +235,6 @@ class TTextHighlighter extends TWebControl
 
 		$options = TJavaScript::encode($this->getTextHighlightOptions());
 		$code = "new Prado.WebUI.TTextHighlighter($options);";
-		$cs->registerEndScript("prado:".$this->getClientID(), $code);
-
+		$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 	}
 }

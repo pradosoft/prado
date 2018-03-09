@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TRatingList;
 
 /**
@@ -57,9 +58,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -69,7 +70,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -77,29 +78,31 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
-		if(parent::getReadOnly() === $value)
+		if (parent::getReadOnly() === $value) {
 			return;
+		}
 
 		parent::setReadOnly($value);
 		$value = $this->getReadOnly();
-		$this->callClientFunction('setReadOnly',$value);
+		$this->callClientFunction('setReadOnly', $value);
 	}
 
 	/**
-	 * @param float rating value, also sets the selected Index
+	 * @param float $value rating value, also sets the selected Index
 	 */
 	public function setRating($value)
 	{
-		if(parent::getRating() === $value)
+		if (parent::getRating() === $value) {
 			return;
+		}
 
 		parent::setRating($value);
 		$value = $this->getRating();
-		$this->callClientFunction('setRating',$value);
+		$this->callClientFunction('setRating', $value);
 	}
 
 	/**
@@ -107,27 +110,27 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * @param string static method name
 	 * @param mixed method parmaeter
 	 */
-	protected function callClientFunction($func,$value)
+	protected function callClientFunction($func, $value)
 	{
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
-			$code = 'Prado.Registry[\''.$this->ClientID.'\'].'.$func.'('.$value.')';
-			$client->evaluateScript($code,array($value));
+			$code = 'Prado.Registry[\'' . $this->ClientID . '\'].' . $func . '(' . $value . ')';
+			$client->evaluateScript($code, [$value]);
 		}
 	}
 
 	/**
-	 * @param string caption text
+	 * @param string $value caption text
 	 */
 	public function setCaption($value)
 	{
-		if(parent::getCaption() === $value)
+		if (parent::getCaption() === $value) {
 			return;
+		}
 
 		parent::setCaption($value);
 		// if it's an active control, this should not be needed.
-		$this->callClientFunction('setCaption',$value);
+		$this->callClientFunction('setCaption', $value);
 	}
 
 	/**
@@ -138,7 +141,9 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	{
 		parent::addAttributesToRender($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
@@ -151,4 +156,3 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 		return 'Prado.WebUI.TActiveRatingList';
 	}
 }
-

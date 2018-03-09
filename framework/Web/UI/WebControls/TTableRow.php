@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -38,12 +39,13 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTableCell} objects into the {@link getCells Cells} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTableCell)
+		if ($object instanceof TTableCell) {
 			$this->getCells()->add($object);
+		}
 	}
 
 	/**
@@ -79,16 +81,17 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -100,16 +103,17 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getVerticalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getVerticalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middle'
-	 * @param string the horizontal alignment
+	 * Valid values include 'NotSet','Top','Bottom','Middle'
+	 * @param string $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
@@ -121,28 +125,26 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getTableSection()
 	{
-		return $this->getViewState('TableSection',TTableRowSection::Body);
+		return $this->getViewState('TableSection', TTableRowSection::Body);
 	}
 
 	/**
-	 * @param TTableRowSection location of a row in a table.
+	 * @param TTableRowSection $value location of a row in a table.
 	 */
 	public function setTableSection($value)
 	{
-		$this->setViewState('TableSection',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableRowSection'),TTableRowSection::Body);
+		$this->setViewState('TableSection', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableRowSection'), TTableRowSection::Body);
 	}
 
 	/**
 	 * Renders body contents of the table row
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getHasControls())
-		{
+		if ($this->getHasControls()) {
 			$writer->writeLine();
-			foreach($this->getControls() as $cell)
-			{
+			foreach ($this->getControls() as $cell) {
 				$cell->renderControl($writer);
 				$writer->writeLine();
 			}

@@ -21,13 +21,13 @@ namespace Prado\I18N\core;
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__).'/util.php');
+require_once(__DIR__ . '/util.php');
 
 /**
  * MessageFormat class.
- * 
- * Format a message, that is, for a particular message find the 
- * translated message. 
+ *
+ * Format a message, that is, for a particular message find the
+ * translated message.
  * Create a new message format instance and echo "Hello"
  * in simplified Chinese. This assumes that the world "Hello"
  * is translated in the database.
@@ -38,8 +38,8 @@ require_once(dirname(__FILE__).'/util.php');
  *	$source->setCulture('zh_CN');
  *	$source->setCache(new MessageCache('./tmp'));
  *
- * 	$formatter = new MessageFormat($source); 
- * 	
+ * 	$formatter = new MessageFormat($source);
+ *
  *	echo $formatter->format('Hello');
  * </code>
  *
@@ -50,37 +50,37 @@ class MessageFormat
 {
 	/**
 	 * The message source.
-	 * @var MessageSource 
+	 * @var MessageSource
 	 */
 	protected $source;
-	
+
 	/**
 	 * A list of loaded message catalogues.
-	 * @var array 
+	 * @var array
 	 */
-	protected $catagloues = array();
-	
+	protected $catagloues = [];
+
 	/**
 	 * The translation messages.
-	 * @var array 
+	 * @var array
 	 */
-	protected $messages = array();
-	
+	protected $messages = [];
+
 	/**
 	 * A list of untranslated messages.
-	 * @var array 
+	 * @var array
 	 */
-	protected $untranslated = array();
-	
+	protected $untranslated = [];
+
 	/**
 	 * The prefix and suffix to append to untranslated messages.
-	 * @var array 
+	 * @var array
 	 */
-	protected $postscript = array('','');
-	
+	protected $postscript = ['', ''];
+
 	/**
 	 * Set the default catalogue.
-	 * @var string 
+	 * @var string
 	 */
 	public $Catalogue;
 
@@ -88,7 +88,7 @@ class MessageFormat
 	 * Output encoding charset
 	 * @var string
 	 */
-	protected $charset = 'UTF-8'; 
+	protected $charset = 'UTF-8';
 
 	/**
 	 * Constructor.
@@ -97,15 +97,15 @@ class MessageFormat
 	 * @param MessageSource the source of translation messages.
 	 * @param string charset for the message output.
 	 */
-	function __construct(IMessageSource $source, $charset='UTF-8')
+	public function __construct(IMessageSource $source, $charset = 'UTF-8')
 	{
-		$this->source = $source;	
+		$this->source = $source;
 		$this->setCharset($charset);
 	}
 
-	/** 
+	/**
 	 * Sets the charset for message output.
-	 * @param string charset, default is UTF-8
+	 * @param string $charset charset, default is UTF-8
 	 */
 	public function setCharset($charset)
 	{
@@ -120,23 +120,23 @@ class MessageFormat
 	{
 		return $this->charset;
 	}
-	
+
 	/**
 	 * Load the message from a particular catalogue. A listed
 	 * loaded catalogues is kept to prevent reload of the same
 	 * catalogue. The load catalogue messages are stored
 	 * in the $this->message array.
-	 * @param string message catalogue to load.
+	 * @param string $catalogue message catalogue to load.
 	 */
 	protected function loadCatalogue($catalogue)
 	{
-		if(in_array($catalogue,$this->catagloues))
+		if (in_array($catalogue, $this->catagloues)) {
 			return;
-			
-		if($this->source->load($catalogue))
-		{
+		}
+
+		if ($this->source->load($catalogue)) {
 			$this->messages[$catalogue] = $this->source->read();
-			$this->catagloues[] = $catalogue;						
+			$this->catagloues[] = $catalogue;
 		}
 	}
 
@@ -153,14 +153,17 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	public function format($string,$args=array(), $catalogue=null, $charset=null) 
+	public function format($string, $args = [], $catalogue = null, $charset = null)
 	{
-		if(empty($charset)) $charset = $this->getCharset();
-		
+		if (empty($charset)) {
+			$charset = $this->getCharset();
+		}
+
 		//force args as UTF-8
-		foreach($args as $k => $v)
+		foreach ($args as $k => $v) {
 			$args[$k] = I18N_toUTF8($v, $charset);
-		$s = $this->formatString(I18N_toUTF8($string, $charset),$args,$catalogue);
+		}
+		$s = $this->formatString(I18N_toUTF8($string, $charset), $args, $catalogue);
 		return I18N_toEncoding($s, $charset);
 	}
 
@@ -172,79 +175,73 @@ class MessageFormat
 	 * catalogue.
 	 * @return string translated string.
 	 */
-	protected function formatString($string, $args=array(), $catalogue=null)
-	{		
-		if(empty($catalogue))
-		{
-			if(empty($this->Catalogue))
+	protected function formatString($string, $args = [], $catalogue = null)
+	{
+		if (empty($catalogue)) {
+			if (empty($this->Catalogue)) {
 				$catalogue = 'messages';
-			else 
+			} else {
 				$catalogue = $this->Catalogue;
+			}
 		}
-				
+
 		$this->loadCatalogue($catalogue);
-		
-		if(empty($args))
-			$args = array();		
-		
-		foreach($this->messages[$catalogue] as $variant)
-		{
+
+		if (empty($args)) {
+			$args = [];
+		}
+
+		foreach ($this->messages[$catalogue] as $variant) {
 			// foreach of the translation units
-			foreach($variant as $source => $result)
-			{ 
+			foreach ($variant as $source => $result) {
 				// we found it, so return the target translation
-				if($source == $string)
-				{
+				if ($source == $string) {
 					//check if it contains only strings.
-					if(is_string($result))
+					if (is_string($result)) {
 						$target = $result;
-					else
-					{
+					} else {
 						$target = $result[0];
 					}
 					//found, but untranslated
-					if(empty($target))
-					{
-						return 	$this->postscript[0].
-								strtr($string, $args).
-								$this->postscript[1];		
-					}
-					else
+					if (empty($target)) {
+						return 	$this->postscript[0] .
+								strtr($string, $args) .
+								$this->postscript[1];
+					} else {
 						return strtr($target, $args);
+					}
 				}
 			}
 		}
-		
+
 		// well we did not find the translation string.
 		$this->source->append($string);
-		
-		return 	$this->postscript[0].
-				strtr($string, $args).
+
+		return 	$this->postscript[0] .
+				strtr($string, $args) .
 				$this->postscript[1];
 	}
-	
+
 	/**
 	 * Get the message source.
-	 * @return MessageSource 
+	 * @return MessageSource
 	 */
-	function getSource()
+	public function getSource()
 	{
 		return $this->source;
 	}
-	
+
 	/**
 	 * Set the prefix and suffix to append to untranslated messages.
-	 * e.g. $postscript=array('[T]','[/T]'); will output 
+	 * e.g. $postscript=array('[T]','[/T]'); will output
 	 * "[T]Hello[/T]" if the translation for "Hello" can not be determined.
-	 * @param array first element is the prefix, second element the suffix.
+	 * @param array $postscript first element is the prefix, second element the suffix.
 	 */
-	function setUntranslatedPS($postscript)
+	public function setUntranslatedPS($postscript)
 	{
-		if(is_array($postscript) && count($postscript)>=2)
-		{
+		if (is_array($postscript) && count($postscript) >= 2) {
 			$this->postscript[0] = $postscript[0];
 			$this->postscript[1] = $postscript[1];
 		}
 	}
 }
-

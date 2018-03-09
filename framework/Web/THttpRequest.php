@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -75,32 +76,32 @@ use Prado\TApplicationMode;
  */
 class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
-	const CGIFIX__PATH_INFO		= 1;
-	const CGIFIX__SCRIPT_NAME	= 2;
+	const CGIFIX__PATH_INFO = 1;
+	const CGIFIX__SCRIPT_NAME = 2;
 	/**
 	 * @var TUrlManager the URL manager module
 	 */
-	private $_urlManager=null;
+	private $_urlManager;
 	/**
 	 * @var string the ID of the URL manager module
 	 */
-	private $_urlManagerID='';
+	private $_urlManagerID = '';
 	/**
 	 * @var string Separator used to separate GET variable name and value when URL format is Path.
 	 */
-	private $_separator=',';
+	private $_separator = ',';
 	/**
 	 * @var string requested service ID
 	 */
-	private $_serviceID=null;
+	private $_serviceID;
 	/**
 	 * @var string requested service parameter
 	 */
-	private $_serviceParam=null;
+	private $_serviceParam;
 	/**
 	 * @var THttpCookieCollection cookies sent from user
 	 */
-	private $_cookies=null;
+	private $_cookies;
 	/**
 	 * @var string requested URI (URL w/o host info)
 	 */
@@ -112,20 +113,20 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var boolean whether the session ID should be kept in cookie only
 	 */
-	private $_cookieOnly=null;
-	private $_urlFormat=THttpRequestUrlFormat::Get;
+	private $_cookieOnly;
+	private $_urlFormat = THttpRequestUrlFormat::Get;
 	private $_services;
-	private $_requestResolved=false;
-	private $_enableCookieValidation=false;
-	private $_cgiFix=0;
+	private $_requestResolved = false;
+	private $_enableCookieValidation = false;
+	private $_cgiFix = 0;
 	/**
 	 * @var boolean whether to cache the TUrlManager class (useful with a lot of TUrlMappings)
 	 */
-	private $_enableCache=false;
+	private $_enableCache = false;
 	/**
 	 * @var string request URL
 	 */
-	private $_url=null;
+	private $_url;
 
 	/**
 	 * @var string module id
@@ -135,7 +136,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * @var array contains all request variables
 	 */
-	private $_items=array();
+	private $_items = [];
 
 	/**
 	 * @return string id of this module
@@ -146,28 +147,27 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string id of this module
+	 * @param string $value id of this module
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
 		// Fill in default request info when the script is run in command line
-		if(php_sapi_name()==='cli')
-		{
-			$_SERVER['REMOTE_ADDR']='127.0.0.1';
-			$_SERVER['REQUEST_METHOD']='GET';
-			$_SERVER['SERVER_NAME']='localhost';
-			$_SERVER['SERVER_PORT']=80;
-			$_SERVER['HTTP_USER_AGENT']='';
+		if (php_sapi_name() === 'cli') {
+			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+			$_SERVER['REQUEST_METHOD'] = 'GET';
+			$_SERVER['SERVER_NAME'] = 'localhost';
+			$_SERVER['SERVER_PORT'] = 80;
+			$_SERVER['HTTP_USER_AGENT'] = '';
 		}
 
 		// Info about server variables:
@@ -176,30 +176,35 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		// QUERY_STRING is the string following the '?' in the ur (eg the a=x part in http://foo/bar?a=x)
 		// REQUEST_URI contains the URI part entered in the browser address bar
 		// SCRIPT_FILENAME is the file path to the executing script
-		if(isset($_SERVER['REQUEST_URI']))
-			$this->_requestUri=$_SERVER['REQUEST_URI'];
-		else  // TBD: in this case, SCRIPT_NAME need to be escaped
-			$this->_requestUri=$_SERVER['SCRIPT_NAME'].(empty($_SERVER['QUERY_STRING'])?'':'?'.$_SERVER['QUERY_STRING']);
+		if (isset($_SERVER['REQUEST_URI'])) {
+			$this->_requestUri = $_SERVER['REQUEST_URI'];
+		} else {  // TBD: in this case, SCRIPT_NAME need to be escaped
+			$this->_requestUri = $_SERVER['SCRIPT_NAME'] . (empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING']);
+		}
 
-		if($this->_cgiFix&self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO']))
-			$this->_pathInfo=substr($_SERVER['ORIG_PATH_INFO'], strlen($_SERVER['SCRIPT_NAME']));
-		elseif(isset($_SERVER['PATH_INFO']))
-			$this->_pathInfo=$_SERVER['PATH_INFO'];
-		else if(strpos($_SERVER['PHP_SELF'],$_SERVER['SCRIPT_NAME'])===0 && $_SERVER['PHP_SELF']!==$_SERVER['SCRIPT_NAME'])
-			$this->_pathInfo=substr($_SERVER['PHP_SELF'],strlen($_SERVER['SCRIPT_NAME']));
-		else
-			$this->_pathInfo='';
+		if ($this->_cgiFix & self::CGIFIX__PATH_INFO && isset($_SERVER['ORIG_PATH_INFO'])) {
+			$this->_pathInfo = substr($_SERVER['ORIG_PATH_INFO'], strlen($_SERVER['SCRIPT_NAME']));
+		} elseif (isset($_SERVER['PATH_INFO'])) {
+			$this->_pathInfo = $_SERVER['PATH_INFO'];
+		} elseif (strpos($_SERVER['PHP_SELF'], $_SERVER['SCRIPT_NAME']) === 0 && $_SERVER['PHP_SELF'] !== $_SERVER['SCRIPT_NAME']) {
+			$this->_pathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
+		} else {
+			$this->_pathInfo = '';
+		}
 
-		if(get_magic_quotes_gpc())
-		{
-			if(isset($_GET))
-				$_GET=$this->stripSlashes($_GET);
-			if(isset($_POST))
-				$_POST=$this->stripSlashes($_POST);
-			if(isset($_REQUEST))
-				$_REQUEST=$this->stripSlashes($_REQUEST);
-			if(isset($_COOKIE))
-				$_COOKIE=$this->stripSlashes($_COOKIE);
+		if (get_magic_quotes_gpc()) {
+			if (isset($_GET)) {
+				$_GET = $this->stripSlashes($_GET);
+			}
+			if (isset($_POST)) {
+				$_POST = $this->stripSlashes($_POST);
+			}
+			if (isset($_REQUEST)) {
+				$_REQUEST = $this->stripSlashes($_REQUEST);
+			}
+			if (isset($_COOKIE)) {
+				$_COOKIE = $this->stripSlashes($_COOKIE);
+			}
 		}
 
 		$this->getApplication()->setRequest($this);
@@ -213,7 +218,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function stripSlashes(&$data)
 	{
-		return is_array($data)?array_map(array($this,'stripSlashes'),$data):stripslashes($data);
+		return is_array($data) ? array_map([$this, 'stripSlashes'], $data) : stripslashes($data);
 	}
 
 	/**
@@ -221,21 +226,20 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUrl()
 	{
-		if($this->_url===null)
-		{
-			$secure=$this->getIsSecureConnection();
-			$url=$secure?'https://':'http://';
-			if(empty($_SERVER['HTTP_HOST']))
-			{
-				$url.=$_SERVER['SERVER_NAME'];
-				$port=$_SERVER['SERVER_PORT'];
-				if(($port!=80 && !$secure) || ($port!=443 && $secure))
-					$url.=':'.$port;
+		if ($this->_url === null) {
+			$secure = $this->getIsSecureConnection();
+			$url = $secure ? 'https://' : 'http://';
+			if (empty($_SERVER['HTTP_HOST'])) {
+				$url .= $_SERVER['SERVER_NAME'];
+				$port = $_SERVER['SERVER_PORT'];
+				if (($port != 80 && !$secure) || ($port != 443 && $secure)) {
+					$url .= ':' . $port;
+				}
+			} else {
+				$url .= $_SERVER['HTTP_HOST'];
 			}
-			else
-				$url.=$_SERVER['HTTP_HOST'];
-			$url.=$this->getRequestUri();
-			$this->_url=new TUri($url);
+			$url .= $this->getRequestUri();
+			$this->_url = new TUri($url);
 		}
 		return $this->_url;
 	}
@@ -243,7 +247,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Set true to cache the UrlManager instance. Consider to enable this cache
 	 * when the application defines a lot of TUrlMappingPatterns
-	 * @param boolean true to cache urlmanager instance.
+	 * @param boolean $value true to cache urlmanager instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -269,18 +273,16 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	protected function cacheUrlManager($manager)
 	{
-		if($this->getEnableCache())
-		{
+		if ($this->getEnableCache()) {
 			$cache = $this->getApplication()->getCache();
-			if($cache !== null)
-			{
+			if ($cache !== null) {
 				$dependencies = null;
-				if($this->getApplication()->getMode() !== TApplicationMode::Performance)
-					if ($manager instanceof TUrlMapping && $fn = $manager->getConfigFile())
-					{
-						$fn = Prado::getPathOfNamespace($fn,$this->getApplication()->getConfigurationFileExt());
+				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
+					if ($manager instanceof TUrlMapping && $fn = $manager->getConfigFile()) {
+						$fn = Prado::getPathOfNamespace($fn, $this->getApplication()->getConfigurationFileExt());
 						$dependencies = new TFileCacheDependency($fn);
 					}
+				}
 				return $cache->set($this->getCacheKey(), $manager, 0, $dependencies);
 			}
 		}
@@ -293,14 +295,13 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	protected function loadCachedUrlManager()
 	{
-		if($this->getEnableCache())
-		{
+		if ($this->getEnableCache()) {
 			$cache = $this->getApplication()->getCache();
-			if($cache !== null)
-			{
+			if ($cache !== null) {
 				$manager = $cache->get($this->getCacheKey());
-				if($manager instanceof TUrlManager)
+				if ($manager instanceof TUrlManager) {
 					return $manager;
+				}
 			}
 		}
 		return null;
@@ -320,11 +321,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * You may specify a different module for URL managing tasks
 	 * by loading it as an application module and setting this property
 	 * with the module ID.
-	 * @param string the ID of the URL manager module
+	 * @param string $value the ID of the URL manager module
 	 */
 	public function setUrlManager($value)
 	{
-		$this->_urlManagerID=$value;
+		$this->_urlManagerID = $value;
 	}
 
 	/**
@@ -332,22 +333,19 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUrlManagerModule()
 	{
-		if($this->_urlManager===null)
-		{
-			if(($this->_urlManager = $this->loadCachedUrlManager())===null)
-			{
-				if(empty($this->_urlManagerID))
-				{
-					$this->_urlManager=new TUrlManager;
+		if ($this->_urlManager === null) {
+			if (($this->_urlManager = $this->loadCachedUrlManager()) === null) {
+				if (empty($this->_urlManagerID)) {
+					$this->_urlManager = new TUrlManager;
 					$this->_urlManager->init(null);
-				}
-				else
-				{
-					$this->_urlManager=$this->getApplication()->getModule($this->_urlManagerID);
-					if($this->_urlManager===null)
-						throw new TConfigurationException('httprequest_urlmanager_inexist',$this->_urlManagerID);
-					if(!($this->_urlManager instanceof TUrlManager))
-						throw new TConfigurationException('httprequest_urlmanager_invalid',$this->_urlManagerID);
+				} else {
+					$this->_urlManager = $this->getApplication()->getModule($this->_urlManagerID);
+					if ($this->_urlManager === null) {
+						throw new TConfigurationException('httprequest_urlmanager_inexist', $this->_urlManagerID);
+					}
+					if (!($this->_urlManager instanceof TUrlManager)) {
+						throw new TConfigurationException('httprequest_urlmanager_invalid', $this->_urlManagerID);
+					}
 				}
 				$this->cacheUrlManager($this->_urlManager);
 			}
@@ -369,11 +367,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * while a Path URL format is like index.php/name1,value1/name2,value.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat the format of URLs.
+	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Prado\\Web\\THttpRequestUrlFormat');
+		$this->_urlFormat = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestUrlFormat');
 	}
 
 	/**
@@ -385,15 +383,16 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
 	 * @throws TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
 	{
-		if(strlen($value)===1)
-			$this->_separator=$value;
-		else
+		if (strlen($value) === 1) {
+			$this->_separator = $value;
+		} else {
 			throw new TInvalidDataValueException('httprequest_separator_invalid');
+		}
 	}
 
 	/**
@@ -401,7 +400,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getRequestType()
 	{
-		return isset($_SERVER['REQUEST_METHOD'])?$_SERVER['REQUEST_METHOD']:null;
+		return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null;
 	}
 
 	/**
@@ -410,11 +409,13 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getContentType($mimetypeOnly = true)
 	{
-		if(!isset($_SERVER['CONTENT_TYPE']))
+		if (!isset($_SERVER['CONTENT_TYPE'])) {
 			return null;
+		}
 
-		if($mimetypeOnly === true && ($_pos = strpos(';', $_SERVER['CONTENT_TYPE'])) !== false)
+		if ($mimetypeOnly === true && ($_pos = strpos(';', $_SERVER['CONTENT_TYPE'])) !== false) {
 			return substr($_SERVER['CONTENT_TYPE'], 0, $_pos);
+		}
 
 		return $_SERVER['CONTENT_TYPE'];
 	}
@@ -424,7 +425,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getIsSecureConnection()
 	{
-			return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'],'off');
+		return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off');
 	}
 
 	/**
@@ -440,7 +441,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getQueryString()
 	{
-		return isset($_SERVER['QUERY_STRING'])?$_SERVER['QUERY_STRING']:null;
+		return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null;
 	}
 
 	/**
@@ -448,31 +449,33 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getHttpProtocolVersion()
 	{
-		return isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:null;
+		return isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : null;
 	}
 
 	/**
 	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
 	 * @return array
 	 */
-	public function getHeaders($case=null)
+	public function getHeaders($case = null)
 	{
 		static $result;
 
-		if($result === null && function_exists('apache_request_headers')) {
+		if ($result === null && function_exists('apache_request_headers')) {
 			$result = apache_request_headers();
-		}
-		elseif($result === null) {
-			$result = array();
-			foreach($_SERVER as $key=>$value) {
-				if(strncasecmp($key, 'HTTP_', 5) !== 0) continue;
-					$key = str_replace(' ','-', ucwords(strtolower(str_replace('_',' ', substr($key, 5)))));
-					$result[$key] = $value;
+		} elseif ($result === null) {
+			$result = [];
+			foreach ($_SERVER as $key => $value) {
+				if (strncasecmp($key, 'HTTP_', 5) !== 0) {
+					continue;
+				}
+				$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+				$result[$key] = $value;
 			}
 		}
 
-		if($case !== null)
+		if ($case !== null) {
 			return array_change_key_case($result, $case);
+		}
 
 		return $result;
 	}
@@ -492,13 +495,15 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * 						false - force http
 	 * @return string schema and hostname of the requested URL
 	 */
-	public function getBaseUrl($forceSecureConnection=null)
+	public function getBaseUrl($forceSecureConnection = null)
 	{
-		$url=$this->getUrl();
-		$scheme=($forceSecureConnection)?"https": (($forceSecureConnection === null)?$url->getScheme():'http');
-		$host=$url->getHost();
-		if (($port=$url->getPort())) $host.=':'.$port;
-		return $scheme.'://'.$host;
+		$url = $this->getUrl();
+		$scheme = ($forceSecureConnection) ? "https" : (($forceSecureConnection === null) ? $url->getScheme() : 'http');
+		$host = $url->getHost();
+		if (($port = $url->getPort())) {
+			$host .= ':' . $port;
+		}
+		return $scheme . '://' . $host;
 	}
 
 	/**
@@ -506,10 +511,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getApplicationUrl()
 	{
-		if($this->_cgiFix&self::CGIFIX__SCRIPT_NAME && isset($_SERVER['ORIG_SCRIPT_NAME']))
+		if ($this->_cgiFix & self::CGIFIX__SCRIPT_NAME && isset($_SERVER['ORIG_SCRIPT_NAME'])) {
 			return $_SERVER['ORIG_SCRIPT_NAME'];
+		}
 
-		return isset($_SERVER['SCRIPT_NAME'])?$_SERVER['SCRIPT_NAME']:null;
+		return isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : null;
 	}
 
 	/**
@@ -519,7 +525,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * 						false - force http
 	 * @return string entry script URL (w/ host part)
 	 */
-	public function getAbsoluteApplicationUrl($forceSecureConnection=null)
+	public function getAbsoluteApplicationUrl($forceSecureConnection = null)
 	{
 		return $this->getBaseUrl($forceSecureConnection) . $this->getApplicationUrl();
 	}
@@ -529,7 +535,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getApplicationFilePath()
 	{
-		return realpath(isset($_SERVER['SCRIPT_FILENAME'])?$_SERVER['SCRIPT_FILENAME']:null);
+		return realpath(isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : null);
 	}
 
 	/**
@@ -537,7 +543,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerName()
 	{
-		return isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:null;
+		return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
 	}
 
 	/**
@@ -545,7 +551,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerPort()
 	{
-		return isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:null;
+		return isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
 	}
 
 	/**
@@ -553,7 +559,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUrlReferrer()
 	{
-		return isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:null;
+		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
 	}
 
 	/**
@@ -562,7 +568,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerSoftware()
 	{
-		return isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']:null;
+		return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
 	}
 
 	/**
@@ -571,12 +577,9 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getBrowser()
 	{
-		try
-		{
+		try {
 			return get_browser();
-		}
-		catch(TPhpErrorException $e)
-		{
+		} catch (TPhpErrorException $e) {
 			throw new TConfigurationException('httprequest_browscap_required');
 		}
 	}
@@ -586,7 +589,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserAgent()
 	{
-		return isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:null;
+		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
 	}
 
 	/**
@@ -594,7 +597,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHostAddress()
 	{
-		return isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:null;
+		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
 	}
 
 	/**
@@ -602,7 +605,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHost()
 	{
-		return isset($_SERVER['REMOTE_HOST'])?$_SERVER['REMOTE_HOST']:null;
+		return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
 	}
 
 	/**
@@ -611,7 +614,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getAcceptTypes()
 	{
 		// TBD: break it into array??
-		return isset($_SERVER['HTTP_ACCEPT'])?$_SERVER['HTTP_ACCEPT']:null;
+		return isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
 	}
 
 	/**
@@ -635,11 +638,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean whether cookies should be validated.
+	 * @param boolean $value whether cookies should be validated.
 	 */
 	public function setEnableCookieValidation($value)
 	{
-		$this->_enableCookieValidation=TPropertyValue::ensureBoolean($value);
+		$this->_enableCookieValidation = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -654,12 +657,12 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Enable this, if you're using PHP via CGI with php.ini setting "cgi.fix_pathinfo=1"
 	 * and have trouble with friendly URL feature. Enable this only if you really know what you are doing!
-	 * @param integer enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
+	 * @param integer $value enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
 	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
 	 */
 	public function setCgiFix($value)
 	{
-		$this->_cgiFix=TPropertyValue::ensureInteger($value);
+		$this->_cgiFix = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -667,22 +670,19 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getCookies()
 	{
-		if($this->_cookies===null)
-		{
-			$this->_cookies=new THttpCookieCollection;
-			if($this->getEnableCookieValidation())
-			{
-				$sm=$this->getApplication()->getSecurityManager();
-				foreach($_COOKIE as $key=>$value)
-				{
-					if(($value=$sm->validateData($value))!==false)
-						$this->_cookies->add(new THttpCookie($key,$value));
+		if ($this->_cookies === null) {
+			$this->_cookies = new THttpCookieCollection;
+			if ($this->getEnableCookieValidation()) {
+				$sm = $this->getApplication()->getSecurityManager();
+				foreach ($_COOKIE as $key => $value) {
+					if (($value = $sm->validateData($value)) !== false) {
+						$this->_cookies->add(new THttpCookie($key, $value));
+					}
 				}
-			}
-			else
-			{
-				foreach($_COOKIE as $key=>$value)
-					$this->_cookies->add(new THttpCookie($key,$value));
+			} else {
+				foreach ($_COOKIE as $key => $value) {
+					$this->_cookies->add(new THttpCookie($key, $value));
+				}
 			}
 		}
 		return $this->_cookies;
@@ -729,15 +729,17 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @return string URL
 	 * @see TUrlManager::constructUrl
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems=null,$encodeAmpersand=true,$encodeGetItems=true)
+	public function constructUrl($serviceID, $serviceParam, $getItems = null, $encodeAmpersand = true, $encodeGetItems = true)
 	{
-		if ($this->_cookieOnly===null)
-				$this->_cookieOnly=(int)ini_get('session.use_cookies') && (int)ini_get('session.use_only_cookies');
-		$url=$this->getUrlManagerModule()->constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems);
-		if(defined('SID') && SID != '' && !$this->_cookieOnly)
-			return $url . (strpos($url,'?')===false? '?' : ($encodeAmpersand?'&amp;':'&')) . SID;
-		else
+		if ($this->_cookieOnly === null) {
+			$this->_cookieOnly = (int) ini_get('session.use_cookies') && (int) ini_get('session.use_only_cookies');
+		}
+		$url = $this->getUrlManagerModule()->constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems);
+		if (defined('SID') && SID != '' && !$this->_cookieOnly) {
+			return $url . (strpos($url, '?') === false ? '?' : ($encodeAmpersand ? '&amp;' : '&')) . SID;
+		} else {
 			return $url;
+		}
 	}
 
 	/**
@@ -763,16 +765,15 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function resolveRequest($serviceIDs)
 	{
-		Prado::trace("Resolving request from ".$_SERVER['REMOTE_ADDR'],'Prado\Web\THttpRequest');
-		$getParams=$this->parseUrl();
-		foreach($getParams as $name=>$value)
-			$_GET[$name]=$value;
-		$this->_items=array_merge($_GET,$_POST);
-		$this->_requestResolved=true;
-		foreach($serviceIDs as $serviceID)
-		{
-			if($this->contains($serviceID))
-			{
+		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'], 'Prado\Web\THttpRequest');
+		$getParams = $this->parseUrl();
+		foreach ($getParams as $name => $value) {
+			$_GET[$name] = $value;
+		}
+		$this->_items = array_merge($_GET, $_POST);
+		$this->_requestResolved = true;
+		foreach ($serviceIDs as $serviceID) {
+			if ($this->contains($serviceID)) {
 				$this->setServiceID($serviceID);
 				$this->setServiceParameter($this->itemAt($serviceID));
 				return $serviceID;
@@ -799,11 +800,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the requested service ID.
-	 * @param string requested service ID
+	 * @param string $value requested service ID
 	 */
 	public function setServiceID($value)
 	{
-		$this->_serviceID=$value;
+		$this->_serviceID = $value;
 	}
 
 	/**
@@ -816,11 +817,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the requested service parameter.
-	 * @param string requested service parameter
+	 * @param string $value requested service parameter
 	 */
 	public function setServiceParameter($value)
 	{
-		$this->_serviceParam=$value;
+		$this->_serviceParam = $value;
 	}
 
 	//------ The following methods enable THttpRequest to be TMap-like -----
@@ -864,7 +865,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the item with the specified key.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
@@ -878,9 +879,9 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param mixed key
 	 * @param mixed value
 	 */
-	public function add($key,$value)
+	public function add($key, $value)
 	{
-		$this->_items[$key]=$value;
+		$this->_items[$key] = $value;
 	}
 
 	/**
@@ -891,14 +892,13 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function remove($key)
 	{
-		if(isset($this->_items[$key]) || array_key_exists($key,$this->_items))
-		{
-			$value=$this->_items[$key];
+		if (isset($this->_items[$key]) || array_key_exists($key, $this->_items)) {
+			$value = $this->_items[$key];
 			unset($this->_items[$key]);
 			return $value;
-		}
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -906,17 +906,18 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function clear()
 	{
-		foreach(array_keys($this->_items) as $key)
+		foreach (array_keys($this->_items) as $key) {
 			$this->remove($key);
+		}
 	}
 
 	/**
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the request contains an item with the specified key
 	 */
 	public function contains($key)
 	{
-		return isset($this->_items[$key]) || array_key_exists($key,$this->_items);
+		return isset($this->_items[$key]) || array_key_exists($key, $this->_items);
 	}
 
 	/**
@@ -930,7 +931,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -941,7 +942,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -955,15 +956,15 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
-		$this->add($offset,$item);
+		$this->add($offset, $item);
 	}
 
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

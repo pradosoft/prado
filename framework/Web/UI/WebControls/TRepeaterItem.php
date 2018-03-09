@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -51,11 +52,11 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	}
 
 	/**
-	 * @param TListItemType item type.
+	 * @param TListItemType $value item type.
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -71,11 +72,11 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
+	 * @param integer $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{
-		$this->_itemIndex=TPropertyValue::ensureInteger($value);
+		$this->_itemIndex = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -88,29 +89,28 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param mixed $value data to be associated with the item
 	 * @since 3.1.0
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 
 	/**
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
-			$this->raiseBubbleEvent($this,new TRepeaterCommandEventParameter($this,$sender,$param));
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
+			$this->raiseBubbleEvent($this, new TRepeaterCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 }

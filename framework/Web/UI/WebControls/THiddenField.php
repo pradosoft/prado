@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
 
@@ -27,8 +28,8 @@ use Prado\TPropertyValue;
  */
 class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer
 {
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * @return string tag name of the hidden field.
@@ -51,24 +52,27 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * Renders the control.
 	 * This method overrides the parent implementation by rendering
 	 * the hidden field input element.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		$uniqueID=$this->getUniqueID();
+		$uniqueID = $this->getUniqueID();
 		$this->getPage()->ensureRenderInForm($this);
-		$writer->addAttribute('type','hidden');
-		if($uniqueID!=='')
-			$writer->addAttribute('name',$uniqueID);
-		if($this->getID()!=='')
-			$writer->addAttribute('id',$this->getClientID());
-		if(($value=$this->getValue())!=='')
-			$writer->addAttribute('value',$value);
+		$writer->addAttribute('type', 'hidden');
+		if ($uniqueID !== '') {
+			$writer->addAttribute('name', $uniqueID);
+		}
+		if ($this->getID() !== '') {
+			$writer->addAttribute('id', $this->getClientID());
+		}
+		if (($value = $this->getValue()) !== '') {
+			$writer->addAttribute('value', $value);
+		}
 
-		if($this->getHasAttributes())
-		{
-			foreach($this->getAttributes() as $name=>$value)
-				$writer->addAttribute($name,$value);
+		if ($this->getHasAttributes()) {
+			foreach ($this->getAttributes() as $name => $value) {
+				$writer->addAttribute($name, $value);
+			}
 		}
 
 		$writer->renderBeginTag('input');
@@ -78,19 +82,18 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	/**
 	 * Loads hidden field data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		$value=$values[$key];
-		if($value===$this->getValue())
+		$value = $values[$key];
+		if ($value === $this->getValue()) {
 			return false;
-		else
-		{
+		} else {
 			$this->setValue($value);
-			return $this->_dataChanged=true;
+			return $this->_dataChanged = true;
 		}
 	}
 
@@ -121,14 +124,14 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -146,11 +149,11 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * The method raises 'OnValueChanged' event to fire up the event delegates.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the attached event handlers can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
-		$this->raiseEvent('OnValueChanged',$this,$param);
+		$this->raiseEvent('OnValueChanged', $this, $param);
 	}
 
 	/**
@@ -158,16 +161,16 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
 	 * Sets the value of the THiddenField
-	 * @param string the value to be set
+	 * @param string $value the value to be set
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**
@@ -206,7 +209,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * @param boolean whether theming is enabled for this control.
+	 * @param boolean $value whether theming is enabled for this control.
 	 * @throws TNotSupportedException This method is always thrown when calling this method.
 	 */
 	public function setEnableTheming($value)
@@ -215,7 +218,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * @param string Skin ID
+	 * @param string $value Skin ID
 	 * @throws TNotSupportedException This method is always thrown when calling this method.
 	 */
 	public function setSkinID($value)
@@ -223,4 +226,3 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 		throw new TNotSupportedException('hiddenfield_skinid_unsupported');
 	}
 }
-

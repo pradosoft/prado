@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TClientSideOptions;
 
@@ -34,11 +35,11 @@ class TSliderClientScript extends TClientSideOptions
 {
 	/**
 	 * Javascript code to execute when the slider value is changed.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnChange($javascript)
 	{
-		$code=TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
+		$code = TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onChange', $code);
 	}
 
@@ -51,11 +52,11 @@ class TSliderClientScript extends TClientSideOptions
 	}
 
 	/* Javascript code to execute when the slider moves.
-	 * @param string javascript code
+	 * @param string $javascript javascript code
 	 */
 	public function setOnSlide($javascript)
 	{
-		$code=TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
+		$code = TJavaScript::quoteJsLiteral("function (value) { {$javascript} }");
 		$this->setFunction('onSlide', $code);
 	}
 

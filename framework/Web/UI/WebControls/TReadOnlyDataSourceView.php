@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Collections\TMap;
 
@@ -22,17 +23,18 @@ use Prado\Collections\TMap;
  */
 class TReadOnlyDataSourceView extends TDataSourceView
 {
-	private $_dataSource=null;
+	private $_dataSource;
 
-	public function __construct(IDataSource $owner,$viewName,$dataSource)
+	public function __construct(IDataSource $owner, $viewName, $dataSource)
 	{
-		parent::__construct($owner,$viewName);
-		if($dataSource===null || is_array($dataSource))
-			$this->_dataSource=new TMap($dataSource);
-		else if($dataSource instanceof \Traversable)
-			$this->_dataSource=$dataSource;
-		else
+		parent::__construct($owner, $viewName);
+		if ($dataSource === null || is_array($dataSource)) {
+			$this->_dataSource = new TMap($dataSource);
+		} elseif ($dataSource instanceof \Traversable) {
+			$this->_dataSource = $dataSource;
+		} else {
 			throw new TInvalidDataTypeException('readonlydatasourceview_datasource_invalid');
+		}
 	}
 
 	public function select($parameters)

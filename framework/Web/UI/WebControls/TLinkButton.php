@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -70,58 +71,57 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getEnableClientScript()
 	{
-		return $this->getViewState('EnableClientScript',true);
+		return $this->getViewState('EnableClientScript', true);
 	}
 
 	/**
-	 * @param boolean whether to render javascript.
+	 * @param boolean $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
-		$this->setViewState('EnableClientScript',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableClientScript', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
 
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 
 		// We call parent implementation here because some attributes
 		// may be overwritten in the following
 		parent::addAttributesToRender($writer);
 
-		if($this->getEnabled(true) && $this->getEnableClientScript())
-		{
+		if ($this->getEnabled(true) && $this->getEnableClientScript()) {
 			$this->renderLinkButtonHref($writer);
 			$this->renderClientControlScript($writer);
+		} elseif ($this->getEnabled()) { // in this case, parent will not render 'disabled'
+			$writer->addAttribute('disabled', 'disabled');
 		}
-		else if($this->getEnabled()) // in this case, parent will not render 'disabled'
-			$writer->addAttribute('disabled','disabled');
 	}
 
 	/**
 	 * Renders the client-script code.
-	 * @param THtmlWriter renderer
+	 * @param THtmlWriter $writer renderer
 	 */
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$cs->registerPostBackControl($this->getClientClassName(),$this->getPostBackOptions());
+		$cs->registerPostBackControl($this->getClientClassName(), $this->getPostBackOptions());
 	}
 
 	/**
-	 * @param boolean set by a panel to register this button as the default button for the panel.
+	 * @param boolean $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
-		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('IsDefaultButton', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -134,12 +134,12 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Renders the Href for link button.
-	 * @param THtmlWriter renderer
+	 * @param THtmlWriter $writer renderer
 	 */
 	protected function renderLinkButtonHref($writer)
 	{
 		//create unique no-op url references
-		$nop = "javascript:;//".$this->getClientID();
+		$nop = "javascript:;//" . $this->getClientID();
 		$writer->addAttribute('href', $nop);
 	}
 
@@ -173,14 +173,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Renders the body content enclosed between the control tag.
 	 * If {@link getText Text} is not empty, it will be rendered. Otherwise,
 	 * the body content enclosed in the control tag will be rendered.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write($text);
+		}
 	}
 
 	/**
@@ -188,15 +189,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -230,15 +231,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCommandName()
 	{
-		return $this->getViewState('CommandName','');
+		return $this->getViewState('CommandName', '');
 	}
 
 	/**
-	 * @param string the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
-		$this->setViewState('CommandName',$value,'');
+		$this->setViewState('CommandName', $value, '');
 	}
 
 	/**
@@ -246,15 +247,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCommandParameter()
 	{
-		return $this->getViewState('CommandParameter','');
+		return $this->getViewState('CommandParameter', '');
 	}
 
 	/**
-	 * @param string the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{
-		$this->setViewState('CommandParameter',$value,'');
+		$this->setViewState('CommandParameter', $value, '');
 	}
 
 	/**
@@ -262,16 +263,16 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
 	 * Sets the value indicating whether postback event trigger by this button will cause input validation.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -279,15 +280,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group of validators which the button causes validation upon postback
+	 * @param string $value the group of validators which the button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -297,14 +298,15 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter the event parameter
+	 * @param TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
-		if($this->getCausesValidation())
+		if ($this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onClick(null);
-		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(),$this->getCommandParameter()));
+		$this->onCommand(new \Prado\Web\UI\TCommandEventParameter($this->getCommandName(), $this->getCommandParameter()));
 	}
 
 	/**
@@ -312,11 +314,11 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
-		$this->raiseEvent('OnClick',$this,$param);
+		$this->raiseEvent('OnClick', $this, $param);
 	}
 
 	/**
@@ -324,12 +326,11 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises 'OnCommand' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param \Prado\Web\UI\TCommandEventParameter event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param)
 	{
-		$this->raiseEvent('OnCommand',$this,$param);
-		$this->raiseBubbleEvent($this,$param);
+		$this->raiseEvent('OnCommand', $this, $param);
+		$this->raiseBubbleEvent($this, $param);
 	}
 }
-

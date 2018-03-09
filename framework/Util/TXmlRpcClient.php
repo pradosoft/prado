@@ -44,16 +44,19 @@ class TXmlRpcClient extends TRpcClient
 		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'text/xml');
 
 		// skip response handling if the request was just a notification request
-		if($this->isNotification)
+		if ($this->isNotification) {
 			return true;
+		}
 
 		// decode response
-		if(($_response = xmlrpc_decode($_response)) === null)
+		if (($_response = xmlrpc_decode($_response)) === null) {
 			throw new TRpcClientResponseException('Empty response received');
+		}
 
 		// handle error response
-		if(xmlrpc_is_fault($_response))
+		if (xmlrpc_is_fault($_response)) {
 			throw new TRpcClientResponseException($_response['faultString'], $_response['faultCode']);
+		}
 
 		return $_response;
 	}

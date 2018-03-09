@@ -28,8 +28,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class TValidationDataType extends \Prado\TEnumerable
 {
-	const Integer='Integer';
-	const Float='Float';
-	const Date='Date';
-	const String='String';
+	const Integer = 'Integer';
+	const Float = 'Float';
+	const Date = 'Date';
+	const String = 'String';
 }

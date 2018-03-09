@@ -16,7 +16,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-
 /**
  * TBaseActiveControl class provided additional basic property for every
  * active control. An instance of TBaseActiveControl or its decendent
@@ -44,7 +43,7 @@ class TBaseActiveControl extends \Prado\TComponent
 
 	/**
 	 * Constructor. Attach a base active control to an active control instance.
-	 * @param TControl active control
+	 * @param TControl $control active control
 	 */
 	public function __construct($control)
 	{
@@ -55,29 +54,30 @@ class TBaseActiveControl extends \Prado\TComponent
 	/**
 	 * Sets a named options with a value. Options are used to store and retrive
 	 * named values for the base active controls.
-	 * @param string option name.
-	 * @param mixed new value.
-	 * @param mixed default value.
+	 * @param string $name option name.
+	 * @param mixed $value new value.
+	 * @param mixed $default default value.
 	 * @return mixed options value.
 	 */
-	protected function setOption($name,$value,$default=null)
+	protected function setOption($name, $value, $default = null)
 	{
-		$value = ($value===null) ? $default : $value;
-		if($value!==null)
-			$this->_options->add($name,$value);
+		$value = ($value === null) ? $default : $value;
+		if ($value !== null) {
+			$this->_options->add($name, $value);
+		}
 	}
 
 	/**
 	 * Gets an option named value. Options are used to store and retrive
 	 * named values for the base active controls.
-	 * @param string option name.
-	 * @param mixed default value.
+	 * @param string $name option name.
+	 * @param mixed $default default value.
 	 * @return mixed options value.
 	 */
-	protected function getOption($name,$default=null)
+	protected function getOption($name, $default = null)
 	{
 		$item = $this->_options->itemAt($name);
-		return ($item===null) ? $default : $item;
+		return ($item === null) ? $default : $item;
 	}
 
 	/**
@@ -105,7 +105,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean true to allow fine grain callback updates.
+	 * @param boolean $value true to allow fine grain callback updates.
 	 */
 	public function setEnableUpdate($value)
 	{
@@ -128,7 +128,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	 * @return boolean true if the callback response is allowed update
 	 * client-side contents.
 	 */
-	public function canUpdateClientSide($bDontRequireVisibility=false)
+	public function canUpdateClientSide($bDontRequireVisibility = false)
 	{
 		return 	$this->getControl()->getHasChildInitialized()
 				&& $this->getPage()->getIsLoadingPostData() == false

@@ -25,10 +25,10 @@ namespace Prado\Web\UI\WebControls;
  */
 class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
-	private $_previousButton=null;
-	private $_nextButton=null;
-	private $_cancelButton=null;
-	private $_completeButton=null;
+	private $_previousButton;
+	private $_nextButton;
+	private $_cancelButton;
+	private $_completeButton;
 
 	/**
 	 * @return mixed the previous button
@@ -39,11 +39,11 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the previous button
+	 * @param mixed $value the previous button
 	 */
 	public function setPreviousButton($value)
 	{
-		$this->_previousButton=$value;
+		$this->_previousButton = $value;
 	}
 
 	/**
@@ -55,11 +55,11 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the next button
+	 * @param mixed $value the next button
 	 */
 	public function setNextButton($value)
 	{
-		$this->_nextButton=$value;
+		$this->_nextButton = $value;
 	}
 
 	/**
@@ -71,11 +71,11 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the cancel button
+	 * @param mixed $value the cancel button
 	 */
 	public function setCancelButton($value)
 	{
-		$this->_cancelButton=$value;
+		$this->_cancelButton = $value;
 	}
 
 	/**
@@ -87,10 +87,10 @@ class TWizardNavigationContainer extends \Prado\Web\UI\TControl implements \Prad
 	}
 
 	/**
-	 * @param mixed the complete button
+	 * @param mixed $value the complete button
 	 */
 	public function setCompleteButton($value)
 	{
-		$this->_completeButton=$value;
+		$this->_completeButton = $value;
 	}
 }

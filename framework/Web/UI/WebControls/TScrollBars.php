@@ -29,9 +29,9 @@ namespace Prado\Web\UI\WebControls;
  */
 class TScrollBars extends \Prado\TEnumerable
 {
-	const None='None';
-	const Auto='Auto';
-	const Both='Both';
-	const Horizontal='Horizontal';
-	const Vertical='Vertical';
+	const None = 'None';
+	const Auto = 'Auto';
+	const Both = 'Both';
+	const Horizontal = 'Horizontal';
+	const Vertical = 'Vertical';
 }

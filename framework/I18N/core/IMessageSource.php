@@ -15,15 +15,15 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\I18N\core
  */
- 
+
 namespace Prado\I18N\core;
 
 /**
  * IMessageSource interface.
- * 
+ *
  * All messages source used by MessageFormat must be of IMessageSource.
  * It defines a set of operations to add and retrive messages from the
- * message source. In addition, message source can load a particular 
+ * message source. In addition, message source can load a particular
  * catalogue.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -34,7 +34,7 @@ interface IMessageSource
 	/**
 	 * Load the translation table for this particular catalogue.
 	 * The translation should be loaded in the following order.
-	 *  # [1] call getCatalogeList($catalogue) to get a list of 
+	 *  # [1] call getCatalogeList($catalogue) to get a list of
 	 *    variants for for the specified $catalogue.
 	 *  # [2] for each of the variants, call getSource($variant)
 	 *    to get the resource, could be a file or catalogue ID.
@@ -43,80 +43,78 @@ interface IMessageSource
 	 *  # [5] if a cache miss, call load($source) to load the message array
 	 *  # [6] store the messages to cache.
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
-	 * 
+	 *
 	 * @param string a catalogue to load
 	 * @return boolean true if loaded, false otherwise.
 	 */
-	function load($catalogue = 'messages');	
-	
+	public function load($catalogue = 'messages');
+
 	/**
 	 * Get the translation table. This includes all the loaded sections.
 	 * It must return a 2 level array of translation strings.
 	 * # "catalogue+variant" the catalogue and its variants.
 	 * # "source string" translation keys, and its translations.
 	 * <code>
-	 *   array('catalogue+variant' => 
+	 *   array('catalogue+variant' =>
 	 *       array('source string' => 'target string', ...)
 	 *             ...),
 	 *        ...);
 	 * </code>
-	 * 
+	 *
 	 * @return array 2 level array translation table.
 	 */
-	function read();
-	
+	public function read();
+
 	/**
-	 * Save the list of untranslated blocks to the translation source. 
+	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
 	 * strings to the translation source via the <b>append()</b> method.
 	 * @param string the catalogue to add to
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
-	function save($catalogue='messages');	
-	
+	public function save($catalogue = 'messages');
+
 	/**
 	 * Add a untranslated message to the source. Need to call save()
 	 * to save the messages to source.
-	 * @param string message to add
+	 * @param string $message message to add
 	 * @return void
 	 */
-	function append($message);
-	
+	public function append($message);
+
 	/**
 	 * Delete a particular message from the specified catalogue.
-	 * @param string the source message to delete.
-	 * @param string the catalogue to delete from.
-	 * @return boolean true if deleted, false otherwise. 
+	 * @param string $message the source message to delete.
+	 * @param string $catalogue the catalogue to delete from.
+	 * @return boolean true if deleted, false otherwise.
 	 */
-	function delete($message, $catalogue='messages');
-		
+	public function delete($message, $catalogue = 'messages');
+
 	/**
 	 * Update the translation.
-	 * @param string the source string.
-	 * @param string the new translation string.
-	 * @param string comments
-	 * @param string the catalogue of the translation.
-	 * @return boolean true if translation was updated, false otherwise. 
-	 */	
-	function update($text, $target, $comments, $catalogue='messages');
-	
+	 * @param string $text the source string.
+	 * @param string $target the new translation string.
+	 * @param string $comments comments
+	 * @param string $catalogue the catalogue of the translation.
+	 * @return boolean true if translation was updated, false otherwise.
+	 */
+	public function update($text, $target, $comments, $catalogue = 'messages');
+
 	/**
 	 * Returns a list of catalogue as key and all it variants as value.
-	 * @return array list of catalogues 
+	 * @return array list of catalogues
 	 */
-	function catalogues();
-		
+	public function catalogues();
+
 	/**
 	 * Set the culture for this particular message source.
-	 * @param string the Culture name.
+	 * @param string $culture the Culture name.
 	 */
-	function setCulture($culture);
-	
+	public function setCulture($culture);
+
 	/**
 	 * Get the culture identifier for the source.
-	 * @return string culture identifier. 
+	 * @return string culture identifier.
 	 */
-	function getCulture();	
-		
+	public function getCulture();
 }
-

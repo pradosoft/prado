@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TLabel;
 
-
 /**
  * TActiveLabel class
  *
@@ -55,44 +54,46 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 	/**
 	 * On callback response, the inner HTML of the label is updated.
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
 	 * On callback response, the For attribute of the label is updated.
-	 * @param string the associated control ID
+	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)
 	{
-		if(parent::getForControl() === $value)
+		if (parent::getForControl() === $value) {
 			return;
+		}
 
 		parent::setForControl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
-			$id=$this->findControl($value)->getClientID();
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$id = $this->findControl($value)->getClientID();
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'for', $id);
 		}
 	}
 
 	/**
 	 * Adds attribute id to the renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
-	protected function addAttributesToRender($writer) {
-	    $writer->addAttribute('id',$this->getClientID());
-	    parent::addAttributesToRender($writer);
+	protected function addAttributesToRender($writer)
+	{
+		$writer->addAttribute('id', $this->getClientID());
+		parent::addAttributesToRender($writer);
 	}
 }
-

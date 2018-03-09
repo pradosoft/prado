@@ -17,7 +17,6 @@ use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
-
 /**
  * TJuiSlider class.
  *
@@ -34,10 +33,10 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  *  OnStop="slider1_changed"
  * />
  * </code>
- * 
+ *
  * To retrieve the current value of the slider during callback, get the value
  * property of the callback request parameter within the {@link TJuiEventParameter}.
- * 
+ *
  * <code>
  * public function slider1_changed($sender, $param) {
  *   $value = $param->getCallbackParameter()->value;
@@ -66,7 +65,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidget()
 	{
-	  return 'slider';
+		return 'slider';
 	}
 
 	/**
@@ -74,7 +73,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -83,10 +82,9 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -97,7 +95,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidOptions()
 	{
-		return array('animate', 'classes', 'disabled', 'max', 'min', 'orientation', 'range', 'step', 'value', 'values');
+		return ['animate', 'classes', 'disabled', 'max', 'min', 'orientation', 'range', 'step', 'value', 'values'];
 	}
 
 	/**
@@ -106,7 +104,7 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidEvents()
 	{
-		return array('change', 'create', 'slide', 'start', 'stop');
+		return ['change', 'create', 'slide', 'start', 'stop'];
 	}
 
 	/**
@@ -125,17 +123,17 @@ class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{

@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -64,7 +65,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
-	private $_dataChanged=false;
+	private $_dataChanged = false;
 
 	/**
 	 * @return string tag name for the control
@@ -78,52 +79,53 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTabView} objects into the {@link getViews Views} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTabView)
+		if ($object instanceof TTabView) {
 			$this->getControls()->add($object);
+		}
 	}
 
 	/**
-     * Returns the index of the active tab view.
-     * Note, this property may not return the correct index.
-     * To ensure the correctness, call {@link getActiveView()} first.
+	 * Returns the index of the active tab view.
+	 * Note, this property may not return the correct index.
+	 * To ensure the correctness, call {@link getActiveView()} first.
 	 * @return integer the zero-based index of the active tab view. If -1, it means no active tab view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()
 	{
-		return $this->getViewState('ActiveViewIndex',0);
+		return $this->getViewState('ActiveViewIndex', 0);
 	}
 
 	/**
-	 * @param integer the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @param integer $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
-		$this->setViewState('ActiveViewIndex',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('ActiveViewIndex', TPropertyValue::ensureInteger($value), 0);
 	}
 
-    /**
-     * Returns the ID of the active tab view.
-     * Note, this property may not return the correct ID.
-     * To ensure the correctness, call {@link getActiveView()} first.
-     * @return string The ID of the active tab view. Defaults to '', meaning not set.
-     */
-    public function getActiveViewID()
-    {
-		return $this->getViewState('ActiveViewID','');
-    }
+	/**
+	 * Returns the ID of the active tab view.
+	 * Note, this property may not return the correct ID.
+	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * @return string The ID of the active tab view. Defaults to '', meaning not set.
+	 */
+	public function getActiveViewID()
+	{
+		return $this->getViewState('ActiveViewID', '');
+	}
 
-    /**
-     * @param string The ID of the active tab view.
-     */
-    public function setActiveViewID($value)
-    {
-		$this->setViewState('ActiveViewID',$value,'');
-    }
+	/**
+	 * @param string $value The ID of the active tab view.
+	 */
+	public function setActiveViewID($value)
+	{
+		$this->setViewState('ActiveViewID', $value, '');
+	}
 
 	/**
 	 * Returns the currently active view.
@@ -134,178 +136,172 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	public function getActiveView()
 	{
-		$activeView=null;
-		$views=$this->getViews();
-		if(($id=$this->getActiveViewID())!=='')
-		{
-			if(($index=$views->findIndexByID($id))>=0)
-				$activeView=$views->itemAt($index);
-			else
-				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid',$id);
-		}
-		else if(($index=$this->getActiveViewIndex())>=0)
-		{
-			if($index<$views->getCount())
-				$activeView=$views->itemAt($index);
-			else
-				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid',$index);
-		}
-		else
-		{
-			foreach($views as $index=>$view)
-			{
-				if($view->getActive())
-				{
-					$activeView=$view;
+		$activeView = null;
+		$views = $this->getViews();
+		if (($id = $this->getActiveViewID()) !== '') {
+			if (($index = $views->findIndexByID($id)) >= 0) {
+				$activeView = $views->itemAt($index);
+			} else {
+				throw new TInvalidDataValueException('tabpanel_activeviewid_invalid', $id);
+			}
+		} elseif (($index = $this->getActiveViewIndex()) >= 0) {
+			if ($index < $views->getCount()) {
+				$activeView = $views->itemAt($index);
+			} else {
+				throw new TInvalidDataValueException('tabpanel_activeviewindex_invalid', $index);
+			}
+		} else {
+			foreach ($views as $index => $view) {
+				if ($view->getActive()) {
+					$activeView = $view;
 					break;
 				}
 			}
 		}
-		if($activeView!==null)
+		if ($activeView !== null) {
 			$this->activateView($activeView);
+		}
 		return $activeView;
 	}
 
 	/**
-	 * @param TTabView the view to be activated
+	 * @param TTabView $view the view to be activated
 	 * @throws TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($view)
 	{
-		if($this->getViews()->indexOf($view)>=0)
+		if ($this->getViews()->indexOf($view) >= 0) {
 			$this->activateView($view);
-		else
+		} else {
 			throw new TInvalidOperationException('tabpanel_view_inexistent');
+		}
 	}
 
-    /**
-     * @return bool status of automatic tab switch on hover
-     */
-    public function getAutoSwitch()
-    {
-        return TPropertyValue::ensureBoolean($this->getViewState('AutoSwitch'));
-    }
+	/**
+	 * @return bool status of automatic tab switch on hover
+	 */
+	public function getAutoSwitch()
+	{
+		return TPropertyValue::ensureBoolean($this->getViewState('AutoSwitch'));
+	}
 
-    /**
-     * @param bool whether to enable automatic tab switch on hover
-     */
-    public function setAutoSwitch($value)
-    {
-        $this->setViewState('AutoSwitch',TPropertyValue::ensureBoolean($value));
-    }
+	/**
+	 * @param bool $value whether to enable automatic tab switch on hover
+	 */
+	public function setAutoSwitch($value)
+	{
+		$this->setViewState('AutoSwitch', TPropertyValue::ensureBoolean($value));
+	}
 
 
-    /**
-     * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
-     */
-    public function getCssUrl()
-    {
-        return $this->getViewState('CssUrl','default');
-    }
+	/**
+	 * @return string URL for the CSS file including all relevant CSS class definitions. Defaults to ''.
+	 */
+	public function getCssUrl()
+	{
+		return $this->getViewState('CssUrl', 'default');
+	}
 
-    /**
-     * @param string URL for the CSS file including all relevant CSS class definitions.
-     */
-    public function setCssUrl($value)
-    {
-        $this->setViewState('CssUrl',TPropertyValue::ensureString($value),'');
-    }
+	/**
+	 * @param string $value URL for the CSS file including all relevant CSS class definitions.
+	 */
+	public function setCssUrl($value)
+	{
+		$this->setViewState('CssUrl', TPropertyValue::ensureString($value), '');
+	}
 
-    /**
-     * @return string CSS class for the whole tab control div. Defaults to 'tab-panel'.
-     */
-    public function getCssClass()
-    {
-    	$cssClass=parent::getCssClass();
-    	return $cssClass===''?'tab-panel':$cssClass;
-    }
+	/**
+	 * @return string CSS class for the whole tab control div. Defaults to 'tab-panel'.
+	 */
+	public function getCssClass()
+	{
+		$cssClass = parent::getCssClass();
+		return $cssClass === '' ? 'tab-panel' : $cssClass;
+	}
 
-    /**
-     * @return string CSS class for the currently displayed view div. Defaults to 'tab-view'.
-     */
-    public function getViewCssClass()
-    {
-        return $this->getViewStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for the currently displayed view div. Defaults to 'tab-view'.
+	 */
+	public function getViewCssClass()
+	{
+		return $this->getViewStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for the currently displayed view div.
-     */
-    public function setViewCssClass($value)
-    {
-        $this->getViewStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string $value CSS class for the currently displayed view div.
+	 */
+	public function setViewCssClass($value)
+	{
+		$this->getViewStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for all the view div
 	 */
 	public function getViewStyle()
 	{
-		if(($style=$this->getViewState('ViewStyle',null))===null)
-		{
-			$style=new TStyle;
+		if (($style = $this->getViewState('ViewStyle', null)) === null) {
+			$style = new TStyle;
 			$style->setCssClass('tab-view');
-			$this->setViewState('ViewStyle',$style,null);
+			$this->setViewState('ViewStyle', $style, null);
 		}
 		return $style;
 	}
 
-    /**
-     * @return string CSS class for non-active tabs. Defaults to 'tab-normal'.
-     */
-    public function getTabCssClass()
-    {
-        return $this->getTabStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for non-active tabs. Defaults to 'tab-normal'.
+	 */
+	public function getTabCssClass()
+	{
+		return $this->getTabStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for non-active tabs.
-     */
-    public function setTabCssClass($value)
-    {
-        $this->getTabStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string $value CSS class for non-active tabs.
+	 */
+	public function setTabCssClass($value)
+	{
+		$this->getTabStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for all the inactive tab div
 	 */
 	public function getTabStyle()
 	{
-		if(($style=$this->getViewState('TabStyle',null))===null)
-		{
-			$style=new TStyle;
+		if (($style = $this->getViewState('TabStyle', null)) === null) {
+			$style = new TStyle;
 			$style->setCssClass('tab-normal');
-			$this->setViewState('TabStyle',$style,null);
+			$this->setViewState('TabStyle', $style, null);
 		}
 		return $style;
 	}
 
-    /**
-     * @return string CSS class for the active tab. Defaults to 'tab-active'.
-     */
-    public function getActiveTabCssClass()
-    {
-        return $this->getActiveTabStyle()->getCssClass();
-    }
+	/**
+	 * @return string CSS class for the active tab. Defaults to 'tab-active'.
+	 */
+	public function getActiveTabCssClass()
+	{
+		return $this->getActiveTabStyle()->getCssClass();
+	}
 
-    /**
-     * @param string CSS class for the active tab.
-     */
-    public function setActiveTabCssClass($value)
-    {
-        $this->getActiveTabStyle()->setCssClass($value);
-    }
+	/**
+	 * @param string $value CSS class for the active tab.
+	 */
+	public function setActiveTabCssClass($value)
+	{
+		$this->getActiveTabStyle()->setCssClass($value);
+	}
 
 	/**
 	 * @return TStyle the style for the active tab div
 	 */
 	public function getActiveTabStyle()
 	{
-		if(($style=$this->getViewState('ActiveTabStyle',null))===null)
-		{
-			$style=new TStyle;
+		if (($style = $this->getViewState('ActiveTabStyle', null)) === null) {
+			$style = new TStyle;
 			$style->setCssClass('tab-active');
-			$this->setViewState('ActiveTabStyle',$style,null);
+			$this->setViewState('ActiveTabStyle', $style, null);
 		}
 		return $style;
 	}
@@ -313,43 +309,39 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Activates the specified view.
 	 * If there is any other view currently active, it will be deactivated.
-	 * @param TTabView the view to be activated. If null, all views will be deactivated.
+	 * @param TTabView $view the view to be activated. If null, all views will be deactivated.
 	 */
 	protected function activateView($view)
 	{
 		$this->setActiveViewIndex(-1);
 		$this->setActiveViewID('');
-		foreach($this->getViews() as $index=>$v)
-		{
-			if($view===$v)
-			{
+		foreach ($this->getViews() as $index => $v) {
+			if ($view === $v) {
 				$this->setActiveViewIndex($index);
 				$this->setActiveViewID($view->getID(false));
 				$view->setActive(true);
-			}
-			else
+			} else {
 				$v->setActive(false);
+			}
 		}
 	}
 
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the control has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		if(($index=$values[$this->getClientID().'_1'])!==null)
-		{
-			$index=(int)$index;
-			$currentIndex=$this->getActiveViewIndex();
-			if($currentIndex!==$index)
-			{
+		if (($index = $values[$this->getClientID() . '_1']) !== null) {
+			$index = (int) $index;
+			$currentIndex = $this->getActiveViewIndex();
+			if ($currentIndex !== $index) {
 				$this->setActiveViewID(''); // clear up view ID
 				$this->setActiveViewIndex($index);
-				return $this->_dataChanged=true;
+				return $this->_dataChanged = true;
 			}
 		}
 		return false;
@@ -379,11 +371,11 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->setCssClass($this->getCssClass());
 		parent::addAttributesToRender($writer);
 	}
@@ -391,7 +383,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -399,9 +391,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$this->getActiveView();  // determine the active view
 		$this->registerStyleSheet();
 
-		$page=$this->getPage();
+		$page = $this->getPage();
 		$page->registerRequiresPostData($this);
-		$page->registerRequiresPostData($this->getClientID()."_1");
+		$page->registerRequiresPostData($this->getClientID() . "_1");
 	}
 
 	/**
@@ -413,15 +405,15 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	{
 		$url = $this->getCssUrl();
 
-		if($url === '') {
+		if ($url === '') {
 			return;
 		}
 
-		if($url === 'default') {
-			$url = $this->getApplication()->getAssetManager()->publishFilePath(dirname(__FILE__).DIRECTORY_SEPARATOR.'assets'.DIRECTORY_SEPARATOR.'tabpanel.css');
+		if ($url === 'default') {
+			$url = $this->getApplication()->getAssetManager()->publishFilePath(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'tabpanel.css');
 		}
 
-		if($url !== '') {
+		if ($url !== '') {
 			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
@@ -431,18 +423,19 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 */
 	protected function registerClientScript()
 	{
-		$id=$this->getClientID();
-		$options=TJavaScript::encode($this->getClientOptions());
-		$className=$this->getClientClassName();
-		$cs=$this->getPage()->getClientScript();
+		$id = $this->getClientID();
+		$options = TJavaScript::encode($this->getClientOptions());
+		$className = $this->getClientClassName();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('tabpanel');
-		$code="new $className($options);";
+		$code = "new $className($options);";
 		$cs->registerEndScript("prado:$id", $code);
 		// ensure an item is always active and visible
 		$index = $this->getActiveViewIndex();
-		if(!$this->getViews()->itemAt($index)->Visible)
-			$index=0;
-		$cs->registerHiddenField($id.'_1', $index);
+		if (!$this->getViews()->itemAt($index)->Visible) {
+			$index = 0;
+		}
+		$cs->registerHiddenField($id . '_1', $index);
 	}
 
 	/**
@@ -463,10 +456,9 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		$options['ID'] = $this->getClientID();
 		$options['ActiveCssClass'] = $this->getActiveTabCssClass();
 		$options['NormalCssClass'] = $this->getTabCssClass();
-		$viewIDs = array();
-		$viewVis = array();
-		foreach($this->getViews() as $view)
-		{
+		$viewIDs = [];
+		$viewVis = [];
+		foreach ($this->getViews() as $view) {
 			$viewIDs[] = $view->getClientID();
 			$viewVis[] = $view->getVisible();
 		}
@@ -502,23 +494,20 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders body contents of the tab control.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
-		$views=$this->getViews();
-		if($views->getCount()>0)
-		{
+		$views = $this->getViews();
+		if ($views->getCount() > 0) {
 			$writer->writeLine();
 			// render tab bar
-			foreach($views as $view)
-			{
+			foreach ($views as $view) {
 				$view->renderTab($writer);
 				$writer->writeLine();
 			}
 			// render tab views
-			foreach($views as $view)
-			{
+			foreach ($views as $view) {
 				$view->renderControl($writer);
 				$writer->writeLine();
 			}

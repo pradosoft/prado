@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use PDO;
 
 /**
@@ -21,25 +22,25 @@ use PDO;
  */
 class TDbTableColumn extends \Prado\TComponent
 {
-	const UNDEFINED_VALUE= INF; //use infinity for undefined value
+	const UNDEFINED_VALUE = INF; //use infinity for undefined value
 
-	private $_info=array();
+	private $_info = [];
 
 	/**
 	 * Sets the table column meta data.
-	 * @param array table column information.
+	 * @param array $columnInfo table column information.
 	 */
 	public function __construct($columnInfo)
 	{
-		$this->_info=$columnInfo;
+		$this->_info = $columnInfo;
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed default value if information array value is null
+	 * @param string $name information array key name
+	 * @param mixed $default default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name,$default=null)
+	protected function getInfo($name, $default = null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -48,9 +49,9 @@ class TDbTableColumn extends \Prado\TComponent
 	 * @param string information array key name
 	 * @param mixed new information array value.
 	 */
-	protected function setInfo($name,$value)
+	protected function setInfo($name, $value)
 	{
-		$this->_info[$name]=$value;
+		$this->_info[$name] = $value;
 	}
 
 	/**
@@ -67,11 +68,10 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getPdoType()
 	{
-		switch($this->getPHPType())
-		{
+		switch ($this->getPHPType()) {
 			case 'boolean': return PDO::PARAM_BOOL;
 			case 'integer': return PDO::PARAM_INT;
-			case 'string' : return PDO::PARAM_STR;
+			case 'string': return PDO::PARAM_STR;
 		}
 		return PDO::PARAM_STR;
 	}
@@ -121,7 +121,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getAllowNull()
 	{
-		return $this->getInfo('AllowNull',false);
+		return $this->getInfo('AllowNull', false);
 	}
 
 	/**
@@ -150,10 +150,9 @@ class TDbTableColumn extends \Prado\TComponent
 
 	public function getMaxiumNumericConstraint()
 	{
-		if(($precision=$this->getNumericPrecision())!==null)
-		{
-			$scale=$this->getNumericScale();
-			return $scale===null ? pow(10,$precision) : pow(10,$precision-$scale);
+		if (($precision = $this->getNumericPrecision()) !== null) {
+			$scale = $this->getNumericScale();
+			return $scale === null ? pow(10, $precision) : pow(10, $precision - $scale);
 		}
 	}
 
@@ -162,7 +161,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getIsPrimaryKey()
 	{
-		return $this->getInfo('IsPrimaryKey',false);
+		return $this->getInfo('IsPrimaryKey', false);
 	}
 
 	/**
@@ -170,7 +169,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function getIsForeignKey()
 	{
-		return $this->getInfo('IsForeignKey',false);
+		return $this->getInfo('IsForeignKey', false);
 	}
 
 	/**
@@ -186,7 +185,7 @@ class TDbTableColumn extends \Prado\TComponent
 	 */
 	public function hasSequence()
 	{
-		return $this->getSequenceName()!==null;
+		return $this->getSequenceName() !== null;
 	}
 
 	/**
@@ -197,4 +196,3 @@ class TDbTableColumn extends \Prado\TComponent
 		return false;
 	}
 }
-

@@ -26,7 +26,7 @@ interface IPostBackEventHandler
 	 * Raises postback event.
 	 * The implementation of this function should raise appropriate event(s) (e.g. OnClick, OnCommand)
 	 * indicating the component is responsible for the postback event.
-	 * @param string the parameter associated with the postback event
+	 * @param string $param the parameter associated with the postback event
 	 */
 	public function raisePostBackEvent($param);
 }

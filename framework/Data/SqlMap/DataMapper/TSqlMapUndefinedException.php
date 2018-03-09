@@ -18,5 +18,4 @@ namespace Prado\Data\SqlMap\DataMapper;
  */
 class TSqlMapUndefinedException extends TSqlMapException
 {
-
 }

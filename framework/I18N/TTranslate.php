@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 
-
 /**
  * TTranslate class.
  *
@@ -72,25 +71,25 @@ class TTranslate extends TI18NControl
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text for localization.
-	 * @param string the text for translation.
+	 * @param string $value the text for translation.
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
 	 * Set the key for message lookup.
-	 * @param string key
+	 * @param string $value key
 	 */
 	public function setKey($value)
 	{
-		$this->setViewState('Key',$value,'');
+		$this->setViewState('Key', $value, '');
 	}
 
 	/**
@@ -99,7 +98,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getKey()
 	{
-		return $this->getViewState('Key','');
+		return $this->getViewState('Key', '');
 	}
 
 	/**
@@ -108,25 +107,25 @@ class TTranslate extends TI18NControl
 	 */
 	public function getCatalogue()
 	{
-		return $this->getViewState('Catalogue','');
+		return $this->getViewState('Catalogue', '');
 	}
 
 	/**
 	 * Set the message catalogue.
-	 * @param string catalogue.
+	 * @param string $value catalogue.
 	 */
 	public function setCatalogue($value)
 	{
-		$this->setViewState('Catalogue',$value,'');
+		$this->setViewState('Catalogue', $value, '');
 	}
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean trim or not.
+	 * @param boolean $value trim or not.
 	 */
 	public function setTrim($value)
 	{
-		$this->setViewState('Trim',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('Trim', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -135,7 +134,7 @@ class TTranslate extends TI18NControl
 	 */
 	public function getTrim()
 	{
-		return $this->getViewState('Trim',true);
+		return $this->getViewState('Trim', true);
 	}
 
 	/**
@@ -146,13 +145,12 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameters()
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters;
-		else
-		{
-			$parameters=new TAttributeCollection;
+		} else {
+			$parameters = new TAttributeCollection;
 			$parameters->setCaseSensitive(true);
-			$this->setViewState('Parameters',$parameters,null);
+			$this->setViewState('Parameters', $parameters, null);
 			return $parameters;
 		}
 	}
@@ -162,10 +160,11 @@ class TTranslate extends TI18NControl
 	 */
 	public function hasParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->contains($name);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -173,32 +172,34 @@ class TTranslate extends TI18NControl
 	 */
 	public function getParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->itemAt($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
 	 * @param string parameter name
 	 * @param string value of the parameter
 	 */
-	public function setParameter($name,$value)
+	public function setParameter($name, $value)
 	{
-		$this->getParameters()->add($name,$value);
+		$this->getParameters()->add($name, $value);
 	}
 
 	/**
 	 * Removes the named parameter.
-	 * @param string the name of the parameter to be removed.
+	 * @param string $name the name of the parameter to be removed.
 	 * @return string parameter value removed, null if parameter does not exist.
 	 */
 	public function removeParameter($name)
 	{
-		if($parameters=$this->getViewState('Parameters',null))
+		if ($parameters = $this->getViewState('Parameters', null)) {
 			return $parameters->remove($name);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
@@ -207,32 +208,35 @@ class TTranslate extends TI18NControl
 	public function render($writer)
 	{
 		$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
-		$subs = array();
-		foreach($this->getParameters() as $key => $value)
-			$subs['{'.$key.'}'] = $value;
-		foreach($this->getControls() as $control)
-		{
-			if($control instanceof TTranslateParameter)
-				$subs['{'.$control->getKey().'}'] = $control->getParameter();
-			elseif($control instanceof TControl)
+		$subs = [];
+		foreach ($this->getParameters() as $key => $value) {
+			$subs['{' . $key . '}'] = $value;
+		}
+		foreach ($this->getControls() as $control) {
+			if ($control instanceof TTranslateParameter) {
+				$subs['{' . $control->getKey() . '}'] = $control->getParameter();
+			} elseif ($control instanceof TControl) {
 				$control->render($htmlWriter);
-			elseif(is_string($control))
+			} elseif (is_string($control)) {
 				$htmlWriter->write($control);
+			}
 		}
 
 		$text = $this->getText();
-		if(strlen($text)==0)
+		if (strlen($text) == 0) {
 			$text = $htmlWriter->flush();
-		if($this->getTrim())
+		}
+		if ($this->getTrim()) {
 			$text = trim($text);
+		}
 
 		$writer->write($this->translateText($text, $subs));
 	}
 
 	/**
 	 * Translates the text with subsititution.
-	 * @param string text for translation
-	 * @param array list of substitutions
+	 * @param string $text text for translation
+	 * @param array $subs list of substitutions
 	 * @return string translated text
 	 */
 	protected function translateText($text, $subs)
@@ -240,21 +244,30 @@ class TTranslate extends TI18NControl
 		$app = $this->getApplication()->getGlobalization();
 
 		//no translation handler provided
-		if(($config = $app->getTranslationConfiguration())===null)
+		if (($config = $app->getTranslationConfiguration()) === null) {
 			return strtr($text, $subs);
+		}
 
 		$catalogue = $this->getCatalogue();
-		if(empty($catalogue) && isset($config['catalogue']))
+		if (empty($catalogue) && isset($config['catalogue'])) {
 			$catalogue = $config['catalogue'];
-		if (empty($catalogue)) $catalogue='messages';
+		}
+		if (empty($catalogue)) {
+			$catalogue = 'messages';
+		}
 		Translation::init($catalogue);
 
 		$key = $this->getKey();
-		if(!empty($key)) $text = $key;
+		if (!empty($key)) {
+			$text = $key;
+		}
 
 		//translate it
-		return Translation::formatter($catalogue)->format($text,
-										$subs, $catalogue, $this->getCharset());
+		return Translation::formatter($catalogue)->format(
+			$text,
+										$subs,
+			$catalogue,
+			$this->getCharset()
+		);
 	}
 }
-

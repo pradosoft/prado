@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
@@ -34,25 +35,26 @@ use Prado\TPropertyValue;
  */
 class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {
-	private $_forControl='';
+	private $_forControl = '';
 
 	/**
 	 * @return string tag name of the label, returns 'label' if there is an associated control, 'span' otherwise.
 	 */
 	protected function getTagName()
 	{
-		return ($this->getForControl()==='')?'span':'label';
+		return ($this->getForControl() === '') ? 'span' : 'label';
 	}
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 * @throws TInvalidDataValueException if associated control cannot be found using the ID
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->_forControl!=='')
-			$writer->addAttribute('for',$this->_forControl);
+		if ($this->_forControl !== '') {
+			$writer->addAttribute('for', $this->_forControl);
+		}
 		parent::addAttributesToRender($writer);
 	}
 
@@ -60,37 +62,35 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Renders the label.
 	 * It overrides the parent implementation by checking if an associated
 	 * control is visible or not. If not, the label will not be rendered.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
-		if(($aid=$this->getForControl())!=='')
-		{
-			if($control=$this->findControl($aid))
-			{
-				if($control->getVisible(true))
-				{
-					$this->_forControl=$control->getClientID();
+		if (($aid = $this->getForControl()) !== '') {
+			if ($control = $this->findControl($aid)) {
+				if ($control->getVisible(true)) {
+					$this->_forControl = $control->getClientID();
 					parent::render($writer);
 				}
+			} else {
+				throw new TInvalidDataValueException('label_associatedcontrol_invalid', $aid);
 			}
-			else
-				throw new TInvalidDataValueException('label_associatedcontrol_invalid',$aid);
-		}
-		else
+		} else {
 			parent::render($writer);
+		}
 	}
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write($text);
+		}
 	}
 
 	/**
@@ -98,15 +98,15 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -140,17 +140,16 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 */
 	public function getForControl()
 	{
-		return $this->getViewState('ForControl','');
+		return $this->getViewState('ForControl', '');
 	}
 
 	/**
 	 * Sets the ID of the control that the label is associated with.
 	 * The control must be locatable via {@link TControl::findControl} using the ID.
-	 * @param string the associated control ID
+	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)
 	{
-		$this->setViewState('ForControl',$value,'');
+		$this->setViewState('ForControl', $value, '');
 	}
 }
-

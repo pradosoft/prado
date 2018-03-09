@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -28,22 +29,22 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	 * the X coordinate of the clicking point
 	 * @var integer
 	 */
-	private $_x=0;
+	private $_x = 0;
 	/**
 	 * the Y coordinate of the clicking point
 	 * @var integer
 	 */
-	private $_y=0;
+	private $_y = 0;
 
 	/**
 	 * Constructor.
 	 * @param integer X coordinate of the clicking point
 	 * @param integer Y coordinate of the clicking point
 	 */
-	public function __construct($x,$y)
+	public function __construct($x, $y)
 	{
-		$this->_x=$x;
-		$this->_y=$y;
+		$this->_x = $x;
+		$this->_y = $y;
 	}
 
 	/**
@@ -55,11 +56,11 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer X coordinate of the clicking point
+	 * @param integer $value X coordinate of the clicking point
 	 */
 	public function setX($value)
 	{
-		$this->_x=TPropertyValue::ensureInteger($value);
+		$this->_x = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -71,10 +72,10 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer Y coordinate of the clicking point
+	 * @param integer $value Y coordinate of the clicking point
 	 */
 	public function setY($value)
 	{
-		$this->_y=TPropertyValue::ensureInteger($value);
+		$this->_y = TPropertyValue::ensureInteger($value);
 	}
 }

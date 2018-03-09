@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TListItemType;
 
-
 /**
  * Template control for editing an Active Record instance.
  * The <b>RecordClass</b> determines the Active Record class to be edited.
@@ -49,7 +48,7 @@ use Prado\Web\UI\WebControls\TListItemType;
  * xxx is the property name).
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldEditView extends TScaffoldBase
@@ -64,8 +63,9 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	public function onLoad($param)
 	{
-		if($this->getVisible())
+		if ($this->getVisible()) {
 			$this->initializeEditForm();
+		}
 	}
 
 	/**
@@ -77,7 +77,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string the class name for scaffold editor. Defaults to empty, meaning not set.
+	 * @param string $value the class name for scaffold editor. Defaults to empty, meaning not set.
 	 */
 	public function setEditRenderer($value)
 	{
@@ -85,7 +85,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @param array Active Record primary key value to be edited.
+	 * @param array $value Active Record primary key value to be edited.
 	 */
 	public function setRecordPk($value)
 	{
@@ -117,18 +117,16 @@ class TScaffoldEditView extends TScaffoldBase
 	{
 		$record = $this->getCurrentRecord();
 		$classPath = $this->getEditRenderer();
-		if($classPath === '')
-		{
+		if ($classPath === '') {
 			$columns = $this->getTableInfo()->getColumns();
 			$this->getInputRepeater()->setDataSource($columns);
 			$this->getInputRepeater()->dataBind();
-		}
-		else
-		{
-			if($this->_editRenderer===null)
+		} else {
+			if ($this->_editRenderer === null) {
 				$this->createEditRenderer($record, $classPath);
-			else
+			} else {
 				$this->_editRenderer->setData($record);
+			}
 		}
 	}
 
@@ -142,16 +140,16 @@ class TScaffoldEditView extends TScaffoldBase
 	protected function createEditRenderer($record, $classPath)
 	{
 		$this->_editRenderer = Prado::createComponent($classPath);
-		if($this->_editRenderer instanceof IScaffoldEditRenderer)
-		{
+		if ($this->_editRenderer instanceof IScaffoldEditRenderer) {
 			$index = $this->getControls()->remove($this->getInputRepeater());
-			$this->getControls()->insertAt($index,$this->_editRenderer);
+			$this->getControls()->insertAt($index, $this->_editRenderer);
 			$this->_editRenderer->setData($record);
-		}
-		else
-		{
+		} else {
 			throw new TConfigurationException(
-				'scaffold_invalid_edit_renderer', $this->getID(), get_class($record));
+				'scaffold_invalid_edit_renderer',
+				$this->getID(),
+				get_class($record)
+			);
 		}
 	}
 
@@ -161,12 +159,12 @@ class TScaffoldEditView extends TScaffoldBase
 	protected function createRepeaterEditItem($sender, $param)
 	{
 		$type = $param->getItem()->getItemType();
-		if($type==TListItemType::Item || $type==TListItemType::AlternatingItem)
-		{
+		if ($type == TListItemType::Item || $type == TListItemType::AlternatingItem) {
 			$item = $param->getItem();
 			$column = $item->getData();
-			if($column===null)
+			if ($column === null) {
 				return;
+			}
 
 			$record = $this->getCurrentRecord();
 			$builder = $this->getScaffoldInputBuilder($record);
@@ -180,8 +178,7 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	public function bubbleEvent($sender, $param)
 	{
-		switch(strtolower($param->getCommandName()))
-		{
+		switch (strtolower($param->getCommandName())) {
 			case 'save':
 				return $this->doSave() ? false : true;
 			case 'clear':
@@ -199,28 +196,21 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	protected function doSave()
 	{
-		if($this->getPage()->getIsValid())
-		{
+		if ($this->getPage()->getIsValid()) {
 			$record = $this->getCurrentRecord();
-			if($this->_editRenderer===null)
-			{
+			if ($this->_editRenderer === null) {
 				$table = $this->getTableInfo();
 				$builder = $this->getScaffoldInputBuilder($record);
-				foreach($this->getInputRepeater()->getItems() as $item)
-				{
+				foreach ($this->getInputRepeater()->getItems() as $item) {
 					$column = $table->getColumn($item->getCustomData());
 					$builder->loadScaffoldInput($this, $item, $column, $record);
 				}
-			}
-			else
-			{
+			} else {
 				$this->_editRenderer->updateRecord($record);
 			}
 			$record->save();
 			return true;
-		}
-		else if($this->_editRenderer!==null)
-		{
+		} elseif ($this->_editRenderer !== null) {
 			//preserve the form data.
 			$this->_editRenderer->updateRecord($this->getCurrentRecord());
 		}
@@ -266,15 +256,14 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Create the default scaffold editor control factory.
-	 * @param TActiveRecord record instance.
+	 * @param TActiveRecord $record record instance.
 	 * @return TScaffoldInputBase scaffold editor control factory.
 	 */
 	protected function getScaffoldInputBuilder($record)
 	{
-		static $_builders=array();
+		static $_builders = [];
 		$class = get_class($record);
-		if(!isset($_builders[$class]))
-		{
+		if (!isset($_builders[$class])) {
 			$_builders[$class] = TScaffoldInputBase::createInputBuilder($record);
 		}
 		return $_builders[$class];
@@ -285,6 +274,6 @@ class TScaffoldEditView extends TScaffoldBase
 	 */
 	public function getValidationGroup()
 	{
-		return 'group_'.$this->getUniqueID();
+		return 'group_' . $this->getUniqueID();
 	}
 }

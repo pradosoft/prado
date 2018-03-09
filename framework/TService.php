@@ -30,12 +30,12 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	/**
 	 * @var boolean whether the service is enabled
 	 */
-	private $_enabled=true;
+	private $_enabled = true;
 
 	/**
 	 * Initializes the service and attaches {@link run} to the RunService event of application.
 	 * This method is required by IService and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
@@ -50,11 +50,11 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	}
 
 	/**
-	 * @param string id of this service
+	 * @param string $value id of this service
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -66,11 +66,11 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	}
 
 	/**
-	 * @param boolean whether the service is enabled
+	 * @param boolean $value whether the service is enabled
 	 */
 	public function setEnabled($value)
 	{
-		$this->_enabled=TPropertyValue::ensureBoolean($value);
+		$this->_enabled = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -80,4 +80,3 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	{
 	}
 }
-

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+
 use Prado\Data\TDataSourceConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -47,24 +48,26 @@ use Prado\Prado;
  */
 class TDbUserManager extends \Prado\TModule implements IUserManager
 {
-	private $_connID='';
+	private $_connID = '';
 	private $_conn;
-	private $_guestName='Guest';
-	private $_userClass='';
+	private $_guestName = 'Guest';
+	private $_userClass = '';
 	private $_userFactory;
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
-		if($this->_userClass==='')
+		if ($this->_userClass === '') {
 			throw new TConfigurationException('dbusermanager_userclass_required');
-		$this->_userFactory=Prado::createComponent($this->_userClass,$this);
-		if(!($this->_userFactory instanceof TDbUser))
-			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid',$this->_userClass);
+		}
+		$this->_userFactory = Prado::createComponent($this->_userClass, $this);
+		if (!($this->_userFactory instanceof TDbUser)) {
+			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
+		}
 	}
 
 	/**
@@ -76,11 +79,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param string the user class name in namespace format. The user class must extend from {@link TDbUser}.
+	 * @param string $value the user class name in namespace format. The user class must extend from {@link TDbUser}.
 	 */
 	public function setUserClass($value)
 	{
-		$this->_userClass=$value;
+		$this->_userClass = $value;
 	}
 
 	/**
@@ -92,22 +95,22 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param string name to be used for guest users.
+	 * @param string $value name to be used for guest users.
 	 */
 	public function setGuestName($value)
 	{
-		$this->_guestName=$value;
+		$this->_guestName = $value;
 	}
 
 	/**
 	 * Validates if the username and password are correct.
-	 * @param string user name
-	 * @param string password
+	 * @param string $username user name
+	 * @param string $password password
 	 * @return boolean true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username,$password)
+	public function validateUser($username, $password)
 	{
-		return $this->_userFactory->validateUser($username,$password);
+		return $this->_userFactory->validateUser($username, $password);
 	}
 
 	/**
@@ -115,16 +118,15 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * @param string user name, null if it is a guest.
 	 * @return TUser the user instance, null if the specified username is not in the user database.
 	 */
-	public function getUser($username=null)
+	public function getUser($username = null)
 	{
-		if($username===null)
-		{
-			$user=Prado::createComponent($this->_userClass,$this);
+		if ($username === null) {
+			$user = Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
 			return $user;
-		}
-		else
+		} else {
 			return $this->_userFactory->createUser($username);
+		}
 	}
 
 	/**
@@ -139,11 +141,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection
 	 * that will be used by the user manager.
-	 * @param string module ID.
+	 * @param string $value module ID.
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -151,9 +153,8 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function getDbConnection()
 	{
-		if($this->_conn===null)
-		{
-			$this->_conn=$this->createDbConnection($this->_connID);
+		if ($this->_conn === null) {
+			$this->_conn = $this->createDbConnection($this->_connID);
 			$this->_conn->setActive(true);
 		}
 		return $this->_conn;
@@ -167,16 +168,16 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 */
 	protected function createDbConnection($connectionID)
 	{
-		if($connectionID!=='')
-		{
-			$conn=$this->getApplication()->getModule($connectionID);
-			if($conn instanceof TDataSourceConfig)
+		if ($connectionID !== '') {
+			$conn = $this->getApplication()->getModule($connectionID);
+			if ($conn instanceof TDataSourceConfig) {
 				return $conn->getDbConnection();
-			else
-				throw new TConfigurationException('dbusermanager_connectionid_invalid',$connectionID);
-		}
-		else
+			} else {
+				throw new TConfigurationException('dbusermanager_connectionid_invalid', $connectionID);
+			}
+		} else {
 			throw new TConfigurationException('dbusermanager_connectionid_required');
+		}
 	}
 
 	/**
@@ -192,13 +193,14 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @param THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie)
 	{
-		$user=$this->getApplication()->getUser();
-		if($user instanceof TDbUser)
+		$user = $this->getApplication()->getUser();
+		if ($user instanceof TDbUser) {
 			$user->saveUserToCookie($cookie);
+		}
 	}
 }

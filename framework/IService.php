@@ -24,7 +24,7 @@ interface IService
 {
 	/**
 	 * Initializes the service.
-	 * @param TXmlElement the configuration for the service
+	 * @param TXmlElement $config the configuration for the service
 	 */
 	public function init($config);
 	/**
@@ -32,7 +32,7 @@ interface IService
 	 */
 	public function getID();
 	/**
-	 * @param string ID of the service
+	 * @param string $id ID of the service
 	 */
 	public function setID($id);
 	/**
@@ -40,7 +40,7 @@ interface IService
 	 */
 	public function getEnabled();
 	/**
-	 * @param boolean whether the service is enabled
+	 * @param boolean $value whether the service is enabled
 	 */
 	public function setEnabled($value);
 	/**

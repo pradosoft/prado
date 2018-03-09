@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\TClientSideOptions;
 
 /**
@@ -46,7 +47,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 * Client-side OnHideSummary validation summary event is raise when all the
 	 * validators are valid. This will override the default client-side
 	 * validation summary behaviour.
-	 * @param string javascript code for client-side OnHideSummary event.
+	 * @param string $javascript javascript code for client-side OnHideSummary event.
 	 */
 	public function setOnHideSummary($javascript)
 	{
@@ -57,7 +58,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	 * Client-side OnShowSummary event is raise when one or more validators are
 	 * not valid. This will override the default client-side validation summary
 	 * behaviour.
-	 * @param string javascript code for client-side OnShowSummary event.
+	 * @param string $javascript javascript code for client-side OnShowSummary event.
 	 */
 	public function setOnShowSummary($javascript)
 	{
@@ -75,7 +76,7 @@ class TClientSideValidationSummaryOptions extends TClientSideOptions
 	/**
 	 * Ensure the string is a valid javascript function. The code block
 	 * is enclosed with "function(summary, validators){ }" block.
-	 * @param string javascript code.
+	 * @param string $javascript javascript code.
 	 * @return string javascript function code.
 	 */
 	protected function ensureFunction($javascript)

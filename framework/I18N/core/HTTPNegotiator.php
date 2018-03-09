@@ -21,7 +21,7 @@ namespace Prado\I18N\core;
 /**
  * Include the CultureInfo class.
  */
-require_once(dirname(__FILE__).'/CultureInfo.php');
+require_once(__DIR__ . '/CultureInfo.php');
 
 /**
  * HTTPNegotiator class.
@@ -49,55 +49,54 @@ class HTTPNegotiator
 	 * Get a list of languages acceptable by the client browser
 	 * @return array languages ordered in the user browser preferences.
 	 */
-	function getLanguages()
+	public function getLanguages()
 	{
-		if($this->languages !== null) {
+		if ($this->languages !== null) {
 			return $this->languages;
 		}
 
-		$this->languages = array();
+		$this->languages = [];
 
-		if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-            return $this->languages;
+		if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+			return $this->languages;
+		}
 
 		//$basedir = CultureInfo::dataDir();
 		//$ext = CultureInfo::fileExt();
 		$info = new CultureInfo();
 
-		foreach(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang)
-		{
-            // Cut off any q-value that might come after a semi-colon
-            if ($pos = strpos($lang, ';'))
-                $lang = trim(substr($lang, 0, $pos));
+		foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang) {
+			// Cut off any q-value that might come after a semi-colon
+			if ($pos = strpos($lang, ';')) {
+				$lang = trim(substr($lang, 0, $pos));
+			}
 
-			if (strstr($lang, '-'))
-			{
-				$codes = explode('-',$lang);
-				if($codes[0] == 'i')
-				{
-                    // Language not listed in ISO 639 that are not variants
-                    // of any listed language, which can be registerd with the
-                    // i-prefix, such as i-cherokee
-					if(count($codes)>1)
+			if (strstr($lang, '-')) {
+				$codes = explode('-', $lang);
+				if ($codes[0] == 'i') {
+					// Language not listed in ISO 639 that are not variants
+					// of any listed language, which can be registerd with the
+					// i-prefix, such as i-cherokee
+					if (count($codes) > 1) {
 						$lang = $codes[1];
-				}
-				else
-				{
-					for($i = 0, $k = count($codes); $i<$k; ++$i)
-					{
-						if($i == 0)
+					}
+				} else {
+					for ($i = 0, $k = count($codes); $i < $k; ++$i) {
+						if ($i == 0) {
 							$lang = strtolower($codes[0]);
-						else
-							$lang .= '_'.strtoupper($codes[$i]);
+						} else {
+							$lang .= '_' . strtoupper($codes[$i]);
+						}
 					}
 				}
-            }
+			}
 
 
 
-			if($info->validCulture($lang))
+			if ($info->validCulture($lang)) {
 				$this->languages[] = $lang;
-        }
+			}
+		}
 
 		return $this->languages;
 	}
@@ -106,24 +105,24 @@ class HTTPNegotiator
 	 * Get a list of charsets acceptable by the client browser.
 	 * @return array list of charsets in preferable order.
 	 */
-	function getCharsets()
+	public function getCharsets()
 	{
-        if($this->charsets !== null) {
+		if ($this->charsets !== null) {
 			return $this->charsets;
 		}
 
-		$this->charsets = array();
+		$this->charsets = [];
 
-		if (!isset($_SERVER['HTTP_ACCEPT_CHARSET']))
-            return $this->charsets;
+		if (!isset($_SERVER['HTTP_ACCEPT_CHARSET'])) {
+			return $this->charsets;
+		}
 
-		foreach (explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']) as $charset)
-		{
-            if (!empty($charset))
-                $this->charsets[] = preg_replace('/;.*/', '', $charset);
-        }
+		foreach (explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']) as $charset) {
+			if (!empty($charset)) {
+				$this->charsets[] = preg_replace('/;.*/', '', $charset);
+			}
+		}
 
 		return $this->charsets;
 	}
 }
-

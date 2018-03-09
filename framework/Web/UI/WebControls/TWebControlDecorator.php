@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TCompositeControl;
@@ -58,7 +59,8 @@ use Prado\Web\UI\TCompositeControl;
  * @since 3.2
  */
 
-class TWebControlDecorator extends \Prado\TComponent {
+class TWebControlDecorator extends \Prado\TComponent
+{
 
 	/**
 	 * @var boolean tells if there should only be decoration around the inner content
@@ -84,7 +86,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	/**
 	 * @var boolean This tells if the Templates have been
 	 */
-	private $_addedTemplateDecoration=false;
+	private $_addedTemplateDecoration = false;
 
 
 	/**
@@ -129,7 +131,8 @@ class TWebControlDecorator extends \Prado\TComponent {
 	 * @param TWebControl The control that is to be decorated.
 	 * @param boolean whether decoration is just around the inner content
 	 */
-	public function __construct($control, $onlyinternal = false) {
+	public function __construct($control, $onlyinternal = false)
+	{
 		$this->_control = $control;
 		$this->_internalonly = $onlyinternal;
 	}
@@ -143,7 +146,7 @@ class TWebControlDecorator extends \Prado\TComponent {
 	}
 
 	/**
-	 * @param boolean $value true to tell the decoration that the templates need state and should be
+	 * @param boolean $value $value true to tell the decoration that the templates need state and should be
 	 * placed in a control step before the state is saved.
 	 */
 	public function setUseState($value)
@@ -154,128 +157,152 @@ class TWebControlDecorator extends \Prado\TComponent {
 	/**
 	 * @return string gets the text before the open tag in the TWebControl
 	 */
-	public function getPreTagText() {
+	public function getPreTagText()
+	{
 		return $this->_pretagtext;
 	}
 
 	/**
-	 * @param string sets the text before the open tag in the TWebControl
+	 * @param string $value sets the text before the open tag in the TWebControl
 	 */
-	public function setPreTagText($value) {
-		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
+	public function setPreTagText($value)
+	{
+		if (!$this->_internalonly && !$this->_control->getIsSkinApplied()) {
 			$this->_pretagtext = TPropertyValue::ensureString($value);
+		}
 	}
 
 
 	/**
 	 * @return string the text after the open tag in the TWebControl
 	 */
-	public function getPreContentsText() {
+	public function getPreContentsText()
+	{
 		return $this->_precontentstext;
 	}
 
 	/**
-	 * @param string sets the text after the open tag in the TWebControl
+	 * @param string $value sets the text after the open tag in the TWebControl
 	 */
-	public function setPreContentsText($value) {
-		if(!$this->_control->getIsSkinApplied())
+	public function setPreContentsText($value)
+	{
+		if (!$this->_control->getIsSkinApplied()) {
 			$this->_precontentstext = TPropertyValue::ensureString($value);
+		}
 	}
 
 
 	/**
 	 * @return string the text before the close tag in the TWebControl
 	 */
-	public function getPostContentsText() {
+	public function getPostContentsText()
+	{
 		return $this->_postcontentstext;
 	}
 
 	/**
-	 * @param string sets the text before the close tag in the TWebControl
+	 * @param string $value sets the text before the close tag in the TWebControl
 	 */
-	public function setPostContentsText($value) {
-		if(!$this->_control->getIsSkinApplied())
+	public function setPostContentsText($value)
+	{
+		if (!$this->_control->getIsSkinApplied()) {
 			$this->_postcontentstext = TPropertyValue::ensureString($value);
+		}
 	}
 
 
 	/**
 	 * @return string the text before the close tag in the TWebControl
 	 */
-	public function getPostTagText() {
+	public function getPostTagText()
+	{
 		return $this->_posttagtext;
 	}
 
 	/**
-	 * @param string sets the text after the close tag in the TWebControl
+	 * @param string $value sets the text after the close tag in the TWebControl
 	 */
-	public function setPostTagText($value) {
-		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
+	public function setPostTagText($value)
+	{
+		if (!$this->_internalonly && !$this->_control->getIsSkinApplied()) {
 			$this->_posttagtext = TPropertyValue::ensureString($value);
+		}
 	}
 
 
 	/**
 	 * @return TTemplate|null the template before the open tag in the TWebControl.  Defaults to null.
 	 */
-	public function getPreTagTemplate() {
+	public function getPreTagTemplate()
+	{
 		return $this->_pretagtemplate;
 	}
 
 	/**
-	 * @param TTemplate sets the template before the open tag in the TWebControl
+	 * @param TTemplate $value sets the template before the open tag in the TWebControl
 	 */
-	public function setPreTagTemplate($value) {
-		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
+	public function setPreTagTemplate($value)
+	{
+		if (!$this->_internalonly && !$this->_control->getIsSkinApplied()) {
 			$this->_pretagtemplate = $value;
+		}
 	}
 
 
 	/**
 	 * @return TTemplate|null the template after the open tag in the TWebControl.  Defaults to null.
 	 */
-	public function getPreContentsTemplate() {
+	public function getPreContentsTemplate()
+	{
 		return $this->_precontentstemplate;
 	}
 
 	/**
-	 * @param TTemplate sets the template after the open tag in the TWebControl
+	 * @param TTemplate $value sets the template after the open tag in the TWebControl
 	 */
-	public function setPreContentsTemplate($value) {
-		if(!$this->_control->getIsSkinApplied())
+	public function setPreContentsTemplate($value)
+	{
+		if (!$this->_control->getIsSkinApplied()) {
 			$this->_precontentstemplate = $value;
+		}
 	}
 
 
 	/**
 	 * @return TTemplate|null the template before the close tag in the TWebControl.  Defaults to null.
 	 */
-	public function getPostContentsTemplate() {
+	public function getPostContentsTemplate()
+	{
 		return $this->_postcontentstemplate;
 	}
 
 	/**
-	 * @param TTemplate sets the template before the close tag in the TWebControl
+	 * @param TTemplate $value sets the template before the close tag in the TWebControl
 	 */
-	public function setPostContentsTemplate($value) {
-		if(!$this->_control->getIsSkinApplied())
+	public function setPostContentsTemplate($value)
+	{
+		if (!$this->_control->getIsSkinApplied()) {
 			$this->_postcontentstemplate = $value;
+		}
 	}
 
 
 	/**
 	 * @return TTemplate|null the template after the close tag in the TWebControl.  Defaults to null.
 	 */
-	public function getPostTagTemplate() {
+	public function getPostTagTemplate()
+	{
 		return $this->_posttagtemplate;
 	}
 
 	/**
-	 * @param TTemplate sets the template before the close tag in the TWebControl
+	 * @param TTemplate $value sets the template before the close tag in the TWebControl
 	 */
-	public function setPostTagTemplate($value) {
-		if(!$this->_internalonly && !$this->_control->getIsSkinApplied())
+	public function setPostTagTemplate($value)
+	{
+		if (!$this->_internalonly && !$this->_control->getIsSkinApplied()) {
 			$this->_posttagtemplate = $value;
+		}
 	}
 
 	/**
@@ -284,15 +311,16 @@ class TWebControlDecorator extends \Prado\TComponent {
 	 * This call attaches the ensureTemplateDecoration to the TPage onSaveStateComplete so
 	 * these controls don't have page states.  This is as close to not influencing the page as possible.
 	 */
-	public function instantiate($outercontrol = null) {
-		if($this->getPreTagTemplate() || $this->getPreContentsTemplate() ||
+	public function instantiate($outercontrol = null)
+	{
+		if ($this->getPreTagTemplate() || $this->getPreContentsTemplate() ||
 			$this->getPostContentsTemplate() || $this->getPostTagTemplate()) {
-
 			$this->_outercontrol = $outercontrol;
-			if($this->getUseState())
+			if ($this->getUseState()) {
 				$this->ensureTemplateDecoration();
-			else
-				$this->_control->getPage()->onSaveStateComplete[] = array($this, 'ensureTemplateDecoration');
+			} else {
+				$this->_control->getPage()->onSaveStateComplete[] = [$this, 'ensureTemplateDecoration'];
+			}
 		}
 	}
 
@@ -305,45 +333,44 @@ class TWebControlDecorator extends \Prado\TComponent {
 	 * control
 	 * @return boolean returns true if the template decorations have been added
 	 */
-	public function ensureTemplateDecoration($sender=null, $param=null) {
-
+	public function ensureTemplateDecoration($sender = null, $param = null)
+	{
 		$control = $this->_control;
 		$outercontrol = $this->_outercontrol;
-		if($outercontrol === null)
+		if ($outercontrol === null) {
 			$outercontrol = $control;
+		}
 
-		if($this->_addedTemplateDecoration)
+		if ($this->_addedTemplateDecoration) {
 			return $this->_addedTemplateDecoration;
+		}
 
 		$this->_addedTemplateDecoration = true;
 
-		if($this->getPreContentsTemplate())
-		{
+		if ($this->getPreContentsTemplate()) {
 			$precontents = new TCompositeControl;
 			$this->getPreContentsTemplate()->instantiateIn($precontents);
 			$control->getControls()->insertAt(0, $precontents);
 		}
 
-		if($this->getPostContentsTemplate())
-		{
+		if ($this->getPostContentsTemplate()) {
 			$postcontents = new TCompositeControl;
 			$this->getPostContentsTemplate()->instantiateIn($postcontents);
 			$control->getControls()->add($postcontents);
 		}
 
-		if(!$outercontrol->getParent())
+		if (!$outercontrol->getParent()) {
 			return $this->_addedTemplateDecoration;
+		}
 
 
-		if($this->getPreTagTemplate())
-		{
+		if ($this->getPreTagTemplate()) {
 			$pretag = new TCompositeControl;
 			$this->getPreTagTemplate()->instantiateIn($pretag);
 			$outercontrol->getParent()->getControls()->insertBefore($outercontrol, $pretag);
 		}
 
-		if($this->getPostTagTemplate())
-		{
+		if ($this->getPostTagTemplate()) {
 			$posttag = new TCompositeControl;
 			$this->getPostTagTemplate()->instantiateIn($posttag);
 			$outercontrol->getParent()->getControls()->insertAfter($outercontrol, $posttag);
@@ -354,33 +381,37 @@ class TWebControlDecorator extends \Prado\TComponent {
 
 	/**
 	 * This method places the pre tag text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
-	public function renderPreTagText($writer) {
+	public function renderPreTagText($writer)
+	{
 		$writer->write($this->getPreTagText());
 	}
 
 	/**
 	 * This method places the pre contents text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
-	public function renderPreContentsText($writer) {
+	public function renderPreContentsText($writer)
+	{
 		$writer->write($this->getPreContentsText());
 	}
 
 	/**
 	 * This method places the post contents text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
-	public function renderPostContentsText($writer) {
+	public function renderPostContentsText($writer)
+	{
 		$writer->write($this->getPostContentsText());
 	}
 
 	/**
 	 * This method places the post tag text into the {@link TTextWriter}
-	 * @param {@link TTextWriter} the writer to which the text is written
+	 * @param {@link $writer TTextWriter} the writer to which the text is written
 	 */
-	public function renderPostTagText($writer) {
+	public function renderPostTagText($writer)
+	{
 		$writer->write($this->getPostTagText());
 	}
 }

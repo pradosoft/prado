@@ -52,71 +52,69 @@ class TPropertyAccess
 	 * @return mixed property value.
 	 * @throws TInvalidDataValueException if property path is invalid.
 	 */
-	public static function get($object,$path)
+	public static function get($object, $path)
 	{
-		if(!is_array($object) && !is_object($object))
+		if (!is_array($object) && !is_object($object)) {
 			return $object;
+		}
 		$properties = explode('.', $path);
-		foreach($properties as $prop)
-		{
-			if(is_array($object) || $object instanceof \ArrayAccess)
-			{
-				if(array_key_exists($prop, $object))
+		foreach ($properties as $prop) {
+			if (is_array($object) || $object instanceof \ArrayAccess) {
+				if (array_key_exists($prop, $object)) {
 					$object = $object[$prop];
-				else
-					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
-			}
-			else if(is_object($object))
-			{
-				$getter = 'get'.$prop;
-				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
+				} else {
+					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
+				}
+			} elseif (is_object($object)) {
+				$getter = 'get' . $prop;
+				if (method_exists($object, $getter) && is_callable([$object, $getter])) {
 					$object = $object->{$getter}();
-				else if(in_array($prop, array_keys(get_object_vars($object))))
+				} elseif (in_array($prop, array_keys(get_object_vars($object)))) {
 					$object = $object->{$prop};
-				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
+				} elseif (method_exists($object, '__get') && is_callable([$object, '__get'])) {
 					$object = $object->{$prop};
-				else
-					throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
+				} else {
+					throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
+				}
+			} else {
+				throw new TInvalidPropertyException('sqlmap_invalid_property', $path);
 			}
-			else
-				throw new TInvalidPropertyException('sqlmap_invalid_property',$path);
 		}
 		return $object;
 	}
 
 	/**
-	 * @param mixed object or array
-	 * @param string property path.
+	 * @param mixed $object object or array
+	 * @param string $path property path.
 	 * @return boolean true if property path is valid
 	 */
 	public static function has($object, $path)
 	{
-		if(!is_array($object) && !is_object($object))
+		if (!is_array($object) && !is_object($object)) {
 			return false;
+		}
 		$properties = explode('.', $path);
-		foreach($properties as $prop)
-		{
-			if(is_array($object) || $object instanceof \ArrayAccess)
-			{
-				if(array_key_exists($prop, $object))
+		foreach ($properties as $prop) {
+			if (is_array($object) || $object instanceof \ArrayAccess) {
+				if (array_key_exists($prop, $object)) {
 					$object = $object[$prop];
-				else
+				} else {
 					return false;
-			}
-			else if(is_object($object))
-			{
-				$getter = 'get'.$prop;
-				if(method_exists($object, $getter) && is_callable(array($object, $getter)))
+				}
+			} elseif (is_object($object)) {
+				$getter = 'get' . $prop;
+				if (method_exists($object, $getter) && is_callable([$object, $getter])) {
 					$object = $object->{$getter}();
-				else if(in_array($prop, array_keys(get_object_vars($object))))
+				} elseif (in_array($prop, array_keys(get_object_vars($object)))) {
 					$object = $object->{$prop};
-				elseif(method_exists($object, '__get') && is_callable(array($object, '__get')))
+				} elseif (method_exists($object, '__get') && is_callable([$object, '__get'])) {
 					$object = $object->{$prop};
-				else
+				} else {
 					return false;
-			}
-			else
+				}
+			} else {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -132,26 +130,23 @@ class TPropertyAccess
 	{
 		$properties = explode('.', $path);
 		$prop = array_pop($properties);
-		if(count($properties) > 0)
-			$object = self::get($originalObject, implode('.',$properties));
-		else
+		if (count($properties) > 0) {
+			$object = self::get($originalObject, implode('.', $properties));
+		} else {
 			$object = &$originalObject;
+		}
 
-		if(is_array($object) || $object instanceof \ArrayAccess)
-		{
+		if (is_array($object) || $object instanceof \ArrayAccess) {
 			$object[$prop] = $value;
-		}
-		else if(is_object($object))
-		{
-			$setter = 'set'.$prop;
-			if (method_exists($object, $setter) && is_callable(array($object, $setter)))
+		} elseif (is_object($object)) {
+			$setter = 'set' . $prop;
+			if (method_exists($object, $setter) && is_callable([$object, $setter])) {
 				$object->{$setter}($value);
-			else
+			} else {
 				$object->{$prop} = $value;
+			}
+		} else {
+			throw new TInvalidPropertyException('sqlmap_invalid_property_type', $path);
 		}
-		else
-			throw new TInvalidPropertyException('sqlmap_invalid_property_type',$path);
 	}
-
 }
-

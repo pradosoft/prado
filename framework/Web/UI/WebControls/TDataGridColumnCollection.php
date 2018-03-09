@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Web\UI\TControl;
 
@@ -41,7 +42,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 */
 	public function __construct(TDataGrid $owner)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**
@@ -59,14 +60,13 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TDataGridColumn)
-		{
+		if ($item instanceof TDataGridColumn) {
 			$item->setOwner($this->_o);
-			parent::insertAt($index,$item);
-		}
-		else
+			parent::insertAt($index, $item);
+		} else {
 			throw new TInvalidDataTypeException('datagridcolumncollection_datagridcolumn_required');
+		}
 	}
 }

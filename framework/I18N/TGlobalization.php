@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TApplication;
@@ -45,13 +46,13 @@ class TGlobalization extends \Prado\TModule
 	 * The current charset.
 	 * @var string
 	 */
-	private $_charset=null;
+	private $_charset;
 
 	/**
 	 * The current culture.
 	 * @var string
 	 */
-	private $_culture=null;
+	private $_culture;
 
 	/**
 	 * Translation source parameters.
@@ -62,33 +63,34 @@ class TGlobalization extends \Prado\TModule
 	/**
 	 * @var boolean whether we should translate the default culture
 	 */
-	private $_translateDefaultCulture=true;
+	private $_translateDefaultCulture = true;
 
 	/**
 	 * Initialize the Culture and Charset for this application.
 	 * You should override this method if you want a different way of
 	 * setting the Culture and/or Charset for your application.
 	 * If you override this method, call parent::init($xml) first.
-	 * @param mixed application configuration
+	 * @param mixed $config application configuration
 	 */
 	public function init($config)
 	{
-		if($this->_charset===null)
-			$this->_charset=$this->getDefaultCharset();
-		if($this->_culture===null)
-			$this->_culture=$this->getDefaultCulture();
+		if ($this->_charset === null) {
+			$this->_charset = $this->getDefaultCharset();
+		}
+		if ($this->_culture === null) {
+			$this->_culture = $this->getDefaultCulture();
+		}
 
-		if($config!==null)
-		{
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-				$translation = isset($config['translate'])?$config['translate']:null;
-			else
-			{
+		if ($config !== null) {
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+				$translation = isset($config['translate']) ? $config['translate'] : null;
+			} else {
 				$t = $config->getElementByTagName('translation');
-				$translation = ($t)?$t->getAttributes():null;
+				$translation = ($t) ? $t->getAttributes() : null;
 			}
-			if($translation)
+			if ($translation) {
 				$this->setTranslationConfiguration($translation);
+			}
 		}
 		$this->getApplication()->setGlobalization($this);
 	}
@@ -102,7 +104,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param bool default culture, e.g. <tt>en_US</tt> for American English
+	 * @param bool $value default culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setTranslateDefaultCulture($value)
 	{
@@ -118,11 +120,11 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string default culture, e.g. <tt>en_US</tt> for American English
+	 * @param string $culture default culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setDefaultCulture($culture)
 	{
-		$this->_defaultCulture = str_replace('-','_',$culture);
+		$this->_defaultCulture = str_replace('-', '_', $culture);
 	}
 
 	/**
@@ -134,7 +136,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string default localization charset, e.g. <tt>UTF-8</tt>
+	 * @param string $charset default localization charset, e.g. <tt>UTF-8</tt>
 	 */
 	public function setDefaultCharset($charset)
 	{
@@ -150,11 +152,11 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string culture, e.g. <tt>en_US</tt> for American English
+	 * @param string $culture culture, e.g. <tt>en_US</tt> for American English
 	 */
 	public function setCulture($culture)
 	{
-		$this->_culture = str_replace('-','_',$culture);
+		$this->_culture = str_replace('-', '_', $culture);
 	}
 
 	/**
@@ -166,7 +168,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string localization charset, e.g. <tt>UTF-8</tt>
+	 * @param string $charset localization charset, e.g. <tt>UTF-8</tt>
 	 */
 	public function setCharset($charset)
 	{
@@ -195,41 +197,38 @@ class TGlobalization extends \Prado\TModule
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
-	 * @param TMap|array configuration options
+	 * @param TMap|array $config configuration options
 	 */
 	protected function setTranslationConfiguration($config)
 	{
-		if($config['type'] == 'XLIFF' || $config['type'] == 'gettext'  || $config['type'] == 'PHP')
-		{
-			if($config['source'])
-			{
+		if ($config['type'] == 'XLIFF' || $config['type'] == 'gettext' || $config['type'] == 'PHP') {
+			if ($config['source']) {
 				$config['source'] = Prado::getPathOfNamespace($config['source']);
-				if(!is_dir($config['source']))
-				{
-					if(@mkdir($config['source'])===false)
-					throw new TConfigurationException('globalization_source_path_failed',
-						$config['source']);
+				if (!is_dir($config['source'])) {
+					if (@mkdir($config['source']) === false) {
+						throw new TConfigurationException(
+						'globalization_source_path_failed',
+						$config['source']
+					);
+					}
 					chmod($config['source'], PRADO_CHMOD); //make it deletable
 				}
-			}
-			else
-			{
+			} else {
 				throw new TConfigurationException("invalid source dir '{$config['source']}'");
 			}
 		}
-		if(isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache']))
-		{
-			$config['cache'] = $this->getApplication()->getRunTimePath().'/i18n';
-			if(!is_dir($config['cache']))
-			{
-				if(@mkdir($config['cache'])===false)
-					throw new TConfigurationException('globalization_cache_path_failed',
-						$config['cache']);
+		if (isset($config['cache']) && TPropertyValue::ensureBoolean($config['cache'])) {
+			$config['cache'] = $this->getApplication()->getRunTimePath() . '/i18n';
+			if (!is_dir($config['cache'])) {
+				if (@mkdir($config['cache']) === false) {
+					throw new TConfigurationException(
+						'globalization_cache_path_failed',
+						$config['cache']
+					);
+				}
 				chmod($config['cache'], PRADO_CHMOD); //make it deletable
 			}
-		}
-		else
-		{
+		} else {
 			unset($config['cache']);
 		}
 		$this->_translation = $config;
@@ -244,7 +243,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @param string update the translation catalogue.
+	 * @param string $value update the translation catalogue.
 	 */
 	public function setTranslationCatalogue($value)
 	{
@@ -257,13 +256,16 @@ class TGlobalization extends \Prado\TModule
 	 * @param string $culture the Culture string
 	 * @return array variants of the culture.
 	 */
-	public function getCultureVariants($culture=null)
+	public function getCultureVariants($culture = null)
 	{
-		if($culture===null) $culture = $this->getCulture();
+		if ($culture === null) {
+			$culture = $this->getCulture();
+		}
 		$variants = explode('_', $culture);
-		$result = array();
-		for(; count($variants) > 0; array_pop($variants))
+		$result = [];
+		for (; count($variants) > 0; array_pop($variants)) {
 			$result[] = implode('_', $variants);
+		}
 		return $result;
 	}
 
@@ -282,22 +284,23 @@ class TGlobalization extends \Prado\TModule
 	 *   4 => 'path/to/Home.page'
 	 * </pre>
 	 * Note that you still need to verify the existance of these files.
-	 * @param string filename
-	 * @param string culture string, null to use current culture
+	 * @param string $file filename
+	 * @param string $culture culture string, null to use current culture
 	 * @return array list of possible localized resource files.
 	 */
-	public function getLocalizedResource($file,$culture=null)
+	public function getLocalizedResource($file, $culture = null)
 	{
-		$files = array();
+		$files = [];
 		$variants = $this->getCultureVariants($culture);
 		$path = pathinfo($file);
-		foreach($variants as $variant)
-			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$variant.DIRECTORY_SEPARATOR.$path['basename'];
-		$filename = substr($path['basename'],0,strrpos($path['basename'],'.'));
-		foreach($variants as $variant)
-			$files[] = $path['dirname'].DIRECTORY_SEPARATOR.$filename.'.'.$variant.'.'.$path['extension'];
+		foreach ($variants as $variant) {
+			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $variant . DIRECTORY_SEPARATOR . $path['basename'];
+		}
+		$filename = substr($path['basename'], 0, strrpos($path['basename'], '.'));
+		foreach ($variants as $variant) {
+			$files[] = $path['dirname'] . DIRECTORY_SEPARATOR . $filename . '.' . $variant . '.' . $path['extension'];
+		}
 		$files[] = $file;
 		return $files;
 	}
-
 }

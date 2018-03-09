@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 
@@ -30,24 +31,24 @@ use Prado\TPropertyValue;
  */
 class TView extends \Prado\Web\UI\TControl
 {
-	private $_active=false;
+	private $_active = false;
 
 	/**
 	 * Raises <b>OnActivate</b> event.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onActivate($param)
 	{
-		$this->raiseEvent('OnActivate',$this,$param);
+		$this->raiseEvent('OnActivate', $this, $param);
 	}
 
 	/**
 	 * Raises <b>OnDeactivate</b> event.
-	 * @param TEventParameter event parameter
+	 * @param TEventParameter $param event parameter
 	 */
 	public function onDeactivate($param)
 	{
-		$this->raiseEvent('OnDeactivate',$this,$param);
+		$this->raiseEvent('OnDeactivate', $this, $param);
 	}
 
 	/**
@@ -59,12 +60,12 @@ class TView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean whether this view is active.
+	 * @param boolean $value whether this view is active.
 	 */
 	public function setActive($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
-		$this->_active=$value;
+		$value = TPropertyValue::ensureBoolean($value);
+		$this->_active = $value;
 		parent::setVisible($value);
 	}
 
@@ -73,19 +74,19 @@ class TView extends \Prado\Web\UI\TControl
 	 * @return boolean whether this view is visible.
 	 * The view is visible if it is active and its parent is visible.
 	 */
-	public function getVisible($checkParents=true)
+	public function getVisible($checkParents = true)
 	{
-		if(($parent=$this->getParent())===null)
+		if (($parent = $this->getParent()) === null) {
 			return $this->getActive();
-		else if($this->getActive())
+		} elseif ($this->getActive()) {
 			return $parent->getVisible($checkParents);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
-	 * @param boolean
-	 * @throws TInvalidOperationException whenever this method is invoked.
+	 * @param boolean $value * @throws TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setVisible($value)
 	{

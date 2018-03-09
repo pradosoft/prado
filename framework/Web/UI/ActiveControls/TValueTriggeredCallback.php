@@ -15,7 +15,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TValueTriggeredCallback Class
  *
@@ -44,7 +43,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Sets the control property name to observe value changes that fires the callback request.
-	 * @param string The control property name to observe value changes.
+	 * @param string $value The control property name to observe value changes.
 	 */
 	public function setPropertyName($value)
 	{
@@ -54,7 +53,7 @@ class TValueTriggeredCallback extends TTriggeredCallback
 	/**
 	 * Sets the polling interval in seconds to observe property changes.
 	 * Default is 1 second.
-	 * @param float polling interval in seconds.
+	 * @param float $value polling interval in seconds.
 	 */
 	public function setInterval($value)
 	{
@@ -80,13 +79,14 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Sets the decay rate between callback. Default is 0;
-	 * @param float decay rate between callbacks.
+	 * @param float $value decay rate between callbacks.
 	 */
 	public function setDecayRate($value)
 	{
 		$decay = TPropertyValue::ensureFloat($value);
-		if($decay < 0)
+		if ($decay < 0) {
 			throw new TConfigurationException('callback_decay_be_not_negative', $this->getID());
+		}
 		$this->setViewState('Decay', $decay);
 	}
 
@@ -104,13 +104,15 @@ class TValueTriggeredCallback extends TTriggeredCallback
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{
 		parent::render($writer);
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getTriggerOptions());
+			$this->getClientClassName(),
+			$this->getTriggerOptions()
+		);
 	}
 
 	/**

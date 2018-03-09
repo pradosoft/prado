@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplicationMode;
@@ -62,7 +63,7 @@ class THtmlArea4 extends TTextBox
 	/**
 	 * @var array list of locale => language file pairs.
 	 */
-	private static $_langs = array(
+	private static $_langs = [
 			'ar' => 'ar',
 			'bg_BG' => 'bg_BG',
 			'bs' => 'bs',
@@ -115,12 +116,12 @@ class THtmlArea4 extends TTextBox
 			'vi_VN' => 'vi_VN',
 			'zh_CN' => 'zh_CN',
 			'zh_TW' => 'zh_TW',
-		);
+		];
 
 	/**
 	 * @var array list of default plugins to load, override using getAvailablePlugins();
 	 */
-	private static $_plugins = array(
+	private static $_plugins = [
 		'advlist',
 		'anchor',
 		'autolink',
@@ -159,14 +160,14 @@ class THtmlArea4 extends TTextBox
 		'visualblocks',
 		'visualchars',
 		'wordcount',
-	);
+	];
 
 	/**
 	 * @var array default themes to load
 	 */
-	private static $_themes = array(
+	private static $_themes = [
 		'modern',
-	);
+	];
 
 	/**
 	 * Constructor.
@@ -191,7 +192,7 @@ class THtmlArea4 extends TTextBox
 	/**
 	 * Overrides the parent implementation.
 	 * TextMode for THtmlArea is always 'MultiLine' and cannot be changed to others.
-	 * @param string the text mode
+	 * @param string $value the text mode
 	 */
 	public function setTextMode($value)
 	{
@@ -211,16 +212,16 @@ class THtmlArea4 extends TTextBox
 	 */
 	public function getEnableVisualEdit()
 	{
-		return $this->getViewState('EnableVisualEdit',true);
+		return $this->getViewState('EnableVisualEdit', true);
 	}
 
 	/**
 	 * Sets whether to show WYSIWYG text editor.
-	 * @param boolean whether to show WYSIWYG text editor
+	 * @param boolean $value whether to show WYSIWYG text editor
 	 */
 	public function setEnableVisualEdit($value)
 	{
-		$this->setViewState('EnableVisualEdit',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('EnableVisualEdit', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -234,7 +235,7 @@ class THtmlArea4 extends TTextBox
 
 	/**
 	 * Sets the culture/language for the html area
-	 * @param string a culture string, e.g. de_AT.
+	 * @param string $value a culture string, e.g. de_AT.
 	 */
 	public function setCulture($value)
 	{
@@ -254,7 +255,7 @@ class THtmlArea4 extends TTextBox
 	/**
 	 * Sets the list of options for the WYSIWYG (TinyMCE) editor
 	 * @see http://www.tinymce.com/wiki.php/Configuration
-	 * @param string options
+	 * @param string $value options
 	 */
 	public function setOptions($value)
 	{
@@ -262,7 +263,7 @@ class THtmlArea4 extends TTextBox
 	}
 
 	/**
-	 * @param string path to custom plugins to be copied.
+	 * @param string $value path to custom plugins to be copied.
 	 */
 	public function setCustomPluginPath($value)
 	{
@@ -281,13 +282,12 @@ class THtmlArea4 extends TTextBox
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation by registering
 	 * additional javacript code.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getEnableVisualEdit() && $this->getEnabled(true))
-		{
-			$writer->addAttribute('id',$this->getClientID());
+		if ($this->getEnableVisualEdit() && $this->getEnabled(true)) {
+			$writer->addAttribute('id', $this->getClientID());
 			$this->registerEditorClientScript($writer);
 		}
 
@@ -326,26 +326,26 @@ class THtmlArea4 extends TTextBox
 	{
 		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
-		$options = array(
+		$options = [
 			'EditorOptions' => $this->getEditorOptions()
-		);
+		];
 
-		$options = TJavaScript::encode($options,true,true);
+		$options = TJavaScript::encode($options, true, true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea4'.$this->ClientID,$script);
+		$scripts->registerEndScript('prado:THtmlArea4' . $this->ClientID, $script);
 	}
 
 	protected function copyCustomPlugins()
 	{
-		if($plugins = $this->getCustomPluginPath())
-		{
+		if ($plugins = $this->getCustomPluginPath()) {
 			$basepath = $this->getPage()->getClientScript()->getPradoScriptAssetPath('tinymce');
 			$assets = $this->getApplication()->getAssetManager();
 			$path = is_dir($plugins) ? $plugins : Prado::getPathOfNameSpace($plugins);
 			$name = basename($path);
-			$dest = $basepath.'/plugins/'.$name;
-			if(!is_dir($dest) || $this->getApplication()->getMode()!==TApplicationMode::Performance)
+			$dest = $basepath . '/plugins/' . $name;
+			if (!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
 				$assets->copyDirectory($path, $dest);
+			}
 		}
 	}
 
@@ -364,8 +364,7 @@ class THtmlArea4 extends TTextBox
 		$options['height'] = $this->getHeight();
 		$options['resize'] = 'both';
 		$options['menubar'] = false;
-		if($this->getReadOnly())
-		{
+		if ($this->getReadOnly()) {
 			$options['readonly'] = true;
 			$options['toolbar'] = false;
 			$options['menubar'] = false;
@@ -384,19 +383,18 @@ class THtmlArea4 extends TTextBox
 	 */
 	protected function parseEditorOptions($string)
 	{
-		$options = array();
+		$options = [];
 		$substrings = preg_split('/,\s*\n|\n/', trim($string));
-		foreach($substrings as $bits)
-		{
-			$option = explode(":",$bits,2);
+		foreach ($substrings as $bits) {
+			$option = explode(":", $bits, 2);
 
-			if(count($option) == 2)
-			{
-				$value=trim(trim($option[1]),"'\"");
-				if (($s=strtolower($value))==='false')
-					$value=false;
-				elseif ($s==='true')
-					$value=true;
+			if (count($option) == 2) {
+				$value = trim(trim($option[1]), "'\"");
+				if (($s = strtolower($value)) === 'false') {
+					$value = false;
+				} elseif ($s === 'true') {
+					$value = true;
+				}
 				$options[trim($option[0])] = $value;
 			}
 		}
@@ -409,16 +407,18 @@ class THtmlArea4 extends TTextBox
 	protected function getLanguageSuffix($culture)
 	{
 		$app = $this->getApplication()->getGlobalization();
-		if(empty($culture) && ($app!==null))
+		if (empty($culture) && ($app !== null)) {
 			$culture = $app->getCulture();
-		$variants = array();
-		if($app!==null)
+		}
+		$variants = [];
+		if ($app !== null) {
 			$variants = $app->getCultureVariants($culture);
+		}
 
-		foreach($variants as $variant)
-		{
-			if(isset(self::$_langs[$variant]))
+		foreach ($variants as $variant) {
+			if (isset(self::$_langs[$variant])) {
 				return self::$_langs[$variant];
+			}
 		}
 
 		return 'en';

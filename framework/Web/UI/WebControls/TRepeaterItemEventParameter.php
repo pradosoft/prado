@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 
 /**
@@ -29,15 +30,15 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 	 * The repeater item control responsible for the event.
 	 * @var TControl
 	 */
-	private $_item=null;
+	private $_item;
 
 	/**
 	 * Constructor.
-	 * @param TControl repeater item related with the corresponding event
+	 * @param TControl $item repeater item related with the corresponding event
 	 */
 	public function __construct($item)
 	{
-		$this->_item=$item;
+		$this->_item = $item;
 	}
 
 	/**

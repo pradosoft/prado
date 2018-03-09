@@ -12,7 +12,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__).'/TCache_Lite.php');
+require_once(__DIR__ . '/TCache_Lite.php');
 
 /**
  * Cache the translation table into the file system.
@@ -41,22 +41,26 @@ class MessageCache
 	 */
 	public function __construct($cacheDir)
 	{
-		$cacheDir = $cacheDir.'/';
+		$cacheDir = $cacheDir . '/';
 
-		if(!is_dir($cacheDir))
+		if (!is_dir($cacheDir)) {
 			throw new Exception(
-				'The cache directory '.$cacheDir.' does not exists.'.
-				'The cache directory must be writable by the server.');
-		if(!is_writable($cacheDir))
+				'The cache directory ' . $cacheDir . ' does not exists.' .
+				'The cache directory must be writable by the server.'
+			);
+		}
+		if (!is_writable($cacheDir)) {
 			throw new Exception(
-				'The cache directory '.$cacheDir.' must be writable '.
-				'by the server.');
+				'The cache directory ' . $cacheDir . ' must be writable ' .
+				'by the server.'
+			);
+		}
 
-		$options = array(
+		$options = [
 			'cacheDir' => $cacheDir,
 			'lifeTime' => $this->getLifeTime(),
 			'automaticSerialization' => true
-		);
+		];
 
 		$this->cache = new TCache_Lite($options);
 	}
@@ -76,7 +80,7 @@ class MessageCache
 	 */
 	public function setLifeTime($time)
 	{
-		$this->lifetime = (int)$time;
+		$this->lifetime = (int) $time;
 	}
 
 	/**
@@ -86,7 +90,7 @@ class MessageCache
 	 */
 	protected function getID($catalogue, $culture)
 	{
-		return $catalogue.':'.$culture;
+		return $catalogue . ':' . $culture;
 	}
 
 	/**
@@ -96,7 +100,7 @@ class MessageCache
 	 */
 	protected function getGroup($catalogue, $culture)
 	{
-		return $catalogue.':'.get_class($this);
+		return $catalogue . ':' . get_class($this);
 	}
 
 	/**
@@ -108,7 +112,7 @@ class MessageCache
 	 * @return mixed Boolean FALSE if no cache hit. Otherwise, translation
 	 * table data for the specified section and locale.
 	 */
-	public function get($catalogue, $culture, $lastmodified=0)
+	public function get($catalogue, $culture, $lastmodified = 0)
 	{
 		$ID = $this->getID($catalogue, $culture);
 		$group = $this->getGroup($catalogue, $culture);
@@ -117,14 +121,16 @@ class MessageCache
 
 		$cache = $this->cache->getCacheFile();
 
-		if(is_file($cache) == false)
+		if (is_file($cache) == false) {
 			return false;
+		}
 
 
-		$lastmodified = (int)$lastmodified;
+		$lastmodified = (int) $lastmodified;
 
-		if($lastmodified <= 0 || $lastmodified > filemtime($cache))
+		if ($lastmodified <= 0 || $lastmodified > filemtime($cache)) {
 			return false;
+		}
 
 		//echo '@@ Cache hit: "'.$ID.'" : "'.$group.'"';
 		//echo "<br>\n";
@@ -167,6 +173,4 @@ class MessageCache
 	{
 		$this->cache->clean();
 	}
-
 }
-

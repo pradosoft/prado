@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\IListControlAdapter;
 
-
 /**
  * TActiveListControlAdapter class.
  *
@@ -40,99 +39,113 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Selects an item based on zero-base index on the client side.
-	 * @param integer the index (zero-based) of the item to be selected
+	 * @param integer $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			// if a prompt is set, we mimic the postback behaviour of not counting it
 			// in the index. We assume the prompt is _always_ the first item (Issue #368)
-			$promptValue=$this->getControl()->getPromptValue();
-			if($promptValue==='')
-				$promptValue=$this->getControl()->getPromptText();
-			if($promptValue!=='')
+			$promptValue = $this->getControl()->getPromptValue();
+			if ($promptValue === '') {
+				$promptValue = $this->getControl()->getPromptText();
+			}
+			if ($promptValue !== '') {
 				$index++;
+			}
 
-			if($index >= 0 && $index <= $this->getControl()->getItemCount())
-			$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Index', $index);
+			if ($index >= 0 && $index <= $this->getControl()->getItemCount()) {
+				$this->getPage()->getCallbackClient()->select(
+					$this->getControl(),
+				'Index',
+				$index
+			);
+			}
 		}
 	}
 
 	/**
 	 * Selects a list of item based on zero-base indices on the client side.
-	 * @param array list of index of items to be selected
+	 * @param array $indices list of index of items to be selected
 	 */
 	public function setSelectedIndices($indices)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$n = $this->getControl()->getItemCount();
 
-			$promptValue=$this->getControl()->getPromptValue();
-			if($promptValue==='')
-				$promptValue=$this->getControl()->getPromptText();
-
-			$list = array();
-			foreach($indices as $index)
-			{
-				$index = intval($index);
-				if($promptValue!=='')
-					$index++;
-				if($index >= 0 && $index <= $n)
-					$list[] = $index;
+			$promptValue = $this->getControl()->getPromptValue();
+			if ($promptValue === '') {
+				$promptValue = $this->getControl()->getPromptText();
 			}
-			if(count($list) > 0)
+
+			$list = [];
+			foreach ($indices as $index) {
+				$index = (int) $index;
+				if ($promptValue !== '') {
+					$index++;
+				}
+				if ($index >= 0 && $index <= $n) {
+					$list[] = $index;
+				}
+			}
+			if (count($list) > 0) {
 				$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Indices', $list);
+					$this->getControl(),
+					'Indices',
+					$list
+				);
+			}
 		}
 	}
 
 	/**
 	 * Sets selection by item value on the client side.
-	 * @param string the value of the item to be selected.
+	 * @param string $value the value of the item to be selected.
 	 */
 	public function setSelectedValue($value)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Value', $value);
+					$this->getControl(),
+				'Value',
+				$value
+			);
 		}
 	}
 
 	/**
 	 * Sets selection by a list of item values on the client side.
-	 * @param array list of the selected item values
+	 * @param array $values list of the selected item values
 	 */
 	public function setSelectedValues($values)
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
-			$list = array();
-			foreach($values as $value)
+			$list = [];
+			foreach ($values as $value) {
 				$list[] = $value;
-			if(count($list) > 0)
+			}
+			if (count($list) > 0) {
 				$this->getPage()->getCallbackClient()->select(
-					$this->getControl(), 'Values', $list);
+					$this->getControl(),
+					'Values',
+					$list
+				);
+			}
 		}
 	}
 
-    /**
-     * Clears all existing selections on the client side.
-     */
-    public function clearSelection()
-    {
-		if($this->canUpdateClientSide())
-		{
+	/**
+	 * Clears all existing selections on the client side.
+	 */
+	public function clearSelection()
+	{
+		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
-			if($this->getControl() instanceof TActiveDropDownList)
-			{
+			if ($this->getControl() instanceof TActiveDropDownList) {
 				// clearing a TActiveDropDownList's selection actually doesn't select the first item;
 				// we mimic the postback behaviour selecting it (Issue #368)
 				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Index', 0);
@@ -140,19 +153,17 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 				$this->getPage()->getCallbackClient()->select($this->getControl(), 'Clear');
 			}
 		}
-    }
+	}
 
 	/**
 	 * Update the client-side list options.
 	 */
 	public function updateListItems()
 	{
-		if($this->canUpdateClientSide())
-		{
+		if ($this->canUpdateClientSide()) {
 			$items = $this->getControl()->getItems();
-			if($items instanceof TActiveListItemCollection
-				&& $items->getListHasChanged())
-			{
+			if ($items instanceof TActiveListItemCollection
+				&& $items->getListHasChanged()) {
 				$items->updateClientSide();
 			}
 		}

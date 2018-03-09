@@ -12,6 +12,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TListItem;
@@ -34,24 +35,26 @@ class TListItemCollection extends TList
 	 * If -1, the item will be appended to the end.
 	 * @return TListItem list item object
 	 */
-	public function createListItem($index=-1)
+	public function createListItem($index = -1)
 	{
-		$item=$this->createNewListItem();
-		if($index<0)
+		$item = $this->createNewListItem();
+		if ($index < 0) {
 			$this->add($item);
-		else
-			$this->insertAt($index,$item);
+		} else {
+			$this->insertAt($index, $item);
+		}
 		return $item;
 	}
 
 	/**
 	 * @return TListItem new item.
 	 */
-	protected function createNewListItem($text=null)
+	protected function createNewListItem($text = null)
 	{
-		$item =  new TListItem;
-		if($text!==null)
+		$item = new TListItem;
+		if ($text !== null) {
 			$item->setText($text);
+		}
 		return $item;
 	}
 
@@ -62,29 +65,31 @@ class TListItemCollection extends TList
 	 * @param TListItem the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if(is_string($item))
+		if (is_string($item)) {
 			$item = $this->createNewListItem($item);
-		if(!($item instanceof TListItem))
-			throw new TInvalidDataTypeException('listitemcollection_item_invalid',get_class($this));
-		parent::insertAt($index,$item);
+		}
+		if (!($item instanceof TListItem)) {
+			throw new TInvalidDataTypeException('listitemcollection_item_invalid', get_class($this));
+		}
+		parent::insertAt($index, $item);
 	}
 
 	/**
 	 * Finds the lowest cardinal index of the item whose value is the one being looked for.
-	 * @param string the value to be looked for
-	 * @param boolean whether to look for disabled items also
+	 * @param string $value the value to be looked for
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByValue($value,$includeDisabled=true)
+	public function findIndexByValue($value, $includeDisabled = true)
 	{
-		$value=TPropertyValue::ensureString($value);
-		$index=0;
-		foreach($this as $item)
-		{
-			if($item->getValue()===$value && ($includeDisabled || $item->getEnabled()))
+		$value = TPropertyValue::ensureString($value);
+		$index = 0;
+		foreach ($this as $item) {
+			if ($item->getValue() === $value && ($includeDisabled || $item->getEnabled())) {
 				return $index;
+			}
 			$index++;
 		}
 		return -1;
@@ -92,18 +97,18 @@ class TListItemCollection extends TList
 
 	/**
 	 * Finds the lowest cardinal index of the item whose text is the one being looked for.
-	 * @param string the text to be looked for
-	 * @param boolean whether to look for disabled items also
+	 * @param string $text the text to be looked for
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return integer the index of the item found, -1 if not found.
 	 */
-	public function findIndexByText($text,$includeDisabled=true)
+	public function findIndexByText($text, $includeDisabled = true)
 	{
-		$text=TPropertyValue::ensureString($text);
-		$index=0;
-		foreach($this as $item)
-		{
-			if($item->getText()===$text && ($includeDisabled || $item->getEnabled()))
+		$text = TPropertyValue::ensureString($text);
+		$index = 0;
+		foreach ($this as $item) {
+			if ($item->getText() === $text && ($includeDisabled || $item->getEnabled())) {
 				return $index;
+			}
 			$index++;
 		}
 		return -1;
@@ -111,42 +116,45 @@ class TListItemCollection extends TList
 
 	/**
 	 * Finds the item whose value is the one being looked for.
-	 * @param string the value to be looked for
-	 * @param boolean whether to look for disabled items also
+	 * @param string $value the value to be looked for
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByValue($value,$includeDisabled=true)
+	public function findItemByValue($value, $includeDisabled = true)
 	{
-		if(($index=$this->findIndexByValue($value,$includeDisabled))>=0)
+		if (($index = $this->findIndexByValue($value, $includeDisabled)) >= 0) {
 			return $this->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
 	 * Finds the item whose text is the one being looked for.
-	 * @param string the text to be looked for
-	 * @param boolean whether to look for disabled items also
+	 * @param string $text the text to be looked for
+	 * @param boolean $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
-	public function findItemByText($text,$includeDisabled=true)
+	public function findItemByText($text, $includeDisabled = true)
 	{
-		if(($index=$this->findIndexByText($text,$includeDisabled))>=0)
+		if (($index = $this->findIndexByText($text, $includeDisabled)) >= 0) {
 			return $this->itemAt($index);
-		else
+		} else {
 			return null;
+		}
 	}
 
 	/**
 	 * Loads state into every item in the collection.
 	 * This method should only be used by framework and control developers.
-	 * @param array|null state to be loaded.
+	 * @param array|null $state state to be loaded.
 	 */
 	public function loadState($state)
 	{
 		$this->clear();
-		if($state!==null)
+		if ($state !== null) {
 			$this->copyFrom($state);
+		}
 	}
 
 	/**
@@ -156,6 +164,6 @@ class TListItemCollection extends TList
 	 */
 	public function saveState()
 	{
-		return ($this->getCount()>0) ? $this->toArray() : null;
+		return ($this->getCount() > 0) ? $this->toArray() : null;
 	}
 }

@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Web\Services;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Prado;
@@ -19,12 +20,12 @@ use Prado\Xml\TXmlElement;
  *
  * The TRpcService class is a generic class that can be extended and used to implement
  * rpc services using different servers and protocols.
- * 
+ *
  * A server is a {@link TModule} that must subclass {@link TRpcServer}: its role is
  * to be an intermediate, moving data between the service and the provider. The base
  * {@link TRpcServer} class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
- * 
+ *
  * A protocol is a {@link TModule} that must subclass {@link TRpcProtocol}: its role is
  * to implement the protocol that exposes the rpc api. Prado already implements two
  * protocols: {@link TXmlRpcProtocol} for Xml-Rpc request and {@link TJsonRpcProtocol} for
@@ -72,15 +73,15 @@ class TRpcService extends \Prado\TService
 	/**
 	 * @var array containing mimetype to protocol handler mappings
 	 */
-	protected $protocolHandlers = array(
+	protected $protocolHandlers = [
 		'application/json' => 'TJsonRpcProtocol',
 		'text/xml' => 'TXmlRpcProtocol'
-	);
+	];
 
 	/**
 	 * @var array containing API provider and their configured properties
 	 */
-	protected $apiProviders = array();
+	protected $apiProviders = [];
 
 	// methods
 
@@ -93,29 +94,34 @@ class TRpcService extends \Prado\TService
 	{
 		$_properties = $this->apiProviders[$providerId];
 
-		if(($_providerClass = $_properties->remove('class')) === null)
+		if (($_providerClass = $_properties->remove('class')) === null) {
 			throw new TConfigurationException('rpcservice_apiprovider_required');
+		}
 
 		Prado::using($_providerClass);
 
 		$_providerClassName = ($_pos = strrpos($_providerClass, '.')) !== false ? substr($_providerClass, $_pos + 1) : $_providerClass;
-		if(!is_subclass_of($_providerClassName, self::BASE_API_PROVIDER))
+		if (!is_subclass_of($_providerClassName, self::BASE_API_PROVIDER)) {
 			throw new TConfigurationException('rpcservice_apiprovider_invalid');
+		}
 
-		if(($_rpcServerClass = $_properties->remove('server')) === null)
+		if (($_rpcServerClass = $_properties->remove('server')) === null) {
 			$_rpcServerClass = self::BASE_RPC_SERVER;
+		}
 
 		Prado::using($_rpcServerClass);
 
 		$_rpcServerClassName = ($_pos = strrpos($_rpcServerClass, '.')) !== false ? substr($_rpcServerClass, $_pos + 1) : $_rpcServerClass;
-		if($_rpcServerClassName!==self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER))
+		if ($_rpcServerClassName !== self::BASE_RPC_SERVER && !is_subclass_of($_rpcServerClassName, self::BASE_RPC_SERVER)) {
 			throw new TConfigurationException('rpcservice_rpcserver_invalid');
+		}
 
 		$_apiProvider = new $_providerClassName(new $_rpcServerClassName($protocolHandler));
 		$_apiProvider->setId($providerId);
 
-		foreach($_properties as $_key => $_value)
+		foreach ($_properties as $_key => $_value) {
 			$_apiProvider->setSubProperty($_key, $_value);
+		}
 
 		return $_apiProvider;
 	}
@@ -135,15 +141,16 @@ class TRpcService extends \Prado\TService
 	 */
 	public function loadConfig(TXmlElement $xml)
 	{
-		foreach($xml->getElementsByTagName('rpcapi') as $_apiProviderXml)
-		{
+		foreach ($xml->getElementsByTagName('rpcapi') as $_apiProviderXml) {
 			$_properties = $_apiProviderXml->getAttributes();
 
-			if(($_id = $_properties->remove('id')) === null || $_id == "")
+			if (($_id = $_properties->remove('id')) === null || $_id == "") {
 				throw new TConfigurationException('rpcservice_apiproviderid_required');
+			}
 
-			if(isset($this->apiProviders[$_id]))
+			if (isset($this->apiProviders[$_id])) {
 				throw new TConfigurationException('rpcservice_apiproviderid_duplicated');
+			}
 
 			$this->apiProviders[$_id] = $_properties;
 		}
@@ -156,23 +163,26 @@ class TRpcService extends \Prado\TService
 	{
 		$_request = $this->getRequest();
 
-		if(($_providerId = $_request->getServiceParameter()) == "")
+		if (($_providerId = $_request->getServiceParameter()) == "") {
 			throw new THttpException(400, 'RPC API-Provider id required');
+		}
 		
-		if(($_method = $_request->getRequestType()) != 'POST')
-			throw new THttpException(405, 'Invalid request method "'.$_method.'"!'); // TODO Exception muss "Allow POST" Header setzen
+		if (($_method = $_request->getRequestType()) != 'POST') {
+			throw new THttpException(405, 'Invalid request method "' . $_method . '"!');
+		} // TODO Exception muss "Allow POST" Header setzen
 
-		if(($_mimeType = $_request->getContentType()) === null)
-			throw new THttpException(406, 'Content-Type is missing!'); // TODO Exception muss gültige Content-Type werte zurück geben
+		if (($_mimeType = $_request->getContentType()) === null) {
+			throw new THttpException(406, 'Content-Type is missing!');
+		} // TODO Exception muss gültige Content-Type werte zurück geben
 
-		if(!in_array($_mimeType, array_keys($this->protocolHandlers)))
-			throw new THttpException(406, 'Unsupported Content-Type!'); // TODO see previous
+		if (!in_array($_mimeType, array_keys($this->protocolHandlers))) {
+			throw new THttpException(406, 'Unsupported Content-Type!');
+		} // TODO see previous
 
 		$_protocolHandlerClass = $this->protocolHandlers[$_mimeType];
 		$_protocolHandler = new $_protocolHandlerClass;
 
-		if(($_result = $this->createApiProvider($_protocolHandler, $_providerId)->processRequest()) !== null)
-		{
+		if (($_result = $this->createApiProvider($_protocolHandler, $_providerId)->processRequest()) !== null) {
 			$_response = $this->getResponse();
 			$_protocolHandler->createResponseHeaders($_response);
 			$_response->write($_result);

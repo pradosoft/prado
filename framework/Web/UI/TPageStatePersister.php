@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Exceptions\THttpException;
 
 /**
@@ -44,16 +45,16 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	 */
 	public function setPage(TPage $page)
 	{
-		$this->_page=$page;
+		$this->_page = $page;
 	}
 
 	/**
 	 * Saves state in hidden fields.
-	 * @param mixed state to be stored
+	 * @param mixed $state state to be stored
 	 */
 	public function save($state)
 	{
-		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page,$state));
+		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $state));
 	}
 
 	/**
@@ -63,10 +64,10 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	 */
 	public function load()
 	{
-		if(($data=TPageStateFormatter::unserialize($this->_page,$this->_page->getRequestClientState()))!==null)
+		if (($data = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null) {
 			return $data;
-		else
-			throw new THttpException(400,'pagestatepersister_pagestate_corrupted');
+		} else {
+			throw new THttpException(400, 'pagestatepersister_pagestate_corrupted');
+		}
 	}
 }
-

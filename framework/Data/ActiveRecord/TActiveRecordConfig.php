@@ -15,7 +15,6 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
-
 /**
  * TActiveRecordConfig module configuration class.
  *
@@ -92,9 +91,9 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * @var TActiveRecordManager
 	 */
-	private $_manager = null;
+	private $_manager;
 
-	private $_enableCache=false;
+	private $_enableCache = false;
 
 	/**
 	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'
@@ -106,14 +105,15 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Initialize the active record manager.
-	 * @param TXmlDocument xml configuration.
+	 * @param TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
 		parent::init($xml);
 		$manager = $this -> getManager();
-		if($this->getEnableCache())
+		if ($this->getEnableCache()) {
 			$manager->setCache($this->getApplication()->getCache());
+		}
 		$manager->setDbConnection($this->getDbConnection());
 		$manager->setInvalidFinderResult($this->getInvalidFinderResult());
 		$manager->setGatewayClass($this->getGatewayClass());
@@ -122,9 +122,11 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * @return TActiveRecordManager
 	 */
-	public function getManager() {
-		if($this->_manager === null)
+	public function getManager()
+	{
+		if ($this->_manager === null) {
 			$this->_manager = Prado::createComponent($this -> getManagerClass());
+		}
 		return TActiveRecordManager::getInstance($this->_manager);
 	}
 
@@ -164,7 +166,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Set true to cache the table meta data.
-	 * @param boolean true to cache sqlmap instance.
+	 * @param boolean $value true to cache sqlmap instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -192,8 +194,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param TActiveRecordInvalidFinderResult
-	 * @see getInvalidFinderResult
+	 * @param TActiveRecordInvalidFinderResult $value * @see getInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)

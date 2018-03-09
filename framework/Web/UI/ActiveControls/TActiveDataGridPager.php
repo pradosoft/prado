@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TDataGridPager;
 
 /**
@@ -30,8 +31,9 @@ class TActiveDataGridPager extends TDataGridPager
 	 */
 	public function getClientSide()
 	{
-		if($this->_callbackoptions === null)
+		if ($this->_callbackoptions === null) {
 			$this->_callbackoptions = new TCallbackOptions;
+		}
 		return $this->_callbackoptions->getClientSide();
 	}
 }

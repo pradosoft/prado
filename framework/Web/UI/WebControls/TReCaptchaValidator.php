@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Exception;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -31,7 +32,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TReCaptchaValidator extends TBaseValidator
 {
-	protected $_isvalid = null;
+	protected $_isvalid;
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.
@@ -51,10 +52,12 @@ class TReCaptchaValidator extends TBaseValidator
 	protected function getCaptchaControl()
 	{
 		$control = $this->getValidationTarget();
-		if (!$control)
+		if (!$control) {
 			throw new Exception('No target control specified for TReCaptchaValidator');
-		if (!($control instanceof TReCaptcha))
+		}
+		if (!($control instanceof TReCaptcha)) {
 			throw new Exception('TReCaptchaValidator only works with TReCaptcha controls');
+		}
 		return $control;
 	}
 
@@ -75,12 +78,11 @@ class TReCaptchaValidator extends TBaseValidator
 	protected function evaluateIsValid()
 	{
 		// check validity only once (if trying to evaulate multiple times, all redundant checks would fail)
-		if (is_null($this->_isvalid))
-		{
+		if (null === $this->_isvalid) {
 			$control = $this->getCaptchaControl();
 			$this->_isvalid = $control->validate();
 		}
-		return ($this->_isvalid==true);
+		return ($this->_isvalid == true);
 	}
 
 	public function onPreRender($param)
@@ -91,46 +93,43 @@ class TReCaptchaValidator extends TBaseValidator
 		$cs->registerPradoScript('validator');
 
 		// communicate validation status to the client side
-		$value = $this->_isvalid===false ? '0' : '1';
-		$cs->registerHiddenField($this->getClientID().'_1',$value);
+		$value = $this->_isvalid === false ? '0' : '1';
+		$cs->registerHiddenField($this->getClientID() . '_1', $value);
 		
 		// update validator display
-		if ($control = $this->getValidationTarget())
-		{
-			$fn = 'captchaUpdateValidatorStatus_'.$this->getClientID();
+		if ($control = $this->getValidationTarget()) {
+			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			// check if we need to request a new captcha too
-			if ($this->Page->IsCallback)
-			{
-				if ($control->getVisible(true))
-					if (!is_null($this->_isvalid))
-					{
-						// if the response has been tested and we reach the pre-render phase 
+			if ($this->Page->IsCallback) {
+				if ($control->getVisible(true)) {
+					if (null !== $this->_isvalid) {
+						// if the response has been tested and we reach the pre-render phase
 						// then we need to regenerate the token, because it won't test positive
 						// anymore, even if solves correctly
 
 						$control->regenerateToken();
 					}
+				}
 			}
 
-			$cs->registerEndScript($this->getClientID().'::validate', implode(' ',array(
+			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ', [
 				// this function will be used to update the validator
-				'function '.$fn.'(valid)',
+				'function ' . $fn . '(valid)',
 				'{',
-				'  jQuery('.TJavaScript::quoteString('#'.$this->getClientID().'_1').').val(valid);',
-				'  Prado.Validation.validateControl('.TJavaScript::quoteString($control->ClientID).'); ',
+				'  jQuery(' . TJavaScript::quoteString('#' . $this->getClientID() . '_1') . ').val(valid);',
+				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->ClientID) . '); ',
 				'}',
 				'',
-				// update the validator to the result if we're in a callback 
+				// update the validator to the result if we're in a callback
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
-				$this->Page->IsCallback ? $fn.'('.$value.');' : '',
+				$this->Page->IsCallback ? $fn . '(' . $value . ');' : '',
 				'',
 				// install event handler that clears the validation error when user changes the captcha response field
-				'jQuery("#'.$control->getClientID().'").on("keyup", '.TJavaScript::quoteString('#'.$control->getResponseFieldName()).', function() { ',
-					$fn.'("1");',
+				'jQuery("#' . $control->getClientID() . '").on("keyup", ' . TJavaScript::quoteString('#' . $control->getResponseFieldName()) . ', function() { ',
+					$fn . '("1");',
 				'});',
-			)));
+			]));
 		}
 	}
-
 }

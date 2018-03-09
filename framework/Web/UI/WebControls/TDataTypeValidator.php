@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Util\TSimpleDateFormatter;
@@ -49,22 +50,22 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType','String');
+		return $this->getViewState('DataType', 'String');
 	}
 
 	/**
 	 * Sets the data type that the values being compared are converted to before the comparison is made.
-	 * @param TValidationDataType the data type
+	 * @param TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationDataType'),TValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationDataType'), TValidationDataType::String);
 	}
 
 	/**
-     * Sets the date format for a date validation
-     * @param string the date format value
-     */
+	 * Sets the date format for a date validation
+	 * @param string $value the date format value
+	 */
 	public function setDateFormat($value)
 	{
 		$this->setViewState('DateFormat', $value, '');
@@ -81,29 +82,28 @@ class TDataTypeValidator extends TBaseValidator
 
 	/**
 	 * Determine if the given value is of a particular type using RegExp.
-	 * @param string value to check
+	 * @param string $value value to check
 	 * @return boolean true if value fits the type expression.
 	 */
 	protected function evaluateDataTypeCheck($value)
 	{
-		if($value=='')
+		if ($value == '') {
 			return true;
+		}
 
-		switch($this->getDataType())
-		{
+		switch ($this->getDataType()) {
 			case TValidationDataType::Integer:
-				return preg_match('/^[-+]?[0-9]+$/',trim($value));
+				return preg_match('/^[-+]?[0-9]+$/', trim($value));
 			case TValidationDataType::Float:
-				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/',trim($value));
+				return preg_match('/^[-+]?([0-9]*\.)?[0-9]+([eE][-+]?[0-9]+)?$/', trim($value));
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
-				if(strlen($dateFormat))
-				{
+				if (strlen($dateFormat)) {
 					$formatter = new TSimpleDateFormatter($dateFormat);
 					return $formatter->isValidDate($value);
-				}
-				else
+				} else {
 					return strtotime($value) > 0;
+				}
 		}
 		return true;
 	}
@@ -115,9 +115,10 @@ class TDataTypeValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['DataType']=$this->getDataType();
-		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['DateFormat']=$dateFormat;
+		$options['DataType'] = $this->getDataType();
+		if (($dateFormat = $this->getDateFormat()) !== '') {
+			$options['DateFormat'] = $dateFormat;
+		}
 		return $options;
 	}
 
@@ -130,10 +131,10 @@ class TDataTypeValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
+		}
 
 		return $this->evaluateDataTypeCheck($value);
 	}
 }
-

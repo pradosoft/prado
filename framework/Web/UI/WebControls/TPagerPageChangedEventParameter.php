@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 
 /**
@@ -35,17 +36,17 @@ class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 	/**
 	 * @var TControl original event sender
 	 */
-	private $_source=null;
+	private $_source;
 
 	/**
 	 * Constructor.
 	 * @param TControl the control originally raises the <b>OnCommand</b> event.
 	 * @param integer new page index
 	 */
-	public function __construct($source,$newPageIndex)
+	public function __construct($source, $newPageIndex)
 	{
-		$this->_source=$source;
-		$this->_newIndex=$newPageIndex;
+		$this->_source = $source;
+		$this->_newIndex = $newPageIndex;
 	}
 
 	/**

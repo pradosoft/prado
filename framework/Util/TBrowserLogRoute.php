@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 
@@ -27,35 +28,33 @@ class TBrowserLogRoute extends TLogRoute
 	/**
 	 * @var string css class for indentifying the table structure in the dom tree
 	 */
-	private $_cssClass=null;
+	private $_cssClass;
 
 	public function processLogs($logs)
 	{
-		if(empty($logs) || $this->getApplication()->getMode()==='Performance') return;
+		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
+			return;
+		}
 		$first = $logs[0][3];
 		$even = true;
 		$response = $this->getApplication()->getResponse();
 		$response->write($this->renderHeader());
-		for($i=0,$n=count($logs);$i<$n;++$i)
-		{
-			if ($i<$n-1)
-			{
-				$timing['delta'] = $logs[$i+1][3] - $logs[$i][3];
-				$timing['total'] = $logs[$i+1][3] - $first;
-			}
-			else
-			{
+		for ($i = 0,$n = count($logs);$i < $n;++$i) {
+			if ($i < $n - 1) {
+				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];
+				$timing['total'] = $logs[$i + 1][3] - $first;
+			} else {
 				$timing['delta'] = '?';
 				$timing['total'] = $logs[$i][3] - $first;
 			}
 			$timing['even'] = !($even = !$even);
-			$response->write($this->renderMessage($logs[$i],$timing));
+			$response->write($this->renderMessage($logs[$i], $timing));
 		}
 		$response->write($this->renderFooter());
 	}
 
 	/**
-	 * @param string the css class of the control
+	 * @param string $value the css class of the control
 	 */
 	public function setCssClass($value)
 	{
@@ -73,8 +72,7 @@ class TBrowserLogRoute extends TLogRoute
 	protected function renderHeader()
 	{
 		$string = '';
-		if($className=$this->getCssClass())
-		{
+		if ($className = $this->getCssClass()) {
 			$string = <<<EOD
 <table class="$className">
 	<tr class="header">
@@ -86,9 +84,7 @@ class TBrowserLogRoute extends TLogRoute
 		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
 	</tr>
 EOD;
-		}
-		else
-		{
+		} else {
 			$string = <<<EOD
 <table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
 	<tr>
@@ -109,10 +105,9 @@ EOD;
 		$string = '';
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = preg_replace('/\(line[^\)]+\)$/','',$log[0]); //remove line number info
+		$msg = preg_replace('/\(line[^\)]+\)$/', '', $log[0]); //remove line number info
 		$msg = THttpUtility::htmlEncode($msg);
-		if($this->getCssClass())
-		{
+		if ($this->getCssClass()) {
 			$colorCssClass = $log[1];
 			$messageCssClass = $info['even'] ? 'even' : 'odd';
 			$string = <<<EOD
@@ -124,9 +119,7 @@ EOD;
 		<td class="cumulatedtime">{$total}</td>
 	</tr>
 EOD;
-		}
-		else
-		{
+		} else {
 			$bgcolor = $info['even'] ? "#fff" : "#eee";
 			$color = $this->getColorLevel($log[1]);
 			$string = <<<EOD
@@ -144,8 +137,7 @@ EOD;
 
 	protected function getColorLevel($level)
 	{
-		switch($level)
-		{
+		switch ($level) {
 			case TLogger::DEBUG: return 'green';
 			case TLogger::INFO: return 'black';
 			case TLogger::NOTICE: return '#3333FF';
@@ -160,21 +152,16 @@ EOD;
 	protected function renderFooter()
 	{
 		$string = '';
-		if($this->getCssClass())
-		{
+		if ($this->getCssClass()) {
 			$string .= '<tr class="footer"><td colspan="5">';
-			foreach(self::$_levelValues as $name => $level)
-			{
-				$string .= '<span class="level'.$level.'">'.strtoupper($name)."</span>";
+			foreach (self::$_levelValues as $name => $level) {
+				$string .= '<span class="level' . $level . '">' . strtoupper($name) . "</span>";
 			}
-		}
-		else
-		{
+		} else {
 			$string .= "<tr><td colspan=\"5\" style=\"text-align:center; background-color:black; border-top: 1px solid #ccc; padding:0.2em;\">";
-			foreach(self::$_levelValues as $name => $level)
-			{
-				$string .= "<span style=\"color:white; border:1px solid white; background-color:".$this->getColorLevel($level);
-				$string .= ";margin: 0.5em; padding:0.01em;\">".strtoupper($name)."</span>";
+			foreach (self::$_levelValues as $name => $level) {
+				$string .= "<span style=\"color:white; border:1px solid white; background-color:" . $this->getColorLevel($level);
+				$string .= ";margin: 0.5em; padding:0.01em;\">" . strtoupper($name) . "</span>";
 			}
 		}
 		$string .= '</td></tr></table>';

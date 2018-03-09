@@ -17,7 +17,6 @@ namespace Prado\Web\UI\ActiveControls;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TTextBox;
 
-
 /**
  * TActiveTextBox class.
  *
@@ -62,25 +61,27 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 
 	/**
 	 * Client-side Text property can only be updated after the OnLoad stage.
-	 * @param string text content for the textbox
+	 * @param string $value text content for the textbox
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData())
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
+		}
 	}
 
 	/**
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
 	}
@@ -90,7 +91,7 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -122,9 +123,10 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 }
-

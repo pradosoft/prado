@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -65,52 +66,52 @@ use Prado\TPropertyValue;
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
-	const DEFAULT_CONTENTTYPE	= 'text/html';
-	const DEFAULT_CHARSET		= 'UTF-8';
+	const DEFAULT_CONTENTTYPE = 'text/html';
+	const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
 	 * @var The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
 	 */
-	private static $HTTP_STATUS_CODES = array(
+	private static $HTTP_STATUS_CODES = [
 		100 => 'Continue', 101 => 'Switching Protocols',
 		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content',
 		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect',
 		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed',
 		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported'
-	);
+	];
 
 	/**
 	 * @var boolean whether to buffer output
 	 */
-	private $_bufferOutput=true;
+	private $_bufferOutput = true;
 	/**
 	 * @var boolean if the application is initialized
 	 */
-	private $_initialized=false;
+	private $_initialized = false;
 	/**
 	 * @var THttpCookieCollection list of cookies to return
 	 */
-	private $_cookies=null;
+	private $_cookies;
 	/**
 	 * @var integer response status code
 	 */
-	private $_status=200;
+	private $_status = 200;
 	/**
 	 * @var string reason correspond to status code
 	 */
-	private $_reason='OK';
+	private $_reason = 'OK';
 	/**
 	 * @var string HTML writer type
 	 */
-	private $_htmlWriterType='\Prado\Web\UI\THtmlWriter';
+	private $_htmlWriterType = '\Prado\Web\UI\THtmlWriter';
 	/**
 	 * @var string content type
 	 */
-	private $_contentType=null;
+	private $_contentType;
 	/**
 	 * @var string|boolean character set, e.g. UTF-8 or false if no character set should be send to client
 	 */
-	private $_charset='';
+	private $_charset = '';
 	/**
 	 * @var THttpResponseAdapter adapter.
 	 */
@@ -139,7 +140,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setAdapter(THttpResponseAdapter $adapter)
 	{
-		$this->_adapter=$adapter;
+		$this->_adapter = $adapter;
 	}
 
 	/**
@@ -155,20 +156,21 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getHasAdapter()
 	{
-		return $this->_adapter!==null;
+		return $this->_adapter !== null;
 	}
 
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param TXmlElement module configuration
+	 * @param TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
-		if($this->_bufferOutput)
+		if ($this->_bufferOutput) {
 			ob_start();
-		$this->_initialized=true;
+		}
+		$this->_initialized = true;
 		$this->getApplication()->setResponse($this);
 	}
 
@@ -181,7 +183,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param integer time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
+	 * @param integer $value time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
 	 */
 	public function setCacheExpire($value)
 	{
@@ -197,12 +199,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string cache control method to use for session pages. Valid values
+	 * @param string $value cache control method to use for session pages. Valid values
 	 *               include none/nocache/private/private_no_expire/public
 	 */
 	public function setCacheControl($value)
 	{
-		session_cache_limiter(TPropertyValue::ensureEnum($value,array('none','nocache','private','private_no_expire','public')));
+		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']));
 	}
 
 	/**
@@ -210,8 +212,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setContentType($type)
 	{
-		if ($this->_contentTypeHeaderSent)
+		if ($this->_contentTypeHeaderSent) {
 			throw new \Exception('Unable to alter content-type as it has been already sent');
+		}
 		$this->_contentType = $type;
 	}
 
@@ -232,11 +235,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string|boolean output charset.
+	 * @param string|boolean $charset output charset.
 	 */
 	public function setCharset($charset)
 	{
-		$this->_charset = (strToLower($charset) === 'false') ? false : (string)$charset;
+		$this->_charset = (strToLower($charset) === 'false') ? false : (string) $charset;
 	}
 
 	/**
@@ -248,15 +251,16 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param boolean whether to enable output buffer
+	 * @param boolean $value whether to enable output buffer
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setBufferOutput($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('httpresponse_bufferoutput_unchangeable');
-		else
-			$this->_bufferOutput=TPropertyValue::ensureBoolean($value);
+		} else {
+			$this->_bufferOutput = TPropertyValue::ensureBoolean($value);
+		}
 	}
 
 	/**
@@ -275,30 +279,32 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param integer HTTP status code
 	 * @param string HTTP status reason, defaults to standard HTTP reasons
 	 */
-	public function setStatusCode($status, $reason=null)
+	public function setStatusCode($status, $reason = null)
 	{
-		if ($this->_httpHeaderSent)
+		if ($this->_httpHeaderSent) {
 			throw new \Exception('Unable to alter response as HTTP header already sent');
-		$status=TPropertyValue::ensureInteger($status);
-		if(isset(self::$HTTP_STATUS_CODES[$status])) {
-			$this->_reason=self::$HTTP_STATUS_CODES[$status];
-		}else{
-			if($reason===null || $reason==='') {
+		}
+		$status = TPropertyValue::ensureInteger($status);
+		if (isset(self::$HTTP_STATUS_CODES[$status])) {
+			$this->_reason = self::$HTTP_STATUS_CODES[$status];
+		} else {
+			if ($reason === null || $reason === '') {
 				throw new TInvalidDataValueException("response_status_reason_missing");
 			}
-			$reason=TPropertyValue::ensureString($reason);
-			if(strpos($reason, "\r")!=false || strpos($reason, "\n")!=false) {
+			$reason = TPropertyValue::ensureString($reason);
+			if (strpos($reason, "\r") != false || strpos($reason, "\n") != false) {
 				throw new TInvalidDataValueException("response_status_reason_barchars");
 			}
-			$this->_reason=$reason;
+			$this->_reason = $reason;
 		}
-		$this->_status=$status;
+		$this->_status = $status;
 	}
 
 	/**
 	 * @param string HTTP status reason
 	 */
-	public function getStatusReason() {
+	public function getStatusReason()
+	{
 		return $this->_reason;
 	}
 
@@ -307,21 +313,23 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getCookies()
 	{
-		if($this->_cookies===null)
-			$this->_cookies=new THttpCookieCollection($this);
+		if ($this->_cookies === null) {
+			$this->_cookies = new THttpCookieCollection($this);
+		}
 		return $this->_cookies;
 	}
 
 	/**
 	 * Outputs a string.
 	 * It may not be sent back to user immediately if output buffer is enabled.
-	 * @param string string to be output
+	 * @param string $str string to be output
 	 */
 	public function write($str)
 	{
 		// when starting output make sure we send the headers first
-		if (!$this->_bufferOutput and !$this->_httpHeaderSent)
+		if (!$this->_bufferOutput and !$this->_httpHeaderSent) {
 			$this->ensureHeadersSent();
+		}
 		echo $str;
 	}
 
@@ -337,50 +345,49 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param integer size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
-	public function writeFile($fileName,$content=null,$mimeType=null,$headers=null,$forceDownload=true,$clientFileName=null,$fileSize=null)
+	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
-		static $defaultMimeTypes=array(
-			'css'=>'text/css',
-			'gif'=>'image/gif',
-			'png'=>'image/png',
-			'jpg'=>'image/jpeg',
-			'jpeg'=>'image/jpeg',
-			'htm'=>'text/html',
-			'html'=>'text/html',
-			'js'=>'javascript/js',
-			'pdf'=>'application/pdf',
-			'xls'=>'application/vnd.ms-excel',
-		);
+		static $defaultMimeTypes = [
+			'css' => 'text/css',
+			'gif' => 'image/gif',
+			'png' => 'image/png',
+			'jpg' => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'htm' => 'text/html',
+			'html' => 'text/html',
+			'js' => 'javascript/js',
+			'pdf' => 'application/pdf',
+			'xls' => 'application/vnd.ms-excel',
+		];
 
-		if($mimeType===null)
-		{
-			$mimeType='text/plain';
-			if(function_exists('mime_content_type'))
-				$mimeType=mime_content_type($fileName);
-			else if(($ext=strrchr($fileName,'.'))!==false)
-			{
-				$ext=substr($ext,1);
-				if(isset($defaultMimeTypes[$ext]))
-					$mimeType=$defaultMimeTypes[$ext];
+		if ($mimeType === null) {
+			$mimeType = 'text/plain';
+			if (function_exists('mime_content_type')) {
+				$mimeType = mime_content_type($fileName);
+			} elseif (($ext = strrchr($fileName, '.')) !== false) {
+				$ext = substr($ext, 1);
+				if (isset($defaultMimeTypes[$ext])) {
+					$mimeType = $defaultMimeTypes[$ext];
+				}
 			}
 		}
 
-		if($clientFileName===null)
-			$clientFileName=basename($fileName);
-		else
-			$clientFileName=basename($clientFileName);
+		if ($clientFileName === null) {
+			$clientFileName = basename($fileName);
+		} else {
+			$clientFileName = basename($clientFileName);
+		}
 
-		if($fileSize===null || $fileSize < 0)
-			$fileSize = ($content===null?filesize($fileName):strlen($content));
+		if ($fileSize === null || $fileSize < 0) {
+			$fileSize = ($content === null ? filesize($fileName) : strlen($content));
+		}
 
 		$this->sendHttpHeader();
-		if(is_array($headers))
-		{
-			foreach($headers as $h)
+		if (is_array($headers)) {
+			foreach ($headers as $h) {
 				header($h);
-		}
-		else
-		{
+			}
+		} else {
 			header('Pragma: public');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -388,27 +395,29 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		header('Content-Length: '.$fileSize);
+		header('Content-Length: ' . $fileSize);
 		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
 		header('Content-Transfer-Encoding: binary');
-		if($content===null)
+		if ($content === null) {
 			readfile($fileName);
-		else
+		} else {
 			echo $content;
+		}
 	}
 
 	/**
 	 * Redirects the browser to the specified URL.
 	 * The current application will be terminated after this method is invoked.
-	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function redirect($url)
 	{
-		if($this->getHasAdapter())
+		if ($this->getHasAdapter()) {
 			$this->_adapter->httpRedirect($url);
-		else
+		} else {
 			$this->httpRedirect($url);
+		}
 	}
 
 	/**
@@ -420,7 +429,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * calling this function to change the type of redirection.
 	 * If not specified, StatusCode will be 302 (Found) by default
 	 *
-	 * @param string URL to be redirected to. If the URL is a relative one, the base URL of
+	 * @param string $url URL to be redirected to. If the URL is a relative one, the base URL of
 	 * the current request will be inserted at the beginning.
 	 */
 	public function httpRedirect($url)
@@ -430,28 +439,29 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		// Under IIS, explicitly send an HTTP response including the status code
 		// this is handled automatically by PHP on Apache and others
 		$isIIS = (stripos($this->getRequest()->getServerSoftware(), "microsoft-iis") !== false);
-		if($url[0]==='/')
-			$url=$this->getRequest()->getBaseUrl().$url;
-		if ($this->_status >= 300 && $this->_status < 400)
-		{
+		if ($url[0] === '/') {
+			$url = $this->getRequest()->getBaseUrl() . $url;
+		}
+		if ($this->_status >= 300 && $this->_status < 400) {
 			// The status code has been modified to a valid redirection status, send it
-			if($isIIS)
-			{
+			if ($isIIS) {
 				header('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
 					array_key_exists($this->_status, self::$HTTP_STATUS_CODES)
 						? $this->_status
 						: 302
 					]);
 			}
-			header('Location: '.str_replace('&amp;','&',$url), true, $this->_status);
+			header('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
-			if($isIIS)
-				header('HTTP/1.1 302 '.self::$HTTP_STATUS_CODES[302]);
-			header('Location: '.str_replace('&amp;','&',$url));
+			if ($isIIS) {
+				header('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
+			}
+			header('Location: ' . str_replace('&amp;', '&', $url));
 		}
 
-		if(!$this->getApplication()->getRequestCompleted())
+		if (!$this->getApplication()->getRequestCompleted()) {
 			$this->getApplication()->onEndRequest();
+		}
 
 		exit();
 	}
@@ -471,10 +481,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function flush($continueBuffering = true)
 	{
-		if($this->getHasAdapter())
+		if ($this->getHasAdapter()) {
 			$this->_adapter->flushContent($continueBuffering);
-		else
+		} else {
 			$this->flushContent($continueBuffering);
+		}
 	}
 
 	/**
@@ -489,29 +500,26 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@link flush} instead.
-	 * @param boolean whether to continue buffering after flush if buffering was active
+	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
-		Prado::trace("Flushing output",'Prado\Web\THttpResponse');
+		Prado::trace("Flushing output", 'Prado\Web\THttpResponse');
 		$this->ensureHeadersSent();
-		if($this->_bufferOutput)
-		{
+		if ($this->_bufferOutput) {
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
-			if (ob_get_length()>0)
-			{
-				if (!$continueBuffering)
-				{
+			if (ob_get_length() > 0) {
+				if (!$continueBuffering) {
 					$this->_bufferOutput = false;
 					ob_end_flush();
-				}
-				else
+				} else {
 					ob_flush();
+				}
 				flush();
 			}
-		}
-		else
+		} else {
 			flush();
+		}
 	}
 
 	/**
@@ -519,8 +527,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function ensureHttpHeaderSent()
 	{
-		if (!$this->_httpHeaderSent)
+		if (!$this->_httpHeaderSent) {
 			$this->sendHttpHeader();
+		}
 	}
 
 	/**
@@ -528,11 +537,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function sendHttpHeader()
 	{
-		$protocol=$this->getRequest()->getHttpProtocolVersion();
-		if($this->getRequest()->getHttpProtocolVersion() === null)
-			$protocol='HTTP/1.1';
+		$protocol = $this->getRequest()->getHttpProtocolVersion();
+		if ($this->getRequest()->getHttpProtocolVersion() === null) {
+			$protocol = 'HTTP/1.1';
+		}
 
-		header($protocol.' '.$this->_status.' '.$this->_reason, true, TPropertyValue::ensureInteger($this->_status));
+		header($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
 
 		$this->_httpHeaderSent = true;
 	}
@@ -542,8 +552,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function ensureContentTypeHeaderSent()
 	{
-		if (!$this->_contentTypeHeaderSent)
+		if (!$this->_contentTypeHeaderSent) {
 			$this->sendContentTypeHeader();
+		}
 	}
 
 	/**
@@ -551,18 +562,21 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	protected function sendContentTypeHeader()
 	{
-		$contentType=$this->_contentType===null?self::DEFAULT_CONTENTTYPE:$this->_contentType;
-		$charset=$this->getCharset();
-		if($charset === false) {
-			$this->appendHeader('Content-Type: '.$contentType);
+		$contentType = $this->_contentType === null ? self::DEFAULT_CONTENTTYPE : $this->_contentType;
+		$charset = $this->getCharset();
+		if ($charset === false) {
+			$this->appendHeader('Content-Type: ' . $contentType);
 			return;
 		}
 
-		if($charset==='' && ($globalization=$this->getApplication()->getGlobalization(false))!==null)
-			$charset=$globalization->getCharset();
+		if ($charset === '' && ($globalization = $this->getApplication()->getGlobalization(false)) !== null) {
+			$charset = $globalization->getCharset();
+		}
 
-		if($charset==='') $charset = self::DEFAULT_CHARSET;
-		$this->appendHeader('Content-Type: '.$contentType.';charset='.$charset);
+		if ($charset === '') {
+			$charset = self::DEFAULT_CHARSET;
+		}
+		$this->appendHeader('Content-Type: ' . $contentType . ';charset=' . $charset);
 
 		$this->_contentTypeHeaderSent = true;
 	}
@@ -575,8 +589,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getContents()
 	{
-		Prado::trace("Retrieving output",'Prado\Web\THttpResponse');
-		return $this->_bufferOutput?ob_get_contents():'';
+		Prado::trace("Retrieving output", 'Prado\Web\THttpResponse');
+		return $this->_bufferOutput ? ob_get_contents() : '';
 	}
 
 	/**
@@ -584,31 +598,34 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function clear()
 	{
-		if($this->_bufferOutput)
+		if ($this->_bufferOutput) {
 			ob_clean();
-		Prado::trace("Clearing output",'Prado\Web\THttpResponse');
+		}
+		Prado::trace("Clearing output", 'Prado\Web\THttpResponse');
 	}
 
 	/**
 	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
 	 * @return array
 	 */
-	public function getHeaders($case=null)
+	public function getHeaders($case = null)
 	{
-		$result = array();
+		$result = [];
 		$headers = headers_list();
-		foreach($headers as $header) {
+		foreach ($headers as $header) {
 			$tmp = explode(':', $header);
 			$key = trim(array_shift($tmp));
 			$value = trim(implode(':', $tmp));
-			if(isset($result[$key]))
+			if (isset($result[$key])) {
 				$result[$key] .= ', ' . $value;
-			else
+			} else {
 				$result[$key] = $value;
+			}
 		}
 
-		if($case !== null)
+		if ($case !== null) {
 			return array_change_key_case($result, $case);
+		}
 
 		return $result;
 	}
@@ -618,9 +635,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param string header
 	 * @param boolean whether the header should replace a previous similar header, or add a second header of the same type
 	 */
-	public function appendHeader($value, $replace=true)
+	public function appendHeader($value, $replace = true)
 	{
-		Prado::trace("Sending header '$value'",'Prado\Web\THttpResponse');
+		Prado::trace("Sending header '$value'", 'Prado\Web\THttpResponse');
 		header($value, $replace);
 	}
 
@@ -633,22 +650,21 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param string The extra headers. It's used when the message parameter is set to 1. This message type uses the same internal function as mail() does.
 	 * @see http://us2.php.net/manual/en/function.error-log.php
 	 */
-	public function appendLog($message,$messageType=0,$destination='',$extraHeaders='')
+	public function appendLog($message, $messageType = 0, $destination = '', $extraHeaders = '')
 	{
-		error_log($message,$messageType,$destination,$extraHeaders);
+		error_log($message, $messageType, $destination, $extraHeaders);
 	}
 
 	/**
 	 * Sends a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie cook to be sent
+	 * @param THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
 	{
-		$request=$this->getRequest();
-		if($request->getEnableCookieValidation())
-		{
-			$value=$this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
+		$request = $this->getRequest();
+		if ($request->getEnableCookieValidation()) {
+			$value = $this->getApplication()->getSecurityManager()->hashData($cookie->getValue());
 			setcookie(
 				$cookie->getName(),
 				$value,
@@ -658,8 +674,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 				$cookie->getSecure(),
 				$cookie->getHttpOnly()
 			);
-		}
-		else {
+		} else {
 			setcookie(
 				$cookie->getName(),
 				$cookie->getValue(),
@@ -675,7 +690,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Deletes a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie cook to be deleted
+	 * @param THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
 	{
@@ -699,26 +714,28 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string the type of HTML writer to be used, may be the class name or the namespace
+	 * @param string $value the type of HTML writer to be used, may be the class name or the namespace
 	 */
 	public function setHtmlWriterType($value)
 	{
-		$this->_htmlWriterType=$value;
+		$this->_htmlWriterType = $value;
 	}
 
 	/**
 	 * Creates a new instance of HTML writer.
 	 * If the type of the HTML writer is not supplied, {@link getHtmlWriterType HtmlWriterType} will be assumed.
-	 * @param string type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 * @param string $type type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
 	 */
-	public function createHtmlWriter($type=null)
+	public function createHtmlWriter($type = null)
 	{
-		if($type===null)
-			$type=$this->getHtmlWriterType();
-		if($this->getHasAdapter())
+		if ($type === null) {
+			$type = $this->getHtmlWriterType();
+		}
+		if ($this->getHasAdapter()) {
 			return $this->_adapter->createNewHtmlWriter($type, $this);
-		else
+		} else {
 			return $this->createNewHtmlWriter($type, $this);
+		}
 	}
 
 	/**
@@ -732,4 +749,3 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		return Prado::createComponent($type, $writer);
 	}
 }
-

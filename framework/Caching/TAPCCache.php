@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -48,22 +49,25 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TAPCCache extends TCache
 {
-   /**
-    * Initializes this module.
-    * This method is required by the IModule interface.
-    * @param TXmlElement configuration for this module, can be null
-    * @throws TConfigurationException if apc extension is not installed or not started, check your php.ini
-    */
+	/**
+	 * Initializes this module.
+	 * This method is required by the IModule interface.
+	 * @param TXmlElement $config configuration for this module, can be null
+	 * @throws TConfigurationException if apc extension is not installed or not started, check your php.ini
+	 */
 	public function init($config)
 	{
-		if(!extension_loaded('apc'))
+		if (!extension_loaded('apc')) {
 			throw new TConfigurationException('apccache_extension_required');
+		}
 
-		if(ini_get('apc.enabled') == false)
+		if (ini_get('apc.enabled') == false) {
 			throw new TConfigurationException('apccache_extension_not_enabled');
+		}
 
-		if(substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false)
+		if (substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false) {
 			throw new TConfigurationException('apccache_extension_not_enabled_cli');
+		}
 
 		parent::init($config);
 	}
@@ -71,7 +75,7 @@ class TAPCCache extends TCache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
@@ -83,34 +87,34 @@ class TAPCCache extends TCache
 	 * Stores a value identified by a key in cache.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key,$value,$expire)
+	protected function setValue($key, $value, $expire)
 	{
-		return apc_store($key,$value,$expire);
+		return apc_store($key, $value, $expire);
 	}
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key,$value,$expire)
+	protected function addValue($key, $value, $expire)
 	{
-		return apc_add($key,$value,$expire);
+		return apc_add($key, $value, $expire);
 	}
 
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)
@@ -127,4 +131,3 @@ class TAPCCache extends TCache
 		return apc_clear_cache('user');
 	}
 }
-

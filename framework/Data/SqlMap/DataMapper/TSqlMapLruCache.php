@@ -27,8 +27,7 @@ class TSqlMapLruCache extends TSqlMapCache
 	 */
 	public function get($key)
 	{
-		if($this->_keyList->contains($key))
-		{
+		if ($this->_keyList->contains($key)) {
 			$this->_keyList->remove($key);
 			$this->_keyList->add($key);
 			return $this->_cache->itemAt($key);
@@ -41,12 +40,11 @@ class TSqlMapLruCache extends TSqlMapCache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 */
-	public function set($key, $value,$expire=0,$dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
 		$this->_cache->add($key, $value);
 		$this->_keyList->add($key);
-		if($this->_keyList->getCount() > $this->_cacheSize)
-		{
+		if ($this->_keyList->getCount() > $this->_cacheSize) {
 			$oldestKey = $this->_keyList->removeAt(0);
 			$this->_cache->remove($oldestKey);
 		}

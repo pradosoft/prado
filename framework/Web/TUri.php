@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Exceptions\TInvalidDataValueException;
 
 /**
@@ -36,16 +37,16 @@ class TUri extends \Prado\TComponent
 	/**
 	 * @var array list of default ports for known schemes
 	 */
-	private static $_defaultPort=array(
-		'ftp'=>21,
-		'gopher'=>70,
-		'http'=>80,
-		'https'=>443,
-		'news'=>119,
-		'nntp'=>119,
-		'wais'=>210,
-		'telnet'=>23
-	);
+	private static $_defaultPort = [
+		'ftp' => 21,
+		'gopher' => 70,
+		'http' => 80,
+		'https' => 443,
+		'news' => 119,
+		'nntp' => 119,
+		'wais' => 210,
+		'telnet' => 23
+	];
 	/**
 	 * @var string scheme of the URI
 	 */
@@ -86,27 +87,24 @@ class TUri extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * Decomposes the specified URI into parts.
-	 * @param string URI to be represented
+	 * @param string $uri URI to be represented
 	 * @throws TInvalidDataValueException if URI is of bad format
 	 */
 	public function __construct($uri)
 	{
-		if(($ret=@parse_url($uri))!==false)
-		{
+		if (($ret = @parse_url($uri)) !== false) {
 			// decoding???
-			$this->_scheme=isset($ret['scheme'])?$ret['scheme']:'';
-			$this->_host=isset($ret['host'])?$ret['host']:'';
-			$this->_port=isset($ret['port'])?$ret['port']:'';
-			$this->_user=isset($ret['user'])?$ret['user']:'';
-			$this->_pass=isset($ret['pass'])?$ret['pass']:'';
-			$this->_path=isset($ret['path'])?$ret['path']:'';
-			$this->_query=isset($ret['query'])?$ret['query']:'';
-			$this->_fragment=isset($ret['fragment'])?$ret['fragment']:'';
-			$this->_uri=$uri;
-		}
-		else
-		{
-			throw new TInvalidDataValueException('uri_format_invalid',$uri);
+			$this->_scheme = isset($ret['scheme']) ? $ret['scheme'] : '';
+			$this->_host = isset($ret['host']) ? $ret['host'] : '';
+			$this->_port = isset($ret['port']) ? $ret['port'] : '';
+			$this->_user = isset($ret['user']) ? $ret['user'] : '';
+			$this->_pass = isset($ret['pass']) ? $ret['pass'] : '';
+			$this->_path = isset($ret['path']) ? $ret['path'] : '';
+			$this->_query = isset($ret['query']) ? $ret['query'] : '';
+			$this->_fragment = isset($ret['fragment']) ? $ret['fragment'] : '';
+			$this->_uri = $uri;
+		} else {
+			throw new TInvalidDataValueException('uri_format_invalid', $uri);
 		}
 	}
 

@@ -47,16 +47,16 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text caption of the hyperlink.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -64,15 +64,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the hyperlink caption
+	 * @param string $value the field name from the data source to bind to the hyperlink caption
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -80,15 +80,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
-	 * @param string the formatting string used to control how the hyperlink caption will be displayed.
+	 * @param string $value the formatting string used to control how the hyperlink caption will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -96,15 +96,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageHeight()
 	{
-		return $this->getViewState('ImageHeight','');
+		return $this->getViewState('ImageHeight', '');
 	}
 
 	/**
-	 * @param string height of the image in the THyperLink
+	 * @param string $value height of the image in the THyperLink
 	 */
 	public function setImageHeight($value)
 	{
-		$this->setViewState('ImageHeight',$value,'');
+		$this->setViewState('ImageHeight', $value, '');
 	}
 
 	/**
@@ -112,15 +112,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageUrl()
 	{
-		return $this->getViewState('ImageUrl','');
+		return $this->getViewState('ImageUrl', '');
 	}
 
 	/**
-	 * @param string url of the image in the THyperLink
+	 * @param string $value url of the image in the THyperLink
 	 */
 	public function setImageUrl($value)
 	{
-		$this->setViewState('ImageUrl',$value,'');
+		$this->setViewState('ImageUrl', $value, '');
 	}
 
 	/**
@@ -128,15 +128,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getImageWidth()
 	{
-		return $this->getViewState('ImageWidth','');
+		return $this->getViewState('ImageWidth', '');
 	}
 
 	/**
-	 * @param string width of the image in the THyperLink
+	 * @param string $value width of the image in the THyperLink
 	 */
 	public function setImageWidth($value)
 	{
-		$this->setViewState('ImageWidth',$value,'');
+		$this->setViewState('ImageWidth', $value, '');
 	}
 
 	/**
@@ -144,16 +144,16 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
 	 * Sets the URL to link to when the hyperlink is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',$value,'');
+		$this->setViewState('NavigateUrl', $value, '');
 	}
 
 	/**
@@ -161,15 +161,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataNavigateUrlField()
 	{
-		return $this->getViewState('DataNavigateUrlField','');
+		return $this->getViewState('DataNavigateUrlField', '');
 	}
 
 	/**
-	 * @param string the field name from the data source to bind to the navigate url of hyperlink
+	 * @param string $value the field name from the data source to bind to the navigate url of hyperlink
 	 */
 	public function setDataNavigateUrlField($value)
 	{
-		$this->setViewState('DataNavigateUrlField',$value,'');
+		$this->setViewState('DataNavigateUrlField', $value, '');
 	}
 
 	/**
@@ -177,15 +177,15 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getDataNavigateUrlFormatString()
 	{
-		return $this->getViewState('DataNavigateUrlFormatString','');
+		return $this->getViewState('DataNavigateUrlFormatString', '');
 	}
 
 	/**
-	 * @param string the formatting string used to control how the navigate url of hyperlink will be displayed.
+	 * @param string $value the formatting string used to control how the navigate url of hyperlink will be displayed.
 	 */
 	public function setDataNavigateUrlFormatString($value)
 	{
-		$this->setViewState('DataNavigateUrlFormatString',$value,'');
+		$this->setViewState('DataNavigateUrlFormatString', $value, '');
 	}
 
 	/**
@@ -193,16 +193,16 @@ class THyperLinkColumn extends TDataGridColumn
 	 */
 	public function getTarget()
 	{
-		return $this->getViewState('Target','');
+		return $this->getViewState('Target', '');
 	}
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the hyperlink is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{
-		$this->setViewState('Target',$value,'');
+		$this->setViewState('Target', $value, '');
 	}
 
 	/**
@@ -213,29 +213,30 @@ class THyperLinkColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
-		{
-			$link=new THyperLink;
-			if(($url = $this->getImageUrl())!=='')
-			{
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
+			$link = new THyperLink;
+			if (($url = $this->getImageUrl()) !== '') {
 				$link->setImageUrl($url);
-				if(($width=$this->getImageWidth())!=='')
+				if (($width = $this->getImageWidth()) !== '') {
 					$link->setImageWidth($width);
-				if(($height=$this->getImageHeight())!=='')
+				}
+				if (($height = $this->getImageHeight()) !== '') {
 					$link->setImageHeight($height);
+				}
 			}
 			$link->setText($this->getText());
 			$link->setNavigateUrl($this->getNavigateUrl());
 			$link->setTarget($this->getTarget());
-			if($this->getDataTextField()!=='' || $this->getDataNavigateUrlField()!=='')
-				$link->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+			if ($this->getDataTextField() !== '' || $this->getDataNavigateUrlField() !== '') {
+				$link->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
+			}
 			$cell->getControls()->add($link);
-			$cell->registerObject('HyperLink',$link);
+			$cell->registerObject('HyperLink', $link);
+		} else {
+			parent::initializeCell($cell, $columnIndex, $itemType);
 		}
-		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
@@ -243,22 +244,19 @@ class THyperLinkColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
-		$item=$sender->getNamingContainer();
-		$data=$item->getData();
-		if(($field=$this->getDataTextField())!=='')
-		{
-			$value=$this->getDataFieldValue($data,$field);
-			$text=$this->formatDataValue($this->getDataTextFormatString(),$value);
+		$item = $sender->getNamingContainer();
+		$data = $item->getData();
+		if (($field = $this->getDataTextField()) !== '') {
+			$value = $this->getDataFieldValue($data, $field);
+			$text = $this->formatDataValue($this->getDataTextFormatString(), $value);
 			$sender->setText($text);
 		}
-		if(($field=$this->getDataNavigateUrlField())!=='')
-		{
-			$value=$this->getDataFieldValue($data,$field);
-			$url=$this->formatDataValue($this->getDataNavigateUrlFormatString(),$value);
+		if (($field = $this->getDataNavigateUrlField()) !== '') {
+			$value = $this->getDataFieldValue($data, $field);
+			$url = $this->formatDataValue($this->getDataNavigateUrlFormatString(), $value);
 			$sender->setNavigateUrl($url);
 		}
 	}
 }
-

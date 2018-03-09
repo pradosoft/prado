@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 
@@ -51,18 +52,18 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	public function getCaptchaControl()
 	{
-		return $this->getViewState('CaptchaControl','');
+		return $this->getViewState('CaptchaControl', '');
 	}
 
 	/**
 	 * Sets the ID path of the CAPTCHA control to validate.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the validator's naming container to the target control.
-	 * @param string the ID path
+	 * @param string $value the ID path
 	 */
 	public function setCaptchaControl($value)
 	{
-		$this->setViewState('CaptchaControl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('CaptchaControl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -74,8 +75,8 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	protected function evaluateIsValid()
 	{
-		$value=$this->getValidationValue($this->getValidationTarget());
-		$control=$this->findCaptchaControl();
+		$value = $this->getValidationValue($this->getValidationTarget());
+		$control = $this->findCaptchaControl();
 		return $control->validate(trim($value));
 	}
 
@@ -85,14 +86,15 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	protected function findCaptchaControl()
 	{
-		if(($id=$this->getCaptchaControl())==='')
+		if (($id = $this->getCaptchaControl()) === '') {
 			throw new TConfigurationException('captchavalidator_captchacontrol_required');
-		else if(($control=$this->findControl($id))===null)
-			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent',$id);
-		else if(!($control instanceof TCaptcha))
-			throw new TConfigurationException('captchavalidator_captchacontrol_invalid',$id);
-		else
+		} elseif (($control = $this->findControl($id)) === null) {
+			throw new TConfigurationException('captchavalidator_captchacontrol_inexistent', $id);
+		} elseif (!($control instanceof TCaptcha)) {
+			throw new TConfigurationException('captchavalidator_captchacontrol_invalid', $id);
+		} else {
 			return $control;
+		}
 	}
 
 	/**
@@ -101,26 +103,23 @@ class TCaptchaValidator extends TBaseValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options=parent::getClientScriptOptions();
-		$control=$this->findCaptchaControl();
-		if($control->getCaseSensitive())
-		{
-			$options['TokenHash']=$this->generateTokenHash($control->getToken());
-			$options['CaseSensitive']=true;
-		}
-		else
-		{
-			$options['TokenHash']=$this->generateTokenHash(strtoupper($control->getToken()));
-			$options['CaseSensitive']=false;
+		$options = parent::getClientScriptOptions();
+		$control = $this->findCaptchaControl();
+		if ($control->getCaseSensitive()) {
+			$options['TokenHash'] = $this->generateTokenHash($control->getToken());
+			$options['CaseSensitive'] = true;
+		} else {
+			$options['TokenHash'] = $this->generateTokenHash(strtoupper($control->getToken()));
+			$options['CaseSensitive'] = false;
 		}
 		return $options;
 	}
 
 	private function generateTokenHash($token)
 	{
-		for($h=0,$i=strlen($token)-1;$i>=0;--$i)
-			$h+=ord($token[$i]);
+		for ($h = 0,$i = strlen($token) - 1;$i >= 0;--$i) {
+			$h += ord($token[$i]);
+		}
 		return $h;
 	}
 }
-

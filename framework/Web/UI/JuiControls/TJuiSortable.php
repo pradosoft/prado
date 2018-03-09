@@ -61,7 +61,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getWidget()
 	{
-	  return 'sortable';
+		return 'sortable';
 	}
 
 	/**
@@ -69,7 +69,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID() . '_0';
+		return $this->getClientID() . '_0';
 	}
 
 	/**
@@ -78,10 +78,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -92,7 +91,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'axis', 'cancel', 'connectWith', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'dropOnEmpty', 'forceHelperSize', 'forcePlaceholderSize', 'grid', 'handle', 'helper', 'items', 'opacity', 'placeholder', 'revert', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'tolerance', 'zIndex');
+		return ['appendTo', 'axis', 'cancel', 'connectWith', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'dropOnEmpty', 'forceHelperSize', 'forcePlaceholderSize', 'grid', 'handle', 'helper', 'items', 'opacity', 'placeholder', 'revert', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'tolerance', 'zIndex'];
 	}
 
 	/**
@@ -101,7 +100,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getValidEvents()
 	{
-		return array('activate', 'beforeStop', 'change', 'create', 'deactivate', 'out', 'over', 'receive', 'remove', 'sort', 'start', 'stop', 'update');
+		return ['activate', 'beforeStop', 'change', 'create', 'deactivate', 'out', 'over', 'receive', 'remove', 'sort', 'start', 'stop', 'update'];
 	}
 
 	/**
@@ -111,10 +110,10 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	{
 		$options = $this->getOptions()->toArray();
 		// overload some events to add information about the items order
-		foreach($options as $event => $implementation)
-		{
-			if($event=='sort' || $event=='stop')
-				$options[$event]=new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback('.TJavaScript::encode($this->getUniqueID()).', \''.$event.'\', event, ui, this); }');
+		foreach ($options as $event => $implementation) {
+			if ($event == 'sort' || $event == 'stop') {
+				$options[$event] = new TJavaScriptLiteral('function( event, ui ) { ui.index = jQuery(this).sortable(\'toArray\'); Prado.JuiCallback(' . TJavaScript::encode($this->getUniqueID()) . ', \'' . $event . '\', event, ui, this); }');
+			}
 		}
 		return $options;
 	}
@@ -126,17 +125,17 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -147,7 +146,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnActivate event
 	 * @param object $params event parameters
 	 */
-	public function onActivate ($params)
+	public function onActivate($params)
 	{
 		$this->raiseEvent('OnActivate', $this, $params);
 	}
@@ -156,7 +155,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnBeforeStop event
 	 * @param object $params event parameters
 	 */
-	public function onBeforeStop ($params)
+	public function onBeforeStop($params)
 	{
 		$this->raiseEvent('OnBeforeStop', $this, $params);
 	}
@@ -165,7 +164,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnChange event
 	 * @param object $params event parameters
 	 */
-	public function onChange ($params)
+	public function onChange($params)
 	{
 		$this->raiseEvent('OnChange', $this, $params);
 	}
@@ -174,7 +173,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onCreate ($params)
+	public function onCreate($params)
 	{
 		$this->raiseEvent('OnCreate', $this, $params);
 	}
@@ -183,7 +182,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnDeactivate event
 	 * @param object $params event parameters
 	 */
-	public function onDeactivate ($params)
+	public function onDeactivate($params)
 	{
 		$this->raiseEvent('OnDeactivate', $this, $params);
 	}
@@ -192,7 +191,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnOut event
 	 * @param object $params event parameters
 	 */
-	public function onOut ($params)
+	public function onOut($params)
 	{
 		$this->raiseEvent('OnOut', $this, $params);
 	}
@@ -201,7 +200,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnOver event
 	 * @param object $params event parameters
 	 */
-	public function onOver ($params)
+	public function onOver($params)
 	{
 		$this->raiseEvent('OnOver', $this, $params);
 	}
@@ -210,7 +209,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnReceive event
 	 * @param object $params event parameters
 	 */
-	public function onReceive ($params)
+	public function onReceive($params)
 	{
 		$this->raiseEvent('OnReceive', $this, $params);
 	}
@@ -219,7 +218,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnRemove event
 	 * @param object $params event parameters
 	 */
-	public function onRemove ($params)
+	public function onRemove($params)
 	{
 		$this->raiseEvent('OnRemove', $this, $params);
 	}
@@ -228,7 +227,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnSort event
 	 * @param object $params event parameters
 	 */
-	public function onSort ($params)
+	public function onSort($params)
 	{
 		$this->raiseEvent('OnSort', $this, $params);
 	}
@@ -237,7 +236,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnStart event
 	 * @param object $params event parameters
 	 */
-	public function onStart ($params)
+	public function onStart($params)
 	{
 		$this->raiseEvent('OnStart', $this, $params);
 	}
@@ -246,7 +245,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnStop event
 	 * @param object $params event parameters
 	 */
-	public function OnStop ($params)
+	public function OnStop($params)
 	{
 		$this->raiseEvent('OnStop', $this, $params);
 	}
@@ -255,7 +254,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 * Raises the OnUpdate event
 	 * @param object $params event parameters
 	 */
-	public function onUpdate ($params)
+	public function onUpdate($params)
 	{
 		$this->raiseEvent('OnUpdate', $this, $params);
 	}
@@ -263,10 +262,10 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_repeater=null;
+	private $_repeater;
 
 	/**
-	 * @param array data source for Sortables.
+	 * @param array $data data source for Sortables.
 	 */
 	public function setDataSource($data)
 	{
@@ -280,8 +279,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	public function dataBind()
 	{
 		parent::dataBind();
-		if($this->getPage()->getIsCallback())
+		if ($this->getPage()->getIsCallback()) {
 			$this->renderSortables($this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
@@ -289,8 +289,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	public function getSortables()
 	{
-		if($this->_repeater===null)
+		if ($this->_repeater === null) {
 			$this->_repeater = $this->createRepeater();
+		}
 		return $this->_repeater;
 	}
 
@@ -300,9 +301,9 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	protected function createRepeater()
 	{
 		$repeater = new TRepeater;
-		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="'.$this->getWidgetID().'">'));
+		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="' . $this->getWidgetID() . '">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
-		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>',null));
+		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>', null));
 		$repeater->setEmptyTemplate(new TJuiSortableTemplate('<ul></ul>'));
 		$this->getControls()->add($repeater);
 		return $repeater;

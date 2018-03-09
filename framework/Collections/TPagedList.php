@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
@@ -62,28 +63,28 @@ class TPagedList extends TList
 	/**
 	 * @var boolean whether to allow custom paging
 	 */
-	private $_customPaging=false;
+	private $_customPaging = false;
 	/**
 	 * @var integer number of items in each page
 	 */
-	private $_pageSize=10;
+	private $_pageSize = 10;
 	/**
 	 * @var integer current page index
 	 */
-	private $_currentPageIndex=-1;
+	private $_currentPageIndex = -1;
 	/**
 	 * @var integer user-assigned number of items in data source
 	 */
-	private $_virtualCount=-1;
+	private $_virtualCount = -1;
 
 	/**
 	 * Constructor.
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only. Always true for paged list.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data = null, $readOnly = false)
 	{
-		parent::__construct($data,true);
+		parent::__construct($data, true);
 	}
 
 	/**
@@ -95,11 +96,11 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param boolean whether to allow custom paging
+	 * @param boolean $value whether to allow custom paging
 	 */
 	public function setCustomPaging($value)
 	{
-		$this->_customPaging=TPropertyValue::ensureBoolean($value);
+		$this->_customPaging = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -111,14 +112,15 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer number of items in each page
+	 * @param integer $value number of items in each page
 	 */
 	public function setPageSize($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))>0)
-			$this->_pageSize=$value;
-		else
+		if (($value = TPropertyValue::ensureInteger($value)) > 0) {
+			$this->_pageSize = $value;
+		} else {
 			throw new TInvalidDataValueException('pagedlist_pagesize_invalid');
+		}
 	}
 
 	/**
@@ -130,23 +132,24 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer current page index
+	 * @param integer $value current page index
 	 * @throws TInvalidDataValueException if the page index is out of range
 	 */
 	public function setCurrentPageIndex($value)
 	{
-		if($this->gotoPage($value=TPropertyValue::ensureInteger($value))===false)
+		if ($this->gotoPage($value = TPropertyValue::ensureInteger($value)) === false) {
 			throw new TInvalidDataValueException('pagedlist_currentpageindex_invalid');
+		}
 	}
 
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This event is raised each time when the list changes to a different page.
-	 * @param TPagedListPageChangedEventParameter event parameter
+	 * @param TPagedListPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
-		$this->raiseEvent('OnPageIndexChanged',$this,$param);
+		$this->raiseEvent('OnPageIndexChanged', $this, $param);
 	}
 
 	/**
@@ -154,54 +157,49 @@ class TPagedList extends TList
 	 * This event is raised each time when the list changes to a different page
 	 * and needs the new page of data. This event can only be raised when
 	 * {@link setCustomPaging CustomPaging} is true.
-	 * @param TPagedListFetchDataEventParameter event parameter
+	 * @param TPagedListFetchDataEventParameter $param event parameter
 	 */
 	public function onFetchData($param)
 	{
-		$this->raiseEvent('OnFetchData',$this,$param);
+		$this->raiseEvent('OnFetchData', $this, $param);
 	}
 
 	/**
 	 * Changes to a page with the specified page index.
-	 * @param integer page index
+	 * @param integer $pageIndex page index
 	 * @return integer|boolean the new page index, false if page index is out of range.
 	 */
 	public function gotoPage($pageIndex)
 	{
-		if($pageIndex===$this->_currentPageIndex)
+		if ($pageIndex === $this->_currentPageIndex) {
 			return $pageIndex;
-		if($this->_customPaging)
-		{
-			if($pageIndex>=0 && ($this->_virtualCount<0 || $pageIndex<$this->getPageCount()))
-			{
-				$param=new TPagedListFetchDataEventParameter($pageIndex,$this->_pageSize*$pageIndex,$this->_pageSize);
+		}
+		if ($this->_customPaging) {
+			if ($pageIndex >= 0 && ($this->_virtualCount < 0 || $pageIndex < $this->getPageCount())) {
+				$param = new TPagedListFetchDataEventParameter($pageIndex, $this->_pageSize * $pageIndex, $this->_pageSize);
 				$this->onFetchData($param);
-				if(($data=$param->getData())!==null)
-				{
+				if (($data = $param->getData()) !== null) {
 					$this->setReadOnly(false);
 					$this->copyFrom($data);
 					$this->setReadOnly(true);
-					$oldPage=$this->_currentPageIndex;
-					$this->_currentPageIndex=$pageIndex;
+					$oldPage = $this->_currentPageIndex;
+					$this->_currentPageIndex = $pageIndex;
 					$this->onPageIndexChanged(new TPagedListPageChangedEventParameter($oldPage));
 					return $pageIndex;
-				}
-				else
+				} else {
 					return false;
-			}
-			else
+				}
+			} else {
 				return false;
-		}
-		else
-		{
-			if($pageIndex>=0 && $pageIndex<$this->getPageCount())
-			{
-				$this->_currentPageIndex=$pageIndex;
+			}
+		} else {
+			if ($pageIndex >= 0 && $pageIndex < $this->getPageCount()) {
+				$this->_currentPageIndex = $pageIndex;
 				$this->onPageIndexChanged(null);
 				return $pageIndex;
-			}
-			else
+			} else {
 				return false;
+			}
 		}
 	}
 
@@ -211,7 +209,7 @@ class TPagedList extends TList
 	 */
 	public function nextPage()
 	{
-		return $this->gotoPage($this->_currentPageIndex+1);
+		return $this->gotoPage($this->_currentPageIndex + 1);
 	}
 
 	/**
@@ -220,7 +218,7 @@ class TPagedList extends TList
 	 */
 	public function previousPage()
 	{
-		return $this->gotoPage($this->_currentPageIndex-1);
+		return $this->gotoPage($this->_currentPageIndex - 1);
 	}
 
 	/**
@@ -232,13 +230,14 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer user-assigned number of items in data source
+	 * @param integer $value user-assigned number of items in data source
 	 */
 	public function setVirtualCount($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
-		$this->_virtualCount=$value;
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		$this->_virtualCount = $value;
 	}
 
 	/**
@@ -246,15 +245,15 @@ class TPagedList extends TList
 	 */
 	public function getPageCount()
 	{
-		if($this->_customPaging)
-		{
-			if($this->_virtualCount>=0)
-				return (int)(($this->_virtualCount+$this->_pageSize-1)/$this->_pageSize);
-			else
+		if ($this->_customPaging) {
+			if ($this->_virtualCount >= 0) {
+				return (int) (($this->_virtualCount + $this->_pageSize - 1) / $this->_pageSize);
+			} else {
 				return -1;
+			}
+		} else {
+			return (int) ((parent::getCount() + $this->_pageSize - 1) / $this->_pageSize);
 		}
-		else
-			return (int)((parent::getCount()+$this->_pageSize-1)/$this->_pageSize);
 	}
 
 	/**
@@ -262,7 +261,7 @@ class TPagedList extends TList
 	 */
 	public function getIsFirstPage()
 	{
-		return $this->_currentPageIndex===0;
+		return $this->_currentPageIndex === 0;
 	}
 
 	/**
@@ -270,7 +269,7 @@ class TPagedList extends TList
 	 */
 	public function getIsLastPage()
 	{
-		return $this->_currentPageIndex===$this->getPageCount()-1;
+		return $this->_currentPageIndex === $this->getPageCount() - 1;
 	}
 
 	/**
@@ -278,14 +277,14 @@ class TPagedList extends TList
 	 */
 	public function getCount()
 	{
-		if($this->_customPaging)
+		if ($this->_customPaging) {
 			return parent::getCount();
-		else
-		{
-			if($this->_currentPageIndex===$this->getPageCount()-1)
-				return parent::getCount()-$this->_pageSize*$this->_currentPageIndex;
-			else
+		} else {
+			if ($this->_currentPageIndex === $this->getPageCount() - 1) {
+				return parent::getCount() - $this->_pageSize * $this->_currentPageIndex;
+			} else {
 				return $this->_pageSize;
+			}
 		}
 	}
 
@@ -294,11 +293,10 @@ class TPagedList extends TList
 	 */
 	public function getIterator()
 	{
-		if($this->_customPaging)
+		if ($this->_customPaging) {
 			return parent::getIterator();
-		else
-		{
-			$data=$this->toArray();
+		} else {
+			$data = $this->toArray();
 			return new \ArrayIterator($data);
 		}
 	}
@@ -312,34 +310,37 @@ class TPagedList extends TList
 	 */
 	public function itemAt($index)
 	{
-		if($this->_customPaging)
+		if ($this->_customPaging) {
 			return parent::itemAt($index);
-		else
-			return parent::itemAt($this->_pageSize*$this->_currentPageIndex+$index);
+		} else {
+			return parent::itemAt($this->_pageSize * $this->_currentPageIndex + $index);
+		}
 	}
 
 	/**
-	 * @param mixed the item
+	 * @param mixed $item the item
 	 * @return integer the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
 	{
-		$c=$this->getCount();
-		for($i=0;$i<$c;++$i)
-			if($this->itemAt($i)===$item)
+		$c = $this->getCount();
+		for ($i = 0;$i < $c;++$i) {
+			if ($this->itemAt($i) === $item) {
 				return $i;
+			}
+		}
 		return -1;
 	}
 
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to check on
+	 * @param integer $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
 	{
-		return ($offset>=0 && $offset<$this->getCount());
+		return ($offset >= 0 && $offset < $this->getCount());
 	}
 
 	/**
@@ -359,10 +360,11 @@ class TPagedList extends TList
 	 */
 	public function toArray()
 	{
-		$c=$this->getCount();
-		$array=array();
-		for($i=0;$i<$c;++$i)
-			$array[$i]=$this->itemAt($i);
+		$c = $this->getCount();
+		$array = [];
+		for ($i = 0;$i < $c;++$i) {
+			$array[$i] = $this->itemAt($i);
+		}
 		return $array;
 	}
 }

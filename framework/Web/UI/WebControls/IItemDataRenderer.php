@@ -35,7 +35,7 @@ interface IItemDataRenderer extends \Prado\IDataRenderer
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
+	 * @param integer $value zero-based index of the item.
 	 */
 	public function setItemIndex($value);
 
@@ -45,7 +45,7 @@ interface IItemDataRenderer extends \Prado\IDataRenderer
 	public function getItemType();
 
 	/**
-	 * @param TListItemType the item type.
+	 * @param TListItemType $value the item type.
 	 */
 	public function setItemType($value);
 }

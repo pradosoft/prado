@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+
 use Prado\Web\UI\ITemplate;
 
 /**
@@ -33,7 +34,7 @@ class TJuiSelectableTemplate extends \Prado\TComponent implements ITemplate
 	/**
 	 * Instantiates the template.
 	 * It creates a {@link TDataList} control.
-	 * @param TControl parent to hold the content within the template
+	 * @param TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

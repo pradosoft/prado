@@ -16,7 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-
 /**
  * TJuiProgressbar class.
  *
@@ -56,7 +55,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getWidget()
 	{
-	  return 'progressbar';
+		return 'progressbar';
 	}
 
 	/**
@@ -64,7 +63,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -73,10 +72,9 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -87,7 +85,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getValidOptions()
 	{
-		return array('disabled', 'max', 'value');
+		return ['disabled', 'max', 'value'];
 	}
 
 	/**
@@ -96,7 +94,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	 */
 	public function getValidEvents()
 	{
-		return array('change', 'complete', 'create');
+		return ['change', 'complete', 'create'];
 	}
 
 	/**
@@ -115,17 +113,17 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{

@@ -34,28 +34,28 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.3
  */
-class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, IActiveControl
+class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IActiveControl
 {
 
 	/**
 	 * @return boolean a value indicating whether an automatic postback to the server
-     * will occur whenever the user modifies the text in the TActiveDatePicker control and
-     * then tabs out of the component. Defaults to true.
+	 * will occur whenever the user modifies the text in the TActiveDatePicker control and
+	 * then tabs out of the component. Defaults to true.
 	 */
 	public function getAutoPostBack()
 	{
-		return $this->getViewState('AutoPostBack',true);
+		return $this->getViewState('AutoPostBack', true);
 	}
 
 	/**
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the text in the TActiveDatePicker control and then tabs out of the component.
-	 * @param boolean the value indicating if postback automatically
+	 * @param boolean $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
-		$this->setViewState('AutoPostBack',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AutoPostBack', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -65,8 +65,8 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	protected function getDatePickerOptions()
 	{
 		$options = parent::getDatePickerOptions();
-		$options['CausesValidation']=$this->getCausesValidation();
-		$options['ValidationGroup']=$this->getValidationGroup();
+		$options['CausesValidation'] = $this->getCausesValidation();
+		$options['ValidationGroup'] = $this->getValidationGroup();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['ShowCalendar'] = $this->getShowCalendar();
 		$options['AutoPostBack'] = $this->getAutoPostBack();
@@ -87,31 +87,32 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	/**
 	 * @return TBaseActiveCallbackControl standard callback control options.
 	 */
-	public function getActiveControl(){
+	public function getActiveControl()
+	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
 
 	/**
 	 * Client-side Text property can only be updated after the OnLoad stage.
-	 * @param string text content for the textbox
+	 * @param string $value text content for the textbox
 	 */
-	public function setText($value){
-		if(parent::getText() === $value)
+	public function setText($value)
+	{
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()){
-			$cb=$this->getPage()->getCallbackClient();
+		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
+			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
-			if ($this->getInputMode()==TDatePickerInputMode::DropDownList)
-			{
+			if ($this->getInputMode() == TDatePickerInputMode::DropDownList) {
 				$dt = new \DateTime;
 				$dt->setTimeStamp($this->getTimeStampFromText());
-				$id=$this->getClientID();
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'day', 'Value', $dt->format('j'), 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'month', 'Value', $dt->format('n')-1, 'select');
-				$cb->select($id.TControl::CLIENT_ID_SEPARATOR.'year', 'Value', $dt->format('Y'), 'select');
-
+				$id = $this->getClientID();
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n') - 1, 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'year', 'Value', $dt->format('Y'), 'select');
 			}
 		}
 	}
@@ -120,9 +121,10 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param){
+	public function raiseCallbackEvent($param)
+	{
 		$this->onCallback($param);
 	}
 
@@ -131,9 +133,10 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
-	public function onCallback($param){
+	public function onCallback($param)
+	{
 		$this->raiseEvent('OnCallback', $this, $param);
 	}
 
@@ -150,8 +153,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 	protected function renderClientControlScript($writer)
 	{
 		$cs = $this->getPage()->getClientScript();
-		if(!$cs->isEndScriptRegistered('TDatePicker.spacer'))
-		{
+		if (!$cs->isEndScriptRegistered('TDatePicker.spacer')) {
 			$spacer = $this->getAssetUrl('spacer.gif');
 			$code = "Prado.WebUI.TDatePicker.spacer = '$spacer';";
 			$cs->registerEndScript('TDatePicker.spacer', $code);
@@ -159,7 +161,7 @@ class TActiveDatePicker extends TDatePicker  implements ICallbackEventHandler, I
 
 		$options = TJavaScript::encode($this->getDatePickerOptions());
 		$code = "new Prado.WebUI.TActiveDatePicker($options);";
-		$cs->registerEndScript("prado:".$this->getClientID(), $code);
+		$cs->registerEndScript("prado:" . $this->getClientID(), $code);
 	}
 
 	/**

@@ -18,7 +18,6 @@ use Prado\Data\Common\TDbMetaData;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
-
 /**
  * TPgsqlMetaData loads PostgreSQL database table and column information.
  *
@@ -40,7 +39,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a table name for use in a query.
-	 * @param string $name table name
+	 * @param string $name $name table name
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -50,7 +49,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column name for use in a query.
-	 * @param string $name column name
+	 * @param string $name $name column name
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -60,7 +59,7 @@ class TPgsqlMetaData extends TDbMetaData
 
 	/**
 	 * Quotes a column alias for use in a query.
-	 * @param string $name column alias
+	 * @param string $name $name column alias
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)
@@ -69,11 +68,11 @@ class TPgsqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string default schema.
+	 * @param string $schema default schema.
 	 */
 	public function setDefaultSchema($schema)
 	{
-		$this->_defaultSchema=$schema;
+		$this->_defaultSchema = $schema;
 	}
 
 	/**
@@ -85,25 +84,26 @@ class TPgsqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table name with optional schema name prefix, uses default schema name prefix is not provided.
+	 * @param string $table table name with optional schema name prefix, uses default schema name prefix is not provided.
 	 * @return array tuple as ($schemaName,$tableName)
 	 */
 	protected function getSchemaTableName($table)
 	{
-		if(count($parts= explode('.', str_replace('"','',$table))) > 1)
-			return array($parts[0], $parts[1]);
-		else
-			return array($this->getDefaultSchema(),$parts[0]);
+		if (count($parts = explode('.', str_replace('"', '', $table))) > 1) {
+			return [$parts[0], $parts[1]];
+		} else {
+			return [$this->getDefaultSchema(), $parts[0]];
+		}
 	}
 
 	/**
 	 * Get the column definitions for given table.
-	 * @param string table name.
+	 * @param string $table table name.
 	 * @return TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName,$tableName) = $this->getSchemaTableName($table);
+		list($schemaName, $tableName) = $this->getSchemaTableName($table);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -143,14 +143,14 @@ EOD;
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
 		$tableInfo = $this->createNewTableInfo($schemaName, $tableName);
-		$index=0;
-		foreach($command->query() as $col)
-		{
+		$index = 0;
+		foreach ($command->query() as $col) {
 			$col['index'] = $index++;
 			$this->processColumn($tableInfo, $col);
 		}
-		if($index===0)
+		if ($index === 0) {
 			throw new TDbException('dbmetadata_invalid_table_view', $table);
+		}
 		return $tableInfo;
 	}
 
@@ -159,15 +159,16 @@ EOD;
 	 * @param string table name.
 	 * @return TPgsqlTableInfo
 	 */
-	protected function createNewTableInfo($schemaName,$tableName)
+	protected function createNewTableInfo($schemaName, $tableName)
 	{
 		$info['SchemaName'] = $this->assertIdentifier($schemaName);
 		$info['TableName'] = $this->assertIdentifier($tableName);
-		if($this->getIsView($schemaName,$tableName))
+		if ($this->getIsView($schemaName, $tableName)) {
 			$info['IsView'] = true;
+		}
 		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
-		return new $class($info,$primary,$foreign);
+		return new $class($info, $primary, $foreign);
 	}
 
 	/**
@@ -177,8 +178,7 @@ EOD;
 	 */
 	protected function assertIdentifier($name)
 	{
-		if(strpos($name, '"')!==false)
-		{
+		if (strpos($name, '"') !== false) {
 			$ref = 'http://www.postgresql.org/docs/7.4/static/sql-syntax.html#SQL-SYNTAX-IDENTIFIERS';
 			throw new TDbException('dbcommon_invalid_identifier_name', $name, $ref);
 		}
@@ -186,11 +186,11 @@ EOD;
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string table name.
+	 * @param string $schemaName table schema name
+	 * @param string $tableName table name.
 	 * @return boolean true if the table is a view.
 	 */
-	protected function getIsView($schemaName,$tableName)
+	protected function getIsView($schemaName, $tableName)
 	{
 		$sql =
 <<<EOD
@@ -200,9 +200,9 @@ EOD;
 EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':schema',$schemaName);
+		$command->bindValue(':schema', $schemaName);
 		$command->bindValue(':table', $tableName);
-		return intval($command->queryScalar()) === 1;
+		return (int) ($command->queryScalar()) === 1;
 	}
 
 	/**
@@ -213,43 +213,45 @@ EOD;
 	{
 		$columnId = $col['attname']; //use column name as column Id
 
-		$info['ColumnName'] = '"'.$columnId.'"'; //quote the column names!
+		$info['ColumnName'] = '"' . $columnId . '"'; //quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
-		if(!$col['attnotnull'])
+		if (!$col['attnotnull']) {
 			$info['AllowNull'] = true;
-		if(in_array($columnId, $tableInfo->getPrimaryKeys()))
+		}
+		if (in_array($columnId, $tableInfo->getPrimaryKeys())) {
 			$info['IsPrimaryKey'] = true;
-		if($this->isForeignKeyColumn($columnId, $tableInfo))
+		}
+		if ($this->isForeignKeyColumn($columnId, $tableInfo)) {
 			$info['IsForeignKey'] = true;
+		}
 
-		if($col['atttypmod'] > 0)
-			$info['ColumnSize'] =  $col['atttypmod'] - 4;
-		if($col['atthasdef'])
+		if ($col['atttypmod'] > 0) {
+			$info['ColumnSize'] = $col['atttypmod'] - 4;
+		}
+		if ($col['atthasdef']) {
 			$info['DefaultValue'] = $col['adsrc'];
-		if($col['attisserial'] || substr($col['adsrc'],0,8) === 'nextval(')
-		{
-			if(($sequence = $this->getSequenceName($tableInfo, $col['adsrc']))!==null)
-			{
+		}
+		if ($col['attisserial'] || substr($col['adsrc'], 0, 8) === 'nextval(') {
+			if (($sequence = $this->getSequenceName($tableInfo, $col['adsrc'])) !== null) {
 				$info['SequenceName'] = $sequence;
 				unset($info['DefaultValue']);
 			}
 		}
-		$matches = array();
-		if(preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches))
-		{
-			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/','',$col['type']);
-			if($this->isPrecisionType($info['DbType']))
-			{
-				$info['NumericPrecision'] = intval($matches[1]);
-				if(count($matches) > 2)
-					$info['NumericScale'] = intval($matches[2]);
+		$matches = [];
+		if (preg_match('/\((\d+)(?:,(\d+))?+\)/', $col['type'], $matches)) {
+			$info['DbType'] = preg_replace('/\(\d+(?:,\d+)?\)/', '', $col['type']);
+			if ($this->isPrecisionType($info['DbType'])) {
+				$info['NumericPrecision'] = (int) ($matches[1]);
+				if (count($matches) > 2) {
+					$info['NumericScale'] = (int) ($matches[2]);
+				}
+			} else {
+				$info['ColumnSize'] = (int) ($matches[1]);
 			}
-			else
-				$info['ColumnSize'] = intval($matches[1]);
-		}
-		else
+		} else {
 			$info['DbType'] = $col['type'];
+		}
 
 		$tableInfo->Columns[$columnId] = new TPgsqlTableColumn($info);
 	}
@@ -257,15 +259,15 @@ EOD;
 	/**
 	 * @return string serial name if found, null otherwise.
 	 */
-	protected function getSequenceName($tableInfo,$src)
+	protected function getSequenceName($tableInfo, $src)
 	{
-		$matches = array();
-		if(preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i',$src,$matches))
-		{
-			if(is_int(strpos($matches[1], '.')))
+		$matches = [];
+		if (preg_match('/nextval\([^\']*\'([^\']+)\'[^\)]*\)/i', $src, $matches)) {
+			if (is_int(strpos($matches[1], '.'))) {
 				return $matches[1];
-			else
-				return $tableInfo->getSchemaName().'.'.$matches[1];
+			} else {
+				return $tableInfo->getSchemaName() . '.' . $matches[1];
+			}
 		}
 	}
 
@@ -275,13 +277,13 @@ EOD;
 	protected function isPrecisionType($type)
 	{
 		$type = strtolower(trim($type));
-		return $type==='numeric' || $type==='interval' || strpos($type, 'time')===0;
+		return $type === 'numeric' || $type === 'interval' || strpos($type, 'time') === 0;
 	}
 
 	/**
 	 * Gets the primary and foreign key column details for the given table.
-	 * @param string schema name
-	 * @param string table name.
+	 * @param string $schemaName schema name
+	 * @param string $tableName table name.
 	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($schemaName, $tableName)
@@ -337,22 +339,21 @@ EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
-		$primary = array();
-		$foreign = array();
-		foreach($command->query() as $row)
-		{
-			switch($row['contype'])
-			{
+		$primary = [];
+		$foreign = [];
+		foreach ($command->query() as $row) {
+			switch ($row['contype']) {
 				case 'p':
 					$primary = $this->getPrimaryKeys($tableName, $schemaName, $row['indkey']);
 					break;
 				case 'f':
-					if(($fkey = $this->getForeignKeys($row['consrc']))!==null)
+					if (($fkey = $this->getForeignKeys($row['consrc'])) !== null) {
 						$foreign[] = $fkey;
+					}
 					break;
 			}
 		}
-		return array($primary,$foreign);
+		return [$primary, $foreign];
 	}
 
 	/**
@@ -362,7 +363,7 @@ EOD;
 	 */
 	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)
 	{
-		$index = join(', ', explode(' ', $columnIndex));
+		$index = implode(', ', explode(' ', $columnIndex));
 		$sql =
 <<<EOD
 		SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
@@ -377,10 +378,9 @@ EOD;
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
 //		$command->bindValue(':columnIndex', join(', ', explode(' ', $columnIndex)));
-		$primary = array();
-		foreach($command->query() as $row)
-		{
-						$primary[] = $row['attname'];
+		$primary = [];
+		foreach ($command->query() as $row) {
+			$primary[] = $row['attname'];
 		}
 
 		return $primary;
@@ -388,65 +388,65 @@ EOD;
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string pgsql foreign key definition
+	 * @param string $src pgsql foreign key definition
 	 * @return array foreign relationship table name and keys, null otherwise
 	 */
 	protected function getForeignKeys($src)
 	{
-		$matches = array();
+		$matches = [];
 		$brackets = '\(([^\)]+)\)';
 		$find = "/FOREIGN\s+KEY\s+{$brackets}\s+REFERENCES\s+([^\(]+){$brackets}/i";
-		if(preg_match($find, $src, $matches))
-		{
+		if (preg_match($find, $src, $matches)) {
 			$keys = preg_split('/,\s+/', $matches[1]);
-			$fkeys = array();
-			foreach(preg_split('/,\s+/', $matches[3]) as $i => $fkey)
+			$fkeys = [];
+			foreach (preg_split('/,\s+/', $matches[3]) as $i => $fkey) {
 				$fkeys[$keys[$i]] = $fkey;
-			return array('table' => str_replace('"','',$matches[2]), 'keys' => $fkeys);
+			}
+			return ['table' => str_replace('"', '', $matches[2]), 'keys' => $fkeys];
 		}
 	}
 
 	/**
-	 * @param string column name.
-	 * @param TPgsqlTableInfo table information.
+	 * @param string $columnId column name.
+	 * @param TPgsqlTableInfo $tableInfo table information.
 	 * @return boolean true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)
 	{
-		foreach($tableInfo->getForeignKeys() as $fk)
-		{
-			if(in_array($columnId, array_keys($fk['keys'])))
+		foreach ($tableInfo->getForeignKeys() as $fk) {
+			if (in_array($columnId, array_keys($fk['keys']))) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-        /**
+	/**
 	 * Returns all table names in the database.
 	 * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
 	 * If not empty, the returned table names will be prefixed with the schema name.
 	 * @return array all table names in the database.
 	 */
-	public function findTableNames($schema='public')
+	public function findTableNames($schema = 'public')
 	{
-		if($schema==='')
-			$schema=self::DEFAULT_SCHEMA;
-		$sql=<<<EOD
+		if ($schema === '') {
+			$schema = self::DEFAULT_SCHEMA;
+		}
+		$sql = <<<EOD
 SELECT table_name, table_schema FROM information_schema.tables
 WHERE table_schema=:schema AND table_type='BASE TABLE'
 EOD;
-		$command=$this->getDbConnection()->createCommand($sql);
-		$command->bindParam(':schema',$schema);
-		$rows=$command->queryAll();
-		$names=array();
-		foreach($rows as $row)
-		{
-			if($schema===self::DEFAULT_SCHEMA)
-				$names[]=$row['table_name'];
-			else
-				$names[]=$row['table_schema'].'.'.$row['table_name'];
+		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindParam(':schema', $schema);
+		$rows = $command->queryAll();
+		$names = [];
+		foreach ($rows as $row) {
+			if ($schema === self::DEFAULT_SCHEMA) {
+				$names[] = $row['table_name'];
+			} else {
+				$names[] = $row['table_schema'] . '.' . $row['table_name'];
+			}
 		}
 		return $names;
 	}
 }
-

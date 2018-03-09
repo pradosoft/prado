@@ -46,16 +46,19 @@ class TJsonRpcClient extends TRpcClient
 		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'application/json');
 
 		// skip response handling if the request was just a notification request
-		if($this->isNotification)
+		if ($this->isNotification) {
 			return true;
+		}
 
 		// decode response
-		if(($_response = json_decode($_response, true)) === null)
+		if (($_response = json_decode($_response, true)) === null) {
 			throw new TRpcClientResponseException('Empty response received');
+		}
 
 		// handle error response
-		if(!is_null($_response['error']))
+		if (null !== $_response['error']) {
 			throw new TRpcClientResponseException($_response['error']);
+		}
 
 		return $_response['result'];
 	}
@@ -71,11 +74,11 @@ class TJsonRpcClient extends TRpcClient
 		static $_requestId;
 		$_requestId = ($_requestId === null) ? 1 : $_requestId + 1;
 
-		return json_encode(array(
+		return json_encode([
 			'method' => $method,
 			'params' => $parameters,
 			'id' => $this->isNotification ? null : $_requestId
-		));
+		]);
 	}
 
 	/**

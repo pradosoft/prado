@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -31,11 +32,12 @@ class TTableCellCollection extends \Prado\Web\UI\TControlCollection
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TTableCell object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TTableCell)
-			parent::insertAt($index,$item);
-		else
+		if ($item instanceof TTableCell) {
+			parent::insertAt($index, $item);
+		} else {
 			throw new TInvalidDataTypeException('tablecellcollection_tablecell_required');
+		}
 	}
 }

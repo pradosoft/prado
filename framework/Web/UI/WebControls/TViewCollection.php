@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -30,11 +31,12 @@ class TViewCollection extends \Prado\Web\UI\TControlCollection
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TView)
-			parent::insertAt($index,$item);
-		else
+		if ($item instanceof TView) {
+			parent::insertAt($index, $item);
+		} else {
 			throw new TInvalidDataTypeException('viewcollection_view_required');
+		}
 	}
 }

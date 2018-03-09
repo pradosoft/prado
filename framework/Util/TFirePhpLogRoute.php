@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Prado\Prado;
 
 /**
@@ -31,14 +32,15 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	const DEFAULT_LABEL = 'System.Util.TLogRouter(TFirePhpLogRoute)';
 
-	private $_groupLabel = null;
+	private $_groupLabel;
 
 	public function processLogs($logs)
 	{
-		if(empty($logs) || $this->getApplication()->getMode()==='Performance')
+		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
 			return;
+		}
 
-		if(headers_sent()) {
+		if (headers_sent()) {
 			echo '
 				<div style="width:100%; background-color:darkred; color:#FFF; padding:2px">
 					TFirePhpLogRoute.GroupLabel "<i>' . $this -> getGroupLabel() . '</i>" -
@@ -51,25 +53,21 @@ class TFirePhpLogRoute extends TLogRoute
 		}
 
 		$firephp = FirePHP::getInstance(true);
-		$firephp->setOptions(array('useNativeJsonEncode' => false));
-		$firephp->group($this->getGroupLabel(), array('Collapsed' => true));
+		$firephp->setOptions(['useNativeJsonEncode' => false]);
+		$firephp->group($this->getGroupLabel(), ['Collapsed' => true]);
 		$firephp->log('Time,  Message');
 
 		$first = $logs[0][3];
 		$c = count($logs);
-		for($i=0,$n=$c;$i<$n;++$i)
-		{
-			$message	= $logs[$i][0];
-			$level		= $logs[$i][1];
-			$category	= $logs[$i][2];
+		for ($i = 0,$n = $c;$i < $n;++$i) {
+			$message = $logs[$i][0];
+			$level = $logs[$i][1];
+			$category = $logs[$i][2];
 
-			if ($i<$n-1)
-			{
-				$delta = $logs[$i+1][3] - $logs[$i][3];
-				$total = $logs[$i+1][3] - $first;
-			}
-			else
-			{
+			if ($i < $n - 1) {
+				$delta = $logs[$i + 1][3] - $logs[$i][3];
+				$total = $logs[$i + 1][3] - $first;
+			} else {
 				$delta = '?';
 				$total = $logs[$i][3] - $first;
 			}
@@ -83,13 +81,12 @@ class TFirePhpLogRoute extends TLogRoute
 
 	/**
 	 * Translates a PRADO log level attribute into one understood by FirePHP for correct visualization
-	 * @param string prado log level
+	 * @param string $level prado log level
 	 * @return string FirePHP log level
 	 */
 	protected static function translateLogLevel($level)
 	{
-		switch($level)
-		{
+		switch ($level) {
 			case TLogger::INFO:
 				return FirePHP::INFO;
 			case TLogger::DEBUG:
@@ -111,17 +108,18 @@ class TFirePhpLogRoute extends TLogRoute
 	 */
 	public function getGroupLabel()
 	{
-		if($this->_groupLabel===null)
-			$this->_groupLabel=self::DEFAULT_LABEL;
+		if ($this->_groupLabel === null) {
+			$this->_groupLabel = self::DEFAULT_LABEL;
+		}
 
 		return $this->_groupLabel;
 	}
 
 	/**
-	 * @param string group label.
+	 * @param string $value group label.
 	 */
 	public function setGroupLabel($value)
 	{
-		$this->_groupLabel=$value;
+		$this->_groupLabel = $value;
 	}
 }

@@ -92,11 +92,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	/**
 	 * @var ITemplate template for repeater items
 	 */
-	private $_repeater=null;
+	private $_repeater;
 	/**
 	 * @var TPanel result panel holding the suggestion items.
 	 */
-	private $_resultPanel=null;
+	private $_resultPanel;
 
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -131,10 +131,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -145,7 +144,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoFocus', 'delay', 'disabled', 'minLength', 'position', 'source');
+		return ['appendTo', 'autoFocus', 'delay', 'disabled', 'minLength', 'position', 'source'];
 	}
 
 	/**
@@ -154,11 +153,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getValidEvents()
 	{
-		return array();
+		return [];
 	}
 
 	/**
-	 * @param string Css class name of the element to use for suggestion.
+	 * @param string $value Css class name of the element to use for suggestion.
 	 */
 	public function setTextCssClass($value)
 	{
@@ -183,7 +182,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param string word or token separators (delimiters).
+	 * @param string $value word or token separators (delimiters).
 	 */
 	public function setSeparator($value)
 	{
@@ -199,7 +198,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param float maximum delay (in seconds) before requesting a suggestion.
+	 * @param float $value maximum delay (in seconds) before requesting a suggestion.
 	 * Default is 0.4.
 	 */
 	public function setFrequency($value)
@@ -212,11 +211,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getMinChars()
 	{
-		return $this->getViewState('minChars','');
+		return $this->getViewState('minChars', '');
 	}
 
 	/**
-	 * @param integer minimum number of characters before requesting a suggestion.
+	 * @param integer $value minimum number of characters before requesting a suggestion.
 	 * Default is 1
 	 */
 	public function setMinChars($value)
@@ -232,26 +231,22 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * raise if the request is to find sugggestions, the {@link onTextChanged OnTextChanged}
 	 * and {@link onCallback OnCallback} events are <b>NOT</b> raised.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$token = $param->getCallbackParameter();
-		if(is_array($token) && count($token) == 2)
-		{
-			if($token[1] === '__TJuiAutoComplete_onSuggest__')
-			{
+		if (is_array($token) && count($token) == 2) {
+			if ($token[1] === '__TJuiAutoComplete_onSuggest__') {
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), $token[0]);
 				$this->onSuggest($parameter);
-			}
-			else if($token[1] === '__TJuiAutoComplete_onSuggestionSelected__')
-			{
+			} elseif ($token[1] === '__TJuiAutoComplete_onSuggestionSelected__') {
 				$parameter = new TJuiAutoCompleteEventParameter($this->getResponse(), null, $token[0]);
 				$this->onSuggestionSelected($parameter);
 			}
-		}
-		else if($this->getAutoPostBack())
+		} elseif ($this->getAutoPostBack()) {
 			parent::raiseCallbackEvent($param);
+		}
 	}
 
 	/**
@@ -259,7 +254,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggest' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggest($param)
 	{
@@ -271,7 +266,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggestionSelected' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggestionSelected($param)
 	{
@@ -279,7 +274,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param array data source for suggestions.
+	 * @param array $data data source for suggestions.
 	 */
 	public function setDataSource($data)
 	{
@@ -293,8 +288,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	public function dataBind()
 	{
 		parent::dataBind();
-		if($this->getPage()->getIsCallback())
+		if ($this->getPage()->getIsCallback()) {
 			$this->renderSuggestions($this->getResponse()->createHtmlWriter());
+		}
 	}
 
 	/**
@@ -302,8 +298,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getResultPanel()
 	{
-		if($this->_resultPanel===null)
+		if ($this->_resultPanel === null) {
 			$this->_resultPanel = $this->createResultPanel();
+		}
 		return $this->_resultPanel;
 	}
 
@@ -323,8 +320,9 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	public function getSuggestions()
 	{
-		if($this->_repeater===null)
+		if ($this->_repeater === null) {
 			$this->_repeater = $this->createRepeater();
+		}
 		return $this->_repeater;
 	}
 
@@ -334,7 +332,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	protected function createRepeater()
 	{
 		$repeater = new TRepeater;
-		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>',null));
+		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>', null));
 		$this->getControls()->add($repeater);
 		return $repeater;
 	}
@@ -350,7 +348,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the result panel.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	protected function renderResultPanel($writer)
 	{
@@ -359,7 +357,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions during a callback respones.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function renderCallback($writer)
 	{
@@ -368,20 +366,18 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions repeater.
-	 * @param THtmlWriter the renderer.
+	 * @param THtmlWriter $writer the renderer.
 	 */
 	public function renderSuggestions($writer)
 	{
-		if($this->getActiveControl()->canUpdateClientSide(true))
-		{
-			$data=array();
-			$items=$this->getSuggestions()->getItems();
+		if ($this->getActiveControl()->canUpdateClientSide(true)) {
+			$data = [];
+			$items = $this->getSuggestions()->getItems();
 			$writer = new TTextWriter;
-			for($i=0; $i<$items->Count; $i++)
-			{
+			for ($i = 0; $i < $items->Count; $i++) {
 				$items->itemAt($i)->render($writer);
-				$item=$writer->flush();
-				$data[]=array( 'id' => $i, 'label' => $item);
+				$item = $writer->flush();
+				$data[] = ['id' => $i, 'label' => $item];
 			}
 
 			$this->getResponse()->getAdapter()->setResponseData($data);
@@ -395,19 +391,20 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	{
 		$options = $this->getOptions()->toArray();
 
-		if(strlen($separator = $this->getSeparator()))
+		if (strlen($separator = $this->getSeparator())) {
 			$options['Separators'] = $separator;
+		}
 
-		if($this->getAutoPostBack())
-		{
-			$options = array_merge($options,parent::getPostBackOptions());
+		if ($this->getAutoPostBack()) {
+			$options = array_merge($options, parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
-		if(strlen($textCssClass = $this->getTextCssClass()))
+		if (strlen($textCssClass = $this->getTextCssClass())) {
 			$options['textCssClass'] = $textCssClass;
+		}
 		$options['minLength'] = $this->getMinChars();
-		$options['delay'] = $this->getFrequency()*1000.0;
-		$options['appendTo'] = '#'.$this->getResultPanel()->getClientID();
+		$options['delay'] = $this->getFrequency() * 1000.0;
+		$options['appendTo'] = '#' . $this->getResultPanel()->getClientID();
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
 		$options['CausesValidation'] = $this->getCausesValidation();

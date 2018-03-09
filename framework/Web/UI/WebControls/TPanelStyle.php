@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -25,23 +26,23 @@ class TPanelStyle extends TStyle
 	/**
 	 * @var string the URL of the background image for the panel component
 	 */
-	private $_backImageUrl=null;
+	private $_backImageUrl;
 	/**
 	 * @var string alignment of the content in the panel.
 	 */
-	private $_direction=null;
+	private $_direction;
 	/**
 	 * @var string horizontal alignment of the contents within the panel
 	 */
-	private $_horizontalAlign=null;
+	private $_horizontalAlign;
 	/**
 	 * @var string visibility and position of scroll bars
 	 */
-	private $_scrollBars=null;
+	private $_scrollBars;
 	/**
 	 * @var boolean whether the content wraps within the panel
 	 */
-	private $_wrap=null;
+	private $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -52,48 +53,55 @@ class TPanelStyle extends TStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_backImageUrl===null)
+		if ($this->_backImageUrl === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_backImageUrl";
-		if ($this->_direction===null)
+		}
+		if ($this->_direction === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_direction";
-		if ($this->_horizontalAlign===null)
+		}
+		if ($this->_horizontalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_horizontalAlign";
-		if ($this->_scrollBars===null)
+		}
+		if ($this->_scrollBars === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_scrollBars";
-		if ($this->_wrap===null)
+		}
+		if ($this->_wrap === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_wrap";
+		}
 	}
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(($url=trim($this->getBackImageUrl()))!=='')
-			$this->setStyleField('background-image','url('.$url.')');
-
-		switch($this->getScrollBars())
-		{
-			case TScrollBars::Horizontal: $this->setStyleField('overflow-x','scroll'); break;
-			case TScrollBars::Vertical: $this->setStyleField('overflow-y','scroll'); break;
-			case TScrollBars::Both: $this->setStyleField('overflow','scroll'); break;
-			case TScrollBars::Auto: $this->setStyleField('overflow','auto'); break;
+		if (($url = trim($this->getBackImageUrl())) !== '') {
+			$this->setStyleField('background-image', 'url(' . $url . ')');
 		}
 
-		if(($align=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
-			$this->setStyleField('text-align',strtolower($align));
+		switch ($this->getScrollBars()) {
+			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll'); break;
+			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll'); break;
+			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll'); break;
+			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto'); break;
+		}
 
-		if(!$this->getWrap())
-			$this->setStyleField('white-space','nowrap');
+		if (($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
+			$this->setStyleField('text-align', strtolower($align));
+		}
 
-		if(($direction=$this->getDirection())!==TContentDirection::NotSet)
-		{
-			if($direction===TContentDirection::LeftToRight)
-				$this->setStyleField('direction','ltr');
-			else
-				$this->setStyleField('direction','rtl');
+		if (!$this->getWrap()) {
+			$this->setStyleField('white-space', 'nowrap');
+		}
+
+		if (($direction = $this->getDirection()) !== TContentDirection::NotSet) {
+			if ($direction === TContentDirection::LeftToRight) {
+				$this->setStyleField('direction', 'ltr');
+			} else {
+				$this->setStyleField('direction', 'rtl');
+			}
 		}
 
 		parent::addAttributesToRender($writer);
@@ -104,16 +112,16 @@ class TPanelStyle extends TStyle
 	 */
 	public function getBackImageUrl()
 	{
-		return $this->_backImageUrl===null?'':$this->_backImageUrl;
+		return $this->_backImageUrl === null ? '' : $this->_backImageUrl;
 	}
 
 	/**
 	 * Sets the URL of the background image for the panel component.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
-		$this->_backImageUrl=$value;
+		$this->_backImageUrl = $value;
 	}
 
 	/**
@@ -121,15 +129,15 @@ class TPanelStyle extends TStyle
 	 */
 	public function getDirection()
 	{
-		return $this->_direction===null?TContentDirection::NotSet:$this->_direction;
+		return $this->_direction === null ? TContentDirection::NotSet : $this->_direction;
 	}
 
 	/**
-	 * @param TContentDirection alignment of the content in the panel.
+	 * @param TContentDirection $value alignment of the content in the panel.
 	 */
 	public function setDirection($value)
 	{
-		$this->_direction=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TContentDirection');
+		$this->_direction = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TContentDirection');
 	}
 
 	/**
@@ -137,16 +145,16 @@ class TPanelStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap===null?true:$this->_wrap;
+		return $this->_wrap === null ? true : $this->_wrap;
 	}
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{
-		$this->_wrap=TPropertyValue::ensureBoolean($value);
+		$this->_wrap = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -154,16 +162,16 @@ class TPanelStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign===null?THorizontalAlign::NotSet:$this->_horizontalAlign;
+		return $this->_horizontalAlign === null ? THorizontalAlign::NotSet : $this->_horizontalAlign;
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-	 * @param THorizontalAlign the horizontal alignment
+	 * @param THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
 	}
 
 	/**
@@ -171,15 +179,15 @@ class TPanelStyle extends TStyle
 	 */
 	public function getScrollBars()
 	{
-		return $this->_scrollBars===null?TScrollBars::None:$this->_scrollBars;
+		return $this->_scrollBars === null ? TScrollBars::None : $this->_scrollBars;
 	}
 
 	/**
-	 * @param TScrollBars the visibility and position of scroll bars in a panel control.
+	 * @param TScrollBars $value the visibility and position of scroll bars in a panel control.
 	 */
 	public function setScrollBars($value)
 	{
-		$this->_scrollBars=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TScrollBars');
+		$this->_scrollBars = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TScrollBars');
 	}
 
 	/**
@@ -190,34 +198,38 @@ class TPanelStyle extends TStyle
 	public function reset()
 	{
 		parent::reset();
-		$this->_backImageUrl=null;
-		$this->_direction=null;
-		$this->_horizontalAlign=null;
-		$this->_scrollBars=null;
-		$this->_wrap=null;
+		$this->_backImageUrl = null;
+		$this->_direction = null;
+		$this->_horizontalAlign = null;
+		$this->_scrollBars = null;
+		$this->_wrap = null;
 	}
 
 	/**
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TPanelStyle)
-		{
-			if($style->_backImageUrl!==null)
-				$this->_backImageUrl=$style->_backImageUrl;
-			if($style->_direction!==null)
-				$this->_direction=$style->_direction;
-			if($style->_horizontalAlign!==null)
-				$this->_horizontalAlign=$style->_horizontalAlign;
-			if($style->_scrollBars!==null)
-				$this->_scrollBars=$style->_scrollBars;
-			if($style->_wrap!==null)
-				$this->_wrap=$style->_wrap;
+		if ($style instanceof TPanelStyle) {
+			if ($style->_backImageUrl !== null) {
+				$this->_backImageUrl = $style->_backImageUrl;
+			}
+			if ($style->_direction !== null) {
+				$this->_direction = $style->_direction;
+			}
+			if ($style->_horizontalAlign !== null) {
+				$this->_horizontalAlign = $style->_horizontalAlign;
+			}
+			if ($style->_scrollBars !== null) {
+				$this->_scrollBars = $style->_scrollBars;
+			}
+			if ($style->_wrap !== null) {
+				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
@@ -225,23 +237,27 @@ class TPanelStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TPanelStyle)
-		{
-			if($this->_backImageUrl===null && $style->_backImageUrl!==null)
-				$this->_backImageUrl=$style->_backImageUrl;
-			if($this->_direction===null && $style->_direction!==null)
-				$this->_direction=$style->_direction;
-			if($this->_horizontalAlign===null && $style->_horizontalAlign!==null)
-				$this->_horizontalAlign=$style->_horizontalAlign;
-			if($this->_scrollBars===null && $style->_scrollBars!==null)
-				$this->_scrollBars=$style->_scrollBars;
-			if($this->_wrap===null && $style->_wrap!==null)
-				$this->_wrap=$style->_wrap;
+		if ($style instanceof TPanelStyle) {
+			if ($this->_backImageUrl === null && $style->_backImageUrl !== null) {
+				$this->_backImageUrl = $style->_backImageUrl;
+			}
+			if ($this->_direction === null && $style->_direction !== null) {
+				$this->_direction = $style->_direction;
+			}
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
+				$this->_horizontalAlign = $style->_horizontalAlign;
+			}
+			if ($this->_scrollBars === null && $style->_scrollBars !== null) {
+				$this->_scrollBars = $style->_scrollBars;
+			}
+			if ($this->_wrap === null && $style->_wrap !== null) {
+				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -25,15 +26,15 @@ class TTableItemStyle extends TStyle
 	/**
 	 * @var THorizontalAlign horizontal alignment of the contents within the table item
 	 */
-	private $_horizontalAlign=null;
+	private $_horizontalAlign;
 	/**
 	 * @var TVerticalAlign vertical alignment of the contents within the table item
 	 */
-	private $_verticalAlign=null;
+	private $_verticalAlign;
 	/**
 	 * @var boolean whether the content wraps within the table item
 	 */
-	private $_wrap=null;
+	private $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -44,12 +45,15 @@ class TTableItemStyle extends TStyle
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_horizontalAlign===null)
+		if ($this->_horizontalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_horizontalAlign";
-		if ($this->_verticalAlign===null)
+		}
+		if ($this->_verticalAlign === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_verticalAlign";
-		if ($this->_wrap===null)
+		}
+		if ($this->_wrap === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_wrap";
+		}
 	}
 
 	/**
@@ -60,28 +64,30 @@ class TTableItemStyle extends TStyle
 	public function reset()
 	{
 		parent::reset();
-		$this->_verticalAlign=null;
-		$this->_horizontalAlign=null;
-		$this->_wrap=null;
+		$this->_verticalAlign = null;
+		$this->_horizontalAlign = null;
+		$this->_wrap = null;
 	}
 
 	/**
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TTableItemStyle)
-		{
-			if($this->_verticalAlign===null && $style->_verticalAlign!==null)
-				$this->_verticalAlign=$style->_verticalAlign;
-			if($this->_horizontalAlign===null && $style->_horizontalAlign!==null)
-				$this->_horizontalAlign=$style->_horizontalAlign;
-			if($this->_wrap===null && $style->_wrap!==null)
-				$this->_wrap=$style->_wrap;
+		if ($style instanceof TTableItemStyle) {
+			if ($this->_verticalAlign === null && $style->_verticalAlign !== null) {
+				$this->_verticalAlign = $style->_verticalAlign;
+			}
+			if ($this->_horizontalAlign === null && $style->_horizontalAlign !== null) {
+				$this->_horizontalAlign = $style->_horizontalAlign;
+			}
+			if ($this->_wrap === null && $style->_wrap !== null) {
+				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
@@ -89,37 +95,42 @@ class TTableItemStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TTableItemStyle)
-		{
-			if($style->_verticalAlign!==null)
-				$this->_verticalAlign=$style->_verticalAlign;
-			if($style->_horizontalAlign!==null)
-				$this->_horizontalAlign=$style->_horizontalAlign;
-			if($style->_wrap!==null)
-				$this->_wrap=$style->_wrap;
+		if ($style instanceof TTableItemStyle) {
+			if ($style->_verticalAlign !== null) {
+				$this->_verticalAlign = $style->_verticalAlign;
+			}
+			if ($style->_horizontalAlign !== null) {
+				$this->_horizontalAlign = $style->_horizontalAlign;
+			}
+			if ($style->_wrap !== null) {
+				$this->_wrap = $style->_wrap;
+			}
 		}
 	}
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if(!$this->getWrap())
-			$writer->addStyleAttribute('white-space','nowrap');
+		if (!$this->getWrap()) {
+			$writer->addStyleAttribute('white-space', 'nowrap');
+		}
 
-		if(($horizontalAlign=$this->getHorizontalAlign())!==THorizontalAlign::NotSet)
-			$writer->addAttribute('align',strtolower($horizontalAlign));
+		if (($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
+			$writer->addAttribute('align', strtolower($horizontalAlign));
+		}
 
-		if(($verticalAlign=$this->getVerticalAlign())!==TVerticalAlign::NotSet)
-			$writer->addAttribute('valign',strtolower($verticalAlign));
+		if (($verticalAlign = $this->getVerticalAlign()) !== TVerticalAlign::NotSet) {
+			$writer->addAttribute('valign', strtolower($verticalAlign));
+		}
 
 		parent::addAttributesToRender($writer);
 	}
@@ -129,16 +140,16 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getHorizontalAlign()
 	{
-		return $this->_horizontalAlign===null?THorizontalAlign::NotSet:$this->_horizontalAlign;
+		return $this->_horizontalAlign === null ? THorizontalAlign::NotSet : $this->_horizontalAlign;
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-	 * @param THorizontalAlign the horizontal alignment
+	 * @param THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
 	}
 
 	/**
@@ -146,16 +157,16 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getVerticalAlign()
 	{
-		return $this->_verticalAlign===null?TVerticalAlign::NotSet:$this->_verticalAlign;
+		return $this->_verticalAlign === null ? TVerticalAlign::NotSet : $this->_verticalAlign;
 	}
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-	 * @param TVerticalAlign the horizontal alignment
+	 * @param TVerticalAlign $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
-		$this->_verticalAlign=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TVerticalAlign');
+		$this->_verticalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TVerticalAlign');
 	}
 
 	/**
@@ -163,15 +174,15 @@ class TTableItemStyle extends TStyle
 	 */
 	public function getWrap()
 	{
-		return $this->_wrap===null?true:$this->_wrap;
+		return $this->_wrap === null ? true : $this->_wrap;
 	}
 
 	/**
 	 * Sets the value indicating whether the content wraps within the table item.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{
-		$this->_wrap=TPropertyValue::ensureBoolean($value);
+		$this->_wrap = TPropertyValue::ensureBoolean($value);
 	}
 }

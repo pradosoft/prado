@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Prado;
 use Prado\Web\UI\WebControls\TButtonColumnType;
 use Prado\Web\UI\WebControls\TEditCommandColumn;
@@ -33,24 +34,26 @@ use Prado\Web\UI\WebControls\TEditCommandColumn;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
-class TActiveEditCommandColumn extends TEditCommandColumn {
-	protected function createButton($commandName,$text,$causesValidation,$validationGroup) {
-		if($this->getButtonType()===TButtonColumnType::LinkButton)
-			$button= new TActiveLinkButton;
-		else if($this->getButtonType()===TButtonColumnType::PushButton)
-				$button= new TActiveButton;
-			else  // image buttons
-			{
-				$button= new TActiveImageButton;
-				$button->setToolTip($text);
-				if(strcasecmp($commandName,'Update')===0)
-					$url=$this->getUpdateImageUrl();
-				else if(strcasecmp($commandName,'Cancel')===0)
-						$url=$this->getCancelImageUrl();
-					else
-						$url=$this->getEditImageUrl();
-				$button->setImageUrl($url);
+class TActiveEditCommandColumn extends TEditCommandColumn
+{
+	protected function createButton($commandName, $text, $causesValidation, $validationGroup)
+	{
+		if ($this->getButtonType() === TButtonColumnType::LinkButton) {
+			$button = new TActiveLinkButton;
+		} elseif ($this->getButtonType() === TButtonColumnType::PushButton) {
+			$button = new TActiveButton;
+		} else {  // image buttons
+			$button = new TActiveImageButton;
+			$button->setToolTip($text);
+			if (strcasecmp($commandName, 'Update') === 0) {
+				$url = $this->getUpdateImageUrl();
+			} elseif (strcasecmp($commandName, 'Cancel') === 0) {
+				$url = $this->getCancelImageUrl();
+			} else {
+				$url = $this->getEditImageUrl();
 			}
+			$button->setImageUrl($url);
+		}
 		$button->setText($text);
 		$button->setCommandName($commandName);
 		$button->setCausesValidation($causesValidation);

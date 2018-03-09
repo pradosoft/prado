@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 
@@ -76,12 +77,13 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TTableRow} objects into the {@link getRows Rows} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
-		if($object instanceof TTableRow)
+		if ($object instanceof TTableRow) {
 			$this->getRows()->add($object);
+		}
 	}
 
 	/**
@@ -96,23 +98,22 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$border=0;
-		if($this->getHasStyle())
-		{
-			if($this->getGridLines()!==TTableGridLines::None)
-			{
-				if(($border=$this->getBorderWidth())==='')
-					$border=1;
-				else
-					$border=(int)$border;
+		$border = 0;
+		if ($this->getHasStyle()) {
+			if ($this->getGridLines() !== TTableGridLines::None) {
+				if (($border = $this->getBorderWidth()) === '') {
+					$border = 1;
+				} else {
+					$border = (int) $border;
+				}
 			}
 		}
-		$writer->addAttribute('border',"$border");
+		$writer->addAttribute('border', "$border");
 	}
 
 	/**
@@ -138,15 +139,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaption()
 	{
-		return $this->getViewState('Caption','');
+		return $this->getViewState('Caption', '');
 	}
 
 	/**
-	 * @param string table caption
+	 * @param string $value table caption
 	 */
 	public function setCaption($value)
 	{
-		$this->setViewState('Caption',$value,'');
+		$this->setViewState('Caption', $value, '');
 	}
 
 	/**
@@ -154,15 +155,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaptionAlign()
 	{
-		return $this->getViewState('CaptionAlign',TTableCaptionAlign::NotSet);
+		return $this->getViewState('CaptionAlign', TTableCaptionAlign::NotSet);
 	}
 
 	/**
-	 * @param TTableCaptionAlign table caption alignment.
+	 * @param TTableCaptionAlign $value table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign'),TTableCaptionAlign::NotSet);
+		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign'), TTableCaptionAlign::NotSet);
 	}
 
 	/**
@@ -170,14 +171,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCellSpacing()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellSpacing();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
-	 * @param integer the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @param integer $value the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -189,14 +191,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCellPadding()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellPadding();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
-	 * @param integer the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @param integer $value the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellPadding($value)
 	{
@@ -208,14 +211,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return THorizontalAlign::NotSet;
+		}
 	}
 
 	/**
-	 * @param THorizontalAlign the horizontal alignment of the table content.
+	 * @param THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -227,14 +231,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getGridLines()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getGridLines();
-		else
+		} else {
 			return TTableGridLines::None;
+		}
 	}
 
 	/**
-	 * @param TTableGridLines the grid line setting of the table
+	 * @param TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -246,15 +251,16 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getBackImageUrl()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getBackImageUrl();
-		else
+		} else {
 			return '';
+		}
 	}
 
 	/**
 	 * Sets the URL of the background image for the table
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -263,15 +269,15 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the table control which will render table caption if present.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($caption=$this->getCaption())!=='')
-		{
-			if(($align=$this->getCaptionAlign())!==TTableCaptionAlign::NotSet)
-				$writer->addAttribute('align',strtolower($align));
+		if (($caption = $this->getCaption()) !== '') {
+			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
+				$writer->addAttribute('align', strtolower($align));
+			}
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);
 			$writer->renderEndTag();
@@ -280,66 +286,56 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
-		if($this->getHasControls())
-		{
-			$renderTableSection=false;
-			foreach($this->getControls() as $row)
-			{
-				if($row->getTableSection()!==TTableRowSection::Body)
-				{
-					$renderTableSection=true;
+		if ($this->getHasControls()) {
+			$renderTableSection = false;
+			foreach ($this->getControls() as $row) {
+				if ($row->getTableSection() !== TTableRowSection::Body) {
+					$renderTableSection = true;
 					break;
 				}
 			}
-			if($renderTableSection)
-			{
-				$currentSection=TTableRowSection::Header;
+			if ($renderTableSection) {
+				$currentSection = TTableRowSection::Header;
 				$writer->writeLine();
-				foreach($this->getControls() as $index=>$row)
-				{
-					if(($section=$row->getTableSection())===$currentSection)
-					{
-						if($index===0 && $currentSection===TTableRowSection::Header)
+				foreach ($this->getControls() as $index => $row) {
+					if (($section = $row->getTableSection()) === $currentSection) {
+						if ($index === 0 && $currentSection === TTableRowSection::Header) {
 							$writer->renderBeginTag('thead');
-					}
-					else
-					{
-						if($currentSection===TTableRowSection::Header)
-						{
-							if($index>0)
+						}
+					} else {
+						if ($currentSection === TTableRowSection::Header) {
+							if ($index > 0) {
 								$writer->renderEndTag();
-							if($section===TTableRowSection::Body)
+							}
+							if ($section === TTableRowSection::Body) {
 								$writer->renderBeginTag('tbody');
-							else
+							} else {
 								$writer->renderBeginTag('tfoot');
-							$currentSection=$section;
-						}
-						else if($currentSection===TTableRowSection::Body)
-						{
+							}
+							$currentSection = $section;
+						} elseif ($currentSection === TTableRowSection::Body) {
 							$writer->renderEndTag();
-							if($section===TTableRowSection::Footer)
+							if ($section === TTableRowSection::Footer) {
 								$writer->renderBeginTag('tfoot');
-							else
+							} else {
 								throw new TConfigurationException('table_tablesection_outoforder');
-							$currentSection=$section;
-						}
-						else // Footer
+							}
+							$currentSection = $section;
+						} else { // Footer
 							throw new TConfigurationException('table_tablesection_outoforder');
+						}
 					}
 					$row->renderControl($writer);
 					$writer->writeLine();
 				}
 				$writer->renderEndTag();
-			}
-			else
-			{
+			} else {
 				$writer->writeLine();
-				foreach($this->getControls() as $row)
-				{
+				foreach ($this->getControls() as $row) {
 					$row->renderControl($writer);
 					$writer->writeLine();
 				}

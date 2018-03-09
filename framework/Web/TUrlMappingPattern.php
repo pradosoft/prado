@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -124,7 +125,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * @var string service ID, default is 'page'.
 	 */
-	private $_serviceID='page';
+	private $_serviceID = 'page';
 	/**
 	 * @var string url pattern to match.
 	 */
@@ -140,19 +141,19 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * @var string regular expression pattern.
 	 */
-	private $_regexp='';
+	private $_regexp = '';
 
-	private $_customUrl=true;
+	private $_customUrl = true;
 
 	private $_manager;
 
-	private $_caseSensitive=true;
+	private $_caseSensitive = true;
 
-	private $_isWildCardPattern=false;
+	private $_isWildCardPattern = false;
 
-	private $_urlFormat=THttpRequestUrlFormat::Get;
+	private $_urlFormat = THttpRequestUrlFormat::Get;
 
-	private $_separator='/';
+	private $_separator = '/';
 
 	/**
 	 * @var TUrlMappingPatternSecureConnection
@@ -166,7 +167,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function __construct(TUrlManager $manager)
 	{
-		$this->_manager=$manager;
+		$this->_manager = $manager;
 	}
 
 	/**
@@ -179,15 +180,17 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Initializes the pattern.
-	 * @param TXmlElement configuration for this module.
+	 * @param TXmlElement $config configuration for this module.
 	 * @throws TConfigurationException if service parameter is not specified
 	 */
 	public function init($config)
 	{
-		if($this->_serviceParameter===null)
+		if ($this->_serviceParameter === null) {
 			throw new TConfigurationException('urlmappingpattern_serviceparameter_required', $this->getPattern());
-		if(strpos($this->_serviceParameter,'*')!==false)
-				$this->_isWildCardPattern=true;
+		}
+		if (strpos($this->_serviceParameter, '*') !== false) {
+			$this->_isWildCardPattern = true;
+		}
 	}
 
 	/**
@@ -197,32 +200,31 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	protected function getParameterizedPattern()
 	{
-		$params=array();
-		$values=array();
-		if ($this->_parameters)
-		{
-			foreach($this->_parameters as $key=>$value)
-			{
-				$params[]='{'.$key.'}';
-				$values[]='(?P<'.$key.'>'.$value.')';
+		$params = [];
+		$values = [];
+		if ($this->_parameters) {
+			foreach ($this->_parameters as $key => $value) {
+				$params[] = '{' . $key . '}';
+				$values[] = '(?P<' . $key . '>' . $value . ')';
 			}
 		}
-		if ($this->getIsWildCardPattern())
-		{
-				$params[]='{*}';
-				// service parameter must not contain '=' and '/'
-				$values[]='(?P<'.$this->getServiceID().'>[^=/]+)';
+		if ($this->getIsWildCardPattern()) {
+			$params[] = '{*}';
+			// service parameter must not contain '=' and '/'
+			$values[] = '(?P<' . $this->getServiceID() . '>[^=/]+)';
 		}
-		$params[]='/';
-		$values[]='\\/';
-		$regexp=str_replace($params,$values,trim($this->getPattern(),'/').'/');
-		if ($this->_urlFormat===THttpRequestUrlFormat::Get)
-				$regexp='/^'.$regexp.'$/u';
-		else
-				$regexp='/^'.$regexp.'(?P<urlparams>.*)$/u';
+		$params[] = '/';
+		$values[] = '\\/';
+		$regexp = str_replace($params, $values, trim($this->getPattern(), '/') . '/');
+		if ($this->_urlFormat === THttpRequestUrlFormat::Get) {
+			$regexp = '/^' . $regexp . '$/u';
+		} else {
+			$regexp = '/^' . $regexp . '(?P<urlparams>.*)$/u';
+		}
 
-		if(!$this->getCaseSensitive())
-			$regexp.='i';
+		if (!$this->getCaseSensitive()) {
+			$regexp .= 'i';
+		}
 		return $regexp;
 	}
 
@@ -235,11 +237,11 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string full regular expression mapping pattern.
+	 * @param string $value full regular expression mapping pattern.
 	 */
 	public function setRegularExpression($value)
 	{
-		$this->_regexp=$value;
+		$this->_regexp = $value;
 	}
 
 	/**
@@ -251,19 +253,19 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether the {@link getPattern Pattern} should be treated as case sensititve.
+	 * @param boolean $value whether the {@link getPattern Pattern} should be treated as case sensititve.
 	 */
 	public function setCaseSensitive($value)
 	{
-		$this->_caseSensitive=TPropertyValue::ensureBoolean($value);
+		$this->_caseSensitive = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
-	 * @param string service parameter, such as page class name.
+	 * @param string $value service parameter, such as page class name.
 	 */
 	public function setServiceParameter($value)
 	{
-		$this->_serviceParameter=$value;
+		$this->_serviceParameter = $value;
 	}
 
 	/**
@@ -275,11 +277,11 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string service id to handle.
+	 * @param string $value service id to handle.
 	 */
 	public function setServiceID($value)
 	{
-		$this->_serviceID=$value;
+		$this->_serviceID = $value;
 	}
 
 	/**
@@ -299,7 +301,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string url pattern to match.
+	 * @param string $value url pattern to match.
 	 */
 	public function setPattern($value)
 	{
@@ -311,20 +313,19 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function getParameters()
 	{
-		if (!$this->_parameters)
-		{
-			$this->_parameters=new TAttributeCollection;
+		if (!$this->_parameters) {
+			$this->_parameters = new TAttributeCollection;
 			$this->_parameters->setCaseSensitive(true);
 		}
 		return $this->_parameters;
 	}
 
 	/**
-	 * @param TAttributeCollection new parameter key value pairs.
+	 * @param TAttributeCollection $value new parameter key value pairs.
 	 */
 	public function setParameters($value)
 	{
-		$this->_parameters=$value;
+		$this->_parameters = $value;
 	}
 
 	/**
@@ -333,8 +334,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function getConstants()
 	{
-		if (!$this->_constants)
-		{
+		if (!$this->_constants) {
 			$this->_constants = new TAttributeCollection;
 			$this->_constants->setCaseSensitive(true);
 		}
@@ -344,44 +344,42 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
-	 * @param THttpRequest the request module
+	 * @param THttpRequest $request the request module
 	 * @return array matched parameters, empty if no matches.
 	 */
 	public function getPatternMatches($request)
 	{
-		$matches=array();
-		if(($pattern=$this->getRegularExpression())!=='')
-			preg_match($pattern,$request->getPathInfo(),$matches);
-		else
-			preg_match($this->getParameterizedPattern(),trim($request->getPathInfo(),'/').'/',$matches);
+		$matches = [];
+		if (($pattern = $this->getRegularExpression()) !== '') {
+			preg_match($pattern, $request->getPathInfo(), $matches);
+		} else {
+			preg_match($this->getParameterizedPattern(), trim($request->getPathInfo(), '/') . '/', $matches);
+		}
 
-		if($this->getIsWildCardPattern() && isset($matches[$this->_serviceID]))
-			$matches[$this->_serviceID]=str_replace('*',$matches[$this->_serviceID],$this->_serviceParameter);
+		if ($this->getIsWildCardPattern() && isset($matches[$this->_serviceID])) {
+			$matches[$this->_serviceID] = str_replace('*', $matches[$this->_serviceID], $this->_serviceParameter);
+		}
 
-		if (isset($matches['urlparams']))
-		{
-			$params=explode('/',$matches['urlparams']);
-			if ($this->_separator==='/')
-			{
-				while($key=array_shift($params))
-					$matches[$key]=($value=array_shift($params)) ? $value : '';
-			}
-			else
-			{
+		if (isset($matches['urlparams'])) {
+			$params = explode('/', $matches['urlparams']);
+			if ($this->_separator === '/') {
+				while ($key = array_shift($params)) {
+					$matches[$key] = ($value = array_shift($params)) ? $value : '';
+				}
+			} else {
 				array_pop($params);
-				foreach($params as $param)
-				{
-					list($key,$value)=explode($this->_separator,$param,2);
-					$matches[$key]=$value;
+				foreach ($params as $param) {
+					list($key, $value) = explode($this->_separator, $param, 2);
+					$matches[$key] = $value;
 				}
 			}
 			unset($matches['urlparams']);
 		}
 
-		if(count($matches) > 0 && $this->_constants)
-		{
-			foreach($this->_constants->toArray() as $key=>$value)
+		if (count($matches) > 0 && $this->_constants) {
+			foreach ($this->_constants->toArray() as $key => $value) {
 				$matches[$key] = $value;
+			}
 		}
 
 		return $matches;
@@ -399,18 +397,19 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Sets a value indicating whether to enable custom constructUrl using this pattern
-	 * @param boolean whether to enable custom constructUrl.
+	 * @param boolean $value whether to enable custom constructUrl.
 	 */
 	public function setEnableCustomUrl($value)
 	{
-		$this->_customUrl=TPropertyValue::ensureBoolean($value);
+		$this->_customUrl = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
 	 * @return boolean whether this pattern is a wildcard pattern
 	 * @since 3.1.4
 	 */
-	public function getIsWildCardPattern() {
+	public function getIsWildCardPattern()
+	{
 		return $this->_isWildCardPattern;
 	}
 
@@ -430,12 +429,12 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * {@link setUrlParamSeparator} and defaults to '/'.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat the format of URLs.
+	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 * @since 3.1.4
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat=TPropertyValue::ensureEnum($value,'Prado\\Web\\THttpRequestUrlFormat');
+		$this->_urlFormat = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestUrlFormat');
 	}
 
 	/**
@@ -447,15 +446,16 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string separator used to separate GET variable name and value when URL format is Path.
+	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
 	 * @throws TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
 	{
-		if(strlen($value)===1)
-			$this->_separator=$value;
-		else
+		if (strlen($value) === 1) {
+			$this->_separator = $value;
+		} else {
 			throw new TInvalidDataValueException('httprequest_separator_invalid');
+		}
 	}
 
 	/**
@@ -468,7 +468,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TUrlMappingPatternSecureConnection the SecureConnection behavior.
+	 * @param TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
 	 * @since 3.2
 	 */
 	public function setSecureConnection($value)
@@ -483,25 +483,25 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function supportCustomUrl($getItems)
 	{
-		if(!$this->_customUrl || $this->getPattern()===null)
+		if (!$this->_customUrl || $this->getPattern() === null) {
 			return false;
-		if ($this->_parameters)
-		{
-			foreach($this->_parameters as $key=>$value)
-			{
-				if(!isset($getItems[$key]))
+		}
+		if ($this->_parameters) {
+			foreach ($this->_parameters as $key => $value) {
+				if (!isset($getItems[$key])) {
 					return false;
+				}
 			}
 		}
 
-		if ($this->_constants)
-		{
-			foreach($this->_constants->toArray() as $key=>$value)
-			{
-				if (!isset($getItems[$key]))
+		if ($this->_constants) {
+			foreach ($this->_constants->toArray() as $key => $value) {
+				if (!isset($getItems[$key])) {
 					return false;
-				if ($getItems[$key]!=$value)
+				}
+				if ($getItems[$key] != $value) {
 					return false;
+				}
 			}
 		}
 		return true;
@@ -515,68 +515,61 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * @return string the constructed URL
 	 * @since 3.1.1
 	 */
-	public function constructUrl($getItems,$encodeAmpersand,$encodeGetItems)
+	public function constructUrl($getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		if ($this->_constants)
-		{
-			foreach($this->_constants->toArray() as $key=>$value)
-			{
+		if ($this->_constants) {
+			foreach ($this->_constants->toArray() as $key => $value) {
 				unset($getItems[$key]);
 			}
 		}
 
-		$extra=array();
-		$replace=array();
+		$extra = [];
+		$replace = [];
 		// for the GET variables matching the pattern, put them in the URL path
-		foreach($getItems as $key=>$value)
-		{
-			if(($this->_parameters && $this->_parameters->contains($key)) || ($key==='*' && $this->getIsWildCardPattern()))
-				$replace['{'.$key.'}']=$encodeGetItems ? rawurlencode($value) : $value;
-			else
-				$extra[$key]=$value;
+		foreach ($getItems as $key => $value) {
+			if (($this->_parameters && $this->_parameters->contains($key)) || ($key === '*' && $this->getIsWildCardPattern())) {
+				$replace['{' . $key . '}'] = $encodeGetItems ? rawurlencode($value) : $value;
+			} else {
+				$extra[$key] = $value;
+			}
 		}
 
-		$url=$this->_manager->getUrlPrefix().'/'.ltrim(strtr($this->getPattern(),$replace),'/');
+		$url = $this->_manager->getUrlPrefix() . '/' . ltrim(strtr($this->getPattern(), $replace), '/');
 
 		// for the rest of the GET variables, put them in the query string
-		if(count($extra)>0)
-		{
-			if ($this->_urlFormat===THttpRequestUrlFormat::Path && $this->getIsWildCardPattern()) {
-				foreach ($extra as $name=>$value)
-					$url.='/'.$name.$this->_separator.($encodeGetItems?rawurlencode($value):$value);
+		if (count($extra) > 0) {
+			if ($this->_urlFormat === THttpRequestUrlFormat::Path && $this->getIsWildCardPattern()) {
+				foreach ($extra as $name => $value) {
+					$url .= '/' . $name . $this->_separator . ($encodeGetItems ? rawurlencode($value) : $value);
+				}
 				return $url;
 			}
 
-			$url2='';
-			$amp=$encodeAmpersand?'&amp;':'&';
-			if($encodeGetItems)
-			{
-				foreach($extra as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						$name=rawurlencode($name.'[]');
-						foreach($value as $v)
-							$url2.=$amp.$name.'='.rawurlencode($v);
+			$url2 = '';
+			$amp = $encodeAmpersand ? '&amp;' : '&';
+			if ($encodeGetItems) {
+				foreach ($extra as $name => $value) {
+					if (is_array($value)) {
+						$name = rawurlencode($name . '[]');
+						foreach ($value as $v) {
+							$url2 .= $amp . $name . '=' . rawurlencode($v);
+						}
+					} else {
+						$url2 .= $amp . rawurlencode($name) . '=' . rawurlencode($value);
 					}
-					else
-						$url2.=$amp.rawurlencode($name).'='.rawurlencode($value);
+				}
+			} else {
+				foreach ($extra as $name => $value) {
+					if (is_array($value)) {
+						foreach ($value as $v) {
+							$url2 .= $amp . $name . '[]=' . $v;
+						}
+					} else {
+						$url2 .= $amp . $name . '=' . $value;
+					}
 				}
 			}
-			else
-			{
-				foreach($extra as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						foreach($value as $v)
-							$url2.=$amp.$name.'[]='.$v;
-					}
-					else
-						$url2.=$amp.$name.'='.$value;
-				}
-			}
-			$url=$url.'?'.substr($url2,strlen($amp));
+			$url = $url . '?' . substr($url2, strlen($amp));
 		}
 		return $this -> applySecureConnectionPrefix($url);
 	}
@@ -592,19 +585,26 @@ class TUrlMappingPattern extends \Prado\TComponent
 	protected function applySecureConnectionPrefix($url)
 	{
 		static $request;
-		if($request === null) $request = Prado::getApplication() -> getRequest();
+		if ($request === null) {
+			$request = Prado::getApplication() -> getRequest();
+		}
 
 		static $isSecureConnection;
-		if($isSecureConnection === null) $isSecureConnection = $request -> getIsSecureConnection();
+		if ($isSecureConnection === null) {
+			$isSecureConnection = $request -> getIsSecureConnection();
+		}
 
-		switch($this -> getSecureConnection())
-		{
+		switch ($this -> getSecureConnection()) {
 			case TUrlMappingPatternSecureConnection::EnableIfNotSecure:
-				if($isSecureConnection) return $url;
+				if ($isSecureConnection) {
+					return $url;
+				}
 				return $request -> getBaseUrl(true) . $url;
 			break;
 			case TUrlMappingPatternSecureConnection::DisableIfSecure:
-				if(!$isSecureConnection) return $url;
+				if (!$isSecureConnection) {
+					return $url;
+				}
 				return $request -> getBaseUrl(false) . $url;
 			break;
 			case TUrlMappingPatternSecureConnection::Enable:

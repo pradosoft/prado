@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Prado\Web\UI\TControl;
 
 /**
@@ -28,17 +29,17 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * Log levels.
 	 */
-	const DEBUG=0x01;
-	const INFO=0x02;
-	const NOTICE=0x04;
-	const WARNING=0x08;
-	const ERROR=0x10;
-	const ALERT=0x20;
-	const FATAL=0x40;
+	const DEBUG = 0x01;
+	const INFO = 0x02;
+	const NOTICE = 0x04;
+	const WARNING = 0x08;
+	const ERROR = 0x10;
+	const ALERT = 0x20;
+	const FATAL = 0x40;
 	/**
 	 * @var array log messages
 	 */
-	private $_logs=array();
+	private $_logs = [];
 	/**
 	 * @var integer log levels (bits) to be filtered
 	 */
@@ -66,16 +67,18 @@ class TLogger extends \Prado\TComponent
 	 * @param string category of the message
 	 * @param string|TControl control of the message
 	 */
-	public function log($message,$level,$category='Uncategorized', $ctl=null)
+	public function log($message, $level, $category = 'Uncategorized', $ctl = null)
 	{
-		if($ctl) {
-			if($ctl instanceof TControl)
+		if ($ctl) {
+			if ($ctl instanceof TControl) {
 				$ctl = $ctl->ClientId;
-			else if(!is_string($ctl))
+			} elseif (!is_string($ctl)) {
 				$ctl = null;
-		} else
+			}
+		} else {
 			$ctl = null;
-		$this->_logs[]=array($message,$level,$category,microtime(true),memory_get_usage(),$ctl);
+		}
+		$this->_logs[] = [$message, $level, $category, microtime(true), memory_get_usage(), $ctl];
 	}
 
 	/**
@@ -111,23 +114,28 @@ class TLogger extends \Prado\TComponent
 	 *   [4] => memory in bytes
 	 *   [5] => control client id
 	 */
-	public function getLogs($levels=null,$categories=null,$controls=null,$timestamp=null)
+	public function getLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{
-		$this->_levels=$levels;
-		$this->_categories=$categories;
-		$this->_controls=$controls;
-		$this->_timestamp=$timestamp;
-		if(empty($levels) && empty($categories) && empty($controls) && is_null($timestamp))
+		$this->_levels = $levels;
+		$this->_categories = $categories;
+		$this->_controls = $controls;
+		$this->_timestamp = $timestamp;
+		if (empty($levels) && empty($categories) && empty($controls) && null === $timestamp) {
 			return $this->_logs;
+		}
 		$logs = $this->_logs;
-		if(!empty($levels))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByLevels')) ));
-		if(!empty($categories))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByCategories')) ));
-		if(!empty($controls))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByControl')) ));
-		if(!is_null($timestamp))
-			$logs = array_values(array_filter( array_filter($logs,array($this,'filterByTimeStamp')) ));
+		if (!empty($levels)) {
+			$logs = array_values(array_filter(array_filter($logs, [$this, 'filterByLevels'])));
+		}
+		if (!empty($categories)) {
+			$logs = array_values(array_filter(array_filter($logs, [$this, 'filterByCategories'])));
+		}
+		if (!empty($controls)) {
+			$logs = array_values(array_filter(array_filter($logs, [$this, 'filterByControl'])));
+		}
+		if (null !== $timestamp) {
+			$logs = array_values(array_filter(array_filter($logs, [$this, 'filterByTimeStamp'])));
+		}
 		return $logs;
 	}
 
@@ -155,83 +163,87 @@ class TLogger extends \Prado\TComponent
 	 * @param array category filter
 	 * @param array control filter
 	 */
-	public function deleteLogs($levels=null,$categories=null,$controls=null,$timestamp=null)
+	public function deleteLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{
-		$this->_levels=$levels;
-		$this->_categories=$categories;
-		$this->_controls=$controls;
-		$this->_timestamp=$timestamp;
-		if(empty($levels) && empty($categories) && empty($controls) && is_null($timestamp))
-		{
-			$this->_logs=array();
+		$this->_levels = $levels;
+		$this->_categories = $categories;
+		$this->_controls = $controls;
+		$this->_timestamp = $timestamp;
+		if (empty($levels) && empty($categories) && empty($controls) && null === $timestamp) {
+			$this->_logs = [];
 			return;
 		}
 		$logs = $this->_logs;
-		if(!empty($levels))
-			$logs = array_filter( array_filter($logs,array($this,'filterByLevels')) );
-		if(!empty($categories))
-			$logs = array_filter( array_filter($logs,array($this,'filterByCategories')) );
-		if(!empty($controls))
-			$logs = array_filter( array_filter($logs,array($this,'filterByControl')) );
-		if(!is_null($timestamp))
-			$logs = array_filter( array_filter($logs,array($this,'filterByTimeStamp')) );
-		$this->_logs = array_values( array_diff_key($this->_logs, $logs) );
+		if (!empty($levels)) {
+			$logs = array_filter(array_filter($logs, [$this, 'filterByLevels']));
+		}
+		if (!empty($categories)) {
+			$logs = array_filter(array_filter($logs, [$this, 'filterByCategories']));
+		}
+		if (!empty($controls)) {
+			$logs = array_filter(array_filter($logs, [$this, 'filterByControl']));
+		}
+		if (null !== $timestamp) {
+			$logs = array_filter(array_filter($logs, [$this, 'filterByTimeStamp']));
+		}
+		$this->_logs = array_values(array_diff_key($this->_logs, $logs));
 	}
 
 	/**
 	 * Filter function used by {@link getLogs}.
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByCategories($value)
 	{
-		foreach($this->_categories as $category)
-		{
+		foreach ($this->_categories as $category) {
 			// element 2 is the category
-			if($value[2]===$category || strpos($value[2],$category.'.')===0)
+			if ($value[2] === $category || strpos($value[2], $category . '.') === 0) {
 				return $value;
+			}
 		}
 		return false;
 	}
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByLevels($value)
 	{
 		// element 1 are the levels
-		if($value[1] & $this->_levels)
+		if ($value[1] & $this->_levels) {
 			return $value;
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByControl($value)
 	{
 		// element 5 are the control client ids
-		foreach($this->_controls as $control)
-		{
-			if($value[5]===$control || strpos($value[5],$control)===0)
+		foreach ($this->_controls as $control) {
+			if ($value[5] === $control || strpos($value[5], $control) === 0) {
 				return $value;
+			}
 		}
 		return false;
 	}
 
 	/**
 	 * Filter function used by {@link getLogs}
-	 * @param array element to be filtered
+	 * @param array $value element to be filtered
 	 */
 	private function filterByTimeStamp($value)
 	{
 		// element 3 is the timestamp
-		if($value[3] <= $this->_timestamp)
+		if ($value[3] <= $this->_timestamp) {
 			return $value;
-		else
+		} else {
 			return false;
+		}
 	}
 }
-

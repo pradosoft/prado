@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -58,16 +59,17 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -79,16 +81,17 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getVerticalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getVerticalAlign();
-		else
+		} else {
 			return 'NotSet';
+		}
 	}
 
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
-     * Valid values include 'NotSet','Top','Bottom','Middle'
-	 * @param string the horizontal alignment
+	 * Valid values include 'NotSet','Top','Bottom','Middle'
+	 * @param string $value the horizontal alignment
 	 */
 	public function setVerticalAlign($value)
 	{
@@ -105,7 +108,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the columnspan for the table cell.
-	 * @param integer the columnspan for the table cell, 0 if not set.
+	 * @param integer $value the columnspan for the table cell, 0 if not set.
 	 */
 	public function setColumnSpan($value)
 	{
@@ -122,7 +125,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the rowspan for the table cell.
-	 * @param integer the rowspan for the table cell, 0 if not set.
+	 * @param integer $value the rowspan for the table cell, 0 if not set.
 	 */
 	public function setRowSpan($value)
 	{
@@ -134,15 +137,16 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getWrap()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getWrap();
-		else
+		} else {
 			return true;
+		}
 	}
 
 	/**
 	 * Sets the value indicating whether the text content wraps within a table cell.
-	 * @param boolean whether the text content wraps within a table cell.
+	 * @param boolean $value whether the text content wraps within a table cell.
 	 */
 	public function setWrap($value)
 	{
@@ -154,17 +158,17 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text content of the table cell.
 	 * If the text content is empty, body content (child controls) of the cell will be rendered.
-	 * @param string the text content
+	 * @param string $value the text content
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',$value,'');
+		$this->setViewState('Text', $value, '');
 	}
 
 	/**
@@ -195,29 +199,31 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($colspan=$this->getColumnSpan())>0)
-			$writer->addAttribute('colspan',"$colspan");
-		if(($rowspan=$this->getRowSpan())>0)
-			$writer->addAttribute('rowspan',"$rowspan");
+		if (($colspan = $this->getColumnSpan()) > 0) {
+			$writer->addAttribute('colspan', "$colspan");
+		}
+		if (($rowspan = $this->getRowSpan()) > 0) {
+			$writer->addAttribute('rowspan', "$rowspan");
+		}
 	}
 
 	/**
 	 * Renders body contents of the table cell.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())!=='')
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
-		else if($this->getHasControls())
+		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write('&nbsp;');
+		}
 	}
 }
-

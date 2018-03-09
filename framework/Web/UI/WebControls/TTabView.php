@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -36,7 +37,7 @@ use Prado\TPropertyValue;
  */
 class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 {
-	private $_active=false;
+	private $_active = false;
 
 	/**
 	 * @return the tag name for the view element
@@ -48,18 +49,19 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if(!$this->getActive() && $this->getPage()->getClientSupportsJavaScript())
-			$this->getStyle()->setStyleField('display','none');
+		if (!$this->getActive() && $this->getPage()->getClientSupportsJavaScript()) {
+			$this->getStyle()->setStyleField('display', 'none');
+		}
 
 		$this->getStyle()->mergeWith($this->getParent()->getViewStyle());
 
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 	}
 
 	/**
@@ -67,15 +69,15 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getCaption()
 	{
-		return $this->getViewState('Caption','');
+		return $this->getViewState('Caption', '');
 	}
 
 	/**
-	 * @param string the caption displayed on this tab
+	 * @param string $value the caption displayed on this tab
 	 */
 	public function setCaption($value)
 	{
-		$this->setViewState('Caption',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Caption', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -83,17 +85,17 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getNavigateUrl()
 	{
-		return $this->getViewState('NavigateUrl','');
+		return $this->getViewState('NavigateUrl', '');
 	}
 
 	/**
 	 * Sets the URL of the target page.
 	 * If not empty, clicking on this tab will redirect the browser to the specified URL.
-	 * @param string the URL of the target page.
+	 * @param string $value the URL of the target page.
 	 */
 	public function setNavigateUrl($value)
 	{
-		$this->setViewState('NavigateUrl',TPropertyValue::ensureString($value),'');
+		$this->setViewState('NavigateUrl', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -101,17 +103,17 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getText()
 	{
-		return $this->getViewState('Text','');
+		return $this->getViewState('Text', '');
 	}
 
 	/**
 	 * Sets the text content to be displayed on this view.
 	 * If this is not empty, the child content of the view will be ignored.
-	 * @param string the text content displayed on this view
+	 * @param string $value the text content displayed on this view
 	 */
 	public function setText($value)
 	{
-		$this->setViewState('Text',TPropertyValue::ensureString($value),'');
+		$this->setViewState('Text', TPropertyValue::ensureString($value), '');
 	}
 
 	/**
@@ -123,36 +125,36 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean whether this tab view is active.
+	 * @param boolean $value whether this tab view is active.
 	 */
 	public function setActive($value)
 	{
-		$this->_active=TPropertyValue::ensureBoolean($value);
+		$this->_active = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
 	 * Renders body contents of the tab view.
-	 * @param THtmlWriter the writer used for the rendering purpose.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())!=='')
+		if (($text = $this->getText()) !== '') {
 			$writer->write($text);
-		else if($this->getHasControls())
+		} elseif ($this->getHasControls()) {
 			parent::renderContents($writer);
+		}
 	}
 
 	/**
 	 * Renders the tab associated with the tab view.
-	 * @param THtmlWriter the writer for rendering purpose.
+	 * @param THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function renderTab($writer)
 	{
-		if($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript())
-		{
-			$writer->addAttribute('id',$this->getClientID().'_0');
+		if ($this->getVisible(false) && $this->getPage()->getClientSupportsJavaScript()) {
+			$writer->addAttribute('id', $this->getClientID() . '_0');
 
-			$style=$this->getActive()?$this->getParent()->getActiveTabStyle():$this->getParent()->getTabStyle();
+			$style = $this->getActive() ? $this->getParent()->getActiveTabStyle() : $this->getParent()->getTabStyle();
 			$style->addAttributesToRender($writer);
 
 			$writer->renderBeginTag($this->getTagName());
@@ -166,14 +168,16 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Renders the content in the tab.
 	 * By default, a hyperlink is displayed.
-	 * @param THtmlWriter the HTML writer
+	 * @param THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
 	{
-		if(($url=$this->getNavigateUrl())==='')
-			$url='javascript://';
-		if(($caption=$this->getCaption())==='')
-			$caption='&nbsp;';
+		if (($url = $this->getNavigateUrl()) === '') {
+			$url = 'javascript://';
+		}
+		if (($caption = $this->getCaption()) === '') {
+			$caption = '&nbsp;';
+		}
 		$writer->write("<a href=\"{$url}\">{$caption}</a>");
 	}
 }

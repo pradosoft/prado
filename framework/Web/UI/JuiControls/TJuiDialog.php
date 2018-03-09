@@ -55,7 +55,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidget()
 	{
-	  return 'dialog';
+		return 'dialog';
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -72,10 +72,9 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -86,7 +85,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidOptions()
 	{
-		return array('appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizable', 'show', 'title', 'width');
+		return ['appendTo', 'autoOpen', 'buttons', 'closeOnEscape', 'closeText', 'dialogClass', 'draggable', 'height', 'hide', 'minHeight', 'minWidth', 'maxHeight', 'maxWidth', 'modal', 'position', 'resizable', 'show', 'title', 'width'];
 	}
 
 	/**
@@ -95,7 +94,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function getValidEvents()
 	{
-		return array('beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop');
+		return ['beforeClose', 'close', 'create', 'drag', 'dragStart', 'dragStop', 'focus', 'open', 'resize', 'resizeStart', 'resizeStop'];
 	}
 
 	/**
@@ -105,12 +104,15 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	{
 		$options = $this->getOptions()->toArray();
 		// always make the dialog a child of the form, or its inner inputs won't be collected
-		if(!isset($options['appendTo']))
+		if (!isset($options['appendTo'])) {
 			$options['appendTo'] = 'form:first';
+		}
 
-		foreach($this->getControls() as $control)
-			if($control instanceof TJuiDialogButton)
+		foreach ($this->getControls() as $control) {
+			if ($control instanceof TJuiDialogButton) {
 				$options['buttons'][] = $control->getPostBackOptions();
+			}
+		}
 
 		return $options;
 	}
@@ -123,17 +125,17 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -144,7 +146,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onOpen ($params)
+	public function onOpen($params)
 	{
 		$this->raiseEvent('OnOpen', $this, $params);
 	}
@@ -168,13 +170,13 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	private function triggerClientMethod($method)
 	{
 		$cs = $this->getPage()->getClientScript();
-		$code = "jQuery(document).ready(function() { jQuery('#".$this->getClientId()."').dialog('".$method."'); })";
+		$code = "jQuery(document).ready(function() { jQuery('#" . $this->getClientId() . "').dialog('" . $method . "'); })";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Rendering as a fieldset is not supported for TJuiDialog.
-	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 * @param string $value the legend text. If this value is not empty, the panel will be rendered as a fieldset.
 	 * @throws TNotSupportedException not supported for TJuiDialog.
 	 */
 	public function setGroupingText($value)
@@ -185,16 +187,15 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	/**
 	 * Overrides parent implementation to just render the inner contents and avoid replacing the element itself when
 	 * updating clientside, because replacing/removing will cause jqueryui to fire destroy on the original dialog extension.
-	 * @param THtmlWriter html writer
+	 * @param THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{
-		if($this->getHasPreRendered() && $this->getActiveControl()->canUpdateClientSide())
-		{
-		  parent::renderContents($writer);
+		if ($this->getHasPreRendered() && $this->getActiveControl()->canUpdateClientSide()) {
+			parent::renderContents($writer);
 			$this->getPage()->getCallbackClient()->replaceContent($this, $writer, false);
-		}
-		else
+		} else {
 			parent::render($writer);
+		}
 	}
 }

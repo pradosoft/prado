@@ -17,7 +17,7 @@ namespace Prado\Web\UI\WebControls;
  * TMetaTag represents a meta tag appearing in a page head section.
  * You can set its {@link setID ID}, {@link setHttpEquiv HttpEquiv},
  * {@link setName Name}, {@link setContent Content}, {@link setScheme Scheme}, {@link setCharset Charset}
- * properties, which correspond to 
+ * properties, which correspond to
  * id, http-equiv, name, content, scheme and charset * attributes for a meta tag, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -29,27 +29,27 @@ class TMetaTag extends \Prado\TComponent
 	/**
 	 * @var string id of the meta tag
 	 */
-	private $_id='';
+	private $_id = '';
 	/**
 	 * @var string http-equiv attribute of the meta tag
 	 */
-	private $_httpEquiv='';
+	private $_httpEquiv = '';
 	/**
 	 * @var string name attribute of the meta tag
 	 */
-	private $_name='';
+	private $_name = '';
 	/**
 	 * @var string content attribute of the meta tag
 	 */
-	private $_content='';
+	private $_content = '';
 	/**
 	 * @var string scheme attribute of the meta tag
 	 */
-	private $_scheme='';
+	private $_scheme = '';
 	/**
 	 * @var string charset attribute of the meta tag
 	 */
-	private $_charset='';
+	private $_charset = '';
 
 	/**
 	 * @return string id of the meta tag
@@ -60,11 +60,11 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string id of the meta tag
+	 * @param string $value id of the meta tag
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**
@@ -76,11 +76,11 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string http-equiv attribute of the meta tag
+	 * @param string $value http-equiv attribute of the meta tag
 	 */
 	public function setHttpEquiv($value)
 	{
-		$this->_httpEquiv=$value;
+		$this->_httpEquiv = $value;
 	}
 
 	/**
@@ -92,11 +92,11 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name attribute of the meta tag
+	 * @param string $value name attribute of the meta tag
 	 */
 	public function setName($value)
 	{
-		$this->_name=$value;
+		$this->_name = $value;
 	}
 
 	/**
@@ -108,11 +108,11 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string content attribute of the meta tag
+	 * @param string $value content attribute of the meta tag
 	 */
 	public function setContent($value)
 	{
-		$this->_content=$value;
+		$this->_content = $value;
 	}
 
 	/**
@@ -124,11 +124,11 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string scheme attribute of the meta tag
+	 * @param string $value scheme attribute of the meta tag
 	 */
 	public function setScheme($value)
 	{
-		$this->_scheme=$value;
+		$this->_scheme = $value;
 	}
 
 	/**
@@ -140,31 +140,37 @@ class TMetaTag extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string charset attribute of the meta tag
+	 * @param string $value charset attribute of the meta tag
 	 */
 	public function setCharset($value)
 	{
-		$this->_charset=$value;
+		$this->_charset = $value;
 	}
 
 	/**
 	 * Renders the meta tag.
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		if($this->_id!=='')
-			$writer->addAttribute('id',$this->_id);
-		if($this->_name!=='')
-			$writer->addAttribute('name',$this->_name);
-		if($this->_httpEquiv!=='')
-			$writer->addAttribute('http-equiv',$this->_httpEquiv);
-		if($this->_scheme!=='')
-			$writer->addAttribute('scheme',$this->_scheme);
-		if($this->_charset!=='')
-			$writer->addAttribute('charset',$this->_charset);
-		if ($this->_charset === '')
-			$writer->addAttribute('content',$this->_content);
+		if ($this->_id !== '') {
+			$writer->addAttribute('id', $this->_id);
+		}
+		if ($this->_name !== '') {
+			$writer->addAttribute('name', $this->_name);
+		}
+		if ($this->_httpEquiv !== '') {
+			$writer->addAttribute('http-equiv', $this->_httpEquiv);
+		}
+		if ($this->_scheme !== '') {
+			$writer->addAttribute('scheme', $this->_scheme);
+		}
+		if ($this->_charset !== '') {
+			$writer->addAttribute('charset', $this->_charset);
+		}
+		if ($this->_charset === '') {
+			$writer->addAttribute('content', $this->_content);
+		}
 		$writer->renderBeginTag('meta');
 		$writer->renderEndTag();
 	}

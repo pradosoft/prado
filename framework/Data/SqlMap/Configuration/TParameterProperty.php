@@ -47,7 +47,7 @@ class TParameterProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string class name of a custom type handler.
+	 * @param string $value class name of a custom type handler.
 	 */
 	public function setTypeHandler($value)
 	{
@@ -63,7 +63,7 @@ class TParameterProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string type of the parameter's property
+	 * @param string $value type of the parameter's property
 	 */
 	public function setType($value)
 	{
@@ -79,7 +79,7 @@ class TParameterProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of a parameter to be used in the SQL statement.
+	 * @param string $value name of a parameter to be used in the SQL statement.
 	 */
 	public function setColumn($value)
 	{
@@ -95,7 +95,7 @@ class TParameterProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string the database column type of the parameter to be set by this property.
+	 * @param string $value the database column type of the parameter to be set by this property.
 	 */
 	public function setDbType($value)
 	{
@@ -111,7 +111,7 @@ class TParameterProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of a property of the parameter object.
+	 * @param string $value name of a property of the parameter object.
 	 */
 	public function setProperty($value)
 	{
@@ -128,7 +128,7 @@ class TParameterProperty extends \Prado\TComponent
 
 	/**
 	 * The nullValue attribute is used to specify an outgoing null value replacement.
-	 * @param mixed null value replacement.
+	 * @param mixed $value null value replacement.
 	 */
 	public function setNullValue($value)
 	{
@@ -137,14 +137,26 @@ class TParameterProperty extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = 'TParameterProperty';
-		if ($this->_typeHandler===null) $exprops[] = "\0$cn\0_typeHandler";
-		if ($this->_type===null) $exprops[] = "\0$cn\0_type";
-		if ($this->_column===null) $exprops[] = "\0$cn\0_column";
-		if ($this->_dbType===null) $exprops[] = "\0$cn\0_dbType";
-		if ($this->_property===null) $exprops[] = "\0$cn\0_property";
-		if ($this->_nullValue===null) $exprops[] = "\0$cn\0_nullValue";
-		return array_diff(parent::__sleep(),$exprops);
+		$exprops = [];
+		$cn = 'TParameterProperty';
+		if ($this->_typeHandler === null) {
+			$exprops[] = "\0$cn\0_typeHandler";
+		}
+		if ($this->_type === null) {
+			$exprops[] = "\0$cn\0_type";
+		}
+		if ($this->_column === null) {
+			$exprops[] = "\0$cn\0_column";
+		}
+		if ($this->_dbType === null) {
+			$exprops[] = "\0$cn\0_dbType";
+		}
+		if ($this->_property === null) {
+			$exprops[] = "\0$cn\0_property";
+		}
+		if ($this->_nullValue === null) {
+			$exprops[] = "\0$cn\0_nullValue";
+		}
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }
-

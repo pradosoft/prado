@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TIOException;
 use Prado\TPropertyValue;
@@ -34,14 +35,14 @@ use Prado\TPropertyValue;
  */
 class TDirectoryCacheDependency extends TCacheDependency
 {
-	private $_recursiveCheck=true;
-	private $_recursiveLevel=-1;
+	private $_recursiveCheck = true;
+	private $_recursiveLevel = -1;
 	private $_timestamps;
 	private $_directory;
 
 	/**
 	 * Constructor.
-	 * @param string the directory to be checked
+	 * @param string $directory the directory to be checked
 	 */
 	public function __construct($directory)
 	{
@@ -57,15 +58,16 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param string the directory to be checked
+	 * @param string $directory the directory to be checked
 	 * @throws TInvalidDataValueException if the directory does not exist
 	 */
 	public function setDirectory($directory)
 	{
-		if(($path=realpath($directory))===false || !is_dir($path))
-			throw new TInvalidDataValueException('directorycachedependency_directory_invalid',$directory);
-		$this->_directory=$path;
-		$this->_timestamps=$this->generateTimestamps($path);
+		if (($path = realpath($directory)) === false || !is_dir($path)) {
+			throw new TInvalidDataValueException('directorycachedependency_directory_invalid', $directory);
+		}
+		$this->_directory = $path;
+		$this->_timestamps = $this->generateTimestamps($path);
 	}
 
 	/**
@@ -78,11 +80,11 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param boolean whether the subdirectories of the directory will also be checked.
+	 * @param boolean $value whether the subdirectories of the directory will also be checked.
 	 */
 	public function setRecursiveCheck($value)
 	{
-		$this->_recursiveCheck=TPropertyValue::ensureBoolean($value);
+		$this->_recursiveCheck = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -104,7 +106,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function setRecursiveLevel($value)
 	{
-		$this->_recursiveLevel=TPropertyValue::ensureInteger($value);
+		$this->_recursiveLevel = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -114,7 +116,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 */
 	public function getHasChanged()
 	{
-		return $this->generateTimestamps($this->_directory)!=$this->_timestamps;
+		return $this->generateTimestamps($this->_directory) != $this->_timestamps;
 	}
 
 	/**
@@ -122,7 +124,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method is invoked when dependency of the whole directory is being checked.
 	 * By default, it always returns true, meaning the file should be checked.
 	 * You may override this method to check only certain files.
-	 * @param string the name of the file that may be checked for dependency.
+	 * @param string $fileName the name of the file that may be checked for dependency.
 	 * @return boolean whether this file should be checked.
 	 */
 	protected function validateFile($fileName)
@@ -135,7 +137,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * This method is invoked when dependency of the whole directory is being checked.
 	 * By default, it always returns true, meaning the subdirectory should be checked.
 	 * You may override this method to check only certain subdirectories.
-	 * @param string the name of the subdirectory that may be checked for dependency.
+	 * @param string $directory the name of the subdirectory that may be checked for dependency.
 	 * @return boolean whether this subdirectory should be checked.
 	 */
 	protected function validateDirectory($directory)
@@ -147,27 +149,27 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * Determines the last modification time for files under the directory.
 	 * This method may go recursively into subdirectories if
 	 * {@link setRecursiveCheck RecursiveCheck} is set true.
-	 * @param string the directory name
-	 * @param int level of the recursion
+	 * @param string $directory the directory name
+	 * @param int $level level of the recursion
 	 * @return array list of file modification time indexed by the file path
 	 */
-	protected function generateTimestamps($directory,$level=0)
+	protected function generateTimestamps($directory, $level = 0)
 	{
-		if(($dir=opendir($directory))===false)
-			throw new TIOException('directorycachedependency_directory_invalid',$directory);
-		$timestamps=array();
-		while(($file=readdir($dir))!==false)
-		{
-			$path=$directory.DIRECTORY_SEPARATOR.$file;
-			if($file==='.' || $file==='..')
+		if (($dir = opendir($directory)) === false) {
+			throw new TIOException('directorycachedependency_directory_invalid', $directory);
+		}
+		$timestamps = [];
+		while (($file = readdir($dir)) !== false) {
+			$path = $directory . DIRECTORY_SEPARATOR . $file;
+			if ($file === '.' || $file === '..') {
 				continue;
-			else if(is_dir($path))
-			{
-				if(($this->_recursiveLevel<0 || $level<$this->_recursiveLevel) && $this->validateDirectory($path))
-					$timestamps=array_merge($this->generateTimestamps($path,$level+1));
+			} elseif (is_dir($path)) {
+				if (($this->_recursiveLevel < 0 || $level < $this->_recursiveLevel) && $this->validateDirectory($path)) {
+					$timestamps = array_merge($this->generateTimestamps($path, $level + 1));
+				}
+			} elseif ($this->validateFile($path)) {
+				$timestamps[$path] = filemtime($path);
 			}
-			else if($this->validateFile($path))
-				$timestamps[$path]=filemtime($path);
 		}
 		closedir($dir);
 		return $timestamps;

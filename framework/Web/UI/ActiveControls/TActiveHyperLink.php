@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\Web\UI\WebControls\THyperLink;
@@ -51,30 +52,32 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * On callback response, the inner HTMl of the label is updated.
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
-		if(parent::getText() === $value)
+		if (parent::getText() === $value) {
 			return;
+		}
 
 		parent::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->update($this, $value);
+		}
 	}
 
 	/**
 	 * Sets the location of image file of the THyperLink.
-	 * @param string the image file location
+	 * @param string $value the image file location
 	 */
 	public function setImageUrl($value)
 	{
-		if(parent::getImageUrl() === $value)
+		if (parent::getImageUrl() === $value) {
 			return;
+		}
 
 		parent::setImageUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide() && $value !== '')
-		{
+		if ($this->getActiveControl()->canUpdateClientSide() && $value !== '') {
 			$textWriter = new TTextWriter;
 			$renderer = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $textWriter);
 			$this->createImage($value)->renderControl($renderer);
@@ -84,16 +87,16 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setNavigateUrl($value)
 	{
-		if(parent::getNavigateUrl() === $value)
+		if (parent::getNavigateUrl() === $value) {
 			return;
+		}
 
 		parent::setNavigateUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			//replace &amp; with & and urldecode the url (setting the href using javascript is literal)
 			$url = urldecode(str_replace('&amp;', '&', $value));
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'href', $url);
@@ -102,16 +105,17 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 	/**
 	 * Sets the target window or frame to display the Web page content linked to when the THyperLink component is clicked.
-	 * @param string the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
+	 * @param string $value the target window, valid values include '_blank', '_parent', '_self', '_top' and empty string.
 	 */
 	public function setTarget($value)
 	{
-		if(parent::getTarget() === $value)
+		if (parent::getTarget() === $value) {
 			return;
+		}
 
 		parent::setTarget($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'target', $value);
+		}
 	}
 }
-

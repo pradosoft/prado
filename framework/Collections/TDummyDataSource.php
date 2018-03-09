@@ -32,11 +32,11 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 
 	/**
 	 * Constructor.
-	 * @param integer number of (virtual) items in the data source.
+	 * @param integer $count number of (virtual) items in the data source.
 	 */
 	public function __construct($count)
 	{
-		$this->_count=$count;
+		$this->_count = $count;
 	}
 
 	/**

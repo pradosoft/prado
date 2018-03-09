@@ -32,14 +32,14 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 {
 
 	/**
-	* @var integer the zero-based index of the cell.
-	*/
+	 * @var integer the zero-based index of the cell.
+	 */
 	private $_selectedCellIndex = -1;
 
 	/**
 	 * Creates a new TActiveTableRowEventParameter.
 	 */
-	public function __construct($response, $parameter, $index=-1)
+	public function __construct($response, $parameter, $index = -1)
 	{
 		parent::__construct($response, $parameter);
 		$this->_selectedCellIndex = $index;
@@ -54,5 +54,4 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 	{
 		return $this->_selectedCellIndex;
 	}
-
 }

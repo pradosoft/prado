@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Caching\ICache;
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
@@ -66,11 +67,11 @@ use Prado\TPropertyValue;
  */
 class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
-	private $_prefix='statepersister';
+	private $_prefix = 'statepersister';
 	private $_page;
-	private $_cache=null;
-	private $_cacheModuleID='';
-	private $_timeout=1800;
+	private $_cache;
+	private $_cacheModuleID = '';
+	private $_timeout = 1800;
 
 	/**
 	 * @param TPage the page that this persister works for
@@ -85,7 +86,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function setPage(TPage $page)
 	{
-		$this->_page=$page;
+		$this->_page = $page;
 	}
 
 	/**
@@ -97,11 +98,11 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param string the ID of the cache module. If not set, the primary cache module will be used.
+	 * @param string $value the ID of the cache module. If not set, the primary cache module will be used.
 	 */
 	public function setCacheModuleID($value)
 	{
-		$this->_cacheModuleID=$value;
+		$this->_cacheModuleID = $value;
 	}
 
 	/**
@@ -109,20 +110,20 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function getCache()
 	{
-		if($this->_cache===null)
-		{
-			if($this->_cacheModuleID!=='')
-				$cache=Prado::getApplication()->getModule($this->_cacheModuleID);
-			else
-				$cache=Prado::getApplication()->getCache();
-			if($cache===null || !($cache instanceof ICache))
-			{
-				if($this->_cacheModuleID!=='')
-					throw new TConfigurationException('cachepagestatepersister_cachemoduleid_invalid',$this->_cacheModuleID);
-				else
-					throw new TConfigurationException('cachepagestatepersister_cache_required');
+		if ($this->_cache === null) {
+			if ($this->_cacheModuleID !== '') {
+				$cache = Prado::getApplication()->getModule($this->_cacheModuleID);
+			} else {
+				$cache = Prado::getApplication()->getCache();
 			}
-			$this->_cache=$cache;
+			if ($cache === null || !($cache instanceof ICache)) {
+				if ($this->_cacheModuleID !== '') {
+					throw new TConfigurationException('cachepagestatepersister_cachemoduleid_invalid', $this->_cacheModuleID);
+				} else {
+					throw new TConfigurationException('cachepagestatepersister_cache_required');
+				}
+			}
+			$this->_cache = $cache;
 		}
 		return $this->_cache;
 	}
@@ -136,15 +137,16 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param integer the number of seconds in which the cached state will expire. 0 means never expire.
+	 * @param integer $value the number of seconds in which the cached state will expire. 0 means never expire.
 	 * @throws TInvalidDataValueException if the number is smaller than 0.
 	 */
 	public function setCacheTimeout($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))>=0)
-			$this->_timeout=$value;
-		else
+		if (($value = TPropertyValue::ensureInteger($value)) >= 0) {
+			$this->_timeout = $value;
+		} else {
 			throw new TInvalidDataValueException('cachepagestatepersister_timeout_invalid');
+		}
 	}
 
 	/**
@@ -152,24 +154,24 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function getKeyPrefix()
 	{
-	    return $this->_prefix;
+		return $this->_prefix;
 	}
 
 	/**
-     * @param string prefix of cache variable name to avoid conflict with other cache data
-     */
+	 * @param string $value prefix of cache variable name to avoid conflict with other cache data
+	 */
 	public function setKeyPrefix($value)
 	{
-	    $this->_prefix=$value;
+		$this->_prefix = $value;
 	}
 
 	/**
-	 * @param string micro timestamp when saving state occurs
+	 * @param string $timestamp micro timestamp when saving state occurs
 	 * @return string a key that is unique per user request
 	 */
 	protected function calculateKey($timestamp)
 	{
-		return $this->getKeyPrefix().':'
+		return $this->getKeyPrefix() . ':'
 			. $this->_page->getRequest()->getUserHostAddress()
 			. $this->_page->getPagePath()
 			. $timestamp;
@@ -177,14 +179,14 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 
 	/**
 	 * Saves state in cache.
-	 * @param mixed state to be stored
+	 * @param mixed $data state to be stored
 	 */
 	public function save($data)
 	{
-		$timestamp=(string)microtime(true);
-		$key=$this->calculateKey($timestamp);
-		$this->getCache()->add($key,$data,$this->_timeout);
-		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page,$timestamp));
+		$timestamp = (string) microtime(true);
+		$key = $this->calculateKey($timestamp);
+		$this->getCache()->add($key, $data, $this->_timeout);
+		$this->_page->setClientState(TPageStateFormatter::serialize($this->_page, $timestamp));
 	}
 
 	/**
@@ -194,13 +196,12 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	 */
 	public function load()
 	{
-		if(($timestamp=TPageStateFormatter::unserialize($this->_page,$this->_page->getRequestClientState()))!==null)
-		{
-			$key=$this->calculateKey($timestamp);
-			if(($data=$this->getCache()->get($key))!==false)
+		if (($timestamp = TPageStateFormatter::unserialize($this->_page, $this->_page->getRequestClientState())) !== null) {
+			$key = $this->calculateKey($timestamp);
+			if (($data = $this->getCache()->get($key)) !== false) {
 				return $data;
+			}
 		}
-		throw new THttpException(400,'cachepagestatepersister_pagestate_corrupted');
+		throw new THttpException(400, 'cachepagestatepersister_pagestate_corrupted');
 	}
 }
-

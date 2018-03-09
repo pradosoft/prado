@@ -33,10 +33,10 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	 * @param string name of the broadcast event
 	 * @param mixed parameter of the broadcast event
 	 */
-	public function __construct($name='',$parameter=null)
+	public function __construct($name = '', $parameter = null)
 	{
-		$this->_name=$name;
-		$this->_param=$parameter;
+		$this->_name = $name;
+		$this->_param = $parameter;
 	}
 
 	/**
@@ -48,11 +48,11 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param string name of the broadcast event
+	 * @param string $value name of the broadcast event
 	 */
 	public function setName($value)
 	{
-		$this->_name=$value;
+		$this->_name = $value;
 	}
 
 	/**
@@ -64,10 +64,10 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param mixed parameter of the broadcast event
+	 * @param mixed $value parameter of the broadcast event
 	 */
 	public function setParameter($value)
 	{
-		$this->_param=$value;
+		$this->_param = $value;
 	}
 }

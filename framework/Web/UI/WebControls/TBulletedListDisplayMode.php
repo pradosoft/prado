@@ -27,7 +27,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TBulletedListDisplayMode extends \Prado\TEnumerable
 {
-	const Text='Text';
-	const HyperLink='HyperLink';
-	const LinkButton='LinkButton';
+	const Text = 'Text';
+	const HyperLink = 'HyperLink';
+	const LinkButton = 'LinkButton';
 }

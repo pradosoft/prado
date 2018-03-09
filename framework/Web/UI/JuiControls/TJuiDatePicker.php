@@ -78,10 +78,9 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -92,13 +91,13 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getValidOptions()
 	{
-		return array('altField', 'altFormat', 'appendText', 'autoSize', 'buttonImage', 'buttonImageOnly', 'buttonText', 'calculateWeek',
+		return ['altField', 'altFormat', 'appendText', 'autoSize', 'buttonImage', 'buttonImageOnly', 'buttonText', 'calculateWeek',
 								 'changeMonth', 'changeYear', 'closeText', 'constrainInput', 'currentText', 'dateFormat', 'dayNames', 'dayNamesMin',
-				         'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
+						 'dayNamesShort', 'defaultDate', 'duration', 'firstDay', 'gotoCurrent', 'hideIfNoPrevNext', 'isRTL', 'maxDate',
 								 'minDate', 'monthNames', 'monthNamesShort', 'navigationAsDateFormat', 'nextText', 'numberOfMonths', 'prevText',
 								 'selectOtherMonths', 'shortYearCutoff', 'showAnim', 'showButtonPanel', 'showCurrentAtPos', 'showMonthAfterYear',
-				         'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
-								 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect');
+						 'showOn', 'showOptions', 'showOtherMonths', 'showWeek', 'stepMonths', 'weekHeader', 'yearRange', 'yearSuffix',
+								 'beforeShow', 'beforeShowDay', 'onChangeMonthYear', 'onClose', 'onSelect'];
 	}
 
 	/**
@@ -107,7 +106,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getValidEvents()
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -117,22 +116,20 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$cs=$this->getPage()->getClientScript();
-		if(self::$_first)
-		{
-		  $culture=$this->getCurrentCulture();
-		  if($culture!='en')
-		  {
-		    $url=$this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui')."/ui/i18n/datepicker-{$culture}.js";
-		    $cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
-		  }
-		  $code="jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
-		  $cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
-		  self::$_first=false;
+		$cs = $this->getPage()->getClientScript();
+		if (self::$_first) {
+			$culture = $this->getCurrentCulture();
+			if ($culture != 'en') {
+				$url = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui') . "/ui/i18n/datepicker-{$culture}.js";
+				$cs->registerScriptFile(sprintf('%08X', crc32($url)), $url);
+			}
+			$code = "jQuery(document).ready(function(){jQuery.datepicker.setDefaults(jQuery.datepicker.regional['{$culture}']);});";
+			$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
+			self::$_first = false;
 		}
 		parent::addAttributesToRender($writer);
-		$options=TJavaScript::encode($this->getOptions()->toArray());
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$options = TJavaScript::encode($this->getOptions()->toArray());
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
@@ -147,7 +144,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Setting the behavior mode of the underlying TTextBox component is NOT supported.
-	 * @param TTextBoxMode the text mode
+	 * @param TTextBoxMode $value the text mode
 	 * @throws TNotSupportedException not supported, fixed to TTextBoxMode::SingleLine.
 	 */
 	public function setTextMode($value)
@@ -166,7 +163,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Sets the culture/language for the date picker.
-	 * @param string a culture string, e.g. en_AU.
+	 * @param string $value a culture string, e.g. en_AU.
 	 */
 	public function setCulture($value)
 	{
@@ -188,16 +185,16 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getDateFormat()
 	{
-		return $this->getViewState('DateFormat','dd-MM-yyyy');
+		return $this->getViewState('DateFormat', 'dd-MM-yyyy');
 	}
 
 	/**
 	 * Sets the format of the date string.
-	 * @param string the format of the date string
+	 * @param string $value the format of the date string
 	 */
 	public function setDateFormat($value)
 	{
-		$this->setViewState('DateFormat',$value,'dd-MM-yyyy');
+		$this->setViewState('DateFormat', $value, 'dd-MM-yyyy');
 	}
 
 	/**
@@ -235,7 +232,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @param string date string
+	 * @param string $value date string
 	 */
 	public function setDate($value)
 	{
@@ -247,22 +244,22 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getTimeStamp()
 	{
-		if(trim($this->getText())==='')
+		if (trim($this->getText()) === '') {
 			return null;
-		else
+		} else {
 			return $this->getTimeStampFromText();
+		}
 	}
 
 	/**
 	 * Sets the date for the date picker using timestamp.
-	 * @param float time stamp for the date picker
+	 * @param float $value time stamp for the date picker
 	 */
 	public function setTimeStamp($value)
 	{
-		if($value===null || (is_string($value) && trim($value)===''))
+		if ($value === null || (is_string($value) && trim($value) === '')) {
 			$this->setText('');
-		else
-		{
+		} else {
 			$date = TPropertyValue::ensureFloat($value);
 			$formatter = new TSimpleDateFormatter($this->getDateFormat());
 			$this->setText($formatter->format($date));
@@ -276,7 +273,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	protected function getTimeStampFromText()
 	{
 		$pattern = $this->getDateFormat();
-		$pattern = str_replace(array('MMMM', 'MMM'), array('MM','MM'), $pattern);
+		$pattern = str_replace(['MMMM', 'MMM'], ['MM', 'MM'], $pattern);
 		$formatter = new TSimpleDateFormatter($pattern);
 		return $formatter->parse($this->getText());
 	}
@@ -288,10 +285,10 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 */
 	public function getValidationPropertyValue()
 	{
-		if(($text = $this->getText()) === '')
+		if (($text = $this->getText()) === '') {
 			return '';
+		}
 		$date = $this->getTimeStamp();
 		return $date == null ? $text : $date;
 	}
-
 }

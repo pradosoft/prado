@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Exception;
 use Prado\Exceptions\TErrorHandler;
 use Prado\Exceptions\TPhpErrorException;
@@ -35,12 +36,11 @@ class TCallbackErrorHandler extends TErrorHandler
 	/**
 	 * Displays the exceptions to the client-side TJavascriptLogger.
 	 * A HTTP 500 status code is sent and the stack trace is sent as JSON encoded.
-	 * @param Exception exception details.
+	 * @param Exception $exception exception details.
 	 */
 	protected function displayException($exception)
 	{
-		if($this->getApplication()->getMode()===TApplicationMode::Debug)
-		{
+		if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
 			$response = $this->getApplication()->getResponse();
 			$trace = $this->getExceptionStackTrace($exception);
 			// avoid error on non-utf8 strings
@@ -48,50 +48,47 @@ class TCallbackErrorHandler extends TErrorHandler
 				$trace = TJavaScript::jsonEncode($trace);
 			} catch (Exception $e) {
 				// strip everythin not 7bit ascii
-				$trace = preg_replace('/[^(\x20-\x7F)]*/','', serialize($trace));
+				$trace = preg_replace('/[^(\x20-\x7F)]*/', '', serialize($trace));
 			}
 
 			// avoid exception loop if headers have already been sent
 			try {
 				$response->setStatusCode(500, 'Internal Server Error');
-			} catch (Exception $e) { }
+			} catch (Exception $e) {
+			}
 
 			$content = $response->createHtmlWriter();
 			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_ERROR_HEADER);
 			$content->write($trace);
-		}
-		else
-		{
-			error_log("Error happened while processing an existing error:\n".$exception->__toString());
+		} else {
+			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
 			header('HTTP/1.0 500 Internal Server Error', true, 500);
 		}
 		$this->getApplication()->getResponse()->flush();
 	}
 
 	/**
-	 * @param Exception exception details.
+	 * @param Exception $exception exception details.
 	 * @return array exception stack trace details.
 	 */
 	private function getExceptionStackTrace($exception)
 	{
-		$data['code']=$exception->getCode() > 0 ? $exception->getCode() : 500;
-		$data['file']=$exception->getFile();
-		$data['line']=$exception->getLine();
-		$data['trace']=$exception->getTrace();
-		if($exception instanceof TPhpErrorException)
-		{
+		$data['code'] = $exception->getCode() > 0 ? $exception->getCode() : 500;
+		$data['file'] = $exception->getFile();
+		$data['line'] = $exception->getLine();
+		$data['trace'] = $exception->getTrace();
+		if ($exception instanceof TPhpErrorException) {
 			// if PHP exception, we want to show the 2nd stack level context
 			// because the 1st stack level is of little use (it's in error handler)
-			if(isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line']))
-			{
-				$data['file']=$trace[0]['file'];
-				$data['line']=$trace[0]['line'];
+			if (isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line'])) {
+				$data['file'] = $trace[0]['file'];
+				$data['line'] = $trace[0]['line'];
 			}
 		}
-		$data['type']=get_class($exception);
-		$data['message']=$exception->getMessage();
-		$data['version']=$_SERVER['SERVER_SOFTWARE'].' '.Prado::getVersion();
-		$data['time']=@strftime('%Y-%m-%d %H:%M',time());
+		$data['type'] = get_class($exception);
+		$data['message'] = $exception->getMessage();
+		$data['version'] = $_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
+		$data['time'] = @strftime('%Y-%m-%d %H:%M', time());
 		return $data;
 	}
 }

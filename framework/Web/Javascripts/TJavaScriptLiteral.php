@@ -47,7 +47,7 @@ class TJavaScriptLiteral
 
 	public function __toString()
 	{
-		return (string)$this->_s;
+		return (string) $this->_s;
 	}
 
 	public function toJavaScriptLiteral()

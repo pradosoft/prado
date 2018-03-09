@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Caching;
+
 use Prado\Prado;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
@@ -94,7 +95,7 @@ class TDbCache extends TCache
 	/**
 	 * @var string the ID of TDataSourceConfig module
 	 */
-	private $_connID='';
+	private $_connID = '';
 	/**
 	 * @var TDbConnection the DB connection instance
 	 */
@@ -102,11 +103,11 @@ class TDbCache extends TCache
 	/**
 	 * @var string name of the DB cache table
 	 */
-	private $_cacheTable='pradocache';
+	private $_cacheTable = 'pradocache';
 	/**
 	 * @var integer Interval expired items will be removed from cache
 	 */
-	private $_flushInterval=60;
+	private $_flushInterval = 60;
 	/**
 	 * @var boolean
 	 */
@@ -114,14 +115,14 @@ class TDbCache extends TCache
 	/**
 	 * @var boolean
 	 */
-	private $_createCheck= false;
+	private $_createCheck = false;
 	/**
 	 * @var boolean whether the cache DB table should be created automatically
 	 */
-	private $_autoCreate=true;
-	private $_username='';
-	private $_password='';
-	private $_connectionString='';
+	private $_autoCreate = true;
+	private $_username = '';
+	private $_password = '';
+	private $_connectionString = '';
 
 	/**
 	 * Destructor.
@@ -129,8 +130,9 @@ class TDbCache extends TCache
 	 */
 	public function __destruct()
 	{
-		if($this->_db!==null)
+		if ($this->_db !== null) {
 			$this->_db->setActive(false);
+		}
 	}
 
 	/**
@@ -139,12 +141,12 @@ class TDbCache extends TCache
 	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
 	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
 	 *
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
-		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', array($this, 'doInitializeCache'));
-		$this -> getApplication() -> attachEventHandler('OnSaveState', array($this, 'doFlushCacheExpired'));
+		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+		$this -> getApplication() -> attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
 		parent::init($config);
 	}
 
@@ -182,55 +184,54 @@ class TDbCache extends TCache
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
 	 * @since 3.1.5
 	 */
-	protected function initializeCache($force=false)
+	protected function initializeCache($force = false)
 	{
-		if($this->_cacheInitialized && !$force) return;
-		$db=$this->getDbConnection();
-		try
-		{
+		if ($this->_cacheInitialized && !$force) {
+			return;
+		}
+		$db = $this->getDbConnection();
+		try {
 			$key = 'TDbCache:' . $this->_cacheTable . ':created';
-			if($force)
+			if ($force) {
 				$this -> _createCheck = false;
-			else
+			} else {
 				$this -> _createCheck = $this -> getApplication() -> getGlobalState($key, 0);
+			}
 
-			if($this->_autoCreate && !$this -> _createCheck) {
-
+			if ($this->_autoCreate && !$this -> _createCheck) {
 				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
-				$sql='SELECT 1 FROM '.$this->_cacheTable.' WHERE 0=1';
+				$sql = 'SELECT 1 FROM ' . $this->_cacheTable . ' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
 
 				$this -> _createCheck = true;
 				$this -> getApplication() -> setGlobalState($key, time());
 			}
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			// DB table not exists
-			if($this->_autoCreate)
-			{
+			if ($this->_autoCreate) {
 				Prado::trace('Autocreate: ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
-				$driver=$db->getDriverName();
-				if($driver==='mysql')
-					$blob='LONGBLOB';
-				else if($driver==='pgsql')
-					$blob='BYTEA';
-				else
-					$blob='BLOB';
+				$driver = $db->getDriverName();
+				if ($driver === 'mysql') {
+					$blob = 'LONGBLOB';
+				} elseif ($driver === 'pgsql') {
+					$blob = 'BYTEA';
+				} else {
+					$blob = 'BLOB';
+				}
 
-				$sql='CREATE TABLE '.$this->_cacheTable." (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
+				$sql = 'CREATE TABLE ' . $this->_cacheTable . " (itemkey CHAR(128) PRIMARY KEY, value $blob, expire INTEGER)";
 				$db->createCommand($sql)->execute();
 
-				$sql='CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';
+				$sql = 'CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';
 				$db->createCommand($sql)->execute();
 
 				$this -> _createCheck = true;
 				$this -> getApplication() -> setGlobalState($key, time());
+			} else {
+				throw new TConfigurationException('db_cachetable_inexistent', $this->_cacheTable);
 			}
-			else
-				throw new TConfigurationException('db_cachetable_inexistent',$this->_cacheTable);
 		}
 		$this->_cacheInitialized = true;
 	}
@@ -241,20 +242,23 @@ class TDbCache extends TCache
 	 * @return void
 	 * @since 3.1.5
 	 */
-	public function flushCacheExpired($force=false)
+	public function flushCacheExpired($force = false)
 	{
 		$interval = $this -> getFlushInterval();
-		if(!$force && $interval === 0) return;
+		if (!$force && $interval === 0) {
+			return;
+		}
 
-		$key	= 'TDbCache:' . $this->_cacheTable . ':flushed';
-		$now	= time();
-		$next	= $interval + (integer)$this -> getApplication() -> getGlobalState($key, 0);
+		$key = 'TDbCache:' . $this->_cacheTable . ':flushed';
+		$now = time();
+		$next = $interval + (integer) $this -> getApplication() -> getGlobalState($key, 0);
 
-		if($force || $next <= $now)
-		{
-			if(!$this->_cacheInitialized) $this->initializeCache();
+		if ($force || $next <= $now) {
+			if (!$this->_cacheInitialized) {
+				$this->initializeCache();
+			}
 			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
-			$sql='DELETE FROM '.$this->_cacheTable.' WHERE expire<>0 AND expire<'.$now;
+			$sql = 'DELETE FROM ' . $this->_cacheTable . ' WHERE expire<>0 AND expire<' . $now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this -> getApplication() -> setGlobalState($key, $now);
 		}
@@ -275,7 +279,7 @@ class TDbCache extends TCache
 	 * To disable automatic deletion of expired items,
 	 * e.g. for external flushing via cron you can set value to '0'
 	 *
-	 * @param integer Interval in sec
+	 * @param integer $value Interval in sec
 	 * @since 3.1.5
 	 */
 	public function setFlushInterval($value)
@@ -291,30 +295,27 @@ class TDbCache extends TCache
 	 */
 	protected function createDbConnection()
 	{
-		if($this->_connID!=='')
-		{
-			$config=$this->getApplication()->getModule($this->_connID);
-			if($config instanceof TDataSourceConfig)
+		if ($this->_connID !== '') {
+			$config = $this->getApplication()->getModule($this->_connID);
+			if ($config instanceof TDataSourceConfig) {
 				return $config->getDbConnection();
-			else
-				throw new TConfigurationException('dbcache_connectionid_invalid',$this->_connID);
-		}
-		else
-		{
-			$db=new TDbConnection;
-			if($this->_connectionString!=='')
-			{
-				$db->setConnectionString($this->_connectionString);
-				if($this->_username!=='')
-					$db->setUsername($this->_username);
-				if($this->_password!=='')
-					$db->setPassword($this->_password);
+			} else {
+				throw new TConfigurationException('dbcache_connectionid_invalid', $this->_connID);
 			}
-			else
-			{
+		} else {
+			$db = new TDbConnection;
+			if ($this->_connectionString !== '') {
+				$db->setConnectionString($this->_connectionString);
+				if ($this->_username !== '') {
+					$db->setUsername($this->_username);
+				}
+				if ($this->_password !== '') {
+					$db->setPassword($this->_password);
+				}
+			} else {
 				// default to SQLite3 database
-				$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.cache';
-				$db->setConnectionString('sqlite:'.$dbFile);
+				$dbFile = $this->getApplication()->getRuntimePath() . '/sqlite3.cache';
+				$db->setConnectionString('sqlite:' . $dbFile);
 			}
 			return $db;
 		}
@@ -325,8 +326,9 @@ class TDbCache extends TCache
 	 */
 	public function getDbConnection()
 	{
-		if($this->_db===null)
-			$this->_db=$this->createDbConnection();
+		if ($this->_db === null) {
+			$this->_db = $this->createDbConnection();
+		}
 
 		$this->_db->setActive(true);
 		return $this->_db;
@@ -346,12 +348,12 @@ class TDbCache extends TCache
 	 * The datasource module will be used to establish the DB connection for this cache module.
 	 * The database connection can also be specified via {@link setConnectionString ConnectionString}.
 	 * When both ConnectionID and ConnectionString are specified, the former takes precedence.
-	 * @param string ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@link TDataSourceConfig} module
 	 * @since 3.1.1
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -363,12 +365,12 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string The Data Source Name, or DSN, contains the information required to connect to the database.
+	 * @param string $value The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @see http://www.php.net/manual/en/function.pdo-construct.php
 	 */
 	public function setConnectionString($value)
 	{
-		$this->_connectionString=$value;
+		$this->_connectionString = $value;
 	}
 
 	/**
@@ -380,11 +382,11 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string the username for establishing DB connection
+	 * @param string $value the username for establishing DB connection
 	 */
 	public function setUsername($value)
 	{
-		$this->_username=$value;
+		$this->_username = $value;
 	}
 
 	/**
@@ -396,11 +398,11 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param string the password for establishing DB connection
+	 * @param string $value the password for establishing DB connection
 	 */
 	public function setPassword($value)
 	{
-		$this->_password=$value;
+		$this->_password = $value;
 	}
 
 	/**
@@ -428,12 +430,12 @@ class TDbCache extends TCache
 	 *
 	 * Important: Make sure that the indices are non-unique!
 	 *
-	 * @param string the name of the DB table to store cache content
+	 * @param string $value the name of the DB table to store cache content
 	 * @see setAutoCreateCacheTable
 	 */
 	public function setCacheTableName($value)
 	{
-		$this->_cacheTable=$value;
+		$this->_cacheTable = $value;
 	}
 
 	/**
@@ -446,30 +448,30 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param boolean whether the cache DB table should be automatically created if not exists.
+	 * @param boolean $value whether the cache DB table should be automatically created if not exists.
 	 * @see setCacheTableName
 	 */
 	public function setAutoCreateCacheTable($value)
 	{
-		$this->_autoCreate=TPropertyValue::ensureBoolean($value);
+		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string a unique key identifying the cached value
+	 * @param string $key a unique key identifying the cached value
 	 * @return string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
-		if(!$this->_cacheInitialized) $this->initializeCache();
-		try {
-			$sql='SELECT value FROM '.$this->_cacheTable.' WHERE itemkey=\''.$key.'\' AND (expire=0 OR expire>'.time().') ORDER BY expire DESC';
-			$command=$this->getDbConnection()->createCommand($sql);
-			return unserialize($command->queryScalar());
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
 		}
-		catch(\Exception $e)
-		{
+		try {
+			$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>' . time() . ') ORDER BY expire DESC';
+			$command = $this->getDbConnection()->createCommand($sql);
+			return unserialize($command->queryScalar());
+		} catch (\Exception $e) {
 			$this->initializeCache(true);
 			return unserialize($command->queryScalar());
 		}
@@ -479,49 +481,45 @@ class TDbCache extends TCache
 	 * Stores a value identified by a key in cache.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function setValue($key,$value,$expire)
+	protected function setValue($key, $value, $expire)
 	{
 		$this->deleteValue($key);
-		return $this->addValue($key,$value,$expire);
+		return $this->addValue($key, $value, $expire);
 	}
 
 	/**
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * This is the implementation of the method declared in the parent class.
 	 *
-	 * @param string the key identifying the value to be cached
-	 * @param string the value to be cached
-	 * @param integer the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param string $key the key identifying the value to be cached
+	 * @param string $value the value to be cached
+	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @return boolean true if the value is successfully stored into cache, false otherwise
 	 */
-	protected function addValue($key,$value,$expire)
+	protected function addValue($key, $value, $expire)
 	{
-		if(!$this->_cacheInitialized) $this->initializeCache();
-		$expire=($expire<=0)?0:time()+$expire;
-		$sql="INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
-		try
-		{
-			$command=$this->getDbConnection()->createCommand($sql);
-			$command->bindValue(':key',$key,\PDO::PARAM_STR);
-			$command->bindValue(':value',serialize($value),\PDO::PARAM_LOB);
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
+		}
+		$expire = ($expire <= 0) ? 0 : time() + $expire;
+		$sql = "INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
+		try {
+			$command = $this->getDbConnection()->createCommand($sql);
+			$command->bindValue(':key', $key, \PDO::PARAM_STR);
+			$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
 			$command->execute();
 			return true;
-		}
-		catch(\Exception $e)
-		{
-			try
-			{
+		} catch (\Exception $e) {
+			try {
 				$this->initializeCache(true);
 				$command->execute();
 				return true;
-			}
-			catch(\Exception $e)
-			{
+			} catch (\Exception $e) {
 				return false;
 			}
 		}
@@ -530,21 +528,20 @@ class TDbCache extends TCache
 	/**
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
-	 * @param string the key of the value to be deleted
+	 * @param string $key the key of the value to be deleted
 	 * @return boolean if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{
-		if(!$this->_cacheInitialized) $this->initializeCache();
-		try
-		{
-			$command=$this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-			$command->bindValue(':key',$key,\PDO::PARAM_STR);
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
+		}
+		try {
+			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+			$command->bindValue(':key', $key, \PDO::PARAM_STR);
 			$command->execute();
 			return true;
-		}
-		catch(\Exception $e)
-		{
+		} catch (\Exception $e) {
 			$this->initializeCache(true);
 			$command->execute();
 			return true;
@@ -557,22 +554,18 @@ class TDbCache extends TCache
 	 */
 	public function flush()
 	{
-		if(!$this->_cacheInitialized) $this->initializeCache();
-		try
-		{
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
+		}
+		try {
 			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable}");
 			$command->execute();
-		}
-		catch(\Exception $e)
-		{
-			try
-			{
+		} catch (\Exception $e) {
+			try {
 				$this->initializeCache(true);
 				$command->execute();
 				return true;
-			}
-			catch(\Exception $e)
-			{
+			} catch (\Exception $e) {
 				return false;
 			}
 		}

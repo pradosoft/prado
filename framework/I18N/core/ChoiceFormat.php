@@ -17,6 +17,7 @@
  */
 
 namespace Prado\I18N\core;
+
 use Exception;
 
 /**
@@ -68,7 +69,7 @@ use Exception;
  *   # <tt>&amp;</tt> -- conditional AND.
  *   # <tt>&amp;&amp;</tt> -- condition AND with short circuit.
  *   # <tt>|</tt> -- conditional OR.
- *   # <tt>||</tt> -- conditional OR with short circuit. 
+ *   # <tt>||</tt> -- conditional OR with short circuit.
  *   # <tt>!</tt> -- negation.
  *
  * Additional round brackets can also be used to perform grouping.
@@ -100,7 +101,7 @@ class ChoiceFormat
 	/**
 	 * Constructor.
 	 */
-	function __construct()
+	public function __construct()
 	{
 		$this->inf = -log(0);
 	}
@@ -108,73 +109,75 @@ class ChoiceFormat
 
 	/**
 	 * Determine if the given number belongs to a given set
-	 * @param float the number to test.
-	 * @param string the set, in set notation.
+	 * @param float $number the number to test.
+	 * @param string $set the set, in set notation.
 	 * @return boolean true if number is in the set, false otherwise.
 	 */
-	function isValid($number, $set)
+	public function isValid($number, $set)
 	{
-		$n = preg_match_all($this->validate,$set,$matches,PREG_SET_ORDER);
+		$n = preg_match_all($this->validate, $set, $matches, PREG_SET_ORDER);
 
-		if($n < 3) throw new Exception("Invalid set \"{$set}\"");
+		if ($n < 3) {
+			throw new Exception("Invalid set \"{$set}\"");
+		}
 
-		if(preg_match('/\{\s*n:([^\}]+)\}/', $set, $def))
-		{
+		if (preg_match('/\{\s*n:([^\}]+)\}/', $set, $def)) {
 			return $this->isValidSetNotation($number, $def[1]);
 		}
 
 		$leftBracket = $matches[0][0];
-		$rightBracket = $matches[$n-1][0];
+		$rightBracket = $matches[$n - 1][0];
 
 		$i = 0;
-		$elements = array();
-		foreach($matches as $match)
-		{
+		$elements = [];
+		foreach ($matches as $match) {
 			$string = $match[0];
-			if($i != 0 && $i != $n-1 && $string !== ',')
-			{
-				if($string == '-Inf')
-					$elements[] = -1*$this->inf;
-				else if ($string == '+Inf' || $string == 'Inf')
+			if ($i != 0 && $i != $n - 1 && $string !== ',') {
+				if ($string == '-Inf') {
+					$elements[] = -1 * $this->inf;
+				} elseif ($string == '+Inf' || $string == 'Inf') {
 					$elements[] = $this->inf;
-				else
-					$elements[] = floatval($string);
+				} else {
+					$elements[] = (float) $string;
+				}
 			}
 			$i++;
 		}
 		$total = count($elements);
-		$number = floatval($number);
+		$number = (float) $number;
 
-		if($leftBracket == '{' && $rightBracket == '}')
+		if ($leftBracket == '{' && $rightBracket == '}') {
 			return in_array($number, $elements);
+		}
 
 		$left = false;
-		if($leftBracket == '[')
+		if ($leftBracket == '[') {
 			$left = $number >= $elements[0];
-		else if ($leftBracket == '(')
+		} elseif ($leftBracket == '(') {
 			$left = $number > $elements[0];
+		}
 
 		$right = false;
-		if($rightBracket==']')
-			$right = $number <= $elements[$total-1];
-		else if($rightBracket == ')')
-			$right = $number < $elements[$total-1];
+		if ($rightBracket == ']') {
+			$right = $number <= $elements[$total - 1];
+		} elseif ($rightBracket == ')') {
+			$right = $number < $elements[$total - 1];
+		}
 
-		if($left && $right) return true;
+		if ($left && $right) {
+			return true;
+		}
 
 		return false;
 	}
 
 	protected function isValidSetNotation($number, $set)
 	{
-		$str = '$result = '.str_replace('n', '$number', $set).';';
-		try
-		{
+		$str = '$result = ' . str_replace('n', '$number', $set) . ';';
+		try {
 			eval($str);
 			return $result;
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			return false;
 		}
 	}
@@ -182,44 +185,43 @@ class ChoiceFormat
 	/**
 	 * Parse a choice string and get a list of sets and a list of strings
 	 * corresponding to the sets.
-	 * @param string the string containing the choices
+	 * @param string $string the string containing the choices
 	 * @return array array($sets, $strings)
 	 */
-	function parse($string)
+	public function parse($string)
 	{
-		$n = preg_match_all($this->parse,$string,$matches, PREG_OFFSET_CAPTURE);
-		$sets = array();
-		foreach($matches[1] as $match)
+		$n = preg_match_all($this->parse, $string, $matches, PREG_OFFSET_CAPTURE);
+		$sets = [];
+		foreach ($matches[1] as $match) {
 			$sets[] = $match[0];
+		}
 		$offset = $matches[0];
-		$strings = array();
-		for($i = 0; $i < $n; $i++)
-		{
+		$strings = [];
+		for ($i = 0; $i < $n; $i++) {
 			$len = strlen($offset[$i][0]);
-			$begin = $i == 0? $len : $offset[$i][1] + $len;
-			$end = $i == $n-1 ? strlen($string) : $offset[$i+1][1];
+			$begin = $i == 0 ? $len : $offset[$i][1] + $len;
+			$end = $i == $n - 1 ? strlen($string) : $offset[$i + 1][1];
 			$strings[] = substr($string, $begin, $end - $begin);
 		}
-		return array($sets, $strings);
+		return [$sets, $strings];
 	}
 
 	/**
 	 * For the choice string, and a number, find and return the
 	 * string that satisfied the set within the choices.
-	 * @param string the choices string.
-	 * @param float the number to test.
+	 * @param string $string the choices string.
+	 * @param float $number the number to test.
 	 * @return string the choosen string.
 	 */
 	public function format($string, $number)
 	{
 		list($sets, $strings) = $this->parse($string);
 		$total = count($sets);
-		for($i = 0; $i < $total; $i++)
-		{
-			if($this->isValid($number, $sets[$i]))
+		for ($i = 0; $i < $total; $i++) {
+			if ($this->isValid($number, $sets[$i])) {
 				return $strings[$i];
+			}
 		}
 		return false;
 	}
 }
-

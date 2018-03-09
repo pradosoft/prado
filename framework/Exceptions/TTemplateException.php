@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Exceptions;
+
 use Prado\TPropertyValue;
 
 /**
@@ -23,9 +24,9 @@ use Prado\TPropertyValue;
  */
 class TTemplateException extends TConfigurationException
 {
-	private $_template='';
-	private $_lineNumber=0;
-	private $_fileName='';
+	private $_template = '';
+	private $_lineNumber = 0;
+	private $_fileName = '';
 
 	/**
 	 * @return string the template source code that causes the exception. This is empty if {@link getTemplateFile TemplateFile} is not empty.
@@ -36,11 +37,11 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param string the template source code that causes the exception
+	 * @param string $value the template source code that causes the exception
 	 */
 	public function setTemplateSource($value)
 	{
-		$this->_template=$value;
+		$this->_template = $value;
 	}
 
 	/**
@@ -52,11 +53,11 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param string the template file that causes the exception
+	 * @param string $value the template file that causes the exception
 	 */
 	public function setTemplateFile($value)
 	{
-		$this->_fileName=$value;
+		$this->_fileName = $value;
 	}
 
 	/**
@@ -68,10 +69,10 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param integer the line number at which the template has error
+	 * @param integer $value the line number at which the template has error
 	 */
 	public function setLineNumber($value)
 	{
-		$this->_lineNumber=TPropertyValue::ensureInteger($value);
+		$this->_lineNumber = TPropertyValue::ensureInteger($value);
 	}
 }

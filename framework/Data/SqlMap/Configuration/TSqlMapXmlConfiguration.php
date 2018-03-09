@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 
 /**
@@ -34,14 +35,14 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * @var array global properties.
 	 */
-	private $_properties=array();
+	private $_properties = [];
 
 	/**
-	 * @param TSqlMapManager manager instance.
+	 * @param TSqlMapManager $manager manager instance.
 	 */
 	public function __construct($manager)
 	{
-		$this->_manager=$manager;
+		$this->_manager = $manager;
 	}
 
 	public function getManager()
@@ -56,28 +57,32 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Configure the TSqlMapManager using the given xml file.
-	 * @param string SqlMap configuration xml file.
+	 * @param string $filename SqlMap configuration xml file.
 	 */
-	public function configure($filename=null)
+	public function configure($filename = null)
 	{
-		$this->_configFile=$filename;
-		$document = $this->loadXmlDocument($filename,$this);
+		$this->_configFile = $filename;
+		$document = $this->loadXmlDocument($filename, $this);
 
-		foreach($document->xpath('//property') as $property)
+		foreach ($document->xpath('//property') as $property) {
 			$this->loadGlobalProperty($property);
+		}
 
-		foreach($document->xpath('//typeHandler') as $handler)
+		foreach ($document->xpath('//typeHandler') as $handler) {
 			$this->loadTypeHandler($handler);
+		}
 
-		foreach($document->xpath('//connection[last()]') as $conn)
+		foreach ($document->xpath('//connection[last()]') as $conn) {
 			$this->loadDatabaseConnection($conn);
+		}
 
 		//try to load configuration in the current config file.
 		$mapping = new TSqlMapXmlMappingConfiguration($this);
 		$mapping->configure($filename);
 
-		foreach($document->xpath('//sqlMap') as $sqlmap)
+		foreach ($document->xpath('//sqlMap') as $sqlmap) {
 			$this->loadSqlMappingFiles($sqlmap);
+		}
 
 		$this->resolveResultMapping();
 		$this->attachCacheModels();
@@ -85,16 +90,16 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load global replacement property.
-	 * @param SimpleXmlElement property node.
+	 * @param SimpleXmlElement $node property node.
 	 */
 	protected function loadGlobalProperty($node)
 	{
-		$this->_properties[(string)$node['name']] = (string)$node['value'];
+		$this->_properties[(string) $node['name']] = (string) $node['value'];
 	}
 
 	/**
 	 * Load the type handler configurations.
-	 * @param SimpleXmlElement type handler node
+	 * @param SimpleXmlElement $node type handler node
 	 */
 	protected function loadTypeHandler($node)
 	{
@@ -104,7 +109,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the database connection tag.
-	 * @param SimpleXmlElement connection node.
+	 * @param SimpleXmlElement $node connection node.
 	 */
 	protected function loadDatabaseConnection($node)
 	{
@@ -118,10 +123,10 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSqlMappingFiles($node)
 	{
-		if(strlen($resource = (string)$node['resource']) > 0)
-		{
-			if( strpos($resource, '${') !== false)
+		if (strlen($resource = (string) $node['resource']) > 0) {
+			if (strpos($resource, '${') !== false) {
 				$resource = $this->replaceProperties($resource);
+			}
 
 			$mapping = new TSqlMapXmlMappingConfiguration($this);
 			$filename = $this->getAbsoluteFilePath($this->_configFile, $resource);
@@ -135,23 +140,25 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	protected function resolveResultMapping()
 	{
 		$maps = $this->_manager->getResultMaps();
-		foreach($maps as $entry)
-		{
-			foreach($entry->getColumns() as $item)
-			{
+		foreach ($maps as $entry) {
+			foreach ($entry->getColumns() as $item) {
 				$resultMap = $item->getResultMapping();
-				if(strlen($resultMap) > 0)
-				{
-					if($maps->contains($resultMap))
+				if (strlen($resultMap) > 0) {
+					if ($maps->contains($resultMap)) {
 						$item->setNestedResultMap($maps[$resultMap]);
-					else
+					} else {
 						throw new TSqlMapConfigurationException(
 							'sqlmap_unable_to_find_result_mapping',
-								$resultMap, $this->_configFile, $entry->getID());
+								$resultMap,
+							$this->_configFile,
+							$entry->getID()
+						);
+					}
 				}
 			}
-			if($entry->getDiscriminator()!==null)
+			if ($entry->getDiscriminator() !== null) {
 				$entry->getDiscriminator()->initialize($this->_manager);
+			}
 		}
 	}
 
@@ -160,10 +167,8 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function attachCacheModels()
 	{
-		foreach($this->_manager->getMappedStatements() as $mappedStatement)
-		{
-			if(strlen($model = $mappedStatement->getStatement()->getCacheModel()) > 0)
-			{
+		foreach ($this->_manager->getMappedStatements() as $mappedStatement) {
+			if (strlen($model = $mappedStatement->getStatement()->getCacheModel()) > 0) {
 				$cache = $this->_manager->getCacheModel($model);
 				$mappedStatement->getStatement()->setCache($cache);
 			}
@@ -173,13 +178,14 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Replace the place holders ${name} in text with properties the
 	 * corresponding global property value.
-	 * @param string original string.
+	 * @param string $string original string.
 	 * @return string string with global property replacement.
 	 */
 	public function replaceProperties($string)
 	{
-		foreach($this->_properties as $find => $replace)
-			$string = str_replace('${'.$find.'}', $replace, $string);
+		foreach ($this->_properties as $find => $replace) {
+			$string = str_replace('${' . $find . '}', $replace, $string);
+		}
 		return $string;
 	}
 }

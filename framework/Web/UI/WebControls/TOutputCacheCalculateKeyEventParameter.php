@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -27,7 +28,7 @@ class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 	/**
 	 * @var string cache key to be appended to the default calculation scheme.
 	 */
-	private $_cacheKey='';
+	private $_cacheKey = '';
 
 	/**
 	 * @return string cache key to be appended to the default calculation scheme.
@@ -38,10 +39,10 @@ class TOutputCacheCalculateKeyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param string cache key to be appended to the default calculation scheme
+	 * @param string $value cache key to be appended to the default calculation scheme
 	 */
 	public function setCacheKey($value)
 	{
-		$this->_cacheKey=TPropertyValue::ensureString($value);
+		$this->_cacheKey = TPropertyValue::ensureString($value);
 	}
 }

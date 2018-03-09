@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -36,11 +37,11 @@ class THttpCookieCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param mixed owner of this collection.
+	 * @param mixed $owner owner of this collection.
 	 */
-	public function __construct($owner=null)
+	public function __construct($owner = null)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**
@@ -51,55 +52,59 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof THttpCookie)
-		{
-			parent::insertAt($index,$item);
-			if($this->_o instanceof THttpResponse)
+		if ($item instanceof THttpCookie) {
+			parent::insertAt($index, $item);
+			if ($this->_o instanceof THttpResponse) {
 				$this->_o->addCookie($item);
-		}
-		else
+			}
+		} else {
 			throw new TInvalidDataTypeException('httpcookiecollection_httpcookie_required');
+		}
 	}
 
 	/**
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a TCookie object.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
-		if($this->_o instanceof THttpResponse)
+		$item = parent::removeAt($index);
+		if ($this->_o instanceof THttpResponse) {
 			$this->_o->removeCookie($item);
+		}
 		return $item;
 	}
 
 	/**
-	 * @param integer|string index of the cookie in the collection or the cookie's name
+	 * @param integer|string $index index of the cookie in the collection or the cookie's name
 	 * @return THttpCookie the cookie found
 	 */
 	public function itemAt($index)
 	{
-		if(is_integer($index))
+		if (is_int($index)) {
 			return parent::itemAt($index);
-		else
+		} else {
 			return $this->findCookieByName($index);
+		}
 	}
 
 	/**
 	 * Finds the cookie with the specified name.
-	 * @param string the name of the cookie to be looked for
+	 * @param string $name the name of the cookie to be looked for
 	 * @return THttpCookie the cookie, null if not found
 	 */
 	public function findCookieByName($name)
 	{
-		foreach($this as $cookie)
-			if($cookie->getName()===$name)
+		foreach ($this as $cookie) {
+			if ($cookie->getName() === $name) {
 				return $cookie;
+			}
+		}
 		return null;
 	}
 }

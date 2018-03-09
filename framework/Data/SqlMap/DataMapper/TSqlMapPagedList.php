@@ -16,7 +16,6 @@ use Prado\Collections\TPagedList;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
-
 /**
  * TSqlMapPagedList implements a list with paging functionality that retrieves
  * data from a SqlMap statement.
@@ -37,7 +36,7 @@ class TSqlMapPagedList extends TPagedList
 	private $_parameter;
 	private $_prevPageList;
 	private $_nextPageList;
-	private $_delegate=null;
+	private $_delegate;
 
 	/**
 	 * Create a new SqlMap paged list.
@@ -47,12 +46,12 @@ class TSqlMapPagedList extends TPagedList
 	 * @param mixed delegate for each data row retrieved.
 	 * @param int number of page to fetch on initialization
 	 */
-	public function __construct(IMappedStatement $statement,$parameter, $pageSize, $delegate=null, $page=0)
+	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate = null, $page = 0)
 	{
 		parent::__construct();
 		parent::setCustomPaging(true);
-		$this->initialize($statement,$parameter, $pageSize, $page);
-		$this->_delegate=$delegate;
+		$this->initialize($statement, $parameter, $pageSize, $page);
+		$this->_delegate = $delegate;
 	}
 
 	/**
@@ -67,7 +66,7 @@ class TSqlMapPagedList extends TPagedList
 		$this->_statement = $statement;
 		$this->_parameter = $parameter;
 		$this->setPageSize($pageSize);
-		$this->attachEventHandler('OnFetchData', array($this, 'fetchDataFromStatement'));
+		$this->attachEventHandler('OnFetchData', [$this, 'fetchDataFromStatement']);
 		$this->gotoPage($page);
 	}
 
@@ -88,8 +87,14 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$limit = $this->getOffsetAndLimit($param);
 		$connection = $this->_statement->getManager()->getDbConnection();
-		$data = $this->_statement->executeQueryForList($connection,
-						$this->_parameter, null, $limit[0], $limit[1], $this->_delegate);
+		$data = $this->_statement->executeQueryForList(
+			$connection,
+						$this->_parameter,
+			null,
+			$limit[0],
+			$limit[1],
+			$this->_delegate
+		);
 		$this->populateData($param, $data);
 	}
 
@@ -120,61 +125,49 @@ class TSqlMapPagedList extends TPagedList
 	{
 		$total = $data instanceof TList ? $data->getCount() : count($data);
 		$pageSize = $this->getPageSize();
-		if($total < 1)
-		{
+		if ($total < 1) {
 			$param->setData($data);
 			$this->_prevPageList = null;
 			$this->_nextPageList = null;
 			return;
 		}
 
-		if($param->getNewPageIndex() < 1)
-		{
+		if ($param->getNewPageIndex() < 1) {
 			$this->_prevPageList = null;
-			if($total <= $pageSize)
-			{
+			if ($total <= $pageSize) {
 				$param->setData($data);
 				$this->_nextPageList = null;
-			}
-			else
-			{
+			} else {
 				$param->setData(array_slice($data, 0, $pageSize));
-				$this->_nextPageList = array_slice($data, $pageSize-1,$total);
+				$this->_nextPageList = array_slice($data, $pageSize - 1, $total);
 			}
-		}
-		else
-		{
-			if($total <= $pageSize)
-			{
+		} else {
+			if ($total <= $pageSize) {
 				$this->_prevPageList = array_slice($data, 0, $total);
-				$param->setData(array());
+				$param->setData([]);
 				$this->_nextPageList = null;
-			}
-			else if($total <= $pageSize*2)
-			{
+			} elseif ($total <= $pageSize * 2) {
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $total));
 				$this->_nextPageList = null;
-			}
-			else
-			{
+			} else {
 				$this->_prevPageList = array_slice($data, 0, $pageSize);
 				$param->setData(array_slice($data, $pageSize, $pageSize));
-				$this->_nextPageList = array_slice($data, $pageSize*2, $total-$pageSize*2);
+				$this->_nextPageList = array_slice($data, $pageSize * 2, $total - $pageSize * 2);
 			}
 		}
 	}
 
 	/**
 	 * Calculate the data fetch offsets and limits.
-	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 * @param TPagedListFetchDataEventParameter $param fetch parameters
 	 * @return array 1st element is the offset, 2nd element is the limit.
 	 */
 	protected function getOffsetAndLimit($param)
 	{
 		$index = $param->getNewPageIndex();
 		$pageSize = $this->getPageSize();
-		return $index < 1 ? array($index, $pageSize*2) : array(($index-1)*$pageSize, $pageSize*3);
+		return $index < 1 ? [$index, $pageSize * 2] : [($index - 1) * $pageSize, $pageSize * 3];
 	}
 
 	/**
@@ -182,7 +175,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsNextPageAvailable()
 	{
-		return $this->_nextPageList!==null;
+		return $this->_nextPageList !== null;
 	}
 
 	/**
@@ -190,7 +183,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsPreviousPageAvailable()
 	{
-		return $this->_prevPageList!==null;
+		return $this->_prevPageList !== null;
 	}
 
 	/**
@@ -198,7 +191,7 @@ class TSqlMapPagedList extends TPagedList
 	 */
 	public function getIsLastPage()
 	{
-		return ($this->_nextPageList===null) || $this->_nextPageList->getCount() < 1;
+		return ($this->_nextPageList === null) || $this->_nextPageList->getCount() < 1;
 	}
 
 	/**
@@ -209,4 +202,3 @@ class TSqlMapPagedList extends TPagedList
 		return !($this->getIsFirstPage() || $this->getIsLastPage());
 	}
 }
-

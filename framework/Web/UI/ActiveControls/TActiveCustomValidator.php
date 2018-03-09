@@ -16,7 +16,6 @@ use Prado\Prado;
 use Prado\Web\UI\WebControls\TBaseValidator;
 use Prado\Web\UI\WebControls\TCustomValidator;
 
-
 /**
  * TActiveCustomValidator Class
  *
@@ -36,8 +35,7 @@ use Prado\Web\UI\WebControls\TCustomValidator;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TActiveCustomValidator extends TCustomValidator
-	implements ICallbackEventHandler, IActiveControl
+class TActiveCustomValidator extends TCustomValidator implements ICallbackEventHandler, IActiveControl
 {
 	/**
 	 * @var boolean true if validation is made during a callback request.
@@ -85,8 +83,10 @@ class TActiveCustomValidator extends TCustomValidator
 	 */
 	public function setClientValidationFunction($value)
 	{
-		throw new TNotSupportedException('tactivecustomvalidator_clientfunction_unsupported',
-			get_class($this));
+		throw new TNotSupportedException(
+			'tactivecustomvalidator_clientfunction_unsupported',
+			get_class($this)
+		);
 	}
 
 	/**
@@ -95,9 +95,9 @@ class TActiveCustomValidator extends TCustomValidator
 	 * OnServerValidate} event is raised first and then the
 	 * {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->_isCallback = true;
 		$result = $this->onServerValidate($param->getCallbackParameter());
@@ -106,7 +106,7 @@ class TActiveCustomValidator extends TCustomValidator
 	}
 
 	/**
-	 * @param boolean whether the value is valid; this method will trigger a clientside update if needed
+	 * @param boolean $value whether the value is valid; this method will trigger a clientside update if needed
 	 */
 	public function setIsValid($value)
 	{
@@ -114,11 +114,10 @@ class TActiveCustomValidator extends TCustomValidator
 		// it could have been changed by the clientside validation.
 
 		parent::setIsValid($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.updateActiveCustomValidator';
-			$client->callClientFunction($func, array($this, $value));
+			$client->callClientFunction($func, [$this, $value]);
 		}
 	}
 
@@ -127,7 +126,7 @@ class TActiveCustomValidator extends TCustomValidator
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -140,27 +139,27 @@ class TActiveCustomValidator extends TCustomValidator
 	 */
 	protected function getClientScriptOptions()
 	{
-		$options=TBaseValidator::getClientScriptOptions();
+		$options = TBaseValidator::getClientScriptOptions();
 		$options['EventTarget'] = $this->getUniqueID();
 		return $options;
 	}
 
 	/**
 	 * Sets the text for the error message. Updates client-side error message.
-	 * @param string the error message
+	 * @param string $value the error message
 	 */
 	public function setErrorMessage($value)
 	{
-		if(parent::getErrorMessage() === $value)
+		if (parent::getErrorMessage() === $value) {
 			return;
+		}
 
 
 		parent::setErrorMessage($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$func = 'Prado.Validation.setErrorMessage';
-			$client->callClientFunction($func, array($this, $value));
+			$client->callClientFunction($func, [$this, $value]);
 		}
 	}
 

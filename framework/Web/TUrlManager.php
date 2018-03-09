@@ -64,50 +64,43 @@ class TUrlManager extends \Prado\TModule
 	 * @return string URL
 	 * @see parseUrl
 	 */
-	public function constructUrl($serviceID,$serviceParam,$getItems,$encodeAmpersand,$encodeGetItems)
+	public function constructUrl($serviceID, $serviceParam, $getItems, $encodeAmpersand, $encodeGetItems)
 	{
-		$url=$serviceID.'='.urlencode($serviceParam);
-		$amp=$encodeAmpersand?'&amp;':'&';
-		$request=$this->getRequest();
-		if(is_array($getItems) || $getItems instanceof \Traversable)
-		{
-			if($encodeGetItems)
-			{
-				foreach($getItems as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						$name=urlencode($name.'[]');
-						foreach($value as $v)
-							$url.=$amp.$name.'='.urlencode($v);
+		$url = $serviceID . '=' . urlencode($serviceParam);
+		$amp = $encodeAmpersand ? '&amp;' : '&';
+		$request = $this->getRequest();
+		if (is_array($getItems) || $getItems instanceof \Traversable) {
+			if ($encodeGetItems) {
+				foreach ($getItems as $name => $value) {
+					if (is_array($value)) {
+						$name = urlencode($name . '[]');
+						foreach ($value as $v) {
+							$url .= $amp . $name . '=' . urlencode($v);
+						}
+					} else {
+						$url .= $amp . urlencode($name) . '=' . urlencode($value);
 					}
-					else
-						$url.=$amp.urlencode($name).'='.urlencode($value);
 				}
-			}
-			else
-			{
-				foreach($getItems as $name=>$value)
-				{
-					if(is_array($value))
-					{
-						foreach($value as $v)
-							$url.=$amp.$name.'[]='.$v;
+			} else {
+				foreach ($getItems as $name => $value) {
+					if (is_array($value)) {
+						foreach ($value as $v) {
+							$url .= $amp . $name . '[]=' . $v;
+						}
+					} else {
+						$url .= $amp . $name . '=' . $value;
 					}
-					else
-						$url.=$amp.$name.'='.$value;
 				}
 			}
 		}
 
-		switch($request->getUrlFormat())
-		{
+		switch ($request->getUrlFormat()) {
 			case THttpRequestUrlFormat::Path:
-				return $request->getApplicationUrl().'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+				return $request->getApplicationUrl() . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			case THttpRequestUrlFormat::HiddenPath:
-				return rtrim(dirname($request->getApplicationUrl()), '/').'/'.strtr($url,array($amp=>'/','?'=>'/','='=>$request->getUrlParamSeparator()));
+				return rtrim(dirname($request->getApplicationUrl()), '/') . '/' . strtr($url, [$amp => '/', '?' => '/', '=' => $request->getUrlParamSeparator()]);
 			default:
-				return $request->getApplicationUrl().'?'.$url;
+				return $request->getApplicationUrl() . '?' . $url;
 		}
 	}
 
@@ -126,36 +119,32 @@ class TUrlManager extends \Prado\TModule
 	 */
 	public function parseUrl()
 	{
-		$request=$this->getRequest();
-		$pathInfo=trim($request->getPathInfo(),'/');
-		if(($request->getUrlFormat()===THttpRequestUrlFormat::Path ||
-			$request->getUrlFormat()===THttpRequestUrlFormat::HiddenPath) &&
-			$pathInfo!=='')
-		{
-			$separator=$request->getUrlParamSeparator();
-			$paths=explode('/',$pathInfo);
-			$getVariables=array();
-			foreach($paths as $path)
-			{
-				if(($path=trim($path))!=='')
-				{
-					if(($pos=strpos($path,$separator))!==false)
-					{
-						$name=substr($path,0,$pos);
-						$value=substr($path,$pos+1);
-						if(($pos=strpos($name,'[]'))!==false)
-							$getVariables[substr($name,0,$pos)][]=$value;
-						else
-							$getVariables[$name]=$value;
+		$request = $this->getRequest();
+		$pathInfo = trim($request->getPathInfo(), '/');
+		if (($request->getUrlFormat() === THttpRequestUrlFormat::Path ||
+			$request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) &&
+			$pathInfo !== '') {
+			$separator = $request->getUrlParamSeparator();
+			$paths = explode('/', $pathInfo);
+			$getVariables = [];
+			foreach ($paths as $path) {
+				if (($path = trim($path)) !== '') {
+					if (($pos = strpos($path, $separator)) !== false) {
+						$name = substr($path, 0, $pos);
+						$value = substr($path, $pos + 1);
+						if (($pos = strpos($name, '[]')) !== false) {
+							$getVariables[substr($name, 0, $pos)][] = $value;
+						} else {
+							$getVariables[$name] = $value;
+						}
+					} else {
+						$getVariables[$path] = '';
 					}
-					else
-						$getVariables[$path]='';
 				}
 			}
 			return $getVariables;
+		} else {
+			return [];
 		}
-		else
-			return array();
 	}
 }
-

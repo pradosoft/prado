@@ -9,6 +9,7 @@
  */
 
 namespace Prado\Util;
+
 use Prado\Exceptions\TApplicationException;
 use Prado\TPropertyValue;
 
@@ -80,8 +81,9 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{
-		if(($_handler = constant('TRpcClientTypesEnumerable::'.strtoupper($type))) === null)
+		if (($_handler = constant('TRpcClientTypesEnumerable::' . strtoupper($type))) === null) {
 			throw new TApplicationException('rpcclient_unsupported_handler');
+		}
 
 		return new $_handler($serverUrl, $isNotification);
 	}
@@ -93,13 +95,13 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	protected function createStreamContext($content, $contentType)
 	{
-		return stream_context_create(array(
-			'http' => array(
+		return stream_context_create([
+			'http' => [
 				'method' => 'POST',
 				'header' => "Content-Type: {$contentType}",
 				'content' => $content
-			)
-		));
+			]
+		]);
 	}
 
 	/**
@@ -110,8 +112,9 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 */
 	protected function performRequest($serverUrl, $payload, $mimeType)
 	{
-		if(($_response = @file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false)
-			throw new TRpcClientRequestException('Request failed ("'.$http_response_header[0].'")');
+		if (($_response = @file_get_contents($serverUrl, false, $this->createStreamContext($payload, $mimeType))) === false) {
+			throw new TRpcClientRequestException('Request failed ("' . $http_response_header[0] . '")');
+		}
 
 		return $_response;
 	}
@@ -127,7 +130,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
+	 * @param string $bool boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
 	public function setIsNotification($bool)
 	{
@@ -143,7 +146,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string url of the RPC server
+	 * @param string $value url of the RPC server
 	 */
 	public function setServerUrl($value)
 	{

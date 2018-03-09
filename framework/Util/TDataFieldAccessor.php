@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Exception;
 use Prado\Exceptions\TInvalidDataValueException;
 
@@ -52,42 +53,37 @@ class TDataFieldAccessor
 	 * @return mixed value at the specified field
 	 * @throws TInvalidDataValueException if field or data is invalid
 	 */
-	public static function getDataFieldValue($data,$field)
+	public static function getDataFieldValue($data, $field)
 	{
-		try
-		{
-			if(is_array($data) || ($data instanceof \ArrayAccess))
-			{
-				if(isset($data[$field]))
+		try {
+			if (is_array($data) || ($data instanceof \ArrayAccess)) {
+				if (isset($data[$field])) {
 					return $data[$field];
+				}
 
 				$tmp = $data;
-				foreach (explode(".", $field) as $f)
-				    $tmp = $tmp[$f];
-				return $tmp;
-			}
-			else if(is_object($data))
-			{
-				if(strpos($field,'.')===false)  // simple field
-				{
-					if(method_exists($data, 'get'.$field))
-						return call_user_func(array($data,'get'.$field));
-					else
-						return $data->{$field};
+				foreach (explode(".", $field) as $f) {
+					$tmp = $tmp[$f];
 				}
-				else // field in the format of xxx.yyy.zzz
-				{
-					$object=$data;
-					foreach(explode('.',$field) as $f)
+				return $tmp;
+			} elseif (is_object($data)) {
+				if (strpos($field, '.') === false) {  // simple field
+					if (method_exists($data, 'get' . $field)) {
+						return call_user_func([$data, 'get' . $field]);
+					} else {
+						return $data->{$field};
+					}
+				} else { // field in the format of xxx.yyy.zzz
+					$object = $data;
+					foreach (explode('.', $field) as $f) {
 						$object = TDataFieldAccessor::getDataFieldValue($object, $f);
+					}
 					return $object;
 				}
 			}
+		} catch (Exception $e) {
+			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid', $field, $e->getMessage());
 		}
-		catch(Exception $e)
-		{
-			throw new TInvalidDataValueException('datafieldaccessor_datafield_invalid',$field,$e->getMessage());
-		}
-		throw new TInvalidDataValueException('datafieldaccessor_data_invalid',$field);
+		throw new TInvalidDataValueException('datafieldaccessor_data_invalid', $field);
 	}
 }

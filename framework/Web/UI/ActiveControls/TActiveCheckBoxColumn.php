@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Prado;
 use Prado\Web\UI\WebControls\IItemDataRenderer;
 use Prado\Web\UI\WebControls\TCheckBoxColumn;
@@ -42,82 +43,74 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem || $itemType===TListItemType::EditItem)
-		{
-			$checkBox=new TActiveCheckBox;
-			if($this->getReadOnly() || $itemType!==TListItemType::EditItem)
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
+			$checkBox = new TActiveCheckBox;
+			if ($this->getReadOnly() || $itemType !== TListItemType::EditItem) {
 				$checkBox->setEnabled(false);
+			}
 			$cell->setHorizontalAlign('Center');
 			$cell->getControls()->add($checkBox);
-			$cell->registerObject('CheckBox',$checkBox);
-			if($this->getDataField()!=='')
-				$checkBox->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+			$cell->registerObject('CheckBox', $checkBox);
+			if ($this->getDataField() !== '') {
+				$checkBox->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
+			}
+		} else {
+			parent::initializeCell($cell, $columnIndex, $itemType);
 		}
-		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
-	protected function initializeHeaderCell($cell,$columnIndex)
+	protected function initializeHeaderCell($cell, $columnIndex)
 	{
-		$text=$this->getHeaderText();
+		$text = $this->getHeaderText();
 
-		if(($classPath=$this->getHeaderRenderer())!=='')
-		{
-			$control=Prado::createComponent($classPath);
-			if($control instanceof \Prado\IDataRenderer)
-			{
-				if($control instanceof IItemDataRenderer)
-				{
-					$item=$cell->getParent();
+		if (($classPath = $this->getHeaderRenderer()) !== '') {
+			$control = Prado::createComponent($classPath);
+			if ($control instanceof \Prado\IDataRenderer) {
+				if ($control instanceof IItemDataRenderer) {
+					$item = $cell->getParent();
 					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($item->getItemType());
 				}
 				$control->setData($text);
 			}
 			$cell->getControls()->add($control);
-		}
-		else if($this->getAllowSorting())
-		{
-			$sortExpression=$this->getSortExpression();
-			if(($url=$this->getHeaderImageUrl())!=='')
-			{
-				$button= new TActiveImageButton;
+		} elseif ($this->getAllowSorting()) {
+			$sortExpression = $this->getSortExpression();
+			if (($url = $this->getHeaderImageUrl()) !== '') {
+				$button = new TActiveImageButton;
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
-				if($text!=='')
+				if ($text !== '') {
 					$button->setAlternateText($text);
+				}
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			else if($text!=='')
-			{
-				$button= new TActiveLinkButton;
+			} elseif ($text !== '') {
+				$button = new TActiveLinkButton;
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
-			}
-			else
+			} else {
 				$cell->setText('&nbsp;');
-		}
-		else
-		{
-			if(($url=$this->getHeaderImageUrl())!=='')
-			{
-				$image= new TActiveImage;
+			}
+		} else {
+			if (($url = $this->getHeaderImageUrl()) !== '') {
+				$image = new TActiveImage;
 				$image->setImageUrl($url);
-				if($text!=='')
+				if ($text !== '') {
 					$image->setAlternateText($text);
+				}
 				$cell->getControls()->add($image);
-			}
-			else if($text!=='')
+			} elseif ($text !== '') {
 				$cell->setText($text);
-			else
+			} else {
 				$cell->setText('&nbsp;');
+			}
 		}
 	}
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\Services;
+
 use Prado\TApplication;
 use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
@@ -61,12 +62,12 @@ class TJsonService extends \Prado\TService
 	/**
 	 * @var array registered services
 	 */
-	private $_services=array();
+	private $_services = [];
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $xml configuration for this module, can be null
 	 */
 	public function init($xml)
 	{
@@ -75,26 +76,23 @@ class TJsonService extends \Prado\TService
 
 	/**
 	 * Load the service definitions.
-	 * @param mixed configuration for this module, can be null
+	 * @param mixed $config configuration for this module, can be null
 	 */
 	protected function loadJsonServices($config)
 	{
-		if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-		{
-			if(is_array($config))
-			{
-				foreach($config['json'] as $id => $json)
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+			if (is_array($config)) {
+				foreach ($config['json'] as $id => $json) {
 					$this->_services[$id] = $json;
+				}
 			}
-		}
-		else
-		{
-			foreach($config->getElementsByTagName('json') as $json)
-			{
-				if(($id=$json->getAttribute('id'))!==null)
-					$this->_services[$id]=$json;
-				else
+		} else {
+			foreach ($config->getElementsByTagName('json') as $json) {
+				if (($id = $json->getAttribute('id')) !== null) {
+					$this->_services[$id] = $json;
+				} else {
 					throw new TConfigurationException('jsonservice_id_required');
+				}
 			}
 		}
 	}
@@ -105,59 +103,53 @@ class TJsonService extends \Prado\TService
 	 */
 	public function run()
 	{
-		$id=$this->getRequest()->getServiceParameter();
-		if(isset($this->_services[$id]))
-		{
-			$serviceConfig=$this->_services[$id];
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-			{
-				if(isset($serviceConfig['class']))
-				{
-					$service=Prado::createComponent($serviceConfig['class']);
-					if($service instanceof TJsonResponse)
-					{
-						$properties = isset($serviceConfig['properties'])?$serviceConfig['properties']:array();
-						$this->createJsonResponse($service,$properties,$serviceConfig);
+		$id = $this->getRequest()->getServiceParameter();
+		if (isset($this->_services[$id])) {
+			$serviceConfig = $this->_services[$id];
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
+				if (isset($serviceConfig['class'])) {
+					$service = Prado::createComponent($serviceConfig['class']);
+					if ($service instanceof TJsonResponse) {
+						$properties = isset($serviceConfig['properties']) ? $serviceConfig['properties'] : [];
+						$this->createJsonResponse($service, $properties, $serviceConfig);
+					} else {
+						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 					}
-					else
-						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
+				} else {
+					throw new TConfigurationException('jsonservice_class_required', $id);
 				}
-				else
-					throw new TConfigurationException('jsonservice_class_required',$id);
-			}
-			else
-			{
-				$properties=$serviceConfig->getAttributes();
-				if(($class=$properties->remove('class'))!==null)
-				{
-					$service=Prado::createComponent($class);
-					if($service instanceof TJsonResponse)
-						$this->createJsonResponse($service,$properties,$serviceConfig);
-					else
-						throw new TConfigurationException('jsonservice_response_type_invalid',$id);
+			} else {
+				$properties = $serviceConfig->getAttributes();
+				if (($class = $properties->remove('class')) !== null) {
+					$service = Prado::createComponent($class);
+					if ($service instanceof TJsonResponse) {
+						$this->createJsonResponse($service, $properties, $serviceConfig);
+					} else {
+						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
+					}
+				} else {
+					throw new TConfigurationException('jsonservice_class_required', $id);
 				}
-				else
-					throw new TConfigurationException('jsonservice_class_required',$id);
 			}
+		} else {
+			throw new THttpException(404, 'jsonservice_provider_unknown', $id);
 		}
-		else
-			throw new THttpException(404,'jsonservice_provider_unknown',$id);
 	}
 
 	/**
 	 * Renders content provided by TJsonResponse::getJsonContent() as
 	 * javascript in JSON format.
 	 */
-	protected function createJsonResponse($service,$properties,$config)
+	protected function createJsonResponse($service, $properties, $config)
 	{
 		// init service properties
-		foreach($properties as $name=>$value)
-			$service->setSubproperty($name,$value);
+		foreach ($properties as $name => $value) {
+			$service->setSubproperty($name, $value);
+		}
 		$service->init($config);
 
 		//send content if not null
-		if(($content=$service->getJsonContent())!==null)
-		{
+		if (($content = $service->getJsonContent()) !== null) {
 			$response = $this->getResponse();
 			$response->setContentType('application/json');
 			$response->setCharset('UTF-8');

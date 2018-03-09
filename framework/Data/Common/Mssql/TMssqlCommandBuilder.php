@@ -14,7 +14,6 @@ namespace Prado\Data\Common\Mssql;
 use Prado\Data\Common\TDbCommandBuilder;
 use Prado\Prado;
 
-
 /**
  * TMssqlCommandBuilder provides specifics methods to create limit/offset query commands
  * for MSSQL servers.
@@ -31,12 +30,10 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	public function getLastInsertID()
 	{
-		foreach($this->getTableInfo()->getColumns() as $column)
-		{
-			if($column->hasSequence())
-			{
+		foreach ($this->getTableInfo()->getColumns() as $column) {
+			if ($column->hasSequence()) {
 				$command = $this->getDbConnection()->createCommand('SELECT @@Identity');
-				return intval($command->queryScalar());
+				return (int) ($command->queryScalar());
 			}
 		}
 	}
@@ -76,19 +73,20 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * </li>
 	 * </ul>
 	 *
-	 * @param string SQL query string.
-	 * @param integer maximum number of rows, -1 to ignore limit.
-	 * @param integer row offset, -1 to ignore offset.
+	 * @param string $sql SQL query string.
+	 * @param integer $limit maximum number of rows, -1 to ignore limit.
+	 * @param integer $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
-	public function applyLimitOffset($sql, $limit=-1, $offset=-1)
+	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit = $limit!==null ? intval($limit) : -1;
-		$offset = $offset!==null ? intval($offset) : -1;
-		if ($limit > 0 && $offset <= 0) //just limit
-			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $limit", $sql);
-		else if($limit > 0 && $offset > 0)
-			$sql = $this->rewriteLimitOffsetSql($sql, $limit,$offset);
+		$limit = $limit !== null ? (int) $limit : -1;
+		$offset = $offset !== null ? (int) $offset : -1;
+		if ($limit > 0 && $offset <= 0) { //just limit
+			$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $limit", $sql);
+		} elseif ($limit > 0 && $offset > 0) {
+			$sql = $this->rewriteLimitOffsetSql($sql, $limit, $offset);
+		}
 		return $sql;
 	}
 
@@ -102,8 +100,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 */
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)
 	{
-		$fetch = $limit+$offset;
-		$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i',"\\1SELECT\\2 TOP $fetch", $sql);
+		$fetch = $limit + $offset;
+		$sql = preg_replace('/^([\s(])*SELECT( DISTINCT)?(?!\s*TOP\s*\()/i', "\\1SELECT\\2 TOP $fetch", $sql);
 		$ordering = $this->findOrdering($sql);
 
 		$orginalOrdering = $this->joinOrdering($ordering);
@@ -115,61 +113,58 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	/**
 	 * Base on simplified syntax http://msdn2.microsoft.com/en-us/library/aa259187(SQL.80).aspx
 	 *
-	 * @param string $sql
+	 * @param string $sql $sql
 	 * @return array ordering expression as key and ordering direction as value
 	 */
 	protected function findOrdering($sql)
 	{
-		if(!preg_match('/ORDER BY/i', $sql))
-			return array();
-		$matches=array();
-		$ordering=array();
+		if (!preg_match('/ORDER BY/i', $sql)) {
+			return [];
+		}
+		$matches = [];
+		$ordering = [];
 		preg_match_all('/(ORDER BY)[\s"\[](.*)(ASC|DESC)?(?:[\s"\[]|$|COMPUTE|FOR)/i', $sql, $matches);
-		if(count($matches)>1 && count($matches[2]) > 0)
-		{
+		if (count($matches) > 1 && count($matches[2]) > 0) {
 			$parts = explode(',', $matches[2][0]);
-			foreach($parts as $part)
-			{
-				$subs=array();
-				if(preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs))
-				{
-					if(count($subs) > 1 && count($subs[2]) > 0)
-					{
+			foreach ($parts as $part) {
+				$subs = [];
+				if (preg_match_all('/(.*)[\s"\]](ASC|DESC)$/i', trim($part), $subs)) {
+					if (count($subs) > 1 && count($subs[2]) > 0) {
 						$ordering[$subs[1][0]] = $subs[2][0];
 					}
 					//else what?
-				}
-				else
+				} else {
 					$ordering[trim($part)] = 'ASC';
+				}
 			}
 		}
 		return $ordering;
 	}
 
 	/**
-	 * @param array ordering obtained from findOrdering()
+	 * @param array $orders ordering obtained from findOrdering()
 	 * @return string concat the orderings
 	 */
 	protected function joinOrdering($orders)
 	{
-		if(count($orders)>0)
-		{
-			$str=array();
-			foreach($orders as $column => $direction)
-				$str[] = $column.' '.$direction;
-			return 'ORDER BY '.implode(', ', $str);
+		if (count($orders) > 0) {
+			$str = [];
+			foreach ($orders as $column => $direction) {
+				$str[] = $column . ' ' . $direction;
+			}
+			return 'ORDER BY ' . implode(', ', $str);
 		}
 	}
 
 	/**
-	 * @param array original ordering
+	 * @param array $orders original ordering
 	 * @return array ordering with reversed direction.
 	 */
 	protected function reverseDirection($orders)
 	{
-		foreach($orders as $column => $direction)
-			$orders[$column] = strtolower(trim($direction))==='desc' ? 'ASC' : 'DESC';
+		foreach ($orders as $column => $direction) {
+			$orders[$column] = strtolower(trim($direction)) === 'desc' ? 'ASC' : 'DESC';
+		}
 		return $orders;
 	}
 }
-

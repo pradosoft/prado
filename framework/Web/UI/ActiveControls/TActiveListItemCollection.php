@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Collections\TListItemCollection;
 
 /**
@@ -36,7 +37,7 @@ class TActiveListItemCollection extends TListItemCollection
 	/**
 	 * @var boolean true if list items were changed.
 	 */
-	private $_hasChanged=false;
+	private $_hasChanged = false;
 
 	/**
 	 * @return boolean true if active controls can update client-side and
@@ -79,7 +80,7 @@ class TActiveListItemCollection extends TListItemCollection
 	{
 		$client = $this->getControl()->getPage()->getCallbackClient();
 		$client->setListItems($this->getControl(), $this);
-		$this->_hasChanged=false;
+		$this->_hasChanged = false;
 	}
 
 	/**
@@ -93,18 +94,20 @@ class TActiveListItemCollection extends TListItemCollection
 	public function insertAt($index, $value)
 	{
 		parent::insertAt($index, $value);
-		if($this->canUpdateClientSide())
+		if ($this->canUpdateClientSide()) {
 			$this->_hasChanged = true;
+		}
 	}
 
 	/**
 	 * Removes an item from at specified index.
-	 * @param int zero based index.
+	 * @param int $index zero based index.
 	 */
 	public function removeAt($index)
 	{
 		parent::removeAt($index);
-		if($this->canUpdateClientSide())
+		if ($this->canUpdateClientSide()) {
 			$this->_hasChanged = true;
+		}
 	}
 }

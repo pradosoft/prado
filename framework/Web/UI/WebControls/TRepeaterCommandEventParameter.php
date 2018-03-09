@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\TControl;
 
 /**
@@ -31,11 +32,11 @@ class TRepeaterCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	/**
 	 * @var TControl the repeater item control responsible for the event.
 	 */
-	private $_item=null;
+	private $_item;
 	/**
 	 * @var TControl the control originally raises the <b>OnCommand</b> event.
 	 */
-	private $_source=null;
+	private $_source;
 
 	/**
 	 * Constructor.
@@ -43,11 +44,11 @@ class TRepeaterCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	 * @param TControl original event sender
 	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
 	 */
-	public function __construct($item,$source,\Prado\Web\UI\TCommandEventParameter $param)
+	public function __construct($item, $source, \Prado\Web\UI\TCommandEventParameter $param)
 	{
-		$this->_item=$item;
-		$this->_source=$source;
-		parent::__construct($param->getCommandName(),$param->getCommandParameter());
+		$this->_item = $item;
+		$this->_source = $source;
+		parent::__construct($param->getCommandName(), $param->getCommandParameter());
 	}
 
 	/**

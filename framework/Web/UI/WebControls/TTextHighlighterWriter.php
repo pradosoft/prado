@@ -21,6 +21,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\Web\THttpUtility;
 
@@ -29,13 +30,12 @@ class TTextHighlighterWriter extends \Prado\Web\UI\THtmlWriter
 	protected $firstLine = true;
 	/**
 	 * Renders a string.
-	 * @param string string to be rendered
+	 * @param string $str string to be rendered
 	 */
 	public function write($str)
 	{
-		if($this->firstLine)
-		{
-			$this->firstLine=false;
+		if ($this->firstLine) {
+			$this->firstLine = false;
 			$this->_writer->write(THttpUtility::htmlEncode(ltrim($str)));
 		} else {
 			$this->_writer->write(THttpUtility::htmlEncode($str));

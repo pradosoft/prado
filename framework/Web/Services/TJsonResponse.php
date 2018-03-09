@@ -26,11 +26,11 @@ namespace Prado\Web\Services;
  */
 abstract class TJsonResponse extends \Prado\TApplicationComponent
 {
-	private $_id='';
+	private $_id = '';
 
 	/**
 	 * Initializes the feed.
-	 * @param TXmlElement configurations specified in {@link TJsonService}.
+	 * @param TXmlElement $config configurations specified in {@link TJsonService}.
 	 */
 	public function init($config)
 	{
@@ -45,11 +45,11 @@ abstract class TJsonResponse extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param string ID of this response
+	 * @param string $value ID of this response
 	 */
 	public function setID($value)
 	{
-		$this->_id=$value;
+		$this->_id = $value;
 	}
 
 	/**

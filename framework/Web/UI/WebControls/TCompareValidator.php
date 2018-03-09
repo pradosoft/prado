@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -60,17 +61,17 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getDataType()
 	{
-		return $this->getViewState('DataType',TValidationDataType::String);
+		return $this->getViewState('DataType', TValidationDataType::String);
 	}
 
 	/**
 	 * Sets the data type that the values being
 	 * compared are converted to before the comparison is made.
-	 * @param TValidationDataType the data type
+	 * @param TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationDataType'),TValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationDataType'), TValidationDataType::String);
 	}
 
 	/**
@@ -78,16 +79,16 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getControlToCompare()
 	{
-		return $this->getViewState('ControlToCompare','');
+		return $this->getViewState('ControlToCompare', '');
 	}
 
 	/**
 	 * Sets the input component to compare with the input control being validated.
-	 * @param string the ID path of the component to compare with
+	 * @param string $value the ID path of the component to compare with
 	 */
 	public function setControlToCompare($value)
 	{
-		$this->setViewState('ControlToCompare',$value,'');
+		$this->setViewState('ControlToCompare', $value, '');
 	}
 
 	/**
@@ -95,16 +96,16 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getValueToCompare()
 	{
-		return $this->getViewState('ValueToCompare','');
+		return $this->getViewState('ValueToCompare', '');
 	}
 
 	/**
 	 * Sets the constant value to compare with the value entered by the user into the input component being validated.
-	 * @param string the constant value
+	 * @param string $value the constant value
 	 */
 	public function setValueToCompare($value)
 	{
-		$this->setViewState('ValueToCompare',$value,'');
+		$this->setViewState('ValueToCompare', $value, '');
 	}
 
 	/**
@@ -112,22 +113,22 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function getOperator()
 	{
-		return $this->getViewState('Operator',TValidationCompareOperator::Equal);
+		return $this->getViewState('Operator', TValidationCompareOperator::Equal);
 	}
 
 	/**
 	 * Sets the comparison operation to perform
-	 * @param TValidationCompareOperator the comparison operation
+	 * @param TValidationCompareOperator $value the comparison operation
 	 */
 	public function setOperator($value)
 	{
-		$this->setViewState('Operator',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TValidationCompareOperator'),TValidationCompareOperator::Equal);
+		$this->setViewState('Operator', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationCompareOperator'), TValidationCompareOperator::Equal);
 	}
 
 	/**
-     * Sets the date format for a date validation
-     * @param string the date format value
-     */
+	 * Sets the date format for a date validation
+	 * @param string $value the date format value
+	 */
 	public function setDateFormat($value)
 	{
 		$this->setViewState('DateFormat', $value, '');
@@ -150,22 +151,23 @@ class TCompareValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
-
-		if(($controlToCompare=$this->getControlToCompare())!=='')
-		{
-			if(($control2=$this->findControl($controlToCompare))===null)
-				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
-			if(($value2=$this->getValidationValue($control2))==='')
-				return false;
 		}
-		else
-			$value2=$this->getValueToCompare();
+
+		if (($controlToCompare = $this->getControlToCompare()) !== '') {
+			if (($control2 = $this->findControl($controlToCompare)) === null) {
+				throw new TInvalidDataValueException('comparevalidator_controltocompare_invalid');
+			}
+			if (($value2 = $this->getValidationValue($control2)) === '') {
+				return false;
+			}
+		} else {
+			$value2 = $this->getValueToCompare();
+		}
 
 		$values = $this->getComparisonValues($value, $value2);
-		switch($this->getOperator())
-		{
+		switch ($this->getOperator()) {
 			case TValidationCompareOperator::Equal:
 				return $values[0] == $values[1];
 			case TValidationCompareOperator::NotEqual:
@@ -185,29 +187,27 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Parse the pair of values into the appropriate value type.
-	 * @param string value one
-	 * @param string second value
+	 * @param string $value1 value one
+	 * @param string $value2 second value
 	 * @return array appropriate type of the value pair, array($value1, $value2);
 	 */
 	protected function getComparisonValues($value1, $value2)
 	{
-		switch($this->getDataType())
-		{
+		switch ($this->getDataType()) {
 			case TValidationDataType::Integer:
-				return array(intval($value1), intval($value2));
+				return [(int) $value1, (int) $value2];
 			case TValidationDataType::Float:
-				return array(floatval($value1), floatval($value2));
+				return [(float) $value1, (float) $value2];
 			case TValidationDataType::Date:
 				$dateFormat = $this->getDateFormat();
-				if($dateFormat!=='')
-				{
+				if ($dateFormat !== '') {
 					$formatter = new TSimpleDateFormatter($dateFormat);
-					return array($formatter->parse($value1), $formatter->parse($value2));
+					return [$formatter->parse($value1), $formatter->parse($value2)];
+				} else {
+					return [strtotime($value1), strtotime($value2)];
 				}
-				else
-					return array(strtotime($value1), strtotime($value2));
 		}
-		return array($value1, $value2);
+		return [$value1, $value2];
 	}
 
 	/**
@@ -217,18 +217,21 @@ class TCompareValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		if(($name=$this->getControlToCompare())!=='')
-		{
-			if(($control=$this->findControl($name))!==null)
-				$options['ControlToCompare']=$control->getClientID();
+		if (($name = $this->getControlToCompare()) !== '') {
+			if (($control = $this->findControl($name)) !== null) {
+				$options['ControlToCompare'] = $control->getClientID();
+			}
 		}
-		if(($value=$this->getValueToCompare())!=='')
-			$options['ValueToCompare']=$value;
-		if(($operator=$this->getOperator())!==TValidationCompareOperator::Equal)
-			$options['Operator']=$operator;
-		$options['DataType']=$this->getDataType();
-		if(($dateFormat=$this->getDateFormat())!=='')
-			$options['DateFormat']=$dateFormat;
+		if (($value = $this->getValueToCompare()) !== '') {
+			$options['ValueToCompare'] = $value;
+		}
+		if (($operator = $this->getOperator()) !== TValidationCompareOperator::Equal) {
+			$options['Operator'] = $operator;
+		}
+		$options['DataType'] = $this->getDataType();
+		if (($dateFormat = $this->getDateFormat()) !== '') {
+			$options['DateFormat'] = $dateFormat;
+		}
 		return $options;
 	}
 }

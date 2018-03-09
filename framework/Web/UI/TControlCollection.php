@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -35,10 +36,10 @@ class TControlCollection extends \Prado\Collections\TList
 	 * @param TControl the control that owns this collection.
 	 * @param boolean whether the list is read-only
 	 */
-	public function __construct(TControl $owner,$readOnly=false)
+	public function __construct(TControl $owner, $readOnly = false)
 	{
-		$this->_o=$owner;
-		parent::__construct(null,$readOnly);
+		$this->_o = $owner;
+		parent::__construct(null, $readOnly);
 	}
 
 	/**
@@ -57,31 +58,31 @@ class TControlCollection extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TControl)
-		{
-			parent::insertAt($index,$item);
+		if ($item instanceof TControl) {
+			parent::insertAt($index, $item);
 			$this->_o->addedControl($item);
-		}
-		else if(is_string($item) || ($item instanceof IRenderable))
-			parent::insertAt($index,$item);
-		else
+		} elseif (is_string($item) || ($item instanceof IRenderable)) {
+			parent::insertAt($index, $item);
+		} else {
 			throw new TInvalidDataTypeException('controlcollection_control_required');
+		}
 	}
 
 	/**
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a child control.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
-		if($item instanceof TControl)
+		$item = parent::removeAt($index);
+		if ($item instanceof TControl) {
 			$this->_o->removedControl($item);
+		}
 		return $item;
 	}
 
@@ -91,7 +92,8 @@ class TControlCollection extends \Prado\Collections\TList
 	public function clear()
 	{
 		parent::clear();
-		if($this->_o instanceof INamingContainer)
+		if ($this->_o instanceof INamingContainer) {
 			$this->_o->clearNamingContainer();
+		}
 	}
 }

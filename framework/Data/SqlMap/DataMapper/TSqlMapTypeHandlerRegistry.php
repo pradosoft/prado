@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+
 use Prado\Prado;
 
 /**
@@ -22,27 +23,30 @@ use Prado\Prado;
  */
 class TSqlMapTypeHandlerRegistry
 {
-	private $_typeHandlers=array();
+	private $_typeHandlers = [];
 
 	/**
 	 * @param string database field type
 	 * @return TSqlMapTypeHandler type handler for give database field type.
 	 */
-	public function getDbTypeHandler($dbType='NULL')
+	public function getDbTypeHandler($dbType = 'NULL')
 	{
-		foreach($this->_typeHandlers as $handler)
-			if($handler->getDbType()===$dbType)
+		foreach ($this->_typeHandlers as $handler) {
+			if ($handler->getDbType() === $dbType) {
 				return $handler;
+			}
+		}
 	}
 
 	/**
-	 * @param string type handler class name
+	 * @param string $class type handler class name
 	 * @return TSqlMapTypeHandler type handler
 	 */
 	public function getTypeHandler($class)
 	{
-		if(isset($this->_typeHandlers[$class]))
+		if (isset($this->_typeHandlers[$class])) {
 			return $this->_typeHandlers[$class];
+		}
 	}
 
 	/**
@@ -60,45 +64,43 @@ class TSqlMapTypeHandlerRegistry
 	 * @return mixed default type value, if no type is specified null is returned.
 	 * @throws TSqlMapException if class name is not found.
 	 */
-	public function createInstanceOf($type='')
+	public function createInstanceOf($type = '')
 	{
-		if(strlen($type) > 0)
-		{
-			switch(strtolower($type))
-			{
+		if (strlen($type) > 0) {
+			switch (strtolower($type)) {
 				case 'string': return '';
-				case 'array': return array();
+				case 'array': return [];
 				case 'float': case 'double': case 'decimal': return 0.0;
 				case 'integer': case 'int': return 0;
 				case 'bool': case 'boolean': return false;
 			}
 
-			if(class_exists('Prado', false))
+			if (class_exists('Prado', false)) {
 				return Prado::createComponent($type);
-			else if(class_exists($type, false)) //NO auto loading
+			} elseif (class_exists($type, false)) { //NO auto loading
 				return new $type;
-			else
+			} else {
 				throw new TSqlMapException('sqlmap_unable_to_find_class', $type);
+			}
 		}
 	}
 
 	/**
 	 * Converts the value to given type using PHP's settype() function.
-	 * @param string PHP primative type.
-	 * @param mixed value to be casted
+	 * @param string $type PHP primative type.
+	 * @param mixed $value value to be casted
 	 * @return mixed type casted value.
 	 */
 	public function convertToType($type, $value)
 	{
-		switch(strtolower($type))
-		{
+		switch (strtolower($type)) {
 			case 'integer': case 'int':
 				$type = 'integer'; break;
 			case 'float': case 'double': case 'decimal':
 				$type = 'float'; break;
 			case 'boolean': case 'bool':
 				$type = 'boolean'; break;
-			case 'string' :
+			case 'string':
 				$type = 'string'; break;
 			default:
 				return $value;

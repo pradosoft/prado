@@ -44,7 +44,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getHasStyle()
 	{
-		return $this->getViewState('Style',null)!==null;
+		return $this->getViewState('Style', null) !== null;
 	}
 
 	/**
@@ -52,12 +52,11 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	public function getStyle()
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			return $style;
-		else
-		{
-			$style=$this->createStyle();
-			$this->setViewState('Style',$style,null);
+		} else {
+			$style = $this->createStyle();
+			$this->setViewState('Style', $style, null);
 			return $style;
 		}
 	}
@@ -73,19 +72,18 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
-			$this->raiseBubbleEvent($this,new TDataListCommandEventParameter($this,$sender,$param));
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
+			$this->raiseBubbleEvent($this, new TDataListCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 
 	/**
@@ -104,12 +102,13 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Adds attribute name-value pairs to renderer.
 	 * By default, this method renders the style string.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($style=$this->getViewState('Style',null))
+		if ($style = $this->getViewState('Style', null)) {
 			$style->addAttributesToRender($writer);
+		}
 	}
 
 	/**
@@ -120,24 +119,23 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
 	 * If the {@link getTagName TagName} is empty, only {@link renderContents} is invoked.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
-		if($this->getTagName()!=='')
-		{
+		if ($this->getTagName() !== '') {
 			$this->renderBeginTag($writer);
 			$this->renderContents($writer);
 			$this->renderEndTag($writer);
-		}
-		else
+		} else {
 			$this->renderContents($writer);
+		}
 	}
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -149,7 +147,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -159,11 +157,10 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Renders the closing tag for the control
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{
 		$writer->renderEndTag();
 	}
 }
-

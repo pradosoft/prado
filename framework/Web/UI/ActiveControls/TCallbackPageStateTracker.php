@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Collections\TMap;
 use stdClass;
 
@@ -43,7 +44,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Constructor. Add a set of default states to track.
-	 * @param TControl control to track.
+	 * @param TControl $control control to track.
 	 */
 	public function __construct($control)
 	{
@@ -65,13 +66,13 @@ class TCallbackPageStateTracker
 	protected function addStatesToTrack()
 	{
 		$states = $this->getStatesToTrack();
-		$states['Visible'] = array('TScalarDiff', array($this, 'updateVisible'));
-		$states['Enabled'] = array('TScalarDiff', array($this, 'updateEnabled'));
-		$states['Attributes'] = array('TMapCollectionDiff', array($this, 'updateAttributes'));
-		$states['Style'] = array('TStyleDiff', array($this, 'updateStyle'));
-		$states['TabIndex'] = array('TScalarDiff', array($this, 'updateTabIndex'));
-		$states['ToolTip'] = array('TScalarDiff', array($this, 'updateToolTip'));
-		$states['AccessKey'] = array('TScalarDiff', array($this, 'updateAccessKey'));
+		$states['Visible'] = ['TScalarDiff', [$this, 'updateVisible']];
+		$states['Enabled'] = ['TScalarDiff', [$this, 'updateEnabled']];
+		$states['Attributes'] = ['TMapCollectionDiff', [$this, 'updateAttributes']];
+		$states['Style'] = ['TStyleDiff', [$this, 'updateStyle']];
+		$states['TabIndex'] = ['TScalarDiff', [$this, 'updateTabIndex']];
+		$states['ToolTip'] = ['TScalarDiff', [$this, 'updateToolTip']];
+		$states['AccessKey'] = ['TScalarDiff', [$this, 'updateAccessKey']];
 	}
 
 	/**
@@ -88,8 +89,7 @@ class TCallbackPageStateTracker
 	 */
 	public function trackChanges()
 	{
-		foreach($this->_states as $name => $value)
-		{
+		foreach ($this->_states as $name => $value) {
 			$obj = $this->_control->getViewState($name);
 			$this->_existingState[$name] = is_object($obj) ? clone($obj) : $obj;
 		}
@@ -100,16 +100,15 @@ class TCallbackPageStateTracker
 	 */
 	protected function getChanges()
 	{
-		$changes = array();
-		foreach($this->_states as $name => $details)
-		{
+		$changes = [];
+		foreach ($this->_states as $name => $details) {
 			$new = $this->_control->getViewState($name);
 			$old = $this->_existingState[$name];
-			if($new !== $old)
-			{
+			if ($new !== $old) {
 				$diff = new $details[0]($new, $old, $this->_nullObject);
-				if(($change = $diff->getDifference()) !== $this->_nullObject)
-					$changes[] = array($details[1],array($change));
+				if (($change = $diff->getDifference()) !== $this->_nullObject) {
+					$changes[] = [$details[1], [$change]];
+				}
 			}
 		}
 		return $changes;
@@ -120,8 +119,9 @@ class TCallbackPageStateTracker
 	 */
 	public function respondToChanges()
 	{
-		foreach($this->getChanges() as $change)
+		foreach ($this->getChanges() as $change) {
 			call_user_func_array($change[0], $change[1]);
+		}
 	}
 
 	/**
@@ -134,7 +134,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the tooltip.
-	 * @param string new tooltip
+	 * @param string $value new tooltip
 	 */
 	protected function updateToolTip($value)
 	{
@@ -143,7 +143,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the tab index.
-	 * @param integer tab index
+	 * @param integer $value tab index
 	 */
 	protected function updateTabIndex($value)
 	{
@@ -152,7 +152,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the modifier access key
-	 * @param string access key
+	 * @param string $value access key
 	 */
 	protected function updateAccessKey($value)
 	{
@@ -162,44 +162,48 @@ class TCallbackPageStateTracker
 	/**
 	 * Hides or shows the control on the client-side. The control must be
 	 * already rendered on the client-side.
-	 * @param boolean true to show the control, false to hide.
+	 * @param boolean $visible true to show the control, false to hide.
 	 */
 	protected function updateVisible($visible)
 	{
-		if($visible === false)
-			$this->client()->replaceContent($this->_control,"<span id=\"".$this->_control->getClientID()."\" style=\"display:none\" ></span>");
-		else
-			$this->client()->replaceContent($this->_control,$this->_control);
+		if ($visible === false) {
+			$this->client()->replaceContent($this->_control, "<span id=\"" . $this->_control->getClientID() . "\" style=\"display:none\" ></span>");
+		} else {
+			$this->client()->replaceContent($this->_control, $this->_control);
+		}
 	}
 
 	/**
 	 * Enables or Disables the control on the client-side.
-	 * @param boolean true to enable the control, false to disable.
+	 * @param boolean $enable true to enable the control, false to disable.
 	 */
 	protected function updateEnabled($enable)
 	{
-		$this->client()->setAttribute($this->_control, 'disabled', $enable===false);
+		$this->client()->setAttribute($this->_control, 'disabled', $enable === false);
 	}
 
 	/**
 	 * Updates the CSS style on the control on the client-side.
-	 * @param array list of new CSS style declarations.
+	 * @param array $style list of new CSS style declarations.
 	 */
 	protected function updateStyle($style)
 	{
-		if($style['CssClass']!==null)
+		if ($style['CssClass'] !== null) {
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
-		if(is_array($style['Style']) && count($style['Style']) > 0)
+		}
+		if (is_array($style['Style']) && count($style['Style']) > 0) {
 			$this->client()->setStyle($this->_control, $style['Style']);
+		}
 	}
 
 	/**
 	 * Updates/adds a list of attributes on the control.
-	 * @param array list of attribute name-value pairs.
+	 * @param array $attributes list of attribute name-value pairs.
 	 */
 	protected function updateAttributes($attributes)
 	{
-		foreach($attributes as $name => $value)
+		foreach ($attributes as $name => $value) {
 			$this->client()->setAttribute($this->_control, $name, $value);
+		}
 	}
 }

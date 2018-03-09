@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -58,26 +59,27 @@ use Prado\TPropertyValue;
  */
 class TDropDownListColumn extends TDataGridColumn
 {
-	private $_stateLoaded=false;
-	private $_dataBound=false;
-	private $_listControl=null;
+	private $_stateLoaded = false;
+	private $_dataBound = false;
+	private $_listControl;
 
 	public function __construct()
 	{
-		$this->_listControl=new TDropDownList;
+		$this->_listControl = new TDropDownList;
 	}
 
 	/**
 	 * Loads items from viewstate.
 	 * This method overrides the parent implementation by loading list items
-	 * @param mixed state values
+	 * @param mixed $state state values
 	 */
 	public function loadState($state)
 	{
 		parent::loadState($state);
-		$this->_stateLoaded=true;
-		if(!$this->_dataBound)
-			$this->_listControl->getItems()->loadState($this->getViewState('Items',null));
+		$this->_stateLoaded = true;
+		if (!$this->_dataBound) {
+			$this->_listControl->getItems()->loadState($this->getViewState('Items', null));
+		}
 	}
 
 	/**
@@ -86,7 +88,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function saveState()
 	{
-		$this->setViewState('Items',$this->_listControl->getItems()->saveState(),null);
+		$this->setViewState('Items', $this->_listControl->getItems()->saveState(), null);
 		return parent::saveState();
 	}
 
@@ -94,15 +96,14 @@ class TDropDownListColumn extends TDataGridColumn
 	 * Adds object parsed from template to the control.
 	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
 	 * All other objects are ignored.
-	 * @param mixed object parsed from template
+	 * @param mixed $object object parsed from template
 	 */
 	public function addParsedObject($object)
 	{
 		// Do not add items from template if items are loaded from viewstate
-		if(!$this->_stateLoaded && ($object instanceof TListItem))
-		{
+		if (!$this->_stateLoaded && ($object instanceof TListItem)) {
 			$object->setSelected(false);
-			$index=$this->_listControl->getItems()->add($object);
+			$index = $this->_listControl->getItems()->add($object);
 		}
 	}
 
@@ -111,18 +112,18 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataTextField()
 	{
-		return $this->getViewState('DataTextField','');
+		return $this->getViewState('DataTextField', '');
 	}
 
 	/**
 	 * Sets the field of the data source that provides the text content of the column.
 	 * If this is not set, the data specified via {@link getDataValueField DataValueField}
 	 * will be displayed in the column.
-	 * @param string the field of the data source that provides the text content of the column.
+	 * @param string $value the field of the data source that provides the text content of the column.
 	 */
 	public function setDataTextField($value)
 	{
-		$this->setViewState('DataTextField',$value,'');
+		$this->setViewState('DataTextField', $value, '');
 	}
 
 	/**
@@ -130,15 +131,15 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataTextFormatString()
 	{
-		return $this->getViewState('DataTextFormatString','');
+		return $this->getViewState('DataTextFormatString', '');
 	}
 
 	/**
-	 * @param string the formatting string used to control how the bound data will be displayed.
+	 * @param string $value the formatting string used to control how the bound data will be displayed.
 	 */
 	public function setDataTextFormatString($value)
 	{
-		$this->setViewState('DataTextFormatString',$value,'');
+		$this->setViewState('DataTextFormatString', $value, '');
 	}
 
 	/**
@@ -146,18 +147,18 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getDataValueField()
 	{
-		return $this->getViewState('DataValueField','');
+		return $this->getViewState('DataValueField', '');
 	}
 
 	/**
 	 * Sets the field of the data source that provides the key selecting an item in dropdown list.
 	 * If this is not present, the data specified via {@link getDataTextField DataTextField} (without
 	 * applying the formatting string) will be used for selection, instead.
-	 * @param string the field of the data source that provides the key selecting an item in dropdown list.
+	 * @param string $value the field of the data source that provides the key selecting an item in dropdown list.
 	 */
 	public function setDataValueField($value)
 	{
-		$this->setViewState('DataValueField',$value,'');
+		$this->setViewState('DataValueField', $value, '');
 	}
 
 	/**
@@ -165,15 +166,15 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getReadOnly()
 	{
-		return $this->getViewState('ReadOnly',false);
+		return $this->getViewState('ReadOnly', false);
 	}
 
 	/**
-	 * @param boolean whether the items in the column can be edited
+	 * @param boolean $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
-		$this->setViewState('ReadOnly',TPropertyValue::ensureBoolean($value),false);
+		$this->setViewState('ReadOnly', TPropertyValue::ensureBoolean($value), false);
 	}
 
 	/**
@@ -185,7 +186,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param Traversable|array|string data source to be bound to the dropdown list boxes.
+	 * @param Traversable|array|string $value data source to be bound to the dropdown list boxes.
 	 */
 	public function setListDataSource($value)
 	{
@@ -197,15 +198,15 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListValueField()
 	{
-		return $this->getViewState('ListValueField','');
+		return $this->getViewState('ListValueField', '');
 	}
 
 	/**
-	 * @param string the data field used to populate the values of the dropdown list items
+	 * @param string $value the data field used to populate the values of the dropdown list items
 	 */
 	public function setListValueField($value)
 	{
-		$this->setViewState('ListValueField',$value,'');
+		$this->setViewState('ListValueField', $value, '');
 	}
 
 	/**
@@ -213,15 +214,15 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListTextField()
 	{
-		return $this->getViewState('ListTextField','');
+		return $this->getViewState('ListTextField', '');
 	}
 
 	/**
-	 * @param string the data field used to populate the texts of the dropdown list items
+	 * @param string $value the data field used to populate the texts of the dropdown list items
 	 */
 	public function setListTextField($value)
 	{
-		$this->setViewState('ListTextField',$value,'');
+		$this->setViewState('ListTextField', $value, '');
 	}
 
 	/**
@@ -229,15 +230,15 @@ class TDropDownListColumn extends TDataGridColumn
 	 */
 	public function getListTextFormatString()
 	{
-		return $this->getViewState('ListTextFormatString','');
+		return $this->getViewState('ListTextFormatString', '');
 	}
 
 	/**
-	 * @param string the formatting string used to control how the list item texts will be displayed.
+	 * @param string $value the formatting string used to control how the list item texts will be displayed.
 	 */
 	public function setListTextFormatString($value)
 	{
-		$this->setViewState('ListTextFormatString',$value,'');
+		$this->setViewState('ListTextFormatString', $value, '');
 	}
 
 	/**
@@ -251,38 +252,36 @@ class TDropDownListColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if(!$this->_dataBound && $this->_listControl->getDataSource()!==null)
-		{
+		if (!$this->_dataBound && $this->_listControl->getDataSource() !== null) {
 			$this->_listControl->setDataTextField($this->getListTextField());
 			$this->_listControl->setDataValueField($this->getListValueField());
 			$this->_listControl->setDataTextFormatString($this->getListTextFormatString());
 			$this->_listControl->dataBind();
-			$this->_dataBound=true;
+			$this->_dataBound = true;
 		}
-		switch($itemType)
-		{
+		switch ($itemType) {
 			case TListItemType::EditItem:
-				if(!$this->getReadOnly())
-				{
-					$listControl=clone $this->_listControl;
+				if (!$this->getReadOnly()) {
+					$listControl = clone $this->_listControl;
 					$cell->getControls()->add($listControl);
-					$cell->registerObject('DropDownList',$listControl);
-					$control=$listControl;
+					$cell->registerObject('DropDownList', $listControl);
+					$control = $listControl;
+				} else {
+					$control = $cell;
 				}
-				else
-					$control=$cell;
-				$control->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				break;
 			case TListItemType::Item:
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
-				if($this->getDataTextField()!=='' || $this->getDataValueField()!=='')
-					$cell->attachEventHandler('OnDataBinding',array($this,'dataBindColumn'));
+				if ($this->getDataTextField() !== '' || $this->getDataValueField() !== '') {
+					$cell->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
+				}
 				break;
 			default:
-				parent::initializeCell($cell,$columnIndex,$itemType);
+				parent::initializeCell($cell, $columnIndex, $itemType);
 				break;
 		}
 	}
@@ -292,28 +291,29 @@ class TDropDownListColumn extends TDataGridColumn
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
 	 */
-	public function dataBindColumn($sender,$param)
+	public function dataBindColumn($sender, $param)
 	{
-		$item=$sender->getNamingContainer();
-		$data=$item->getData();
-		if(($valueField=$this->getDataValueField())!=='')
-			$value=$this->getDataFieldValue($data,$valueField);
-		else
-			$value='';
-		if(($textField=$this->getDataTextField())!=='')
-		{
-			$text=$this->getDataFieldValue($data,$textField);
-			if($valueField==='')
-				$value=$text;
-			$formatString=$this->getDataTextFormatString();
-			$text=$this->formatDataValue($formatString,$text);
+		$item = $sender->getNamingContainer();
+		$data = $item->getData();
+		if (($valueField = $this->getDataValueField()) !== '') {
+			$value = $this->getDataFieldValue($data, $valueField);
+		} else {
+			$value = '';
 		}
-		else
-			$text=$value;
-		if($sender instanceof TTableCell)
+		if (($textField = $this->getDataTextField()) !== '') {
+			$text = $this->getDataFieldValue($data, $textField);
+			if ($valueField === '') {
+				$value = $text;
+			}
+			$formatString = $this->getDataTextFormatString();
+			$text = $this->formatDataValue($formatString, $text);
+		} else {
+			$text = $value;
+		}
+		if ($sender instanceof TTableCell) {
 			$sender->setText($text);
-		else if($sender instanceof TDropDownList)
+		} elseif ($sender instanceof TDropDownList) {
 			$sender->setSelectedValue($value);
+		}
 	}
 }
-

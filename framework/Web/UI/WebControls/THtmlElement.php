@@ -9,6 +9,7 @@
  * @package Prado\Web\UI\WebControls
  */
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -30,7 +31,7 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * @var the tag of this element
 	 */
-	private $_tagName=null;
+	private $_tagName;
 
 	/**
 	 * @return string the tag name of this control. Defaults to 'span'.
@@ -41,18 +42,19 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the tag name of this control.
+	 * @param string $value the tag name of this control.
 	 */
 	public function setTagName($value)
 	{
-		$this->_tagName=TPropertyValue::ensureString($value);
+		$this->_tagName = TPropertyValue::ensureString($value);
 	}
 
 	/**
 	 *	This is the default tag when no other is specified
 	 * @return string the default tag
 	 */
-	public function getDefaultTagName() {
+	public function getDefaultTagName()
+	{
 		return 'span';
 	}
 
@@ -60,7 +62,8 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 	 * This tells you if this TagName has deviated from the original
 	 * @return boolean true if TagName has deviated from the default.
 	 */
-	public function getIsMutated() {
+	public function getIsMutated()
+	{
 		return $this->_tagName !== null && $this->_tagName != $this->getDefaultTagName();
 	}
 }

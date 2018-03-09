@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Security;
+
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 
@@ -36,20 +37,18 @@ abstract class TDbUser extends TUser
 	 */
 	public function getDbConnection()
 	{
-		if($this->_connection===null)
-		{
-			$userManager=$this->getManager();
-			if($userManager instanceof TDbUserManager)
-			{
-				$connection=$userManager->getDbConnection();
-				if($connection instanceof TDbConnection)
-				{
+		if ($this->_connection === null) {
+			$userManager = $this->getManager();
+			if ($userManager instanceof TDbUserManager) {
+				$connection = $userManager->getDbConnection();
+				if ($connection instanceof TDbConnection) {
 					$connection->setActive(true);
-					$this->_connection=$connection;
+					$this->_connection = $connection;
 				}
 			}
-			if($this->_connection===null)
+			if ($this->_connection === null) {
 				throw new TConfigurationException('dbuser_dbconnection_invalid');
+			}
 		}
 		return $this->_connection;
 	}
@@ -59,11 +58,11 @@ abstract class TDbUser extends TUser
 	 * Usually, this is accomplished by checking if the user database
 	 * contains this (username, password) pair.
 	 * You may use {@link getDbConnection DbConnection} to deal with database.
-	 * @param string username (case-sensitive)
-	 * @param string password
+	 * @param string $username username (case-sensitive)
+	 * @param string $password password
 	 * @return boolean whether the validation succeeds
 	 */
-	abstract public function validateUser($username,$password);
+	abstract public function validateUser($username, $password);
 
 	/**
 	 * Creates a new user instance given the username.
@@ -77,7 +76,7 @@ abstract class TDbUser extends TUser
 	 *
 	 * You may use {@link getDbConnection DbConnection} to deal with database.
 	 *
-	 * @param string username (case-sensitive)
+	 * @param string $username username (case-sensitive)
 	 * @return TDbUser the newly created and initialized user instance
 	 */
 	abstract public function createUser($username);

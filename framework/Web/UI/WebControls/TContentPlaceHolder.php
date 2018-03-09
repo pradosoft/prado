@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -36,14 +37,14 @@ class TContentPlaceHolder extends \Prado\Web\UI\TControl
 	 * This overrides the parent implementation by registering the content placeholder
 	 * control to the template owner control. The placeholder control will NOT
 	 * be added to the potential parent control!
-	 * @param TControl potential parent of this control
+	 * @param TControl $parent potential parent of this control
 	 */
 	public function createdOnTemplate($parent)
 	{
-		if(($id=$this->getID())==='')
+		if (($id = $this->getID()) === '') {
 			throw new TConfigurationException('contentplaceholder_id_required');
-		$this->getTemplateControl()->registerContentPlaceHolder($id,$this);
+		}
+		$this->getTemplateControl()->registerContentPlaceHolder($id, $this);
 		$parent->getControls()->add($this);
 	}
 }
-

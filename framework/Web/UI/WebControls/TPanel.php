@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
 
@@ -41,7 +42,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * @var string ID path to the default button
 	 */
-	private $_defaultButton='';
+	private $_defaultButton = '';
 
 	/**
 	 * @return string tag name of the panel
@@ -63,14 +64,15 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 * @throws TInvalidDataValueException if default button is not right.
 	 */
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		if(($butt=$this->getDefaultButton())!=='')
-			$writer->addAttribute('id',$this->getClientID());
+		if (($butt = $this->getDefaultButton()) !== '') {
+			$writer->addAttribute('id', $this->getClientID());
+		}
 	}
 
 	/**
@@ -83,7 +85,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean whether the content wraps within the panel.
+	 * @param boolean $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{
@@ -100,8 +102,8 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-     * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
-	 * @param string the horizontal alignment
+	 * Valid values include 'NotSet', 'Justify', 'Left', 'Right', 'Center'
+	 * @param string $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -118,7 +120,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the URL of the background image for the panel component.
-	 * @param string the URL
+	 * @param string $value the URL
 	 */
 	public function setBackImageUrl($value)
 	{
@@ -134,7 +136,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string alignment of the content in the panel.
+	 * @param string $value alignment of the content in the panel.
 	 * Valid values include 'NotSet', 'LeftToRight', 'RightToLeft'.
 	 */
 	public function setDirection($value)
@@ -155,11 +157,11 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 * The default button will be fired (clicked) whenever a user enters 'return'
 	 * key within the panel.
 	 * The button must be locatable via the function call {@link TControl::findControl findControl}.
-	 * @param string the ID path to the default button.
+	 * @param string $value the ID path to the default button.
 	 */
 	public function setDefaultButton($value)
 	{
-		$this->_defaultButton=$value;
+		$this->_defaultButton = $value;
 	}
 
 	/**
@@ -167,15 +169,15 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function getGroupingText()
 	{
-		return $this->getViewState('GroupingText','');
+		return $this->getViewState('GroupingText', '');
 	}
 
 	/**
-	 * @param string the legend text. If this value is not empty, the panel will be rendered as a fieldset.
+	 * @param string $value the legend text. If this value is not empty, the panel will be rendered as a fieldset.
 	 */
 	public function setGroupingText($value)
 	{
-		$this->setViewState('GroupingText',$value,'');
+		$this->setViewState('GroupingText', $value, '');
 	}
 
 	/**
@@ -187,7 +189,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param string the visibility and position of scroll bars in a panel control.
+	 * @param string $value the visibility and position of scroll bars in a panel control.
 	 * Valid values include None, Auto, Both, Horizontal and Vertical.
 	 */
 	public function setScrollBars($value)
@@ -197,13 +199,12 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if(($text=$this->getGroupingText())!=='')
-		{
+		if (($text = $this->getGroupingText()) !== '') {
 			$writer->renderBeginTag('fieldset');
 			$writer->renderBeginTag('legend');
 			$writer->write($text);
@@ -213,12 +214,13 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{
-		if($this->getGroupingText()!=='')
+		if ($this->getGroupingText() !== '') {
 			$writer->renderEndTag();
+		}
 		parent::renderEndTag($writer);
 	}
 
@@ -226,13 +228,12 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		parent::render($writer);
 
-		if(($butt=$this->getDefaultButton())!=='')
-		{
-			if(($button=$this->findControl($butt))===null)
-				throw new TInvalidDataValueException('panel_defaultbutton_invalid',$butt);
-			else
+		if (($butt = $this->getDefaultButton()) !== '') {
+			if (($button = $this->findControl($butt)) === null) {
+				throw new TInvalidDataValueException('panel_defaultbutton_invalid', $butt);
+			} else {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
+			}
 		}
 	}
 }
-

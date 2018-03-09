@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Oracle;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Prado;
 
-
 /**
  * Describes the column metadata of the schema for a PostgreSQL database table.
  *
@@ -27,12 +26,12 @@ use Prado\Prado;
  */
 class TOracleTableColumn extends TDbTableColumn
 {
-	private static $types=array(
-		'numeric' => array( 'numeric' )
+	private static $types = [
+		'numeric' => ['numeric']
 //		'integer' => array('bit', 'bit varying', 'real', 'serial', 'int', 'integer'),
 //		'boolean' => array('boolean'),
 //		'float' => array('bigint', 'bigserial', 'double precision', 'money', 'numeric')
-	);
+	];
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
@@ -41,12 +40,11 @@ class TOracleTableColumn extends TDbTableColumn
 	public function getPHPType()
 	{
 		$dbtype = strtolower($this->getDbType());
-		foreach(self::$types as $type => $dbtypes)
-		{
-			if(in_array($dbtype, $dbtypes))
+		foreach (self::$types as $type => $dbtypes) {
+			if (in_array($dbtype, $dbtypes)) {
 				return $type;
+			}
 		}
 		return 'string';
 	}
 }
-

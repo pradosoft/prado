@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -51,11 +52,11 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	}
 
 	/**
-	 * @param TListItemType item type.
+	 * @param TListItemType $value item type.
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -71,11 +72,10 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer zero-based index of the item.
+	 * @param integer $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{
-		$this->_itemIndex=TPropertyValue::ensureInteger($value);
+		$this->_itemIndex = TPropertyValue::ensureInteger($value);
 	}
 }
-

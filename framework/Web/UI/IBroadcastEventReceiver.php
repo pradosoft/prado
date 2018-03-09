@@ -31,5 +31,5 @@ interface IBroadcastEventReceiver
 	 * @param TControl sender of the event
 	 * @param TBroadCastEventParameter event parameter
 	 */
-	public function broadcastEventReceived($sender,$param);
+	public function broadcastEventReceived($sender, $param);
 }

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Collections;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
@@ -41,11 +42,11 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @var array internal data storage
 	 */
-	private $_d=array();
+	private $_d = [];
 	/**
 	 * @var boolean whether this list is read-only
 	 */
-	private $_r=false;
+	private $_r = false;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -56,10 +57,12 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_d===array())
+		if ($this->_d === []) {
 			$exprops[] = "\0Prado\Collections\TMap\0_d";
-		if ($this->_r===false)
+		}
+		if ($this->_r === false) {
 			$exprops[] = "\0Prado\Collections\TMap\0_r";
+		}
 	}
 
 	/**
@@ -69,10 +72,11 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param boolean whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data=null,$readOnly=false)
+	public function __construct($data = null, $readOnly = false)
 	{
-		if($data!==null)
+		if ($data !== null) {
 			$this->copyFrom($data);
+		}
 		$this->setReadOnly($readOnly);
 	}
 
@@ -85,11 +89,11 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @param boolean whether this list is read-only or not
+	 * @param boolean $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
-		$this->_r=TPropertyValue::ensureBoolean($value);
+		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -99,7 +103,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator( $this->_d );
+		return new \ArrayIterator($this->_d);
 	}
 
 	/**
@@ -131,7 +135,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the item with the specified key.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key)
@@ -146,12 +150,13 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed value
 	 * @throws TInvalidOperationException if the map is read-only
 	 */
-	public function add($key,$value)
+	public function add($key, $value)
 	{
-		if(!$this->_r)
-			$this->_d[$key]=$value;
-		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
+		if (!$this->_r) {
+			$this->_d[$key] = $value;
+		} else {
+			throw new TInvalidOperationException('map_readonly', get_class($this));
+		}
 	}
 
 	/**
@@ -162,19 +167,17 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function remove($key)
 	{
-		if(!$this->_r)
-		{
-			if(isset($this->_d[$key]) || array_key_exists($key,$this->_d))
-			{
-				$value=$this->_d[$key];
+		if (!$this->_r) {
+			if (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) {
+				$value = $this->_d[$key];
 				unset($this->_d[$key]);
 				return $value;
-			}
-			else
+			} else {
 				return null;
+			}
+		} else {
+			throw new TInvalidOperationException('map_readonly', get_class($this));
 		}
-		else
-			throw new TInvalidOperationException('map_readonly',get_class($this));
 	}
 
 	/**
@@ -182,17 +185,18 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function clear()
 	{
-		foreach(array_keys($this->_d) as $key)
+		foreach (array_keys($this->_d) as $key) {
 			$this->remove($key);
+		}
 	}
 
 	/**
-	 * @param mixed the key
+	 * @param mixed $key the key
 	 * @return boolean whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
-		return isset($this->_d[$key]) || array_key_exists($key,$this->_d);
+		return isset($this->_d[$key]) || array_key_exists($key, $this->_d);
 	}
 
 	/**
@@ -206,43 +210,44 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param mixed the data to be copied from, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
 	{
-		if(is_array($data) || $data instanceof Traversable)
-		{
-			if($this->getCount()>0)
+		if (is_array($data) || $data instanceof Traversable) {
+			if ($this->getCount() > 0) {
 				$this->clear();
-			foreach($data as $key=>$value)
-				$this->add($key,$value);
-		}
-		else if($data!==null)
+			}
+			foreach ($data as $key => $value) {
+				$this->add($key, $value);
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param mixed the data to be merged with, must be an array or object implementing Traversable
+	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
 	{
-		if(is_array($data) || $data instanceof Traversable)
-		{
-			foreach($data as $key=>$value)
-				$this->add($key,$value);
-		}
-		else if($data!==null)
+		if (is_array($data) || $data instanceof Traversable) {
+			foreach ($data as $key => $value) {
+				$this->add($key, $value);
+			}
+		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
 	}
 
 	/**
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to check on
+	 * @param mixed $offset the offset to check on
 	 * @return boolean
 	 */
 	public function offsetExists($offset)
@@ -253,7 +258,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve element.
+	 * @param integer $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -267,15 +272,15 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param integer the offset to set element
 	 * @param mixed the element value
 	 */
-	public function offsetSet($offset,$item)
+	public function offsetSet($offset, $item)
 	{
-		$this->add($offset,$item);
+		$this->add($offset, $item);
 	}
 
 	/**
 	 * Unsets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed the offset to unset element
+	 * @param mixed $offset the offset to unset element
 	 */
 	public function offsetUnset($offset)
 	{

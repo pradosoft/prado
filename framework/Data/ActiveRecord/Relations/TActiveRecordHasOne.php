@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
-
 /**
  * TActiveRecordHasOne models the object relationship that a record (the source object)
  * property is an instance of foreign record object having a foreign key
@@ -99,8 +98,8 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 		$fields = array_keys($fkeys);
 
 		$indexValues = $this->getIndexValues($properties, $results);
-		$fkObjects = $this->findForeignObjects($fields,$indexValues);
-		$this->populateResult($results,$properties,$fkObjects,$fields);
+		$fkObjects = $this->findForeignObjects($fields, $indexValues);
+		$this->populateResult($results, $properties, $fkObjects, $fields);
 	}
 
 	/**
@@ -122,10 +121,10 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		if(isset($collections[$hash]) && count($collections[$hash]) > 0)
-		{
-			if(count($collections[$hash]) > 1)
+		if (isset($collections[$hash]) && count($collections[$hash]) > 0) {
+			if (count($collections[$hash]) > 1) {
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
+			}
 			$source->setColumnValue($prop, $collections[$hash][0]);
 		}
 	}
@@ -139,9 +138,9 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 		$fkObject = $this->getContext()->getPropertyValue();
 		$source = $this->getSourceRecord();
 		$fkeys = $this->findForeignKeys($fkObject, $source);
-		foreach($fkeys as $fKey => $srcKey)
+		foreach ($fkeys as $fKey => $srcKey) {
 			$fkObject->setColumnValue($fKey, $source->getColumnValue($srcKey));
+		}
 		return $fkObject->save();
 	}
 }
-

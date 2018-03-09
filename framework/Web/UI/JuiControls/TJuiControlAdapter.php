@@ -28,12 +28,12 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TJuiControlAdapter extends TActiveControlAdapter
 {
 	const CSS_PATH = 'themes';
-	const BASE_CSS_FILENAME ='jquery-ui.css';
+	const BASE_CSS_FILENAME = 'jquery-ui.css';
 
 	/**
 	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
 	 * options tracking in ViewState.
-	 * @param TEventParameter event parameter to be passed to the event handlers
+	 * @param TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -42,7 +42,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	}
 
 	/**
-	 * @param string set the jquery-ui style
+	 * @param string $value set the jquery-ui style
 	 */
 	public function setJuiBaseStyle($value)
 	{
@@ -71,23 +71,24 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	 * @param string jQuery asset file in the jquery-ui directory.
 	 * @return string jQuery asset url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl('jquery-ui');
-		return $base.'/'.$file;
+		return $base . '/' . $file;
 	}
 
 	/**
 	 * Publish the jQuery-ui style Css asset file.
-	 * @param file name
+	 * @param file $file name
 	 * @return string Css file url.
 	 */
 	public function publishJuiStyle($file)
 	{
-		$url = $this->getAssetUrl(self::CSS_PATH.'/'.$this->getJuiBaseStyle().'/'.$file);
+		$url = $this->getAssetUrl(self::CSS_PATH . '/' . $this->getJuiBaseStyle() . '/' . $file);
 		$cs = $this->getPage()->getClientScript();
-		if(!$cs->isStyleSheetFileRegistered($url))
+		if (!$cs->isStyleSheetFileRegistered($url)) {
 			$cs->registerStyleSheetFile($url, $url);
+		}
 		return $url;
 	}
 
@@ -100,5 +101,4 @@ class TJuiControlAdapter extends TActiveControlAdapter
 		parent::loadState();
 		$this->getControl()->getOptions()->setControl($this->getControl());
 	}
-
 }

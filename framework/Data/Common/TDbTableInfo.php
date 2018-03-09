@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\Common;
+
 use Prado\Collections\TMap;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
@@ -23,7 +24,7 @@ use Prado\Prado;
  */
 class TDbTableInfo extends \Prado\TComponent
 {
-	private $_info=array();
+	private $_info = [];
 
 	private $_primaryKeys;
 	private $_foreignKeys;
@@ -36,35 +37,35 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @var null|array
 	 * @since 3.1.7
 	 */
-	private $_names = null;
+	private $_names;
 
 	/**
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
+	public function __construct($tableInfo = [], $primary = [], $foreign = [])
 	{
-		$this->_info=$tableInfo;
-		$this->_primaryKeys=$primary;
-		$this->_foreignKeys=$foreign;
-		$this->_columns=new TMap;
+		$this->_info = $tableInfo;
+		$this->_primaryKeys = $primary;
+		$this->_foreignKeys = $foreign;
+		$this->_columns = new TMap;
 	}
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TDbCommandBuilder($connection,$this);
+		return new TDbCommandBuilder($connection, $this);
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed default value if information array value is null
+	 * @param string $name information array key name
+	 * @param mixed $default default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	protected function getInfo($name,$default=null)
+	protected function getInfo($name, $default = null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -73,9 +74,9 @@ class TDbTableInfo extends \Prado\TComponent
 	 * @param string information array key name
 	 * @param mixed new information array value.
 	 */
-	protected function setInfo($name,$value)
+	protected function setInfo($name, $value)
 	{
-		$this->_info[$name]=$value;
+		$this->_info[$name] = $value;
 	}
 
 	/**
@@ -99,7 +100,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getIsView()
 	{
-		return $this->getInfo('IsView',false);
+		return $this->getInfo('IsView', false);
 	}
 
 	/**
@@ -111,13 +112,14 @@ class TDbTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string column id
+	 * @param string $name column id
 	 * @return TDbTableColumn column information.
 	 */
 	public function getColumn($name)
 	{
-		if(($column = $this->_columns->itemAt($name))!==null)
+		if (($column = $this->_columns->itemAt($name)) !== null) {
 			return $column;
+		}
 		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
 
@@ -127,11 +129,11 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
-		if($this->_names===null)
-		{
-			$this->_names=array();
-			foreach($this->getColumns() as $column)
+		if ($this->_names === null) {
+			$this->_names = [];
+			foreach ($this->getColumns() as $column) {
 				$this->_names[] = $column->getColumnName();
+			}
 		}
 		return $this->_names;
 	}
@@ -157,11 +159,11 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	public function getLowerCaseColumnNames()
 	{
-		if($this->_lowercase===null)
-		{
-			$this->_lowercase=array();
-			foreach($this->getColumns()->getKeys() as $key)
+		if ($this->_lowercase === null) {
+			$this->_lowercase = [];
+			foreach ($this->getColumns()->getKeys() as $key) {
 				$this->_lowercase[strtolower($key)] = $key;
+			}
 		}
 		return $this->_lowercase;
 	}

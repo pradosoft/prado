@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -47,15 +48,15 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getAlign()
 	{
-		return $this->getViewState('Align',TInlineFrameAlign::NotSet);
+		return $this->getViewState('Align', TInlineFrameAlign::NotSet);
 	}
 
 	/**
-	 * @param TInlineFrameAlign alignment of the iframe.
+	 * @param TInlineFrameAlign $value alignment of the iframe.
 	 */
 	public function setAlign($value)
 	{
-		$this->setViewState('Align',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TInlineFrameAlign'),TInlineFrameAlign::NotSet);
+		$this->setViewState('Align', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameAlign'), TInlineFrameAlign::NotSet);
 	}
 
 	/**
@@ -63,15 +64,15 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getDescriptionUrl()
 	{
-		return $this->getViewState('DescriptionUrl','');
+		return $this->getViewState('DescriptionUrl', '');
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
-		$this->setViewState('DescriptionUrl',$value,'');
+		$this->setViewState('DescriptionUrl', $value, '');
 	}
 
 	/**
@@ -79,15 +80,15 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getShowBorder()
 	{
-		return $this->getViewState('ShowBorder',true);
+		return $this->getViewState('ShowBorder', true);
 	}
 
 	/**
-	 * @param boolean whether there should be a visual separator between the frames.
+	 * @param boolean $value whether there should be a visual separator between the frames.
 	 */
 	public function setShowBorder($value)
 	{
-		$this->setViewState('ShowBorder',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowBorder', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -95,15 +96,15 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getFrameUrl()
 	{
-		return $this->getViewState('FrameUrl','');
+		return $this->getViewState('FrameUrl', '');
 	}
 
 	/**
-	 * @param string URL that this iframe will load content from.
+	 * @param string $value URL that this iframe will load content from.
 	 */
 	public function setFrameUrl($value)
 	{
-		$this->setViewState('FrameUrl',$value,'');
+		$this->setViewState('FrameUrl', $value, '');
 	}
 
 	/**
@@ -137,15 +138,15 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getScrollBars()
 	{
-		return $this->getViewState('ScrollBars',TInlineFrameScrollBars::Auto);
+		return $this->getViewState('ScrollBars', TInlineFrameScrollBars::Auto);
 	}
 
 	/**
-	 * @param TInlineFrameScrollBars the visibility and position of scroll bars in an iframe.
+	 * @param TInlineFrameScrollBars $value the visibility and position of scroll bars in an iframe.
 	 */
 	public function setScrollBars($value)
 	{
-		$this->setViewState('ScrollBars',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TInlineFrameScrollBars'),TInlineFrameScrollBars::Auto);
+		$this->setViewState('ScrollBars', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameScrollBars'), TInlineFrameScrollBars::Auto);
 	}
 
 	/**
@@ -153,55 +154,58 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getWidth()
 	{
-	  return $this->getViewState('Width',-1);
+		return $this->getViewState('Width', -1);
 	}
-	
+
 	/**
-	 * @param integer the width of the control
+	 * @param integer $value the width of the control
 	 */
 	public function setWidth($value)
 	{
-	  if(($value=TPropertyValue::ensureInteger($value))<0)
-	    $value=-1;
-	  $this->setViewState('Width',$value,-1);
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		$this->setViewState('Width', $value, -1);
 	}
-	
+
 	/**
 	 * @return integer the height of the control
 	 */
 	public function getHeight()
 	{
-	  return $this->getViewState('Height',-1);
+		return $this->getViewState('Height', -1);
 	}
-	
+
 	/**
-	 * @param integer the height of the control
+	 * @param integer $value the height of the control
 	 */
 	public function setHeight($value)
 	{
-	  if(($value=TPropertyValue::ensureInteger($value))<0)
-	    $value=-1;
-	  $this->setViewState('Height',$value,-1);
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		$this->setViewState('Height', $value, -1);
 	}
-	
+
 	/**
 	 * @return integer the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins. Defaults to -1, meaning not set.
 	 */
 	public function getMarginWidth()
 	{
-		return $this->getViewState('MarginWidth',-1);
+		return $this->getViewState('MarginWidth', -1);
 	}
 
 	/**
-	 * @param integer the amount of space, in pixels, that should be left between
+	 * @param integer $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins.
 	 */
 	public function setMarginWidth($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
-		$this->setViewState('MarginWidth',$value,-1);
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		$this->setViewState('MarginWidth', $value, -1);
 	}
 
 	/**
@@ -210,59 +214,70 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function getMarginHeight()
 	{
-		return $this->getViewState('MarginHeight',-1);
+		return $this->getViewState('MarginHeight', -1);
 	}
 
 	/**
-	 * @param integer the amount of space, in pixels, that should be left between
+	 * @param integer $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins.
 	 */
 	public function setMarginHeight($value)
 	{
-		if(($value=TPropertyValue::ensureInteger($value))<0)
-			$value=-1;
-		$this->setViewState('MarginHeight',$value,-1);
+		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
+			$value = -1;
+		}
+		$this->setViewState('MarginHeight', $value, -1);
 	}
 
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		if($this->getID()!=='')
-			$writer->addAttribute('name',$this->getUniqueID());
+		if ($this->getID() !== '') {
+			$writer->addAttribute('name', $this->getUniqueID());
+		}
 
-		if(($src=$this->getFrameUrl())!=='')
-			$writer->addAttribute('src',$src);
+		if (($src = $this->getFrameUrl()) !== '') {
+			$writer->addAttribute('src', $src);
+		}
 
-		if(($align=strtolower($this->getAlign()))!=='notset')
-			$writer->addAttribute('align',$align);
+		if (($align = strtolower($this->getAlign())) !== 'notset') {
+			$writer->addAttribute('align', $align);
+		}
 
-		$scrollBars=$this->getScrollBars();
-		if($scrollBars===TInlineFrameScrollBars::None)
-			$writer->addAttribute('scrolling','no');
-		else if($scrollBars===TInlineFrameScrollBars::Both)
-			$writer->addAttribute('scrolling','yes');
+		$scrollBars = $this->getScrollBars();
+		if ($scrollBars === TInlineFrameScrollBars::None) {
+			$writer->addAttribute('scrolling', 'no');
+		} elseif ($scrollBars === TInlineFrameScrollBars::Both) {
+			$writer->addAttribute('scrolling', 'yes');
+		}
 
-		if (!$this->getShowBorder())
-			$writer->addAttribute('frameborder','0');
+		if (!$this->getShowBorder()) {
+			$writer->addAttribute('frameborder', '0');
+		}
 
-		if(($longdesc=$this->getDescriptionUrl())!=='')
-			$writer->addAttribute('longdesc',$longdesc);
-		
-		if (($width=$this->getWidth())!==-1)
-		  $writer->addAttribute('width',$width);
-		
-		if (($height=$this->getHeight())!==-1)
-		  $writer->addAttribute('height',$height);
+		if (($longdesc = $this->getDescriptionUrl()) !== '') {
+			$writer->addAttribute('longdesc', $longdesc);
+		}
 
-		if(($marginheight=$this->getMarginHeight())!==-1)
-			$writer->addAttribute('marginheight',$marginheight);
+		if (($width = $this->getWidth()) !== -1) {
+			$writer->addAttribute('width', $width);
+		}
 
-		if(($marginwidth=$this->getMarginWidth())!==-1)
-			$writer->addAttribute('marginwidth',$marginwidth);
+		if (($height = $this->getHeight()) !== -1) {
+			$writer->addAttribute('height', $height);
+		}
+
+		if (($marginheight = $this->getMarginHeight()) !== -1) {
+			$writer->addAttribute('marginheight', $marginheight);
+		}
+
+		if (($marginwidth = $this->getMarginWidth()) !== -1) {
+			$writer->addAttribute('marginwidth', $marginwidth);
+		}
 
 		parent::addAttributesToRender($writer);
 	}

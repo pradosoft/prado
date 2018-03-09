@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Collections\TList;
 use Prado\Util\TDataFieldAccessor;
 
@@ -54,14 +55,15 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getCellSpacing()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellSpacing();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
-	 * @param integer the cellspacing for the table layout.
+	 * @param integer $value the cellspacing for the table layout.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -73,14 +75,15 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getCellPadding()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getCellPadding();
-		else
+		} else {
 			return -1;
+		}
 	}
 
 	/**
-	 * @param integer the cellpadding for the table layout
+	 * @param integer $value the cellpadding for the table layout
 	 */
 	public function setCellPadding($value)
 	{
@@ -92,14 +95,15 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getHorizontalAlign()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getHorizontalAlign();
-		else
+		} else {
 			return THorizontalAlign::NotSet;
+		}
 	}
 
 	/**
-	 * @param THorizontalAlign the horizontal alignment of the table content.
+	 * @param THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -111,15 +115,16 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getGridLines()
 	{
-		if($this->getHasStyle())
+		if ($this->getHasStyle()) {
 			return $this->getStyle()->getGridLines();
-		else
+		} else {
 			return TTableGridLines::None;
+		}
 	}
 
 	/**
 	 * Sets the grid line style of the table layout.
-	 * @param TTableGridLines the grid line setting of the table
+	 * @param TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -132,15 +137,15 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeyField()
 	{
-		return $this->getViewState('DataKeyField','');
+		return $this->getViewState('DataKeyField', '');
 	}
 
 	/**
-	 * @param string the field of the data source that provides the keys of the list items.
+	 * @param string $value the field of the data source that provides the keys of the list items.
 	 */
 	public function setDataKeyField($value)
 	{
-		$this->setViewState('DataKeyField',$value,'');
+		$this->setViewState('DataKeyField', $value, '');
 	}
 
 	/**
@@ -148,10 +153,9 @@ abstract class TBaseDataList extends TDataBoundControl
 	 */
 	public function getDataKeys()
 	{
-		if(($dataKeys=$this->getViewState('DataKeys',null))===null)
-		{
-			$dataKeys=new TList;
-			$this->setViewState('DataKeys',$dataKeys,null);
+		if (($dataKeys = $this->getViewState('DataKeys', null)) === null) {
+			$dataKeys = new TList;
+			$this->setViewState('DataKeys', $dataKeys, null);
 		}
 		return $dataKeys;
 	}
@@ -167,20 +171,19 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
 	 */
-	protected function getDataFieldValue($data,$field)
+	protected function getDataFieldValue($data, $field)
 	{
-		return TDataFieldAccessor::getDataFieldValue($data,$field);
+		return TDataFieldAccessor::getDataFieldValue($data, $field);
 	}
 
 	/**
 	 * Raises OnSelectedIndexChanged event.
 	 * This method is invoked when a different item is selected
 	 * in a data listing control between posts to the server.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{
-		$this->raiseEvent('OnSelectedIndexChanged',$this,$param);
+		$this->raiseEvent('OnSelectedIndexChanged', $this, $param);
 	}
 }
-

@@ -11,12 +11,11 @@
 
 namespace Prado\I18N;
 
- /**
+/**
  * Get the ChoiceFormat class.
  */
 use Prado\I18N\core\ChoiceFormat;
 use Prado\Prado;
-
 
 /**
  * TChoiceFormat class.
@@ -82,16 +81,16 @@ class TChoiceFormat extends TTranslate
 	 */
 	public function getValue()
 	{
-		return $this->getViewState('Value','');
+		return $this->getViewState('Value', '');
 	}
 
 	/**
 	 * Sets the numerical choice value
-	 * @param float the choice value
+	 * @param float $value the choice value
 	 */
 	public function setValue($value)
 	{
-		$this->setViewState('Value',$value,'');
+		$this->setViewState('Value', $value, '');
 	}
 
 	/**
@@ -105,7 +104,8 @@ class TChoiceFormat extends TTranslate
 		$choice = new ChoiceFormat();
 		$value = $this->getValue();
 		$string = $choice->format($text, $value);
-		if($string)
-			return strtr($string, array('{Value}'=> $value));
+		if ($string) {
+			return strtr($string, ['{Value}' => $value]);
+		}
 	}
 }

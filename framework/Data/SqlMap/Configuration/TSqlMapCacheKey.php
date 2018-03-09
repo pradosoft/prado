@@ -25,7 +25,7 @@ class TSqlMapCacheKey
 	private $_key;
 
 	/**
-	 * @param mixed object to be cached.
+	 * @param mixed $object object to be cached.
 	 */
 	public function __construct($object)
 	{
@@ -33,12 +33,12 @@ class TSqlMapCacheKey
 	}
 
 	/**
-	 * @param string serialized object
+	 * @param string $string serialized object
 	 * @return string crc32 hash of the serialized object.
 	 */
 	protected function generateKey($string)
 	{
-		return sprintf('%x',crc32($string));
+		return sprintf('%x', crc32($string));
 	}
 
 	/**

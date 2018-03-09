@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 
@@ -55,15 +56,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getButtonType()
 	{
-		return $this->getViewState('ButtonType',TButtonColumnType::LinkButton);
+		return $this->getViewState('ButtonType', TButtonColumnType::LinkButton);
 	}
 
 	/**
-	 * @param TButtonColumnType the type of command button.
+	 * @param TButtonColumnType $value the type of command button.
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType',TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TButtonColumnType'),TButtonColumnType::LinkButton);
+		$this->setViewState('ButtonType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TButtonColumnType'), TButtonColumnType::LinkButton);
 	}
 
 	/**
@@ -71,15 +72,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getEditText()
 	{
-		return $this->getViewState('EditText','Edit');
+		return $this->getViewState('EditText', 'Edit');
 	}
 
 	/**
-	 * @param string the caption of the edit button
+	 * @param string $value the caption of the edit button
 	 */
 	public function setEditText($value)
 	{
-		$this->setViewState('EditText',$value,'Edit');
+		$this->setViewState('EditText', $value, 'Edit');
 	}
 
 	/**
@@ -87,15 +88,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getEditImageUrl()
 	{
-		return $this->getViewState('EditImageUrl','');
+		return $this->getViewState('EditImageUrl', '');
 	}
 
 	/**
-	 * @param string the URL of the image file for edit image buttons
+	 * @param string $value the URL of the image file for edit image buttons
 	 */
 	public function setEditImageUrl($value)
 	{
-		$this->setViewState('EditImageUrl',$value,'');
+		$this->setViewState('EditImageUrl', $value, '');
 	}
 
 	/**
@@ -103,15 +104,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getUpdateText()
 	{
-		return $this->getViewState('UpdateText','Update');
+		return $this->getViewState('UpdateText', 'Update');
 	}
 
 	/**
-	 * @param string the caption of the update button
+	 * @param string $value the caption of the update button
 	 */
 	public function setUpdateText($value)
 	{
-		$this->setViewState('UpdateText',$value,'Update');
+		$this->setViewState('UpdateText', $value, 'Update');
 	}
 
 	/**
@@ -119,15 +120,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getUpdateImageUrl()
 	{
-		return $this->getViewState('UpdateImageUrl','');
+		return $this->getViewState('UpdateImageUrl', '');
 	}
 
 	/**
-	 * @param string the URL of the image file for update image buttons
+	 * @param string $value the URL of the image file for update image buttons
 	 */
 	public function setUpdateImageUrl($value)
 	{
-		$this->setViewState('UpdateImageUrl',$value,'');
+		$this->setViewState('UpdateImageUrl', $value, '');
 	}
 
 	/**
@@ -135,15 +136,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getCancelText()
 	{
-		return $this->getViewState('CancelText','Cancel');
+		return $this->getViewState('CancelText', 'Cancel');
 	}
 
 	/**
-	 * @param string the caption of the cancel button
+	 * @param string $value the caption of the cancel button
 	 */
 	public function setCancelText($value)
 	{
-		$this->setViewState('CancelText',$value,'Cancel');
+		$this->setViewState('CancelText', $value, 'Cancel');
 	}
 
 	/**
@@ -151,15 +152,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getCancelImageUrl()
 	{
-		return $this->getViewState('CancelImageUrl','');
+		return $this->getViewState('CancelImageUrl', '');
 	}
 
 	/**
-	 * @param string the URL of the image file for cancel image buttons
+	 * @param string $value the URL of the image file for cancel image buttons
 	 */
 	public function setCancelImageUrl($value)
 	{
-		$this->setViewState('CancelImageUrl',$value,'');
+		$this->setViewState('CancelImageUrl', $value, '');
 	}
 
 	/**
@@ -167,15 +168,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getCausesValidation()
 	{
-		return $this->getViewState('CausesValidation',true);
+		return $this->getViewState('CausesValidation', true);
 	}
 
 	/**
-	 * @param boolean whether postback event trigger by edit or update button will cause input validation
+	 * @param boolean $value whether postback event trigger by edit or update button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
-		$this->setViewState('CausesValidation',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('CausesValidation', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -183,15 +184,15 @@ class TEditCommandColumn extends TDataGridColumn
 	 */
 	public function getValidationGroup()
 	{
-		return $this->getViewState('ValidationGroup','');
+		return $this->getViewState('ValidationGroup', '');
 	}
 
 	/**
-	 * @param string the group of validators which the edit or update button causes validation upon postback
+	 * @param string $value the group of validators which the edit or update button causes validation upon postback
 	 */
 	public function setValidationGroup($value)
 	{
-		$this->setViewState('ValidationGroup',$value,'');
+		$this->setViewState('ValidationGroup', $value, '');
 	}
 
 	/**
@@ -203,53 +204,50 @@ class TEditCommandColumn extends TDataGridColumn
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
-	public function initializeCell($cell,$columnIndex,$itemType)
+	public function initializeCell($cell, $columnIndex, $itemType)
 	{
-		if($itemType===TListItemType::Item || $itemType===TListItemType::AlternatingItem || $itemType===TListItemType::SelectedItem)
-		{
-			$button=$this->createButton('Edit',$this->getEditText(),false,'');
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem) {
+			$button = $this->createButton('Edit', $this->getEditText(), false, '');
 			$cell->getControls()->add($button);
-			$cell->registerObject('EditButton',$button);
-		}
-		else if($itemType===TListItemType::EditItem)
-		{
-			$controls=$cell->getControls();
-			$button=$this->createButton('Update',$this->getUpdateText(),$this->getCausesValidation(),$this->getValidationGroup());
+			$cell->registerObject('EditButton', $button);
+		} elseif ($itemType === TListItemType::EditItem) {
+			$controls = $cell->getControls();
+			$button = $this->createButton('Update', $this->getUpdateText(), $this->getCausesValidation(), $this->getValidationGroup());
 			$controls->add($button);
-			$cell->registerObject('UpdateButton',$button);
+			$cell->registerObject('UpdateButton', $button);
 			$controls->add('&nbsp;');
-			$button=$this->createButton('Cancel',$this->getCancelText(),false,'');
+			$button = $this->createButton('Cancel', $this->getCancelText(), false, '');
 			$controls->add($button);
-			$cell->registerObject('CancelButton',$button);
+			$cell->registerObject('CancelButton', $button);
+		} else {
+			parent::initializeCell($cell, $columnIndex, $itemType);
 		}
-		else
-			parent::initializeCell($cell,$columnIndex,$itemType);
 	}
 
 	/**
 	 * Creates a button and initializes its properties.
 	 * The button type is determined by {@link getButtonType ButtonType}.
-	 * @param string command name associated with the button
-	 * @param string button caption
-	 * @param boolean whether the button should cause validation
-	 * @param string the validation group that the button belongs to
+	 * @param string $commandName command name associated with the button
+	 * @param string $text button caption
+	 * @param boolean $causesValidation whether the button should cause validation
+	 * @param string $validationGroup the validation group that the button belongs to
 	 * @return mixed the newly created button.
 	 */
-	protected function createButton($commandName,$text,$causesValidation,$validationGroup)
+	protected function createButton($commandName, $text, $causesValidation, $validationGroup)
 	{
-		if($this->getButtonType()===TButtonColumnType::LinkButton)
-			$button= new TLinkButton;
-		else if($this->getButtonType()===TButtonColumnType::PushButton)
-			$button= new TButton;
-		else	// image buttons
-		{
-			$button= new TImageButton;
-			if(strcasecmp($commandName,'Update')===0)
-				$url=$this->getUpdateImageUrl();
-			else if(strcasecmp($commandName,'Cancel')===0)
-				$url=$this->getCancelImageUrl();
-			else
-				$url=$this->getEditImageUrl();
+		if ($this->getButtonType() === TButtonColumnType::LinkButton) {
+			$button = new TLinkButton;
+		} elseif ($this->getButtonType() === TButtonColumnType::PushButton) {
+			$button = new TButton;
+		} else {	// image buttons
+			$button = new TImageButton;
+			if (strcasecmp($commandName, 'Update') === 0) {
+				$url = $this->getUpdateImageUrl();
+			} elseif (strcasecmp($commandName, 'Cancel') === 0) {
+				$url = $this->getCancelImageUrl();
+			} else {
+				$url = $this->getEditImageUrl();
+			}
 			$button->setImageUrl($url);
 		}
 		$button->setText($text);
@@ -259,4 +257,3 @@ class TEditCommandColumn extends TDataGridColumn
 		return $button;
 	}
 }
-

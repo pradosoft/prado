@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Prado;
@@ -43,27 +44,28 @@ class TResultProperty extends \Prado\TComponent
 	private $_nullValue;
 	private $_propertyName;
 	private $_columnName;
-	private $_columnIndex=-1;
+	private $_columnIndex = -1;
 	private $_nestedResultMapName;
 	private $_nestedResultMap;
 	private $_valueType;
 	private $_typeHandler;
-	private $_isLazyLoad=false;
+	private $_isLazyLoad = false;
 	private $_select;
 
-	private $_hostResultMapID='inplicit internal mapping';
+	private $_hostResultMapID = 'inplicit internal mapping';
 
 	const LIST_TYPE = 0;
 	const ARRAY_TYPE = 1;
 
 	/**
 	 * Gets the containing result map ID.
-	 * @param TResultMap containing result map.
+	 * @param TResultMap $resultMap containing result map.
 	 */
-	public function __construct($resultMap=null)
+	public function __construct($resultMap = null)
 	{
-		if($resultMap instanceof TResultMap)
+		if ($resultMap instanceof TResultMap) {
 			$this->_hostResultMapID = $resultMap->getID();
+		}
 	}
 
 	/**
@@ -75,7 +77,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed null value replacement.
+	 * @param mixed $value null value replacement.
 	 */
 	public function setNullValue($value)
 	{
@@ -91,7 +93,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of a property of the result object that will be set to.
+	 * @param string $value name of a property of the result object that will be set to.
 	 */
 	public function setProperty($value)
 	{
@@ -108,7 +110,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of the column in the result set from which the value
+	 * @param string $value name of the column in the result set from which the value
 	 * will be used to populate the property.
 	 */
 	public function setColumn($value)
@@ -126,7 +128,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int index of the column in the ResultSet from which the value will
+	 * @param int $value index of the column in the ResultSet from which the value will
 	 * be used to populate the object property
 	 */
 	public function setColumnIndex($value)
@@ -143,7 +145,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string ID of another <resultMap> used to fill the property.
+	 * @param string $value ID of another <resultMap> used to fill the property.
 	 */
 	public function setResultMapping($value)
 	{
@@ -159,7 +161,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TResult nested result map.
+	 * @param TResult $value nested result map.
 	 */
 	public function setNestedResultMap($value)
 	{
@@ -175,7 +177,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string property type of the object property to be set.
+	 * @param string $value property type of the object property to be set.
 	 */
 	public function setType($value)
 	{
@@ -191,7 +193,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string custom type handler class name (may use namespace).
+	 * @param string $value custom type handler class name (may use namespace).
 	 */
 	public function setTypeHandler($value)
 	{
@@ -209,7 +211,7 @@ class TResultProperty extends \Prado\TComponent
 	/**
 	 * The select property is used to describe a relationship between objects
 	 * and to automatically load complex (i.e. user defined) property types.
-	 * @param string name of another mapped statement.
+	 * @param string $value name of another mapped statement.
 	 */
 	public function setSelect($value)
 	{
@@ -225,57 +227,61 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean indicate whether or not the select statement's results should be lazy loaded
+	 * @param boolean $value indicate whether or not the select statement's results should be lazy loaded
 	 */
 	public function setLazyLoad($value)
 	{
-		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value,false);
+		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value, false);
 	}
 
 	/**
 	 * Gets the value for the current property, converts to applicable type if necessary.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param array result row
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param array $row result row
 	 * @return mixed property value.
 	 */
-	public function getPropertyValue($registry,$row)
+	public function getPropertyValue($registry, $row)
 	{
 		$value = null;
 		$index = $this->getColumnIndex();
 		$name = $this->getColumn();
-		if($index > 0 && isset($row[$index]))
-			$value = $this->getTypedValue($registry,$row[$index]);
-		else if(isset($row[$name]))
-			$value = $this->getTypedValue($registry,$row[$name]);
-		if(($value===null) && ($this->getNullValue()!==null))
-			$value = $this->getTypedValue($registry,$this->getNullValue());
+		if ($index > 0 && isset($row[$index])) {
+			$value = $this->getTypedValue($registry, $row[$index]);
+		} elseif (isset($row[$name])) {
+			$value = $this->getTypedValue($registry, $row[$name]);
+		}
+		if (($value === null) && ($this->getNullValue() !== null)) {
+			$value = $this->getTypedValue($registry, $this->getNullValue());
+		}
 		return $value;
 	}
 
 	/**
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param mixed raw property value
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param mixed $value raw property value
 	 * @return mixed property value casted to specific type.
 	 */
-	protected function getTypedValue($registry,$value)
+	protected function getTypedValue($registry, $value)
 	{
-		if(($handler = $this->createTypeHandler($registry))!==null)
+		if (($handler = $this->createTypeHandler($registry)) !== null) {
 			return $handler->getResult($value);
-		else
+		} else {
 			return $registry->convertToType($this->getType(), $value);
+		}
 	}
 
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($registry)
 	{
-		$type=$this->getTypeHandler() ? $this->getTypeHandler() : $this->getType();
-		$handler=$registry->getTypeHandler($type);
-		if($handler===null && $this->getTypeHandler())
+		$type = $this->getTypeHandler() ? $this->getTypeHandler() : $this->getType();
+		$handler = $registry->getTypeHandler($type);
+		if ($handler === null && $this->getTypeHandler()) {
 			$handler = Prado::createComponent($type);
+		}
 		return $handler;
 	}
 
@@ -285,46 +291,50 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	protected function getPropertyValueType()
 	{
-		if(class_exists($type = $this->getType(), false)) //NO force autoloading
-		{
-			if($type==='TList')
+		if (class_exists($type = $this->getType(), false)) { //NO force autoloading
+			if ($type === 'TList') {
 				return self::LIST_TYPE;
+			}
 			$class = new ReflectionClass($type);
-			if($class->isSubclassOf('TList'))
+			if ($class->isSubclassOf('TList')) {
 				return self::LIST_TYPE;
-			if($class->implementsInterface('ArrayAccess'))
+			}
+			if ($class->implementsInterface('ArrayAccess')) {
 				return self::ARRAY_TYPE;
+			}
 		}
-		if(strtolower($type) == 'array')
+		if (strtolower($type) == 'array') {
 			return self::ARRAY_TYPE;
+		}
 	}
 
 	/**
 	 * Returns true if the result property {@link Type getType()} is of TList type
 	 * or that the actual result object is an instance of TList.
-	 * @param object result object
+	 * @param object $target result object
 	 * @return boolean true if the result object is an instance of TList
 	 */
 	public function instanceOfListType($target)
 	{
-		if($this->getType()===null)
-			return  TPropertyAccess::get($target,$this->getProperty()) instanceof TList;
+		if ($this->getType() === null) {
+			return  TPropertyAccess::get($target, $this->getProperty()) instanceof TList;
+		}
 		return $this->getPropertyValueType() == self::LIST_TYPE;
 	}
 
 	/**
 	 * Returns true if the result property {@link Type getType()} is of \ArrayAccess
 	 * or that the actual result object is an array or implements \ArrayAccess
-	 * @param object result object
+	 * @param object $target result object
 	 * @return boolean true if the result object is an instance of \ArrayAccess or is an array.
 	 */
 	public function instanceOfArrayType($target)
 	{
-		if($this->getType()===null)
-		{
-			$prop = TPropertyAccess::get($target,$this->getProperty());
-			if(is_object($prop))
+		if ($this->getType() === null) {
+			$prop = TPropertyAccess::get($target, $this->getProperty());
+			if (is_object($prop)) {
 				return $prop instanceof \ArrayAccess;
+			}
 			return is_array($prop);
 		}
 		return $this->getPropertyValueType() == self::ARRAY_TYPE;
@@ -332,18 +342,38 @@ class TResultProperty extends \Prado\TComponent
 
 	public function __sleep()
 	{
-		$exprops = array(); $cn = 'TResultProperty';
-		if ($this->_nullValue===null) $exprops[] = "\0$cn\0_nullValue";
-		if ($this->_propertyName===null) $exprops[] = "\0$cn\0_propertyNama";
-		if ($this->_columnName===null) $exprops[] = "\0$cn\0_columnName";
-		if ($this->_columnIndex==-1) $exprops[] = "\0$cn\0_columnIndex";
-		if ($this->_nestedResultMapName===null) $exprops[] = "\0$cn\0_nestedResultMapName";
-		if ($this->_nestedResultMap===null) $exprops[] = "\0$cn\0_nestedResultMap";
-		if ($this->_valueType===null) $exprops[] = "\0$cn\0_valueType";
-		if ($this->_typeHandler===null) $exprops[] = "\0$cn\0_typeHandler";
-		if ($this->_isLazyLoad===false) $exprops[] = "\0$cn\0_isLazyLoad";
-		if ($this->_select===null) $exprops[] = "\0$cn\0_select";
-		return array_diff(parent::__sleep(),$exprops);
+		$exprops = [];
+		$cn = 'TResultProperty';
+		if ($this->_nullValue === null) {
+			$exprops[] = "\0$cn\0_nullValue";
+		}
+		if ($this->_propertyName === null) {
+			$exprops[] = "\0$cn\0_propertyNama";
+		}
+		if ($this->_columnName === null) {
+			$exprops[] = "\0$cn\0_columnName";
+		}
+		if ($this->_columnIndex == -1) {
+			$exprops[] = "\0$cn\0_columnIndex";
+		}
+		if ($this->_nestedResultMapName === null) {
+			$exprops[] = "\0$cn\0_nestedResultMapName";
+		}
+		if ($this->_nestedResultMap === null) {
+			$exprops[] = "\0$cn\0_nestedResultMap";
+		}
+		if ($this->_valueType === null) {
+			$exprops[] = "\0$cn\0_valueType";
+		}
+		if ($this->_typeHandler === null) {
+			$exprops[] = "\0$cn\0_typeHandler";
+		}
+		if ($this->_isLazyLoad === false) {
+			$exprops[] = "\0$cn\0_isLazyLoad";
+		}
+		if ($this->_select === null) {
+			$exprops[] = "\0$cn\0_select";
+		}
+		return array_diff(parent::__sleep(), $exprops);
 	}
 }
-

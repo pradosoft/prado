@@ -24,6 +24,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TButtonTag extends \Prado\TEnumerable
 {
-	const Input='Input';
-	const Button='Button';
+	const Input = 'Input';
+	const Button = 'Button';
 }

@@ -35,16 +35,17 @@ class TPagedMapIterator implements \Iterator
 	 * Constructor.
 	 * @param array the data to be iterated through
 	 */
-	public function __construct(TMap $map,$startIndex,$count)
+	public function __construct(TMap $map, $startIndex, $count)
 	{
-		$this->_map=$map;
-		$this->_index=0;
-		$this->_startIndex=$startIndex;
-		if($startIndex+$count>$map->getCount())
-			$this->_count=$map->getCount()-$startIndex;
-		else
-			$this->_count=$count;
-		$this->_iterator=$map->getIterator();
+		$this->_map = $map;
+		$this->_index = 0;
+		$this->_startIndex = $startIndex;
+		if ($startIndex + $count > $map->getCount()) {
+			$this->_count = $map->getCount() - $startIndex;
+		} else {
+			$this->_count = $count;
+		}
+		$this->_iterator = $map->getIterator();
 	}
 
 	/**
@@ -54,9 +55,10 @@ class TPagedMapIterator implements \Iterator
 	public function rewind()
 	{
 		$this->_iterator->rewind();
-		for($i=0;$i<$this->_startIndex;++$i)
+		for ($i = 0;$i < $this->_startIndex;++$i) {
 			$this->_iterator->next();
-		$this->_index=0;
+		}
+		$this->_index = 0;
 	}
 
 	/**
@@ -96,6 +98,6 @@ class TPagedMapIterator implements \Iterator
 	 */
 	public function valid()
 	{
-		return $this->_index<$this->_count;
+		return $this->_index < $this->_count;
 	}
 }

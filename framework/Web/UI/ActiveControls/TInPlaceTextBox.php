@@ -16,7 +16,6 @@ use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TTextBox;
 use Prado\Web\UI\WebControls\TWebControl;
 
-
 /**
  * TInPlaceTextBox Class
  *
@@ -60,7 +59,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean true to hide the textbox after losing focus.
+	 * @param boolean $value true to hide the textbox after losing focus.
 	 */
 	public function setAutoHideTextBox($value)
 	{
@@ -76,14 +75,15 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean true to display the edit textbox
+	 * @param boolean $value true to display the edit textbox
 	 */
 	public function setDisplayTextBox($value)
 	{
 		$value = TPropertyValue::ensureBoolean($value);
-		$this->setViewState('DisplayTextBox', $value,false);
-		if($this->getActiveControl()->canUpdateClientSide())
-			$this->callClientFunction('setDisplayTextBox',$value);
+		$this->setViewState('DisplayTextBox', $value, false);
+		if ($this->getActiveControl()->canUpdateClientSide()) {
+			$this->callClientFunction('setDisplayTextBox', $value);
+		}
 	}
 
 	/**
@@ -99,15 +99,15 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * @param string static method name
 	 * @param mixed method parmaeter
 	 */
-	protected function callClientFunction($func,$value)
+	protected function callClientFunction($func, $value)
 	{
 		$client = $this->getPage()->getCallbackClient();
-		$code = $this->getClientClassName().'.'.$func;
-		$client->callClientFunction($code,array($this,$value));
+		$code = $this->getClientClassName() . '.' . $func;
+		$client->callClientFunction($code, [$this, $value]);
 	}
 
 	/**
-	 * @param string ID of the control that can trigger to edit the textbox
+	 * @param string $value ID of the control that can trigger to edit the textbox
 	 */
 	public function setEditTriggerControlID($value)
 	{
@@ -128,25 +128,28 @@ class TInPlaceTextBox extends TActiveTextBox
 	protected function getExternalControlID()
 	{
 		$extID = $this->getEditTriggerControlID();
-		if($extID===null) return '';
-		if(($control = $this->findControl($extID))!==null)
+		if ($extID === null) {
+			return '';
+		}
+		if (($control = $this->findControl($extID)) !== null) {
 			return $control->getClientID();
+		}
 		return $extID;
 	}
 
 	/**
 	 * On callback response, the inner HTMl of the label and the
 	 * value of the textbox is updated
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 */
 	public function setText($value)
 	{
-		if(TTextBox::getText() === $value)
+		if (TTextBox::getText() === $value) {
 			return;
+		}
 
 		TTextBox::setText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
 			$client->update($this->getLabelClientID(), $value);
 			$client->setValue($this, $value);
@@ -155,18 +158,18 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Update ClientSide Readonly property
-	 * @param boolean value
+	 * @param boolean $value value
 	 * @since 3.1.2
 	 */
-	public function setReadOnly ($value)
+	public function setReadOnly($value)
 	{
-		$value=TPropertyValue::ensureBoolean($value);
-		if(TTextBox::getReadOnly() === $value)
+		$value = TPropertyValue::ensureBoolean($value);
+		if (TTextBox::getReadOnly() === $value) {
 			return;
+		}
 
 		TTextBox::setReadOnly($value);
-		if ($this->getActiveControl()->canUpdateClientSide())
-		{
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->callClientFunction('setReadOnly', $value);
 		}
 	}
@@ -181,14 +184,15 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter the writer for rendering
+	 * @param THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
-		if(($text=$this->getText())==='')
+		if (($text = $this->getText()) === '') {
 			parent::renderContents($writer);
-		else
+		} else {
 			$writer->write($text);
+		}
 	}
 
 	/**
@@ -196,7 +200,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	protected function getLabelClientID()
 	{
-		return $this->getClientID().'__label';
+		return $this->getClientID() . '__label';
 	}
 
 	/**
@@ -204,13 +208,12 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
 		$action = $param->getCallbackParameter();
-		if(is_array($action) && $action[0] === '__InlineEditor_loadExternalText__')
-		{
+		if (is_array($action) && $action[0] === '__InlineEditor_loadExternalText__') {
 			$parameter = new TCallbackEventParameter($this->getResponse(), $action[1]);
 			$this->onLoadingText($parameter);
 		}
@@ -229,32 +232,30 @@ class TInPlaceTextBox extends TActiveTextBox
 		$options['AutoHide'] = $this->getAutoHideTextBox() == false ? '' : true;
 		$options['AutoPostBack'] = $this->getAutoPostBack() == false ? '' : true;
 		$options['Columns'] = $this->getColumns();
-		if($this->getTextMode()==='MultiLine')
-		{
+		if ($this->getTextMode() === 'MultiLine') {
 			$options['Rows'] = $this->getRows();
-			$options['Wrap'] = $this->getWrap()== false ? '' : true;
-		}
-		else
-		{
+			$options['Wrap'] = $this->getWrap() == false ? '' : true;
+		} else {
 			$length = $this->getMaxLength();
 			$options['MaxLength'] = $length > 0 ? $length : '';
 		}
 
-		if($this->hasEventHandler('OnLoadingText'))
+		if ($this->hasEventHandler('OnLoadingText')) {
 			$options['LoadTextOnEdit'] = true;
+		}
 
-		$options['ReadOnly']=$this->getReadOnly();
+		$options['ReadOnly'] = $this->getReadOnly();
 		return $options;
 	}
 
 	/**
 	 * Raised when editing the content is requsted to be loaded from the
 	 * server side.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoadingText($param)
 	{
-		$this->raiseEvent('OnLoadingText',$this,$param);
+		$this->raiseEvent('OnLoadingText', $this, $param);
 	}
 
 	/**
@@ -273,15 +274,17 @@ class TInPlaceTextBox extends TActiveTextBox
 	{
 		//calls the TWebControl to avoid rendering other attribute normally render for a textbox.
 		TWebControl::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getLabelClientID());
+		$writer->addAttribute('id', $this->getLabelClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**
 	 * Registers CSS and JS.
 	 * This method is invoked right before the control rendering, if the control is visible.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -294,7 +297,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 */
 	protected function registerClientScript()
 	{
-		$cs=$this->getPage()->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('inlineeditor');
 	}
 }

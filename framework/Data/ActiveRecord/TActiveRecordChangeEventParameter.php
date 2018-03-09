@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord;
+
 use Prado\TPropertyValue;
 
 /**
@@ -27,7 +28,7 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 {
-	private $_isValid=true;
+	private $_isValid = true;
 
 	/**
 	 * @return boolean whether the event should be performed.
@@ -38,7 +39,7 @@ class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean set to false to prevent the event.
+	 * @param boolean $value set to false to prevent the event.
 	 */
 	public function setIsValid($value)
 	{

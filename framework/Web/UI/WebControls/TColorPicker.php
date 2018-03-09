@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -50,24 +51,24 @@ class TColorPicker extends TTextBox
 	 */
 	public function getShowColorPicker()
 	{
-		return $this->getViewState('ShowColorPicker',true);
+		return $this->getViewState('ShowColorPicker', true);
 	}
 
 	/**
 	 * Sets whether to pop up the color picker when the button is clicked.
-	 * @param boolean whether to show the color picker popup
+	 * @param boolean $value whether to show the color picker popup
 	 */
 	public function setShowColorPicker($value)
 	{
-		$this->setViewState('ShowColorPicker',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('ShowColorPicker', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
-	 * @param TColorPickerMode color picker UI mode
+	 * @param TColorPickerMode $value color picker UI mode
 	 */
 	public function setMode($value)
 	{
-	   $this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
 	}
 
 	/**
@@ -75,15 +76,15 @@ class TColorPicker extends TTextBox
 	 */
 	public function getMode()
 	{
-	   return $this->getViewState('Mode', TColorPickerMode::Basic);
+		return $this->getViewState('Mode', TColorPickerMode::Basic);
 	}
 
 	/**
-	 * @param string set the color picker style
+	 * @param string $value set the color picker style
 	 */
 	public function setColorPickerStyle($value)
 	{
-	   $this->setViewState('ColorStyle', $value, 'default');
+		$this->setViewState('ColorStyle', $value, 'default');
 	}
 
 	/**
@@ -91,7 +92,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function getColorPickerStyle()
 	{
-	   return $this->getViewState('ColorStyle', 'default');
+		return $this->getViewState('ColorStyle', 'default');
 	}
 
 	/**
@@ -103,7 +104,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string text for the color picker OK button
+	 * @param string $value text for the color picker OK button
 	 */
 	public function setOKButtonText($value)
 	{
@@ -119,7 +120,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string text for the color picker Cancel button
+	 * @param string $value text for the color picker Cancel button
 	 */
 	public function setCancelButtonText($value)
 	{
@@ -131,8 +132,9 @@ class TColorPicker extends TTextBox
 	 */
 	public function getClientSide()
 	{
-		if($this->_clientSide===null)
+		if ($this->_clientSide === null) {
 			$this->_clientSide = $this->createClientSide();
+		}
 		return $this->_clientSide;
 	}
 
@@ -153,15 +155,17 @@ class TColorPicker extends TTextBox
 		$options = parent::getPostBackOptions();
 		$options['ClassName'] = $this->getCssClass();
 		$options['ShowColorPicker'] = $this->getShowColorPicker();
-		if($options['ShowColorPicker'])
-		{
+		if ($options['ShowColorPicker']) {
 			$mode = $this->getMode();
-			if($mode == TColorPickerMode::Full) $options['Mode'] = $mode;
-			else if($mode == TColorPickerMode::Simple) $options['Palette'] = 'Tiny';
+			if ($mode == TColorPickerMode::Full) {
+				$options['Mode'] = $mode;
+			} elseif ($mode == TColorPickerMode::Simple) {
+				$options['Palette'] = 'Tiny';
+			}
 			$options['OKButtonText'] = $this->getOKButtonText();
 			$options['CancelButtonText'] = $this->getCancelButtonText();
 		}
-		$options = array_merge($options,$this->getClientSide()->getOptions()->toArray());
+		$options = array_merge($options, $this->getClientSide()->getOptions()->toArray());
 		return $options;
 	}
 
@@ -169,10 +173,10 @@ class TColorPicker extends TTextBox
 	 * @param string asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
-	protected function getAssetUrl($file='')
+	protected function getAssetUrl($file = '')
 	{
 		$base = $this->getPage()->getClientScript()->getPradoScriptAssetUrl();
-		return $base.'/'.self::SCRIPT_PATH.'/'.$file;
+		return $base . '/' . self::SCRIPT_PATH . '/' . $file;
 	}
 
 	/**
@@ -190,23 +194,24 @@ class TColorPicker extends TTextBox
 	protected function publishColorPickerAssets()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$key = "prado:".get_class($this);
+		$key = "prado:" . get_class($this);
 		$imgs['button.gif'] = $this->getAssetUrl('button.gif');
 		$imgs['background.png'] = $this->getAssetUrl('background.png');
 		$options = TJavaScript::encode($imgs);
 		$code = "Prado.WebUI.TColorPicker.UIImages = {$options};";
 		$cs->registerEndScript($key, $code);
 		$cs->registerPradoScript("colorpicker");
-		$url = $this->getAssetUrl($this->getColorPickerStyle().'.css');
-		if(!$cs->isStyleSheetFileRegistered($url))
+		$url = $this->getAssetUrl($this->getColorPickerStyle() . '.css');
+		if (!$cs->isStyleSheetFileRegistered($url)) {
 			$cs->registerStyleSheetFile($url, $url);
+		}
 	}
 
 	/**
 	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
 	 * additional color picker button.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function renderEndTag($writer)
 	{
@@ -216,10 +221,11 @@ class TColorPicker extends TTextBox
 		$writer->addAttribute('class', 'TColorPicker_button');
 		$writer->renderBeginTag('span');
 
-		$writer->addAttribute('id', $this->getClientID().'_button');
+		$writer->addAttribute('id', $this->getClientID() . '_button');
 		$writer->addAttribute('src', $this->getAssetUrl('button.gif'));
-		if($color !== '')
+		if ($color !== '') {
 			$writer->addAttribute('style', "background-color:{$color};");
+		}
 		$writer->addAttribute('width', '20');
 		$writer->addAttribute('height', '20');
 		$writer->addAttribute('alt', '');

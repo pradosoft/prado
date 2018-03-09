@@ -29,5 +29,5 @@ namespace Prado\Web\UI\WebControls;
  */
 class TRangeValidationDataType extends TValidationDataType
 {
-	const StringLength='StringLength';
+	const StringLength = 'StringLength';
 }

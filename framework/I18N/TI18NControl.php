@@ -10,6 +10,7 @@
  */
 
 namespace Prado\I18N;
+
 use Prado\Web\UI\TControl;
 
 /**
@@ -45,26 +46,28 @@ class TI18NControl extends TControl
 		$app = $this->getApplication()->getGlobalization(false);
 
 		//instance charset
-		$charset = $this->getViewState('Charset','');
+		$charset = $this->getViewState('Charset', '');
 
 		//fall back to globalization charset
-		if(empty($charset))
-			$charset = ($app===null) ? '' : $app->getCharset();
+		if (empty($charset)) {
+			$charset = ($app === null) ? '' : $app->getCharset();
+		}
 
 		//fall back to default charset
-		if(empty($charset))
-			$charset = ($app===null) ? 'UTF-8' : $app->getDefaultCharset();
+		if (empty($charset)) {
+			$charset = ($app === null) ? 'UTF-8' : $app->getDefaultCharset();
+		}
 
 		return $charset;
 	}
 
 	/**
 	 * Sets the charset for message output
-	 * @param string the charset, e.g. UTF-8
+	 * @param string $value the charset, e.g. UTF-8
 	 */
 	public function setCharset($value)
 	{
-		$this->setViewState('Charset',$value,'');
+		$this->setViewState('Charset', $value, '');
 	}
 
 
@@ -75,16 +78,15 @@ class TI18NControl extends TControl
 	 */
 	public function getCulture()
 	{
-		return $this->getViewState('Culture','');
+		return $this->getViewState('Culture', '');
 	}
 
 	/**
 	 * Get the custom culture identifier.
-	 * @param string culture identifier.
+	 * @param string $culture culture identifier.
 	 */
 	public function setCulture($culture)
 	{
-		$this->setViewState('Culture',$culture,'');
+		$this->setViewState('Culture', $culture, '');
 	}
 }
-

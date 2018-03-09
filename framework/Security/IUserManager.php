@@ -33,7 +33,7 @@ interface IUserManager
 	 * @param string user name, null if it is a guest.
 	 * @return TUser the user instance, null if the specified username is not in the user database.
 	 */
-	public function getUser($username=null);
+	public function getUser($username = null);
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
 	 * @param THttpCookie the cookie storing user authentication information
@@ -43,16 +43,15 @@ interface IUserManager
 	public function getUserFromCookie($cookie);
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie the cookie to receive the user auth data.
+	 * @param THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie);
 	/**
 	 * Validates if the username and password are correct.
-	 * @param string user name
-	 * @param string password
+	 * @param string $username user name
+	 * @param string $password password
 	 * @return boolean true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username,$password);
+	public function validateUser($username, $password);
 }
-

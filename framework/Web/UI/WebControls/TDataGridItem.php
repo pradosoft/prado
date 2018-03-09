@@ -15,6 +15,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -36,36 +37,37 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	/**
 	 * @var integer index of the data item in the Items collection of datagrid
 	 */
-	private $_itemIndex='';
+	private $_itemIndex = '';
 	/**
 	 * @var integer index of the item from the bound data source
 	 */
-	private $_dataSourceIndex=0;
+	private $_dataSourceIndex = 0;
 	/**
 	 * type of the TDataGridItem
 	 * @var string
 	 */
-	private $_itemType='';
+	private $_itemType = '';
 	/**
 	 * value of the data item
 	 * @var mixed
 	 */
-	private $_data=null;
+	private $_data;
 
 	/**
 	 * Constructor.
 	 * @param integer zero-based index of the item in the item collection of datagrid
 	 * @param TListItemType item type
 	 */
-	public function __construct($itemIndex,$dataSourceIndex,$itemType)
+	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
-		$this->_itemIndex=$itemIndex;
-		$this->_dataSourceIndex=$dataSourceIndex;
+		$this->_itemIndex = $itemIndex;
+		$this->_dataSourceIndex = $dataSourceIndex;
 		$this->setItemType($itemType);
-		if($itemType===TListItemType::Header)
+		if ($itemType === TListItemType::Header) {
 			$this->setTableSection(TTableRowSection::Header);
-		else if($itemType===TListItemType::Footer)
+		} elseif ($itemType === TListItemType::Footer) {
 			$this->setTableSection(TTableRowSection::Footer);
+		}
 	}
 
 	/**
@@ -77,11 +79,11 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param TListItemType item type
+	 * @param TListItemType $value item type
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
 	}
 
 	/**
@@ -110,29 +112,28 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param mixed data to be associated with the item
+	 * @param mixed $value data to be associated with the item
 	 * @since 3.1.0
 	 */
 	public function setData($value)
 	{
-		$this->_data=$value;
+		$this->_data = $value;
 	}
 
 	/**
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl the sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender the sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @return boolean whether the event bubbling should stop here.
 	 */
-	public function bubbleEvent($sender,$param)
+	public function bubbleEvent($sender, $param)
 	{
-		if($param instanceof \Prado\Web\UI\TCommandEventParameter)
-		{
-			$this->raiseBubbleEvent($this,new TDataGridCommandEventParameter($this,$sender,$param));
+		if ($param instanceof \Prado\Web\UI\TCommandEventParameter) {
+			$this->raiseBubbleEvent($this, new TDataGridCommandEventParameter($this, $sender, $param));
 			return true;
-		}
-		else
+		} else {
 			return false;
+		}
 	}
 }

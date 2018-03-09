@@ -17,7 +17,6 @@ namespace Prado\Data\Common\Pgsql;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Prado;
 
-
 /**
  * TPgsqlTableInfo class provides additional table information for PostgreSQL database.
  *
@@ -40,19 +39,19 @@ class TPgsqlTableInfo extends TDbTableInfo
 	 */
 	public function getTableFullName()
 	{
-		if(($schema=$this->getSchemaName())!==null)
-			return $schema.'.'.$this->getTableName();
-		else
+		if (($schema = $this->getSchemaName()) !== null) {
+			return $schema . '.' . $this->getTableName();
+		} else {
 			return $this->getTableName();
+		}
 	}
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TPgsqlCommandBuilder($connection,$this);
+		return new TPgsqlCommandBuilder($connection, $this);
 	}
 }
-

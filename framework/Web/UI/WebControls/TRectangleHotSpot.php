@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -37,7 +38,7 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getCoordinates()
 	{
-		return $this->getLeft().','.$this->getTop().','.$this->getRight().','.$this->getBottom();
+		return $this->getLeft() . ',' . $this->getTop() . ',' . $this->getRight() . ',' . $this->getBottom();
 	}
 
 	/**
@@ -45,15 +46,15 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getBottom()
 	{
-		return $this->getViewState('Bottom',0);
+		return $this->getViewState('Bottom', 0);
 	}
 
 	/**
-	 * @param integer the Y coordinate of the bottom side of the rectangle HotSpot region.
+	 * @param integer $value the Y coordinate of the bottom side of the rectangle HotSpot region.
 	 */
 	public function setBottom($value)
 	{
-		$this->setViewState('Bottom',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Bottom', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -61,15 +62,15 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getLeft()
 	{
-		return $this->getViewState('Left',0);
+		return $this->getViewState('Left', 0);
 	}
 
 	/**
-	 * @param integer the X coordinate of the right side of the rectangle HotSpot region.
+	 * @param integer $value the X coordinate of the right side of the rectangle HotSpot region.
 	 */
 	public function setLeft($value)
 	{
-		$this->setViewState('Left',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Left', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -77,15 +78,15 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getRight()
 	{
-		return $this->getViewState('Right',0);
+		return $this->getViewState('Right', 0);
 	}
 
 	/**
-	 * @param integer the X coordinate of the right side of the rectangle HotSpot region.
+	 * @param integer $value the X coordinate of the right side of the rectangle HotSpot region.
 	 */
 	public function setRight($value)
 	{
-		$this->setViewState('Right',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Right', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -93,14 +94,14 @@ class TRectangleHotSpot extends THotSpot
 	 */
 	public function getTop()
 	{
-		return $this->getViewState('Top',0);
+		return $this->getViewState('Top', 0);
 	}
 
 	/**
-	 * @param integer the Y coordinate of the top side of the rectangle HotSpot region.
+	 * @param integer $value the Y coordinate of the top side of the rectangle HotSpot region.
 	 */
 	public function setTop($value)
 	{
-		$this->setViewState('Top',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Top', TPropertyValue::ensureInteger($value), 0);
 	}
 }

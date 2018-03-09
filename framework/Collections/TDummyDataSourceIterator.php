@@ -31,12 +31,12 @@ class TDummyDataSourceIterator implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param integer number of (virtual) items in the data source.
+	 * @param integer $count number of (virtual) items in the data source.
 	 */
 	public function __construct($count)
 	{
-		$this->_count=$count;
-		$this->_index=0;
+		$this->_count = $count;
+		$this->_index = 0;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class TDummyDataSourceIterator implements \Iterator
 	 */
 	public function rewind()
 	{
-		$this->_index=0;
+		$this->_index = 0;
 	}
 
 	/**
@@ -84,6 +84,6 @@ class TDummyDataSourceIterator implements \Iterator
 	 */
 	public function valid()
 	{
-		return $this->_index<$this->_count;
+		return $this->_index < $this->_count;
 	}
 }

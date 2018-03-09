@@ -24,8 +24,6 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapUndefinedException;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 
-
-
 /**
  * TSqlMapManager class holds the sqlmap configuation result maps, statements
  * parameter maps and a type handler factory.
@@ -60,24 +58,24 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Constructor, create a new SqlMap manager.
 	 * @param TDbConnection database connection
-	 * @param string configuration file.
+	 * @param string $connection configuration file.
 	 */
-	public function __construct($connection=null)
+	public function __construct($connection = null)
 	{
-		$this->_connection=$connection;
+		$this->_connection = $connection;
 
-		$this->_mappedStatements=new TMap;
-		$this->_resultMaps=new TMap;
-		$this->_parameterMaps=new TMap;
-		$this->_cacheModels=new TMap;
+		$this->_mappedStatements = new TMap;
+		$this->_resultMaps = new TMap;
+		$this->_parameterMaps = new TMap;
+		$this->_cacheModels = new TMap;
 	}
 
 	/**
-	 * @param TDbConnection default database connection
+	 * @param TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{
-		$this->_connection=$conn;
+		$this->_connection = $conn;
 	}
 
 	/**
@@ -93,8 +91,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getTypeHandlers()
 	{
-		if($this->_typeHandlers===null)
-			$this->_typeHandlers= new TSqlMapTypeHandlerRegistry();
+		if ($this->_typeHandlers === null) {
+			$this->_typeHandlers = new TSqlMapTypeHandlerRegistry();
+		}
 		return $this->_typeHandlers;
 	}
 
@@ -103,14 +102,15 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getSqlmapGateway()
 	{
-		if($this->_gateway===null)
-			$this->_gateway=$this->createSqlMapGateway();
+		if ($this->_gateway === null) {
+			$this->_gateway = $this->createSqlMapGateway();
+		}
 		return $this->_gateway;
 	}
 
 	/**
 	 * Loads and parses the SqlMap configuration file.
-	 * @param string xml configuration file.
+	 * @param string $file xml configuration file.
 	 */
 	public function configureXml($file)
 	{
@@ -124,8 +124,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getCacheDependencies()
 	{
-		if($this->_cacheDependencies === null)
-			$this->_cacheDependencies=new TChainedCacheDependency();
+		if ($this->_cacheDependencies === null) {
+			$this->_cacheDependencies = new TChainedCacheDependency();
+		}
 
 		return $this->_cacheDependencies;
 	}
@@ -156,8 +157,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getMappedStatement($name)
 	{
-		if($this->_mappedStatements->contains($name) == false)
+		if ($this->_mappedStatements->contains($name) == false) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_statement', $name);
+		}
 		return $this->_mappedStatements[$name];
 	}
 
@@ -170,8 +172,9 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addMappedStatement(IMappedStatement $statement)
 	{
 		$key = $statement->getID();
-		if($this->_mappedStatements->contains($key) == true)
+		if ($this->_mappedStatements->contains($key) == true) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_statement', $key);
+		}
 		$this->_mappedStatements->add($key, $statement);
 	}
 
@@ -191,8 +194,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getResultMap($name)
 	{
-		if($this->_resultMaps->contains($name) == false)
+		if ($this->_resultMaps->contains($name) == false) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_result_map', $name);
+		}
 		return $this->_resultMaps[$name];
 	}
 
@@ -203,8 +207,9 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addResultMap(TResultMap $result)
 	{
 		$key = $result->getID();
-		if($this->_resultMaps->contains($key) == true)
+		if ($this->_resultMaps->contains($key) == true) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_result_map', $key);
+		}
 		$this->_resultMaps->add($key, $result);
 	}
 
@@ -223,8 +228,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getParameterMap($name)
 	{
-		if($this->_parameterMaps->contains($name) == false)
+		if ($this->_parameterMaps->contains($name) == false) {
 			throw new TSqlMapUndefinedException('sqlmap_contains_no_parameter_map', $name);
+		}
 		return $this->_parameterMaps[$name];
 	}
 
@@ -235,8 +241,9 @@ class TSqlMapManager extends \Prado\TComponent
 	public function addParameterMap(TParameterMap $parameter)
 	{
 		$key = $parameter->getID();
-		if($this->_parameterMaps->contains($key) == true)
+		if ($this->_parameterMaps->contains($key) == true) {
 			throw new TSqlMapDuplicateException('sqlmap_already_contains_parameter_map', $key);
+		}
 		$this->_parameterMaps->add($key, $parameter);
 	}
 
@@ -247,10 +254,11 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function addCacheModel(TSqlMapCacheModel $cacheModel)
 	{
-		if($this->_cacheModels->contains($cacheModel->getID()))
+		if ($this->_cacheModels->contains($cacheModel->getID())) {
 			throw new TSqlMapConfigurationException('sqlmap_cache_model_already_exists', $cacheModel->getID());
-		else
+		} else {
 			$this->_cacheModels->add($cacheModel->getID(), $cacheModel);
+		}
 	}
 
 	/**
@@ -261,8 +269,9 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function getCacheModel($name)
 	{
-		if(!$this->_cacheModels->contains($name))
+		if (!$this->_cacheModels->contains($name)) {
 			throw new TSqlMapConfigurationException('sqlmap_unable_to_find_cache_model', $name);
+		}
 		return $this->_cacheModels[$name];
 	}
 
@@ -271,8 +280,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 */
 	public function flushCacheModels()
 	{
-		foreach($this->_cacheModels as $cache)
+		foreach ($this->_cacheModels as $cache) {
 			$cache->flush();
+		}
 	}
 }
-

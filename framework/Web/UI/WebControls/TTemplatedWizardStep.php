@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Web\UI\ITemplate;
 
 /**
@@ -30,15 +31,15 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	/**
 	 * @var ITemplate the template for displaying the navigation UI of a wizard step.
 	 */
-	private $_navigationTemplate=null;
+	private $_navigationTemplate;
 	/**
 	 * @var ITemplate the template for displaying the content within the wizard step.
 	 */
-	private $_contentTemplate=null;
+	private $_contentTemplate;
 	/**
 	 * @var TWizardNavigationContainer
 	 */
-	private $_navigationContainer=null;
+	private $_navigationContainer;
 
 	/**
 	 * Creates child controls.
@@ -47,13 +48,14 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	public function createChildControls()
 	{
 		$this->getControls()->clear();
-		if($this->_contentTemplate)
+		if ($this->_contentTemplate) {
 			$this->_contentTemplate->instantiateIn($this);
+		}
 	}
 
 	/**
 	 * Ensures child controls are created.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -70,11 +72,11 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate the template for the content of the wizard step.
+	 * @param ITemplate $value the template for the content of the wizard step.
 	 */
 	public function setContentTemplate($value)
 	{
-		$this->_contentTemplate=$value;
+		$this->_contentTemplate = $value;
 	}
 
 	/**
@@ -86,11 +88,11 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate the template for displaying the navigation UI of a wizard step.
+	 * @param ITemplate $value the template for displaying the navigation UI of a wizard step.
 	 */
 	public function setNavigationTemplate($value)
 	{
-		$this->_navigationTemplate=$value;
+		$this->_navigationTemplate = $value;
 	}
 
 	/**
@@ -107,9 +109,8 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	 */
 	public function instantiateNavigationTemplate()
 	{
-		if(!$this->_navigationContainer && $this->_navigationTemplate)
-		{
-			$this->_navigationContainer=new TWizardNavigationContainer;
+		if (!$this->_navigationContainer && $this->_navigationTemplate) {
+			$this->_navigationContainer = new TWizardNavigationContainer;
 			$this->_navigationTemplate->instantiateIn($this->_navigationContainer);
 		}
 	}

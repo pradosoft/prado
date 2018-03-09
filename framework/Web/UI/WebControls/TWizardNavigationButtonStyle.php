@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -27,9 +28,9 @@ use Prado\TPropertyValue;
  */
 class TWizardNavigationButtonStyle extends TStyle
 {
-	private $_imageUrl=null;
-	private $_buttonText=null;
-	private $_buttonType=null;
+	private $_imageUrl;
+	private $_buttonText;
+	private $_buttonType;
 
 	/**
 	 * Sets the style attributes to default values.
@@ -39,28 +40,30 @@ class TWizardNavigationButtonStyle extends TStyle
 	public function reset()
 	{
 		parent::reset();
-		$this->_imageUrl=null;
-		$this->_buttonText=null;
-		$this->_buttonType=null;
+		$this->_imageUrl = null;
+		$this->_buttonText = null;
+		$this->_buttonType = null;
 	}
 
 	/**
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
 		parent::copyFrom($style);
-		if($style instanceof TWizardNavigationButtonStyle)
-		{
-			if($this->_imageUrl===null && $style->_imageUrl!==null)
-				$this->_imageUrl=$style->_imageUrl;
-			if($this->_buttonText===null && $style->_buttonText!==null)
-				$this->_buttonText=$style->_buttonText;
-			if($this->_buttonType===null && $style->_buttonType!==null)
-				$this->_buttonType=$style->_buttonType;
+		if ($style instanceof TWizardNavigationButtonStyle) {
+			if ($this->_imageUrl === null && $style->_imageUrl !== null) {
+				$this->_imageUrl = $style->_imageUrl;
+			}
+			if ($this->_buttonText === null && $style->_buttonText !== null) {
+				$this->_buttonText = $style->_buttonText;
+			}
+			if ($this->_buttonType === null && $style->_buttonType !== null) {
+				$this->_buttonType = $style->_buttonType;
+			}
 		}
 	}
 
@@ -68,19 +71,21 @@ class TWizardNavigationButtonStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
 		parent::mergeWith($style);
-		if($style instanceof TWizardNavigationButtonStyle)
-		{
-			if($style->_imageUrl!==null)
-				$this->_imageUrl=$style->_imageUrl;
-			if($style->_buttonText!==null)
-				$this->_buttonText=$style->_buttonText;
-			if($style->_buttonType!==null)
-				$this->_buttonType=$style->_buttonType;
+		if ($style instanceof TWizardNavigationButtonStyle) {
+			if ($style->_imageUrl !== null) {
+				$this->_imageUrl = $style->_imageUrl;
+			}
+			if ($style->_buttonText !== null) {
+				$this->_buttonText = $style->_buttonText;
+			}
+			if ($style->_buttonType !== null) {
+				$this->_buttonType = $style->_buttonType;
+			}
 		}
 	}
 
@@ -89,15 +94,15 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getImageUrl()
 	{
-		return $this->_imageUrl===null?'':$this->_imageUrl;
+		return $this->_imageUrl === null ? '' : $this->_imageUrl;
 	}
 
 	/**
-	 * @param string image URL for the image button
+	 * @param string $value image URL for the image button
 	 */
 	public function setImageUrl($value)
 	{
-		$this->_imageUrl=$value;
+		$this->_imageUrl = $value;
 	}
 
 	/**
@@ -105,15 +110,15 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonText()
 	{
-		return $this->_buttonText===null?'':$this->_buttonText;
+		return $this->_buttonText === null ? '' : $this->_buttonText;
 	}
 
 	/**
-	 * @param string button caption
+	 * @param string $value button caption
 	 */
 	public function setButtonText($value)
 	{
-		$this->_buttonText=$value;
+		$this->_buttonText = $value;
 	}
 
 	/**
@@ -121,31 +126,31 @@ class TWizardNavigationButtonStyle extends TStyle
 	 */
 	public function getButtonType()
 	{
-		return $this->_buttonType===null? TWizardNavigationButtonType::Button :$this->_buttonType;
+		return $this->_buttonType === null ? TWizardNavigationButtonType::Button : $this->_buttonType;
 	}
 
 	/**
-	 * @param TWizardNavigationButtonType button type.
+	 * @param TWizardNavigationButtonType $value button type.
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType=TPropertyValue::ensureEnum($value,'Prado\\Web\\UI\\WebControls\\TWizardNavigationButtonType');
+		$this->_buttonType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TWizardNavigationButtonType');
 	}
 
 	/**
 	 * Applies this style to the specified button
-	 * @param mixed button to be applied with this style
+	 * @param mixed $button button to be applied with this style
 	 */
 	public function apply($button)
 	{
-		if($button instanceof TImageButton)
-		{
-			if($button->getImageUrl()==='')
+		if ($button instanceof TImageButton) {
+			if ($button->getImageUrl() === '') {
 				$button->setImageUrl($this->getImageUrl());
+			}
 		}
-		if($button->getText()==='')
+		if ($button->getText() === '') {
 			$button->setText($this->getButtonText());
+		}
 		$button->getStyle()->mergeWith($this);
 	}
 }
-

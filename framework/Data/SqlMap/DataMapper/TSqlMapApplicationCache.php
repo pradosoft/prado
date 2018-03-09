@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
+
 use Prado\Caching\ICache;
 use Prado\Collections\TList;
 use Prado\Data\SqlMap\Configuration\TSqlMapCacheModel;
@@ -25,15 +26,15 @@ use Prado\Prado;
  */
 class TSqlMapApplicationCache implements ICache
 {
-	protected $_cacheModel=null;
+	protected $_cacheModel;
 
 	/**
 	 * Create a new cache with limited cache size.
 	 * @param TSqlMapCacheModel $cacheModel.
 	 */
-	public function __construct($cacheModel=null)
+	public function __construct($cacheModel = null)
 	{
-		$this->_cacheModel=$cacheModel;
+		$this->_cacheModel = $cacheModel;
 	}
 
 	/**
@@ -42,9 +43,10 @@ class TSqlMapApplicationCache implements ICache
 	 */
 	protected function getKeyListId()
 	{
-		$id='keyList';
-		if ($this->_cacheModel instanceof TSqlMapCacheModel)
-				$id.='_'.$this->_cacheModel->getId();
+		$id = 'keyList';
+		if ($this->_cacheModel instanceof TSqlMapCacheModel) {
+			$id .= '_' . $this->_cacheModel->getId();
+		}
 		return $id;
 	}
 	/**
@@ -53,9 +55,8 @@ class TSqlMapApplicationCache implements ICache
 	 */
 	protected function getKeyList()
 	{
-		if (($keyList=$this->getCache()->get($this->getKeyListId()))===false)
-		{
-			$keyList=new TList();
+		if (($keyList = $this->getCache()->get($this->getKeyListId())) === false) {
+			$keyList = new TList();
 			$this->getCache()->set($this->getKeyListId(), $keyList);
 		}
 		return $keyList;
@@ -67,11 +68,11 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @param string item to be deleted.
+	 * @param string $key item to be deleted.
 	 */
 	public function delete($key)
 	{
-		$keyList=$this->getKeyList();
+		$keyList = $this->getKeyList();
 		$keyList->remove($key);
 		$this->getCache()->delete($key);
 		$this->setKeyList($keyList);
@@ -82,10 +83,9 @@ class TSqlMapApplicationCache implements ICache
 	 */
 	public function flush()
 	{
-		$keyList=$this->getKeyList();
-		$cache=$this->getCache();
-		foreach ($keyList as $key)
-		{
+		$keyList = $this->getKeyList();
+		$cache = $this->getCache();
+		foreach ($keyList as $key) {
 			$cache->delete($key);
 		}
 		// Remove the old keylist
@@ -98,12 +98,10 @@ class TSqlMapApplicationCache implements ICache
 	public function get($key)
 	{
 		$result = $this->getCache()->get($key);
-		if ($result === false)
-		{
+		if ($result === false) {
 			// if the key has not been found in cache (e.g expired), remove from keylist
-			$keyList=$this->getKeyList();
-			if ($keyList->contains($key))
-			{
+			$keyList = $this->getKeyList();
+			if ($keyList->contains($key)) {
 				$keyList->remove($key);
 				$this->setKeyList($keyList);
 			}
@@ -116,12 +114,11 @@ class TSqlMapApplicationCache implements ICache
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
 	 */
-	public function set($key, $value,$expire=0,$dependency=null)
+	public function set($key, $value, $expire = 0, $dependency = null)
 	{
-		$this->getCache()->set($key, $value, $expire,$dependency);
-		$keyList=$this->getKeyList();
-		if (!$keyList->contains($key))
-		{
+		$this->getCache()->set($key, $value, $expire, $dependency);
+		$keyList = $this->getKeyList();
+		if (!$keyList->contains($key)) {
 			$keyList->add($key);
 			$this->setKeyList($keyList);
 		}
@@ -138,7 +135,7 @@ class TSqlMapApplicationCache implements ICache
 	/**
 	 * @throws TSqlMapException not implemented.
 	 */
-	public function add($id,$value,$expire=0,$dependency=null)
+	public function add($id, $value, $expire = 0, $dependency = null)
 	{
 		throw new TSqlMapException('sqlmap_use_set_to_store_cache');
 	}

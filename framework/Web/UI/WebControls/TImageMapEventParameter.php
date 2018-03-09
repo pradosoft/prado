@@ -29,11 +29,11 @@ class TImageMapEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param string post back value associated with the hotspot clicked
+	 * @param string $postBackValue post back value associated with the hotspot clicked
 	 */
 	public function __construct($postBackValue)
 	{
-		$this->_postBackValue=$postBackValue;
+		$this->_postBackValue = $postBackValue;
 	}
 
 	/**

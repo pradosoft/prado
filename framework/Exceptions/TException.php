@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Exceptions;
+
 use Prado\Prado;
 use Prado\TPropertyValue;
 
@@ -36,8 +37,8 @@ use Prado\TPropertyValue;
  */
 class TException extends \Exception
 {
-	private $_errorCode='';
-	static $_messageCache=array();
+	private $_errorCode = '';
+	protected static $_messageCache = [];
 
 	/**
 	 * Constructor.
@@ -48,35 +49,33 @@ class TException extends \Exception
 	 */
 	public function __construct($errorMessage)
 	{
-		$this->_errorCode=$errorMessage;
-		$errorMessage=$this->translateErrorMessage($errorMessage);
-		$args=func_get_args();
+		$this->_errorCode = $errorMessage;
+		$errorMessage = $this->translateErrorMessage($errorMessage);
+		$args = func_get_args();
 		array_shift($args);
-		$n=count($args);
-		$tokens=array();
-		for($i=0;$i<$n;++$i)
-			$tokens['{'.$i.'}']=TPropertyValue::ensureString($args[$i]);
-		parent::__construct(strtr($errorMessage,$tokens));
+		$n = count($args);
+		$tokens = [];
+		for ($i = 0;$i < $n;++$i) {
+			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
+		}
+		parent::__construct(strtr($errorMessage, $tokens));
 	}
 
 	/**
 	 * Translates an error code into an error message.
-	 * @param string error code that is passed in the exception constructor.
+	 * @param string $key error code that is passed in the exception constructor.
 	 * @return string the translated error message
 	 */
 	protected function translateErrorMessage($key)
 	{
-		$msgFile=$this->getErrorMessageFile();
+		$msgFile = $this->getErrorMessageFile();
 
 		// Cache messages
-		if (!isset(self::$_messageCache[$msgFile]))
-		{
-			if(($entries=@file($msgFile))!==false)
-			{
-				foreach($entries as $entry)
-				{
-					list($code,$message)=array_merge(explode('=',$entry,2), array( '' ) );
-					self::$_messageCache[$msgFile][trim($code)]=trim($message);
+		if (!isset(self::$_messageCache[$msgFile])) {
+			if (($entries = @file($msgFile)) !== false) {
+				foreach ($entries as $entry) {
+					list($code, $message) = array_merge(explode('=', $entry, 2), ['']);
+					self::$_messageCache[$msgFile][trim($code)] = trim($message);
 				}
 			}
 		}
@@ -88,10 +87,11 @@ class TException extends \Exception
 	 */
 	protected function getErrorMessageFile()
 	{
-		$lang=Prado::getPreferredLanguage();
-		$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages-'.$lang.'.txt';
-		if(!is_file($msgFile))
-			$msgFile=Prado::getFrameworkPath().'/Exceptions/messages/messages.txt';
+		$lang = Prado::getPreferredLanguage();
+		$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages-' . $lang . '.txt';
+		if (!is_file($msgFile)) {
+			$msgFile = Prado::getFrameworkPath() . '/Exceptions/messages/messages.txt';
+		}
 		return $msgFile;
 	}
 
@@ -104,11 +104,11 @@ class TException extends \Exception
 	}
 
 	/**
-	 * @param string error code
+	 * @param string $code error code
 	 */
 	public function setErrorCode($code)
 	{
-		$this->_errorCode=$code;
+		$this->_errorCode = $code;
 	}
 
 	/**
@@ -120,10 +120,10 @@ class TException extends \Exception
 	}
 
 	/**
-	 * @param string error message
+	 * @param string $message error message
 	 */
 	protected function setErrorMessage($message)
 	{
-		$this->message=$message;
+		$this->message = $message;
 	}
 }

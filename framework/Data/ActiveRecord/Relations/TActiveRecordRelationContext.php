@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\ActiveRecord\Relations;
+
 use Prado\Collections\TList;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\TActiveRecord;
@@ -35,11 +36,11 @@ class TActiveRecordRelationContext
 	private $_relation; //data from an entry of TActiveRecord::$RELATION
 	private $_fkeys;
 
-	public function __construct($record, $property=null, $relation=null)
+	public function __construct($record, $property = null, $relation = null)
 	{
-		$this->_record=$record;
-		$this->_property=$property;
-		$this->_relation=$relation;
+		$this->_record = $record;
+		$this->_property = $property;
+		$this->_relation = $relation;
 	}
 
 	/**
@@ -48,7 +49,7 @@ class TActiveRecordRelationContext
 	 */
 	public function hasRecordRelation()
 	{
-		return $this->_relation!==null;
+		return $this->_relation !== null;
 	}
 
 	public function getPropertyValue()
@@ -80,8 +81,9 @@ class TActiveRecordRelationContext
 	 */
 	public function getRelationForeignKeys()
 	{
-		if($this->_fkeys===null)
-			$this->_fkeys=$this->getRelationHandler()->getRelationForeignKeys();
+		if ($this->_fkeys === null) {
+			$this->_fkeys = $this->getRelationHandler()->getRelationForeignKeys();
+		}
 		return $this->_fkeys;
 	}
 
@@ -116,7 +118,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getCondition()
 	{
-		return isset($this->_relation[3])?$this->_relation[3]:null;
+		return isset($this->_relation[3]) ? $this->_relation[3] : null;
 	}
 
 	/**
@@ -125,7 +127,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getParameters()
 	{
-		return isset($this->_relation[4])?$this->_relation[4]:array();
+		return isset($this->_relation[4]) ? $this->_relation[4] : [];
 	}
 
 	/**
@@ -171,17 +173,20 @@ class TActiveRecordRelationContext
 	 * @return TActiveRecordRelation record relationship handler instnace.
 	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
-	public function getRelationHandler($criteria=null)
+	public function getRelationHandler($criteria = null)
 	{
-		if(!$this->hasRecordRelation())
-		{
-			throw new TActiveRecordException('ar_undefined_relation_prop',
-				$this->_property, get_class($this->_record), 'RELATIONS');
+		if (!$this->hasRecordRelation()) {
+			throw new TActiveRecordException(
+				'ar_undefined_relation_prop',
+				$this->_property,
+				get_class($this->_record),
+				'RELATIONS'
+			);
 		}
-		if($criteria===null)
+		if ($criteria === null) {
 			$criteria = new TActiveRecordCriteria($this->getCondition(), $this->getParameters());
-		switch($this->getRelationType())
-		{
+		}
+		switch ($this->getRelationType()) {
 			case TActiveRecord::HAS_MANY:
 				return new TActiveRecordHasMany($this, $criteria);
 			case TActiveRecord::MANY_TO_MANY:
@@ -198,19 +203,16 @@ class TActiveRecordRelationContext
 	/**
 	 * @return TActiveRecordRelationCommand
 	 */
-	public function updateAssociatedRecords($updateBelongsTo=false)
+	public function updateAssociatedRecords($updateBelongsTo = false)
 	{
-		$success=true;
-		foreach($this->_record->getRecordRelations() as $data)
-		{
+		$success = true;
+		foreach ($this->_record->getRecordRelations() as $data) {
 			list($property, $relation) = $data;
-			$belongsTo = $relation[0]==TActiveRecord::BELONGS_TO;
-			if(($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo))
-			{
+			$belongsTo = $relation[0] == TActiveRecord::BELONGS_TO;
+			if (($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo)) {
 				$obj = $this->getSourceRecord();
-				if(!$this->isEmptyFkObject($obj->getColumnValue($property)))
-				{
-					$context = new TActiveRecordRelationContext($this->getSourceRecord(),$property,$relation);
+				if (!$this->isEmptyFkObject($obj->getColumnValue($property))) {
+					$context = new TActiveRecordRelationContext($this->getSourceRecord(), $property, $relation);
 					$success = $context->getRelationHandler()->updateAssociatedRecords() && $success;
 				}
 			}
@@ -220,12 +222,12 @@ class TActiveRecordRelationContext
 
 	protected function isEmptyFkObject($obj)
 	{
-		if(is_object($obj))
+		if (is_object($obj)) {
 			return $obj instanceof TList ? $obj->count() === 0 : false;
-		else if(is_array($obj))
-			return count($obj)===0;
-		else
+		} elseif (is_array($obj)) {
+			return count($obj) === 0;
+		} else {
 			return empty($obj);
+		}
 	}
 }
-

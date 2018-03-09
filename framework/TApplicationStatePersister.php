@@ -27,11 +27,11 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	/**
 	 * Name of the value stored in cache
 	 */
-	const CACHE_NAME='prado:appstate';
+	const CACHE_NAME = 'prado:appstate';
 
 	/**
 	 * Initializes module.
-	 * @param TXmlElement module configuration (may be null)
+	 * @param TXmlElement $config module configuration (may be null)
 	 */
 	public function init($config)
 	{
@@ -43,7 +43,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	protected function getStateFilePath()
 	{
-		return $this->getApplication()->getRuntimePath().'/global.cache';
+		return $this->getApplication()->getRuntimePath() . '/global.cache';
 	}
 
 	/**
@@ -52,37 +52,35 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	public function load()
 	{
-		if(($cache=$this->getApplication()->getCache())!==null && ($value=$cache->get(self::CACHE_NAME))!==false)
+		if (($cache = $this->getApplication()->getCache()) !== null && ($value = $cache->get(self::CACHE_NAME)) !== false) {
 			return unserialize($value);
-		else
-		{
-			if(($content=@file_get_contents($this->getStateFilePath()))!==false)
+		} else {
+			if (($content = @file_get_contents($this->getStateFilePath())) !== false) {
 				return unserialize($content);
-			else
+			} else {
 				return null;
+			}
 		}
 	}
 
 	/**
 	 * Saves application state in persistent storage.
-	 * @param mixed application state
+	 * @param mixed $state application state
 	 */
 	public function save($state)
 	{
-		$content=serialize($state);
-		$saveFile=true;
-		if(($cache=$this->getApplication()->getCache())!==null)
-		{
-			if($cache->get(self::CACHE_NAME)===$content)
-				$saveFile=false;
-			else
-				$cache->set(self::CACHE_NAME,$content);
+		$content = serialize($state);
+		$saveFile = true;
+		if (($cache = $this->getApplication()->getCache()) !== null) {
+			if ($cache->get(self::CACHE_NAME) === $content) {
+				$saveFile = false;
+			} else {
+				$cache->set(self::CACHE_NAME, $content);
+			}
 		}
-		if($saveFile)
-		{
-			$fileName=$this->getStateFilePath();
-			file_put_contents($fileName,$content,LOCK_EX);
+		if ($saveFile) {
+			$fileName = $this->getStateFilePath();
+			file_put_contents($fileName, $content, LOCK_EX);
 		}
 	}
-
 }

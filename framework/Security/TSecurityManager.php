@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Security;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
@@ -52,8 +53,8 @@ class TSecurityManager extends \Prado\TModule
 	const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
 	const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';
 
-	private $_validationKey = null;
-	private $_encryptionKey = null;
+	private $_validationKey;
+	private $_encryptionKey;
 	private $_hashAlgorithm = 'sha256';
 	private $_cryptAlgorithm = 'aes-256-cbc';
 	private $_mbstring;
@@ -61,11 +62,11 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * The security module is registered with the application.
-	 * @param TXmlElement initial module configuration
+	 * @param TXmlElement $config initial module configuration
 	 */
 	public function init($config)
 	{
-		$this->_mbstring=extension_loaded('mbstring');
+		$this->_mbstring = extension_loaded('mbstring');
 		$this->getApplication()->setSecurityManager($this);
 	}
 
@@ -74,7 +75,7 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function generateRandomKey()
 	{
-		return sprintf('%08x%08x%08x%08x',mt_rand(),mt_rand(),mt_rand(),mt_rand());
+		return sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
 	}
 
 	/**
@@ -83,8 +84,8 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function getValidationKey()
 	{
-		if(null === $this->_validationKey) {
-			if(null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
+		if (null === $this->_validationKey) {
+			if (null === ($this->_validationKey = $this->getApplication()->getGlobalState(self::STATE_VALIDATION_KEY))) {
 				$this->_validationKey = $this->generateRandomKey();
 				$this->getApplication()->setGlobalState(self::STATE_VALIDATION_KEY, $this->_validationKey, null, true);
 			}
@@ -93,13 +94,14 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the key used to generate HMAC
+	 * @param string $value the key used to generate HMAC
 	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setValidationKey($value)
 	{
-		if('' === $value)
+		if ('' === $value) {
 			throw new TInvalidDataValueException('securitymanager_validationkey_invalid');
+		}
 
 		$this->_validationKey = $value;
 	}
@@ -110,8 +112,8 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function getEncryptionKey()
 	{
-		if(null === $this->_encryptionKey) {
-			if(null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
+		if (null === $this->_encryptionKey) {
+			if (null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
 				$this->_encryptionKey = $this->generateRandomKey();
 				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null, true);
 			}
@@ -120,13 +122,14 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string the key used to encrypt/decrypt data.
+	 * @param string $value the key used to encrypt/decrypt data.
 	 * @throws TInvalidDataValueException if the key is empty
 	 */
 	public function setEncryptionKey($value)
 	{
-		if('' === $value)
+		if ('' === $value) {
 			throw new TInvalidDataValueException('securitymanager_encryptionkey_invalid');
+		}
 
 		$this->_encryptionKey = $value;
 	}
@@ -141,14 +144,15 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * This method accepts all hash algorithms returned by hash_algos().
-	 * @param string hashing algorithm used to generate HMAC.
+	 * @param string $value hashing algorithm used to generate HMAC.
 	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
 	 */
 	public function setHashAlgorithm($value)
 	{
 		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
-		if(!in_array($this->_hashAlgorithm, hash_algos()))
+		if (!in_array($this->_hashAlgorithm, hash_algos())) {
 			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
+		}
 	}
 
 	/**
@@ -161,13 +165,14 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@link encrypt} and {@link decrypt}.
-	 * @param mixed either a string containing the cipther name.
+	 * @param mixed $value either a string containing the cipther name.
 	 */
 	public function setCryptAlgorithm($value)
 	{
 		$this->_cryptAlgorithm = TPropertyValue::ensureString($value);
-		if(!in_array($this->_hashAlgorithm, openssl_get_cipher_methods()))
+		if (!in_array($this->_hashAlgorithm, openssl_get_cipher_methods())) {
 			throw new TInvalidDataValueException('securitymanager_crypt_algorithm_invalid');
+		}
 	}
 
 	/**
@@ -178,14 +183,13 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function encrypt($data)
 	{
-		if(extension_loaded('openssl'))
-		{
+		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return $iv.openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
-		}
-		else
+			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
+		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
+		}
 	}
 
 	/**
@@ -196,25 +200,24 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function decrypt($data)
 	{
-		if(extension_loaded('openssl'))
-		{
+		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = $this->substr($data, 0, openssl_cipher_iv_length($this->_cryptAlgorithm));
 			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, null, $iv);
-		}
-		else
+		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
+		}
 	}
 
 	/**
 	 * Prefixes data with an HMAC.
-	 * @param string data to be hashed.
+	 * @param string $data data to be hashed.
 	 * @return string data prefixed with HMAC
 	 */
 	public function hashData($data)
 	{
 		$hmac = $this->computeHMAC($data);
-		return $hmac.$data;
+		return $hmac . $data;
 	}
 
 	/**
@@ -226,19 +229,20 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	public function validateData($data)
 	{
-		$len=$this->strlen($this->computeHMAC('test'));
+		$len = $this->strlen($this->computeHMAC('test'));
 
-		if($this->strlen($data) < $len)
+		if ($this->strlen($data) < $len) {
 			return false;
+		}
 
 		$hmac = $this->substr($data, 0, $len);
-		$data2=$this->substr($data, $len, $this->strlen($data));
+		$data2 = $this->substr($data, $len, $this->strlen($data));
 		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
 	}
 
 	/**
 	 * Computes the HMAC for the data with {@link getValidationKey ValidationKey}.
-	 * @param string data to be generated HMAC
+	 * @param string $data data to be generated HMAC
 	 * @return string the HMAC for the data
 	 */
 	protected function computeHMAC($data)
@@ -249,12 +253,12 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Returns the length of the given string.
 	 * If available uses the multibyte string function mb_strlen.
-	 * @param string $string the string being measured for length
+	 * @param string $string $string the string being measured for length
 	 * @return int the length of the string
 	 */
 	private function strlen($string)
 	{
-		return $this->_mbstring ? mb_strlen($string,'8bit') : strlen($string);
+		return $this->_mbstring ? mb_strlen($string, '8bit') : strlen($string);
 	}
 
 	/**
@@ -265,8 +269,8 @@ class TSecurityManager extends \Prado\TModule
 	 * @param int $length the desired portion length
 	 * @return string the extracted part of string, or FALSE on failure or an empty string.
 	 */
-	private function substr($string,$start,$length)
+	private function substr($string, $start, $length)
 	{
-		return $this->_mbstring ? mb_substr($string,$start,$length,'8bit') : substr($string,$start,$length);
+		return $this->_mbstring ? mb_substr($string, $start, $length, '8bit') : substr($string, $start, $length);
 	}
 }

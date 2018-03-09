@@ -59,15 +59,15 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function getRegularExpression()
 	{
-		return $this->getViewState('RegularExpression','');
+		return $this->getViewState('RegularExpression', '');
 	}
 
 	/**
-	 * @param string the regular expression that determines the pattern used to validate a field.
+	 * @param string $value the regular expression that determines the pattern used to validate a field.
 	 */
 	public function setRegularExpression($value)
 	{
-		$this->setViewState('RegularExpression',$value,'');
+		$this->setViewState('RegularExpression', $value, '');
 	}
 
 	/**
@@ -79,19 +79,19 @@ class TRegularExpressionValidator extends TBaseValidator
 	 */
 	public function evaluateIsValid()
 	{
-		if(($value=$this->getValidationValue($this->getValidationTarget()))==='')
+		if (($value = $this->getValidationValue($this->getValidationTarget())) === '') {
 			return true;
-		if(($expression=addcslashes($this->getRegularExpression(),"/"))!=='')
-		{
-			$mods = $this->getPatternModifiers();
-			return preg_match("/^$expression\$/{$mods}",$value);
 		}
-		else
+		if (($expression = addcslashes($this->getRegularExpression(), "/")) !== '') {
+			$mods = $this->getPatternModifiers();
+			return preg_match("/^$expression\$/{$mods}", $value);
+		} else {
 			return true;
+		}
 	}
 
 	/**
-	 * @param string pattern modifiers for server side validation,
+	 * @param string $value pattern modifiers for server side validation,
 	 * see http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
 	 */
 	public function setPatternModifiers($value)
@@ -108,7 +108,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param string pattern modifiers for clientside.
+	 * @param string $value pattern modifiers for clientside.
 	 * (Only 'g','i' and 'm' are available.)
 	 */
 	public function setClientSidePatternModifiers($value)
@@ -131,9 +131,8 @@ class TRegularExpressionValidator extends TBaseValidator
 	protected function getClientScriptOptions()
 	{
 		$options = parent::getClientScriptOptions();
-		$options['ValidationExpression']=$this->getRegularExpression();
-		$options['PatternModifiers']=$this->getClientSidePatternModifiers();
+		$options['ValidationExpression'] = $this->getRegularExpression();
+		$options['PatternModifiers'] = $this->getClientSidePatternModifiers();
 		return $options;
 	}
 }
-

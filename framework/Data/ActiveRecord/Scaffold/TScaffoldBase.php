@@ -6,7 +6,7 @@
  * @link https://github.com/pradosoft/prado
  * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold;
@@ -20,7 +20,6 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TTemplateControl;
 
-
 /**
  * Base class for Active Record scaffold views.
  *
@@ -32,7 +31,7 @@ use Prado\Web\UI\TTemplateControl;
  * file explicitly.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
-  * @package Prado\Data\ActiveRecord\Scaffold
+ * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 abstract class TScaffoldBase extends TTemplateControl
@@ -53,28 +52,29 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord record instance
+	 * @param TActiveRecord $record record instance
 	 * @return array record property values
 	 */
 	protected function getRecordPropertyValues($record)
 	{
-		$data = array();
-		foreach($this->getTableInfo()->getColumns() as $name=>$column)
+		$data = [];
+		foreach ($this->getTableInfo()->getColumns() as $name => $column) {
 			$data[] = $record->getColumnValue($name);
+		}
 		return $data;
 	}
 
 	/**
-	 * @param TActiveRecord record instance
+	 * @param TActiveRecord $record record instance
 	 * @return array record primary key values.
 	 */
 	protected function getRecordPkValues($record)
 	{
-		$data=array();
-		foreach($this->getTableInfo()->getColumns() as $name=>$column)
-		{
-			if($column->getIsPrimaryKey())
+		$data = [];
+		foreach ($this->getTableInfo()->getColumns() as $name => $column) {
+			if ($column->getIsPrimaryKey()) {
 				$data[] = $record->getColumnValue($name);
+			}
 		}
 		return $data;
 	}
@@ -90,7 +90,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Name of the Active Record class to be viewed or scaffolded.
-	 * @param string Active Record class name.
+	 * @param string $value Active Record class name.
 	 */
 	public function setRecordClass($value)
 	{
@@ -113,7 +113,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function clearRecordObject()
 	{
-		$this->_record=null;
+		$this->_record = null;
 	}
 
 	/**
@@ -122,26 +122,28 @@ abstract class TScaffoldBase extends TTemplateControl
 	 * @param array primary key value
 	 * @return TActiveRecord record instance
 	 */
-	protected function getRecordObject($pk=null)
+	protected function getRecordObject($pk = null)
 	{
-		if($this->_record===null)
-		{
-			if($pk!==null)
-			{
-				$this->_record=$this->getRecordFinder()->findByPk($pk);
-				if($this->_record===null)
-					throw new TConfigurationException('scaffold_invalid_record_pk',
-						$this->getRecordClass(), $pk);
-			}
-			else
-			{
+		if ($this->_record === null) {
+			if ($pk !== null) {
+				$this->_record = $this->getRecordFinder()->findByPk($pk);
+				if ($this->_record === null) {
+					throw new TConfigurationException(
+						'scaffold_invalid_record_pk',
+						$this->getRecordClass(),
+						$pk
+					);
+				}
+			} else {
 				$class = $this->getRecordClass();
-				if($class!==null)
-					$this->_record=Prado::createComponent($class);
-				else
-				{
-					throw new TConfigurationException('scaffold_invalid_record_class',
-						$this->getRecordClass(),$this->getID());
+				if ($class !== null) {
+					$this->_record = Prado::createComponent($class);
+				} else {
+					throw new TConfigurationException(
+						'scaffold_invalid_record_class',
+						$this->getRecordClass(),
+						$this->getID()
+					);
 				}
 			}
 		}
@@ -153,7 +155,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{
-		$this->_record=$value;
+		$this->_record = $value;
 	}
 
 	/**
@@ -173,7 +175,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param string default scaffold stylesheet name
+	 * @param string $value default scaffold stylesheet name
 	 */
 	public function setDefaultStyle($value)
 	{
@@ -189,7 +191,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean enable default stylesheet, default is true.
+	 * @param boolean $value enable default stylesheet, default is true.
 	 */
 	public function setEnableDefaultStyle($value)
 	{
@@ -202,11 +204,9 @@ abstract class TScaffoldBase extends TTemplateControl
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		if($this->getEnableDefaultStyle())
-		{
-			$url = $this->publishAsset($this->getDefaultStyle().'.css');
-			$this->getPage()->getClientScript()->registerStyleSheetFile($url,$url);
+		if ($this->getEnableDefaultStyle()) {
+			$url = $this->publishAsset($this->getDefaultStyle() . '.css');
+			$this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 		}
 	}
 }
-

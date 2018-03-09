@@ -17,7 +17,6 @@ namespace Prado\Data\ActiveRecord\Relations;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Prado;
 
-
 /**
  * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between
  * the source objects and the related foreign object. Consider the
@@ -85,7 +84,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 		$fields = array_values($fkeys);
 		$indexValues = $this->getIndexValues($properties, $results);
 		$fkObjects = $this->findForeignObjects($fields, $indexValues);
-		$this->populateResult($results,$properties,$fkObjects,$fields);
+		$this->populateResult($results, $properties, $fkObjects, $fields);
 	}
 
 	/**
@@ -95,7 +94,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	public function getRelationForeignKeys()
 	{
 		$fkObject = $this->getContext()->getForeignRecordFinder();
-		return $this->findForeignKeys($this->getSourceRecord(),$fkObject);
+		return $this->findForeignKeys($this->getSourceRecord(), $fkObject);
 	}
 
 	/**
@@ -107,14 +106,14 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		if(isset($collections[$hash]) && count($collections[$hash]) > 0)
-		{
-			if(count($collections[$hash]) > 1)
+		if (isset($collections[$hash]) && count($collections[$hash]) > 0) {
+			if (count($collections[$hash]) > 1) {
 				throw new TActiveRecordException('ar_belongs_to_multiple_result');
-			$source->$prop=$collections[$hash][0];
+			}
+			$source->$prop = $collections[$hash][0];
+		} else {
+			$source->$prop = null;
 		}
-		else
-			$source->$prop=null;
 	}
 
 	/**
@@ -125,16 +124,15 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	{
 		$obj = $this->getContext()->getSourceRecord();
 		$fkObject = $obj->getColumnValue($this->getContext()->getProperty());
-		if($fkObject!==null)
-		{
+		if ($fkObject !== null) {
 			$fkObject->save();
 			$source = $this->getSourceRecord();
 			$fkeys = $this->findForeignKeys($source, $fkObject);
-			foreach($fkeys as $srcKey => $fKey)
+			foreach ($fkeys as $srcKey => $fKey) {
 				$source->setColumnValue($srcKey, $fkObject->getColumnValue($fKey));
+			}
 			return true;
 		}
 		return false;
 	}
 }
-

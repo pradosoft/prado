@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI;
+
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 
@@ -33,7 +34,7 @@ class TForm extends TControl
 {
 	/**
 	 * Registers the form with the page.
-	 * @param mixed event parameter
+	 * @param mixed $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -43,58 +44,56 @@ class TForm extends TControl
 
 	/**
 	 * Adds form specific attributes to renderer.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('id',$this->getClientID());
-		$writer->addAttribute('method',$this->getMethod());
-		$uri=$this->getRequest()->getRequestURI();
-		$writer->addAttribute('action',str_replace('&','&amp;',str_replace('&amp;','&',$uri)));
-		if(($enctype=$this->getEnctype())!=='')
-			$writer->addAttribute('enctype',$enctype);
+		$writer->addAttribute('id', $this->getClientID());
+		$writer->addAttribute('method', $this->getMethod());
+		$uri = $this->getRequest()->getRequestURI();
+		$writer->addAttribute('action', str_replace('&', '&amp;', str_replace('&amp;', '&', $uri)));
+		if (($enctype = $this->getEnctype()) !== '') {
+			$writer->addAttribute('enctype', $enctype);
+		}
 
-		$attributes=$this->getAttributes();
+		$attributes = $this->getAttributes();
 		$attributes->remove('action');
 		$writer->addAttributes($attributes);
 
-		if(($butt=$this->getDefaultButton())!=='')
-		{
-			if(($button=$this->findControl($butt))!==null)
+		if (($butt = $this->getDefaultButton()) !== '') {
+			if (($button = $this->findControl($butt)) !== null) {
 				$this->getPage()->getClientScript()->registerDefaultButton($this, $button);
-			else
-				throw new TInvalidDataValueException('form_defaultbutton_invalid',$butt);
+			} else {
+				throw new TInvalidDataValueException('form_defaultbutton_invalid', $butt);
+			}
 		}
 	}
 
 	/**
 	 * Renders the form.
-	 * @param THtmlWriter writer
+	 * @param THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
-		$page=$this->getPage();
+		$page = $this->getPage();
 
 		$this->addAttributesToRender($writer);
 		$writer->renderBeginTag('form');
 
-		$cs=$page->getClientScript();
-		if($page->getClientSupportsJavaScript())
-		{
+		$cs = $page->getClientScript();
+		if ($page->getClientSupportsJavaScript()) {
 			$cs->renderHiddenFieldsBegin($writer);
 			$cs->renderScriptFilesBegin($writer);
 			$cs->renderBeginScripts($writer);
 
- 			$page->beginFormRender($writer);
- 			$this->renderChildren($writer);
+			$page->beginFormRender($writer);
+			$this->renderChildren($writer);
 			$cs->renderHiddenFieldsEnd($writer);
- 			$page->endFormRender($writer);
+			$page->endFormRender($writer);
 
 			$cs->renderScriptFilesEnd($writer);
 			$cs->renderEndScripts($writer);
-		}
-		else
-		{
+		} else {
 			$cs->renderHiddenFieldsBegin($writer);
 
 			$page->beginFormRender($writer);
@@ -112,18 +111,18 @@ class TForm extends TControl
 	 */
 	public function getDefaultButton()
 	{
-		return $this->getViewState('DefaultButton','');
+		return $this->getViewState('DefaultButton', '');
 	}
 
 	/**
 	 * Sets a button to be default one in a form.
 	 * A default button will be clicked if a user presses 'Enter' key within
 	 * the form.
-	 * @param string id path to the default button control.
+	 * @param string $value id path to the default button control.
 	 */
 	public function setDefaultButton($value)
 	{
-		$this->setViewState('DefaultButton',$value,'');
+		$this->setViewState('DefaultButton', $value, '');
 	}
 
 	/**
@@ -131,15 +130,15 @@ class TForm extends TControl
 	 */
 	public function getMethod()
 	{
-		return $this->getViewState('Method','post');
+		return $this->getViewState('Method', 'post');
 	}
 
 	/**
-	 * @param string form submission method. Valid values include 'post' and 'get'.
+	 * @param string $value form submission method. Valid values include 'post' and 'get'.
 	 */
 	public function setMethod($value)
 	{
-		$this->setViewState('Method',TPropertyValue::ensureEnum($value,'post','get'),'post');
+		$this->setViewState('Method', TPropertyValue::ensureEnum($value, 'post', 'get'), 'post');
 	}
 
 	/**
@@ -147,7 +146,7 @@ class TForm extends TControl
 	 */
 	public function getEnctype()
 	{
-		return $this->getViewState('Enctype','');
+		return $this->getViewState('Enctype', '');
 	}
 
 	/**
@@ -159,7 +158,7 @@ class TForm extends TControl
 	 */
 	public function setEnctype($value)
 	{
-		$this->setViewState('Enctype',$value,'');
+		$this->setViewState('Enctype', $value, '');
 	}
 
 	/**
@@ -170,4 +169,3 @@ class TForm extends TControl
 		return $this->getUniqueID();
 	}
 }
-

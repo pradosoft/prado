@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TImage;
 
 /**
@@ -47,16 +48,18 @@ class TActiveImage extends TImage implements IActiveControl
 
 	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
-	 * @param string the alternative text
+	 * @param string $value the alternative text
 	 */
 	public function setAlternateText($value)
 	{
-		if(parent::getAlternateText() === $value)
+		if (parent::getAlternateText() === $value) {
 			return;
+		}
 
 		parent::setAlternateText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'alt', $value);
+		}
 	}
 
 	/**
@@ -64,42 +67,47 @@ class TActiveImage extends TImage implements IActiveControl
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
-		if(parent::getImageAlign() === $value)
+		if (parent::getImageAlign() === $value) {
 			return;
+		}
 
 		parent::setImageAlign($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'align', $value);
+		}
 	}
 
 	/**
-	 * @param string the URL of the image file
+	 * @param string $value the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
-		if(parent::getImageUrl() === $value)
+		if (parent::getImageUrl() === $value) {
 			return;
+		}
 
 		parent::setImageUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'src', $value);
+		}
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
-		if(parent::getDescriptionUrl() === $value)
+		if (parent::getDescriptionUrl() === $value) {
 			return;
+		}
 
 		parent::setDescriptionUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'longdesc', $value);
+		}
 	}
 }
-

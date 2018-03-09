@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Xml;
+
 use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
@@ -35,7 +36,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 */
 	public function __construct(TXmlElement $owner)
 	{
-		$this->_o=$owner;
+		$this->_o = $owner;
 	}
 
 	/**
@@ -54,31 +55,32 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * @param mixed new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
-	public function insertAt($index,$item)
+	public function insertAt($index, $item)
 	{
-		if($item instanceof TXmlElement)
-		{
-			parent::insertAt($index,$item);
-			if($item->getParent()!==null)
+		if ($item instanceof TXmlElement) {
+			parent::insertAt($index, $item);
+			if ($item->getParent() !== null) {
 				$item->getParent()->getElements()->remove($item);
+			}
 			$item->setParent($this->_o);
-		}
-		else
+		} else {
 			throw new TInvalidDataTypeException('xmlelementlist_xmlelement_required');
+		}
 	}
 
 	/**
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a TXmlElement object.
-	 * @param integer the index of the item to be removed.
+	 * @param integer $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
-		$item=parent::removeAt($index);
-		if($item instanceof TXmlElement)
+		$item = parent::removeAt($index);
+		if ($item instanceof TXmlElement) {
 			$item->setParent(null);
+		}
 		return $item;
 	}
 }

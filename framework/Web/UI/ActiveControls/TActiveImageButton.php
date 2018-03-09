@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\ActiveControls;
+
 use Prado\Web\UI\WebControls\TImageButton;
 
 /**
@@ -57,16 +58,18 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 
 	/**
 	 * Sets the alternative text to be displayed in the TImage when the image is unavailable.
-	 * @param string the alternative text
+	 * @param string $value the alternative text
 	 */
 	public function setAlternateText($value)
 	{
-		if(parent::getAlternateText() === $value)
+		if (parent::getAlternateText() === $value) {
 			return;
+		}
 
 		parent::setAlternateText($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'alt', $value);
+		}
 	}
 
 	/**
@@ -74,42 +77,48 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * Possible values include: absbottom, absmiddle, baseline, bottom, left,
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
-	 * @param string the alignment of the image
+	 * @param string $value the alignment of the image
 	 */
 	public function setImageAlign($value)
 	{
-		if(parent::getImageAlign() === $value)
+		if (parent::getImageAlign() === $value) {
 			return;
+		}
 
 		parent::setImageAlign($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'align', $value);
+		}
 	}
 
 	/**
-	 * @param string the URL of the image file
+	 * @param string $value the URL of the image file
 	 */
 	public function setImageUrl($value)
 	{
-		if(parent::getImageUrl() === $value)
+		if (parent::getImageUrl() === $value) {
 			return;
+		}
 
 		parent::setImageUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'src', $value);
+		}
 	}
 
 	/**
-	 * @param string the URL to the long description of the image.
+	 * @param string $value the URL to the long description of the image.
 	 */
 	public function setDescriptionUrl($value)
 	{
-		if(parent::getDescriptionUrl() === $value)
+		if (parent::getDescriptionUrl() === $value) {
 			return;
+		}
 
 		parent::setDescriptionUrl($value);
-		if($this->getActiveControl()->canUpdateClientSide())
+		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$this->getPage()->getCallbackClient()->setAttribute($this, 'longdesc', $value);
+		}
 	}
 
 	/**
@@ -119,9 +128,9 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * {@link TPage::validate} method first. It will raise
 	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter the event parameter
+	 * @param TCallbackEventParameter $param the event parameter
 	 */
- 	public function raiseCallbackEvent($param)
+	public function raiseCallbackEvent($param)
 	{
 		$this->raisePostBackEvent($param);
 		$this->onCallback($param);
@@ -132,7 +141,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -154,9 +163,11 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	protected function addAttributesToRender($writer)
 	{
 		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id',$this->getClientID());
+		$writer->addAttribute('id', $this->getClientID());
 		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(), $this->getPostBackOptions());
+			$this->getClientClassName(),
+			$this->getPostBackOptions()
+		);
 	}
 
 	/**

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -54,101 +55,85 @@ use Prado\Xml\TXmlElement;
  */
 class TParameterModule extends \Prado\TModule
 {
-	const PARAM_FILE_EXT='.xml';
-	private $_initialized=false;
-	private $_paramFile=null;
+	const PARAM_FILE_EXT = '.xml';
+	private $_initialized = false;
+	private $_paramFile;
 
 	/**
 	 * Initializes the module by loading parameters.
-	 * @param mixed content enclosed within the module tag
+	 * @param mixed $config content enclosed within the module tag
 	 */
 	public function init($config)
 	{
 		$this->loadParameters($config);
-		if($this->_paramFile!==null)
-		{
+		if ($this->_paramFile !== null) {
 			$configFile = null;
-			if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_XML && ($cache=$this->getApplication()->getCache())!==null)
-			{
-				$cacheKey='TParameterModule:'.$this->_paramFile;
-				if(($configFile=$cache->get($cacheKey))===false)
-				{
-					$configFile=new TXmlDocument;
+			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML && ($cache = $this->getApplication()->getCache()) !== null) {
+				$cacheKey = 'TParameterModule:' . $this->_paramFile;
+				if (($configFile = $cache->get($cacheKey)) === false) {
+					$configFile = new TXmlDocument;
 					$configFile->loadFromFile($this->_paramFile);
-					$cache->set($cacheKey,$configFile,0,new TFileCacheDependency($this->_paramFile));
+					$cache->set($cacheKey, $configFile, 0, new TFileCacheDependency($this->_paramFile));
 				}
-			}
-			else
-			{
-				if($this->getApplication()->getConfigurationType()==TApplication::CONFIG_TYPE_PHP)
-				{
+			} else {
+				if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 					$configFile = include $this->_paramFile;
-				}
-				else
-				{
-					$configFile=new TXmlDocument;
+				} else {
+					$configFile = new TXmlDocument;
 					$configFile->loadFromFile($this->_paramFile);
 				}
 			}
 			$this->loadParameters($configFile);
 		}
-		$this->_initialized=true;
+		$this->_initialized = true;
 	}
 
 	/**
 	 * Loads parameters into application.
-	 * @param mixed XML of PHP representation of the parameters
+	 * @param mixed $config XML of PHP representation of the parameters
 	 * @throws TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
 	{
-		$parameters=array();
-		if(is_array($config))
-		{
-			foreach($config as $id => $parameter)
-			{
-				if(is_array($parameter) && isset($parameter['class']))
-				{
-					$properties = isset($parameter['properties'])?$parameter['properties']:array();
-					$parameters[$id]=array($parameter['class'],$properties);
-				}
-				else
-				{
+		$parameters = [];
+		if (is_array($config)) {
+			foreach ($config as $id => $parameter) {
+				if (is_array($parameter) && isset($parameter['class'])) {
+					$properties = isset($parameter['properties']) ? $parameter['properties'] : [];
+					$parameters[$id] = [$parameter['class'], $properties];
+				} else {
 					$parameters[$id] = $parameter;
 				}
 			}
-		}
-		else if($config instanceof TXmlElement)
-		{
-			foreach($config->getElementsByTagName('parameter') as $node)
-			{
-				$properties=$node->getAttributes();
-				if(($id=$properties->remove('id'))===null)
+		} elseif ($config instanceof TXmlElement) {
+			foreach ($config->getElementsByTagName('parameter') as $node) {
+				$properties = $node->getAttributes();
+				if (($id = $properties->remove('id')) === null) {
 					throw new TConfigurationException('parametermodule_parameterid_required');
-				if(($type=$properties->remove('class'))===null)
-				{
-					if(($value=$properties->remove('value'))===null)
-						$parameters[$id]=$node;
-					else
-						$parameters[$id]=$value;
 				}
-				else
-					$parameters[$id]=array($type,$properties->toArray());
+				if (($type = $properties->remove('class')) === null) {
+					if (($value = $properties->remove('value')) === null) {
+						$parameters[$id] = $node;
+					} else {
+						$parameters[$id] = $value;
+					}
+				} else {
+					$parameters[$id] = [$type, $properties->toArray()];
+				}
 			}
 		}
 
-		$appParams=$this->getApplication()->getParameters();
-		foreach($parameters as $id=>$parameter)
-		{
-			if(is_array($parameter))
-			{
-				$component=Prado::createComponent($parameter[0]);
-				foreach($parameter[1] as $name=>$value)
-					$component->setSubProperty($name,$value);
-				$appParams->add($id,$component);
+		$appParams = $this->getApplication()->getParameters();
+		foreach ($parameters as $id => $parameter) {
+			if (is_array($parameter)) {
+				$component = Prado::createComponent($parameter[0]);
+				foreach ($parameter[1] as $name => $value) {
+					$component->setSubProperty($name, $value);
+				}
+				$appParams->add($id, $component);
+			} else {
+				$appParams->add($id, $parameter);
 			}
-			else
-				$appParams->add($id,$parameter);
 		}
 	}
 
@@ -168,10 +153,10 @@ class TParameterModule extends \Prado\TModule
 	 */
 	public function setParameterFile($value)
 	{
-		if($this->_initialized)
+		if ($this->_initialized) {
 			throw new TInvalidOperationException('parametermodule_parameterfile_unchangeable');
-		else if(($this->_paramFile=Prado::getPathOfNamespace($value,$this->getApplication()->getConfigurationFileExt()))===null || !is_file($this->_paramFile))
-			throw new TConfigurationException('parametermodule_parameterfile_invalid',$value);
+		} elseif (($this->_paramFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($this->_paramFile)) {
+			throw new TConfigurationException('parametermodule_parameterfile_invalid', $value);
+		}
 	}
 }
-

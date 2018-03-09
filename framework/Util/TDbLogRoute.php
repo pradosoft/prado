@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Util;
+
 use Exception;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
@@ -46,7 +47,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * @var string the ID of TDataSourceConfig module
 	 */
-	private $_connID='';
+	private $_connID = '';
 	/**
 	 * @var TDbConnection the DB connection instance
 	 */
@@ -54,11 +55,11 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * @var string name of the DB log table
 	 */
-	private $_logTable='pradolog';
+	private $_logTable = 'pradolog';
 	/**
 	 * @var boolean whether the log DB table should be created automatically
 	 */
-	private $_autoCreate=true;
+	private $_autoCreate = true;
 
 	/**
 	 * Destructor.
@@ -66,34 +67,33 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public function __destruct()
 	{
-		if($this->_db!==null)
+		if ($this->_db !== null) {
 			$this->_db->setActive(false);
+		}
 	}
 
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * It initializes the database for logging purpose.
-	 * @param TXmlElement configuration for this module, can be null
+	 * @param TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if the DB table does not exist.
 	 */
 	public function init($config)
 	{
-		$db=$this->getDbConnection();
+		$db = $this->getDbConnection();
 		$db->setActive(true);
 
-		$sql='SELECT * FROM '.$this->_logTable.' WHERE 0=1';
-		try
-		{
+		$sql = 'SELECT * FROM ' . $this->_logTable . ' WHERE 0=1';
+		try {
 			$db->createCommand($sql)->query()->close();
-		}
-		catch(Exception $e)
-		{
+		} catch (Exception $e) {
 			// DB table not exists
-			if($this->_autoCreate)
+			if ($this->_autoCreate) {
 				$this->createDbTable();
-			else
-				throw new TConfigurationException('db_logtable_inexistent',$this->_logTable);
+			} else {
+				throw new TConfigurationException('db_logtable_inexistent', $this->_logTable);
+			}
 		}
 
 		parent::init($config);
@@ -101,18 +101,17 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Stores log messages into database.
-	 * @param array list of log messages
+	 * @param array $logs list of log messages
 	 */
 	protected function processLogs($logs)
 	{
-		$sql='INSERT INTO '.$this->_logTable.'(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
-		$command=$this->getDbConnection()->createCommand($sql);
-		foreach($logs as $log)
-		{
-			$command->bindValue(':message',$log[0]);
-			$command->bindValue(':level',$log[1]);
-			$command->bindValue(':category',$log[2]);
-			$command->bindValue(':logtime',$log[3]);
+		$sql = 'INSERT INTO ' . $this->_logTable . '(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
+		$command = $this->getDbConnection()->createCommand($sql);
+		foreach ($logs as $log) {
+			$command->bindValue(':message', $log[0]);
+			$command->bindValue(':level', $log[1]);
+			$command->bindValue(':category', $log[2]);
+			$command->bindValue(':logtime', $log[3]);
 			$command->execute();
 		}
 	}
@@ -124,12 +123,13 @@ class TDbLogRoute extends TLogRoute
 	protected function createDbTable()
 	{
 		$db = $this->getDbConnection();
-		$driver=$db->getDriverName();
+		$driver = $db->getDriverName();
 		$autoidAttributes = '';
-		if($driver==='mysql')
+		if ($driver === 'mysql') {
 			$autoidAttributes = 'AUTO_INCREMENT';
+		}
 
-		$sql='CREATE TABLE '.$this->_logTable.' (
+		$sql = 'CREATE TABLE ' . $this->_logTable . ' (
 			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
 			level INTEGER,
 			category VARCHAR(128),
@@ -146,20 +146,18 @@ class TDbLogRoute extends TLogRoute
 	 */
 	protected function createDbConnection()
 	{
-		if($this->_connID!=='')
-		{
-			$config=$this->getApplication()->getModule($this->_connID);
-			if($config instanceof TDataSourceConfig)
+		if ($this->_connID !== '') {
+			$config = $this->getApplication()->getModule($this->_connID);
+			if ($config instanceof TDataSourceConfig) {
 				return $config->getDbConnection();
-			else
-				throw new TConfigurationException('dblogroute_connectionid_invalid',$this->_connID);
-		}
-		else
-		{
-			$db=new TDbConnection;
+			} else {
+				throw new TConfigurationException('dblogroute_connectionid_invalid', $this->_connID);
+			}
+		} else {
+			$db = new TDbConnection;
 			// default to SQLite3 database
-			$dbFile=$this->getApplication()->getRuntimePath().'/sqlite3.log';
-			$db->setConnectionString('sqlite:'.$dbFile);
+			$dbFile = $this->getApplication()->getRuntimePath() . '/sqlite3.log';
+			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}
 	}
@@ -169,8 +167,9 @@ class TDbLogRoute extends TLogRoute
 	 */
 	public function getDbConnection()
 	{
-		if($this->_db===null)
-			$this->_db=$this->createDbConnection();
+		if ($this->_db === null) {
+			$this->_db = $this->createDbConnection();
+		}
 		return $this->_db;
 	}
 
@@ -185,11 +184,11 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.
-	 * @param string ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@link TDataSourceConfig} module
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID=$value;
+		$this->_connID = $value;
 	}
 
 	/**
@@ -207,12 +206,12 @@ class TDbLogRoute extends TLogRoute
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
 	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
-	 * @param string the name of the DB table to store log content
+	 * @param string $value the name of the DB table to store log content
 	 * @see setAutoCreateLogTable
 	 */
 	public function setLogTableName($value)
 	{
-		$this->_logTable=$value;
+		$this->_logTable = $value;
 	}
 
 	/**
@@ -225,12 +224,11 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param boolean whether the log DB table should be automatically created if not exists.
+	 * @param boolean $value whether the log DB table should be automatically created if not exists.
 	 * @see setLogTableName
 	 */
 	public function setAutoCreateLogTable($value)
 	{
-		$this->_autoCreate=TPropertyValue::ensureBoolean($value);
+		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
-
 }

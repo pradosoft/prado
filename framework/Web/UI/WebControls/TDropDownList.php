@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TPropertyValue;
 
@@ -42,16 +43,16 @@ use Prado\TPropertyValue;
  */
 class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
-	private $_dataChanged=false;
-	private $_isValid=true;
+	private $_dataChanged = false;
+	private $_isValid = true;
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter the renderer
+	 * @param THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
-		$writer->addAttribute('name',$this->getUniqueID());
+		$writer->addAttribute('name', $this->getUniqueID());
 		parent::addAttributesToRender($writer);
 	}
 
@@ -68,23 +69,22 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	/**
 	 * Loads user input data.
 	 * This method is primarly used by framework developers.
-	 * @param string the key that can be used to retrieve data from the input data collection
-	 * @param array the input data collection
+	 * @param string $key the key that can be used to retrieve data from the input data collection
+	 * @param array $values the input data collection
 	 * @return boolean whether the data of the component has been changed
 	 */
-	public function loadPostData($key,$values)
+	public function loadPostData($key, $values)
 	{
-		if(!$this->getEnabled(true))
+		if (!$this->getEnabled(true)) {
 			return false;
+		}
 		$this->ensureDataBound();
-		$selection=isset($values[$key])?$values[$key]:null;
-		if($selection!==null)
-		{
-			$index=$this->getItems()->findIndexByValue($selection,false);
-			if($this->getSelectedIndex()!==$index)
-			{
+		$selection = isset($values[$key]) ? $values[$key] : null;
+		if ($selection !== null) {
+			$index = $this->getItems()->findIndexByValue($selection, false);
+			if ($this->getSelectedIndex() !== $index) {
 				$this->setSelectedIndex($index);
-				return $this->_dataChanged=true;
+				return $this->_dataChanged = true;
 			}
 		}
 		return false;
@@ -99,8 +99,9 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function raisePostDataChangedEvent()
 	{
-		if($this->getAutoPostBack() && $this->getCausesValidation())
+		if ($this->getAutoPostBack() && $this->getCausesValidation()) {
 			$this->getPage()->validate($this->getValidationGroup());
+		}
 		$this->onSelectedIndexChanged(null);
 	}
 
@@ -139,13 +140,13 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	 */
 	public function getIsValid()
 	{
-	    return $this->_isValid;
+		return $this->_isValid;
 	}
 	/**
-	 * @param bool wether this control is valid.
+	 * @param bool $value wether this control is valid.
 	 */
 	public function setIsValid($value)
 	{
-	    $this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 }

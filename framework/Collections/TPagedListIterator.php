@@ -36,15 +36,16 @@ class TPagedListIterator implements \Iterator
 	 * @param integer start index
 	 * @param integer number of items to be iterated through
 	 */
-	public function __construct(TList $list,$startIndex,$count)
+	public function __construct(TList $list, $startIndex, $count)
 	{
-		$this->_list=$list;
-		$this->_index=0;
-		$this->_startIndex=$startIndex;
-		if($startIndex+$count>$list->getCount())
-			$this->_count=$list->getCount()-$startIndex;
-		else
-			$this->_count=$count;
+		$this->_list = $list;
+		$this->_index = 0;
+		$this->_startIndex = $startIndex;
+		if ($startIndex + $count > $list->getCount()) {
+			$this->_count = $list->getCount() - $startIndex;
+		} else {
+			$this->_count = $count;
+		}
 	}
 
 	/**
@@ -53,7 +54,7 @@ class TPagedListIterator implements \Iterator
 	 */
 	public function rewind()
 	{
-		$this->_index=0;
+		$this->_index = 0;
 	}
 
 	/**
@@ -73,7 +74,7 @@ class TPagedListIterator implements \Iterator
 	 */
 	public function current()
 	{
-		return $this->_list->itemAt($this->_startIndex+$this->_index);
+		return $this->_list->itemAt($this->_startIndex + $this->_index);
 	}
 
 	/**
@@ -92,6 +93,6 @@ class TPagedListIterator implements \Iterator
 	 */
 	public function valid()
 	{
-		return $this->_index<$this->_count;
+		return $this->_index < $this->_count;
 	}
 }

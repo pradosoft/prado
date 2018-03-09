@@ -23,7 +23,7 @@ namespace Prado\I18N\core;
  */
 use Exception;
 
-require_once(dirname(__FILE__).'/CultureInfo.php');
+require_once(__DIR__ . '/CultureInfo.php');
 
 /**
  * NumberFormatInfo class
@@ -54,19 +54,19 @@ class NumberFormatInfo
 	 * ICU number formatting data.
 	 * @var array
 	 */
-	private $data = array();
+	private $data = [];
 
 	/**
 	 * A list of properties that are accessable/writable.
 	 * @var array
 	 */
-	protected $properties = array();
+	protected $properties = [];
 
 	/**
 	 * The number pattern.
 	 * @var array
 	 */
-	protected $pattern = array();
+	protected $pattern = [];
 
 	const DECIMAL = 0;
 	const CURRENCY = 1;
@@ -80,11 +80,12 @@ class NumberFormatInfo
 	 */
 	public function __get($name)
 	{
-		$getProperty = 'get'.$name;
-		if(in_array($getProperty, $this->properties))
+		$getProperty = 'get' . $name;
+		if (in_array($getProperty, $this->properties)) {
 			return $this->$getProperty();
-		else
-			throw new Exception('Property '.$name.' does not exists.');
+		} else {
+			throw new Exception('Property ' . $name . ' does not exists.');
+		}
 	}
 
 	/**
@@ -93,11 +94,12 @@ class NumberFormatInfo
 	 */
 	public function __set($name, $value)
 	{
-		$setProperty = 'set'.$name;
-		if(in_array($setProperty, $this->properties))
+		$setProperty = 'set' . $name;
+		if (in_array($setProperty, $this->properties)) {
 			$this->$setProperty($value);
-		else
-			throw new Exception('Property '.$name.' can not be set.');
+		} else {
+			throw new Exception('Property ' . $name . ' can not be set.');
+		}
 	}
 
 	/**
@@ -109,12 +111,13 @@ class NumberFormatInfo
 	 * @param array ICU data for date time formatting.
 	 * @see getInstance()
 	 */
-	public function __construct($data=array(), $type=NumberFormatInfo::DECIMAL)
+	public function __construct($data = [], $type = NumberFormatInfo::DECIMAL)
 	{
 		$this->properties = get_class_methods($this);
 
-		if(empty($data))
+		if (empty($data)) {
 			throw new Exception('Please provide the ICU data to initialize.');
+		}
 
 		$this->data = $data;
 
@@ -124,23 +127,24 @@ class NumberFormatInfo
 	/**
 	 * Set the pattern for a specific number pattern. The validate patterns
 	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
-     * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
-	 * @param int pattern type.
+	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
+	 * @param int $type pattern type.
 	 */
-	public function setPattern($type=NumberFormatInfo::DECIMAL)
+	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{
-		if(is_int($type))
+		if (is_int($type)) {
 			$this->pattern =
 				$this->parsePattern($this->data['NumberPatterns'][$type]);
-		else
+		} else {
 			$this->pattern = $this->parsePattern($type);
+		}
 
 		$this->pattern['negInfty'] =
-			$this->data['NumberElements'][6].
+			$this->data['NumberElements'][6] .
 			$this->data['NumberElements'][9];
 
 		$this->pattern['posInfty'] =
-			$this->data['NumberElements'][11].
+			$this->data['NumberElements'][11] .
 			$this->data['NumberElements'][9];
 	}
 
@@ -154,100 +158,96 @@ class NumberFormatInfo
 	 * (invariant).
 	 * @return NumberFormatInfo default NumberFormatInfo.
 	 */
-    public static function getInvariantInfo($type=NumberFormatInfo::DECIMAL)
-    {
-        static $invariant;
-		if($invariant === null)
-        {
-            $culture = CultureInfo::getInvariantCulture();
-            $invariant = $culture->NumberFormat;
-            $invariant->setPattern($type);
-        }
-		return $invariant;
-    }
-
-    /**
-     * Returns the NumberFormatInfo associated with the specified culture.
-     * @param CultureInfo the culture that gets the NumberFormat property.
-     * @param int the number formatting type, it should be
-     * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
-     * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
-     * @return NumberFormatInfo NumberFormatInfo for the specified
-     * culture.
-     * @see getCurrencyInstance();
-     * @see getPercentageInstance();
-     * @see getScientificInstance();
-     */
-    public static function getInstance($culture=null,
-    								   $type=NumberFormatInfo::DECIMAL)
-    {
-   		if ($culture instanceof CultureInfo)
-   		{
-            $formatInfo = $culture->NumberFormat;
-            $formatInfo->setPattern($type);
-            return $formatInfo;
-   		}
-       	else if(is_string($culture))
-       	{
-       		$cultureInfo = new CultureInfo($culture);
-       		$formatInfo = $cultureInfo->NumberFormat;
-       		$formatInfo->setPattern($type);
-       		return $formatInfo;
-       	}
-       	else
-       	{
-            $cultureInfo = new CultureInfo();
-       		$formatInfo = $cultureInfo->NumberFormat;
-       		$formatInfo->setPattern($type);
-       		return $formatInfo;
-       	}
-    }
-
-    /**
-     * Returns the currency format info associated with the specified culture.
-     * @param CultureInfo the culture that gets the NumberFormat property.
-     * @return NumberFormatInfo NumberFormatInfo for the specified
-     * culture.
-     */
-    public static function getCurrencyInstance($culture=null)
-    {
-        return self::getInstance($culture, self::CURRENCY);
-    }
-
-    /**
-     * Returns the percentage format info associated with the specified culture.
-     * @param CultureInfo the culture that gets the NumberFormat property.
-     * @return NumberFormatInfo NumberFormatInfo for the specified
-     * culture.
-     */
-    public static function getPercentageInstance($culture=null)
-    {
-        return self::getInstance($culture, self::PERCENTAGE);
-    }
-
-    /**
-     * Returns the scientific format info associated with the specified culture.
-     * @param CultureInfo the culture that gets the NumberFormat property.
-     * @return NumberFormatInfo NumberFormatInfo for the specified
-     * culture.
-     */
-    public static function getScientificInstance($culture=null)
-    {
-        return self::getInstance($culture, self::SCIENTIFIC);
-    }
-
-    /**
-     * Parse the given pattern and return a list of known properties.
-     * @param string a number pattern.
-     * @return array list of pattern properties.
-     */
-    protected function parsePattern($pattern)
+	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
-		$pattern = explode(';',$pattern);
+		static $invariant;
+		if ($invariant === null) {
+			$culture = CultureInfo::getInvariantCulture();
+			$invariant = $culture->NumberFormat;
+			$invariant->setPattern($type);
+		}
+		return $invariant;
+	}
+
+	/**
+	 * Returns the NumberFormatInfo associated with the specified culture.
+	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @param int the number formatting type, it should be
+	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
+	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
+	 * @return NumberFormatInfo NumberFormatInfo for the specified
+	 * culture.
+	 * @see getCurrencyInstance();
+	 * @see getPercentageInstance();
+	 * @see getScientificInstance();
+	 */
+	public static function getInstance(
+		$culture = null,
+									   $type = NumberFormatInfo::DECIMAL
+	) {
+		if ($culture instanceof CultureInfo) {
+			$formatInfo = $culture->NumberFormat;
+			$formatInfo->setPattern($type);
+			return $formatInfo;
+		} elseif (is_string($culture)) {
+			$cultureInfo = new CultureInfo($culture);
+			$formatInfo = $cultureInfo->NumberFormat;
+			$formatInfo->setPattern($type);
+			return $formatInfo;
+		} else {
+			$cultureInfo = new CultureInfo();
+			$formatInfo = $cultureInfo->NumberFormat;
+			$formatInfo->setPattern($type);
+			return $formatInfo;
+		}
+	}
+
+	/**
+	 * Returns the currency format info associated with the specified culture.
+	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @return NumberFormatInfo NumberFormatInfo for the specified
+	 * culture.
+	 */
+	public static function getCurrencyInstance($culture = null)
+	{
+		return self::getInstance($culture, self::CURRENCY);
+	}
+
+	/**
+	 * Returns the percentage format info associated with the specified culture.
+	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @return NumberFormatInfo NumberFormatInfo for the specified
+	 * culture.
+	 */
+	public static function getPercentageInstance($culture = null)
+	{
+		return self::getInstance($culture, self::PERCENTAGE);
+	}
+
+	/**
+	 * Returns the scientific format info associated with the specified culture.
+	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @return NumberFormatInfo NumberFormatInfo for the specified
+	 * culture.
+	 */
+	public static function getScientificInstance($culture = null)
+	{
+		return self::getInstance($culture, self::SCIENTIFIC);
+	}
+
+	/**
+	 * Parse the given pattern and return a list of known properties.
+	 * @param string $pattern a number pattern.
+	 * @return array list of pattern properties.
+	 */
+	protected function parsePattern($pattern)
+	{
+		$pattern = explode(';', $pattern);
 
 		$negative = null;
-		if(count($pattern) > 1)
+		if (count($pattern) > 1) {
 			$negative = $pattern[1];
+		}
 		$pattern = $pattern[0];
 
 		$comma = ',';
@@ -256,13 +256,13 @@ class NumberFormatInfo
 		$hash = '#';
 
 		//find the first group point, and decimal point
-		$groupPos1 = strrpos($pattern,$comma);
-		$decimalPos = strrpos($pattern,$dot);
+		$groupPos1 = strrpos($pattern, $comma);
+		$decimalPos = strrpos($pattern, $dot);
 
 		$groupPos2 = false;
 		$groupSize1 = false;
 		$groupSize2 = false;
-		$decimalPoints = is_int($decimalPos)?-1:false;
+		$decimalPoints = is_int($decimalPos) ? -1 : false;
 
 		$info['negPref'] = $this->data['NumberElements'][6];
 		$info['negPost'] = '';
@@ -271,8 +271,7 @@ class NumberFormatInfo
 		$info['positive'] = $pattern;
 
 		//find the negative prefix and postfix
-		if($negative)
-		{
+		if ($negative) {
 			$prefixPostfix = $this->getPrePostfix($negative);
 			$info['negPref'] = $prefixPostfix[0];
 			$info['negPost'] = $prefixPostfix[1];
@@ -284,25 +283,18 @@ class NumberFormatInfo
 
 		//var_dump($pattern);
 		//var_dump($decimalPos);
-		if(is_int($groupPos1))
-		{
+		if (is_int($groupPos1)) {
 			//get the second group
-			$groupPos2 = strrpos(substr($pattern,0,$groupPos1),$comma);
+			$groupPos2 = strrpos(substr($pattern, 0, $groupPos1), $comma);
 
 			//get the number of decimal digits
-			if(is_int($decimalPos))
-			{
-				$groupSize1 = $decimalPos - $groupPos1-1;
-
-			}
-			else
-			{
+			if (is_int($decimalPos)) {
+				$groupSize1 = $decimalPos - $groupPos1 - 1;
+			} else {
 				//no decimal point, so traverse from the back
 				//to find the groupsize 1.
-				for($i=strlen($pattern)-1; $i>=0; $i--)
-				{
-					if($pattern{$i} == $digit || $pattern{$i}==$hash)
-					{
+				for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+					if ($pattern{$i} == $digit || $pattern{$i} == $hash) {
 						$groupSize1 = $i - $groupPos1;
 						break;
 					}
@@ -310,29 +302,30 @@ class NumberFormatInfo
 			}
 
 			//get the second group size
-			if(is_int($groupPos2))
-				$groupSize2 = $groupPos1 - $groupPos2-1;
+			if (is_int($groupPos2)) {
+				$groupSize2 = $groupPos1 - $groupPos2 - 1;
+			}
 		}
 
-		if(is_int($decimalPos))
-		{
-			for($i=strlen($pattern)-1; $i>=0; $i--)
-			{
-				if($pattern{$i} == $dot) break;
-				if($pattern{$i} == $digit)
-				{
+		if (is_int($decimalPos)) {
+			for ($i = strlen($pattern) - 1; $i >= 0; $i--) {
+				if ($pattern{$i} == $dot) {
+					break;
+				}
+				if ($pattern{$i} == $digit) {
 					$decimalPoints = $i - $decimalPos;
 					break;
 				}
 			}
 		}
 
-		if(is_int($decimalPos))
-			$digitPattern = substr($pattern,0,$decimalPos);
-		else
-			$digitPattern  = $pattern;
+		if (is_int($decimalPos)) {
+			$digitPattern = substr($pattern, 0, $decimalPos);
+		} else {
+			$digitPattern = $pattern;
+		}
 
-		$digitPattern  = preg_replace('/[^0]/','',$digitPattern);
+		$digitPattern = preg_replace('/[^0]/', '', $digitPattern);
 
 		$info['groupPos1'] = $groupPos1;
 		$info['groupSize1'] = $groupSize1;
@@ -346,307 +339,307 @@ class NumberFormatInfo
 
 	/**
 	 * Get the prefix and postfix of a pattern.
-	 * @param string pattern
+	 * @param string $pattern pattern
 	 * @return array of prefix and postfix, array(prefix,postfix).
 	 */
 	protected function getPrePostfix($pattern)
 	{
 		$regexp = '/[#,\.0]+/';
 		$result = preg_split($regexp, $pattern);
-		return array($result[0],$result[1]);
+		return [$result[0], $result[1]];
 	}
 
 
-    /**
-     * Indicates the number of decimal places.
-     * @return int number of decimal places.
-     */
-    function getDecimalDigits()
-    {
-    	return $this->pattern['decimalPoints'];
-    }
+	/**
+	 * Indicates the number of decimal places.
+	 * @return int number of decimal places.
+	 */
+	public function getDecimalDigits()
+	{
+		return $this->pattern['decimalPoints'];
+	}
 
-    /**
-     * Set the number of decimal places.
-     * @param int number of decimal places.
-     */
-    function setDecimalDigits($value)
-    {
-    	return $this->pattern['decimalPoints'] = $value;
-    }
+	/**
+	 * Set the number of decimal places.
+	 * @param int $value number of decimal places.
+	 */
+	public function setDecimalDigits($value)
+	{
+		return $this->pattern['decimalPoints'] = $value;
+	}
 
-    function getDigitSize()
-    {
-    	return $this->pattern['digitSize'];
-    }
+	public function getDigitSize()
+	{
+		return $this->pattern['digitSize'];
+	}
 
-    function setDigitSize($value)
-    {
-    	$this->pattern['digitSize'] = $value;
-    }
+	public function setDigitSize($value)
+	{
+		$this->pattern['digitSize'] = $value;
+	}
 
-    /**
-     * Gets the string to use as the decimal separator.
-     * @return string decimal separator.
-     */
-    function getDecimalSeparator()
-    {
-    	return $this->data['NumberElements'][0];
-    }
+	/**
+	 * Gets the string to use as the decimal separator.
+	 * @return string decimal separator.
+	 */
+	public function getDecimalSeparator()
+	{
+		return $this->data['NumberElements'][0];
+	}
 
-    /**
-     * Set the string to use as the decimal separator.
-     * @param string the decimal point
-     */
-    function setDecimalSeparator($value)
-    {
-    	return $this->data['NumberElements'][0] = $value;
-    }
+	/**
+	 * Set the string to use as the decimal separator.
+	 * @param string $value the decimal point
+	 */
+	public function setDecimalSeparator($value)
+	{
+		return $this->data['NumberElements'][0] = $value;
+	}
 
-    /**
-     * Gets the string that separates groups of digits to the left
-     * of the decimal in currency values.
-     * @param parameter
-     * @return string currency group separator.
-     */
-    function getGroupSeparator()
-    {
-    	return $this->data['NumberElements'][1];
-    }
+	/**
+	 * Gets the string that separates groups of digits to the left
+	 * of the decimal in currency values.
+	 * @param parameter
+	 * @return string currency group separator.
+	 */
+	public function getGroupSeparator()
+	{
+		return $this->data['NumberElements'][1];
+	}
 
-    /**
-     * Set the string to use as the group separator.
-     * @param string the group separator.
-     */
-    function setGroupSeparator($value)
-    {
-    	return $this->data['NumberElements'][1] = $value;
-    }
+	/**
+	 * Set the string to use as the group separator.
+	 * @param string $value the group separator.
+	 */
+	public function setGroupSeparator($value)
+	{
+		return $this->data['NumberElements'][1] = $value;
+	}
 
-    /**
-     * Gets the number of digits in each group to the left of the decimal
-     * There can be two grouping sizes, this fucntion
-     * returns <b>array(group1, group2)</b>, if there is only 1 grouping size,
-     * group2 will be false.
-     * @return array grouping size(s).
-     */
-    function getGroupSizes()
-    {
-    	$group1 = $this->pattern['groupSize1'];
-    	$group2 = $this->pattern['groupSize2'];
+	/**
+	 * Gets the number of digits in each group to the left of the decimal
+	 * There can be two grouping sizes, this fucntion
+	 * returns <b>array(group1, group2)</b>, if there is only 1 grouping size,
+	 * group2 will be false.
+	 * @return array grouping size(s).
+	 */
+	public function getGroupSizes()
+	{
+		$group1 = $this->pattern['groupSize1'];
+		$group2 = $this->pattern['groupSize2'];
 
-    	return array($group1, $group2);
-    }
+		return [$group1, $group2];
+	}
 
-    /**
-     * Set the number of digits in each group to the left of the decimal.
-     * There can be two grouping sizes, the value should
-     * be an <b>array(group1, group2)</b>, if there is only 1 grouping size,
-     * group2 should be false.
-     * @param array grouping size(s).
-     */
-    function setGroupSizes($groupSize)
-    {
-   		$this->pattern['groupSize1'] = $groupSize[0];
-   		$this->pattern['groupSize2'] = $groupSize[1];
-    }
+	/**
+	 * Set the number of digits in each group to the left of the decimal.
+	 * There can be two grouping sizes, the value should
+	 * be an <b>array(group1, group2)</b>, if there is only 1 grouping size,
+	 * group2 should be false.
+	 * @param array $groupSize grouping size(s).
+	 */
+	public function setGroupSizes($groupSize)
+	{
+		$this->pattern['groupSize1'] = $groupSize[0];
+		$this->pattern['groupSize2'] = $groupSize[1];
+	}
 
-    /**
-     * Gets the format pattern for negative values.
-     * The negative pattern is composed of a prefix, and postfix.
-     * This function returns <b>array(prefix, postfix)</b>.
-     * @return arary negative pattern.
-     */
-    function getNegativePattern()
-    {
-    	$prefix = $this->pattern['negPref'];
-    	$postfix = $this->pattern['negPost'];
-    	return array($prefix, $postfix);
-    }
+	/**
+	 * Gets the format pattern for negative values.
+	 * The negative pattern is composed of a prefix, and postfix.
+	 * This function returns <b>array(prefix, postfix)</b>.
+	 * @return arary negative pattern.
+	 */
+	public function getNegativePattern()
+	{
+		$prefix = $this->pattern['negPref'];
+		$postfix = $this->pattern['negPost'];
+		return [$prefix, $postfix];
+	}
 
-    /**
-     * Set the format pattern for negative values.
-     * The negative pattern is composed of a prefix, and postfix in the form
-     * <b>array(prefix, postfix)</b>.
-     * @param arary negative pattern.
-     */
-    function setNegativePattern($pattern)
-    {
-    	$this->pattern['negPref'] = $pattern[0];
-    	$this->pattern['negPost'] = $pattern[1];
-    }
+	/**
+	 * Set the format pattern for negative values.
+	 * The negative pattern is composed of a prefix, and postfix in the form
+	 * <b>array(prefix, postfix)</b>.
+	 * @param arary $pattern negative pattern.
+	 */
+	public function setNegativePattern($pattern)
+	{
+		$this->pattern['negPref'] = $pattern[0];
+		$this->pattern['negPost'] = $pattern[1];
+	}
 
-    /**
-     * Gets the format pattern for positive values.
-     * The positive pattern is composed of a prefix, and postfix.
-     * This function returns <b>array(prefix, postfix)</b>.
-     * @return arary positive pattern.
-     */
-    function getPositivePattern()
-    {
-    	$prefix = $this->pattern['posPref'];
-    	$postfix = $this->pattern['posPost'];
-    	return array($prefix, $postfix);
-    }
+	/**
+	 * Gets the format pattern for positive values.
+	 * The positive pattern is composed of a prefix, and postfix.
+	 * This function returns <b>array(prefix, postfix)</b>.
+	 * @return arary positive pattern.
+	 */
+	public function getPositivePattern()
+	{
+		$prefix = $this->pattern['posPref'];
+		$postfix = $this->pattern['posPost'];
+		return [$prefix, $postfix];
+	}
 
-    /**
-     * Set the format pattern for positive values.
-     * The positive pattern is composed of a prefix, and postfix in the form
-     * <b>array(prefix, postfix)</b>.
-     * @param arary positive pattern.
-     */
-    function setPositivePattern($pattern)
-    {
-    	$this->pattern['posPref'] = $pattern[0];
-    	$this->pattern['posPost'] = $pattern[1];
-    }
+	/**
+	 * Set the format pattern for positive values.
+	 * The positive pattern is composed of a prefix, and postfix in the form
+	 * <b>array(prefix, postfix)</b>.
+	 * @param arary $pattern positive pattern.
+	 */
+	public function setPositivePattern($pattern)
+	{
+		$this->pattern['posPref'] = $pattern[0];
+		$this->pattern['posPost'] = $pattern[1];
+	}
 
-    /**
-     * Gets the string to use as the currency symbol.
-     * @return string currency symbol.
-     */
-    function getCurrencySymbol($currency='USD')
-    {
-    	if(isset($this->pattern['symbol']))
+	/**
+	 * Gets the string to use as the currency symbol.
+	 * @return string currency symbol.
+	 */
+	public function getCurrencySymbol($currency = 'USD')
+	{
+		if (isset($this->pattern['symbol'])) {
 			return $this->pattern['symbol'];
-    	else
-    		return $this->data['Currencies'][$currency][0];
-    }
+		} else {
+			return $this->data['Currencies'][$currency][0];
+		}
+	}
 
 
-    /**
-     * Set the string to use as the currency symbol.
-     * @param string currency symbol.
-     */
-    function setCurrencySymbol($symbol)
-    {
-    	$this->pattern['symbol'] = $symbol;
-    }
+	/**
+	 * Set the string to use as the currency symbol.
+	 * @param string $symbol currency symbol.
+	 */
+	public function setCurrencySymbol($symbol)
+	{
+		$this->pattern['symbol'] = $symbol;
+	}
 
-    /**
-     * Gets the string that represents negative infinity.
-     * @return string negative infinity.
-     */
-    function getNegativeInfinitySymbol()
-    {
+	/**
+	 * Gets the string that represents negative infinity.
+	 * @return string negative infinity.
+	 */
+	public function getNegativeInfinitySymbol()
+	{
 		return $this->pattern['negInfty'];
-    }
+	}
 
-    /**
-     * Set the string that represents negative infinity.
-     * @param string negative infinity.
-     */
-    function setNegativeInfinitySymbol($value)
-    {
+	/**
+	 * Set the string that represents negative infinity.
+	 * @param string $value negative infinity.
+	 */
+	public function setNegativeInfinitySymbol($value)
+	{
 		$this->pattern['negInfty'] = $value;
-    }
+	}
 
-    /**
-     * Gets the string that represents positive infinity.
-     * @return string positive infinity.
-     */
-    function getPositiveInfinitySymbol()
-    {
+	/**
+	 * Gets the string that represents positive infinity.
+	 * @return string positive infinity.
+	 */
+	public function getPositiveInfinitySymbol()
+	{
 		return $this->pattern['posInfty'];
-    }
+	}
 
-    /**
-     * Set the string that represents positive infinity.
-     * @param string positive infinity.
-     */
-    function setPositiveInfinitySymbol($value)
-    {
+	/**
+	 * Set the string that represents positive infinity.
+	 * @param string $value positive infinity.
+	 */
+	public function setPositiveInfinitySymbol($value)
+	{
 		$this->pattern['posInfty'] = $value;
-    }
+	}
 
-    /**
-     * Gets the string that denotes that the associated number is negative.
-     * @return string negative sign.
-     */
-    function getNegativeSign()
-    {
-    	return $this->data['NumberElements'][6];
-    }
+	/**
+	 * Gets the string that denotes that the associated number is negative.
+	 * @return string negative sign.
+	 */
+	public function getNegativeSign()
+	{
+		return $this->data['NumberElements'][6];
+	}
 
-    /**
-     * Set the string that denotes that the associated number is negative.
-     * @param string negative sign.
-     */
-    function setNegativeSign($value)
-    {
-    	$this->data['NumberElements'][6] = $value;
-    }
+	/**
+	 * Set the string that denotes that the associated number is negative.
+	 * @param string $value negative sign.
+	 */
+	public function setNegativeSign($value)
+	{
+		$this->data['NumberElements'][6] = $value;
+	}
 
-    /**
-     * Gets the string that denotes that the associated number is positive.
-     * @return string positive sign.
-     */
-    function getPositiveSign()
-    {
-    	return $this->data['NumberElements'][11];
-    }
+	/**
+	 * Gets the string that denotes that the associated number is positive.
+	 * @return string positive sign.
+	 */
+	public function getPositiveSign()
+	{
+		return $this->data['NumberElements'][11];
+	}
 
-    /**
-     * Set the string that denotes that the associated number is positive.
-     * @param string positive sign.
-     */
-    function setPositiveSign($value)
-    {
-    	$this->data['NumberElements'][11] = $value;
-    }
+	/**
+	 * Set the string that denotes that the associated number is positive.
+	 * @param string $value positive sign.
+	 */
+	public function setPositiveSign($value)
+	{
+		$this->data['NumberElements'][11] = $value;
+	}
 
-    /**
-     * Gets the string that represents the IEEE NaN (not a number) value.
-     * @return string NaN symbol.
-     */
-    function getNaNSymbol()
-    {
-    	return $this->data['NumberElements'][10];
-    }
+	/**
+	 * Gets the string that represents the IEEE NaN (not a number) value.
+	 * @return string NaN symbol.
+	 */
+	public function getNaNSymbol()
+	{
+		return $this->data['NumberElements'][10];
+	}
 
-    /**
-     * Set the string that represents the IEEE NaN (not a number) value.
-     * @param string NaN symbol.
-     */
-    function setNaNSymbol($value)
-    {
-    	$this->data['NumberElements'][10] = $value;
-    }
+	/**
+	 * Set the string that represents the IEEE NaN (not a number) value.
+	 * @param string $value NaN symbol.
+	 */
+	public function setNaNSymbol($value)
+	{
+		$this->data['NumberElements'][10] = $value;
+	}
 
-    /**
-     * Gets the string to use as the percent symbol.
-     * @return string percent symbol.
-     */
-    function getPercentSymbol()
-    {
-    	return $this->data['NumberElements'][3];
-    }
+	/**
+	 * Gets the string to use as the percent symbol.
+	 * @return string percent symbol.
+	 */
+	public function getPercentSymbol()
+	{
+		return $this->data['NumberElements'][3];
+	}
 
-    /**
-     * Set the string to use as the percent symbol.
-     * @param string percent symbol.
-     */
-    function setPercentSymbol($value)
-    {
-    	$this->data['NumberElements'][3] = $value;
-    }
+	/**
+	 * Set the string to use as the percent symbol.
+	 * @param string $value percent symbol.
+	 */
+	public function setPercentSymbol($value)
+	{
+		$this->data['NumberElements'][3] = $value;
+	}
 
-    /**
-     * Gets the string to use as the per mille symbol.
-     * @return string percent symbol.
-     */
-    function getPerMilleSymbol()
-    {
-    	return $this->data['NumberElements'][8];
-    }
+	/**
+	 * Gets the string to use as the per mille symbol.
+	 * @return string percent symbol.
+	 */
+	public function getPerMilleSymbol()
+	{
+		return $this->data['NumberElements'][8];
+	}
 
-    /**
-     * Set the string to use as the per mille symbol.
-     * @param string percent symbol.
-     */
-    function setPerMilleSymbol($value)
-    {
-    	$this->data['NumberElements'][8] = $value;
-    }
+	/**
+	 * Set the string to use as the per mille symbol.
+	 * @param string $value percent symbol.
+	 */
+	public function setPerMilleSymbol($value)
+	{
+		$this->data['NumberElements'][8] = $value;
+	}
 }
-

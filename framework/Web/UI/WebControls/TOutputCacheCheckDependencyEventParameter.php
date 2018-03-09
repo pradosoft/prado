@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -24,8 +25,8 @@ use Prado\TPropertyValue;
  */
 class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 {
-	private $_isValid=true;
-	private $_cacheTime=0;
+	private $_isValid = true;
+	private $_cacheTime = 0;
 
 	/**
 	 * @return boolean whether the dependency remains valid. Defaults to true.
@@ -36,11 +37,11 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether the dependency remains valid
+	 * @param boolean $value whether the dependency remains valid
 	 */
 	public function setIsValid($value)
 	{
-		$this->_isValid=TPropertyValue::ensureBoolean($value);
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -53,11 +54,11 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer the timestamp of the cached result. This is used internally.
+	 * @param integer $value the timestamp of the cached result. This is used internally.
 	 * @since 3.1.1
 	 */
 	public function setCacheTime($value)
 	{
-		$this->_cacheTime=TPropertyValue::ensureInteger($value);
+		$this->_cacheTime = TPropertyValue::ensureInteger($value);
 	}
 }

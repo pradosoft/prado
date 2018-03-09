@@ -16,7 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-
 /**
  * TJuiDroppable class.
  *
@@ -80,7 +79,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidget()
 	{
-	  return 'droppable';
+		return 'droppable';
 	}
 
 	/**
@@ -88,7 +87,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -97,10 +96,9 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -111,7 +109,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('accept', 'activeClass', 'addClasses', 'disabled', 'greedy', 'hoverClass', 'scope', 'tolerance');
+		return ['accept', 'activeClass', 'addClasses', 'disabled', 'greedy', 'hoverClass', 'scope', 'tolerance'];
 	}
 
 	/**
@@ -120,7 +118,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidEvents()
 	{
-		return array('activate', 'create', 'deactivate', 'drop', 'out', 'over');
+		return ['activate', 'create', 'deactivate', 'drop', 'out', 'over'];
 	}
 
 	/**
@@ -139,17 +137,17 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -160,7 +158,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnActivate event
 	 * @param object $params event parameters
 	 */
-	public function onActivate ($params)
+	public function onActivate($params)
 	{
 		$this->raiseEvent('OnActivate', $this, $params);
 	}
@@ -169,7 +167,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onCreate ($params)
+	public function onCreate($params)
 	{
 		$this->raiseEvent('OnCreate', $this, $params);
 	}
@@ -178,7 +176,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnDeactivate event
 	 * @param object $params event parameters
 	 */
-	public function onDeactivate ($params)
+	public function onDeactivate($params)
 	{
 		$this->raiseEvent('OnDeactivate', $this, $params);
 	}
@@ -187,7 +185,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnDrop event
 	 * @param object $params event parameters
 	 */
-	public function onDrop ($params)
+	public function onDrop($params)
 	{
 		$this->raiseEvent('OnDrop', $this, $params);
 	}
@@ -196,7 +194,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnOut event
 	 * @param object $params event parameters
 	 */
-	public function OnOut ($params)
+	public function OnOut($params)
 	{
 		$this->raiseEvent('OnOut', $this, $params);
 	}
@@ -205,7 +203,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnOver event
 	 * @param object $params event parameters
 	 */
-	public function OnOver ($params)
+	public function OnOver($params)
 	{
 		$this->raiseEvent('OnOver', $this, $params);
 	}
@@ -215,7 +213,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter event parameter to be passed to the event handlers
+	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 
 	public function onCallback($param)

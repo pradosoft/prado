@@ -11,6 +11,7 @@
  */
 
 namespace Prado\Data\Common\Oracle;
+
 use Prado\Collections\TMap;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
@@ -24,7 +25,7 @@ use Prado\Prado;
  */
 class TOracleTableInfo extends \Prado\TComponent
 {
-	private $_info=array();
+	private $_info = [];
 
 	private $_primaryKeys;
 	private $_foreignKeys;
@@ -37,29 +38,29 @@ class TOracleTableInfo extends \Prado\TComponent
 	 * Sets the database table meta data information.
 	 * @param array table column information.
 	 */
-	public function __construct($tableInfo=array(),$primary=array(),$foreign=array())
+	public function __construct($tableInfo = [], $primary = [], $foreign = [])
 	{
-		$this->_info=$tableInfo;
-		$this->_primaryKeys=$primary;
-		$this->_foreignKeys=$foreign;
-		$this->_columns=new TMap;
+		$this->_info = $tableInfo;
+		$this->_primaryKeys = $primary;
+		$this->_foreignKeys = $foreign;
+		$this->_columns = new TMap;
 	}
 
 	/**
-	 * @param TDbConnection database connection.
+	 * @param TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
-		return new TOracleCommandBuilder($connection,$this);
+		return new TOracleCommandBuilder($connection, $this);
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed default value if information array value is null
+	 * @param string $name information array key name
+	 * @param mixed $default default value if information array value is null
 	 * @return mixed information array value.
 	 */
-	public function getInfo($name,$default=null)
+	public function getInfo($name, $default = null)
 	{
 		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
 	}
@@ -68,9 +69,9 @@ class TOracleTableInfo extends \Prado\TComponent
 	 * @param string information array key name
 	 * @param mixed new information array value.
 	 */
-	protected function setInfo($name,$value)
+	protected function setInfo($name, $value)
 	{
-		$this->_info[$name]=$value;
+		$this->_info[$name] = $value;
 	}
 
 	/**
@@ -86,7 +87,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getTableFullName()
 	{
-		return $this->_info['SchemaName'].'.'.$this->getTableName();
+		return $this->_info['SchemaName'] . '.' . $this->getTableName();
 	}
 
 	/**
@@ -94,7 +95,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getIsView()
 	{
-		return $this->getInfo('IsView',false);
+		return $this->getInfo('IsView', false);
 	}
 
 	/**
@@ -106,13 +107,14 @@ class TOracleTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string column id
+	 * @param string $name column id
 	 * @return TDbTableColumn column information.
 	 */
 	public function getColumn($name)
 	{
-		if(($column = $this->_columns->itemAt($name))!==null)
+		if (($column = $this->_columns->itemAt($name)) !== null) {
 			return $column;
+		}
 		throw new TDbException('dbtableinfo_invalid_column_name', $name, $this->getTableFullName());
 	}
 
@@ -122,8 +124,9 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
-		foreach($this->getColumns() as $column)
+		foreach ($this->getColumns() as $column) {
 			$names[] = $column->getColumnName();
+		}
 		return $names;
 	}
 
@@ -148,13 +151,12 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getLowerCaseColumnNames()
 	{
-		if($this->_lowercase===null)
-		{
-			$this->_lowercase=array();
-			foreach($this->getColumns()->getKeys() as $key)
+		if ($this->_lowercase === null) {
+			$this->_lowercase = [];
+			foreach ($this->getColumns()->getKeys() as $key) {
 				$this->_lowercase[strtolower($key)] = $key;
+			}
 		}
 		return $this->_lowercase;
 	}
 }
-

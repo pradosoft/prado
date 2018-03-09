@@ -33,7 +33,7 @@ interface IBehavior extends IBaseBehavior
 	 */
 	public function getEnabled();
 	/**
-	 * @param boolean whether this behavior is enabled
+	 * @param boolean $value whether this behavior is enabled
 	 */
 	public function setEnabled($value);
 }

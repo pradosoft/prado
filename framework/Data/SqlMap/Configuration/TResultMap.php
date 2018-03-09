@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Data\SqlMap\Configuration;
+
 use Prado\Collections\TMap;
 use Prado\Data\SqlMap\DataMapper\TSqlMapException;
 
@@ -53,7 +54,7 @@ class TResultMap extends \Prado\TComponent
 	 */
 	public function __construct()
 	{
-		$this->_columns=new TMap;
+		$this->_columns = new TMap;
 	}
 
 	/**
@@ -65,11 +66,11 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string a unique identifier for the <resultMap>.
+	 * @param string $value a unique identifier for the <resultMap>.
 	 */
 	public function setID($value)
 	{
-		$this->_ID=$value;
+		$this->_ID = $value;
 	}
 
 	/**
@@ -81,7 +82,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result class name.
+	 * @param string $value result class name.
 	 */
 	public function setClass($value)
 	{
@@ -105,7 +106,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result map extends another result map.
+	 * @param string $value result map extends another result map.
 	 */
 	public function setExtends($value)
 	{
@@ -121,7 +122,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string result map group by
+	 * @param string $value result map group by
 	 */
 	public function setGroupBy($value)
 	{
@@ -162,41 +163,41 @@ class TResultMap extends \Prado\TComponent
 	public function createInstanceOfResult($registry)
 	{
 		$handler = $registry->getTypeHandler($this->getClass());
-		try
-		{
-			if($handler!==null)
+		try {
+			if ($handler !== null) {
 				return $handler->createNewInstance();
-			else
+			} else {
 				return $registry->createInstanceOf($this->getClass());
-		}
-		catch (TSqlMapException $e)
-		{
+			}
+		} catch (TSqlMapException $e) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_create_new_instance',
-					$this->getClass(), get_class($handler), $this->getID());
+					$this->getClass(),
+				get_class($handler),
+				$this->getID()
+			);
 		}
 	}
 
 	/**
 	 * Result sub-mappings using the discriminiator column.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry
-	 * @param array row data.
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param array $row row data.
 	 * @return TResultMap result sub-map.
 	 */
-	public function resolveSubMap($registry,$row)
+	public function resolveSubMap($registry, $row)
 	{
 		$subMap = $this;
-		if(($disc = $this->getDiscriminator())!==null)
-		{
-			$value = $disc->getMapping()->getPropertyValue($registry,$row);
-			$subMap = $disc->getSubMap((string)$value);
+		if (($disc = $this->getDiscriminator()) !== null) {
+			$value = $disc->getMapping()->getPropertyValue($registry, $row);
+			$subMap = $disc->getSubMap((string) $value);
 
-			if($subMap===null)
+			if ($subMap === null) {
 				$subMap = $this;
-			else if($subMap !== $this)
-				$subMap = $subMap->resolveSubMap($registry,$row);
+			} elseif ($subMap !== $this) {
+				$subMap = $subMap->resolveSubMap($registry, $row);
+			}
 		}
 		return $subMap;
 	}
 }
-

@@ -25,4 +25,3 @@ namespace Prado\Web\UI\WebControls;
 class TPlaceHolder extends \Prado\Web\UI\TControl
 {
 }
-

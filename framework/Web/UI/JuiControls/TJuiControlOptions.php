@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\JuiControls;
+
 use Prado\Collections\TMap;
 use Prado\Exceptions\THttpException;
 use Prado\Web\Javascripts\TJavaScript;
@@ -45,7 +46,7 @@ class TJuiControlOptions
 
 	/**
 	 * Constructor. Set the parent control owning these options.
-	 * @param TControl parent control
+	 * @param TControl $control parent control
 	 */
 	public function __construct($control)
 	{
@@ -54,14 +55,15 @@ class TJuiControlOptions
 
 	/**
 	 * Sets the parent control.
-	 * @param TControl $control
+	 * @param TControl $control $control
 	 * @throws THttpException
 	 */
 	public function setControl($control)
 	{
-		if(!$control instanceof IJuiOptions)
-			throw new THttpException(500,'juioptions_control_invalid',$control->ID);
-		$this->_control=$control;
+		if (!$control instanceof IJuiOptions) {
+			throw new THttpException(500, 'juioptions_control_invalid', $control->ID);
+		}
+		$this->_control = $control;
 	}
 
 	/**
@@ -71,27 +73,25 @@ class TJuiControlOptions
 	 * @param mixed option value.
 	 * @throws THttpException
 	 */
-	public function __set($name,$value)
+	public function __set($name, $value)
 	{
-		if($this->_options===null)
-			$this->_options=array();
+		if ($this->_options === null) {
+			$this->_options = [];
+		}
 
-		foreach($this->_control->getValidOptions() as $option)
-		{
-			if(0 == strcasecmp($name, $option))
-			{
+		foreach ($this->_control->getValidOptions() as $option) {
+			if (0 == strcasecmp($name, $option)) {
 				$low = strtolower($value);
-				if($low === 'null')
-				{
+				if ($low === 'null') {
 					$this->_options[$option] = null;
-				} elseif($low === 'true') {
+				} elseif ($low === 'true') {
 					$this->_options[$option] = true;
-				} elseif($low === 'false') {
+				} elseif ($low === 'false') {
 					$this->_options[$option] = false;
-				} elseif(is_numeric($value)) {
+				} elseif (is_numeric($value)) {
 					// trick to get float or integer automatically when needed
 					$this->_options[$option] = $value + 0;
-				} elseif(substr($low,0,8)=='function') {
+				} elseif (substr($low, 0, 8) == 'function') {
 					$this->_options[$option] = new TJavaScriptLiteral($value);
 				} else {
 					$this->_options[$option] = $value;
@@ -100,24 +100,23 @@ class TJuiControlOptions
 			}
 		}
 
-		throw new TConfigurationException('juioptions_option_invalid',$this->_control->ID, $name);
+		throw new TConfigurationException('juioptions_option_invalid', $this->_control->ID, $name);
 	}
 
 	/**
 	 * Gets an option named value. Options are used to store and retrive
 	 * named values for the base active controls.
-	 * @param string option name.
+	 * @param string $name option name.
 	 * @return mixed options value or null if not set.
 	 */
 	public function __get($name)
 	{
-		if($this->_options===null)
-			$this->_options=array();
+		if ($this->_options === null) {
+			$this->_options = [];
+		}
 
-		foreach($this->_control->getValidOptions() as $option)
-		{
-			if(0 == strcasecmp($name, $option) && isset($this->_options[$option]))
-			{
+		foreach ($this->_control->getValidOptions() as $option) {
+			if (0 == strcasecmp($name, $option) && isset($this->_options[$option])) {
 				return $this->_options[$option];
 			}
 		}
@@ -129,8 +128,9 @@ class TJuiControlOptions
 	 * Only serialize the options itself, not the corresponding parent control.
 	 * @return mixed array with the names of all variables of that object that should be serialized.
 	 */
-	public function __sleep() {
-	  return array('_options');
+	public function __sleep()
+	{
+		return ['_options'];
 	}
 
 	/**
@@ -138,30 +138,32 @@ class TJuiControlOptions
 	 */
 	public function toArray()
 	{
-		$ret= ($this->_options===null) ? array() : $this->_options;
+		$ret = ($this->_options === null) ? [] : $this->_options;
 
-		foreach($this->_control->getValidEvents() as $event)
-			if($this->_control->hasEventHandler('on'.$event))
-				$ret[$event]=new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(".TJavaScript::encode($this->_control->getUniqueID()).", ".TJavaScript::encode($event).", event, ui, this); }");
+		foreach ($this->_control->getValidEvents() as $event) {
+			if ($this->_control->hasEventHandler('on' . $event)) {
+				$ret[$event] = new TJavaScriptLiteral("function( event, ui ) { Prado.JuiCallback(" . TJavaScript::encode($this->_control->getUniqueID()) . ", " . TJavaScript::encode($event) . ", event, ui, this); }");
+			}
+		}
 
 		return $ret;
 	}
 
 	/**
 	 * Raise the specific callback event handler of the target control.
-	 * @param mixed callback parameters
+	 * @param mixed $param callback parameters
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		$callbackParam=$param->CallbackParameter;
-		if(isset($callbackParam->event))
-		{
-			$eventName = 'On'.ucfirst($callbackParam->event);
-			if($this->_control->hasEventHandler($eventName))
-			{
-				$this->_control->$eventName( new TJuiEventParameter(
+		$callbackParam = $param->CallbackParameter;
+		if (isset($callbackParam->event)) {
+			$eventName = 'On' . ucfirst($callbackParam->event);
+			if ($this->_control->hasEventHandler($eventName)) {
+				$this->_control->$eventName(
+					new TJuiEventParameter(
 					$this->_control->getResponse(),
-					isset($callbackParam->ui) ? $callbackParam->ui : null)
+					isset($callbackParam->ui) ? $callbackParam->ui : null
+				)
 				);
 			}
 		}

@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\Exceptions\TNotSupportedException;
 
 /**
@@ -24,23 +25,21 @@ abstract class TDataSourceView extends \Prado\TComponent
 	private $_owner;
 	private $_name;
 
-	public function __construct(IDataSource $owner,$viewName)
+	public function __construct(IDataSource $owner, $viewName)
 	{
-		$this->_owner=$owner;
-		$this->_name=$viewName;
+		$this->_owner = $owner;
+		$this->_name = $viewName;
 	}
 
 	/**
 	 * Performs DB selection based on specified parameters.
-	 * @param ???
-	 * @return Traversable
+	 * @param ??? $parameters * @return Traversable
 	 */
 	abstract public function select($parameters);
 
 	/**
 	 * Inserts a DB record.
-	 * @param array|TMap
-	 * @return integer affected rows
+	 * @param array|TMap $values * @return integer affected rows
 	 */
 	public function insertAt($values)
 	{
@@ -49,18 +48,18 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	/**
 	 * Updates DB record(s) with the specified keys and new values
-	 * @param array|TMap keys for specifying the records to be updated
-	 * @param array|TMap new values
+	 * @param array|TMap $keys keys for specifying the records to be updated
+	 * @param array|TMap $values new values
 	 * @return integer affected rows
 	 */
-	public function update($keys,$values)
+	public function update($keys, $values)
 	{
 		throw new TNotSupportedException('datasourceview_update_unsupported');
 	}
 
 	/**
 	 * Deletes DB row(s) with the specified keys.
-	 * @param array|TMap keys for specifying the rows to be deleted
+	 * @param array|TMap $keys keys for specifying the rows to be deleted
 	 * @return integer affected rows
 	 */
 	public function delete($keys)
@@ -110,6 +109,6 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	public function onDataSourceViewChanged($param)
 	{
-		$this->raiseEvent('OnDataSourceViewChanged',$this,$param);
+		$this->raiseEvent('OnDataSourceViewChanged', $this, $param);
 	}
 }

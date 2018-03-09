@@ -13,14 +13,14 @@ namespace Prado\Web\Services;
 /**
  * TRpcServer class
  *
- * TRpcServer is a class 
+ * TRpcServer is a class
  *
  * TRpcServer is the base class used to creare a server to be used in conjunction with
  * {@link TRpcService}.
  * The role of TRpcServer is to be an intermediate, moving data between the service and
  * the provider. This base class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
- * 
+ *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @package Prado\Web\Services
  * @since 3.2
@@ -66,12 +66,9 @@ class TRpcServer extends \Prado\TModule
 	 */
 	public function processRequest()
 	{
-		try
-		{
+		try {
 			return $this->handler->callMethod($this->getPayload());
-		}
-		catch(TRpcException $e)
-		{
+		} catch (TRpcException $e) {
 			return $this->handler->createErrorResponse($e);
 		}
 	}

@@ -24,4 +24,3 @@ namespace Prado\Web\UI\WebControls;
 class TDataGridItemRenderer extends TItemDataRenderer
 {
 }
-

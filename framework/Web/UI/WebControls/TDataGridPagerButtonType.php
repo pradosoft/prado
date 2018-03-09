@@ -30,6 +30,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDataGridPagerButtonType extends \Prado\TEnumerable
 {
-	const LinkButton='LinkButton';
-	const PushButton='PushButton';
+	const LinkButton = 'LinkButton';
+	const PushButton = 'PushButton';
 }

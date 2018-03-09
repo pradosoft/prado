@@ -21,13 +21,13 @@ namespace Prado\I18N\core;
 /**
  * Get the NumberFormatInfo class file.
  */
-require_once(dirname(__FILE__).'/NumberFormatInfo.php');
+require_once(__DIR__ . '/NumberFormatInfo.php');
 
 
 /**
  * Get the encoding utilities
  */
-require_once(dirname(__FILE__).'/util.php');
+require_once(__DIR__ . '/util.php');
 
 
 /**
@@ -76,7 +76,7 @@ class NumberFormat
 
 	/**
 	 * The DateTimeFormatInfo, containing culture specific patterns and names.
- 	 * @var DateTimeFormatInfo
+	 * @var DateTimeFormatInfo
 	 */
 	protected $formatInfo;
 
@@ -88,17 +88,18 @@ class NumberFormat
 	 * @param mixed either null, a CultureInfo, a NumberFormatInfo, or string
 	 * @return NumberFormat
 	 */
-	function __construct($formatInfo=null)
+	public function __construct($formatInfo = null)
 	{
-		if($formatInfo === null)
+		if ($formatInfo === null) {
 			$this->formatInfo = NumberFormatInfo::getInvariantInfo();
-		else if($formatInfo instanceof CultureInfo)
+		} elseif ($formatInfo instanceof CultureInfo) {
 			$this->formatInfo = $formatInfo->NumberFormat;
-		else if($formatInfo instanceof NumberFormatInfo)
+		} elseif ($formatInfo instanceof NumberFormatInfo) {
 			$this->formatInfo = $formatInfo;
-		else
+		} else {
 			$this->formatInfo =
 				NumberFormatInfo::getInstance($formatInfo);
+		}
 	}
 
 	/**
@@ -113,44 +114,47 @@ class NumberFormat
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
 	 * @return string formatted number string
 	 */
-	function format($number, $pattern='d', $currency='USD', $charset='UTF-8')
+	public function format($number, $pattern = 'd', $currency = 'USD', $charset = 'UTF-8')
 	{
-		$oldLocale=setLocale(LC_NUMERIC, '0');
-	    setlocale(LC_NUMERIC, 'C');
+		$oldLocale = setLocale(LC_NUMERIC, '0');
+		setlocale(LC_NUMERIC, 'C');
 
 		$this->setPattern($pattern);
 
-		if(strtolower($pattern) == 'p')
+		if (strtolower($pattern) == 'p') {
 			$number = $number * 100;
+		}
 
-		$string = (string)$number;
+		$string = (string) $number;
 
 		$decimal = $this->formatDecimal($string);
 		$integer = $this->formatInteger(abs($number));
 
-		if(strlen($decimal)>0)
-			$result = $integer.$decimal;
-		else
+		if (strlen($decimal) > 0) {
+			$result = $integer . $decimal;
+		} else {
 			$result = $integer;
+		}
 
 		//get the suffix
-		if($number >= 0)
+		if ($number >= 0) {
 			$suffix = $this->formatInfo->PositivePattern;
-		else if($number < 0)
+		} elseif ($number < 0) {
 			$suffix = $this->formatInfo->NegativePattern;
-		else
-			$suffix = array("","");
+		} else {
+			$suffix = ["", ""];
+		}
 
 		//append and prepend suffix
-		$result = $suffix[0].$result.$suffix[1];
+		$result = $suffix[0] . $result . $suffix[1];
 
 		//replace currency sign
 		$symbol = @$this->formatInfo->getCurrencySymbol($currency);
-		if($symbol === null) {
+		if ($symbol === null) {
 			$symbol = $currency;
 		}
 
-		$result = str_replace('¤',$symbol, $result);
+		$result = str_replace('¤', $symbol, $result);
 
 		setlocale(LC_NUMERIC, $oldLocale);
 
@@ -159,25 +163,27 @@ class NumberFormat
 
 	/**
 	 * For the integer, perform groupings and string padding.
-	 * @param string the decimal number in string form.
+	 * @param string $string the decimal number in string form.
 	 * @return string  formatted integer string with grouping
 	 */
 	protected function formatInteger($string)
 	{
-		$string = (string)$string;
+		$string = (string) $string;
 
 		$decimalDigits = $this->formatInfo->DecimalDigits;
 		//if not decimal digits, assume 0 decimal points.
-		if(is_int($decimalDigits) && $decimalDigits > 0)
-			$string = (string)round(floatval($string),$decimalDigits);
+		if (is_int($decimalDigits) && $decimalDigits > 0) {
+			$string = (string) round((float) $string, $decimalDigits);
+		}
 		$dp = strpos($string, '.');
-		if(is_int($dp))
+		if (is_int($dp)) {
 			$string = substr($string, 0, $dp);
+		}
 		$integer = '';
 
 		$digitSize = $this->formatInfo->getDigitSize();
 
-		$string = str_pad($string, $digitSize, '0',STR_PAD_LEFT);
+		$string = str_pad($string, $digitSize, '0', STR_PAD_LEFT);
 
 		$len = strlen($string);
 
@@ -189,33 +195,23 @@ class NumberFormat
 		$multiGroup = is_int($groupSize[1]);
 		$count = 0;
 
-		if(is_int($groupSize[0]))
-		{
+		if (is_int($groupSize[0])) {
 			//now for the integer groupings
-			for($i=0; $i<$len; $i++)
-			{
-				$char = $string{$len-$i-1};
+			for ($i = 0; $i < $len; $i++) {
+				$char = $string{$len - $i - 1};
 
-				if($multiGroup && $count == 0)
-				{
-					if($i != 0 && $i%$groupSize[0] == 0)
-					{
+				if ($multiGroup && $count == 0) {
+					if ($i != 0 && $i % $groupSize[0] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
-				}
-				else if($multiGroup && $count >= 1)
-				{
-					if($i != 0 && ($i-$groupSize[0])%$groupSize[1] == 0)
-					{
+				} elseif ($multiGroup && $count >= 1) {
+					if ($i != 0 && ($i - $groupSize[0]) % $groupSize[1] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
-				}
-				else
-				{
-					if($i != 0 && $i%$groupSize[0] == 0)
-					{
+				} else {
+					if ($i != 0 && $i % $groupSize[0] == 0) {
 						$integer = $groupSeparator . $integer;
 						$count++;
 					}
@@ -223,16 +219,16 @@ class NumberFormat
 
 				$integer = $char . $integer;
 			}
-		}
-		else
+		} else {
 			$integer = $string;
+		}
 
 		return $integer;
 	}
 
 	/**
 	 * Format the decimal places.
-	 * @param string the decimal number in string form.
+	 * @param string $string the decimal number in string form.
 	 * @return string formatted decimal places.
 	 */
 	protected function formatDecimal($string)
@@ -245,33 +241,27 @@ class NumberFormat
 
 		//do the correct rounding here
 		//$string = round(floatval($string), $decimalDigits);
-		if(is_int($dp))
-		{
-			if($decimalDigits == -1)
-			{
-				$decimal = substr($string, $dp+1);
-			}
-			else if(is_int($decimalDigits))
-			{
-				$float = round((float)$string, $decimalDigits);
-				if(strpos((string)$float, '.') === false)
-				{
-					$decimal = str_pad($decimal,$decimalDigits,'0');
+		if (is_int($dp)) {
+			if ($decimalDigits == -1) {
+				$decimal = substr($string, $dp + 1);
+			} elseif (is_int($decimalDigits)) {
+				$float = round((float) $string, $decimalDigits);
+				if (strpos((string) $float, '.') === false) {
+					$decimal = str_pad($decimal, $decimalDigits, '0');
+				} else {
+					$decimal = substr($float, strpos($float, '.') + 1);
+					if (strlen($decimal) < $decimalDigits) {
+						$decimal = str_pad($decimal, $decimalDigits, '0');
+					}
 				}
-				else
-				{
-					$decimal = substr($float, strpos($float,'.')+1);
-					if(strlen($decimal)<$decimalDigits)
-						$decimal = str_pad($decimal,$decimalDigits,'0');
-				}
-			}
-			else
+			} else {
 				return $decimal;
+			}
 
-			return $decimalSeparator.$decimal;
+			return $decimalSeparator . $decimal;
+		} elseif ($decimalDigits > 0) {
+			return $decimalSeparator . str_pad($decimal, $decimalDigits, '0');
 		}
-		else if ($decimalDigits > 0)
-			return $decimalSeparator.str_pad($decimal,$decimalDigits,'0');
 
 		return $decimal;
 	}
@@ -279,13 +269,12 @@ class NumberFormat
 	/**
 	 * Set the pattern to format against. The default patterns
 	 * are retrieved from the NumberFormatInfo instance.
-	 * @param string the requested patterns.
+	 * @param string $pattern the requested patterns.
 	 * @return string a number format pattern.
 	 */
 	protected function setPattern($pattern)
 	{
-		switch($pattern)
-		{
+		switch ($pattern) {
 			case 'c':
 			case 'C':
 				$this->formatInfo->setPattern(NumberFormatInfo::CURRENCY);
@@ -308,4 +297,3 @@ class NumberFormat
 		}
 	}
 }
-

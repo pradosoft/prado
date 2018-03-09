@@ -16,7 +16,6 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
 
-
 /**
  * TJuiDraggable class.
  *
@@ -60,7 +59,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidget()
 	{
-	  return 'draggable';
+		return 'draggable';
 	}
 
 	/**
@@ -68,7 +67,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getWidgetID()
 	{
-	  return $this->getClientID();
+		return $this->getClientID();
 	}
 
 	/**
@@ -77,10 +76,9 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getOptions()
 	{
-		if (($options=$this->getViewState('JuiOptions'))===null)
-		{
-		  $options=new TJuiControlOptions($this);
-		  $this->setViewState('JuiOptions', $options);
+		if (($options = $this->getViewState('JuiOptions')) === null) {
+			$options = new TJuiControlOptions($this);
+			$this->setViewState('JuiOptions', $options);
 		}
 		return $options;
 	}
@@ -91,7 +89,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidOptions()
 	{
-		return array('addClasses', 'appendTo', 'axis', 'cancel', 'connectToSortable', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'grid', 'handle', 'helper', 'iframeFix', 'opacity', 'refreshPositions', 'revert', 'revertDuration', 'scope', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'snap', 'snapMode', 'snapTolerance', 'stack', 'zIndex');
+		return ['addClasses', 'appendTo', 'axis', 'cancel', 'connectToSortable', 'containment', 'cursor', 'cursorAt', 'delay', 'disabled', 'distance', 'grid', 'handle', 'helper', 'iframeFix', 'opacity', 'refreshPositions', 'revert', 'revertDuration', 'scope', 'scroll', 'scrollSensitivity', 'scrollSpeed', 'snap', 'snapMode', 'snapTolerance', 'stack', 'zIndex'];
 	}
 
 	/**
@@ -100,7 +98,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 */
 	public function getValidEvents()
 	{
-		return array('create', 'drag', 'start', 'stop');
+		return ['create', 'drag', 'start', 'stop'];
 	}
 
 	/**
@@ -119,17 +117,17 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	{
 		parent::addAttributesToRender($writer);
 
-		$writer->addAttribute('id',$this->getClientID());
-		$options=TJavaScript::encode($this->getPostBackOptions());
-		$cs=$this->getPage()->getClientScript();
-		$code="jQuery('#".$this->getWidgetID()."').".$this->getWidget()."(".$options.");";
+		$writer->addAttribute('id', $this->getClientID());
+		$options = TJavaScript::encode($this->getPostBackOptions());
+		$cs = $this->getPage()->getClientScript();
+		$code = "jQuery('#" . $this->getWidgetID() . "')." . $this->getWidget() . "(" . $options . ");";
 		$cs->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter the parameter associated with the callback event
+	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -140,7 +138,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnCreate event
 	 * @param object $params event parameters
 	 */
-	public function onCreate ($params)
+	public function onCreate($params)
 	{
 		$this->raiseEvent('OnCreate', $this, $params);
 	}
@@ -149,7 +147,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnDrag event
 	 * @param object $params event parameters
 	 */
-	public function onDrag ($params)
+	public function onDrag($params)
 	{
 		$this->raiseEvent('OnDrag', $this, $params);
 	}
@@ -158,7 +156,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnStart event
 	 * @param object $params event parameters
 	 */
-	public function onStart ($params)
+	public function onStart($params)
 	{
 		$this->raiseEvent('OnStart', $this, $params);
 	}
@@ -167,7 +165,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * Raises the OnStop event
 	 * @param object $params event parameters
 	 */
-	public function onStop ($params)
+	public function onStop($params)
 	{
 		$this->raiseEvent('OnStop', $this, $params);
 	}

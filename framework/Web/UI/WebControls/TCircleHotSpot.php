@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -37,7 +38,7 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getCoordinates()
 	{
-		return $this->getX().','.$this->getY().','.$this->getRadius();
+		return $this->getX() . ',' . $this->getY() . ',' . $this->getRadius();
 	}
 
 	/**
@@ -45,15 +46,15 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getRadius()
 	{
-		return $this->getViewState('Radius',0);
+		return $this->getViewState('Radius', 0);
 	}
 
 	/**
-	 * @param integer radius of the circular HotSpot region.
+	 * @param integer $value radius of the circular HotSpot region.
 	 */
 	public function setRadius($value)
 	{
-		$this->setViewState('Radius',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Radius', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -61,15 +62,15 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getX()
 	{
-		return $this->getViewState('X',0);
+		return $this->getViewState('X', 0);
 	}
 
 	/**
-	 * @param integer the X coordinate of the center of the circular HotSpot region.
+	 * @param integer $value the X coordinate of the center of the circular HotSpot region.
 	 */
 	public function setX($value)
 	{
-		$this->setViewState('X',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('X', TPropertyValue::ensureInteger($value), 0);
 	}
 
 	/**
@@ -77,14 +78,14 @@ class TCircleHotSpot extends THotSpot
 	 */
 	public function getY()
 	{
-		return $this->getViewState('Y',0);
+		return $this->getViewState('Y', 0);
 	}
 
 	/**
-	 * @param integer the Y coordinate of the center of the circular HotSpot region.
+	 * @param integer $value the Y coordinate of the center of the circular HotSpot region.
 	 */
 	public function setY($value)
 	{
-		$this->setViewState('Y',TPropertyValue::ensureInteger($value),0);
+		$this->setViewState('Y', TPropertyValue::ensureInteger($value), 0);
 	}
 }

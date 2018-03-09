@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -40,11 +41,11 @@ class TWizardStep extends TView
 	/**
 	 * Sets the wizard owning this step.
 	 * This method is used internally by {@link TWizard}.
-	 * @param TWizard the wizard owning this step
+	 * @param TWizard $wizard the wizard owning this step
 	 */
 	public function setWizard($wizard)
 	{
-		$this->_wizard=$wizard;
+		$this->_wizard = $wizard;
 	}
 
 	/**
@@ -52,17 +53,18 @@ class TWizardStep extends TView
 	 */
 	public function getTitle()
 	{
-		return $this->getViewState('Title','');
+		return $this->getViewState('Title', '');
 	}
 
 	/**
-	 * @param string the title for this step.
+	 * @param string $value the title for this step.
 	 */
 	public function setTitle($value)
 	{
-		$this->setViewState('Title',$value,'');
-		if($this->_wizard)
+		$this->setViewState('Title', $value, '');
+		if ($this->_wizard) {
 			$this->_wizard->wizardStepsChanged();
+		}
 	}
 
 	/**
@@ -70,15 +72,15 @@ class TWizardStep extends TView
 	 */
 	public function getAllowReturn()
 	{
-		return $this->getViewState('AllowReturn',true);
+		return $this->getViewState('AllowReturn', true);
 	}
 
 	/**
-	 * @param boolean whether this step can be re-visited.
+	 * @param boolean $value whether this step can be re-visited.
 	 */
 	public function setAllowReturn($value)
 	{
-		$this->setViewState('AllowReturn',TPropertyValue::ensureBoolean($value),true);
+		$this->setViewState('AllowReturn', TPropertyValue::ensureBoolean($value), true);
 	}
 
 	/**
@@ -86,20 +88,20 @@ class TWizardStep extends TView
 	 */
 	public function getStepType()
 	{
-		return $this->getViewState('StepType',TWizardStepType::Auto);
+		return $this->getViewState('StepType', TWizardStepType::Auto);
 	}
 
 	/**
-	 * @param TWizardStepType the wizard step type.
+	 * @param TWizardStepType $type the wizard step type.
 	 */
 	public function setStepType($type)
 	{
-		$type=TPropertyValue::ensureEnum($type,'Prado\\Web\\UI\\WebControls\\TWizardStepType');
-		if($type!==$this->getStepType())
-		{
-			$this->setViewState('StepType',$type,TWizardStepType::Auto);
-			if($this->_wizard)
+		$type = TPropertyValue::ensureEnum($type, 'Prado\\Web\\UI\\WebControls\\TWizardStepType');
+		if ($type !== $this->getStepType()) {
+			$this->setViewState('StepType', $type, TWizardStepType::Auto);
+			if ($this->_wizard) {
 				$this->_wizard->wizardStepsChanged();
+			}
 		}
 	}
 }

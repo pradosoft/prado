@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -32,18 +33,18 @@ use Prado\TPropertyValue;
  */
 class TWizardNavigationEventParameter extends \Prado\TEventParameter
 {
-	private $_cancel=false;
+	private $_cancel = false;
 	private $_currentStep;
 	private $_nextStep;
 
 	/**
 	 * Constructor.
-	 * @param integer current step index
+	 * @param integer $currentStep current step index
 	 */
 	public function __construct($currentStep)
 	{
-		$this->_currentStep=$currentStep;
-		$this->_nextStep=$currentStep;
+		$this->_currentStep = $currentStep;
+		$this->_nextStep = $currentStep;
 	}
 
 	/**
@@ -63,11 +64,11 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer the zero-based index of the next step.
+	 * @param integer $index the zero-based index of the next step.
 	 */
 	public function setNextStepIndex($index)
 	{
-		$this->_nextStep=TPropertyValue::ensureInteger($index);
+		$this->_nextStep = TPropertyValue::ensureInteger($index);
 	}
 
 	/**
@@ -79,10 +80,10 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean whether navigation to the next step should be canceled.
+	 * @param boolean $value whether navigation to the next step should be canceled.
 	 */
 	public function setCancelNavigation($value)
 	{
-		$this->_cancel=TPropertyValue::ensureBoolean($value);
+		$this->_cancel = TPropertyValue::ensureBoolean($value);
 	}
 }

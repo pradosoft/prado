@@ -10,6 +10,7 @@
  */
 
 namespace Prado\Web\UI\WebControls;
+
 use Prado\TPropertyValue;
 
 /**
@@ -26,23 +27,23 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * @var array storage of CSS fields
 	 */
-	private $_fields=array();
+	private $_fields = [];
 	/**
 	 * @var TFont font object
 	 */
-	private $_font=null;
+	private $_font;
 	/**
 	 * @var string CSS class name
 	 */
-	private $_class=null;
+	private $_class;
 	/**
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
-	private $_customStyle=null;
+	private $_customStyle;
 	/**
 	 * @var string display style
 	 */
-	private $_displayStyle='Fixed';
+	private $_displayStyle = 'Fixed';
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -53,27 +54,33 @@ class TStyle extends \Prado\TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_fields===array())
+		if ($this->_fields === []) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_fields";
-		if($this->_font===null)
+		}
+		if ($this->_font === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_font";
-		if($this->_class===null)
+		}
+		if ($this->_class === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_class";
-		if ($this->_customStyle===null)
+		}
+		if ($this->_customStyle === null) {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_customStyle";
-		if ($this->_displayStyle==='Fixed')
+		}
+		if ($this->_displayStyle === 'Fixed') {
 			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_displayStyle";
+		}
 	}
 
 	/**
 	 * Constructor.
-	 * @param TStyle style to copy from
+	 * @param TStyle $style style to copy from
 	 */
-	public function __construct($style=null)
+	public function __construct($style = null)
 	{
-    parent::__construct();
-		if($style!==null)
+		parent::__construct();
+		if ($style !== null) {
 			$this->copyFrom($style);
+		}
 	}
 
 	/**
@@ -81,8 +88,9 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function __clone()
 	{
-		if($this->_font!==null)
+		if ($this->_font !== null) {
 			$this->_font = clone($this->_font);
+		}
 	}
 
 	/**
@@ -90,18 +98,19 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBackColor()
 	{
-		return isset($this->_fields['background-color'])?$this->_fields['background-color']:'';
+		return isset($this->_fields['background-color']) ? $this->_fields['background-color'] : '';
 	}
 
 	/**
-	 * @param string the background color of the control
+	 * @param string $value the background color of the control
 	 */
 	public function setBackColor($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['background-color']);
-		else
-			$this->_fields['background-color']=$value;
+		} else {
+			$this->_fields['background-color'] = $value;
+		}
 	}
 
 	/**
@@ -109,18 +118,19 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderColor()
 	{
-		return isset($this->_fields['border-color'])?$this->_fields['border-color']:'';
+		return isset($this->_fields['border-color']) ? $this->_fields['border-color'] : '';
 	}
 
 	/**
-	 * @param string the border color of the control
+	 * @param string $value the border color of the control
 	 */
 	public function setBorderColor($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['border-color']);
-		else
-			$this->_fields['border-color']=$value;
+		} else {
+			$this->_fields['border-color'] = $value;
+		}
 	}
 
 	/**
@@ -128,19 +138,20 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderStyle()
 	{
-		return isset($this->_fields['border-style'])?$this->_fields['border-style']:'';
+		return isset($this->_fields['border-style']) ? $this->_fields['border-style'] : '';
 	}
 
 	/**
 	 * Sets the border style of the control.
-	 * @param string the border style of the control
+	 * @param string $value the border style of the control
 	 */
 	public function setBorderStyle($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['border-style']);
-		else
-			$this->_fields['border-style']=$value;
+		} else {
+			$this->_fields['border-style'] = $value;
+		}
 	}
 
 	/**
@@ -148,18 +159,19 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getBorderWidth()
 	{
-		return isset($this->_fields['border-width'])?$this->_fields['border-width']:'';
+		return isset($this->_fields['border-width']) ? $this->_fields['border-width'] : '';
 	}
 
 	/**
-	 * @param string the border width of the control
+	 * @param string $value the border width of the control
 	 */
 	public function setBorderWidth($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['border-width']);
-		else
-			$this->_fields['border-width']=$value;
+		} else {
+			$this->_fields['border-width'] = $value;
+		}
 	}
 
 	/**
@@ -167,7 +179,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getCssClass()
 	{
-		return $this->_class===null?'':$this->_class;
+		return $this->_class === null ? '' : $this->_class;
 	}
 
 	/**
@@ -175,15 +187,15 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function hasCssClass()
 	{
-		return ($this->_class!==null);
+		return ($this->_class !== null);
 	}
 
 	/**
-	 * @param string the name of the CSS class of the control
+	 * @param string $value the name of the CSS class of the control
 	 */
 	public function setCssClass($value)
 	{
-		$this->_class=$value;
+		$this->_class = $value;
 	}
 
 	/**
@@ -191,8 +203,9 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getFont()
 	{
-		if($this->_font===null)
-			$this->_font=new TFont;
+		if ($this->_font === null) {
+			$this->_font = new TFont;
+		}
 		return $this->_font;
 	}
 
@@ -205,13 +218,12 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDisplayStyle control display style, default is TDisplayStyle::Fixed
+	 * @param TDisplayStyle $value control display style, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplayStyle($value)
 	{
 		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDisplayStyle');
-		switch($this->_displayStyle)
-		{
+		switch ($this->_displayStyle) {
 			case TDisplayStyle::None:
 				$this->_fields['display'] = 'none';
 				break;
@@ -240,18 +252,19 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getForeColor()
 	{
-		return isset($this->_fields['color'])?$this->_fields['color']:'';
+		return isset($this->_fields['color']) ? $this->_fields['color'] : '';
 	}
 
 	/**
-	 * @param string the foreground color of the control
+	 * @param string $value the foreground color of the control
 	 */
 	public function setForeColor($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['color']);
-		else
-			$this->_fields['color']=$value;
+		} else {
+			$this->_fields['color'] = $value;
+		}
 	}
 
 	/**
@@ -259,18 +272,19 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getHeight()
 	{
-		return isset($this->_fields['height'])?$this->_fields['height']:'';
+		return isset($this->_fields['height']) ? $this->_fields['height'] : '';
 	}
 
 	/**
-	 * @param string the height of the control
+	 * @param string $value the height of the control
 	 */
 	public function setHeight($value)
 	{
-		if(trim($value)==='')
+		if (trim($value) === '') {
 			unset($this->_fields['height']);
-		else
-			$this->_fields['height']=$value;
+		} else {
+			$this->_fields['height'] = $value;
+		}
 	}
 
 	/**
@@ -278,17 +292,17 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getCustomStyle()
 	{
-		return $this->_customStyle===null?'':$this->_customStyle;
+		return $this->_customStyle === null ? '' : $this->_customStyle;
 	}
 
 	/**
 	 * Sets custom style fields from a string.
 	 * Custom style fields will be overwritten by style fields explicitly defined.
-	 * @param string the custom style of the control
+	 * @param string $value the custom style of the control
 	 */
 	public function setCustomStyle($value)
 	{
-		$this->_customStyle=$value;
+		$this->_customStyle = $value;
 	}
 
 	/**
@@ -296,7 +310,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getStyleField($name)
 	{
-		return isset($this->_fields[$name])?$this->_fields[$name]:'';
+		return isset($this->_fields[$name]) ? $this->_fields[$name] : '';
 	}
 
 	/**
@@ -305,14 +319,14 @@ class TStyle extends \Prado\TComponent
 	 * @param string style field name
 	 * @param string style field value
 	 */
-	public function setStyleField($name,$value)
+	public function setStyleField($name, $value)
 	{
-		$this->_fields[$name]=$value;
+		$this->_fields[$name] = $value;
 	}
 
 	/**
 	 * Clears a single style field value;
-	 * @param string style field name
+	 * @param string $name style field name
 	 */
 	public function clearStyleField($name)
 	{
@@ -332,15 +346,15 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function getWidth()
 	{
-		return isset($this->_fields['width'])?$this->_fields['width']:'';
+		return isset($this->_fields['width']) ? $this->_fields['width'] : '';
 	}
 
 	/**
-	 * @param string the width of the control
+	 * @param string $value the width of the control
 	 */
 	public function setWidth($value)
 	{
-		$this->_fields['width']=$value;
+		$this->_fields['width'] = $value;
 	}
 
 	/**
@@ -348,29 +362,31 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function reset()
 	{
-		$this->_fields=array();
-		$this->_font=null;
-		$this->_class=null;
-		$this->_customStyle=null;
+		$this->_fields = [];
+		$this->_font = null;
+		$this->_class = null;
+		$this->_customStyle = null;
 	}
 
 	/**
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
-		if($style instanceof TStyle)
-		{
-			$this->_fields=array_merge($this->_fields,$style->_fields);
-			if($style->_class!==null)
-				$this->_class=$style->_class;
-			if($style->_customStyle!==null)
-				$this->_customStyle=$style->_customStyle;
-			if($style->_font!==null)
+		if ($style instanceof TStyle) {
+			$this->_fields = array_merge($this->_fields, $style->_fields);
+			if ($style->_class !== null) {
+				$this->_class = $style->_class;
+			}
+			if ($style->_customStyle !== null) {
+				$this->_customStyle = $style->_customStyle;
+			}
+			if ($style->_font !== null) {
 				$this->getFont()->copyFrom($style->_font);
+			}
 		}
 	}
 
@@ -378,42 +394,45 @@ class TStyle extends \Prado\TComponent
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle the new style
+	 * @param TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
-		if($style instanceof TStyle)
-		{
-			$this->_fields=array_merge($style->_fields,$this->_fields);
-			if($this->_class===null)
-				$this->_class=$style->_class;
-			if($this->_customStyle===null)
-				$this->_customStyle=$style->_customStyle;
-			if($style->_font!==null)
+		if ($style instanceof TStyle) {
+			$this->_fields = array_merge($style->_fields, $this->_fields);
+			if ($this->_class === null) {
+				$this->_class = $style->_class;
+			}
+			if ($this->_customStyle === null) {
+				$this->_customStyle = $style->_customStyle;
+			}
+			if ($style->_font !== null) {
 				$this->getFont()->mergeWith($style->_font);
+			}
 		}
 	}
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlWriter the writer used for the rendering purpose
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
-		if($this->_customStyle!==null)
-		{
-			foreach(explode(';',$this->_customStyle) as $style)
-			{
-				$arr=explode(':',$style,2);
-				if(isset($arr[1]) && trim($arr[0])!=='')
-					$writer->addStyleAttribute(trim($arr[0]),trim($arr[1]));
+		if ($this->_customStyle !== null) {
+			foreach (explode(';', $this->_customStyle) as $style) {
+				$arr = explode(':', $style, 2);
+				if (isset($arr[1]) && trim($arr[0]) !== '') {
+					$writer->addStyleAttribute(trim($arr[0]), trim($arr[1]));
+				}
 			}
 		}
 		$writer->addStyleAttributes($this->_fields);
-		if($this->_font!==null)
+		if ($this->_font !== null) {
 			$this->_font->addAttributesToRender($writer);
-		if($this->_class!==null)
-			$writer->addAttribute('class',$this->_class);
+		}
+		if ($this->_class !== null) {
+			$writer->addAttribute('class', $this->_class);
+		}
 	}
 
 	/**
