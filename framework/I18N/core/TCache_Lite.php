@@ -381,7 +381,7 @@ class TCache_Lite
 			$motif = ($group) ? 'cache_' . $group . '_' : 'cache_';
 		}
 		if ($this->_memoryCaching) {
-			while (list($key, $value) = each($this->_memoryCaching)) {
+			foreach($this->_memoryCachingArray as $key => $v) {
 				if (strpos($key, $motif, 0)) {
 					unset($this->_memoryCaching[$key]);
 					$this->_memoryCachingCounter =
@@ -447,7 +447,7 @@ class TCache_Lite
 	public function getMemoryCachingState(
 		$id,
 		$group = 'default',
-									$doNotTestCacheValidity = false
+		$doNotTestCacheValidity = false
 	) {
 		if ($this->_caching) {
 			if ($data = $this->get($id, $group, $doNotTestCacheValidity)) {
@@ -492,11 +492,12 @@ class TCache_Lite
 	 *
 	 * @access private
 	 */
-	public function _memoryCacheAdd($id, $data)
+	protected function _memoryCacheAdd($id, $data)
 	{
 		$this->_memoryCachingArray[$this->_file] = $data;
 		if ($this->_memoryCachingCounter >= $this->_memoryCachingLimit) {
-			list($key, $value) = each($this->_memoryCachingArray);
+            $key = key($this->_memoryCachingArray);
+            next($this->_memoryCachingArray);
 			unset($this->_memoryCachingArray[$key]);
 		} else {
 			$this->_memoryCachingCounter = $this->_memoryCachingCounter + 1;
@@ -508,7 +509,7 @@ class TCache_Lite
 	 *
 	 * @param string $id cache id
 	 * @param string $group name of the group
-	 * @access private
+	 * @access public
 	 */
 	public function _setFileName($id, $group)
 	{
@@ -531,7 +532,7 @@ class TCache_Lite
 	 * @return string content of the cache file
 	 * @access private
 	 */
-	public function _read()
+	protected function _read()
 	{
 		$fp = @fopen($this->_file, "rb");
 		if ($this->_fileLocking) {
@@ -570,7 +571,7 @@ class TCache_Lite
 	 * @return boolean true if ok
 	 * @access private
 	 */
-	public function _write($data)
+	protected function _write($data)
 	{
 		$fp = @fopen($this->_file, "wb");
 		if ($fp) {
@@ -600,7 +601,7 @@ class TCache_Lite
 	 * @return boolean true if the test is ok
 	 * @access private
 	 */
-	public function _writeAndControl($data)
+	protected function _writeAndControl($data)
 	{
 		$this->_write($data);
 		$dataRead = $this->_read($data);
@@ -615,7 +616,7 @@ class TCache_Lite
 	 * @return string control key
 	 * @access private
 	 */
-	public function _hash($data, $controlType)
+	protected function _hash($data, $controlType)
 	{
 		switch ($controlType) {
 			case 'md5':
