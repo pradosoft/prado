@@ -152,6 +152,7 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Gets a MappedStatement by name.
 	 * @param string The name of the statement.
+	 * @param mixed $name
 	 * @return IMappedStatement The MappedStatement
 	 * @throws TSqlMapUndefinedException
 	 */
@@ -189,6 +190,7 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Gets a named result map
 	 * @param string result name.
+	 * @param mixed $name
 	 * @return TResultMap the result map.
 	 * @throws TSqlMapUndefinedException
 	 */
@@ -223,6 +225,7 @@ class TSqlMapManager extends \Prado\TComponent
 
 	/**
 	 * @param string parameter map ID name.
+	 * @param mixed $name
 	 * @return TParameterMap the parameter with given ID.
 	 * @throws TSqlMapUndefinedException
 	 */
@@ -264,6 +267,7 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Gets a cache by name
 	 * @param string the name of the cache to get.
+	 * @param mixed $name
 	 * @return TSqlMapCacheModel the cache object.
 	 * @throws TSqlMapConfigurationException
 	 */

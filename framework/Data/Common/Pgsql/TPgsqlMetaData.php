@@ -157,6 +157,8 @@ EOD;
 	/**
 	 * @param string table schema name
 	 * @param string table name.
+	 * @param mixed $schemaName
+	 * @param mixed $tableName
 	 * @return TPgsqlTableInfo
 	 */
 	protected function createNewTableInfo($schemaName, $tableName)
@@ -173,6 +175,7 @@ EOD;
 
 	/**
 	 * @param string table name, schema name or column name.
+	 * @param mixed $name
 	 * @return string a valid identifier.
 	 * @throws TDbException when table name contains a double quote (").
 	 */
@@ -208,6 +211,8 @@ EOD;
 	/**
 	 * @param TPgsqlTableInfo table information.
 	 * @param array column information.
+	 * @param mixed $tableInfo
+	 * @param mixed $col
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -258,6 +263,8 @@ EOD;
 
 	/**
 	 * @return string serial name if found, null otherwise.
+	 * @param mixed $tableInfo
+	 * @param mixed $src
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -273,6 +280,7 @@ EOD;
 
 	/**
 	 * @return boolean true if column type if "numeric", "interval" or begins with "time".
+	 * @param mixed $type
 	 */
 	protected function isPrecisionType($type)
 	{
@@ -359,6 +367,9 @@ EOD;
 	/**
 	 * Gets the primary key field names
 	 * @param string pgsql primary key definition
+	 * @param mixed $tableName
+	 * @param mixed $schemaName
+	 * @param mixed $columnIndex
 	 * @return array primary key field names.
 	 */
 	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)

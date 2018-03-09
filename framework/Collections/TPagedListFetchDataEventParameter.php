@@ -38,6 +38,9 @@ class TPagedListFetchDataEventParameter extends \Prado\TEventParameter
 	 * @param integer new page index
 	 * @param integer offset of the first item in the new page
 	 * @param integer number of items in the new page desired
+	 * @param mixed $pageIndex
+	 * @param mixed $offset
+	 * @param mixed $limit
 	 */
 	public function __construct($pageIndex, $offset, $limit)
 	{

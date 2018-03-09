@@ -90,6 +90,7 @@ class DateFormat
 	 * Initialize a new DateFormat.
 	 * @param mixed either, null, a CultureInfo instance,
 	 * a DateTimeFormatInfo instance, or a locale.
+	 * @param null|mixed $formatInfo
 	 * @return DateFormat instance
 	 */
 	public function __construct($formatInfo = null)
@@ -110,6 +111,9 @@ class DateFormat
 	/**
 	 * Format a date according to the pattern.
 	 * @param mixed the time as integer or string in strtotime format.
+	 * @param mixed $time
+	 * @param mixed $pattern
+	 * @param mixed $charset
 	 * @return string formatted date time.
 	 */
 	public function format($time, $pattern = 'F', $charset = 'UTF-8')
@@ -177,6 +181,7 @@ class DateFormat
 	 * DateTimeFormatInfo::formatDateTime
 	 * See the tutorial documentation for futher details on the patterns.
 	 * @param mixed a pattern.
+	 * @param mixed $pattern
 	 * @return string a pattern.
 	 * @see DateTimeFormatInfo::formatDateTime()
 	 */
@@ -577,6 +582,8 @@ class DateFormat
 	/**
 	 * Get week in the month.
 	 * @param array getdate format.
+	 * @param mixed $date
+	 * @param mixed $pattern
 	 * @return int week in month
 	 */
 	protected function getWeekInMonth($date, $pattern = 'W')

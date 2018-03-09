@@ -113,6 +113,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control. Also registers language specific global
 	 * settings for the first used date picker.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -214,7 +215,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@link IDataRenderer}.
 	 * It is the same as {@link setTimeStamp()}.
-	 * @param integer the timestamp of the TDatePicker control.
+	 * @param integer $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */

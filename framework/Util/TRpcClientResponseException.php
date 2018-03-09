@@ -27,6 +27,8 @@ class TRpcClientResponseException extends TApplicationException
 	/**
 	 * @param string error message
 	 * @param integer error code (optional)
+	 * @param mixed $errorMessage
+	 * @param null|mixed $errorCode
 	 */
 	public function __construct($errorMessage, $errorCode = null)
 	{

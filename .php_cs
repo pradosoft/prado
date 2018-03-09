@@ -19,6 +19,7 @@ $config = PhpCsFixer\Config::create()
 		'no_alias_functions' => true,
 		'no_null_property_initialization' => true,
 		'no_whitespace_before_comma_in_array' => true,
+		'phpdoc_add_missing_param_annotation' => true,
 		'psr4' => true,
 		'ternary_operator_spaces' => true,
 		'trim_array_spaces' => true,

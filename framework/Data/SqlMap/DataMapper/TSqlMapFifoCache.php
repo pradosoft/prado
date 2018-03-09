@@ -24,6 +24,7 @@ class TSqlMapFifoCache extends TSqlMapCache
 {
 	/**
 	 * @return mixed Gets a cached object with the specified key.
+	 * @param mixed $key
 	 */
 	public function get($key)
 	{
@@ -35,6 +36,10 @@ class TSqlMapFifoCache extends TSqlMapCache
 	 * The expire and dependency parameters are ignored.
 	 * @param string cache key
 	 * @param mixed value to cache.
+	 * @param mixed $key
+	 * @param mixed $value
+	 * @param mixed $expire
+	 * @param null|mixed $dependency
 	 */
 	public function set($key, $value, $expire = 0, $dependency = null)
 	{

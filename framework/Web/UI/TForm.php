@@ -150,7 +150,7 @@ class TForm extends TControl
 	}
 
 	/**
-	 * @param string the encoding type a browser uses to post data back to the server.
+	 * @param string $value the encoding type a browser uses to post data back to the server.
 	 * Commonly used types include
 	 * - application/x-www-form-urlencoded : Form data is encoded as name/value pairs. This is the standard encoding format.
 	 * - multipart/form-data : Form data is encoded as a message with a separate part for each control on the page.

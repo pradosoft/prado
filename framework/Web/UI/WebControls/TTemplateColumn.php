@@ -187,9 +187,9 @@ class TTemplateColumn extends TDataGridColumn
 	 * This method overrides the parent implementation.
 	 * It initializes the cell based on different templates
 	 * (ItemTemplate, EditItemTemplate, HeaderTemplate, FooterTemplate).
-	 * @param TTableCell the cell to be initialized.
-	 * @param integer the index to the Columns property that the cell resides in.
-	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
+	 * @param TTableCell $cell the cell to be initialized.
+	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
@@ -241,6 +241,8 @@ class TTemplateColumn extends TDataGridColumn
 	 * Databinds a cell in the column.
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function dataBindColumn($sender, $param)
 	{

@@ -190,7 +190,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * Sets the value of the hidden field.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
-	 * @param string value of the hidden field
+	 * @param string $value value of the hidden field
 	 * @see setValue
 	 * @since 3.1.0
 	 */

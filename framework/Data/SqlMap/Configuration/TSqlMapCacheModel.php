@@ -173,6 +173,8 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	/**
 	 * @param TSqlMapCacheKey|string cache key
 	 * @param mixed value to be cached.
+	 * @param mixed $key
+	 * @param mixed $value
 	 */
 	public function set($key, $value)
 	{

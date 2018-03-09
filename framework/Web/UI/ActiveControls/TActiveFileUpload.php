@@ -98,6 +98,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @param mixed $file
 	 * @return string asset file url.
 	 */
 	protected function getAssetUrl($file = '')
@@ -189,6 +190,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
+	 * @param mixed $sender
 	 */
 	public function onInit($sender)
 	{
@@ -277,6 +279,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Publish the javascript
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -343,6 +346,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Removes localfile on ending of the callback.
+	 * @param mixed $param
 	 */
 	public function onUnload($param)
 	{
@@ -423,6 +427,9 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @param string the file name used to save the uploaded file
 	 * @param boolean whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
+	 * @param mixed $fileName
+	 * @param mixed $deleteTempFile
+	 * @param mixed $index
 	 * @return boolean true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)

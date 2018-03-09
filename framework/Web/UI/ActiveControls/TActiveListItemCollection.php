@@ -89,6 +89,8 @@ class TActiveListItemCollection extends TListItemCollection
 	 * @param integer the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
 	 * @param TListItem the item to be inserted.
+	 * @param mixed $index
+	 * @param mixed $value
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
 	public function insertAt($index, $value)

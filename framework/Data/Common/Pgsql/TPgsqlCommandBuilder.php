@@ -44,6 +44,7 @@ class TPgsqlCommandBuilder extends TDbCommandBuilder
 	/**
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
+	 * @param mixed $column
 	 */
 	protected function isSearchableColumn($column)
 	{

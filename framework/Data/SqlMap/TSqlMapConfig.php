@@ -81,6 +81,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	/**
 	 * Saves the current SqlMap manager to cache.
 	 * @return boolean true if SqlMap manager was cached, false otherwise.
+	 * @param mixed $manager
 	 */
 	protected function cacheSqlMapManager($manager)
 	{
@@ -126,6 +127,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	/**
 	 * @param string external configuration file in namespace format. The file
 	 * extension must be '.xml'.
+	 * @param mixed $value
 	 * @throws TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)

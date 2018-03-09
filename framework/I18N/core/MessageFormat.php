@@ -96,6 +96,7 @@ class MessageFormat
 	 * from the supplied message source.
 	 * @param MessageSource the source of translation messages.
 	 * @param string charset for the message output.
+	 * @param mixed $charset
 	 */
 	public function __construct(IMessageSource $source, $charset = 'UTF-8')
 	{
@@ -151,6 +152,10 @@ class MessageFormat
 	 * @param string get the translation from a particular message
 	 * @param string charset, the input AND output charset
 	 * catalogue.
+	 * @param mixed $string
+	 * @param mixed $args
+	 * @param null|mixed $catalogue
+	 * @param null|mixed $charset
 	 * @return string translated string.
 	 */
 	public function format($string, $args = [], $catalogue = null, $charset = null)
@@ -173,6 +178,9 @@ class MessageFormat
 	 * @param array a list of string to substitute.
 	 * @param string get the translation from a particular message
 	 * catalogue.
+	 * @param mixed $string
+	 * @param mixed $args
+	 * @param null|mixed $catalogue
 	 * @return string translated string.
 	 */
 	protected function formatString($string, $args = [], $catalogue = null)

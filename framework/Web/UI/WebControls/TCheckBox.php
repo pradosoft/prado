@@ -232,7 +232,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Sets the value indicating whether the checkbox is to be checked or not.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setChecked()}.
-	 * @param boolean whether the checkbox is to be checked
+	 * @param boolean $value whether the checkbox is to be checked
 	 * @see setChecked
 	 * @since 3.1.0
 	 */
@@ -435,9 +435,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders a label beside the checkbox.
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string label text
+	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param string $clientID checkbox id
+	 * @param string $text label text
 	 */
 	protected function renderLabel($writer, $clientID, $text)
 	{
@@ -452,9 +452,9 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders a checkbox input element.
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string onclick js
+	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param string $clientID checkbox id
+	 * @param string $onclick onclick js
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
@@ -501,6 +501,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders the client-script code.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{

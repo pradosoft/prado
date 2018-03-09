@@ -46,6 +46,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	/**
 	 *
 	 * @return boolean true if column can be used for LIKE searching.
+	 * @param mixed $column
 	 */
 	protected function isSearchableColumn($column)
 	{
@@ -57,6 +58,9 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 	 * Overrides parent implementation to use PostgreSQL's ILIKE instead of LIKE (case-sensitive).
 	 * @param string column name.
 	 * @param array keywords
+	 * @param mixed $sql
+	 * @param mixed $limit
+	 * @param mixed $offset
 	 * @return string search condition for all words in one column.
 	 */
 	/*

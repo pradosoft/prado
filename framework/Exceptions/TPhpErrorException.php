@@ -29,6 +29,10 @@ class TPhpErrorException extends TSystemException
 	 * @param string error string
 	 * @param string error file
 	 * @param integer error line number
+	 * @param mixed $errno
+	 * @param mixed $errstr
+	 * @param mixed $errfile
+	 * @param mixed $errline
 	 */
 	public function __construct($errno, $errstr, $errfile, $errline)
 	{

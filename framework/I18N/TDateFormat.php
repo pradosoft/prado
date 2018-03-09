@@ -202,6 +202,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
 	 * @param string the date-time value.
+	 * @param mixed $value
 	 * @see setValue
 	 * @since 3.1.2
 	 */

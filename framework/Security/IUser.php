@@ -44,6 +44,7 @@ interface IUser
 	public function getRoles();
 	/**
 	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
+	 * @param mixed $value
 	 */
 	public function setRoles($value);
 	/**

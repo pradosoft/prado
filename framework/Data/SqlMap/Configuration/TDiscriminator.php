@@ -70,6 +70,7 @@ class TDiscriminator extends \Prado\TComponent
 	 * cannot otherwise determine the type, the type is assumed from the default
 	 * value of the property.
 	 * @return string property type of the parameter to be set.
+	 * @param mixed $value
 	 */
 	public function setType($value)
 	{

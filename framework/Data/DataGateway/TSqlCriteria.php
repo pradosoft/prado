@@ -50,6 +50,8 @@ class TSqlCriteria extends \Prado\TComponent
 	 * Creates a new criteria with given condition;
 	 * @param string sql string after the WHERE stanza
 	 * @param mixed named or indexed parameters, accepts as multiple arguments.
+	 * @param null|mixed $condition
+	 * @param mixed $parameters
 	 */
 	public function __construct($condition = null, $parameters = [])
 	{

@@ -45,6 +45,7 @@ interface IMessageSource
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
 	 *
 	 * @param string a catalogue to load
+	 * @param mixed $catalogue
 	 * @return boolean true if loaded, false otherwise.
 	 */
 	public function load($catalogue = 'messages');
@@ -70,6 +71,7 @@ interface IMessageSource
 	 * If the translation was not found, you should add those
 	 * strings to the translation source via the <b>append()</b> method.
 	 * @param string the catalogue to add to
+	 * @param mixed $catalogue
 	 * @return boolean true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages');

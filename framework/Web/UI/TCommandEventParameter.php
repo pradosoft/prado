@@ -30,8 +30,8 @@ class TCommandEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param string name of the command
-	 * @param string parameter of the command
+	 * @param string $name name of the command
+	 * @param string $parameter parameter of the command
 	 */
 	public function __construct($name = '', $parameter = '')
 	{

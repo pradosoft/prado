@@ -198,6 +198,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * @return TRatingListStyle current rating style
+	 * @param mixed $value
 	 */
 	public function setCaption($value)
 	{
@@ -285,6 +286,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Publish the the rating style css file and rating image files.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -333,7 +335,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @param string $file asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
 	protected function getAssetUrl($file = '')

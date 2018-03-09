@@ -148,6 +148,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Renders the javascript for list control.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -560,7 +561,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Selects an item by the specified value.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setSelectedValue()}.
-	 * @param string the value of the item to be selected.
+	 * @param string $value the value of the item to be selected.
 	 * @see setSelectedValue
 	 * @since 3.1.0
 	 */
@@ -724,7 +725,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string the prompt selection value. If empty, {@link getPromptText PromptText} will be used as the value.
+	 * @param string $value the prompt selection value. If empty, {@link getPromptText PromptText} will be used as the value.
 	 * @see setPromptText
 	 * @since 3.1.1
 	 */

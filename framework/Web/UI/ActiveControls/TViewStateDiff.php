@@ -38,6 +38,9 @@ abstract class TViewStateDiff
 	 * @param mixed updated viewstate value.
 	 * @param mixed viewstate value at the begining of the request.
 	 * @param object representing the null value.
+	 * @param mixed $new
+	 * @param mixed $old
+	 * @param mixed $null
 	 */
 	public function __construct($new, $old, $null)
 	{

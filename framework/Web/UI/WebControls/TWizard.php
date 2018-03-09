@@ -571,7 +571,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean whether to use default layout to arrange side bar and the rest wizard components.
+	 * @param boolean $value whether to use default layout to arrange side bar and the rest wizard components.
 	 * If true, an HTML table will be used which places the side bar in the left cell
 	 * while the rest components in the right cell.
 	 */
@@ -782,7 +782,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Renders the wizard.
-	 * @param THtmlWriter
+	 * @param THtmlWriter $writer
 	 */
 	public function render($writer)
 	{
@@ -1097,8 +1097,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Event handler for sidebar datalist's OnItemCommand event.
 	 * This method is used internally by wizard. It mainly
 	 * sets the active step index according to the button clicked in the sidebar.
-	 * @param mixed sender of the event
-	 * @param TDataListCommandEventParameter
+	 * @param mixed $sender sender of the event
+	 * @param TDataListCommandEventParameter $param
 	 */
 	public function dataListItemCommand($sender, $param)
 	{
@@ -1133,8 +1133,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Event handler for sidebar datalist's OnItemDataBound event.
 	 * This method is used internally by wizard. It mainly configures
 	 * the buttons in the sidebar datalist.
-	 * @param mixed sender of the event
-	 * @param TDataListItemEventParameter
+	 * @param mixed $sender sender of the event
+	 * @param TDataListItemEventParameter $param
 	 */
 	public function dataListItemDataBound($sender, $param)
 	{
@@ -1312,8 +1312,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Handles bubbled events.
 	 * This method mainly translate certain command events into
 	 * wizard-specific events.
-	 * @param mixed sender of the original command event
-	 * @param TEventParameter event parameter
+	 * @param mixed $sender sender of the original command event
+	 * @param TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
 	 */
 	public function bubbleEvent($sender, $param)

@@ -109,6 +109,8 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 * Calls the client-side static method for this control class.
 	 * @param string static method name
 	 * @param mixed method parmaeter
+	 * @param mixed $func
+	 * @param mixed $value
 	 */
 	protected function callClientFunction($func, $value)
 	{
@@ -136,6 +138,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

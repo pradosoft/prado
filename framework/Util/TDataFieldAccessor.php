@@ -50,6 +50,8 @@ class TDataFieldAccessor
 	 *   then field 'MyValue.MySubValue' will return that method call result.
 	 * @param mixed data containing the field value, can be an array, TMap, TList or object.
 	 * @param mixed field value
+	 * @param mixed $data
+	 * @param mixed $field
 	 * @return mixed value at the specified field
 	 * @throws TInvalidDataValueException if field or data is invalid
 	 */

@@ -35,6 +35,7 @@ class TClassBehaviorEventParameter extends \Prado\TEventParameter
 	 *	@param string $class this is the class to get the behavior
 	 *	@param string $name the name of the behavior
 	 *	@param object $behavior this is the behavior to implement the class behavior
+	 * @param mixed $priority
 	 */
 	public function __construct($class, $name, $behavior, $priority)
 	{

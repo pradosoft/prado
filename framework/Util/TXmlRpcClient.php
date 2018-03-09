@@ -34,6 +34,8 @@ class TXmlRpcClient extends TRpcClient
 	/**
 	 * @param string RPC method name
 	 * @param array RPC method parameters
+	 * @param mixed $method
+	 * @param mixed $parameters
 	 * @return mixed RPC request result
 	 * @throws TRpcClientRequestException if the client fails to connect to the server
 	 * @throws TRpcClientResponseException if the response represents an RPC fault
@@ -66,6 +68,8 @@ class TXmlRpcClient extends TRpcClient
 	/**
 	 * @param string method name
 	 * @param array method parameters
+	 * @param mixed $method
+	 * @param mixed $parameters
 	 */
 	public function encodeRequest($method, $parameters)
 	{
@@ -76,6 +80,9 @@ class TXmlRpcClient extends TRpcClient
 	 * Creates an instance of TXmlRpcClient
 	 * @param string url of the rpc server
 	 * @param boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
+	 * @param mixed $type
+	 * @param mixed $serverUrl
+	 * @param mixed $isNotification
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{

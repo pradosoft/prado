@@ -121,6 +121,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

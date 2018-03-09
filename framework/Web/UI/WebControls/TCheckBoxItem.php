@@ -15,6 +15,7 @@ class TCheckBoxItem extends TCheckBox
 {
 	/**
 	 * Override client implementation to avoid emitting the javascript
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{

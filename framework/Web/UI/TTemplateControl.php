@@ -146,8 +146,8 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Registers a content control.
-	 * @param string ID of the content
-	 * @param TContent
+	 * @param string $id ID of the content
+	 * @param TContent $object
 	 */
 	public function registerContent($id, TContent $object)
 	{
@@ -161,8 +161,8 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Registers a content placeholder to this template control.
 	 * This method should only be used by framework and control developers.
-	 * @param string placeholder ID
-	 * @param TContentPlaceHolder placeholder control
+	 * @param string $id placeholder ID
+	 * @param TContentPlaceHolder $object placeholder control
 	 */
 	public function registerContentPlaceHolder($id, TContentPlaceHolder $object)
 	{
@@ -200,8 +200,8 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Injects all content controls (and their children) to the corresponding content placeholders.
 	 * This method should only be used by framework and control developers.
-	 * @param string ID of the content control
-	 * @param TContent the content to be injected
+	 * @param string $id ID of the content control
+	 * @param TContent $content the content to be injected
 	 */
 	public function injectContent($id, $content)
 	{

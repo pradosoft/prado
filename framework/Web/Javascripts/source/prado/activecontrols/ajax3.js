@@ -363,7 +363,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				{
 					errorData = jQuery.parseJSON(errorData);
 					if(typeof(errorData) == "object")
-						log.info(Prado.CallbackRequestManager.formatException(errorData));						
+						log.info(Prado.CallbackRequestManager.formatException(errorData));
 				}
 			}
 		}

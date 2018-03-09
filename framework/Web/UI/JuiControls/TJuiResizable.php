@@ -115,6 +115,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

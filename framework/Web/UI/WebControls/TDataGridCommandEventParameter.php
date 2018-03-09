@@ -43,9 +43,9 @@ class TDataGridCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 
 	/**
 	 * Constructor.
-	 * @param TDataGridItem datagrid item responsible for the event
-	 * @param TControl original event sender
-	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
+	 * @param TDataGridItem $item datagrid item responsible for the event
+	 * @param TControl $source original event sender
+	 * @param \Prado\Web\UI\TCommandEventParameter $param original event parameter
 	 */
 	public function __construct($item, $source, \Prado\Web\UI\TCommandEventParameter $param)
 	{

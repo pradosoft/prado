@@ -59,6 +59,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 
 	/**
 	 * Inject jquery script and styles before render
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -68,7 +69,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	}
 
 	/**
-	 * @param string jQuery asset file in the jquery-ui directory.
+	 * @param string $file jQuery asset file in the jquery-ui directory.
 	 * @return string jQuery asset url.
 	 */
 	protected function getAssetUrl($file = '')

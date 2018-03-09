@@ -80,6 +80,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 
 	/**
 	 * Client validation function is NOT supported.
+	 * @param mixed $value
 	 */
 	public function setClientValidationFunction($value)
 	{
@@ -176,6 +177,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

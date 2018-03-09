@@ -64,6 +64,11 @@ interface IMappedStatement
 	 * @param TList A list to populate the result with.
 	 * @param integer The number of rows to skip over.
 	 * @param integer The maximum number of rows to return.
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param null|mixed $result
+	 * @param mixed $skip
+	 * @param mixed $max
 	 * @return TList A TList of result objects.
 	 */
 	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1);

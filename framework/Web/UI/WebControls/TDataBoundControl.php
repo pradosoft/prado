@@ -267,7 +267,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer virtual number of data items in the data source.
+	 * @param integer $value virtual number of data items in the data source.
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 * @see setAllowCustomPaging
 	 */
@@ -417,6 +417,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * Raises <b>OnDataBound</b> event.
 	 * This method should be invoked after a databind is performed.
 	 * It is mainly used by framework and component developers.
+	 * @param mixed $param
 	 */
 	public function onDataBound($param)
 	{
@@ -440,8 +441,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets {@link getInitialized} as true.
 	 * This method is invoked when page raises <b>PreLoad</b> event.
-	 * @param mixed event sender
-	 * @param TEventParameter event parameter
+	 * @param mixed $sender event sender
+	 * @param TEventParameter $param event parameter
 	 */
 	public function pagePreLoad($sender, $param)
 	{
@@ -467,7 +468,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Validates if the parameter is a valid data source.
 	 * If it is a string or an array, it will be converted as a TList object.
-	 * @param Traversable|array|string data source to be validated
+	 * @param Traversable|array|string $value data source to be validated
 	 * @return Traversable the data that is traversable
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
 	 */

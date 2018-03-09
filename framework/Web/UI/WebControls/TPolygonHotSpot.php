@@ -42,7 +42,7 @@ class TPolygonHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param string coordinates of the vertices defining the polygon.
+	 * @param string $value coordinates of the vertices defining the polygon.
 	 * Coordinates are concatenated together with comma ','. Each pair
 	 * represents (x,y) of a vertex.
 	 */

@@ -127,6 +127,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
+	 * @param string $name attribute name
 	 * @return string the attribute specified by the name, null if no such attribute
 	 */
 	public function getAttribute($name)
@@ -139,8 +140,8 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string attribute name
-	 * @param string attribute value
+	 * @param string $name attribute name
+	 * @param string $value attribute value
 	 */
 	public function setAttribute($name, $value)
 	{
@@ -171,6 +172,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
+	 * @param mixed $tagName
 	 */
 	public function getElementByTagName($tagName)
 	{
@@ -186,6 +188,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @return TList list of all child elements that have the specified tag-name
+	 * @param mixed $tagName
 	 */
 	public function getElementsByTagName($tagName)
 	{
@@ -202,6 +205,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @return string string representation of this element
+	 * @param mixed $indent
 	 */
 	public function toString($indent = 0)
 	{

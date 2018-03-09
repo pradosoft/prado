@@ -78,6 +78,7 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Loads and display the data.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -161,6 +162,8 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Continue bubbling the "edit" command, "delete" command is handled in this class.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -176,6 +179,8 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Initialize the edit view control form when EditViewID is set.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function initializeEdit($sender, $param)
 	{
@@ -190,6 +195,8 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Deletes an Active Record.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function deleteRecord($sender, $param)
 	{
@@ -201,6 +208,8 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Initialize the default display for each Active Record item.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function listItemCreated($sender, $param)
 	{
@@ -216,6 +225,8 @@ class TScaffoldListView extends TScaffoldBase
 	/**
 	 * Sets the Record primary key to the current repeater item's CustomData.
 	 * Binds the inner repeater with properties of the current Active Record.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function populateField($sender, $param)
 	{
@@ -231,6 +242,8 @@ class TScaffoldListView extends TScaffoldBase
 
 	/**
 	 * Updates repeater page index with the pager new index value.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function pageChanged($sender, $param)
 	{

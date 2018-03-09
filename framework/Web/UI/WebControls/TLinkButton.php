@@ -217,7 +217,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Sets the caption of the button.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string caption of the button
+	 * @param string $value caption of the button
 	 * @see setText
 	 * @since 3.1.0
 	 */

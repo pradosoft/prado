@@ -55,7 +55,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * Processes an object that is created during parsing template.
 	 * This method overrides the parent implementation by adding only {@link TView}
 	 * controls as children.
-	 * @param string|TComponent text string or component parsed and instantiated in template
+	 * @param string|TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 * @throws TConfigurationException if controls other than {@link TView} is being added
 	 */
@@ -150,8 +150,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Activates the specified view.
 	 * If there is any view currently active, it will be deactivated.
-	 * @param TView the view to be activated
-	 * @param boolean whether to trigger OnActiveViewChanged event.
+	 * @param TView $view the view to be activated
+	 * @param boolean $triggerViewChangedEvent whether to trigger OnActiveViewChanged event.
 	 */
 	protected function activateView($view, $triggerViewChangedEvent = true)
 	{

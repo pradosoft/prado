@@ -35,6 +35,8 @@ class TCacheDependencyList extends TList
 	 * for each newly added item.
 	 * @param integer the specified position.
 	 * @param mixed new item
+	 * @param mixed $index
+	 * @param mixed $item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a dependency instance
 	 */
 	public function insertAt($index, $item)

@@ -135,6 +135,7 @@ class CultureInfo
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
 	 * @return mixed
+	 * @param mixed $name
 	 */
 	public function __get($name)
 	{
@@ -149,6 +150,8 @@ class CultureInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to set the value.
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function __set($name, $value)
 	{
@@ -167,6 +170,7 @@ class CultureInfo
 	 * The culture indentifier must be of the form
 	 * "language_(country/region/variant)".
 	 * @param string a culture name, e.g. "en_AU".
+	 * @param mixed $culture
 	 * @return return new CultureInfo.
 	 */
 	public function __construct($culture = 'en')
@@ -208,6 +212,7 @@ class CultureInfo
 	/**
 	 * Gets the CultureInfo that for this culture string
 	 * @return CultureInfo invariant culture info is "en".
+	 * @param mixed $culture
 	 */
 	public static function getInstance($culture)
 	{
@@ -529,6 +534,7 @@ class CultureInfo
 	 * This function can be called statically.
 	 * @param int culture type, CultureInfo::ALL, CultureInfo::NEUTRAL
 	 * or CultureInfo::SPECIFIC.
+	 * @param mixed $type
 	 * @return array list of culture information available.
 	 */
 	public static function getCultures($type = CultureInfo::ALL)

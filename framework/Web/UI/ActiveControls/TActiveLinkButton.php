@@ -111,6 +111,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -119,6 +120,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
+	 * @param mixed $writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

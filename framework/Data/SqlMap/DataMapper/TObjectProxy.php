@@ -27,6 +27,8 @@ class TObjectProxy
 	/**
 	 * @param object handler to method calls.
 	 * @param object the object to by proxied.
+	 * @param mixed $handler
+	 * @param mixed $object
 	 */
 	public function __construct($handler, $object)
 	{

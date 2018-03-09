@@ -116,6 +116,8 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	 * Sets the foreign objects to the given property on the source object.
 	 * @param TActiveRecord source object.
 	 * @param array foreign objects.
+	 * @param mixed $source
+	 * @param mixed $properties
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

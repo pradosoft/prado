@@ -120,6 +120,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 * Gets the current Active Record instance. Creates new instance if the
 	 * primary key value is null otherwise the record is fetched from the db.
 	 * @param array primary key value
+	 * @param null|mixed $pk
 	 * @return TActiveRecord record instance
 	 */
 	protected function getRecordObject($pk = null)
@@ -200,6 +201,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Publish the default stylesheet file.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{

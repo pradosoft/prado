@@ -95,6 +95,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Executes a client-side statement.
 	 * @param string javascript function name
 	 * @param array list of arguments for the function
+	 * @param mixed $function
+	 * @param mixed $params
 	 */
 	public function callClientFunction($function, $params = [])
 	{
@@ -117,6 +119,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string control or element id
 	 * @param string jQuery method name
 	 * @param array list of arguments for the function
+	 * @param mixed $element
+	 * @param mixed $method
+	 * @param mixed $params
 	 */
 	public function jQuery($element, $method, $params = [])
 	{
@@ -137,6 +142,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Client script to set the value of a particular input element.
 	 * @param TControl control element to set the new value
 	 * @param string new value
+	 * @param mixed $input
+	 * @param mixed $text
 	 */
 	public function setValue($input, $text)
 	{
@@ -158,6 +165,10 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string selection method
 	 * @param string|int the value or index to select/check.
 	 * @param string selection control type, either 'check' or 'select'
+	 * @param mixed $control
+	 * @param mixed $method
+	 * @param null|mixed $value
+	 * @param null|mixed $type
 	 */
 	public function select($control, $method = 'Value', $value = null, $type = null)
 	{
@@ -218,6 +229,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Client script to check or uncheck a checkbox or radio button.
 	 * @param TControl control element or element id
 	 * @param boolean check or uncheck the checkbox or radio button.
+	 * @param mixed $checkbox
+	 * @param mixed $checked
 	 */
 	public function check($checkbox, $checked = true)
 	{
@@ -228,6 +241,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Raise the client side event (given by $eventName) on a particular element.
 	 * @param TControl control element or element id
 	 * @param string Event name, e.g. "click"
+	 * @param mixed $control
+	 * @param mixed $eventName
 	 */
 	public function raiseClientEvent($control, $eventName)
 	{
@@ -239,6 +254,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param string attribute name
 	 * @param string attribute value
+	 * @param mixed $control
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function setAttribute($control, $name, $value)
 	{
@@ -253,6 +271,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Sets the options of a select input element.
 	 * @param TControl control element or element id
 	 * @param TCollection a list of new options
+	 * @param mixed $control
+	 * @param mixed $items
 	 */
 	public function setListItems($control, $items)
 	{
@@ -303,6 +323,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param string visual effect, such as, 'fade' or 'slide'.
 	 * @param array additional options.
+	 * @param mixed $element
+	 * @param null|mixed $effect
+	 * @param mixed $options
 	 */
 	public function toggle($element, $effect = null, $options = [])
 	{
@@ -338,6 +361,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or element id
 	 * @param TControl new HTML content, if content is of a TControl, the
 	 * controls render method is called.
+	 * @param mixed $element
+	 * @param mixed $content
 	 */
 	public function update($element, $content)
 	{
@@ -348,6 +373,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Add a Css class name to the element.
 	 * @param TControl control element or element id
 	 * @param string CssClass name to add.
+	 * @param mixed $element
+	 * @param mixed $cssClass
 	 */
 	public function addCssClass($element, $cssClass)
 	{
@@ -358,6 +385,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Remove a Css class name from the element.
 	 * @param TControl control element or element id
 	 * @param string CssClass name to remove.
+	 * @param mixed $element
+	 * @param mixed $cssClass
 	 */
 	public function removeCssClass($element, $cssClass)
 	{
@@ -370,6 +399,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 *
 	 * @param TControl control element or element id
 	 * @param array additional options: 'duration' in ms, 'offset' from the top in pixels
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function scrollTo($element, $options = [])
 	{
@@ -390,6 +421,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * key is the style property and the value is the style value.
 	 * @param TControl control element or element id
 	 * @param array list of key-value pairs as style property and style value.
+	 * @param mixed $element
+	 * @param mixed $styles
 	 */
 	public function setStyle($element, $styles)
 	{
@@ -400,6 +433,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Append a HTML fragement to the element.
 	 * @param TControl control element or element id
 	 * @param string HTML fragement or the control to be rendered
+	 * @param mixed $element
+	 * @param mixed $content
 	 */
 	public function appendContent($element, $content)
 	{
@@ -410,6 +445,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Prepend a HTML fragement to the element.
 	 * @param TControl control element or element id
 	 * @param string HTML fragement or the control to be rendered
+	 * @param mixed $element
+	 * @param mixed $content
 	 */
 	public function prependContent($element, $content)
 	{
@@ -420,6 +457,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Insert a HTML fragement after the element.
 	 * @param TControl control element or element id
 	 * @param string HTML fragement or the control to be rendered
+	 * @param mixed $element
+	 * @param mixed $content
 	 */
 	public function insertContentAfter($element, $content)
 	{
@@ -430,6 +469,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Insert a HTML fragement in before the element.
 	 * @param TControl control element or element id
 	 * @param string HTML fragement or the control to be rendered
+	 * @param mixed $element
+	 * @param mixed $content
 	 */
 	public function insertContentBefore($element, $content)
 	{
@@ -444,6 +485,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or HTML element id.
 	 * @param string HTML fragement or the control to be rendered.
 	 * @param boolean whether to fully replace the element or just its inner content.
+	 * @param mixed $element
+	 * @param mixed $content
+	 * @param mixed $self
 	 * @see insertAbout
 	 * @see insertBelow
 	 * @see insertBefore
@@ -469,6 +513,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param TControl control element or HTML element id.
 	 * @param string HTML fragement or the control to be rendered.
 	 * @param boolean whether to fully replace the element or just its inner content, defaults to true.
+	 * @param mixed $element
+	 * @param mixed $content
+	 * @param mixed $self
 	 */
 	public function replaceContent($element, $content, $self = true)
 	{
@@ -547,6 +594,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string visual effect function name.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $type
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function visualEffect($type, $element, $options = [])
 	{
@@ -560,6 +610,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function fadeIn($element, $options = [])
 	{
@@ -571,6 +623,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function fadeOut($element, $options = [])
 	{
@@ -582,6 +636,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param float opacity value between 1 and 0
+	 * @param mixed $element
+	 * @param mixed $value
+	 * @param mixed $duration
 	 */
 	public function fadeTo($element, $value, $duration = 500)
 	{
@@ -594,6 +651,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function slideDown($element, $options = [])
 	{
@@ -605,6 +664,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect doesn't need jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function slideUp($element, $options = [])
 	{
@@ -618,6 +679,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function appear($element, $options = [])
 	{
@@ -629,6 +692,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function fade($element, $options = [])
 	{
@@ -640,6 +705,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param float opacity value between 1 and 0
+	 * @param mixed $element
+	 * @param mixed $value
 	 */
 	public function setOpacity($element, $value)
 	{
@@ -654,6 +721,9 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @param string visual effect function name.
 	 * @param TControl control element or element id
 	 * @param array effect options.
+	 * @param mixed $element
+	 * @param mixed $effect
+	 * @param mixed $options
 	 */
 	public function juiEffect($element, $effect, $options = [])
 	{
@@ -666,6 +736,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function blind($element, $options = [])
 	{
@@ -677,6 +749,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function drop($element, $options = [])
 	{
@@ -688,6 +762,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function fold($element, $options = [])
 	{
@@ -699,6 +775,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function size($element, $options = [])
 	{
@@ -710,6 +788,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function puff($element, $options = [])
 	{
@@ -721,6 +801,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function pulsate($element, $options = [])
 	{
@@ -732,6 +814,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function shake($element, $options = [])
 	{
@@ -743,6 +827,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function scale($element, $options = [])
 	{
@@ -754,6 +840,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * This effect needs jQueryUI.
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function highlight($element, $options = [])
 	{
@@ -767,6 +855,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function blindDown($element, $options = [])
 	{
@@ -779,6 +869,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function blindUp($element, $options = [])
 	{
@@ -791,6 +883,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function dropOut($element, $options = [])
 	{
@@ -802,6 +896,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function grow($element, $options = [])
 	{
@@ -813,6 +909,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function shrink($element, $options = [])
 	{
@@ -825,6 +923,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function squish($element, $options = [])
 	{
@@ -838,6 +938,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * @deprecated since 3.4
 	 * @param TControl control element or element id
 	 * @param array visual effect key-value pair options.
+	 * @param mixed $element
+	 * @param mixed $options
 	 */
 	public function switchOff($element, $options = [])
 	{

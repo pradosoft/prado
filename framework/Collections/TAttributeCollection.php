@@ -62,6 +62,7 @@ class TAttributeCollection extends TMap
 	 * This method overrides the parent implementation by returning
 	 * a key value if the key exists in the collection.
 	 * @param string the property name or the event name
+	 * @param mixed $name
 	 * @return mixed the property value or the event handler list
 	 * @throws TInvalidOperationException if the property/event is not defined.
 	 */
@@ -76,6 +77,8 @@ class TAttributeCollection extends TMap
 	 * to the collection.
 	 * @param string the property name or event name
 	 * @param mixed the property value or event handler
+	 * @param mixed $name
+	 * @param mixed $value
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
@@ -116,6 +119,8 @@ class TAttributeCollection extends TMap
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed key
 	 * @param mixed value
+	 * @param mixed $key
+	 * @param mixed $value
 	 */
 	public function add($key, $value)
 	{

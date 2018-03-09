@@ -63,6 +63,8 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * should match the case of the column, as returned by the driver.
 	 * @param mixed Name of the PHP variable to which the column will be bound.
 	 * @param int Data type of the parameter
+	 * @param mixed $column
+	 * @param null|mixed $dataType
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php
 	 */
 	public function bindColumn($column, &$value, $dataType = null)
@@ -76,6 +78,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * @see http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php
+	 * @param mixed $mode
 	 */
 	public function setFetchMode($mode)
 	{

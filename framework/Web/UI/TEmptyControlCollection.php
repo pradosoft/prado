@@ -35,8 +35,8 @@ class TEmptyControlCollection extends TControlCollection
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by ignoring new addition.
-	 * @param integer the speicified position.
-	 * @param mixed new item
+	 * @param integer $index the specified position.
+	 * @param mixed $item new item
 	 */
 	public function insertAt($index, $item)
 	{

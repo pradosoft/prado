@@ -217,7 +217,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as datalist items.
 	 * This property takes precedence over {@link getItemTemplate ItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setItemTemplate
 	 * @since 3.1.0
 	 */
@@ -241,7 +241,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as alternative datalist items.
 	 * This property takes precedence over {@link getAlternatingItemTemplate AlternatingItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
+	 * @param mixed $value
 	 * @see setAlternatingItemTemplate
 	 * @since 3.1.0
 	 */
@@ -265,7 +266,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as the datalist item.
 	 * This property takes precedence over {@link getEditItemTemplate EditItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setEditItemTemplate
 	 * @since 3.1.0
 	 */
@@ -289,7 +290,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as the datalist item.
 	 * This property takes precedence over {@link getSelectedItemTemplate SelectedItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setSelectedItemTemplate
 	 * @since 3.1.0
 	 */
@@ -313,7 +314,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as datalist item separators.
 	 * This property takes precedence over {@link getSeparatorTemplate SeparatorTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setSeparatorTemplate
 	 * @since 3.1.0
 	 */
@@ -337,7 +338,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as datalist header item.
 	 * This property takes precedence over {@link getHeaderTemplate HeaderTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setHeaderTemplate
 	 * @since 3.1.0
 	 */
@@ -361,7 +362,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * If not empty, the class will be used to instantiate as datalist footer item.
 	 * This property takes precedence over {@link getFooterTemplate FooterTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setFooterTemplate
 	 * @since 3.1.0
 	 */
@@ -386,7 +387,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * if data bound to the datalist is empty.
 	 * This property takes precedence over {@link getEmptyTemplate EmptyTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setEmptyTemplate
 	 * @since 3.1.0
 	 */
@@ -852,6 +853,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @param mixed $value
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -1083,10 +1085,10 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Renders an item in the list.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param THtmlWriter writer for rendering purpose
-	 * @param TRepeatInfo repeat information
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer zero-based index of the item in the item list
+	 * @param THtmlWriter $writer writer for rendering purpose
+	 * @param TRepeatInfo $repeatInfo repeat information
+	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer $index zero-based index of the item in the item list
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{

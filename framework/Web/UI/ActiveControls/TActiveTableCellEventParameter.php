@@ -38,6 +38,9 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 
 	/**
 	 * Creates a new TActiveTableRowEventParameter.
+	 * @param mixed $response
+	 * @param mixed $parameter
+	 * @param mixed $index
 	 */
 	public function __construct($response, $parameter, $index = -1)
 	{

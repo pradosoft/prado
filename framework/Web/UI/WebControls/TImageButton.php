@@ -115,6 +115,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 
 	/**
 	 * Renders the client-script code.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{

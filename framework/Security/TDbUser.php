@@ -93,6 +93,7 @@ abstract class TDbUser extends TUser
 	 * You then verify the token is valid and use the username to create a user instance.
 	 *
 	 * @param THttpCookie the cookie storing user authentication information
+	 * @param mixed $cookie
 	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @see saveUserToCookie
 	 * @since 3.1.1
@@ -114,6 +115,7 @@ abstract class TDbUser extends TUser
 	 * You should avoid revealing the password in the generated token.
 	 *
 	 * @param THttpCookie the cookie to store the user auth information
+	 * @param mixed $cookie
 	 * @see createUserFromCookie
 	 * @since 3.1.1
 	 */

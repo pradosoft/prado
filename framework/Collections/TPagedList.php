@@ -81,6 +81,8 @@ class TPagedList extends TList
 	 * Constructor.
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only. Always true for paged list.
+	 * @param null|mixed $data
+	 * @param mixed $readOnly
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
@@ -305,6 +307,7 @@ class TPagedList extends TList
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param integer the index of the item
+	 * @param mixed $index
 	 * @return mixed the item at the index
 	 * @throws TInvalidDataValueException if the index is out of the range
 	 */
@@ -347,6 +350,7 @@ class TPagedList extends TList
 	 * Returns the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve item.
+	 * @param mixed $offset
 	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 */

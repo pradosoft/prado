@@ -69,8 +69,8 @@ class TJuiControlOptions
 	/**
 	 * Sets a named options with a value. Options are used to store and retrive
 	 * named values for the javascript control.
-	 * @param string option name.
-	 * @param mixed option value.
+	 * @param string $name option name.
+	 * @param mixed $value option value.
 	 * @throws THttpException
 	 */
 	public function __set($name, $value)

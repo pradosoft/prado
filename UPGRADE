@@ -11,7 +11,8 @@ for both A and B.
 
 Upgrading from v4.0.0
 ---------------------
-- Removed deprecated TSqliteCache class; use TDbCache instead 
+- Prado 4.0.1 requires Php >= 5.4.0
+- Removed deprecated TSqliteCache class; use TDbCache instead
 - Removed deprecated iterator classes: TListIterator, TMapIterator, TStackIterator; use ArrayIterator instead
 - Removed deprecated message source classes: MessageSource_MySQL and MessageSource_SQLite; use MessageSource_Database instead
 - Removed deprecated STATE_OFF, STATE_DEBUG, STATE_NORMAL, STATE_PERFORMANCE constants from TApplication; use TApplicationMode constants instead
@@ -67,7 +68,7 @@ Upgrading from v3.2.0
 
 Upgrading from v3.1.10
 ---------------------
-- Prado 3.2 requires PHP >= 5.3.3 
+- Prado 3.2 requires PHP >= 5.3.3
 - Prado 3.2 doesn't use anymore a separate clientscripts.php script to publish minified javascript files.
   If you were relying (linking directly) to that script to get some js file, you'll need to re-adapt your
   scripts. Remember, linking directly a file in the assets/ directory is always a bad idea, let Prado do
@@ -91,7 +92,7 @@ Upgrading from v3.1.10
   to mantain backwards compatibility) everything based on that extension.
   TSqliteCache should be abandoned in favour of TDbCache.
   The "sqlite" backend for message translation has been deprecated, use "Database" instead.
-- TPageService's default pages path has changed from "Application.pages" to "Application.Pages" (note the 
+- TPageService's default pages path has changed from "Application.pages" to "Application.Pages" (note the
   uppercase P). Using capital letters for the initial letter of the directories name is a long-time
   convention in prado, and this has been changed to reflect it. TPageService has been patched anyway to
   support even the old "Application.pages" to avoid breaking existing code.
@@ -105,7 +106,7 @@ Upgrading from v3.1.10
   4. strings beginning with "javascript:", enclosed in {..} or [..] were previously meant to bypass any
   encoding in TJavascript::encode(): this could introduce xss vulnerabilities. Now everything always gets
   encoded, if you need a string to bypass encoding, prepare it with TJavaScript::quoteJsLiteral(). To
-  achieve the same result on control properties defined in a template, prefix the property name with 
+  achieve the same result on control properties defined in a template, prefix the property name with
   "js" and prado will figure it out automatically.
   to explicitly use TJavascript::quoteFunction() to ensure raw javascript will be published.
 - The php JSON extension is required; it ships by default with php 5.3 and is a lot faster that the old

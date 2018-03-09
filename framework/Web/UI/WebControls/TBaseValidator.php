@@ -261,6 +261,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Override parent implementation to update the control CSS Class before
 	 * the validated control is rendered
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -495,7 +496,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Retrieves the property value of the control being validated.
-	 * @param TControl control being validated
+	 * @param TControl $control control being validated
 	 * @return string property value to be validated
 	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
 	 */

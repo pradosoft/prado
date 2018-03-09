@@ -70,7 +70,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Renders this imagemap.
-	 * @param THtmlWriter
+	 * @param THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

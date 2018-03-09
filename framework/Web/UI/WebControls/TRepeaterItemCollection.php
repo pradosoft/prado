@@ -27,8 +27,8 @@ class TRepeaterItemCollection extends \Prado\Collections\TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by inserting only objects that are descendant of {@link TControl}.
-	 * @param integer the speicified position.
-	 * @param TControl new item
+	 * @param integer $index the specified position.
+	 * @param TControl $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a control.
 	 */
 	public function insertAt($index, $item)

@@ -242,9 +242,9 @@ class TRadioButton extends TCheckBox
 
 	/**
 	 * Renders a radiobutton input element.
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string onclick js
+	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param string $clientID checkbox id
+	 * @param string $onclick onclick js
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
@@ -287,6 +287,7 @@ class TRadioButton extends TCheckBox
 
 	/**
 	 * Renders the client-script code.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{

@@ -54,6 +54,9 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param string parent node id
 	 * @param string new node id
 	 * @param mixed node value
+	 * @param mixed $parent
+	 * @param mixed $node
+	 * @param mixed $object
 	 */
 	public function add($parent, $node, $object = '')
 	{
@@ -84,6 +87,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param array list of nodes to check
 	 * @param string parent node id
 	 * @param string new node id
+	 * @param mixed $parent
+	 * @param mixed $node
 	 * @return boolean true if parent node is found.
 	 */
 	protected function addNode(&$childs, $parent, $node)
@@ -133,6 +138,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * Visit all the child nodes and collect them by removing.
 	 * @param string parent node id
 	 * @param array list of child nodes.
+	 * @param mixed $parent
 	 */
 	protected function collectChildren($parent, &$nodes)
 	{
@@ -156,6 +162,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * Set the object properties for all the child nodes visited.
 	 * @param string parent node id
 	 * @param array list of child nodes visited.
+	 * @param mixed $parent
+	 * @param mixed $nodes
 	 */
 	protected function onChildNodesVisited($parent, $nodes)
 	{

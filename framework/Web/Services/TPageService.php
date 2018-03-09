@@ -170,6 +170,7 @@ class TPageService extends \Prado\TService
 	 * parameter initialization, module loadings, page initial properties
 	 * and authorization rules.
 	 * @param TPageConfiguration
+	 * @param mixed $pageConfig
 	 */
 	protected function initPageContext($pageConfig)
 	{
@@ -468,6 +469,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Creates a page instance based on requested page path.
 	 * @param string requested page path
+	 * @param mixed $pagePath
 	 * @return TPage the requested page instance
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
@@ -519,6 +521,8 @@ class TPageService extends \Prado\TService
 	 * Executes a page.
 	 * @param TPage the page instance to be run
 	 * @param array list of initial page properties
+	 * @param mixed $page
+	 * @param mixed $properties
 	 */
 	protected function runPage($page, $properties)
 	{

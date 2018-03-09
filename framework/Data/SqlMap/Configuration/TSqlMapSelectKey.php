@@ -60,6 +60,7 @@ class TSqlMapSelectKey extends TSqlMapStatement
 
 	/**
 	 * @throws TSqlMapConfigurationException extends is unsupported.
+	 * @param mixed $value
 	 */
 	public function setExtends($value)
 	{

@@ -131,7 +131,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Sets the URL of the image.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setImageUrl()}.
-	 * @param string the URL of the image file.
+	 * @param string $value the URL of the image file.
 	 * @see setImageUrl
 	 * @since 3.1.0
 	 */

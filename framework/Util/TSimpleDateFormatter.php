@@ -65,6 +65,8 @@ class TSimpleDateFormatter
 	 * Constructor, create a new date time formatter.
 	 * @param string formatting pattern.
 	 * @param string pattern and value charset
+	 * @param mixed $pattern
+	 * @param mixed $charset
 	 */
 	public function __construct($pattern, $charset = 'UTF-8')
 	{
@@ -198,6 +200,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * @return boolean true if the given value matches with the date pattern.
+	 * @param mixed $value
 	 */
 	public function isValidDate($value)
 	{
@@ -211,6 +214,8 @@ class TSimpleDateFormatter
 	/**
 	 * Parse the string according to the pattern.
 	 * @param string|int date string or integer to parse
+	 * @param mixed $value
+	 * @param mixed $defaultToCurrentTime
 	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 */
@@ -349,6 +354,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * Calculate the length of a string, may be consider iconv_strlen?
+	 * @param mixed $string
 	 */
 	private function length($string)
 	{
@@ -358,6 +364,8 @@ class TSimpleDateFormatter
 
 	/**
 	 * Get the char at a position.
+	 * @param mixed $string
+	 * @param mixed $pos
 	 */
 	private function charAt($string, $pos)
 	{
@@ -366,6 +374,9 @@ class TSimpleDateFormatter
 
 	/**
 	 * Gets a portion of a string, uses iconv_substr.
+	 * @param mixed $string
+	 * @param mixed $start
+	 * @param mixed $length
 	 */
 	private function substring($string, $start, $length)
 	{
@@ -374,6 +385,9 @@ class TSimpleDateFormatter
 
 	/**
 	 * Returns true if char at position equals a particular char.
+	 * @param mixed $string
+	 * @param mixed $pos
+	 * @param mixed $char
 	 */
 	private function charEqual($string, $pos, $char)
 	{

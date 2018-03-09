@@ -70,6 +70,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * @return TWebControlDecorator
+	 * @param boolean $create
 	 */
 	public function getDecorator($create = true)
 	{

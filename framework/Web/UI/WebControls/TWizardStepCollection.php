@@ -43,8 +43,8 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This method overrides the parent implementation by checking if
 	 * the item being added is a {@link TWizardStep}.
-	 * @param integer the speicified position.
-	 * @param mixed new item
+	 * @param integer $index the specified position.
+	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
 	public function insertAt($index, $item)

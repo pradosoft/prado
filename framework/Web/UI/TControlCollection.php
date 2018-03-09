@@ -33,8 +33,8 @@ class TControlCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TControl the control that owns this collection.
-	 * @param boolean whether the list is read-only
+	 * @param TControl $owner the control that owns this collection.
+	 * @param boolean $readOnly whether the list is read-only
 	 */
 	public function __construct(TControl $owner, $readOnly = false)
 	{
@@ -54,8 +54,8 @@ class TControlCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added child control.
-	 * @param integer the speicified position.
-	 * @param mixed new item
+	 * @param integer $index the specified position.
+	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
 	public function insertAt($index, $item)

@@ -307,6 +307,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Sets Adapter to TActivePageAdapter and calls apter to process the
 	 * callback request.
+	 * @param mixed $writer
 	 */
 	protected function processCallbackRequest($writer)
 	{
@@ -464,7 +465,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Returns a list of registered validators.
 	 * If validation group is specified, only the validators in that group will be returned.
-	 * @param string validation group
+	 * @param null|string $validationGroup validation group
 	 * @return TList registered validators in the requested group. If the group is null, all validators will be returned.
 	 */
 	public function getValidators($validationGroup = null)
@@ -875,8 +876,8 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Processes post data.
-	 * @param TMap post data to be processed
-	 * @param boolean whether this method is invoked before {@link onLoad OnLoad}.
+	 * @param TMap $postData post data to be processed
+	 * @param boolean $beforeLoad whether this method is invoked before {@link onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
 	{
@@ -969,6 +970,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @internal This method is invoked by TForm at the beginning of its rendering
+	 * @param mixed $writer
 	 */
 	public function beginFormRender($writer)
 	{
@@ -982,6 +984,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @internal This method is invoked by TForm  at the end of its rendering
+	 * @param mixed $writer
 	 */
 	public function endFormRender($writer)
 	{
@@ -1203,10 +1206,10 @@ class TPage extends TTemplateControl
 	 * Registers an action associated with the content being cached.
 	 * The registered action will be replayed if the content stored
 	 * in the cache is served to end-users.
-	 * @param string context of the action method. This is a property-path
+	 * @param string $context context of the action method. This is a property-path
 	 * referring to the context object (e.g. Page, Page.ClientScript).
-	 * @param string method name of the context object
-	 * @param array list of parameters to be passed to the action method
+	 * @param  $funcName method name of the context object
+	 * @param array $funcParams list of parameters to be passed to the action method
 	 */
 	public function registerCachingAction($context, $funcName, $funcParams)
 	{

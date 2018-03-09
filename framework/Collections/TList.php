@@ -63,6 +63,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
 	 * @param boolean whether the list is read-only
+	 * @param null|mixed $data
+	 * @param mixed $readOnly
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false)
@@ -121,6 +123,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param integer the index of the item
+	 * @param mixed $index
 	 * @return mixed the item at the index
 	 * @throws TInvalidDataValueException if the index is out of the range
 	 */
@@ -136,6 +139,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
+	 * @param mixed $item
 	 * @return integer the zero-based index at which the item is added
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
@@ -151,6 +155,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * will be moved one step towards the end.
 	 * @param integer the specified position.
 	 * @param mixed new item
+	 * @param mixed $index
+	 * @param mixed $item
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
@@ -175,6 +181,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * The list will first search for the item.
 	 * The first item found will be removed from the list.
 	 * @param mixed the item to be removed.
+	 * @param mixed $item
 	 * @return integer the index at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @throws TInvalidOperationException if the list is read-only
@@ -196,6 +203,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Removes an item at the specified position.
 	 * @param integer the index of the item to be removed.
+	 * @param mixed $index
 	 * @return mixed the removed item.
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
@@ -257,6 +265,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Finds the base item.  If found, the item is inserted before it.
 	 * @param mixed the base item which will be pushed back by the second parameter
 	 * @param mixed the item
+	 * @param mixed $baseitem
+	 * @param mixed $item
 	 * @return int the index where the item is inserted
 	 * @throws TInvalidDataValueException if the base item is not within this list
 	 * @throws TInvalidOperationException if the list is read-only
@@ -281,6 +291,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Finds the base item.  If found, the item is inserted after it.
 	 * @param mixed the base item which comes before the second parameter when added to the list
 	 * @param mixed the item
+	 * @param mixed $baseitem
+	 * @param mixed $item
 	 * @return int the index where the item is inserted
 	 * @throws TInvalidDataValueException if the base item is not within this list
 	 * @throws TInvalidOperationException if the list is read-only
@@ -361,6 +373,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Returns the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to retrieve item.
+	 * @param mixed $offset
 	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 */
@@ -374,6 +387,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set item
 	 * @param mixed the item value
+	 * @param mixed $offset
+	 * @param mixed $item
 	 */
 	public function offsetSet($offset, $item)
 	{

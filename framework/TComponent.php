@@ -395,6 +395,7 @@ class TComponent
 	/**
 	 * This utility function is a private array filter method.  The array values
 	 * that start with 'fx' are filtered in.
+	 * @param mixed $name
 	 */
 	private function filter_prado_fx($name)
 	{
@@ -406,6 +407,7 @@ class TComponent
 	 * This returns an array of the class name and the names of all its parents.  The base object first,
 	 * {@link TComponent}, and the deepest subclass is last.
 	 * @param boolean optional should the names be all lowercase true/false
+	 * @param mixed $lowercase
 	 * @return array array of strings being the class hierarchy of $this.
 	 */
 	public function getClassHierarchy($lowercase = false)
@@ -525,6 +527,8 @@ class TComponent
 	 *
 	 * @param string method name that doesn't exist and is being called on the object
 	 * @param mixed method parameters
+	 * @param mixed $method
+	 * @param mixed $args
 	 * @throws TInvalidOperationException If the property is not defined or read-only or
 	 * 		method is undefined
 	 * @return mixed result of the method call, or false if 'fx' or 'dy' function but
@@ -611,6 +615,7 @@ class TComponent
 	 * When behaviors are enabled, this will return the behavior of a specific
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string the property name or the event name
+	 * @param mixed $name
 	 * @return mixed the property value or the event handler list as {@link TPriorityList}
 	 * @throws TInvalidOperationException if the property/event is not defined.
 	 */
@@ -665,6 +670,8 @@ class TComponent
 	 * When behaviors are enabled, this will also set a behaviors properties and events.
 	 * @param string the property name or event name
 	 * @param mixed the property value or event handler
+	 * @param mixed $name
+	 * @param mixed $value
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
@@ -747,6 +754,7 @@ class TComponent
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using unset() to set a component property to be null.
 	 * @param string the property name or the event name
+	 * @param mixed $name
 	 * @throws TInvalidOperationException if the property is read only.
 	 * @since 3.2.3
 	 */
@@ -866,6 +874,8 @@ class TComponent
 	 * active behaviors of the object.
 	 * @param string property path
 	 * @param mixed the property path value
+	 * @param mixed $path
+	 * @param mixed $value
 	 */
 	public function setSubProperty($path, $value)
 	{
@@ -936,6 +946,7 @@ class TComponent
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
 	 * @return TPriorityList list of attached event handlers for an event
 	 * @throws TInvalidOperationException if the event is not defined
+	 * @param mixed $name
 	 */
 	public function getEventHandlers($name)
 	{
@@ -1004,6 +1015,9 @@ class TComponent
 	 * @param callback the event handler
 	 * @param numeric|null the priority of the handler, defaults to null which translates into the
 	 * default priority of 10.0 within {@link TPriorityList}
+	 * @param mixed $name
+	 * @param mixed $handler
+	 * @param null|mixed $priority
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
@@ -1019,6 +1033,9 @@ class TComponent
 	 * @param callback the event handler to be removed
 	 * @param numeric|false|null the priority of the handler, defaults to false which translates
 	 * to an item of any priority within {@link TPriorityList}; null means the default priority
+	 * @param mixed $name
+	 * @param mixed $handler
+	 * @param mixed $priority
 	 * @return boolean if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
@@ -1101,6 +1118,11 @@ class TComponent
 	 *		null responses. optional
 	 * @param function any per handler filtering of the response result needed is passed through
 	 *		this if not null. default: null.  optional
+	 * @param mixed $name
+	 * @param mixed $sender
+	 * @param mixed $param
+	 * @param null|mixed $responsetype
+	 * @param null|mixed $postfunction
 	 * @return mixed the results of the event
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
@@ -1217,6 +1239,7 @@ class TComponent
 	 * pass-through effect.
 	 *
 	 * @param string PHP expression
+	 * @param mixed $expression
 	 * @return mixed the expression result
 	 * @throws TInvalidOperationException if the expression is invalid
 	 */
@@ -1247,6 +1270,7 @@ class TComponent
 	 * pass-through effect.
 	 *
 	 * @param string PHP statements
+	 * @param mixed $statements
 	 * @return string content echoed or printed by the PHP statements
 	 * @throws TInvalidOperationException if the statements are invalid
 	 */
@@ -1360,6 +1384,10 @@ class TComponent
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
 	 * @param numeric|null priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
+	 * @param mixed $name
+	 * @param mixed $behavior
+	 * @param null|mixed $class
+	 * @param null|mixed $priority
 	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
@@ -1432,6 +1460,7 @@ class TComponent
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string the behavior name
+	 * @param mixed $behaviorname
 	 * @return IBehavior the behavior object, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
@@ -1456,6 +1485,7 @@ class TComponent
 	 * act as a completely different object.
 	 *
 	 * @param class or string
+	 * @param mixed $class
 	 * @return boolean whether or not the object or a behavior is an instance of a particular class
 	 * @since 3.2.3
 	 */
@@ -1553,6 +1583,9 @@ class TComponent
 	 * @param string the behavior's name. It should uniquely identify this behavior.
 	 * @param mixed the behavior configuration. This is passed as the first
 	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
+	 * @param mixed $name
+	 * @param mixed $behavior
+	 * @param null|mixed $priority
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */
@@ -1590,6 +1623,8 @@ class TComponent
 	 *
 	 * @param string the behavior's name. It uniquely identifies the behavior.
 	 * @param numeric the behavior's priority. This defaults to false, aka any priority.
+	 * @param mixed $name
+	 * @param mixed $priority
 	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */

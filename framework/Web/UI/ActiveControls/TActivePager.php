@@ -120,6 +120,11 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * @param string caption of the button
 	 * @param string CommandName corresponding to the OnCommand event of the button
 	 * @param string CommandParameter corresponding to the OnCommand event of the button
+	 * @param mixed $buttonType
+	 * @param mixed $enabled
+	 * @param mixed $text
+	 * @param mixed $commandName
+	 * @param mixed $commandParameter
 	 * @return mixed the button instance
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)

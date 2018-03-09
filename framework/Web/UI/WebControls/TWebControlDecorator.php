@@ -128,8 +128,8 @@ class TWebControlDecorator extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * Initializes the control .
-	 * @param TWebControl The control that is to be decorated.
-	 * @param boolean whether decoration is just around the inner content
+	 * @param TWebControl $control The control that is to be decorated.
+	 * @param boolean $onlyinternal whether decoration is just around the inner content
 	 */
 	public function __construct($control, $onlyinternal = false)
 	{
@@ -306,10 +306,11 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 *	this is a framework call.  The Text decoration can't
+	 * This is a framework call.  The Text decoration can't
 	 * influence the object hierarchy because they are rendered into into the writer directly.
 	 * This call attaches the ensureTemplateDecoration to the TPage onSaveStateComplete so
 	 * these controls don't have page states.  This is as close to not influencing the page as possible.
+	 * @param null|mixed $outercontrol
 	 */
 	public function instantiate($outercontrol = null)
 	{
@@ -328,9 +329,10 @@ class TWebControlDecorator extends \Prado\TComponent
 	/**
 	 *	This method places the templates around the open and close tag.  This takes a parameter which is
 	 * to specify the control to get the outer template decoration.  If no outer control is specified
-	 * @param TComponent this indicates the component or control to get the outer tag elements, just in case it's
+	 * @param TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
 	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
 	 * control
+	 * @param null|mixed $param
 	 * @return boolean returns true if the template decorations have been added
 	 */
 	public function ensureTemplateDecoration($sender = null, $param = null)

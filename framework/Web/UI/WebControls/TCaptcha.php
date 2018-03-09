@@ -447,10 +447,11 @@ class TCaptcha extends TImage
 
 	/**
 	 * Generates the token.
-	 * @param string public key
-	 * @param string private key
-	 * @param integer the length of the token
-	 * @param boolean whether the token is case sensitive
+	 * @param string $publicKey public key
+	 * @param string $privateKey private key
+	 * @param mixed $alphabet
+	 * @param integer $tokenLength the length of the token
+	 * @param boolean $caseSensitive whether the token is case sensitive
 	 * @return string the token generated.
 	 */
 	protected function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)

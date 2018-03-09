@@ -134,6 +134,8 @@ EOD;
 	/**
 	 * @param TMssqlTableInfo table information.
 	 * @param array column information.
+	 * @param mixed $tableInfo
+	 * @param mixed $col
 	 */
 	protected function processColumn($tableInfo, $col)
 	{

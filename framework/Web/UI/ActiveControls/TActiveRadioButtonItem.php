@@ -21,6 +21,9 @@ class TActiveRadioButtonItem extends TActiveRadioButton
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string checkbox id
 	 * @param string onclick js
+	 * @param mixed $writer
+	 * @param mixed $clientID
+	 * @param mixed $onclick
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{

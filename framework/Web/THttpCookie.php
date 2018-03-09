@@ -58,6 +58,8 @@ class THttpCookie extends \Prado\TComponent
 	 * Constructor.
 	 * @param string name of this cookie
 	 * @param string value of this cookie
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function __construct($name, $value)
 	{

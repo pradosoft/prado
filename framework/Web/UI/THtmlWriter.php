@@ -107,8 +107,8 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Adds an attribute to be rendered.
-	 * @param string name of the attribute
-	 * @param string value of the attribute
+	 * @param string $name name of the attribute
+	 * @param string $value value of the attribute
 	 */
 	public function addAttribute($name, $value)
 	{
@@ -137,8 +137,8 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 
 	/**
 	 * Adds a stylesheet attribute to be rendered
-	 * @param string stylesheet attribute name
-	 * @param string stylesheet attribute value
+	 * @param string $name stylesheet attribute name
+	 * @param string $value stylesheet attribute value
 	 */
 	public function addStyleAttribute($name, $value)
 	{

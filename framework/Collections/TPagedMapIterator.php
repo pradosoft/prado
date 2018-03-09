@@ -34,6 +34,8 @@ class TPagedMapIterator implements \Iterator
 	/**
 	 * Constructor.
 	 * @param array the data to be iterated through
+	 * @param mixed $startIndex
+	 * @param mixed $count
 	 */
 	public function __construct(TMap $map, $startIndex, $count)
 	{

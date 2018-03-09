@@ -157,6 +157,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * @return boolean whether the named parameter exists
+	 * @param mixed $name
 	 */
 	public function hasParameter($name)
 	{
@@ -169,6 +170,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * @return string parameter value, null if parameter does not exist
+	 * @param mixed $name
 	 */
 	public function getParameter($name)
 	{
@@ -182,6 +184,8 @@ class TTranslate extends TI18NControl
 	/**
 	 * @param string parameter name
 	 * @param string value of the parameter
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function setParameter($name, $value)
 	{
@@ -204,6 +208,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * renders the translated string.
+	 * @param mixed $writer
 	 */
 	public function render($writer)
 	{

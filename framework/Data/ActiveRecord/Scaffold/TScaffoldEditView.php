@@ -60,6 +60,7 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Initialize the editor form if it is Visible.
+	 * @param mixed $param
 	 */
 	public function onLoad($param)
 	{
@@ -134,6 +135,8 @@ class TScaffoldEditView extends TScaffoldBase
 	 * Instantiate the external edit renderer.
 	 * @param TActiveRecord record to be edited
 	 * @param string external edit renderer class name.
+	 * @param mixed $record
+	 * @param mixed $classPath
 	 * @throws TConfigurationException raised when renderer is not an
 	 * instance of IScaffoldEditRenderer.
 	 */
@@ -155,6 +158,8 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Initialize the default editor using the scaffold input builder.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function createRepeaterEditItem($sender, $param)
 	{
@@ -175,6 +180,8 @@ class TScaffoldEditView extends TScaffoldBase
 	/**
 	 * Bubble the command name event. Stops bubbling when the page validator false.
 	 * Otherwise, the bubble event is continued.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function bubbleEvent($sender, $param)
 	{

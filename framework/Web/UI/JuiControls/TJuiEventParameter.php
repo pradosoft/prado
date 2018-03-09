@@ -49,6 +49,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 *
 	 * Compatibility method to get a control from its clientside id
 	 * @return TControl control, or null if not found
+	 * @param mixed $id
 	 */
 	public function getControl($id)
 	{
@@ -68,6 +69,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 * Example: if a $param->draggable control id is returned from clientside,
 	 * calling $param->DraggableControl will return the control instance
 	 * @return mixed control or null if not set.
+	 * @param mixed $name
 	 */
 	public function __get($name)
 	{

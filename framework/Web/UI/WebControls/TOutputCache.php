@@ -218,8 +218,8 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by loading
 	 * cached state if available.
 	 * This method should only be used by framework developers.
-	 * @param array the collection of the state
-	 * @param boolean whether the viewstate should be loaded
+	 * @param array $state the collection of the state
+	 * @param boolean $needViewState whether the viewstate should be loaded
 	 */
 	protected function loadStateRecursive(&$state, $needViewState = true)
 	{
@@ -232,7 +232,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by saving state
 	 * into cache if needed.
 	 * This method should only be used by framework developers.
-	 * @param boolean whether the viewstate should be saved
+	 * @param boolean $needViewState whether the viewstate should be saved
 	 * @return array the collection of the control state (including its children's state).
 	 */
 	protected function &saveStateRecursive($needViewState = true)
@@ -251,10 +251,10 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Registers an action associated with the content being cached.
 	 * The registered action will be replayed if the content stored
 	 * in the cache is served to end-users.
-	 * @param string context of the action method. This is a property-path
+	 * @param string $context context of the action method. This is a property-path
 	 * referring to the context object (e.g. Page, Page.ClientScript)
-	 * @param string method name of the context object
-	 * @param array list of parameters to be passed to the action method
+	 * @param string $funcName method name of the context object
+	 * @param array $funcParams list of parameters to be passed to the action method
 	 */
 	public function registerAction($context, $funcName, $funcParams)
 	{
@@ -399,6 +399,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * By setting this value, the output cache will use different cached data
 	 * for each different set of request parameter values.
 	 * @return string a semicolon-separated list of strings used to vary the output cache.
+	 * @param mixed $value
 	 */
 	public function setVaryByParam($value)
 	{
@@ -470,7 +471,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Renders the output cache control.
 	 * This method overrides the parent implementation by capturing the output
 	 * from its child controls and saving it into cache, if output cache is needed.
-	 * @param THtmlWriter
+	 * @param THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

@@ -54,10 +54,10 @@ class TListItem extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param string text of the item
-	 * @param string value of the item
-	 * @param boolean whether the item is enabled
-	 * @param boolean whether the item is selected
+	 * @param string $text text of the item
+	 * @param string $value value of the item
+	 * @param boolean $enabled whether the item is enabled
+	 * @param boolean $selectedwhether the item is selected
 	 */
 	public function __construct($text = '', $value = '', $enabled = true, $selected = false)
 	{
@@ -187,6 +187,7 @@ class TListItem extends \Prado\TComponent
 
 	/**
 	 * @return string the named attribute value, null if attribute does not exist
+	 * @param mixed $name
 	 */
 	public function getAttribute($name)
 	{
@@ -194,8 +195,8 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string attribute name
-	 * @param string value of the attribute
+	 * @param string $name attribute name
+	 * @param string $value value of the attribute
 	 */
 	public function setAttribute($name, $value)
 	{

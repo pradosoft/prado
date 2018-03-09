@@ -29,8 +29,8 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing type
 	 * check on the item being added.
-	 * @param integer the speicified position.
-	 * @param mixed new item
+	 * @param integer $index the specified position.
+	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
 	 */
 	public function insertAt($index, $item)

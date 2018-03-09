@@ -39,6 +39,7 @@ class Translation extends \Prado\TComponent
 
 	/**
 	 * Initialize the TTranslate translation components
+	 * @param mixed $catalogue
 	 */
 	public static function init($catalogue = 'messages')
 	{
@@ -83,6 +84,7 @@ class Translation extends \Prado\TComponent
 	 * Get the static formatter from this component.
 	 * @return MessageFormat formattter.
 	 * @see localize()
+	 * @param mixed $catalogue
 	 */
 	public static function formatter($catalogue = 'messages')
 	{

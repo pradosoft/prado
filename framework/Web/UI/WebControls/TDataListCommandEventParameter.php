@@ -40,9 +40,9 @@ class TDataListCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 
 	/**
 	 * Constructor.
-	 * @param TControl datalist item responsible for the event
-	 * @param TControl original event sender
-	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
+	 * @param TControl $item datalist item responsible for the event
+	 * @param TControl $source original event sender
+	 * @param \Prado\Web\UI\TCommandEventParameter $param original event parameter
 	 */
 	public function __construct($item, $source, \Prado\Web\UI\TCommandEventParameter $param)
 	{

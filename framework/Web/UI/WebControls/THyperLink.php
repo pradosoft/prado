@@ -232,7 +232,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Sets the URL to link to when the THyperLink component is clicked.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string the text caption to be set
+	 * @param string $value the text caption to be set
 	 * @see setText
 	 * @since 3.1.0
 	 */

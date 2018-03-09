@@ -103,6 +103,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * @param int the depth of the subdirectories to be checked.
 	 * If the value is less than 0, it means unlimited depth.
 	 * If the value is 0, it means checking the files directly under the specified directory.
+	 * @param mixed $value
 	 */
 	public function setRecursiveLevel($value)
 	{

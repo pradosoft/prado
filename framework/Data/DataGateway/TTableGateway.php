@@ -88,6 +88,8 @@ class TTableGateway extends \Prado\TComponent
 	 * and a database connection.
 	 * @param string|TDbTableInfo table or view name or table information.
 	 * @param TDbConnection database connection.
+	 * @param mixed $table
+	 * @param mixed $connection
 	 */
 	public function __construct($table, $connection)
 	{
@@ -147,6 +149,7 @@ class TTableGateway extends \Prado\TComponent
 	 * inspected to obtain the sql query to be executed.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayEventParameter
+	 * @param mixed $param
 	 */
 	public function onCreateCommand($sender, $param)
 	{
@@ -161,6 +164,7 @@ class TTableGateway extends \Prado\TComponent
 	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayResultEventParameter
+	 * @param mixed $param
 	 */
 	public function onExecuteCommand($sender, $param)
 	{
@@ -344,6 +348,7 @@ class TTableGateway extends \Prado\TComponent
 
 	/**
 	 * Alias for deleteByPk()
+	 * @param mixed $keys
 	 */
 	public function deleteAllByPks($keys)
 	{
@@ -393,6 +398,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Inserts a new record into the table. Each array key must
 	 * correspond to a column name in the table unless a null value is permitted.
 	 * @param array new record data.
+	 * @param mixed $data
 	 * @return mixed last insert id if one column contains a serial or sequence,
 	 * otherwise true if command executes successfully and affected 1 or more rows.
 	 */
@@ -458,6 +464,8 @@ class TTableGateway extends \Prado\TComponent
 	 * </code>
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
 	 * if method name starts with "findAllBy"
+	 * @param mixed $method
+	 * @param mixed $args
 	 */
 	public function __call($method, $args)
 	{

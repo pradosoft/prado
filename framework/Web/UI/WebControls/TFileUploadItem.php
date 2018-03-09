@@ -127,8 +127,8 @@ class TFileUploadItem extends \Prado\TComponent
 
 	/**
 	 * Saves the uploaded file.
-	 * @param string the file name used to save the uploaded file
-	 * @param boolean whether to delete the temporary file after saving.
+	 * @param string $fileName the file name used to save the uploaded file
+	 * @param boolean $deleteTempFile whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
 	 * @return boolean true if the file saving is successful
 	 */

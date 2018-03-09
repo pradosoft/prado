@@ -86,6 +86,7 @@ class NumberFormat
 	 * a CultureInfo or NumberFormatInfo instance will instantiated a instance
 	 * for that particular culture.
 	 * @param mixed either null, a CultureInfo, a NumberFormatInfo, or string
+	 * @param null|mixed $formatInfo
 	 * @return NumberFormat
 	 */
 	public function __construct($formatInfo = null)
@@ -112,6 +113,10 @@ class NumberFormat
 	 * 3 decimal places.
 	 * @param string 3-letter ISO 4217 code. For example, the code
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
+	 * @param mixed $number
+	 * @param mixed $pattern
+	 * @param mixed $currency
+	 * @param mixed $charset
 	 * @return string formatted number string
 	 */
 	public function format($number, $pattern = 'd', $currency = 'USD', $charset = 'UTF-8')

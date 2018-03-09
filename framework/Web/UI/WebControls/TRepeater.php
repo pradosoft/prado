@@ -147,7 +147,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * If not empty, the class will be used to instantiate as repeater items.
 	 * This property takes precedence over {@link getItemTemplate ItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setItemTemplate
 	 * @since 3.1.0
 	 */
@@ -171,7 +171,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * If not empty, the class will be used to instantiate as alternative repeater items.
 	 * This property takes precedence over {@link getAlternatingItemTemplate AlternatingItemTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setAlternatingItemTemplate
 	 * @since 3.1.0
 	 */
@@ -195,7 +195,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * If not empty, the class will be used to instantiate as repeater item separators.
 	 * This property takes precedence over {@link getSeparatorTemplate SeparatorTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setSeparatorTemplate
 	 * @since 3.1.0
 	 */
@@ -219,7 +219,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * If not empty, the class will be used to instantiate as repeater header item.
 	 * This property takes precedence over {@link getHeaderTemplate HeaderTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setHeaderTemplate
 	 * @since 3.1.0
 	 */
@@ -243,7 +243,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * If not empty, the class will be used to instantiate as repeater footer item.
 	 * This property takes precedence over {@link getFooterTemplate FooterTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setFooterTemplate
 	 * @since 3.1.0
 	 */
@@ -268,7 +268,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * if data bound to the repeater is empty.
 	 * This property takes precedence over {@link getEmptyTemplate EmptyTemplate}.
 	 *
-	 * @param string the renderer class name in namespace format.
+	 * @param string $value the renderer class name in namespace format.
 	 * @see setEmptyTemplate
 	 * @since 3.1.0
 	 */
@@ -758,8 +758,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * of the specified field. If the data is a component with a property named
 	 * as the field name, the property value will be returned.
 	 * Otherwise, an exception will be raised.
-	 * @param mixed data item
-	 * @param mixed field name
+	 * @param mixed $data data item
+	 * @param mixed $field field name
 	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
 	 */

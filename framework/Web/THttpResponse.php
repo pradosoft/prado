@@ -209,6 +209,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * @return string content type, default is text/html
+	 * @param mixed $type
 	 */
 	public function setContentType($type)
 	{
@@ -278,6 +279,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 *
 	 * @param integer HTTP status code
 	 * @param string HTTP status reason, defaults to standard HTTP reasons
+	 * @param mixed $status
+	 * @param null|mixed $reason
 	 */
 	public function setStatusCode($status, $reason = null)
 	{
@@ -343,6 +346,12 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param boolean force download of file, even if browser able to display inline. Defaults to 'true'.
 	 * @param string force a specific file name on client side. Defaults to 'null' means auto-detect.
 	 * @param integer size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
+	 * @param null|mixed $content
+	 * @param null|mixed $mimeType
+	 * @param null|mixed $headers
+	 * @param mixed $forceDownload
+	 * @param null|mixed $clientFileName
+	 * @param null|mixed $fileSize
 	 * @throws TInvalidDataValueException if the file cannot be found
 	 */
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
@@ -478,6 +487,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Flush the response contents and headers.
+	 * @param mixed $continueBuffering
 	 */
 	public function flush($continueBuffering = true)
 	{
@@ -606,6 +616,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|mixed $case
 	 * @return array
 	 */
 	public function getHeaders($case = null)
@@ -634,6 +645,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Sends a header.
 	 * @param string header
 	 * @param boolean whether the header should replace a previous similar header, or add a second header of the same type
+	 * @param mixed $value
+	 * @param mixed $replace
 	 */
 	public function appendHeader($value, $replace = true)
 	{
@@ -648,6 +661,10 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param integer where the error should go
 	 * @param string The destination. Its meaning depends on the message parameter as described above
 	 * @param string The extra headers. It's used when the message parameter is set to 1. This message type uses the same internal function as mail() does.
+	 * @param mixed $message
+	 * @param mixed $messageType
+	 * @param mixed $destination
+	 * @param mixed $extraHeaders
 	 * @see http://us2.php.net/manual/en/function.error-log.php
 	 */
 	public function appendLog($message, $messageType = 0, $destination = '', $extraHeaders = '')
@@ -743,6 +760,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * This method is used internally. Please use {@link createHtmlWriter} instead.
 	 * @param string type of HTML writer to be created.
 	 * @param ITextWriter text writer holding the contents.
+	 * @param mixed $type
+	 * @param mixed $writer
 	 */
 	public function createNewHtmlWriter($type, $writer)
 	{

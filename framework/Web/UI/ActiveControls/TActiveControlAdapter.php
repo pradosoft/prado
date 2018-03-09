@@ -58,6 +58,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 * Constructor.
 	 * @param IActiveControl active control to adapt.
 	 * @param string Base active control class name.
+	 * @param null|mixed $baseCallbackClass
 	 */
 	public function __construct(IActiveControl $control, $baseCallbackClass = null)
 	{
@@ -83,6 +84,7 @@ class TActiveControlAdapter extends TControlAdapter
 
 	/**
 	 * Publish the ajax script
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -91,6 +93,7 @@ class TActiveControlAdapter extends TControlAdapter
 
 	/**
 	 * Renders the callback client scripts.
+	 * @param mixed $writer
 	 */
 	public function render($writer)
 	{
@@ -139,6 +142,7 @@ class TActiveControlAdapter extends TControlAdapter
 
 	/**
 	 * Starts viewstate tracking if necessary after when controls has been loaded
+	 * @param mixed $param
 	 */
 	public function onLoad($param)
 	{

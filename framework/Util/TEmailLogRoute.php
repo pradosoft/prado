@@ -63,6 +63,7 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * Initializes the route.
 	 * @param TXmlElement configurations specified in {@link TLogRouter}.
+	 * @param mixed $config
 	 * @throws TConfigurationException if {@link getSentFrom SentFrom} is empty and
 	 * 'sendmail_from' in php.ini is also empty.
 	 */
@@ -104,6 +105,7 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * @return array|string list of destination email addresses. If the value is
 	 * a string, it is assumed to be comma-separated email addresses.
+	 * @param mixed $emails
 	 */
 	public function setEmails($emails)
 	{

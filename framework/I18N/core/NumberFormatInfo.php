@@ -77,6 +77,7 @@ class NumberFormatInfo
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
 	 * @return mixed
+	 * @param mixed $name
 	 */
 	public function __get($name)
 	{
@@ -91,6 +92,8 @@ class NumberFormatInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to set the value.
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function __set($name, $value)
 	{
@@ -109,6 +112,8 @@ class NumberFormatInfo
 	 * class directly unless you know what you are doing. Please use use
 	 * NumberFormatInfo::getInstance() to create an instance.
 	 * @param array ICU data for date time formatting.
+	 * @param mixed $data
+	 * @param mixed $type
 	 * @see getInstance()
 	 */
 	public function __construct($data = [], $type = NumberFormatInfo::DECIMAL)
@@ -157,6 +162,7 @@ class NumberFormatInfo
 	 * Gets the default NumberFormatInfo that is culture-independent
 	 * (invariant).
 	 * @return NumberFormatInfo default NumberFormatInfo.
+	 * @param mixed $type
 	 */
 	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
@@ -175,6 +181,8 @@ class NumberFormatInfo
 	 * @param int the number formatting type, it should be
 	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
 	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
+	 * @param null|mixed $culture
+	 * @param mixed $type
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 * @see getCurrencyInstance();
@@ -205,6 +213,7 @@ class NumberFormatInfo
 	/**
 	 * Returns the currency format info associated with the specified culture.
 	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @param null|mixed $culture
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
@@ -216,6 +225,7 @@ class NumberFormatInfo
 	/**
 	 * Returns the percentage format info associated with the specified culture.
 	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @param null|mixed $culture
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
@@ -227,6 +237,7 @@ class NumberFormatInfo
 	/**
 	 * Returns the scientific format info associated with the specified culture.
 	 * @param CultureInfo the culture that gets the NumberFormat property.
+	 * @param null|mixed $culture
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
@@ -497,6 +508,7 @@ class NumberFormatInfo
 	/**
 	 * Gets the string to use as the currency symbol.
 	 * @return string currency symbol.
+	 * @param mixed $currency
 	 */
 	public function getCurrencySymbol($currency = 'USD')
 	{

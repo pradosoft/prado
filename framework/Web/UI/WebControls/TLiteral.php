@@ -70,7 +70,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	 * Sets the static text of the TLiteral.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string the static text of the TLiteral
+	 * @param string $value the static text of the TLiteral
 	 * @see setText
 	 * @since 3.1.0
 	 */

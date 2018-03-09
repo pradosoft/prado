@@ -33,6 +33,7 @@ abstract class TRpcProtocol
 	/**
 	 * @param string request payload
 	 * Processed the request ans returns the response, if any
+	 * @param mixed $requestPayload
 	 * @return processed response
 	 * @abstract
 	 */
@@ -52,6 +53,7 @@ abstract class TRpcProtocol
 	/**
 	 * Encodes the response
 	 * @param mixed reponse data
+	 * @param mixed $data
 	 * @return string encoded response
 	 * @abstract
 	 */
@@ -59,6 +61,7 @@ abstract class TRpcProtocol
 	/**
 	 * Decodes the request payload
 	 * @param string request payload
+	 * @param mixed $data
 	 * @return mixed decoded request
 	 * @abstract
 	 */

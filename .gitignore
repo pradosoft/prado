@@ -34,3 +34,4 @@ vendor/*
 /nbproject
 
 sauce_connect.log
+*.php

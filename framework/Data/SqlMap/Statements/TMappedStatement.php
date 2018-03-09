@@ -142,6 +142,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Execute SQL Query.
 	 * @param IDbConnection database connection
 	 * @param array SQL statement and parameters.
+	 * @param mixed $connection
+	 * @param mixed $command
+	 * @param mixed $max
+	 * @param mixed $skip
 	 * @return mixed record set if applicable.
 	 * @throws TSqlMapExecutionException if execution error or false record set.
 	 * @throws TSqlMapQueryExecutionException if any execution error
@@ -209,6 +213,12 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param integer The maximum number of rows to return.
 	 * @return array a list of result objects
 	 * @param callback row delegate handler
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param null|mixed $result
+	 * @param mixed $skip
+	 * @param mixed $max
+	 * @param null|mixed $delegate
 	 * @see executeQueryForList()
 	 */
 	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1, $delegate = null)
@@ -230,6 +240,11 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param integer The number of rows to skip over.
 	 * @param integer The maximum number of rows to return.
 	 * @param callback row delegate handler
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param mixed $sql
+	 * @param mixed $result
+	 * @param null|mixed $delegate
 	 * @return array a list of result objects
 	 * @see executeQueryForList()
 	 */
@@ -276,6 +291,13 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param string The property of the result object to be used as the key.
 	 * @param string The property of the result object to be used as the value (or null).
 	 * @param callback row delegate handler
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param mixed $keyProperty
+	 * @param null|mixed $valueProperty
+	 * @param mixed $skip
+	 * @param mixed $max
+	 * @param null|mixed $delegate
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 */
 	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null)
@@ -299,6 +321,12 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param string The property of the result object to be used as the key.
 	 * @param string The property of the result object to be used as the value (or null).
 	 * @param callback row delegate, a callback function
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param mixed $command
+	 * @param mixed $keyProperty
+	 * @param null|mixed $valueProperty
+	 * @param null|mixed $delegate
 	 * @return array An array of object containing the rows keyed by keyProperty.
 	 * @see executeQueryForMap()
 	 */
@@ -336,6 +364,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * This method is invoked for each new list item. It is the responsibility
 	 * of the handler to add the item to the list.
 	 * @param object event parameter
+	 * @param mixed $handler
+	 * @param mixed $param
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{
@@ -364,6 +394,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param IDbConnection database connection
 	 * @param mixed The parameter data (object, arrary, primitive) used to set the parameters in the SQL
 	 * @param mixed The result object.
+	 * @param mixed $connection
+	 * @param mixed $parameter
+	 * @param null|mixed $result
 	 * @return ${return}
 	 */
 	public function executeQueryForObject($connection, $parameter, $result = null)
@@ -382,6 +415,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param IDbConnection database connection
 	 * @param array SQL string and subsititution parameters.
 	 * @param object The result object.
+	 * @param mixed $connection
+	 * @param mixed $command
 	 * @return object the object.
 	 * @see executeQueryForObject()
 	 */
@@ -540,6 +575,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Apply result mapping.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object, will create if necessary.
+	 * @param mixed $row
 	 * @return object the result filled with data, null if not filled.
 	 */
 	protected function applyResultMap($row, &$resultObject = null)
@@ -638,6 +674,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param string result map name.
 	 * @param array a result set row retrieved from the database
 	 * @param object result object to fill, will create new instances if required.
+	 * @param mixed $resultMapName
+	 * @param mixed $row
+	 * @param null|mixed $parentGroup
 	 * @return object result object filled with data.
 	 */
 	protected function fillResultMap($resultMapName, $row, $parentGroup = null, &$resultObject = null)
@@ -670,6 +709,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultMap result mapping details.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
+	 * @param mixed $resultMap
+	 * @param mixed $row
+	 * @param mixed $parent
 	 * @return object result object.
 	 */
 	protected function addResultMapGroupBy($resultMap, $row, $parent, &$resultObject)
@@ -795,6 +837,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultProperty the result property to fill.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
+	 * @param mixed $resultMap
+	 * @param mixed $property
+	 * @param mixed $row
 	 */
 	protected function setObjectProperty($resultMap, $property, $row, &$resultObject)
 	{
@@ -842,6 +887,11 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultProperty current result property.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
+	 * @param mixed $select
+	 * @param mixed $resultMap
+	 * @param mixed $property
+	 * @param mixed $row
+	 * @param mixed $resultObject
 	 */
 	protected function enquequePostSelect($select, $resultMap, $property, $row, $resultObject)
 	{
@@ -905,6 +955,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultMap nested result mapping details.
 	 * @param array a result set row retrieved from the database
 	 * @param object the result object
+	 * @param mixed $resultMap
+	 * @param mixed $row
 	 * @return boolean true if the data was found, false otherwise.
 	 */
 	protected function fillPropertyWithResultMap($resultMap, $row, &$resultObject)

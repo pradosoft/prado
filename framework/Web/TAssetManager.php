@@ -159,6 +159,8 @@ class TAssetManager extends \Prado\TModule
 	 * @param string the path to be published
 	 * @param boolean If true, file modification time will be checked even if the application
 	 * is in performance mode.
+	 * @param mixed $path
+	 * @param mixed $checkTimestamp
 	 * @return string an absolute URL to the published directory
 	 * @throws TInvalidDataValueException if the file path to be published is
 	 * invalid
@@ -256,6 +258,8 @@ class TAssetManager extends \Prado\TModule
 	 * or has an older file modification time.
 	 * @param string source file path
 	 * @param string destination directory (if not exists, it will be created)
+	 * @param mixed $src
+	 * @param mixed $dst
 	 */
 	protected function copyFile($src, $dst)
 	{
@@ -276,6 +280,8 @@ class TAssetManager extends \Prado\TModule
 	 * File modification time is used to ensure the copied files are latest.
 	 * @param string the source directory
 	 * @param string the destination directory
+	 * @param mixed $src
+	 * @param mixed $dst
 	 * @todo a generic solution to ignore certain directories and files
 	 */
 	public function copyDirectory($src, $dst)

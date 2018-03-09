@@ -70,7 +70,7 @@ class TView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean whether the parents should also be checked if visible
+	 * @param boolean $checkParents whether the parents should also be checked if visible
 	 * @return boolean whether this view is visible.
 	 * The view is visible if it is active and its parent is visible.
 	 */
@@ -86,7 +86,8 @@ class TView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean $value * @throws TInvalidOperationException whenever this method is invoked.
+	 * @param boolean $value
+	 * @throws TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setVisible($value)
 	{

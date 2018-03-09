@@ -88,6 +88,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Parses the application configuration given in terms of a PHP array.
 	 * @param array the PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $config
+	 * @param mixed $configPath
 	 */
 	public function loadFromPhp($config, $configPath)
 	{
@@ -124,6 +126,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Parses the application configuration given in terms of a TXmlElement.
 	 * @param TXmlElement the XML element
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $dom
+	 * @param mixed $configPath
 	 */
 	public function loadFromXml($dom, $configPath)
 	{
@@ -161,6 +165,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the paths PHP array
 	 * @param array the paths PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $pathsNode
+	 * @param mixed $configPath
 	 */
 	protected function loadPathsPhp($pathsNode, $configPath)
 	{
@@ -193,6 +199,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the paths XML node.
 	 * @param TXmlElement the paths XML node
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $pathsNode
+	 * @param mixed $configPath
 	 */
 	protected function loadPathsXml($pathsNode, $configPath)
 	{
@@ -240,6 +248,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the modules PHP array.
 	 * @param array the modules PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $modulesNode
+	 * @param mixed $configPath
 	 */
 	protected function loadModulesPhp($modulesNode, $configPath)
 	{
@@ -264,6 +274,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the modules XML node.
 	 * @param TXmlElement the modules XML node
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $modulesNode
+	 * @param mixed $configPath
 	 */
 	protected function loadModulesXml($modulesNode, $configPath)
 	{
@@ -292,6 +304,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the services PHP array.
 	 * @param array the services PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $servicesNode
+	 * @param mixed $configPath
 	 */
 	protected function loadServicesPhp($servicesNode, $configPath)
 	{
@@ -312,6 +326,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the services XML node.
 	 * @param TXmlElement the services XML node
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $servicesNode
+	 * @param mixed $configPath
 	 */
 	protected function loadServicesXml($servicesNode, $configPath)
 	{
@@ -337,6 +353,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the parameters PHP array.
 	 * @param array the parameters PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $parametersNode
+	 * @param mixed $configPath
 	 */
 	protected function loadParametersPhp($parametersNode, $configPath)
 	{
@@ -359,6 +377,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the parameters XML node.
 	 * @param TXmlElement the parameters XML node
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $parametersNode
+	 * @param mixed $configPath
 	 */
 	protected function loadParametersXml($parametersNode, $configPath)
 	{
@@ -388,6 +408,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the external PHP array.
 	 * @param array the application PHP array
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $includeNode
+	 * @param mixed $configPath
 	 */
 	protected function loadExternalPhp($includeNode, $configPath)
 	{
@@ -410,6 +432,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Loads the external XML configurations.
 	 * @param TXmlElement the application DOM element
 	 * @param string the context path (for specifying relative paths)
+	 * @param mixed $includeNode
+	 * @param mixed $configPath
 	 */
 	protected function loadExternalXml($includeNode, $configPath)
 	{

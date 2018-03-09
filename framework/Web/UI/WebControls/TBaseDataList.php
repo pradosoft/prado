@@ -166,8 +166,8 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * of the specified field. If the data is a component with a property named
 	 * as the field name, the property value will be returned.
 	 * Otherwise, an exception will be raised.
-	 * @param mixed data item
-	 * @param mixed field name
+	 * @param mixed $data data item
+	 * @param mixed $field field name
 	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
 	 */

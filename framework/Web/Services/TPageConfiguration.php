@@ -131,6 +131,8 @@ class TPageConfiguration extends \Prado\TComponent
 	 * Loads a specific config file.
 	 * @param string config file name
 	 * @param string the page path that the config file is associated with. The page path doesn't include the page name.
+	 * @param mixed $fname
+	 * @param mixed $configPagePath
 	 */
 	public function loadFromFile($fname, $configPagePath)
 	{
@@ -165,6 +167,9 @@ class TPageConfiguration extends \Prado\TComponent
 	 * @param TXmlElement config xml element
 	 * @param string the directory containing this configuration
 	 * @param string the page path that the config XML is associated with. The page path doesn't include the page name.
+	 * @param mixed $dom
+	 * @param mixed $configPath
+	 * @param mixed $configPagePath
 	 */
 	public function loadFromXml($dom, $configPath, $configPagePath)
 	{
@@ -183,6 +188,8 @@ class TPageConfiguration extends \Prado\TComponent
 	 * Loads the configuration specific for application part
 	 * @param TXmlElement config xml element
 	 * @param string base path corresponding to this xml element
+	 * @param mixed $dom
+	 * @param mixed $configPath
 	 */
 	public function loadApplicationConfigurationFromXml($dom, $configPath)
 	{
@@ -279,6 +286,9 @@ class TPageConfiguration extends \Prado\TComponent
 	 * @param TXmlElement config xml element
 	 * @param string base path corresponding to this xml element
 	 * @param string the page path that the config XML is associated with. The page path doesn't include the page name.
+	 * @param mixed $dom
+	 * @param mixed $configPath
+	 * @param mixed $configPagePath
 	 */
 	public function loadPageConfigurationFromXml($dom, $configPath, $configPagePath)
 	{

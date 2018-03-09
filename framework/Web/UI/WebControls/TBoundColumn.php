@@ -157,9 +157,9 @@ class TBoundColumn extends TDataGridColumn
 	 * Otherwise it displays a static text.
 	 * The caption of the button and the static text are retrieved
 	 * from the datasource.
-	 * @param TTableCell the cell to be initialized.
-	 * @param integer the index to the Columns property that the cell resides in.
-	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
+	 * @param TTableCell $cell the cell to be initialized.
+	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
@@ -219,6 +219,8 @@ class TBoundColumn extends TDataGridColumn
 	 * Databinds a cell in the column.
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function dataBindColumn($sender, $param)
 	{

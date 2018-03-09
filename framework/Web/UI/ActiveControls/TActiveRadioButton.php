@@ -127,6 +127,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -137,6 +138,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * for initializing the active control.
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
 	 *
+	 * @param mixed $writer
+	 * @param mixed $clientID
+	 * @param mixed $onclick
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
@@ -173,6 +177,9 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * @param THtmlWriter the writer for the rendering purpose
 	 * @param string radio button id
 	 * @param string label text
+	 * @param mixed $writer
+	 * @param mixed $clientID
+	 * @param mixed $text
 	 */
 	protected function renderLabel($writer, $clientID, $text)
 	{

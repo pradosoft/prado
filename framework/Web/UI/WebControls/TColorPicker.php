@@ -170,7 +170,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param string asset file in the self::SCRIPT_PATH directory.
+	 * @param string $file asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
 	protected function getAssetUrl($file = '')
@@ -181,6 +181,7 @@ class TColorPicker extends TTextBox
 
 	/**
 	 * Publish the color picker Css asset files.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{

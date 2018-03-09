@@ -118,6 +118,8 @@ EOD;
 	/**
 	 * @param string table schema name
 	 * @param string table name.
+	 * @param mixed $schemaName
+	 * @param mixed $tableName
 	 * @return TOracleTableInfo
 	 */
 	protected function createNewTableInfo($schemaName, $tableName)
@@ -135,6 +137,7 @@ EOD;
 
 	/**
 	 * @param string table name, schema name or column name.
+	 * @param mixed $name
 	 * @return string a valid identifier.
 	 * @throws TDbException when table name contains a double quote (").
 	 */
@@ -172,6 +175,8 @@ EOD;
 	/**
 	 * @param TOracleTableInfo table information.
 	 * @param array column information.
+	 * @param mixed $tableInfo
+	 * @param mixed $col
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -228,6 +233,8 @@ EOD;
 
 	/**
 	 * @return string serial name if found, null otherwise.
+	 * @param mixed $tableInfo
+	 * @param mixed $src
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -243,6 +250,7 @@ EOD;
 
 	/**
 	 * @return boolean true if column type if "numeric", "interval" or begins with "time".
+	 * @param mixed $type
 	 */
 	protected function isPrecisionType($type)
 	{

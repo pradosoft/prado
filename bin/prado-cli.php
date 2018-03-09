@@ -65,7 +65,7 @@ class PradoCommandLineInterpreter
 	protected $_actions = [];
 
 	/**
-	 * @param string action class name
+	 * @param string $class action class name
 	 */
 	public function addActionClass($class)
 	{
@@ -91,7 +91,7 @@ class PradoCommandLineInterpreter
 
 	/**
 	 * Dispatch the command line actions.
-	 * @param array command line arguments
+	 * @param array $args command line arguments
 	 */
 	public function run($args)
 	{
@@ -138,7 +138,7 @@ abstract class PradoCommandLineAction
 {
 	/**
 	 * Execute the action.
-	 * @param array command line parameters
+	 * @param array $args command line parameters
 	 * @return boolean true if action was handled
 	 */
 	abstract public function performAction($args);
@@ -237,6 +237,7 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 
 	/**
 	 * Functions to create new prado project.
+	 * @param mixed $dir
 	 */
 	protected function createNewPradoProject($dir)
 	{
@@ -670,7 +671,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 //				case 'ibm':
 				default:
 					echo "\n    Sorry, generateAll is not implemented for " . $con->getDriverName() . "\n";
-					
+
 			   }
 
 			$dataReader = $command->query();

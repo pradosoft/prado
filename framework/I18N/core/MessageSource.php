@@ -121,6 +121,9 @@ abstract class MessageSource implements IMessageSource
 	 * @param string the message source type.
 	 * @param string the location of the resource or the ConnectionID.
 	 * @param string the filename of the custom message source.
+	 * @param mixed $type
+	 * @param mixed $source
+	 * @param mixed $filename
 	 * @return MessageSource a new message source of the specified type.
 	 * @throws InvalidMessageSourceTypeException
 	 */
@@ -166,6 +169,7 @@ abstract class MessageSource implements IMessageSource
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
 	 *
 	 * @param string a catalogue to load
+	 * @param mixed $catalogue
 	 * @return boolean true if loaded, false otherwise.
 	 * @see read()
 	 */

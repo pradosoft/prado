@@ -108,6 +108,7 @@ class TUser extends \Prado\TComponent implements IUser
 
 	/**
 	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
+	 * @param mixed $value
 	 */
 	public function setRoles($value)
 	{
@@ -171,6 +172,8 @@ class TUser extends \Prado\TComponent implements IUser
 	 *
 	 * @param string variable name
 	 * @param mixed default value
+	 * @param mixed $key
+	 * @param null|mixed $defaultValue
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
@@ -191,6 +194,8 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @param string variable name
 	 * @param mixed variable value
 	 * @param mixed default value. If $value===$defaultValue, the variable will be removed from persistent storage.
+	 * @param mixed $key
+	 * @param null|mixed $defaultValue
 	 * @see getState
 	 */
 	protected function setState($key, $value, $defaultValue = null)

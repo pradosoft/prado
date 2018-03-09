@@ -31,8 +31,8 @@ namespace Prado\Web\UI;
 class TPageStateFormatter
 {
 	/**
-	 * @param TPage
-	 * @param mixed state data
+	 * @param TPage $page
+	 * @param mixed $data state data
 	 * @return string serialized data
 	 */
 	public static function serialize($page, $data)
@@ -53,8 +53,8 @@ class TPageStateFormatter
 	}
 
 	/**
-	 * @param TPage
-	 * @param string serialized data
+	 * @param TPage $page
+	 * @param string $data serialized data
 	 * @return mixed unserialized state data, null if data is corrupted
 	 */
 	public static function unserialize($page, $data)

@@ -197,6 +197,7 @@ class TSoapService extends \Prado\TService
 	/**
 	 * @param string external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
+	 * @param mixed $value
 	 * @throws TInvalidDataValueException if the file is invalid.
 	 */
 	public function setConfigFile($value)

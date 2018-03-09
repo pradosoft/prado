@@ -180,6 +180,7 @@ class TDbCache extends TCache
 	 * and create table if does not exist.
 	 *
 	 * @param boolean Force override global state check
+	 * @param mixed $force
 	 * @return void
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
 	 * @since 3.1.5
@@ -239,6 +240,7 @@ class TDbCache extends TCache
 	/**
 	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
 	 * @param boolean override {@link setFlushInterval FlushInterval} and force deletion of expired items
+	 * @param mixed $force
 	 * @return void
 	 * @since 3.1.5
 	 */

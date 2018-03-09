@@ -76,7 +76,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	/**
 	 * This method creates the template object for the given class
 	 *
-	 * @param string $p_class The class to create the template from
+	 * @param string $parentClass The class to create the template from
 	 * @return void
 	 * @throws TConfigurationException if a template control directive is invalid
 	 */

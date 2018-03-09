@@ -164,6 +164,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a Prado javascript library to be loaded.
+	 * @param mixed $name
 	 */
 	protected function registerPradoScriptInternal($name)
 	{
@@ -221,6 +222,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @return string Prado javascript library base asset url.
+	 * @param mixed $script
 	 */
 	public function getPradoScriptAssetUrl($script = 'prado')
 	{
@@ -235,6 +237,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @return string Prado javascript library base asset path in local filesystem.
+	 * @param mixed $script
 	 */
 	public function getPradoScriptAssetPath($script = 'prado')
 	{
@@ -316,8 +319,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Returns javascript statement that create a new callback request object.
-	 * @param ICallbackEventHandler callback response handler
-	 * @param array additional callback options
+	 * @param ICallbackEventHandler $callbackHandler callback response handler
+	 * @param null|array $options additional callback options
 	 * @return string javascript statement that creates a new callback request.
 	 */
 	public function getCallbackReference(ICallbackEventHandler $callbackHandler, $options = null)
@@ -334,8 +337,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers callback javascript for a control.
-	 * @param string javascript class responsible for the control being registered for callback
-	 * @param array callback options
+	 * @param string $class javascript class responsible for the control being registered for callback
+	 * @param array $options callback options
 	 */
 	public function registerCallbackControl($class, $options)
 	{
@@ -351,8 +354,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Registers postback javascript for a control. A null class parameter will prevent
 	 * the javascript code registration.
-	 * @param string javascript class responsible for the control being registered for postback
-	 * @param array postback options
+	 * @param string $class javascript class responsible for the control being registered for postback
+	 * @param array $options postback options
 	 */
 	public function registerPostBackControl($class, $options)
 	{
@@ -375,8 +378,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param TControl|string panel (or its unique ID) to register the default button action
-	 * @param TControl|string button (or its unique ID) to trigger a postback
+	 * @param TControl|string $panel panel (or its unique ID) to register the default button action
+	 * @param TControl|string $button button (or its unique ID) to trigger a postback
 	 */
 	public function registerDefaultButton($panel, $button)
 	{
@@ -443,6 +446,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a Prado style library to be loaded.
+	 * @param mixed $name
 	 */
 	protected function registerPradoStyleInternal($name)
 	{
@@ -506,9 +510,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * }
 	 * </code>
 	 *
-	 * @param string a unique key identifying the file
-	 * @param string URL to the CSS file
-	 * @param string media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
+	 * @param string $key a unique key identifying the file
+	 * @param string $url URL to the CSS file
+	 * @param string $media media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
 	 */
 	public function registerStyleSheetFile($key, $url, $media = '')
 	{
@@ -524,8 +528,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a CSS block to be rendered in the page head
-	 * @param string a unique key identifying the CSS block
-	 * @param string CSS block
+	 * @param string $key a unique key identifying the CSS block
+	 * @param string $css CSS block
+	 * @param string $media media type of the CSS (such as 'print', 'screen', etc.). Defaults to empty, meaning the CSS applies to all media types.
 	 */
 	public function registerStyleSheet($key, $css, $media = '')
 	{
@@ -569,8 +574,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a javascript file in the page head
-	 * @param string a unique key identifying the file
-	 * @param string URL to the javascript file
+	 * @param string $key a unique key identifying the file
+	 * @param string $url URL to the javascript file
 	 */
 	public function registerHeadScriptFile($key, $url)
 	{
@@ -583,8 +588,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a javascript block in the page head.
-	 * @param string a unique key identifying the script block
-	 * @param string javascript block
+	 * @param string $key a unique key identifying the script block
+	 * @param string $script javascript block
 	 */
 	public function registerHeadScript($key, $script)
 	{
@@ -597,8 +602,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a javascript file to be rendered within the form
-	 * @param string a unique key identifying the file
-	 * @param string URL to the javascript file to be rendered
+	 * @param string $key a unique key identifying the file
+	 * @param string $url URL to the javascript file to be rendered
 	 */
 	public function registerScriptFile($key, $url)
 	{
@@ -610,8 +615,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a javascript script block at the beginning of the form
-	 * @param string a unique key identifying the script block
-	 * @param string javascript block
+	 * @param string $key a unique key identifying the script block
+	 * @param string $script javascript block
 	 */
 	public function registerBeginScript($key, $script)
 	{
@@ -624,8 +629,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a javascript script block at the end of the form
-	 * @param string a unique key identifying the script block
-	 * @param string javascript block
+	 * @param string $key a unique key identifying the script block
+	 * @param string $script javascript block
 	 */
 	public function registerEndScript($key, $script)
 	{
@@ -637,8 +642,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Registers a hidden field to be rendered in the form.
-	 * @param string a unique key identifying the hidden field
-	 * @param string|array hidden field value, if the value is an array, every element
+	 * @param string $name a unique key identifying the hidden field
+	 * @param string|array $value hidden field value, if the value is an array, every element
 	 * in the array will be rendered as a hidden field value.
 	 */
 	public function registerHiddenField($name, $value)
@@ -864,8 +869,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Flushes all pending script registrations
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param TControl the control forcing the flush (used only in error messages)
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param null|TControl  $control the control forcing the flush (used only in error messages)
 	 */
 	public function flushScriptFiles($writer, $control = null)
 	{
@@ -880,7 +885,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * state of the fields after a page reload, the autocomplete="off" attribute is used.
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
 	 * rendered instead (#642).
-	 * @param THtmlWriter writer for the rendering purpose
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param mixed $initial
 	 */
 
 	protected function renderHiddenFieldsInt($writer, $initial)

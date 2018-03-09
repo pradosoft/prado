@@ -278,6 +278,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * in the sql text. Extracts inline parameter maps.
 	 * @param TSqlMapStatement mapped statement.
 	 * @param SimpleXmlElement statement node.
+	 * @param mixed $statement
+	 * @param mixed $node
 	 */
 	protected function processSqlStatement($statement, $node)
 	{
@@ -305,6 +307,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * @param TSqlMapStatement statement object.
 	 * @param string sql text
 	 * @param SimpleXmlElement statement node.
+	 * @param mixed $statement
+	 * @param mixed $sqlStatement
+	 * @param mixed $node
 	 */
 	protected function applyInlineParameterMap($statement, $sqlStatement, $node)
 	{
@@ -337,6 +342,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * @param TSqlMapStatement mapped statement.
 	 * @param string sql text.
 	 * @param SimpleXmlElement statement node.
+	 * @param mixed $statement
+	 * @param mixed $sqlStatement
+	 * @param mixed $node
 	 * @todo Extend to dynamic sql.
 	 */
 	protected function prepareSql($statement, $sqlStatement, $node)
@@ -402,6 +410,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load the selectKey statement from xml mapping.
 	 * @param SimpleXmlElement selectkey node
+	 * @param mixed $insert
+	 * @param mixed $node
 	 */
 	protected function loadSelectKeyTag($insert, $node)
 	{
@@ -498,6 +508,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * Load the flush interval
 	 * @param TSqlMapCacheModel cache model
 	 * @param SimpleXmlElement cache node
+	 * @param mixed $cacheModel
+	 * @param mixed $node
 	 */
 	protected function loadFlushInterval($cacheModel, $node)
 	{
@@ -533,6 +545,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * @param TSqlMapCacheModel cache model
 	 * @param SimpleXmlElement parent node.
 	 * @param SimpleXmlElement flush node.
+	 * @param mixed $cacheModel
+	 * @param mixed $parent
+	 * @param mixed $node
 	 */
 	protected function loadFlushOnCache($cacheModel, $parent, $node)
 	{

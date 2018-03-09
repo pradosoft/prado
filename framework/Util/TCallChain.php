@@ -48,6 +48,8 @@ class TCallChain extends TList implements IDynamicMethods
 	 *	@param string|array this is a callable function as a string or array with
 	 *			the object and method name as string
 	 *  @param array The array of arguments to the function call chain
+	 * @param mixed $method
+	 * @param mixed $args
 	 */
 	public function addCall($method, $args)
 	{
@@ -143,6 +145,8 @@ class TCallChain extends TList implements IDynamicMethods
 	 * to call the next event in the chain.
 	 * @param string method name of the unspecified object method
 	 * @param array arguments to the unspecified object method
+	 * @param mixed $method
+	 * @param mixed $args
 	 */
 	public function __dycall($method, $args)
 	{

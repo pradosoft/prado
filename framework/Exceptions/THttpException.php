@@ -35,6 +35,8 @@ class THttpException extends TSystemException
 	 * in the message file. If so, the message in the preferred language
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 * @param mixed $statusCode
+	 * @param mixed $errorMessage
 	 */
 	public function __construct($statusCode, $errorMessage)
 	{

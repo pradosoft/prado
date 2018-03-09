@@ -156,6 +156,8 @@ class TPropertyValue
 	 * @param mixed the value to be converted.
 	 * @param mixed class name of the enumerable type, or array of valid enumeration values. If this is not an array,
 	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
+	 * @param mixed $value
+	 * @param mixed $enums
 	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 */

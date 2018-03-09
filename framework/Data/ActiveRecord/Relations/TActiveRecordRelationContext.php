@@ -170,6 +170,7 @@ class TActiveRecordRelationContext
 	 * An instance of TActiveRecordHasOne, TActiveRecordBelongsTo, TActiveRecordHasMany,
 	 * or TActiveRecordHasManyAssocation will be returned.
 	 * @param TActiveRecordCriteria search criteria
+	 * @param null|mixed $criteria
 	 * @return TActiveRecordRelation record relationship handler instnace.
 	 * @throws TActiveRecordException if property is not defined or missing.
 	 */
@@ -202,6 +203,7 @@ class TActiveRecordRelationContext
 
 	/**
 	 * @return TActiveRecordRelationCommand
+	 * @param mixed $updateBelongsTo
 	 */
 	public function updateAssociatedRecords($updateBelongsTo = false)
 	{

@@ -124,7 +124,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 * Sets the URL that this iframe will load content from.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setFrameUrl()}.
-	 * @param string the URL that this iframe will load content from
+	 * @param string $value the URL that this iframe will load content from
 	 * @see setFrameUrl
 	 * @since 3.1.0
 	 */

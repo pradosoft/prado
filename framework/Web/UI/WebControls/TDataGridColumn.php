@@ -152,7 +152,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether to create a style if previously not existing
+	 * @param boolean $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for header
 	 */
 	public function getHeaderStyle($createStyle = true)
@@ -205,7 +205,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether to create a style if previously not existing
+	 * @param boolean $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for footer
 	 */
 	public function getFooterStyle($createStyle = true)
@@ -218,7 +218,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean whether to create a style if previously not existing
+	 * @param boolean $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for item
 	 */
 	public function getItemStyle($createStyle = true)
@@ -266,6 +266,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * @return boolean whether the column is visible. Defaults to true.
+	 * @param mixed $checkParents
 	 */
 	public function getVisible($checkParents = true)
 	{
@@ -296,9 +297,10 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets a viewstate value.
 	 *
 	 * Make sure that the viewstate value must be serializable and unserializable.
-	 * @param string the name of the viewstate value
+	 * @param string $key the name of the viewstate value
 	 * @param mixed the viewstate value to be set
-	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param mixed $value default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param null|mixed $defaultValue
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
@@ -359,8 +361,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the data is an of {@link TMap}, {@link TList} or their derived class,
 	 * the field is used as a key value.
 	 * If the data is a component, the field is used as the name of a property.
-	 * @param mixed data containing the field of value
-	 * @param string the data field
+	 * @param mixed $data data containing the field of value
+	 * @param string $field the data field
 	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data or the field is invalid.
 	 */
@@ -377,9 +379,9 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * the header cell will show a link/image button. Otherwise, the header/footer cell
 	 * will only show static text/image.
 	 * This method can be overriden to provide customized intialization to column cells.
-	 * @param TTableCell the cell to be initialized.
-	 * @param integer the index to the Columns property that the cell resides in.
-	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
+	 * @param TTableCell $cell the cell to be initialized.
+	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
@@ -412,8 +414,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the column allows sorting, image or text will be created as
 	 * a button which issues <b>Sort</b> command upon user click.
 	 *
-	 * @param TTableCell the cell to be initialized
-	 * @param integer the index to the Columns property that the cell resides in.
+	 * @param TTableCell $cell the cell to be initialized
+	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
 	 */
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
@@ -475,8 +477,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * instantiate the footer cell. If that is not available, it will populate
 	 * the cell with a text string specified by {@link getFooterImageUrl FooterImageUrl}
 	 *
-	 * @param TTableCell the cell to be initialized
-	 * @param integer the index to the Columns property that the cell resides in.
+	 * @param TTableCell $cell the cell to be initialized
+	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
 	 */
 	protected function initializeFooterCell($cell, $columnIndex)
 	{

@@ -21,6 +21,7 @@ class TSqlMapException extends TException
 	 * Constructor, similar to the parent constructor. For parameters that
 	 * are of SimpleXmlElement, the tag name and its attribute names and values
 	 * are expanded into a string.
+	 * @param mixed $errorMessage
 	 */
 	public function __construct($errorMessage)
 	{

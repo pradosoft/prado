@@ -81,6 +81,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @param mixed $value
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -140,8 +141,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders the repeated items.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{
@@ -176,8 +177,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in raw format.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderRawContents($writer, $user)
 	{
@@ -201,8 +202,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in horizontal repeat direction.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderHorizontalContents($writer, $user)
 	{
@@ -283,8 +284,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in veritcal repeat direction.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderVerticalContents($writer, $user)
 	{
@@ -414,11 +415,11 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders header.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
-	 * @param boolean whether to render using table layout
-	 * @param integer number of columns to be rendered
-	 * @param boolean if a line break is needed at the end
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
+	 * @param boolean $tableLayout whether to render using table layout
+	 * @param integer $columns number of columns to be rendered
+	 * @param boolean $needBreak if a line break is needed at the end
 	 */
 	protected function renderHeader($writer, $user, $tableLayout, $columns, $needBreak)
 	{
@@ -448,10 +449,10 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders footer.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param IRepeatInfoUser repeat information user
-	 * @param boolean whether to render using table layout
-	 * @param integer number of columns to be rendered
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param IRepeatInfoUser $user repeat information user
+	 * @param boolean $tableLayout whether to render using table layout
+	 * @param integer $columns number of columns to be rendered
 	 */
 	protected function renderFooter($writer, $user, $tableLayout, $columns)
 	{

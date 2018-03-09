@@ -96,6 +96,7 @@ abstract class TActiveRecordRelation
 	/**
 	 * Fetch results for current relationship.
 	 * @return boolean always true.
+	 * @param mixed $obj
 	 */
 	public function fetchResultsInto($obj)
 	{
@@ -109,6 +110,8 @@ abstract class TActiveRecordRelation
 	 * The method returns the first matching foreign key between these 2 records.
 	 * @param TActiveRecord $fromRecord
 	 * @param TActiveRecord $matchesRecord
+	 * @param mixed $from
+	 * @param mixed $loose
 	 * @return array foreign keys with source column names as key and foreign column names as value.
 	 */
 	protected function findForeignKeys($from, $matchesRecord, $loose = false)
@@ -152,6 +155,7 @@ abstract class TActiveRecordRelation
 	 * Find matching foreign key fields from the 3rd element of an entry in TActiveRecord::$RELATION.
 	 * Assume field names consist of [\w-] character sets. Prefix to the field names ending with a dot
 	 * are ignored.
+	 * @param mixed $fkeys
 	 */
 	private function getFkFields($fkeys)
 	{
@@ -220,6 +224,8 @@ abstract class TActiveRecordRelation
 	 * @param array source property names
 	 * @param array foreign objects
 	 * @param array foreign object field names.
+	 * @param mixed $properties
+	 * @param mixed $fields
 	 */
 	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
 	{
@@ -235,6 +241,7 @@ abstract class TActiveRecordRelation
 	 * @param array $results
 	 * @param array $collections
 	 * @param array property names
+	 * @param mixed $properties
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
@@ -252,6 +259,8 @@ abstract class TActiveRecordRelation
 	 * @param TActiveRecord source object.
 	 * @param array source properties
 	 * @param array foreign objects.
+	 * @param mixed $source
+	 * @param mixed $properties
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

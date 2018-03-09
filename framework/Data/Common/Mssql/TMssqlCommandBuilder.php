@@ -96,6 +96,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * @param string sql query
 	 * @param integer $limit > 0
 	 * @param integer $offset > 0
+	 * @param mixed $sql
 	 * @return sql modified sql query applied with limit and offset.
 	 */
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)

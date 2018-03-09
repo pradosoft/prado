@@ -159,6 +159,8 @@ class TAuthManager extends \Prado\TModule
 	 * Do not call this method directly.
 	 * @param mixed sender of the Authentication event
 	 * @param mixed event parameter
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function doAuthentication($sender, $param)
 	{
@@ -176,6 +178,8 @@ class TAuthManager extends \Prado\TModule
 	 * Do not call this method directly.
 	 * @param mixed sender of the Authorization event
 	 * @param mixed event parameter
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function doAuthorization($sender, $param)
 	{
@@ -190,6 +194,8 @@ class TAuthManager extends \Prado\TModule
 	 * Do not call this method directly.
 	 * @param mixed sender of the event
 	 * @param mixed event parameter
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function leave($sender, $param)
 	{

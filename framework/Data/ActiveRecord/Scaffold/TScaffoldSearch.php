@@ -74,6 +74,8 @@ class TScaffoldSearch extends TScaffoldBase
 	/**
 	 * Sets the SearchCondition of the TScaffoldListView as the search terms
 	 * given by the text of the search text box.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function bubbleEvent($sender, $param)
 	{

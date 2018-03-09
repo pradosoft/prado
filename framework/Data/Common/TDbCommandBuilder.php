@@ -30,6 +30,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * @param TDbConnection database connection.
 	 * @param TDbTableInfo table information.
+	 * @param null|mixed $connection
+	 * @param null|mixed $tableInfo
 	 */
 	public function __construct($connection = null, $tableInfo = null)
 	{
@@ -195,6 +197,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
 	 * </code>
 	 * @param mixed $value
+	 * @param mixed $data
 	 * @return array of generated fields - use implode(', ', $selectfieldlist) to collapse field list for usage
 	 * @since 3.1.7
 	 * @todo add support for table aliasing
@@ -312,6 +315,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * The tableName is obtained from the {@link setTableInfo TableInfo} property.
 	 * @param string query condition
 	 * @param array condition parameters.
+	 * @param mixed $where
+	 * @param mixed $parameters
+	 * @param mixed $ordering
+	 * @param mixed $limit
+	 * @param mixed $offset
+	 * @param mixed $select
 	 * @return TDbCommand query command.
 	 */
 	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
@@ -342,6 +351,11 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Creates a count(*) command for the table described in {@link setTableInfo TableInfo}.
 	 * @param string count condition.
 	 * @param array binding parameters.
+	 * @param mixed $where
+	 * @param mixed $parameters
+	 * @param mixed $ordering
+	 * @param mixed $limit
+	 * @param mixed $offset
 	 * @return TDbCommand count command.
 	 */
 	public function createCountCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1)
@@ -456,6 +470,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Bind the name-value pairs of $values where the array keys correspond to column names.
 	 * @param TDbCommand database command.
 	 * @param array name-value pairs.
+	 * @param mixed $command
+	 * @param mixed $values
 	 */
 	public function bindColumnValues($command, $values)
 	{
@@ -472,6 +488,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * @param TDbCommand database command
 	 * @param array values for binding.
+	 * @param mixed $command
+	 * @param mixed $values
 	 */
 	public function bindArrayValues($command, $values)
 	{

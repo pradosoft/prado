@@ -40,6 +40,7 @@ class TScaffoldView extends TScaffoldBase
 {
 	/**
 	 * Copy basic record details to the list/edit/search controls.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -88,6 +89,8 @@ class TScaffoldView extends TScaffoldBase
 	/**
 	 * Handle the "edit" and "new" commands by displaying the edit view.
 	 * Default command shows the list view.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -104,6 +107,8 @@ class TScaffoldView extends TScaffoldBase
 
 	/**
 	 * Shows the edit record view.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function showEditView($sender, $param)
 	{
@@ -117,6 +122,8 @@ class TScaffoldView extends TScaffoldBase
 
 	/**
 	 * Shows the view for listing the records.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function showListView($sender, $param)
 	{
@@ -128,6 +135,8 @@ class TScaffoldView extends TScaffoldBase
 
 	/**
 	 * Shows the add record view.
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function showAddView($sender, $param)
 	{

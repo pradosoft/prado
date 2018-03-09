@@ -38,8 +38,8 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	 * javascript function block. If the code begins with "javascript:", the
 	 * code is assumed to be a javascript function block rather than arbiturary
 	 * javascript statements.
-	 * @param string option name
-	 * @param string javascript statements.
+	 * @param string $name option name
+	 * @param string $code javascript statements.
 	 */
 	protected function setFunction($name, $code)
 	{
@@ -51,6 +51,7 @@ abstract class TClientSideOptions extends \Prado\TComponent
 
 	/**
 	 * @return string gets a particular option, null if not set.
+	 * @param mixed $name
 	 */
 	protected function getOption($name)
 	{
@@ -62,8 +63,8 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string option name
-	 * @param mixed option value.
+	 * @param string $name option name
+	 * @param mixed $value option value.
 	 */
 	protected function setOption($name, $value)
 	{
@@ -84,6 +85,7 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	/**
 	 * Ensure that the javascript statements are wrapped in a javascript
 	 * function block as <code>function(sender, parameter){ //code }</code>.
+	 * @param mixed $javascript
 	 */
 	protected function ensureFunction($javascript)
 	{

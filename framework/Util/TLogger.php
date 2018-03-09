@@ -66,6 +66,10 @@ class TLogger extends \Prado\TComponent
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string category of the message
 	 * @param string|TControl control of the message
+	 * @param mixed $message
+	 * @param mixed $level
+	 * @param mixed $category
+	 * @param null|mixed $ctl
 	 */
 	public function log($message, $level, $category = 'Uncategorized', $ctl = null)
 	{
@@ -104,6 +108,10 @@ class TLogger extends \Prado\TComponent
 	 * @param integer level filter
 	 * @param array category filter
 	 * @param array control filter
+	 * @param null|mixed $levels
+	 * @param null|mixed $categories
+	 * @param null|mixed $controls
+	 * @param null|mixed $timestamp
 	 * @return array list of messages. Each array elements represents one message
 	 * with the following structure:
 	 * array(
@@ -162,6 +170,10 @@ class TLogger extends \Prado\TComponent
 	 * @param integer level filter
 	 * @param array category filter
 	 * @param array control filter
+	 * @param null|mixed $levels
+	 * @param null|mixed $categories
+	 * @param null|mixed $controls
+	 * @param null|mixed $timestamp
 	 */
 	public function deleteLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{

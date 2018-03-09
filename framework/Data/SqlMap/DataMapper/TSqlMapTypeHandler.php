@@ -89,6 +89,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * as it was passed in.  It is not recommended to return null, unless null was passed
 	 * in.
 	 * @param array result row.
+	 * @param null|mixed $row
 	 * @return mixed
 	 */
 	abstract public function createNewInstance($row = null);

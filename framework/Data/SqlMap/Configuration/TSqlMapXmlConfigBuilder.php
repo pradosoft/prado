@@ -48,6 +48,9 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param Object object instance
 	 * @param SimpleXmlNode property node
 	 * @param array exception property name
+	 * @param mixed $obj
+	 * @param mixed $node
+	 * @param mixed $except
 	 */
 	protected function setObjectPropFromNode($obj, $node, $except = [])
 	{
@@ -92,6 +95,7 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * Load document using simple xml.
 	 * @param string filename.
+	 * @param mixed $filename
 	 * @return SimpleXmlElement xml document.
 	 */
 	protected function loadXmlDocument($filename, TSqlMapXmlConfiguration $config)
@@ -112,6 +116,8 @@ abstract class TSqlMapXmlConfigBuilder
 	 * @param SimpleXmlDocument $document
 	 * @param string tag name.
 	 * @param string id value.
+	 * @param mixed $tag
+	 * @param mixed $value
 	 * @return SimpleXmlElement node if found, null otherwise.
 	 */
 	protected function getElementByIdValue($document, $tag, $value)

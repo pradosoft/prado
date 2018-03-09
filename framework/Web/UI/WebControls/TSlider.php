@@ -356,6 +356,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Render the body content
+	 * @param mixed $writer
 	 */
 	public function renderContents($writer)
 	{

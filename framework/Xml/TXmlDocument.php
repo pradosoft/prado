@@ -75,8 +75,8 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Constructor.
-	 * @param string version of this XML document
-	 * @param string encoding of this XML document
+	 * @param string $version version of this XML document
+	 * @param string $encoding encoding of this XML document
 	 */
 	public function __construct($version = '1.0', $encoding = '')
 	{
@@ -119,7 +119,7 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Loads and parses an XML document.
-	 * @param string the XML file path
+	 * @param string $file the XML file path
 	 * @return boolean whether the XML file is parsed successfully
 	 * @throws TIOException if the file fails to be opened.
 	 */

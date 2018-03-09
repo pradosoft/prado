@@ -115,6 +115,8 @@ class TActivePageAdapter extends TControlAdapter
 	 * Register a control for defered render() call.
 	 * @param TControl control for defered rendering
 	 * @param THtmlWriter the renderer
+	 * @param mixed $control
+	 * @param mixed $writer
 	 */
 	public function registerControlToRender($control, $writer)
 	{
@@ -234,6 +236,9 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Appends data or javascript code to the body content surrounded with delimiters
+	 * @param mixed $response
+	 * @param mixed $delimiter
+	 * @param mixed $data
 	 */
 	private function appendContentPart($response, $delimiter, $data)
 	{

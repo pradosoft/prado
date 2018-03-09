@@ -270,6 +270,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Saves the current UrlManager instance to cache.
 	 * @return boolean true if UrlManager instance was cached, false otherwise.
+	 * @param mixed $manager
 	 */
 	protected function cacheUrlManager($manager)
 	{
@@ -454,6 +455,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|mixed $case
 	 * @return array
 	 */
 	public function getHeaders($case = null)
@@ -493,6 +495,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * 						null - keep current schema
 	 * 						true - force https
 	 * 						false - force http
+	 * @param null|mixed $forceSecureConnection
 	 * @return string schema and hostname of the requested URL
 	 */
 	public function getBaseUrl($forceSecureConnection = null)
@@ -523,6 +526,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * 						null - keep current schema
 	 * 						true - force https
 	 * 						false - force http
+	 * @param null|mixed $forceSecureConnection
 	 * @return string entry script URL (w/ host part)
 	 */
 	public function getAbsoluteApplicationUrl($forceSecureConnection = null)
@@ -726,6 +730,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param array GET parameters, null if not needed
 	 * @param boolean whether to encode the ampersand in URL, defaults to true.
 	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
+	 * @param mixed $serviceID
+	 * @param mixed $serviceParam
+	 * @param null|mixed $getItems
+	 * @param mixed $encodeAmpersand
+	 * @param mixed $encodeGetItems
 	 * @return string URL
 	 * @see TUrlManager::constructUrl
 	 */
@@ -760,6 +769,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * will be resolved with the serviceID and the serviceParameter.
 	 * You may override this method to provide your own way of service resolution.
 	 * @param array list of valid service IDs
+	 * @param mixed $serviceIDs
 	 * @return string the currently requested service ID, null if no service ID is found
 	 * @see constructUrl
 	 */
@@ -878,6 +888,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Note, if the specified key already exists, the old value will be overwritten.
 	 * @param mixed key
 	 * @param mixed value
+	 * @param mixed $key
+	 * @param mixed $value
 	 */
 	public function add($key, $value)
 	{
@@ -887,6 +899,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Removes an item from the request by its key.
 	 * @param mixed the key of the item to be removed
+	 * @param mixed $key
 	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the item cannot be removed
 	 */
@@ -955,6 +968,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
+	 * @param mixed $offset
+	 * @param mixed $item
 	 */
 	public function offsetSet($offset, $item)
 	{

@@ -43,8 +43,8 @@ class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl the control originally raises the <b>OnCommand</b> event.
-	 * @param TDataGridCommandEventParameter command event parameter
+	 * @param TControl $source the control originally raises the <b>OnCommand</b> event.
+	 * @param TDataGridCommandEventParameter $param command event parameter
 	 */
 	public function __construct($source, TDataGridCommandEventParameter $param)
 	{

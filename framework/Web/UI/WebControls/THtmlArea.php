@@ -346,6 +346,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Registers the editor javascript file and code to initialize the editor.
+	 * @param mixed $writer
 	 */
 	protected function registerEditorClientScript($writer)
 	{
@@ -429,6 +430,7 @@ class THtmlArea extends TTextBox
 	/**
 	 * Parse additional options set in the Options property.
 	 * @return array additional custom options
+	 * @param mixed $string
 	 */
 	protected function parseEditorOptions($string)
 	{
@@ -452,6 +454,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * @return string localized editor interface language extension.
+	 * @param mixed $culture
 	 */
 	protected function getLanguageSuffix($culture)
 	{

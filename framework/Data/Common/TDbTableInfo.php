@@ -42,6 +42,9 @@ class TDbTableInfo extends \Prado\TComponent
 	/**
 	 * Sets the database table meta data information.
 	 * @param array table column information.
+	 * @param mixed $tableInfo
+	 * @param mixed $primary
+	 * @param mixed $foreign
 	 */
 	public function __construct($tableInfo = [], $primary = [], $foreign = [])
 	{
@@ -73,6 +76,8 @@ class TDbTableInfo extends \Prado\TComponent
 	/**
 	 * @param string information array key name
 	 * @param mixed new information array value.
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	protected function setInfo($name, $value)
 	{

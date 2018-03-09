@@ -328,7 +328,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * @param string $host
 	 * @param string $path
 	 * @param array $data
-	 * @param int port
+	 * @param int $port port
 	 * @return array response
 	 */
 	private function recaptcha_http_post($host, $path, $data, $port = 80)

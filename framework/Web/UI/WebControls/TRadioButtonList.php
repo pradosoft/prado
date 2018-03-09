@@ -72,6 +72,7 @@ class TRadioButtonList extends TCheckBoxList
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $indices
 	 */
 	public function setSelectedIndices($indices)
 	{

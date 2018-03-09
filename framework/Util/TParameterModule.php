@@ -148,6 +148,7 @@ class TParameterModule extends \Prado\TModule
 	/**
 	 * @param string the parameter file path. It must be in namespace format
 	 * and the file extension is '.xml'.
+	 * @param mixed $value
 	 * @throws TInvalidOperationException if the module is initialized
 	 * @throws TConfigurationException if the file is invalid
 	 */

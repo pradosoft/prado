@@ -45,6 +45,10 @@ class TSqlMapPagedList extends TPagedList
 	 * @param int page size
 	 * @param mixed delegate for each data row retrieved.
 	 * @param int number of page to fetch on initialization
+	 * @param mixed $parameter
+	 * @param mixed $pageSize
+	 * @param null|mixed $delegate
+	 * @param mixed $page
 	 */
 	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate = null, $page = 0)
 	{
@@ -60,6 +64,10 @@ class TSqlMapPagedList extends TPagedList
 	 * @param mixed query parameters
 	 * @param int page size.
 	 * @param int number of page.
+	 * @param mixed $statement
+	 * @param mixed $parameter
+	 * @param mixed $pageSize
+	 * @param mixed $page
 	 */
 	protected function initialize($statement, $parameter, $pageSize, $page)
 	{
@@ -72,6 +80,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * @throws TSqlMapException custom paging must be enabled.
+	 * @param mixed $value
 	 */
 	public function setCustomPaging($value)
 	{
@@ -82,6 +91,8 @@ class TSqlMapPagedList extends TPagedList
 	 * Fetch data by executing the SqlMap statement.
 	 * @param TPageList current object.
 	 * @param TPagedListFetchDataEventParameter fetch parameters
+	 * @param mixed $sender
+	 * @param mixed $param
 	 */
 	protected function fetchDataFromStatement($sender, $param)
 	{
@@ -120,6 +131,8 @@ class TSqlMapPagedList extends TPagedList
 	 * Populate the list with the fetched data.
 	 * @param TPagedListFetchDataEventParameter fetch parameters
 	 * @param array fetched data.
+	 * @param mixed $param
+	 * @param mixed $data
 	 */
 	protected function populateData($param, $data)
 	{

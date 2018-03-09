@@ -43,8 +43,8 @@ class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TControl the control originally raises the <b>OnCommand</b> event.
-	 * @param integer new page index
+	 * @param TControl $source the control originally raises the <b>OnCommand</b> event.
+	 * @param integer $newPageIndex new page index
 	 */
 	public function __construct($source, $newPageIndex)
 	{

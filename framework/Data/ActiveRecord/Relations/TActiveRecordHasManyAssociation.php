@@ -181,6 +181,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
 	 * @param array field names
 	 * @param array foreign key index values.
+	 * @param mixed $foreignKeys
+	 * @param mixed $indexValues
+	 * @param mixed $sourceKeys
 	 */
 	protected function fetchForeignObjects(&$results, $foreignKeys, $indexValues, $sourceKeys)
 	{
@@ -205,6 +208,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * @param string active record class name.
 	 * @param array row data
 	 * @param array foreign key column names
+	 * @param mixed $type
+	 * @param mixed $row
+	 * @param mixed $foreignKeys
 	 * @return TActiveRecord
 	 */
 	protected function createFkObject($type, $row, $foreignKeys)
@@ -224,6 +230,10 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * @param TTableInfo association table info
 	 * @param array field names
 	 * @param array field values
+	 * @param mixed $criteria
+	 * @param mixed $foreignKeys
+	 * @param mixed $indexValues
+	 * @param mixed $sourceKeys
 	 */
 	public function createCommand($criteria, $foreignKeys, $indexValues, $sourceKeys)
 	{

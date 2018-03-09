@@ -78,8 +78,8 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 
 	/**
 	 * Constructor.
-	 * @param string theme path
-	 * @param string theme URL
+	 * @param string $themePath theme path
+	 * @param string $themeUrl theme URL
 	 * @throws TConfigurationException if theme path does not exist or any parsing error of the skin files
 	 */
 	public function __construct($themePath, $themeUrl)
@@ -239,7 +239,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 * The control's class name and SkinID value will be used to
 	 * identify which skin to be applied. If the control's SkinID is empty,
 	 * the default skin will be applied.
-	 * @param TControl the control to be applied with a skin
+	 * @param TControl $control the control to be applied with a skin
 	 * @return boolean if a skin is successfully applied
 	 * @throws TConfigurationException if any error happened during the skin application
 	 */

@@ -222,6 +222,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Renders the javascript for textbox.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{
@@ -554,7 +555,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Sets the text content of the TTextBox control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string the text content of the TTextBox control.
+	 * @param string $value the text content of the TTextBox control.
 	 * @see setText
 	 * @since 3.1.0
 	 */

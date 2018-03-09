@@ -95,6 +95,7 @@ class DateTimeFormatInfo
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
 	 * @return mixed
+	 * @param mixed $name
 	 */
 	public function __get($name)
 	{
@@ -109,6 +110,8 @@ class DateTimeFormatInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to set the value.
+	 * @param mixed $name
+	 * @param mixed $value
 	 */
 	public function __set($name, $value)
 	{
@@ -127,6 +130,7 @@ class DateTimeFormatInfo
 	 * unless you know what you are doing. Please use use
 	 * DateTimeFormatInfo::getInstance() to create an instance.
 	 * @param array ICU data for date time formatting.
+	 * @param mixed $data
 	 * @see getInstance()
 	 */
 	public function __construct($data = [])
@@ -167,6 +171,7 @@ class DateTimeFormatInfo
 	/**
 	 * Returns the DateTimeFormatInfo associated with the specified culture.
 	 * @param CultureInfo the culture that gets the DateTimeFormat property.
+	 * @param null|mixed $culture
 	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
 	 * culture.
 	 */
@@ -507,6 +512,8 @@ class DateTimeFormatInfo
 	 * Formats the date and time in a culture sensitive paterrn.
 	 * The default is "Date Time".
 	 * @return string date and time formated
+	 * @param mixed $date
+	 * @param mixed $time
 	 */
 	public function formatDateTime($date, $time)
 	{

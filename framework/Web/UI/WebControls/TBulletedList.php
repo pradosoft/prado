@@ -187,6 +187,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @return TBulletedListDisplayMode display mode of the list.
+	 * @param mixed $value
 	 */
 	public function setDisplayMode($value)
 	{
@@ -234,7 +235,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param string the target window or frame to display the Web page content
+	 * @param string $value the target window or frame to display the Web page content
 	 * linked to when {@link getDisplayMode DisplayMode} is 'HyperLink' and one of
 	 * the hyperlinks is clicked.
 	 */
@@ -276,9 +277,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders each item
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param TListItem item to be rendered
-	 * @param integer index of the item being rendered
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param TListItem $item item to be rendered
+	 * @param integer $index index of the item being rendered
 	 */
 	protected function renderBulletText($writer, $item, $index)
 	{
@@ -367,6 +368,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $value
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -375,6 +377,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $index
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -383,6 +386,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $indices
 	 */
 	public function setSelectedIndices($indices)
 	{
@@ -391,6 +395,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $value
 	 */
 	public function setSelectedValue($value)
 	{
@@ -399,6 +404,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $values
 	 */
 	public function setSelectedValues($values)
 	{

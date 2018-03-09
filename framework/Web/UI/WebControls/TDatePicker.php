@@ -93,6 +93,7 @@ class TDatePicker extends TTextBox
 	private $_clientScript;
 	/**
 	 * AutoPostBack is not supported.
+	 * @param mixed $value
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -342,7 +343,7 @@ class TDatePicker extends TTextBox
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setTimeStamp()}.
-	 * @param integer the timestamp of the TDatePicker control.
+	 * @param integer $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */
@@ -409,6 +410,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Publish the date picker Css asset files.
+	 * @param mixed $param
 	 */
 	public function onPreRender($param)
 	{
@@ -439,6 +441,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the date picker popup buttons.
+	 * @param mixed $writer
 	 */
 	protected function renderDatePickerButtons($writer)
 	{
@@ -604,6 +607,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the drop down list date picker.
+	 * @param mixed $writer
 	 */
 	protected function renderDropDownListCalendar($writer)
 	{
@@ -642,8 +646,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the calendar drop down list depending on the DateFormat pattern.
-	 * @param THtmlWriter the Html writer to render the drop down lists.
-	 * @param array the current selected date
+	 * @param THtmlWriter $writer the Html writer to render the drop down lists.
+	 * @param array $date the current selected date
 	 */
 	protected function renderCalendarSelections($writer, $date)
 	{
@@ -674,9 +678,9 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders a drop down lists.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 * @param array list of selection options
-	 * @param mixed selected key.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param array $options list of selection options
+	 * @param null|mixed $selected selected key.
 	 */
 	private function renderDropDownListOptions($writer, $options, $selected = null)
 	{
@@ -693,8 +697,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the day drop down list options.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 * @param mixed selected day.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param null|mixed $selected selected day.
 	 */
 	protected function renderCalendarDayOptions($writer, $selected = null)
 	{
@@ -726,8 +730,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the month drop down list options.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 * @param mixed selected month.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param null|mixed $selected selected month.
 	 */
 	protected function renderCalendarMonthOptions($writer, $selected = null)
 	{
@@ -776,8 +780,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the year drop down list options.
-	 * @param THtmlWriter the writer used for the rendering purpose
-	 * @param mixed selected year.
+	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param null|mixed $selected selected year.
 	 */
 	protected function renderCalendarYearOptions($writer, $selected = null)
 	{
@@ -808,6 +812,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional button such that when clicked it shows the date picker.
 	 * @return THtmlWriter writer
+	 * @param mixed $writer
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
@@ -825,6 +830,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional image button such that when clicked it shows the date picker.
 	 * @return THtmlWriter writer
+	 * @param mixed $writer
 	 */
 	protected function renderImageButtonDatePicker($writer)
 	{
@@ -844,7 +850,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param string date picker asset file in the self::SCRIPT_PATH directory.
+	 * @param string $file date picker asset file in the self::SCRIPT_PATH directory.
 	 * @return string date picker asset url.
 	 */
 	protected function getAssetUrl($file = '')

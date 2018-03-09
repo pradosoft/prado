@@ -52,6 +52,7 @@ class TDbCommand extends \Prado\TComponent
 	 * Constructor.
 	 * @param TDbConnection the database connection
 	 * @param string the SQL statement to be executed
+	 * @param mixed $text
 	 */
 	public function __construct(TDbConnection $connection, $text)
 	{
@@ -140,6 +141,9 @@ class TDbCommand extends \Prado\TComponent
 	 * @param mixed Name of the PHP variable to bind to the SQL statement parameter
 	 * @param int SQL data type of the parameter
 	 * @param int length of the data type
+	 * @param mixed $name
+	 * @param null|mixed $dataType
+	 * @param null|mixed $length
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
 	public function bindParameter($name, &$value, $dataType = null, $length = null)
@@ -162,6 +166,9 @@ class TDbCommand extends \Prado\TComponent
 	 * placeholders, this will be the 1-indexed position of the parameter.
 	 * @param mixed The value to bind to the parameter
 	 * @param int SQL data type of the parameter
+	 * @param mixed $name
+	 * @param mixed $value
+	 * @param null|mixed $dataType
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindValue.php
 	 */
 	public function bindValue($name, $value, $dataType = null)
@@ -234,6 +241,7 @@ class TDbCommand extends \Prado\TComponent
 	 * This is a convenient method of {@link query} when only the first row of data is needed.
 	 * @param boolean whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
+	 * @param mixed $fetchAssociative
 	 * @return array the first row of the query result, false if no result.
 	 * @throws TDbException execution failed
 	 */

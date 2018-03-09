@@ -42,6 +42,9 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 * @param TTableCell the cell to be initialized.
 	 * @param integer the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
+	 * @param mixed $cell
+	 * @param mixed $columnIndex
+	 * @param mixed $itemType
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{

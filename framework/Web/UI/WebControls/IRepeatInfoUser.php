@@ -45,10 +45,10 @@ interface IRepeatInfoUser
 	public function generateItemStyle($itemType, $index);
 	/**
 	 * Renders an item.
-	 * @param THtmlWriter writer for the rendering purpose
-	 * @param TRepeatInfo repeat information
-	 * @param string item type
-	 * @param integer zero-based index of the item being rendered
+	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param TRepeatInfo $repeatInfo repeat information
+	 * @param string $itemType item type
+	 * @param integer $index zero-based index of the item being rendered
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index);
 }

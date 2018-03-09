@@ -188,7 +188,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Sets the text content of the table cell.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string the text content of the table cell.
+	 * @param string $value the text content of the table cell.
 	 * @see setText
 	 * @since 3.1.0
 	 */

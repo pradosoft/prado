@@ -354,6 +354,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * Inserts a new record into the table. Each array key must
 	 * correspond to a column name in the table unless a null value is permitted.
 	 * @param array new record data.
+	 * @param mixed $data
 	 * @return mixed last insert id if one column contains a serial or sequence,
 	 * otherwise true if command executes successfully and affected 1 or more rows.
 	 */
@@ -442,6 +443,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * inspected to obtain the sql query to be executed.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayEventParameter
+	 * @param mixed $command
+	 * @param mixed $criteria
 	 */
 	public function onCreateCommand($command, $criteria)
 	{
@@ -456,6 +459,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayResultEventParameter
+	 * @param mixed $command
+	 * @param mixed $result
 	 */
 	public function onExecuteCommand($command, $result)
 	{

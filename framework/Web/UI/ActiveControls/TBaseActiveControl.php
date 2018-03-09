@@ -127,6 +127,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	 * the page is not loading post data.
 	 * @return boolean true if the callback response is allowed update
 	 * client-side contents.
+	 * @param mixed $bDontRequireVisibility
 	 */
 	public function canUpdateClientSide($bDontRequireVisibility = false)
 	{

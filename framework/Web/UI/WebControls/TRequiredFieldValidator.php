@@ -67,7 +67,7 @@ class TRequiredFieldValidator extends TBaseValidator
 		return '';
 	}
 	/**
-	 * @param string the initial value of the associated input control.
+	 * @param string $value the initial value of the associated input control.
 	 * If the associated input control does not change from this initial value
 	 * upon postback, the validation fails.
 	 */

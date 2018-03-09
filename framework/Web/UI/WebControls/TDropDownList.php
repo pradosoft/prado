@@ -117,6 +117,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 
 	/**
 	 * @throws TNotSupportedException if this method is invoked
+	 * @param mixed $indices
 	 */
 	public function setSelectedIndices($indices)
 	{

@@ -120,6 +120,8 @@ class TMysqlMetaData extends TDbMetaData
 	/**
 	 * @param TMysqlTableInfo table information.
 	 * @param array column information.
+	 * @param mixed $tableInfo
+	 * @param mixed $col
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -175,6 +177,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * @return boolean true if column type if "numeric", "interval" or begins with "time".
+	 * @param mixed $type
 	 */
 	protected function isPrecisionType($type)
 	{
@@ -186,6 +189,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * @return boolean true if column type if "enum" or "set".
+	 * @param mixed $type
 	 */
 	protected function isEnumSetType($type)
 	{
@@ -194,7 +198,7 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table name, may be quoted with back-ticks and may contain database name.
+	 * @param string $table table name, may be quoted with back-ticks and may contain database name.
 	 * @return array tuple ($schema,$table), $schema may be null.
 	 * @throws TDbException when table name contains invalid identifier bytes.
 	 */
@@ -246,6 +250,8 @@ class TMysqlMetaData extends TDbMetaData
 	 * For MySQL version 5.0.1 or ealier, this always return false.
 	 * @param string database name, null to use default connection database.
 	 * @param string table or view name.
+	 * @param mixed $schemaName
+	 * @param mixed $tableName
 	 * @return boolean true if is view, false otherwise.
 	 * @throws TDbException if table or view does not exist.
 	 */
@@ -336,6 +342,8 @@ EOD;
 	/**
 	 * @param string database name
 	 * @param string table name
+	 * @param mixed $schemaName
+	 * @param mixed $tableName
 	 * @return string SQL command to create the table.
 	 * @throws TDbException if PHP version is less than 5.1.3
 	 */

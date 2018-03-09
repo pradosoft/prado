@@ -1109,8 +1109,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Creates a datagrid item instance based on the item type and index.
-	 * @param integer zero-based item index
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based item index
+	 * @param mixed $dataSourceIndex
+	 * @param TListItemType $itemType item type
 	 * @return TDataGridItem created data list item
 	 */
 	protected function createItem($itemIndex, $dataSourceIndex, $itemType)
@@ -1138,8 +1139,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Initializes a datagrid item and cells inside it
-	 * @param TDataGrid datagrid item to be initialized
-	 * @param TDataGridColumnCollection datagrid columns to be used to initialize the cells in the item
+	 * @param TDataGrid $item datagrid item to be initialized
+	 * @param TDataGridColumnCollection $columns datagrid columns to be used to initialize the cells in the item
 	 */
 	protected function initializeItem($item, $columns)
 	{
@@ -1191,12 +1192,12 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
-	 * @param mixed the container pager instance of TActiveDatagridPager
-	 * @param string button type, either LinkButton or PushButton
-	 * @param boolean whether the button should be enabled
-	 * @param string caption of the button
-	 * @param string CommandName corresponding to the OnCommand event of the button
-	 * @param string CommandParameter corresponding to the OnCommand event of the button
+	 * @param mixed $pager the container pager instance of TActiveDatagridPager
+	 * @param string $buttonType button type, either LinkButton or PushButton
+	 * @param boolean $enabled whether the button should be enabled
+	 * @param string $text caption of the button
+	 * @param string $commandName CommandName corresponding to the OnCommand event of the button
+	 * @param string $commandParameter CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
 	protected function createPagerButton($pager, $buttonType, $enabled, $text, $commandName, $commandParameter)

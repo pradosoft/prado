@@ -24,6 +24,7 @@ class TSqlMapLruCache extends TSqlMapCache
 {
 	/**
 	 * @return mixed Gets a cached object with the specified key.
+	 * @param mixed $key
 	 */
 	public function get($key)
 	{
@@ -39,6 +40,10 @@ class TSqlMapLruCache extends TSqlMapCache
 	 * The expire and dependency parameters are ignored.
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
+	 * @param mixed $key
+	 * @param mixed $value
+	 * @param mixed $expire
+	 * @param null|mixed $dependency
 	 */
 	public function set($key, $value, $expire = 0, $dependency = null)
 	{

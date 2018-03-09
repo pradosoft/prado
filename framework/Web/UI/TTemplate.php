@@ -114,11 +114,11 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	/**
 	 * Constructor.
 	 * The template will be parsed after construction.
-	 * @param string the template string
-	 * @param string the template context directory
-	 * @param string the template file, null if no file
-	 * @param integer the line number that parsing starts from (internal use)
-	 * @param boolean whether this template is a source template, i.e., this template is loaded from
+	 * @param string $template the template string
+	 * @param string $contextPath the template context directory
+	 * @param null|string $tplFile the template file, null if no file
+	 * @param integer $startingLine the line number that parsing starts from (internal use)
+	 * @param boolean $sourceTemplate whether this template is a source template, i.e., this template is loaded from
 	 * some external storage rather than from within another template.
 	 */
 	public function __construct($template, $contextPath, $tplFile = null, $startingLine = 0, $sourceTemplate = true)
@@ -186,8 +186,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Instantiates the template.
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
-	 * @param TControl the control who owns the template
-	 * @param TControl the control who will become the root parent of the controls on the template. If null, it uses the template control.
+	 * @param TControl $tplControl the control who owns the template
+	 * @param null|TControl $parentControl the control who will become the root parent of the controls on the template. If null, it uses the template control.
 	 */
 	public function instantiateIn($tplControl, $parentControl = null)
 	{
@@ -301,9 +301,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a property/event of a control.
-	 * @param TControl control to be configured
-	 * @param string property name
-	 * @param mixed property initial value
+	 * @param TControl $control control to be configured
+	 * @param string $name property name
+	 * @param mixed $value property initial value
 	 */
 	protected function configureControl($control, $name, $value)
 	{
@@ -318,9 +318,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a property of a non-control component.
-	 * @param TComponent component to be configured
-	 * @param string property name
-	 * @param mixed property initial value
+	 * @param TComponent$component component to be configured
+	 * @param string $name property name
+	 * @param mixed $value property initial value
 	 */
 	protected function configureComponent($component, $name, $value)
 	{
@@ -333,10 +333,10 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures an event for a control.
-	 * @param TControl control to be configured
-	 * @param string event name
-	 * @param string event handler
-	 * @param TControl context control
+	 * @param TControl $control control to be configured
+	 * @param string $name event name
+	 * @param string $value event handler
+	 * @param TControl $contextControl context control
 	 */
 	protected function configureEvent($control, $name, $value, $contextControl)
 	{
@@ -349,9 +349,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a simple property for a component.
-	 * @param TComponent component to be configured
-	 * @param string property name
-	 * @param mixed property initial value
+	 * @param TComponent $component component to be configured
+	 * @param string $name property name
+	 * @param mixed $value property initial value
 	 */
 	protected function configureProperty($component, $name, $value)
 	{
@@ -402,9 +402,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a subproperty for a component.
-	 * @param TComponent component to be configured
-	 * @param string subproperty name
-	 * @param mixed subproperty initial value
+	 * @param TComponent $component component to be configured
+	 * @param string $name subproperty name
+	 * @param mixed $value subproperty initial value
 	 */
 	protected function configureSubProperty($component, $name, $value)
 	{
@@ -693,7 +693,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Parses the attributes of a tag from a string.
-	 * @param string the string to be parsed.
+	 * @param string $str the string to be parsed.
+	 * @param mixed $offset
 	 * @return array attribute values indexed by names.
 	 */
 	protected function parseAttributes($str, $offset)
@@ -868,9 +869,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Handles template parsing exception.
 	 * This method rethrows the exception caught during template parsing.
 	 * It adjusts the error location by giving out correct error line number and source file.
-	 * @param Exception template exception
-	 * @param int line number
-	 * @param string template string if no source file is used
+	 * @param Exception $e template exception
+	 * @param integer $line line number
+	 * @param null|string $input template string if no source file is used
 	 */
 	protected function handleException($e, $line, $input = null)
 	{

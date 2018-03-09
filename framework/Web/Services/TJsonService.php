@@ -139,6 +139,9 @@ class TJsonService extends \Prado\TService
 	/**
 	 * Renders content provided by TJsonResponse::getJsonContent() as
 	 * javascript in JSON format.
+	 * @param mixed $service
+	 * @param mixed $properties
+	 * @param mixed $config
 	 */
 	protected function createJsonResponse($service, $properties, $config)
 	{

@@ -71,7 +71,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * Finds a control by ID.
 	 * This method overrides the parent implementation so that it always returns
 	 * the checkbox list itself (because the checkbox list does not have child controls.)
-	 * @param string control ID
+	 * @param string $id control ID
+	 * @param mixed $real
 	 * @return TControl control being found
 	 */
 	public function findControl($id, $real = false)
@@ -275,8 +276,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns a style used for rendering items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer index of the item being rendered
+	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer $index index of the item being rendered
 	 * @return null
 	 */
 	public function generateItemStyle($itemType, $index)
@@ -287,10 +288,10 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Renders an item in the list.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param THtmlWriter writer for rendering purpose
-	 * @param TRepeatInfo repeat information
-	 * @param string item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer zero-based index of the item in the item list
+	 * @param THtmlWriter $writer writer for rendering purpose
+	 * @param TRepeatInfo $repeatInfo repeat information
+	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
+	 * @param integer $index zero-based index of the item in the item list
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{

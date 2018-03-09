@@ -50,8 +50,8 @@ abstract class THotSpot extends \Prado\TComponent
 	 * that must be kept in viewstate.
 	 * Make sure that the viewstate value must be serializable and unserializable.
 	 * @param string the name of the viewstate value
-	 * @param mixed the viewstate value to be set
-	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param mixed $key the viewstate value to be set
+	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
@@ -248,6 +248,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * @return boolean whether the named attribute exists
+	 * @param mixed $name
 	 */
 	public function hasAttribute($name)
 	{
@@ -260,6 +261,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * @return string attribute value, null if attribute does not exist
+	 * @param mixed $name
 	 */
 	public function getAttribute($name)
 	{
@@ -272,8 +274,8 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * Sets a custom hotspot attribute.
-	 * @param string attribute name
-	 * @param string value of the attribute
+	 * @param string $name attribute name
+	 * @param string $value value of the attribute
 	 */
 	public function setAttribute($name, $value)
 	{
@@ -296,7 +298,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * Renders this hotspot.
-	 * @param THtmlWriter
+	 * @param THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

@@ -142,7 +142,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return string the original full path name of the file on the client machine
 	 */
 	public function getFileName($index = 0)
@@ -152,7 +152,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return integer the actual size of the uploaded file in bytes
 	 */
 	public function getFileSize($index = 0)
@@ -162,7 +162,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return string the MIME-type of the uploaded file (such as "image/gif").
 	 * This mime type is not checked on the server side and do not take its value for granted.
 	 */
@@ -173,7 +173,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return string the local name of the file (where it is after being uploaded).
 	 * Note, PHP will delete this file automatically after finishing this round of request.
 	 */
@@ -185,7 +185,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Returns an error code describing the status of this file uploading.
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return integer the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
@@ -196,7 +196,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return boolean whether the file is uploaded successfully
 	 */
 	public function getHasFile($index = 0)
@@ -222,10 +222,10 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Saves the uploaded file.
 	 * Returns an error code describing the status of this file uploading.
 	 * For backward compatibility, the first file is used by default.
-	 * @param string the file name used to save the uploaded file
-	 * @param boolean whether to delete the temporary file after saving.
+	 * @param string $fileName the file name used to save the uploaded file
+	 * @param boolean $deleteTempFile whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
-	 * @param integer the index of the uploaded file, defaults to 0.
+	 * @param integer $index the index of the uploaded file, defaults to 0.
 	 * @return boolean true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)

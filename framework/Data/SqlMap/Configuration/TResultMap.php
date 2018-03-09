@@ -157,6 +157,7 @@ class TResultMap extends \Prado\TComponent
 	/**
 	 * Create a new instance of the class of this result map.
 	 * @param TSqlMapTypeHandlerRegistry type handler registry.
+	 * @param mixed $registry
 	 * @return mixed new result object.
 	 * @throws TSqlMapException
 	 */

@@ -112,6 +112,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Returns table information for table in the database connection.
 	 * @param TDbConnection database connection
 	 * @param string table name
+	 * @param mixed $tableName
 	 * @return TDbTableInfo table details.
 	 */
 	public function getTableInfo(TDbConnection $connection, $tableName)
@@ -170,6 +171,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * object calling this gateway.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayEventParameter
+	 * @param mixed $param
 	 */
 	public function onCreateCommand($sender, $param)
 	{
@@ -189,6 +191,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * object calling this gateway.
 	 * @param TDataGatewayCommand originator $sender
 	 * @param TDataGatewayResultEventParameter
+	 * @param mixed $param
 	 */
 	public function onExecuteCommand($sender, $param)
 	{
@@ -203,6 +206,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * composite key, specify the name value pairs as an array.
 	 * @param TActiveRecord active record instance.
 	 * @param array primary name value pairs
+	 * @param mixed $keys
 	 * @return array record data
 	 */
 	public function findRecordByPK(TActiveRecord $record, $keys)
@@ -215,6 +219,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Returns records matching the list of given primary keys.
 	 * @param TActiveRecord active record instance.
 	 * @param array list of primary name value pairs
+	 * @param mixed $keys
 	 * @return array matching data.
 	 */
 	public function findRecordsByPks(TActiveRecord $record, $keys)
@@ -229,6 +234,8 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria.
 	 * @param boolean true to return multiple rows as iterator, false returns first row.
+	 * @param mixed $criteria
+	 * @param mixed $iterator
 	 * @return mixed matching data.
 	 */
 	public function findRecordsByCriteria(TActiveRecord $record, $criteria, $iterator = false)
@@ -241,6 +248,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Return record data from sql query.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria sql query
+	 * @param mixed $criteria
 	 * @return array result.
 	 */
 	public function findRecordBySql(TActiveRecord $record, $criteria)
@@ -252,6 +260,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Return record data from sql query.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria sql query
+	 * @param mixed $criteria
 	 * @return TDbDataReader result iterator.
 	 */
 	public function findRecordsBySql(TActiveRecord $record, $criteria)
@@ -268,6 +277,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Returns the number of records that match the given criteria.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria
+	 * @param mixed $criteria
 	 * @return int number of records.
 	 */
 	public function countRecords(TActiveRecord $record, $criteria)
@@ -406,6 +416,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Delete multiple records using primary keys.
 	 * @param TActiveRecord finder instance.
+	 * @param mixed $keys
 	 * @return int number of rows deleted.
 	 */
 	public function deleteRecordsByPk(TActiveRecord $record, $keys)
@@ -417,6 +428,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Delete multiple records by criteria.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria
+	 * @param mixed $criteria
 	 * @return int number of records.
 	 */
 	public function deleteRecordsByCriteria(TActiveRecord $record, $criteria)
@@ -430,6 +442,10 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TDbCommand sql command to be executed.
 	 * @param TActiveRecord active record
 	 * @param TActiveRecordCriteria data for the command.
+	 * @param mixed $event
+	 * @param mixed $command
+	 * @param mixed $record
+	 * @param mixed $criteria
 	 */
 	protected function raiseCommandEvent($event, $command, $record, $criteria)
 	{

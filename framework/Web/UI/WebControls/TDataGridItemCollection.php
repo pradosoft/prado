@@ -32,8 +32,8 @@ class TDataGridItemCollection extends \Prado\Collections\TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by inserting only TDataGridItem.
-	 * @param integer the speicified position.
-	 * @param mixed new item
+	 * @param integer $index the specified position.
+	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridItem.
 	 */
 	public function insertAt($index, $item)

@@ -186,7 +186,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * with explicit ID. If the name matches both a property and a control ID,
 	 * the control ID will take the precedence.
 	 *
-	 * @param string the property name or control ID
+	 * @param string $name the property name or control ID
 	 * @return mixed the property value or the target control
 	 * @throws TInvalidOperationException if the property is not defined.
 	 * @see registerObject
@@ -213,7 +213,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * with explicit ID. If the name matches both a property and a control ID,
 	 * the control ID will take the precedence.
 	 *
-	 * @param string the property name or control ID
+	 * @param string $name the property name or control ID
 	 * @return bool wether the control or property exists
 	 * @see __get
 	 */
@@ -350,7 +350,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Sets the lifecycle step the control is currently at.
 	 * This method should only be used by control developers.
-	 * @param integer the lifecycle step the control is currently at.
+	 * @param integer $value the lifecycle step the control is currently at.
 	 * Valid values include CS_CONSTRUCTED, CS_CHILD_INITIALIZED, CS_INITIALIZED,
 	 * CS_STATE_LOADED, CS_LOADED, CS_PRERENDERED.
 	 */
@@ -363,7 +363,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Returns the id of the control.
 	 * Control ID can be either manually set or automatically generated.
 	 * If $hideAutoID is true, automatically generated ID will be returned as an empty string.
-	 * @param boolean whether to hide automatically generated ID
+	 * @param boolean $hideAutoID whether to hide automatically generated ID
 	 * @return string the ID of the control
 	 */
 	public function getID($hideAutoID = true)
@@ -562,7 +562,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Checks if a control is visible.
 	 * If parent check is required, then a control is visible only if the control
 	 * and all its ancestors are visible.
-	 * @param boolean whether the parents should also be checked if visible
+	 * @param boolean $checkParents whether the parents should also be checked if visible
 	 * @return boolean whether the control is visible (default=true).
 	 */
 	public function getVisible($checkParents = true)
@@ -594,7 +594,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * and unless they are all enabled, false will be returned.
 	 * The property Enabled is mainly used for {@link TWebControl}
 	 * derived controls.
-	 * @param boolean whether the parents should also be checked enabled
+	 * @param boolean $checkParents whether the parents should also be checked enabled
 	 * @return boolean whether the control is enabled.
 	 */
 	public function getEnabled($checkParents = false)
@@ -650,6 +650,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @return boolean whether the named attribute exists
+	 * @param mixed $name
 	 */
 	public function hasAttribute($name)
 	{
@@ -662,6 +663,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @return string attribute value, null if attribute does not exist
+	 * @param mixed $name
 	 */
 	public function getAttribute($name)
 	{
@@ -674,8 +676,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Sets a custom control attribute.
-	 * @param string attribute name
-	 * @param string value of the attribute
+	 * @param string $name attribute name
+	 * @param string $value value of the attribute
 	 */
 	public function setAttribute($name, $value)
 	{
@@ -698,6 +700,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @return boolean whether viewstate is enabled
+	 * @param mixed $checkParents
 	 */
 	public function getEnableViewState($checkParents = false)
 	{
@@ -745,9 +748,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This function is very useful in defining setter functions for control properties
 	 * that must be kept in controlstate.
 	 * Make sure that the controlstate value must be serializable and unserializable.
-	 * @param string the name of the controlstate value
-	 * @param mixed the controlstate value to be set
-	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from controlstate
+	 * @param string $key the name of the controlstate value
+	 * @param mixed $value the controlstate value to be set
+	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from controlstate
 	 */
 	protected function setControlState($key, $value, $defaultValue = null)
 	{
@@ -807,9 +810,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This function is very useful in defining setter functions for control properties
 	 * that must be kept in viewstate.
 	 * Make sure that the viewstate value must be serializable and unserializable.
-	 * @param string the name of the viewstate value
-	 * @param mixed the viewstate value to be set
-	 * @param mixed default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param string $key the name of the viewstate value
+	 * @param mixed $value the viewstate value to be set
+	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
 	public function setViewState($key, $value, $defaultValue = null)
 	{
@@ -839,8 +842,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Sets up the binding between a property (or property path) and an expression.
 	 * The context of the expression is the template control (or the control itself if it is a page).
-	 * @param string the property name, or property path
-	 * @param string the expression
+	 * @param string $name the property name, or property path
+	 * @param string $expression the expression
 	 */
 	public function bindProperty($name, $expression)
 	{
@@ -861,8 +864,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Unlike regular databinding, the expression bound by this method
 	 * is automatically evaluated during {@link prerenderRecursive()}.
 	 * The context of the expression is the template control (or the control itself if it is a page).
-	 * @param string the property name, or property path
-	 * @param string the expression
+	 * @param string $name the property name, or property path
+	 * @param string $expression the expression
 	 */
 	public function autoBindProperty($name, $expression)
 	{
@@ -992,7 +995,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The ID path is an ID sequence separated by {@link TControl::ID_SEPARATOR}.
 	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
-	 * @param string ID of the control to be looked up
+	 * @param string $id ID of the control to be looked up
 	 * @return TControl|null the control found, null if not found
 	 * @throws TInvalidDataValueException if a control's ID is found not unique within its naming container.
 	 */
@@ -1081,8 +1084,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Registers an object by a name.
 	 * A registered object can be accessed like a public member variable.
 	 * This method should only be used by framework and control developers.
-	 * @param string name of the object
-	 * @param object object to be declared
+	 * @param string $name name of the object
+	 * @param object $object object to be declared
 	 * @see __get
 	 */
 	public function registerObject($name, $object)
@@ -1106,6 +1109,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * @return boolean whether an object has been registered with the name
 	 * @see registerObject
+	 * @param mixed $name
 	 */
 	public function isObjectRegistered($name)
 	{
@@ -1158,6 +1162,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * the template owner. This method allows you to obtain this component
 	 * with the ID.
 	 * @return mixed the named registered object. Null if object is not found.
+	 * @param mixed $name
 	 */
 	public function getRegisteredObject($name)
 	{
@@ -1197,7 +1202,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param TControl the potential ancestor control
+	 * @param TControl $ancestor the potential ancestor control
 	 * @return boolean if the control is a descendent (parent, parent of parent, etc.)
 	 * of the specified control
 	 */
@@ -1455,8 +1460,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Invokes the parent's bubbleEvent method.
 	 * A control who wants to bubble an event must call this method in its onEvent method.
-	 * @param TControl sender of the event
-	 * @param TEventParameter event parameter
+	 * @param TControl $sender sender of the event
+	 * @param TEventParameter $param event parameter
 	 * @see bubbleEvent
 	 */
 	protected function raiseBubbleEvent($sender, $param)
@@ -1473,8 +1478,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method responds to a bubbled event.
 	 * This method should be overriden to provide customized response to a bubbled event.
 	 * Check the type of event parameter to determine what event is bubbled currently.
-	 * @param TControl sender of the event
-	 * @param TEventParameter event parameters
+	 * @param TControl $sender sender of the event
+	 * @param TEventParameter $param event parameters
 	 * @return boolean true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
 	 */
@@ -1495,9 +1500,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * {@link IBroadcastEventReceiver} will also have its
 	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
 	 * invoked.
-	 * @param string name of the broadcast event
-	 * @param TControl sender of this event
-	 * @param TEventParameter event parameter
+	 * @param string $name name of the broadcast event
+	 * @param TControl $sender sender of this event
+	 * @param TEventParameter $param event parameter
 	 */
 	public function broadcastEvent($name, $sender, $param)
 	{
@@ -1508,9 +1513,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Recursively broadcasts an event.
 	 * This method should only be used by framework developers.
-	 * @param string name of the broadcast event
-	 * @param TControl sender of the event
-	 * @param TBroadcastEventParameter event parameter
+	 * @param string $name name of the broadcast event
+	 * @param TControl $sender sender of the event
+	 * @param TBroadcastEventParameter $param event parameter
 	 */
 	private function broadcastEventInternal($name, $sender, $param)
 	{
@@ -1542,9 +1547,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * where $control refers to the control being visited and $param
 	 * is the parameter that is passed originally when calling this traverse function.
 	 *
-	 * @param mixed parameter to be passed to callbacks for each control
-	 * @param callback callback invoked before traversing child controls. If null, it is ignored.
-	 * @param callback callback invoked after traversing child controls. If null, it is ignored.
+	 * @param mixed $param parameter to be passed to callbacks for each control
+	 * @param null|callback $preCallback callback invoked before traversing child controls. If null, it is ignored.
+	 * @param null|callback $postCallback callback invoked after traversing child controls. If null, it is ignored.
 	 */
 	protected function traverseChildControls($param, $preCallback = null, $postCallback = null)
 	{
@@ -1633,8 +1638,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Loads state (viewstate and controlstate) into a control and its children.
 	 * This method should only be used by framework developers.
-	 * @param array the collection of the state
-	 * @param boolean whether the viewstate should be loaded
+	 * @param array $state the collection of the state
+	 * @param boolean $needViewState whether the viewstate should be loaded
 	 */
 	protected function loadStateRecursive(&$state, $needViewState = true)
 	{
@@ -1681,7 +1686,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Saves all control state (viewstate and controlstate) as a collection.
 	 * This method should only be used by framework developers.
-	 * @param boolean whether the viewstate should be saved
+	 * @param boolean $needViewState whether the viewstate should be saved
 	 * @return array the collection of the control state (including its children's state).
 	 */
 	protected function &saveStateRecursive($needViewState = true)
@@ -1767,8 +1772,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Updates the list of the controls whose IDs are managed by the specified naming container.
-	 * @param TControl the naming container
-	 * @param TControlCollection list of controls
+	 * @param TControl $container the naming container
+	 * @param TControlCollection $controls list of controls
 	 * @throws TInvalidDataValueException if a control's ID is not unique within its naming container.
 	 */
 	private function fillNameTable($container, $controls)

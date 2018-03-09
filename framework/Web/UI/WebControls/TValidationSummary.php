@@ -330,6 +330,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Overrides parent implementation by rendering TValidationSummary-specific presentation.
 	 * @return string the rendering result
+	 * @param mixed $writer
 	 */
 	public function renderContents($writer)
 	{

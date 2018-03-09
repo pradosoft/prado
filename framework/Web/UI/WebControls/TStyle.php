@@ -307,6 +307,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * @return string a single style field value set via {@link setStyleField}. Defaults to empty string.
+	 * @param mixed $name
 	 */
 	public function getStyleField($name)
 	{
@@ -316,8 +317,8 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * Sets a single style field value.
 	 * Style fields set by this method will overwrite those set by {@link setCustomStyle}.
-	 * @param string style field name
-	 * @param string style field value
+	 * @param string $name style field name
+	 * @param string $value style field value
 	 */
 	public function setStyleField($name, $value)
 	{
@@ -335,6 +336,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * @return boolean whether a style field has been defined by {@link setStyleField}
+	 * @param mixed $name
 	 */
 	public function hasStyleField($name)
 	{

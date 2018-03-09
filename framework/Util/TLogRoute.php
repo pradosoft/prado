@@ -87,6 +87,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 * @param integer|string integer log level filter (in bits). If the value is
 	 * a string, it is assumed to be comma-separated level names. Valid level names
 	 * include 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert' and 'Fatal'.
+	 * @param mixed $levels
 	 */
 	public function setLevels($levels)
 	{
@@ -183,6 +184,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 *   [1] => level
 	 *   [2] => category
 	 *   [3] => timestamp);
+	 * @param mixed $logs
 	 */
 	abstract protected function processLogs($logs);
 }

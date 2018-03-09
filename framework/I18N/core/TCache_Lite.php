@@ -381,7 +381,7 @@ class TCache_Lite
 			$motif = ($group) ? 'cache_' . $group . '_' : 'cache_';
 		}
 		if ($this->_memoryCaching) {
-			foreach($this->_memoryCachingArray as $key => $v) {
+			foreach ($this->_memoryCachingArray as $key => $v) {
 				if (strpos($key, $motif, 0)) {
 					unset($this->_memoryCaching[$key]);
 					$this->_memoryCachingCounter =
@@ -427,6 +427,8 @@ class TCache_Lite
 	/**
 	 *
 	 * @access public
+	 * @param mixed $id
+	 * @param mixed $group
 	 */
 	public function saveMemoryCachingState($id, $group = 'default')
 	{
@@ -443,6 +445,9 @@ class TCache_Lite
 	/**
 	 *
 	 * @access public
+	 * @param mixed $id
+	 * @param mixed $group
+	 * @param mixed $doNotTestCacheValidity
 	 */
 	public function getMemoryCachingState(
 		$id,
@@ -491,13 +496,15 @@ class TCache_Lite
 	/**
 	 *
 	 * @access private
+	 * @param mixed $id
+	 * @param mixed $data
 	 */
 	protected function _memoryCacheAdd($id, $data)
 	{
 		$this->_memoryCachingArray[$this->_file] = $data;
 		if ($this->_memoryCachingCounter >= $this->_memoryCachingLimit) {
-            $key = key($this->_memoryCachingArray);
-            next($this->_memoryCachingArray);
+			$key = key($this->_memoryCachingArray);
+			next($this->_memoryCachingArray);
 			unset($this->_memoryCachingArray[$key]);
 		} else {
 			$this->_memoryCachingCounter = $this->_memoryCachingCounter + 1;

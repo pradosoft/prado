@@ -35,6 +35,10 @@ class TLazyLoadList
 	 * @param mixed parameter value for the statement.
 	 * @param object result object that contains the lazy collection.
 	 * @param string property of the result object to set the loaded collection.
+	 * @param mixed $mappedStatement
+	 * @param mixed $param
+	 * @param mixed $target
+	 * @param mixed $propertyName
 	 */
 	protected function __construct($mappedStatement, $param, $target, $propertyName)
 	{
@@ -69,6 +73,8 @@ class TLazyLoadList
 	 * Relay the method call to the underlying collection.
 	 * @param string method name.
 	 * @param array method parameters.
+	 * @param mixed $method
+	 * @param mixed $arguments
 	 */
 	public function intercept($method, $arguments)
 	{

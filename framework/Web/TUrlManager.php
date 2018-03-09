@@ -61,6 +61,11 @@ class TUrlManager extends \Prado\TModule
 	 * @param array GET parameters, null if not provided
 	 * @param boolean whether to encode the ampersand in URL
 	 * @param boolean whether to encode the GET parameters (their names and values)
+	 * @param mixed $serviceID
+	 * @param mixed $serviceParam
+	 * @param mixed $getItems
+	 * @param mixed $encodeAmpersand
+	 * @param mixed $encodeGetItems
 	 * @return string URL
 	 * @see parseUrl
 	 */

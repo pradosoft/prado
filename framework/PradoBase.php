@@ -146,7 +146,7 @@ class PradoBase
 	}
 
 	/**
-	 * @param integer the type of "powered logo". Valid values include 0 and 1.
+	 * @param integer $logoType the type of "powered logo". Valid values include 0 and 1.
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
 	public static function poweredByPrado($logoType = 0)
@@ -166,10 +166,10 @@ class PradoBase
 	 * This method should be registered as PHP error handler using
 	 * {@link set_error_handler}. The method throws an exception that
 	 * contains the error information.
-	 * @param integer the level of the error raised
-	 * @param string the error message
-	 * @param string the filename that the error was raised in
-	 * @param integer the line number the error was raised at
+	 * @param integer $errno the level of the error raised
+	 * @param string $errstr the error message
+	 * @param string $errfile the filename that the error was raised in
+	 * @param integer $errline the line number the error was raised at
 	 */
 	public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
 	{
@@ -248,10 +248,9 @@ class PradoBase
 
 	/**
 	 * Convert old Prado namespaces to PHP namespaces
-	 * @param string old class name in Prado3 namespace format
+	 * @param string $type old class name in Prado3 namespace format
 	 * @return string Equivalent class name in PHP namespace format
 	 */
-
 	protected static function prado3NamespaceToPhpNamespace($type)
 	{
 		if (substr($type, 0, 6) === 'System') {
@@ -274,7 +273,7 @@ class PradoBase
 	 * This method can also pass parameters to component constructors.
 	 * All parameters passed to this method except the first one (the component type)
 	 * will be supplied as component constructor parameters.
-	 * @param string component type
+	 * @param string $requestedType component type
 	 * @return TComponent component instance of the specified type
 	 * @throws TInvalidDataValueException if the component type is unknown
 	 */
@@ -335,8 +334,8 @@ class PradoBase
 	 * A namespace ending with an asterisk '*' refers to a directory, otherwise it represents a PHP file.
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
-	 * @param string namespace to be used
-	 * @param boolean whether to check the existence of the class after the class file is included
+	 * @param string $namespace namespace to be used
+	 * @param boolean $checkClassExistence whether to check the existence of the class after the class file is included
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
 	public static function using($namespace, $checkClassExistence = true)
@@ -451,8 +450,10 @@ class PradoBase
 	/**
 	 * @param string alias to the path
 	 * @param string the path corresponding to the alias
-	 * @throws TInvalidOperationException if the alias is already defined
-	 * @throws TInvalidDataValueException if the path is not a valid file path
+	 * @param mixed $alias
+	 * @param mixed $path
+	 * @throws TInvalidOperationException $alias if the alias is already defined
+	 * @throws TInvalidDataValueException $path if the path is not a valid file path
 	 */
 	public static function setPathOfAlias($alias, $path)
 	{
@@ -591,9 +592,9 @@ class PradoBase
 	 * to the message and the message is logged at DEBUG level.
 	 * When the application is in Performance mode, this method does nothing.
 	 * Otherwise, the message is logged at INFO level.
-	 * @param string message to be logged
-	 * @param string category of the message
-	 * @param (string|TControl) control of the message
+	 * @param string $msg message to be logged
+	 * @param string $category category of the message
+	 * @param (string|TControl) $ctl control of the message
 	 * @see log, getLogger
 	 */
 	public static function trace($msg, $category = 'Uncategorized', $ctl = null)
@@ -618,12 +619,12 @@ class PradoBase
 	 * Messages logged by this method may be retrieved via {@link TLogger::getLogs}
 	 * and may be recorded in different media, such as file, email, database, using
 	 * {@link TLogRouter}.
-	 * @param string message to be logged
-	 * @param integer level of the message. Valid values include
+	 * @param string $msg message to be logged
+	 * @param integer $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
-	 * @param string category of the message
-	 * @param (string|TControl) control of the message
+	 * @param string $category category of the message
+	 * @param (string|TControl) $ctl control of the message
 	 */
 	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null)
 	{
@@ -660,10 +661,10 @@ class PradoBase
 
 	/**
 	 * Localize a text to the locale/culture specified in the globalization handler.
-	 * @param string text to be localized.
-	 * @param array a set of parameters to substitute.
-	 * @param string a different catalogue to find the localize text.
-	 * @param string the input AND output charset.
+	 * @param string $text text to be localized.
+	 * @param array $parameters a set of parameters to substitute.
+	 * @param string $catalogue a different catalogue to find the localize text.
+	 * @param string $charset the input AND output charset.
 	 * @return string localized text.
 	 * @see TTranslate::formatter()
 	 * @see TTranslate::init()

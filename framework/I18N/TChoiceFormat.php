@@ -97,6 +97,8 @@ class TChoiceFormat extends TTranslate
 	 * Display the choosen translated string.
 	 * Overrides the parent method, also calls parent's renderBody to
 	 * translate.
+	 * @param mixed $text
+	 * @param mixed $subs
 	 */
 	protected function translateText($text, $subs)
 	{

@@ -103,6 +103,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 * @param string message code, defalt is 'SERVER'.
 	 * @param string actors
 	 * @param string message name
+	 * @param mixed $title
+	 * @param mixed $details
+	 * @param mixed $code
+	 * @param mixed $actor
+	 * @param mixed $name
 	 */
 	public function fault($title, $details = '', $code = 'SERVER', $actor = '', $name = '')
 	{
@@ -343,6 +348,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 
 	/**
 	 * @return string comma delimit list of class names
+	 * @param mixed $classes
 	 */
 	public function setClassMaps($classes)
 	{

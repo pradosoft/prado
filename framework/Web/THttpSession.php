@@ -278,6 +278,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * If true, make sure the methods {@link _open}, {@link _close}, {@link _read},
 	 * {@link _write}, {@link _destroy}, and {@link _gc} are overridden in child
 	 * class, because they will be used as the callback handlers.
+	 * @param mixed $value
 	 */
 	public function setUseCustomStorage($value)
 	{
@@ -364,6 +365,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param integer the probability (percentage) that the gc (garbage collection) process is started on every session initialization.
+	 * @param mixed $value
 	 * @throws TInvalidOperationException if session is started already
 	 * @throws TInvalidDataValueException if the value is beyond [0,100].
 	 */
@@ -552,6 +554,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Note, if the specified name already exists, the old value will be removed first.
 	 * @param mixed session variable name
 	 * @param mixed session variable value
+	 * @param mixed $key
+	 * @param mixed $value
 	 */
 	public function add($key, $value)
 	{
@@ -625,6 +629,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \ArrayAccess.
 	 * @param integer the offset to set element
 	 * @param mixed the element value
+	 * @param mixed $offset
+	 * @param mixed $item
 	 */
 	public function offsetSet($offset, $item)
 	{

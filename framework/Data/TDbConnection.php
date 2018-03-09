@@ -124,6 +124,10 @@ class TDbConnection extends \Prado\TComponent
 	 * @param string The user name for the DSN string.
 	 * @param string The password for the DSN string.
 	 * @param string Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
+	 * @param mixed $dsn
+	 * @param mixed $username
+	 * @param mixed $password
+	 * @param mixed $charset
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn = '', $username = '', $password = '', $charset = '')
@@ -314,6 +318,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Creates a command for execution.
 	 * @param string SQL statement associated with the new command.
+	 * @param mixed $sql
 	 * @return TDbCommand the DB command
 	 * @throws TDbException if the connection is not active
 	 */
@@ -376,6 +381,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Returns the ID of the last inserted row or sequence value.
 	 * @param string name of the sequence object (required by some DBMS)
+	 * @param mixed $sequenceName
 	 * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
 	 * @see http://www.php.net/manual/en/function.PDO-lastInsertId.php
 	 */
@@ -391,6 +397,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Quotes a string for use in a query.
 	 * @param string string to be quoted
+	 * @param mixed $str
 	 * @return string the properly quoted string
 	 * @see http://www.php.net/manual/en/function.PDO-quote.php
 	 */
@@ -608,6 +615,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Obtains a specific DB connection attribute information.
 	 * @param int the attribute to be queried
+	 * @param mixed $name
 	 * @return mixed the corresponding attribute information
 	 * @see http://www.php.net/manual/en/function.PDO-getAttribute.php
 	 */
@@ -624,6 +632,8 @@ class TDbConnection extends \Prado\TComponent
 	 * Sets an attribute on the database connection.
 	 * @param int the attribute to be set
 	 * @param mixed the attribute value
+	 * @param mixed $name
+	 * @param mixed $value
 	 * @see http://www.php.net/manual/en/function.PDO-setAttribute.php
 	 */
 	public function setAttribute($name, $value)

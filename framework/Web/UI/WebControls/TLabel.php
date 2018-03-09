@@ -126,7 +126,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * Sets the text value of the label.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setText()}.
-	 * @param string the text value of the label
+	 * @param string $value the text value of the label
 	 * @see setText
 	 * @since 3.1.0
 	 */

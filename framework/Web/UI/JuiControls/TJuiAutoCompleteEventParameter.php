@@ -30,6 +30,9 @@ class TJuiAutoCompleteEventParameter extends TCallbackEventParameter
 
 	/**
 	 * Creates a new TCallbackEventParameter.
+	 * @param mixed $response
+	 * @param mixed $parameter
+	 * @param mixed $index
 	 */
 	public function __construct($response, $parameter, $index = -1)
 	{

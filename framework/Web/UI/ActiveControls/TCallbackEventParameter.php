@@ -47,6 +47,8 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Creates a new TCallbackEventParameter.
+	 * @param mixed $response
+	 * @param mixed $parameter
 	 */
 	public function __construct($response, $parameter)
 	{

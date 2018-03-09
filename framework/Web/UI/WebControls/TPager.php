@@ -449,11 +449,11 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Depending on the button type, a TLinkButton or a TButton may be created.
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
-	 * @param string button type, either LinkButton or PushButton
-	 * @param boolean whether the button should be enabled
-	 * @param string caption of the button.
-	 * @param string CommandName corresponding to the OnCommand event of the button.
-	 * @param string CommandParameter corresponding to the OnCommand event of the button
+	 * @param string $buttonType button type, either LinkButton or PushButton
+	 * @param boolean $enabled whether the button should be enabled
+	 * @param string $text caption of the button.
+	 * @param string $commandName CommandName corresponding to the OnCommand event of the button.
+	 * @param string $commandParameter CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)
@@ -487,8 +487,8 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string the caption of the image button
-	 * @param string the command name associated with the image button
+	 * @param string $text the caption of the image button
+	 * @param string $commandName the command name associated with the image button
 	 * @since 3.1.1
 	 */
 	protected function getPageImageUrl($text, $commandName)
@@ -634,8 +634,8 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	/**
 	 * Event handler to the OnSelectedIndexChanged event of the dropdown list.
 	 * This handler will raise {@link onPageIndexChanged OnPageIndexChanged} event.
-	 * @param TDropDownList the dropdown list control raising the event
-	 * @param TEventParameter event parameter
+	 * @param TDropDownList $sender the dropdown list control raising the event
+	 * @param TEventParameter $param event parameter
 	 */
 	public function listIndexChanged($sender, $param)
 	{

@@ -40,6 +40,9 @@ class TVarDumper
 	 * but is more robust when handling complex objects such as PRADO controls.
 	 * @param mixed variable to be dumped
 	 * @param integer maximum depth that the dumper should go into the variable. Defaults to 10.
+	 * @param mixed $var
+	 * @param mixed $depth
+	 * @param mixed $highlight
 	 * @return string the string representation of the variable
 	 */
 	public static function dump($var, $depth = 10, $highlight = false)

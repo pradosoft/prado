@@ -282,7 +282,7 @@ class TApplication extends \Prado\TComponent
 	 * data and code not directly accessible by Web users.
 	 * By default, the base path is assumed to be the <b>protected</b>
 	 * directory under the directory containing the current running script.
-	 * @param string application base path or configuration file path.
+	 * @param string $basePath application base path or configuration file path.
 	 *        If the parameter is a file, it is assumed to be the application
 	 *        configuration file, and the directory containing the file is treated
 	 *        as the application base path.
@@ -290,7 +290,8 @@ class TApplication extends \Prado\TComponent
 	 *        and within that directory, a file named <b>application.xml</b>
 	 *        will be looked for. If found, the file is considered as the application
 	 *        configuration file.
-	 * @param boolean whether to cache application configuration. Defaults to true.
+	 * @param boolean $cacheConfig whether to cache application configuration. Defaults to true.
+	 * @param integer $configType configuration type. Defaults to CONFIG_TYPE_XML.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
@@ -317,7 +318,7 @@ class TApplication extends \Prado\TComponent
 	 * This method is invoked by the application constructor
 	 * to determine the application configuration file,
 	 * application root path and the runtime path.
-	 * @param string the application root path or the application configuration file
+	 * @param string $basePath the application root path or the application configuration file
 	 * @see setBasePath
 	 * @see setRuntimePath
 	 * @see setConfigurationFile
@@ -427,6 +428,9 @@ class TApplication extends \Prado\TComponent
 	 * @param mixed the global value to be set
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
 	 * @param boolean wheter to force an immediate GlobalState save. defaults to false
+	 * @param mixed $value
+	 * @param null|mixed $defaultValue
+	 * @param mixed $forceSave
 	 */
 	public function setGlobalState($key, $value, $defaultValue = null, $forceSave = false)
 	{
@@ -657,6 +661,7 @@ class TApplication extends \Prado\TComponent
 	 * Note, this method does not do module initialization.
 	 * @param string ID of the module
 	 * @param IModule module object or null if the module has not been loaded yet
+	 * @param mixed $id
 	 */
 	public function setModule($id, IModule $module = null)
 	{
@@ -669,6 +674,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @return IModule the module with the specified ID, null if not found
+	 * @param mixed $id
 	 */
 	public function getModule($id)
 	{
@@ -880,6 +886,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param boolean whether to create globalization if it does not exist
+	 * @param mixed $createIfNotExists
 	 * @return TGlobalization globalization module
 	 */
 	public function getGlobalization($createIfNotExists = true)
@@ -942,6 +949,8 @@ class TApplication extends \Prado\TComponent
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
 	 * @param boolean whether the configuration is specified within a service.
+	 * @param mixed $config
+	 * @param mixed $withinService
 	 */
 	public function applyConfiguration($config, $withinService = false)
 	{

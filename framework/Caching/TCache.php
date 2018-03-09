@@ -273,6 +273,8 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * This method is required by the interface \ArrayAccess.
 	 * @param string the key identifying the value to be cached
 	 * @param mixed the value to be cached
+	 * @param mixed $id
+	 * @param mixed $value
 	 */
 	public function offsetSet($id, $value)
 	{

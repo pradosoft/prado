@@ -55,9 +55,9 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 * Creates a navigation button.
 	 * It creates a {@link TButton}, {@link TLinkButton}, or {@link TImageButton},
 	 * depending on the given parameters.
-	 * @param TWizardNavigationButtonStyle button style
-	 * @param boolean whether the button should cause validation
-	 * @param string command name for the button's OnCommand event
+	 * @param TWizardNavigationButtonStyle $buttonStyle button style
+	 * @param boolean $causesValidation whether the button should cause validation
+	 * @param string $commandName command name for the button's OnCommand event
 	 * @throws TInvalidDataValueException if the button type is not recognized
 	 */
 	protected function createNavigationButton($buttonStyle, $causesValidation, $commandName)

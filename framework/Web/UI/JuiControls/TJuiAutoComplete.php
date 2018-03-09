@@ -339,6 +339,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the end tag and registers javascript effects library.
+	 * @param mixed $writer
 	 */
 	public function renderEndTag($writer)
 	{
@@ -415,6 +416,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
 	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
 	{

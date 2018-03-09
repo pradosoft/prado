@@ -27,6 +27,7 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * @param string database field type
+	 * @param mixed $dbType
 	 * @return TSqlMapTypeHandler type handler for give database field type.
 	 */
 	public function getDbTypeHandler($dbType = 'NULL')
@@ -61,6 +62,7 @@ class TSqlMapTypeHandlerRegistry
 	 * Creates a new instance of a particular class (for PHP primative types,
 	 * their corresponding default value for given type is used).
 	 * @param string PHP type name
+	 * @param mixed $type
 	 * @return mixed default type value, if no type is specified null is returned.
 	 * @throws TSqlMapException if class name is not found.
 	 */

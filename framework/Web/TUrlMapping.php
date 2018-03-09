@@ -180,6 +180,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * @param string the part that will be prefixed to the constructed URLs. This is used by constructUrl() when EnableCustomUrl is set true.
+	 * @param mixed $value
 	 * @see getUrlPrefix
 	 * @since 3.1.1
 	 */
@@ -199,6 +200,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @param string external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
+	 * @param mixed $value
 	 * @throws TInvalidDataValueException if the file is invalid.
 	 */
 	public function setConfigFile($value)
@@ -345,6 +347,11 @@ class TUrlMapping extends TUrlManager
 	 * @param array GET parameters, null if not provided
 	 * @param boolean whether to encode the ampersand in URL
 	 * @param boolean whether to encode the GET parameters (their names and values)
+	 * @param mixed $serviceID
+	 * @param mixed $serviceParam
+	 * @param mixed $getItems
+	 * @param mixed $encodeAmpersand
+	 * @param mixed $encodeGetItems
 	 * @return string URL
 	 * @see parseUrl
 	 * @since 3.1.1

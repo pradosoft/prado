@@ -478,6 +478,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * @param array list of GET items to be put in the constructed URL
+	 * @param mixed $getItems
 	 * @return boolean whether this pattern IS the one for constructing the URL with the specified GET items.
 	 * @since 3.1.1
 	 */
@@ -512,6 +513,9 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * @param array list of GET variables
 	 * @param boolean whether the ampersand should be encoded in the constructed URL
 	 * @param boolean whether the GET variables should be encoded in the constructed URL
+	 * @param mixed $getItems
+	 * @param mixed $encodeAmpersand
+	 * @param mixed $encodeGetItems
 	 * @return string the constructed URL
 	 * @since 3.1.1
 	 */

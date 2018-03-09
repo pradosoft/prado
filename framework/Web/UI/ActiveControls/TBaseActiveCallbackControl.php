@@ -226,6 +226,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * {@link getClientSide ClientSide} property.
 	 * @param string client side javascript class name.
 	 * @param array additional callback options.
+	 * @param mixed $class
+	 * @param null|mixed $options
 	 */
 	public function registerCallbackClientScript($class, $options = null)
 	{

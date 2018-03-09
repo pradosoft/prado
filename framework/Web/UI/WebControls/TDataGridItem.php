@@ -55,8 +55,9 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Constructor.
-	 * @param integer zero-based index of the item in the item collection of datagrid
-	 * @param TListItemType item type
+	 * @param integer $itemIndex zero-based index of the item in the item collection of datagrid
+	 * @param integer $dataSourceIndex
+	 * @param TListItemType $itemType item type
 	 */
 	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
