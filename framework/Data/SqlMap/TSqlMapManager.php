@@ -153,8 +153,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 * Gets a MappedStatement by name.
 	 * @param string The name of the statement.
 	 * @param mixed $name
-	 * @return IMappedStatement The MappedStatement
 	 * @throws TSqlMapUndefinedException
+	 * @return IMappedStatement The MappedStatement
 	 */
 	public function getMappedStatement($name)
 	{
@@ -168,6 +168,7 @@ class TSqlMapManager extends \Prado\TComponent
 	 * Adds a (named) MappedStatement.
 	 * @param string The key name
 	 * @param IMappedStatement The statement to add
+	 * @param IMappedStatement $statement
 	 * @throws TSqlMapDuplicateException
 	 */
 	public function addMappedStatement(IMappedStatement $statement)
@@ -191,8 +192,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 * Gets a named result map
 	 * @param string result name.
 	 * @param mixed $name
-	 * @return TResultMap the result map.
 	 * @throws TSqlMapUndefinedException
+	 * @return TResultMap the result map.
 	 */
 	public function getResultMap($name)
 	{
@@ -204,6 +205,7 @@ class TSqlMapManager extends \Prado\TComponent
 
 	/**
 	 * @param TResultMap add a new result map to this SQLMap
+	 * @param TResultMap $result
 	 * @throws TSqlMapDuplicateException
 	 */
 	public function addResultMap(TResultMap $result)
@@ -226,8 +228,8 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * @param string parameter map ID name.
 	 * @param mixed $name
-	 * @return TParameterMap the parameter with given ID.
 	 * @throws TSqlMapUndefinedException
+	 * @return TParameterMap the parameter with given ID.
 	 */
 	public function getParameterMap($name)
 	{
@@ -239,6 +241,7 @@ class TSqlMapManager extends \Prado\TComponent
 
 	/**
 	 * @param TParameterMap add a new parameter map to this SQLMap.
+	 * @param TParameterMap $parameter
 	 * @throws TSqlMapDuplicateException
 	 */
 	public function addParameterMap(TParameterMap $parameter)
@@ -253,6 +256,7 @@ class TSqlMapManager extends \Prado\TComponent
 	/**
 	 * Adds a named cache.
 	 * @param TSqlMapCacheModel the cache to add.
+	 * @param TSqlMapCacheModel $cacheModel
 	 * @throws TSqlMapConfigurationException
 	 */
 	public function addCacheModel(TSqlMapCacheModel $cacheModel)
@@ -268,8 +272,8 @@ class TSqlMapManager extends \Prado\TComponent
 	 * Gets a cache by name
 	 * @param string the name of the cache to get.
 	 * @param mixed $name
-	 * @return TSqlMapCacheModel the cache object.
 	 * @throws TSqlMapConfigurationException
+	 * @return TSqlMapCacheModel the cache object.
 	 */
 	public function getCacheModel($name)
 	{

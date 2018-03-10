@@ -82,7 +82,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return boolean whether the rendered text should be HTML-encoded. Defaults to false.
+	 * @return bool whether the rendered text should be HTML-encoded. Defaults to false.
 	 */
 	public function getEncode()
 	{
@@ -90,7 +90,7 @@ class TLiteralColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean $value whether the rendered text should be HTML-encoded.
+	 * @param bool $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{
@@ -101,7 +101,7 @@ class TLiteralColumn extends TDataGridColumn
 	 * Initializes the specified cell to its initial values.
 	 * This method overrides the parent implementation.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)

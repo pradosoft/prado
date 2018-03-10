@@ -38,7 +38,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	private $_value = '';
 	/**
-	 * @var integer expire of the cookie
+	 * @var int expire of the cookie
 	 */
 	private $_expire = 0;
 	/**
@@ -46,11 +46,11 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	private $_path = '/';
 	/**
-	 * @var boolean whether cookie should be sent via secure connection
+	 * @var bool whether cookie should be sent via secure connection
 	 */
 	private $_secure = false;
 	/**
-	 * @var boolean if true the cookie value will be unavailable to JavaScript
+	 * @var bool if true the cookie value will be unavailable to JavaScript
 	 */
 	private $_httpOnly = false;
 
@@ -84,7 +84,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
+	 * @return int the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
 	 */
 	public function getExpire()
 	{
@@ -92,7 +92,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer $value the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
+	 * @param int $value the time the cookie expires. This is a Unix timestamp so is in number of seconds since the epoch.
 	 */
 	public function setExpire($value)
 	{
@@ -100,7 +100,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean if true the cookie value will be unavailable to JavaScript
+	 * @return bool if true the cookie value will be unavailable to JavaScript
 	 */
 	public function getHttpOnly()
 	{
@@ -108,7 +108,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value if true the cookie value will be unavailable to JavaScript
+	 * @param bool $value if true the cookie value will be unavailable to JavaScript
 	 */
 	public function setHttpOnly($value)
 	{
@@ -164,7 +164,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the cookie should only be transmitted over a secure HTTPS connection
+	 * @return bool whether the cookie should only be transmitted over a secure HTTPS connection
 	 */
 	public function getSecure()
 	{
@@ -172,7 +172,7 @@ class THttpCookie extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value ether the cookie should only be transmitted over a secure HTTPS connection
+	 * @param bool $value ether the cookie should only be transmitted over a secure HTTPS connection
 	 */
 	public function setSecure($value)
 	{

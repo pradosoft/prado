@@ -52,6 +52,7 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * @param TSqlMapTypeHandler registers a new type handler
+	 * @param TSqlMapTypeHandler $handler
 	 */
 	public function registerTypeHandler(TSqlMapTypeHandler $handler)
 	{
@@ -63,8 +64,8 @@ class TSqlMapTypeHandlerRegistry
 	 * their corresponding default value for given type is used).
 	 * @param string PHP type name
 	 * @param mixed $type
-	 * @return mixed default type value, if no type is specified null is returned.
 	 * @throws TSqlMapException if class name is not found.
+	 * @return mixed default type value, if no type is specified null is returned.
 	 */
 	public function createInstanceOf($type = '')
 	{

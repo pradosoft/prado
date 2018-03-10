@@ -26,7 +26,7 @@ namespace Prado\Caching;
 interface ICacheDependency
 {
 	/**
-	 * @return boolean whether the dependency has changed. Defaults to false.
+	 * @return bool whether the dependency has changed. Defaults to false.
 	 */
 	public function getHasChanged();
 }

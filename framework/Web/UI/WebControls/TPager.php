@@ -310,7 +310,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return integer maximum number of pager buttons to be displayed. Defaults to 10.
+	 * @return int maximum number of pager buttons to be displayed. Defaults to 10.
 	 */
 	public function getPageButtonCount()
 	{
@@ -318,7 +318,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer $value maximum number of pager buttons to be displayed
+	 * @param int $value maximum number of pager buttons to be displayed
 	 * @throws TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)
@@ -330,7 +330,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return integer the zero-based index of the current page. Defaults to 0.
+	 * @return int the zero-based index of the current page. Defaults to 0.
 	 */
 	public function getCurrentPageIndex()
 	{
@@ -338,7 +338,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer $value the zero-based index of the current page
+	 * @param int $value the zero-based index of the current page
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setCurrentPageIndex($value)
@@ -350,7 +350,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return integer number of pages of data items available
+	 * @return int number of pages of data items available
 	 */
 	public function getPageCount()
 	{
@@ -358,7 +358,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param integer $value number of pages of data items available
+	 * @param int $value number of pages of data items available
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setPageCount($value)
@@ -370,7 +370,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return boolean whether the current page is the first page Defaults to false.
+	 * @return bool whether the current page is the first page Defaults to false.
 	 */
 	public function getIsFirstPage()
 	{
@@ -378,7 +378,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return boolean whether the current page is the last page
+	 * @return bool whether the current page is the last page
 	 */
 	public function getIsLastPage()
 	{
@@ -450,7 +450,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * If it is enabled (clickable), its command name and parameter will also be set.
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
 	 * @param string $buttonType button type, either LinkButton or PushButton
-	 * @param boolean $enabled whether the button should be enabled
+	 * @param bool $enabled whether the button should be enabled
 	 * @param string $text caption of the button.
 	 * @param string $commandName CommandName corresponding to the OnCommand event of the button.
 	 * @param string $commandParameter CommandParameter corresponding to the OnCommand event of the button
@@ -658,7 +658,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{

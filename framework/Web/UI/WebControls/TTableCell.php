@@ -99,7 +99,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return integer the columnspan for the table cell, 0 if not set.
+	 * @return int the columnspan for the table cell, 0 if not set.
 	 */
 	public function getColumnSpan()
 	{
@@ -108,7 +108,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the columnspan for the table cell.
-	 * @param integer $value the columnspan for the table cell, 0 if not set.
+	 * @param int $value the columnspan for the table cell, 0 if not set.
 	 */
 	public function setColumnSpan($value)
 	{
@@ -116,7 +116,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return integer the rowspan for the table cell, 0 if not set.
+	 * @return int the rowspan for the table cell, 0 if not set.
 	 */
 	public function getRowSpan()
 	{
@@ -125,7 +125,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the rowspan for the table cell.
-	 * @param integer $value the rowspan for the table cell, 0 if not set.
+	 * @param int $value the rowspan for the table cell, 0 if not set.
 	 */
 	public function setRowSpan($value)
 	{
@@ -133,7 +133,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return boolean whether the text content wraps within a table cell. Defaults to true.
+	 * @return bool whether the text content wraps within a table cell. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -146,7 +146,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the value indicating whether the text content wraps within a table cell.
-	 * @param boolean $value whether the text content wraps within a table cell.
+	 * @param bool $value whether the text content wraps within a table cell.
 	 */
 	public function setWrap($value)
 	{

@@ -323,7 +323,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether the SOAP service is persistent within session. Defaults to false.
+	 * @return bool whether the SOAP service is persistent within session. Defaults to false.
 	 */
 	public function getSessionPersistent()
 	{
@@ -331,7 +331,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $value whether the SOAP service is persistent within session.
+	 * @param bool $value whether the SOAP service is persistent within session.
 	 */
 	public function setSessionPersistent($value)
 	{
@@ -347,8 +347,8 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return string comma delimit list of class names
 	 * @param mixed $classes
+	 * @return string comma delimit list of class names
 	 */
 	public function setClassMaps($classes)
 	{

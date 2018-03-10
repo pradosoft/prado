@@ -176,8 +176,8 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @return boolean true if column type if "numeric", "interval" or begins with "time".
 	 * @param mixed $type
+	 * @return bool true if column type if "numeric", "interval" or begins with "time".
 	 */
 	protected function isPrecisionType($type)
 	{
@@ -188,8 +188,8 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @return boolean true if column type if "enum" or "set".
 	 * @param mixed $type
+	 * @return bool true if column type if "enum" or "set".
 	 */
 	protected function isEnumSetType($type)
 	{
@@ -199,8 +199,8 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * @param string $table table name, may be quoted with back-ticks and may contain database name.
-	 * @return array tuple ($schema,$table), $schema may be null.
 	 * @throws TDbException when table name contains invalid identifier bytes.
+	 * @return array tuple ($schema,$table), $schema may be null.
 	 */
 	protected function getSchemaTableName($table)
 	{
@@ -218,7 +218,7 @@ class TMysqlMetaData extends TDbMetaData
 	/**
 	 * http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @param string $name identifier name
-	 * @param boolean $name true if valid identifier.
+	 * @param bool $name true if valid identifier.
 	 */
 	protected function isValidIdentifier($name)
 	{
@@ -252,8 +252,8 @@ class TMysqlMetaData extends TDbMetaData
 	 * @param string table or view name.
 	 * @param mixed $schemaName
 	 * @param mixed $tableName
-	 * @return boolean true if is view, false otherwise.
 	 * @throws TDbException if table or view does not exist.
+	 * @return bool true if is view, false otherwise.
 	 */
 	protected function getIsView($schemaName, $tableName)
 	{
@@ -344,8 +344,8 @@ EOD;
 	 * @param string table name
 	 * @param mixed $schemaName
 	 * @param mixed $tableName
-	 * @return string SQL command to create the table.
 	 * @throws TDbException if PHP version is less than 5.1.3
+	 * @return string SQL command to create the table.
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
 	{
@@ -393,7 +393,7 @@ EOD;
 	/**
 	 * @param string $columnId column name.
 	 * @param TPgsqlTableInfo $tableInfo table information.
-	 * @return boolean true if column is a foreign key.
+	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)
 	{

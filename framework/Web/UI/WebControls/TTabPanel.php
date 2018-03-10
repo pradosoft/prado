@@ -92,7 +92,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Returns the index of the active tab view.
 	 * Note, this property may not return the correct index.
 	 * To ensure the correctness, call {@link getActiveView()} first.
-	 * @return integer the zero-based index of the active tab view. If -1, it means no active tab view. Default is 0 (the first view is active).
+	 * @return int the zero-based index of the active tab view. If -1, it means no active tab view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()
 	{
@@ -100,7 +100,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param integer $value the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
@@ -131,8 +131,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Returns the currently active view.
 	 * This method will examin the ActiveViewID, ActiveViewIndex and Views collection to
 	 * determine which view is currently active. It will update ActiveViewID and ActiveViewIndex accordingly.
-	 * @return TTabView the currently active view, null if no active view
 	 * @throws TInvalidDataValueException if the active view ID or index set previously is invalid
+	 * @return TTabView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
@@ -331,7 +331,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -362,7 +362,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{

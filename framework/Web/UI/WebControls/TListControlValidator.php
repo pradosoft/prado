@@ -72,7 +72,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return integer min number of selections. Defaults to -1, meaning not set.
+	 * @return int min number of selections. Defaults to -1, meaning not set.
 	 */
 	public function getMinSelection()
 	{
@@ -80,7 +80,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param integer $value minimum number of selections.
+	 * @param int $value minimum number of selections.
 	 */
 	public function setMinSelection($value)
 	{
@@ -91,7 +91,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return integer max number of selections.  Defaults to -1, meaning not set.
+	 * @return int max number of selections.  Defaults to -1, meaning not set.
 	 */
 	public function getMaxSelection()
 	{
@@ -99,7 +99,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param integer $value max number of selections.
+	 * @param int $value max number of selections.
 	 */
 	public function setMaxSelection($value)
 	{
@@ -131,7 +131,7 @@ class TListControlValidator extends TBaseValidator
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
 	 * from the InitialValue or the input component is not given.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	protected function evaluateIsValid()
 	{

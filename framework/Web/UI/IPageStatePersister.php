@@ -29,6 +29,7 @@ interface IPageStatePersister
 	public function getPage();
 	/**
 	 * @param TPage the page that this persister works for
+	 * @param TPage $page
 	 */
 	public function setPage(TPage $page);
 	/**

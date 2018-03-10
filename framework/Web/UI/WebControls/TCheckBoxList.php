@@ -84,7 +84,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @return boolean whether this control supports multiple selection. Always true for checkbox list.
+	 * @return bool whether this control supports multiple selection. Always true for checkbox list.
 	 */
 	protected function getIsMultiSelect()
 	{
@@ -131,7 +131,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @return integer the number of columns that the list should be displayed with. Defaults to 0 meaning not set.
+	 * @return int the number of columns that the list should be displayed with. Defaults to 0 meaning not set.
 	 */
 	public function getRepeatColumns()
 	{
@@ -139,7 +139,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param integer $value the number of columns that the list should be displayed with.
+	 * @param int $value the number of columns that the list should be displayed with.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -179,7 +179,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @return integer the cellspacing for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @return int the cellspacing for the table keeping the checkbox list. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
 	{
@@ -192,7 +192,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Sets the cellspacing for the table keeping the checkbox list.
-	 * @param integer $value the cellspacing for the table keeping the checkbox list.
+	 * @param int $value the cellspacing for the table keeping the checkbox list.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -200,7 +200,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @return integer the cellpadding for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @return int the cellpadding for the table keeping the checkbox list. Defaults to -1, meaning not set.
 	 */
 	public function getCellPadding()
 	{
@@ -213,7 +213,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Sets the cellpadding for the table keeping the checkbox list.
-	 * @param integer $value the cellpadding for the table keeping the checkbox list.
+	 * @param int $value the cellpadding for the table keeping the checkbox list.
 	 */
 	public function setCellPadding($value)
 	{
@@ -223,7 +223,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns a value indicating whether this control contains header item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return bool always false.
 	 */
 	public function getHasHeader()
 	{
@@ -233,7 +233,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns a value indicating whether this control contains footer item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return bool always false.
 	 */
 	public function getHasFooter()
 	{
@@ -243,7 +243,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns a value indicating whether this control contains separator items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return bool always false.
 	 */
 	public function getHasSeparators()
 	{
@@ -251,7 +251,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param boolean $value whether the control is to be enabled.
+	 * @param bool $value whether the control is to be enabled.
 	 */
 	public function setEnabled($value)
 	{
@@ -277,7 +277,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * Returns a style used for rendering items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer $index index of the item being rendered
+	 * @param int $index index of the item being rendered
 	 * @return null
 	 */
 	public function generateItemStyle($itemType, $index)
@@ -291,7 +291,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * @param THtmlWriter $writer writer for rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer $index zero-based index of the item in the item list
+	 * @param int $index zero-based index of the item in the item list
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{
@@ -316,7 +316,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -377,7 +377,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Wether the list should be rendered inside a span or not
 	 *
-	 *@return boolean true if we need a span
+	 *@return bool true if we need a span
 	 */
 	protected function getSpanNeeded()
 	{
@@ -426,7 +426,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{

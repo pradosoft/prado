@@ -58,7 +58,7 @@ class TPropertyValue
 	 * string 'false' (case-insensitive) will be converted to false.
 	 * If a string represents a non-zero number, it will be treated as true.
 	 * @param mixed $value the value to be converted.
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function ensureBoolean($value)
 	{
@@ -91,7 +91,7 @@ class TPropertyValue
 	/**
 	 * Converts a value to integer type.
 	 * @param mixed $value the value to be converted.
-	 * @return integer
+	 * @return int
 	 */
 	public static function ensureInteger($value)
 	{
@@ -158,8 +158,8 @@ class TPropertyValue
 	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
 	 * @param mixed $value
 	 * @param mixed $enums
-	 * @return string the valid enumeration value
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
+	 * @return string the valid enumeration value
 	 */
 	public static function ensureEnum($value, $enums)
 	{

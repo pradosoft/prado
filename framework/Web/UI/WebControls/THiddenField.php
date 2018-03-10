@@ -84,7 +84,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -100,7 +100,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -201,7 +201,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 
 
 	/**
-	 * @return boolean whether theming is enabled for this control. Defaults to false.
+	 * @return bool whether theming is enabled for this control. Defaults to false.
 	 */
 	public function getEnableTheming()
 	{
@@ -209,7 +209,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * @param boolean $value whether theming is enabled for this control.
+	 * @param bool $value whether theming is enabled for this control.
 	 * @throws TNotSupportedException This method is always thrown when calling this method.
 	 */
 	public function setEnableTheming($value)

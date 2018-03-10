@@ -50,8 +50,8 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string gets a particular option, null if not set.
 	 * @param mixed $name
+	 * @return string gets a particular option, null if not set.
 	 */
 	protected function getOption($name)
 	{

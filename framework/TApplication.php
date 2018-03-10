@@ -162,11 +162,11 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_uniqueID;
 	/**
-	 * @var boolean whether the request is completed
+	 * @var bool whether the request is completed
 	 */
 	private $_requestCompleted = false;
 	/**
-	 * @var integer application state
+	 * @var int application state
 	 */
 	private $_step;
 	/**
@@ -210,7 +210,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_runtimePath;
 	/**
-	 * @var boolean if any global state is changed during the current request
+	 * @var bool if any global state is changed during the current request
 	 */
 	private $_stateChanged = false;
 	/**
@@ -290,8 +290,8 @@ class TApplication extends \Prado\TComponent
 	 *        and within that directory, a file named <b>application.xml</b>
 	 *        will be looked for. If found, the file is considered as the application
 	 *        configuration file.
-	 * @param boolean $cacheConfig whether to cache application configuration. Defaults to true.
-	 * @param integer $configType configuration type. Defaults to CONFIG_TYPE_XML.
+	 * @param bool $cacheConfig whether to cache application configuration. Defaults to true.
+	 * @param int $configType configuration type. Defaults to CONFIG_TYPE_XML.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
@@ -399,7 +399,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the current request is processed.
+	 * @return bool whether the current request is processed.
 	 */
 	public function getRequestCompleted()
 	{
@@ -427,7 +427,7 @@ class TApplication extends \Prado\TComponent
 	 * @param string the name of the value to be set
 	 * @param mixed the global value to be set
 	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
-	 * @param boolean wheter to force an immediate GlobalState save. defaults to false
+	 * @param bool wheter to force an immediate GlobalState save. defaults to false
 	 * @param mixed $value
 	 * @param null|mixed $defaultValue
 	 * @param mixed $forceSave
@@ -662,6 +662,7 @@ class TApplication extends \Prado\TComponent
 	 * @param string ID of the module
 	 * @param IModule module object or null if the module has not been loaded yet
 	 * @param mixed $id
+	 * @param null|IModule $module
 	 */
 	public function setModule($id, IModule $module = null)
 	{
@@ -673,8 +674,8 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IModule the module with the specified ID, null if not found
 	 * @param mixed $id
+	 * @return IModule the module with the specified ID, null if not found
 	 */
 	public function getModule($id)
 	{
@@ -726,6 +727,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param THttpRequest the request module
+	 * @param THttpRequest $request
 	 */
 	public function setRequest(THttpRequest $request)
 	{
@@ -746,6 +748,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param THttpRequest the request module
+	 * @param THttpResponse $response
 	 */
 	public function setResponse(THttpResponse $response)
 	{
@@ -766,6 +769,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param THttpSession the session module
+	 * @param THttpSession $session
 	 */
 	public function setSession(THttpSession $session)
 	{
@@ -786,6 +790,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param TErrorHandler the error handler module
+	 * @param TErrorHandler $handler
 	 */
 	public function setErrorHandler(TErrorHandler $handler)
 	{
@@ -806,6 +811,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param TSecurityManager the security manager module
+	 * @param TSecurityManager $sm
 	 */
 	public function setSecurityManager(TSecurityManager $sm)
 	{
@@ -826,6 +832,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param TAssetManager asset manager
+	 * @param TAssetManager $value
 	 */
 	public function setAssetManager(TAssetManager $value)
 	{
@@ -846,6 +853,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param IStatePersister  application state persister
+	 * @param IStatePersister $persister
 	 */
 	public function setApplicationStatePersister(IStatePersister $persister)
 	{
@@ -862,6 +870,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param ICache the cache module
+	 * @param \Prado\Caching\ICache $cache
 	 */
 	public function setCache(\Prado\Caching\ICache $cache)
 	{
@@ -878,6 +887,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param IUser the application user
+	 * @param \Prado\Security\IUser $user
 	 */
 	public function setUser(\Prado\Security\IUser $user)
 	{
@@ -885,7 +895,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean whether to create globalization if it does not exist
+	 * @param bool whether to create globalization if it does not exist
 	 * @param mixed $createIfNotExists
 	 * @return TGlobalization globalization module
 	 */
@@ -900,6 +910,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param TGlobalization globalization module
+	 * @param \Prado\I18N\TGlobalization $glob
 	 */
 	public function setGlobalization(\Prado\I18N\TGlobalization $glob)
 	{
@@ -948,7 +959,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Applies an application configuration.
 	 * @param TApplicationConfiguration the configuration
-	 * @param boolean whether the configuration is specified within a service.
+	 * @param bool whether the configuration is specified within a service.
 	 * @param mixed $config
 	 * @param mixed $withinService
 	 */
@@ -1230,7 +1241,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Flushes output to client side.
-	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
+	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushOutput($continueBuffering = true)
 	{

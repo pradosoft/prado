@@ -80,7 +80,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	}
 
 	/**
-	 * @return boolean whether the rendered text should be HTML-encoded. Defaults to false.
+	 * @return bool whether the rendered text should be HTML-encoded. Defaults to false.
 	 */
 	public function getEncode()
 	{
@@ -88,7 +88,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 	}
 
 	/**
-	 * @param boolean $value whether the rendered text should be HTML-encoded.
+	 * @param bool $value whether the rendered text should be HTML-encoded.
 	 */
 	public function setEncode($value)
 	{

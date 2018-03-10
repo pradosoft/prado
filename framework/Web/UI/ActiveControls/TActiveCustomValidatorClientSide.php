@@ -77,7 +77,7 @@ class TActiveCustomValidatorClientSide extends TCallbackClientSide
 	}
 
 	/**
-	 * @param boolean $value true to revalidate when the control to validate changes value.
+	 * @param bool $value true to revalidate when the control to validate changes value.
 	 */
 	public function setObserveChanges($value)
 	{
@@ -85,7 +85,7 @@ class TActiveCustomValidatorClientSide extends TCallbackClientSide
 	}
 
 	/**
-	 * @return boolean true to observe changes.
+	 * @return bool true to observe changes.
 	 */
 	public function getObserveChanges()
 	{

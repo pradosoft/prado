@@ -76,7 +76,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the content wraps within the panel. Defaults to true.
+	 * @return bool whether the content wraps within the panel. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -85,7 +85,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean $value whether the content wraps within the panel.
+	 * @param bool $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{

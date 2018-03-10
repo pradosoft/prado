@@ -30,17 +30,18 @@ class TQueueIterator implements \Iterator
 	 */
 	private $_d;
 	/**
-	 * @var integer index of the current item
+	 * @var int index of the current item
 	 */
 	private $_i;
 	/**
-	 * @var integer count of the data items
+	 * @var int count of the data items
 	 */
 	private $_c;
 
 	/**
 	 * Constructor.
 	 * @param array the data to be iterated through
+	 * @param & $data
 	 */
 	public function __construct(&$data)
 	{
@@ -61,7 +62,7 @@ class TQueueIterator implements \Iterator
 	/**
 	 * Returns the key of the current array item.
 	 * This method is required by the interface Iterator.
-	 * @return integer the key of the current array item
+	 * @return int the key of the current array item
 	 */
 	public function key()
 	{
@@ -90,7 +91,7 @@ class TQueueIterator implements \Iterator
 	/**
 	 * Returns whether there is an item at current position.
 	 * This method is required by the interface Iterator.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function valid()
 	{

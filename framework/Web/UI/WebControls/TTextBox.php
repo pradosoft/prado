@@ -85,7 +85,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -93,7 +93,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -261,7 +261,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -280,7 +280,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -384,7 +384,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean a value indicating whether an automatic postback to the server
+	 * @return bool a value indicating whether an automatic postback to the server
 	 * will occur whenever the user modifies the text in the TTextBox control and
 	 * then tabs out of the component. Defaults to false.
 	 */
@@ -397,7 +397,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the text in the TTextBox control and then tabs out of the component.
-	 * @param boolean $value the value indicating if postback automatically
+	 * @param bool $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -405,7 +405,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean a value indicating whether the input text should be trimmed spaces. Defaults to false.
+	 * @return bool a value indicating whether the input text should be trimmed spaces. Defaults to false.
 	 */
 	public function getAutoTrim()
 	{
@@ -414,7 +414,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the value indicating if the input text should be trimmed spaces
-	 * @param boolean $value the value indicating if the input text should be trimmed spaces
+	 * @param bool $value the value indicating if the input text should be trimmed spaces
 	 */
 	public function setAutoTrim($value)
 	{
@@ -422,7 +422,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this text box will cause input validation, default is true.
+	 * @return bool whether postback event trigger by this text box will cause input validation, default is true.
 	 */
 	public function getCausesValidation()
 	{
@@ -430,7 +430,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this text box will cause input validation.
+	 * @param bool $value whether postback event trigger by this text box will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -438,7 +438,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return integer the display width of the text box in characters, default is 0 meaning not set.
+	 * @return int the display width of the text box in characters, default is 0 meaning not set.
 	 */
 	public function getColumns()
 	{
@@ -447,7 +447,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the display width of the text box in characters.
-	 * @param integer $value the display width, set it 0 to clear the setting
+	 * @param int $value the display width, set it 0 to clear the setting
 	 */
 	public function setColumns($value)
 	{
@@ -455,7 +455,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return integer the maximum number of characters allowed in the text box, default is 0 meaning not set.
+	 * @return int the maximum number of characters allowed in the text box, default is 0 meaning not set.
 	 */
 	public function getMaxLength()
 	{
@@ -464,7 +464,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the maximum number of characters allowed in the text box.
-	 * @param integer $value the maximum length,  set it 0 to clear the setting
+	 * @param int $value the maximum length,  set it 0 to clear the setting
 	 */
 	public function setMaxLength($value)
 	{
@@ -472,7 +472,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean whether the textbox is read only, default is false.
+	 * @return bool whether the textbox is read only, default is false.
 	 */
 	public function getReadOnly()
 	{
@@ -480,7 +480,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param boolean $value whether the textbox is read only
+	 * @param bool $value whether the textbox is read only
 	 */
 	public function setReadOnly($value)
 	{
@@ -488,7 +488,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return integer the number of rows displayed in a multiline text box, default is 4
+	 * @return int the number of rows displayed in a multiline text box, default is 4
 	 */
 	public function getRows()
 	{
@@ -497,7 +497,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the number of rows displayed in a multiline text box.
-	 * @param integer $value the number of rows
+	 * @param int $value the number of rows
 	 */
 	public function setRows($value)
 	{
@@ -505,7 +505,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean whether password should be displayed in the textbox during postback. Defaults to false. This property only applies when TextMode='Password'.
+	 * @return bool whether password should be displayed in the textbox during postback. Defaults to false. This property only applies when TextMode='Password'.
 	 */
 	public function getPersistPassword()
 	{
@@ -513,7 +513,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param boolean $value whether password should be displayed in the textbox during postback. This property only applies when TextMode='Password'.
+	 * @param bool $value whether password should be displayed in the textbox during postback. This property only applies when TextMode='Password'.
 	 */
 	public function setPersistPassword($value)
 	{
@@ -621,7 +621,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return boolean whether the text content wraps within a multiline text box. Defaults to true.
+	 * @return bool whether the text content wraps within a multiline text box. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -630,7 +630,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the value indicating whether the text content wraps within a multiline text box.
-	 * @param boolean $value whether the text content wraps within a multiline text box.
+	 * @param bool $value whether the text content wraps within a multiline text box.
 	 */
 	public function setWrap($value)
 	{
@@ -640,6 +640,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Sets a custom configuration for HTMLPurifier.
 	 * @param \HTMLPurifier_Config custom configuration
+	 * @param \HTMLPurifier_Config $value
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)
 	{

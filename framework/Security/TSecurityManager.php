@@ -179,8 +179,8 @@ class TSecurityManager extends \Prado\TModule
 	 * Encrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string data to be encrypted.
 	 * @param mixed $data
-	 * @return string the encrypted data
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
+	 * @return string the encrypted data
 	 */
 	public function encrypt($data)
 	{
@@ -197,8 +197,8 @@ class TSecurityManager extends \Prado\TModule
 	 * Decrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string data to be decrypted.
 	 * @param mixed $data
-	 * @return string the decrypted data
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
+	 * @return string the decrypted data
 	 */
 	public function decrypt($data)
 	{

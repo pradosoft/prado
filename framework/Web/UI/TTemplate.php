@@ -90,7 +90,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	private $_tplFile;
 	/**
-	 * @var integer the line number that parsing starts from (internal use)
+	 * @var int the line number that parsing starts from (internal use)
 	 */
 	private $_startingLine = 0;
 	/**
@@ -98,7 +98,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	private $_content;
 	/**
-	 * @var boolean whether this template is a source template
+	 * @var bool whether this template is a source template
 	 */
 	private $_sourceTemplate = true;
 	/**
@@ -117,8 +117,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * @param string $template the template string
 	 * @param string $contextPath the template context directory
 	 * @param null|string $tplFile the template file, null if no file
-	 * @param integer $startingLine the line number that parsing starts from (internal use)
-	 * @param boolean $sourceTemplate whether this template is a source template, i.e., this template is loaded from
+	 * @param int $startingLine the line number that parsing starts from (internal use)
+	 * @param bool $sourceTemplate whether this template is a source template, i.e., this template is loaded from
 	 * some external storage rather than from within another template.
 	 */
 	public function __construct($template, $contextPath, $tplFile = null, $startingLine = 0, $sourceTemplate = true)
@@ -142,7 +142,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	}
 
 	/**
-	 * @return boolean whether this template is a source template, i.e., this template is loaded from
+	 * @return bool whether this template is a source template, i.e., this template is loaded from
 	 * some external storage rather than from within another template.
 	 */
 	public function getIsSourceTemplate()
@@ -870,7 +870,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * This method rethrows the exception caught during template parsing.
 	 * It adjusts the error location by giving out correct error line number and source file.
 	 * @param Exception $e template exception
-	 * @param integer $line line number
+	 * @param int $line line number
 	 * @param null|string $input template string if no source file is used
 	 */
 	protected function handleException($e, $line, $input = null)
@@ -936,7 +936,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Checks if the given method belongs to a previously attached class behavior.
 	 * @param ReflectionClass $class
 	 * @param string $method
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isClassBehaviorMethod(\ReflectionClass $class, $method)
 	{

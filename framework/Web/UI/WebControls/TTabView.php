@@ -117,7 +117,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether this tab view is active. Defaults to false.
+	 * @return bool whether this tab view is active. Defaults to false.
 	 */
 	public function getActive()
 	{
@@ -125,7 +125,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether this tab view is active.
+	 * @param bool $value whether this tab view is active.
 	 */
 	public function setActive($value)
 	{

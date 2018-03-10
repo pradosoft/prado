@@ -82,7 +82,7 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @param boolean $value true to start the timer when page loads.
+	 * @param bool $value true to start the timer when page loads.
 	 */
 	public function setStartTimerOnLoad($value)
 	{
@@ -94,7 +94,7 @@ class TTimeTriggeredCallback extends TCallback
 	}
 
 	/**
-	 * @return boolean true to start the timer when page loads.
+	 * @return bool true to start the timer when page loads.
 	 */
 	public function getStartTimerOnLoad()
 	{

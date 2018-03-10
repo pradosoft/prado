@@ -44,7 +44,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	private $_d = [];
 	/**
-	 * @var boolean whether this list is read-only
+	 * @var bool whether this list is read-only
 	 */
 	private $_r = false;
 
@@ -53,6 +53,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -69,7 +70,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
-	 * @param boolean whether the list is read-only
+	 * @param bool whether the list is read-only
 	 * @param null|mixed $data
 	 * @param mixed $readOnly
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
@@ -83,7 +84,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return boolean whether this map is read-only or not. Defaults to false.
+	 * @return bool whether this map is read-only or not. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -91,7 +92,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @param boolean $value whether this list is read-only or not
+	 * @param bool $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -111,7 +112,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the number of items in the map.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the map.
+	 * @return int number of items in the map.
 	 */
 	public function count()
 	{
@@ -119,7 +120,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return integer the number of items in the map
+	 * @return int the number of items in the map
 	 */
 	public function getCount()
 	{
@@ -167,8 +168,8 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Removes an item from the map by its key.
 	 * @param mixed the key of the item to be removed
 	 * @param mixed $key
-	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the map is read-only
+	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
 	{
@@ -197,7 +198,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 
 	/**
 	 * @param mixed $key the key
-	 * @return boolean whether the map contains an item with the specified key
+	 * @return bool whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
@@ -253,7 +254,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -263,7 +264,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to retrieve element.
+	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -274,7 +275,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to set element
+	 * @param int the offset to set element
 	 * @param mixed the element value
 	 * @param mixed $offset
 	 * @param mixed $item

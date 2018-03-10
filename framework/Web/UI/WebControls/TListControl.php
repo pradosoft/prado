@@ -87,7 +87,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	private $_items;
 	/**
-	 * @var boolean whether items are restored from viewstate
+	 * @var bool whether items are restored from viewstate
 	 */
 	private $_stateLoaded = false;
 	/**
@@ -108,7 +108,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -116,7 +116,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -299,7 +299,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean whether this is a multiselect control. Defaults to false.
+	 * @return bool whether this is a multiselect control. Defaults to false.
 	 */
 	protected function getIsMultiSelect()
 	{
@@ -307,7 +307,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean whether performing databind should append items or clear the existing ones. Defaults to false.
+	 * @return bool whether performing databind should append items or clear the existing ones. Defaults to false.
 	 */
 	public function getAppendDataBoundItems()
 	{
@@ -315,7 +315,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean $value whether performing databind should append items or clear the existing ones.
+	 * @param bool $value whether performing databind should append items or clear the existing ones.
 	 */
 	public function setAppendDataBoundItems($value)
 	{
@@ -323,7 +323,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean a value indicating whether an automatic postback to the server
+	 * @return bool a value indicating whether an automatic postback to the server
 	 * will occur whenever the user makes change to the list control and then tabs out of it.
 	 * Defaults to false.
 	 */
@@ -336,7 +336,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * makes change to the list control and then tabs out of it.
-	 * @param boolean $value the value indicating if postback automatically
+	 * @param bool $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -344,7 +344,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this list control will cause input validation, default is true.
+	 * @return bool whether postback event trigger by this list control will cause input validation, default is true.
 	 */
 	public function getCausesValidation()
 	{
@@ -352,7 +352,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this list control will cause input validation.
+	 * @param bool $value whether postback event trigger by this list control will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -428,7 +428,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return integer the number of items in the list control
+	 * @return int the number of items in the list control
 	 */
 	public function getItemCount()
 	{
@@ -436,7 +436,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return boolean whether the list control contains any items.
+	 * @return bool whether the list control contains any items.
 	 */
 	public function getHasItems()
 	{
@@ -455,7 +455,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return integer the index (zero-based) of the item being selected, -1 if no item is selected.
+	 * @return int the index (zero-based) of the item being selected, -1 if no item is selected.
 	 */
 	public function getSelectedIndex()
 	{
@@ -471,7 +471,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param integer $index the index (zero-based) of the item to be selected
+	 * @param int $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -533,7 +533,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return TListItem|null the selected item with the lowest cardinal index, null if no item is selected.
+	 * @return null|TListItem the selected item with the lowest cardinal index, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{

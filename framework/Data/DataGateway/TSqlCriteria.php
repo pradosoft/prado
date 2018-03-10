@@ -197,7 +197,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true if the parameter index are string base, false otherwise.
+	 * @return bool true if the parameter index are string base, false otherwise.
 	 */
 	public function getIsNamedParameters()
 	{

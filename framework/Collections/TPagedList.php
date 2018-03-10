@@ -61,26 +61,26 @@ use Prado\TPropertyValue;
 class TPagedList extends TList
 {
 	/**
-	 * @var boolean whether to allow custom paging
+	 * @var bool whether to allow custom paging
 	 */
 	private $_customPaging = false;
 	/**
-	 * @var integer number of items in each page
+	 * @var int number of items in each page
 	 */
 	private $_pageSize = 10;
 	/**
-	 * @var integer current page index
+	 * @var int current page index
 	 */
 	private $_currentPageIndex = -1;
 	/**
-	 * @var integer user-assigned number of items in data source
+	 * @var int user-assigned number of items in data source
 	 */
 	private $_virtualCount = -1;
 
 	/**
 	 * Constructor.
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
-	 * @param boolean whether the list is read-only. Always true for paged list.
+	 * @param bool whether the list is read-only. Always true for paged list.
 	 * @param null|mixed $data
 	 * @param mixed $readOnly
 	 */
@@ -90,7 +90,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return boolean whether to use custom paging. Defaults to false.
+	 * @return bool whether to use custom paging. Defaults to false.
 	 */
 	public function getCustomPaging()
 	{
@@ -98,7 +98,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param boolean $value whether to allow custom paging
+	 * @param bool $value whether to allow custom paging
 	 */
 	public function setCustomPaging($value)
 	{
@@ -106,7 +106,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return integer number of items in each page. Defaults to 10.
+	 * @return int number of items in each page. Defaults to 10.
 	 */
 	public function getPageSize()
 	{
@@ -114,7 +114,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer $value number of items in each page
+	 * @param int $value number of items in each page
 	 */
 	public function setPageSize($value)
 	{
@@ -126,7 +126,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return integer current page index. Defaults to 0.
+	 * @return int current page index. Defaults to 0.
 	 */
 	public function getCurrentPageIndex()
 	{
@@ -134,7 +134,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer $value current page index
+	 * @param int $value current page index
 	 * @throws TInvalidDataValueException if the page index is out of range
 	 */
 	public function setCurrentPageIndex($value)
@@ -168,8 +168,8 @@ class TPagedList extends TList
 
 	/**
 	 * Changes to a page with the specified page index.
-	 * @param integer $pageIndex page index
-	 * @return integer|boolean the new page index, false if page index is out of range.
+	 * @param int $pageIndex page index
+	 * @return bool|int the new page index, false if page index is out of range.
 	 */
 	public function gotoPage($pageIndex)
 	{
@@ -207,7 +207,7 @@ class TPagedList extends TList
 
 	/**
 	 * Switches to the next page.
-	 * @return integer|boolean the new page index, false if next page is not available.
+	 * @return bool|int the new page index, false if next page is not available.
 	 */
 	public function nextPage()
 	{
@@ -216,7 +216,7 @@ class TPagedList extends TList
 
 	/**
 	 * Switches to the previous page.
-	 * @return integer|boolean the new page index, false if previous page is not available.
+	 * @return bool|int the new page index, false if previous page is not available.
 	 */
 	public function previousPage()
 	{
@@ -224,7 +224,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return integer user-assigned number of items in data source. Defaults to 0.
+	 * @return int user-assigned number of items in data source. Defaults to 0.
 	 */
 	public function getVirtualCount()
 	{
@@ -232,7 +232,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @param integer $value user-assigned number of items in data source
+	 * @param int $value user-assigned number of items in data source
 	 */
 	public function setVirtualCount($value)
 	{
@@ -243,7 +243,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return integer number of pages, -1 if under custom paging mode and {@link setVirtualCount VirtualCount} is not set.
+	 * @return int number of pages, -1 if under custom paging mode and {@link setVirtualCount VirtualCount} is not set.
 	 */
 	public function getPageCount()
 	{
@@ -259,7 +259,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return boolean whether the current page is the first page
+	 * @return bool whether the current page is the first page
 	 */
 	public function getIsFirstPage()
 	{
@@ -267,7 +267,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return boolean whether the current page is the last page
+	 * @return bool whether the current page is the last page
 	 */
 	public function getIsLastPage()
 	{
@@ -275,7 +275,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return integer the number of items in current page
+	 * @return int the number of items in current page
 	 */
 	public function getCount()
 	{
@@ -306,10 +306,10 @@ class TPagedList extends TList
 	/**
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param integer the index of the item
+	 * @param int the index of the item
 	 * @param mixed $index
-	 * @return mixed the item at the index
 	 * @throws TInvalidDataValueException if the index is out of the range
+	 * @return mixed the item at the index
 	 */
 	public function itemAt($index)
 	{
@@ -322,7 +322,7 @@ class TPagedList extends TList
 
 	/**
 	 * @param mixed $item the item
-	 * @return integer the index of the item in the list (0 based), -1 if not found.
+	 * @return int the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
 	{
@@ -338,8 +338,8 @@ class TPagedList extends TList
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to check on
-	 * @return boolean
+	 * @param int $offset the offset to check on
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -349,10 +349,10 @@ class TPagedList extends TList
 	/**
 	 * Returns the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve item.
+	 * @param int the offset to retrieve item.
 	 * @param mixed $offset
-	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid
+	 * @return mixed the item at the offset
 	 */
 	public function offsetGet($offset)
 	{

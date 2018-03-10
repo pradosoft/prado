@@ -109,7 +109,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether this accordion view is active. Defaults to false.
+	 * @return bool whether this accordion view is active. Defaults to false.
 	 */
 	public function getActive()
 	{
@@ -117,7 +117,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether this accordion view is active.
+	 * @param bool $value whether this accordion view is active.
 	 */
 	public function setActive($value)
 	{

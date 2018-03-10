@@ -134,8 +134,8 @@ class CultureInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
-	 * @return mixed
 	 * @param mixed $name
+	 * @return mixed
 	 */
 	public function __get($name)
 	{
@@ -211,8 +211,8 @@ class CultureInfo
 
 	/**
 	 * Gets the CultureInfo that for this culture string
-	 * @return CultureInfo invariant culture info is "en".
 	 * @param mixed $culture
+	 * @return CultureInfo invariant culture info is "en".
 	 */
 	public static function getInstance($culture)
 	{
@@ -227,7 +227,7 @@ class CultureInfo
 	 * Determine if a given culture is valid. Simply checks that the
 	 * culture data exists.
 	 * @param string $culture a culture
-	 * @return boolean true if valid, false otherwise.
+	 * @return bool true if valid, false otherwise.
 	 */
 	public static function validCulture($culture)
 	{
@@ -322,7 +322,7 @@ class CultureInfo
 	 * in the "en" data file. Thus to retrieve all the data regarding
 	 * currency for "en_AU", you need to use findInfo("Currencies,true);.
 	 * @param string $path the data you want to find.
-	 * @param boolean $merge merge the data from its parents.
+	 * @param bool $merge merge the data from its parents.
 	 * @return mixed the specific ICU data.
 	 */
 	protected function findInfo($path = '/', $merge = false)
@@ -476,7 +476,7 @@ class CultureInfo
 	 * Gets a value indicating whether the current CultureInfo
 	 * represents a neutral culture. Returns true if the culture
 	 * only contains two characters.
-	 * @return boolean true if culture is neutral, false otherwise.
+	 * @return bool true if culture is neutral, false otherwise.
 	 */
 	public function getIsNeutralCulture()
 	{

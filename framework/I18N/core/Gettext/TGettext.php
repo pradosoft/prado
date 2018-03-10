@@ -93,10 +93,10 @@ class TGettext
 	 *
 	 * @static
 	 * @access  public
-	 * @return  object  Returns File_Gettext_PO or File_Gettext_MO on success
-	 *                  or PEAR_Error on failure.
 	 * @param   string  $format MO or PO
 	 * @param   string  $file   path to GNU gettext file
+	 * @return  object  Returns File_Gettext_PO or File_Gettext_MO on success
+	 *                  or PEAR_Error on failure.
 	 */
 	public static function factory($format, $file = '')
 	{
@@ -120,9 +120,9 @@ class TGettext
 	 *
 	 * @static
 	 * @access  public
-	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 * @param   string  $pofile path to GNU PO file
 	 * @param   string  $mofile path to GNU MO file
+	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 */
 	public static function poFile2moFile($pofile, $mofile)
 	{
@@ -151,9 +151,9 @@ class TGettext
 	 *
 	 * @static
 	 * @access  protected
-	 * @return  string
 	 * @param   string  $string
 	 * @param   bool    $reverse
+	 * @return  string
 	 */
 	public static function prepare($string, $reverse = false)
 	{
@@ -174,8 +174,8 @@ class TGettext
 	 *
 	 * @static
 	 * @access  public
-	 * @return  array
 	 * @param   string $meta  $meta
+	 * @return  array
 	 */
 	public static function meta2array($meta)
 	{
@@ -240,8 +240,8 @@ class TGettext
 	 *
 	 * @see     toArray()
 	 * @access  protected
-	 * @return  bool
 	 * @param   array $array  $array
+	 * @return  bool
 	 */
 	public function fromArray($array)
 	{

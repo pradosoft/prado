@@ -109,7 +109,7 @@ class MessageSource_PHP extends MessageSource
 	/**
 	 * Determin if the PHP file source is valid.
 	 * @param string $source PHP file
-	 * @return boolean true if valid, false otherwise.
+	 * @return bool true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
 	{
@@ -178,9 +178,9 @@ class MessageSource_PHP extends MessageSource
 	 * Returns a list of catalogue and its culture ID. This takes care
 	 * of directory structures.
 	 * E.g. array('messages','en_AU')
-	 * @return array list of catalogues
 	 * @param null|mixed $dir
 	 * @param null|mixed $variant
+	 * @return array list of catalogues
 	 */
 	protected function getCatalogues($dir = null, $variant = null)
 	{
@@ -263,7 +263,7 @@ class MessageSource_PHP extends MessageSource
 	 * strings to the translation source via the <b>append()</b> method.
 	 * @param string the catalogue to add to
 	 * @param mixed $catalogue
-	 * @return boolean true if saved successfuly, false otherwise.
+	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages')
 	{
@@ -304,7 +304,7 @@ class MessageSource_PHP extends MessageSource
 	 * @param string $target the new translation string.
 	 * @param string $comments comments
 	 * @param string $catalogue the catalogue to save to.
-	 * @return boolean true if translation was updated, false otherwise.
+	 * @return bool true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages')
 	{
@@ -342,7 +342,7 @@ class MessageSource_PHP extends MessageSource
 	 * Delete a particular message from the specified catalogue.
 	 * @param string $message the source message to delete.
 	 * @param string $catalogue the catalogue to delete from.
-	 * @return boolean true if deleted, false otherwise.
+	 * @return bool true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages')
 	{

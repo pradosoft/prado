@@ -81,11 +81,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	];
 
 	/**
-	 * @var boolean whether to buffer output
+	 * @var bool whether to buffer output
 	 */
 	private $_bufferOutput = true;
 	/**
-	 * @var boolean if the application is initialized
+	 * @var bool if the application is initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -93,7 +93,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_cookies;
 	/**
-	 * @var integer response status code
+	 * @var int response status code
 	 */
 	private $_status = 200;
 	/**
@@ -109,7 +109,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_contentType;
 	/**
-	 * @var string|boolean character set, e.g. UTF-8 or false if no character set should be send to client
+	 * @var bool|string character set, e.g. UTF-8 or false if no character set should be send to client
 	 */
 	private $_charset = '';
 	/**
@@ -117,11 +117,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_adapter;
 	/**
-	 * @var boolean whether http response header has been sent
+	 * @var bool whether http response header has been sent
 	 */
 	private $_httpHeaderSent;
 	/**
-	 * @var boolean whether content-type header has been sent
+	 * @var bool whether content-type header has been sent
 	 */
 	private $_contentTypeHeaderSent;
 
@@ -137,6 +137,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * @param THttpResponseAdapter response adapter
+	 * @param THttpResponseAdapter $adapter
 	 */
 	public function setAdapter(THttpResponseAdapter $adapter)
 	{
@@ -152,7 +153,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return boolean true if adapter exists, false otherwise.
+	 * @return bool true if adapter exists, false otherwise.
 	 */
 	public function getHasAdapter()
 	{
@@ -175,7 +176,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return integer time-to-live for cached session pages in minutes, this has no effect for nocache limiter. Defaults to 180.
+	 * @return int time-to-live for cached session pages in minutes, this has no effect for nocache limiter. Defaults to 180.
 	 */
 	public function getCacheExpire()
 	{
@@ -183,7 +184,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param integer $value time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
+	 * @param int $value time-to-live for cached session pages in minutes, this has no effect for nocache limiter.
 	 */
 	public function setCacheExpire($value)
 	{
@@ -208,8 +209,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return string content type, default is text/html
 	 * @param mixed $type
+	 * @return string content type, default is text/html
 	 */
 	public function setContentType($type)
 	{
@@ -228,7 +229,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return string|boolean output charset.
+	 * @return bool|string output charset.
 	 */
 	public function getCharset()
 	{
@@ -236,7 +237,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param string|boolean $charset output charset.
+	 * @param bool|string $charset output charset.
 	 */
 	public function setCharset($charset)
 	{
@@ -244,7 +245,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return boolean whether to enable output buffer
+	 * @return bool whether to enable output buffer
 	 */
 	public function getBufferOutput()
 	{
@@ -252,7 +253,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param boolean $value whether to enable output buffer
+	 * @param bool $value whether to enable output buffer
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setBufferOutput($value)
@@ -265,7 +266,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return integer HTTP status code, defaults to 200
+	 * @return int HTTP status code, defaults to 200
 	 */
 	public function getStatusCode()
 	{
@@ -277,7 +278,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@link THttpRequest::getHttpProtocolVersion})
 	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
 	 *
-	 * @param integer HTTP status code
+	 * @param int HTTP status code
 	 * @param string HTTP status reason, defaults to standard HTTP reasons
 	 * @param mixed $status
 	 * @param null|mixed $reason
@@ -343,9 +344,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param string content to be set. If null, the content will be read from the server file pointed to by $fileName.
 	 * @param string mime type of the content.
 	 * @param array list of headers to be sent. Each array element represents a header string (e.g. 'Content-Type: text/plain').
-	 * @param boolean force download of file, even if browser able to display inline. Defaults to 'true'.
+	 * @param bool force download of file, even if browser able to display inline. Defaults to 'true'.
 	 * @param string force a specific file name on client side. Defaults to 'null' means auto-detect.
-	 * @param integer size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
+	 * @param int size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
 	 * @param null|mixed $content
 	 * @param null|mixed $mimeType
 	 * @param null|mixed $headers
@@ -510,7 +511,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
 	 * This method is used internally. Please use {@link flush} instead.
-	 * @param boolean $continueBuffering whether to continue buffering after flush if buffering was active
+	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
 	{
@@ -615,7 +616,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|int Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
 	 * @param null|mixed $case
 	 * @return array
 	 */
@@ -644,7 +645,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a header.
 	 * @param string header
-	 * @param boolean whether the header should replace a previous similar header, or add a second header of the same type
+	 * @param bool whether the header should replace a previous similar header, or add a second header of the same type
 	 * @param mixed $value
 	 * @param mixed $replace
 	 */
@@ -658,7 +659,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Writes a log message into error log.
 	 * This method is simple wrapper of PHP function error_log.
 	 * @param string The error message that should be logged
-	 * @param integer where the error should go
+	 * @param int where the error should go
 	 * @param string The destination. Its meaning depends on the message parameter as described above
 	 * @param string The extra headers. It's used when the message parameter is set to 1. This message type uses the same internal function as mail() does.
 	 * @param mixed $message

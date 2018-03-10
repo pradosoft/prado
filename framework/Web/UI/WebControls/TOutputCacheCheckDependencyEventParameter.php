@@ -29,7 +29,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	private $_cacheTime = 0;
 
 	/**
-	 * @return boolean whether the dependency remains valid. Defaults to true.
+	 * @return bool whether the dependency remains valid. Defaults to true.
 	 */
 	public function getIsValid()
 	{
@@ -37,7 +37,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean $value whether the dependency remains valid
+	 * @param bool $value whether the dependency remains valid
 	 */
 	public function setIsValid($value)
 	{
@@ -45,7 +45,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer the timestamp of the cached result. You may use this to help determine any dependency is changed.
+	 * @return int the timestamp of the cached result. You may use this to help determine any dependency is changed.
 	 * @since 3.1.1
 	 */
 	public function getCacheTime()
@@ -54,7 +54,7 @@ class TOutputCacheCheckDependencyEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer $value the timestamp of the cached result. This is used internally.
+	 * @param int $value the timestamp of the cached result. This is used internally.
 	 * @since 3.1.1
 	 */
 	public function setCacheTime($value)

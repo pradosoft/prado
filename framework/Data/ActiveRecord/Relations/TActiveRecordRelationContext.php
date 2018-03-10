@@ -44,7 +44,7 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return boolean true if the relation is defined in TActiveRecord::$RELATIONS
+	 * @return bool true if the relation is defined in TActiveRecord::$RELATIONS
 	 * @since 3.1.2
 	 */
 	public function hasRecordRelation()
@@ -131,7 +131,7 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return boolean true if the 3rd element of an TActiveRecord::$RELATION entry is set.
+	 * @return bool true if the 3rd element of an TActiveRecord::$RELATION entry is set.
 	 * @since 3.1.2
 	 */
 	public function hasFkField()
@@ -149,7 +149,7 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return boolean true if the relationship is HAS_MANY and requires an association table.
+	 * @return bool true if the relationship is HAS_MANY and requires an association table.
 	 */
 	public function hasAssociationTable()
 	{
@@ -171,8 +171,8 @@ class TActiveRecordRelationContext
 	 * or TActiveRecordHasManyAssocation will be returned.
 	 * @param TActiveRecordCriteria search criteria
 	 * @param null|mixed $criteria
-	 * @return TActiveRecordRelation record relationship handler instnace.
 	 * @throws TActiveRecordException if property is not defined or missing.
+	 * @return TActiveRecordRelation record relationship handler instnace.
 	 */
 	public function getRelationHandler($criteria = null)
 	{
@@ -202,8 +202,8 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return TActiveRecordRelationCommand
 	 * @param mixed $updateBelongsTo
+	 * @return TActiveRecordRelationCommand
 	 */
 	public function updateAssociatedRecords($updateBelongsTo = false)
 	{

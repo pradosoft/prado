@@ -65,7 +65,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	private $_baseUrl;
 	/**
-	 * @var boolean whether to use timestamp checking to ensure files are published with up-to-date versions.
+	 * @var bool whether to use timestamp checking to ensure files are published with up-to-date versions.
 	 */
 	private $_checkTimestamp = false;
 	/**
@@ -77,7 +77,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	private $_published = [];
 	/**
-	 * @var boolean whether the module is initialized
+	 * @var bool whether the module is initialized
 	 */
 	private $_initialized = false;
 
@@ -157,13 +157,13 @@ class TAssetManager extends \Prado\TModule
 	 * time will be used to make sure the published file is latest or not.
 	 * If not, a file copy will be performed.
 	 * @param string the path to be published
-	 * @param boolean If true, file modification time will be checked even if the application
+	 * @param bool If true, file modification time will be checked even if the application
 	 * is in performance mode.
 	 * @param mixed $path
 	 * @param mixed $checkTimestamp
-	 * @return string an absolute URL to the published directory
 	 * @throws TInvalidDataValueException if the file path to be published is
 	 * invalid
+	 * @return string an absolute URL to the published directory
 	 */
 	public function publishFilePath($path, $checkTimestamp = false)
 	{
@@ -317,7 +317,7 @@ class TAssetManager extends \Prado\TModule
 	 * as published asset assumes that the tar file has already been extracted.
 	 * @param string $tarfile tar filename
 	 * @param string $md5sum MD5 checksum for the corresponding tar file.
-	 * @param boolean $checkTimestamp Wether or not to check the time stamp of the file for publishing. Defaults to false.
+	 * @param bool $checkTimestamp Wether or not to check the time stamp of the file for publishing. Defaults to false.
 	 * @return string URL path to the directory where the tar file was extracted.
 	 */
 	public function publishTarFile($tarfile, $md5sum, $checkTimestamp = false)
@@ -345,7 +345,7 @@ class TAssetManager extends \Prado\TModule
 	 * N.B Tar file must not be compressed.
 	 * @param string $path tar file
 	 * @param string $destination path where the contents of tar file are to be extracted
-	 * @return boolean true if extract successful, false otherwise.
+	 * @return bool true if extract successful, false otherwise.
 	 */
 	protected function deployTarFile($path, $destination)
 	{

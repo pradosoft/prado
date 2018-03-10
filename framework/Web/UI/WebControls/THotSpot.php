@@ -52,6 +52,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 * @param string the name of the viewstate value
 	 * @param mixed $key the viewstate value to be set
 	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
+	 * @param mixed $value
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
@@ -152,7 +153,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer the tab index of the HotSpot region. Defaults to 0.
+	 * @return int the tab index of the HotSpot region. Defaults to 0.
 	 */
 	public function getTabIndex()
 	{
@@ -160,7 +161,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer $value the tab index of the HotSpot region.
+	 * @param int $value the tab index of the HotSpot region.
 	 */
 	public function setTabIndex($value)
 	{
@@ -168,7 +169,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this hotspot will cause input validation, default is true
+	 * @return bool whether postback event trigger by this hotspot will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -176,7 +177,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this hotspot will cause input validation
+	 * @param bool $value whether postback event trigger by this hotspot will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -218,7 +219,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the hotspot has custom attributes
+	 * @return bool whether the hotspot has custom attributes
 	 */
 	public function getHasAttributes()
 	{
@@ -247,8 +248,8 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the named attribute exists
 	 * @param mixed $name
+	 * @return bool whether the named attribute exists
 	 */
 	public function hasAttribute($name)
 	{
@@ -260,8 +261,8 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string attribute value, null if attribute does not exist
 	 * @param mixed $name
+	 * @return string attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{

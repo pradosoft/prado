@@ -121,7 +121,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean $value trim or not.
+	 * @param bool $value trim or not.
 	 */
 	public function setTrim($value)
 	{
@@ -130,7 +130,7 @@ class TTranslate extends TI18NControl
 
 	/**
 	 * Trim the content or not.
-	 * @return boolean trim or not.
+	 * @return bool trim or not.
 	 */
 	public function getTrim()
 	{
@@ -156,8 +156,8 @@ class TTranslate extends TI18NControl
 	}
 
 	/**
-	 * @return boolean whether the named parameter exists
 	 * @param mixed $name
+	 * @return bool whether the named parameter exists
 	 */
 	public function hasParameter($name)
 	{
@@ -169,8 +169,8 @@ class TTranslate extends TI18NControl
 	}
 
 	/**
-	 * @return string parameter value, null if parameter does not exist
 	 * @param mixed $name
+	 * @return string parameter value, null if parameter does not exist
 	 */
 	public function getParameter($name)
 	{

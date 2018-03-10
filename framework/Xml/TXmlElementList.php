@@ -33,6 +33,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	/**
 	 * Constructor.
 	 * @param TXmlElement owner of this list
+	 * @param TXmlElement $owner
 	 */
 	public function __construct(TXmlElement $owner)
 	{
@@ -51,7 +52,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added TXmlElement object.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
@@ -72,7 +73,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * Removes an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * cleanup work when removing a TXmlElement object.
-	 * @param integer $index the index of the item to be removed.
+	 * @param int $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)

@@ -77,15 +77,15 @@ use Prado;
 class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
 	/**
-	 * @var boolean whether this module has been initialized
+	 * @var bool whether this module has been initialized
 	 */
 	private $_initialized = false;
 	/**
-	 * @var boolean whether the session has started
+	 * @var bool whether the session has started
 	 */
 	private $_started = false;
 	/**
-	 * @var boolean whether the session should be started when the module is initialized
+	 * @var bool whether the session should be started when the module is initialized
 	 */
 	private $_autoStart = false;
 	/**
@@ -97,7 +97,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_id;
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $_customStorage = false;
 
@@ -177,7 +177,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Update the current session id with a newly generated one
 	 *
-	 * @param boolean $deleteOld Whether to delete the old associated session or not.
+	 * @param bool $deleteOld Whether to delete the old associated session or not.
 	 * @return string old session id
 	 * @link http://php.net/manual/en/function.session-regenerate-id.php
 	 */
@@ -189,7 +189,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean whether the session has started
+	 * @return bool whether the session has started
 	 */
 	public function getIsStarted()
 	{
@@ -266,7 +266,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean whether to use user-specified handlers to store session data. Defaults to false.
+	 * @return bool whether to use user-specified handlers to store session data. Defaults to false.
 	 */
 	public function getUseCustomStorage()
 	{
@@ -274,7 +274,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean whether to use user-specified handlers to store session data.
+	 * @param bool whether to use user-specified handlers to store session data.
 	 * If true, make sure the methods {@link _open}, {@link _close}, {@link _read},
 	 * {@link _write}, {@link _destroy}, and {@link _gc} are overridden in child
 	 * class, because they will be used as the callback handlers.
@@ -335,7 +335,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean whether the session should be automatically started when the session module is initialized, defaults to false.
+	 * @return bool whether the session should be automatically started when the session module is initialized, defaults to false.
 	 */
 	public function getAutoStart()
 	{
@@ -343,7 +343,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean $value whether the session should be automatically started when the session module is initialized, defaults to false.
+	 * @param bool $value whether the session should be automatically started when the session module is initialized, defaults to false.
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setAutoStart($value)
@@ -356,7 +356,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer the probability (percentage) that the gc (garbage collection) process is started on every session initialization, defaults to 1 meaning 1% chance.
+	 * @return int the probability (percentage) that the gc (garbage collection) process is started on every session initialization, defaults to 1 meaning 1% chance.
 	 */
 	public function getGCProbability()
 	{
@@ -364,7 +364,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param integer the probability (percentage) that the gc (garbage collection) process is started on every session initialization.
+	 * @param int the probability (percentage) that the gc (garbage collection) process is started on every session initialization.
 	 * @param mixed $value
 	 * @throws TInvalidOperationException if session is started already
 	 * @throws TInvalidDataValueException if the value is beyond [0,100].
@@ -385,7 +385,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean whether transparent sid support is enabled or not, defaults to false.
+	 * @return bool whether transparent sid support is enabled or not, defaults to false.
 	 */
 	public function getUseTransparentSessionID()
 	{
@@ -397,7 +397,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * the use of transparent session ids. Refer to the main documentation of the class
 	 * THttpSession class for a configuration example.
 	 *
-	 * @param boolean $value whether transparent sid support is enabled or not.
+	 * @param bool $value whether transparent sid support is enabled or not.
 	 */
 	public function setUseTransparentSessionID($value)
 	{
@@ -413,7 +413,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer the number of seconds after which data will be seen as 'garbage' and cleaned up, defaults to 1440 seconds.
+	 * @return int the number of seconds after which data will be seen as 'garbage' and cleaned up, defaults to 1440 seconds.
 	 */
 	public function getTimeout()
 	{
@@ -421,7 +421,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param integer $value the number of seconds after which data will be seen as 'garbage' and cleaned up
+	 * @param int $value the number of seconds after which data will be seen as 'garbage' and cleaned up
 	 * @throws TInvalidOperationException if session is started already
 	 */
 	public function setTimeout($value)
@@ -438,7 +438,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $savePath session save path
 	 * @param string $sessionName session name
-	 * @return boolean whether session is opened successfully
+	 * @return bool whether session is opened successfully
 	 */
 	public function _open($savePath, $sessionName)
 	{
@@ -448,7 +448,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session close handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @return boolean whether session is closed successfully
+	 * @return bool whether session is closed successfully
 	 */
 	public function _close()
 	{
@@ -471,7 +471,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
 	 * @param string $data session data
-	 * @return boolean whether session write is successful
+	 * @return bool whether session write is successful
 	 */
 	public function _write($id, $data)
 	{
@@ -482,7 +482,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Session destroy handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
-	 * @return boolean whether session is destroyed successfully
+	 * @return bool whether session is destroyed successfully
 	 */
 	public function _destroy($id)
 	{
@@ -492,8 +492,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Session GC (garbage collection) handler.
 	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
-	 * @param integer $maxLifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
-	 * @return boolean whether session is GCed successfully
+	 * @param int $maxLifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
+	 * @return bool whether session is GCed successfully
 	 */
 	public function _gc($maxLifetime)
 	{
@@ -513,7 +513,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer the number of session variables
+	 * @return int the number of session variables
 	 */
 	public function getCount()
 	{
@@ -523,7 +523,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the number of items in the session.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the session.
+	 * @return int number of items in the session.
 	 */
 	public function count()
 	{
@@ -590,7 +590,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param mixed $key session variable name
-	 * @return boolean whether there is the named session variable
+	 * @return bool whether there is the named session variable
 	 */
 	public function contains($key)
 	{
@@ -608,7 +608,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -617,7 +617,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to retrieve element.
+	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -627,7 +627,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to set element
+	 * @param int the offset to set element
 	 * @param mixed the element value
 	 * @param mixed $offset
 	 * @param mixed $item

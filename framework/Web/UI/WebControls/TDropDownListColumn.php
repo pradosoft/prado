@@ -162,7 +162,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return boolean whether the items in the column can be edited. Defaults to false.
+	 * @return bool whether the items in the column can be edited. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -170,7 +170,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean $value whether the items in the column can be edited
+	 * @param bool $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -186,7 +186,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param Traversable|array|string $value data source to be bound to the dropdown list boxes.
+	 * @param array|string|Traversable $value data source to be bound to the dropdown list boxes.
 	 */
 	public function setListDataSource($value)
 	{
@@ -249,7 +249,7 @@ class TDropDownListColumn extends TDataGridColumn
 	 * The caption of the button and the static text are retrieved
 	 * from the datasource.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)

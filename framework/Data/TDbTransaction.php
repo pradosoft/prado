@@ -49,6 +49,7 @@ class TDbTransaction extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * @param TDbConnection the connection associated with this transaction
+	 * @param TDbConnection $connection
 	 * @see TDbConnection::beginTransaction
 	 */
 	public function __construct(TDbConnection $connection)
@@ -94,7 +95,7 @@ class TDbTransaction extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this transaction is active
+	 * @return bool whether this transaction is active
 	 */
 	public function getActive()
 	{
@@ -102,7 +103,7 @@ class TDbTransaction extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether this transaction is active
+	 * @param bool $value whether this transaction is active
 	 */
 	protected function setActive($value)
 	{

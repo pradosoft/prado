@@ -225,7 +225,7 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @return boolean whether change of the content should cause postback. Return false if EnableVisualEdit is true.
+	 * @return bool whether change of the content should cause postback. Return false if EnableVisualEdit is true.
 	 */
 	public function getAutoPostBack()
 	{
@@ -233,7 +233,7 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @return boolean whether to show WYSIWYG text editor. Defaults to true.
+	 * @return bool whether to show WYSIWYG text editor. Defaults to true.
 	 */
 	public function getEnableVisualEdit()
 	{
@@ -242,7 +242,7 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Sets whether to show WYSIWYG text editor.
-	 * @param boolean $value whether to show WYSIWYG text editor
+	 * @param bool $value whether to show WYSIWYG text editor
 	 */
 	public function setEnableVisualEdit($value)
 	{
@@ -429,8 +429,8 @@ class THtmlArea extends TTextBox
 
 	/**
 	 * Parse additional options set in the Options property.
-	 * @return array additional custom options
 	 * @param mixed $string
+	 * @return array additional custom options
 	 */
 	protected function parseEditorOptions($string)
 	{
@@ -453,8 +453,8 @@ class THtmlArea extends TTextBox
 	}
 
 	/**
-	 * @return string localized editor interface language extension.
 	 * @param mixed $culture
+	 * @return string localized editor interface language extension.
 	 */
 	protected function getLanguageSuffix($culture)
 	{

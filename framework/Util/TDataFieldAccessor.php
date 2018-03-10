@@ -52,8 +52,8 @@ class TDataFieldAccessor
 	 * @param mixed field value
 	 * @param mixed $data
 	 * @param mixed $field
-	 * @return mixed value at the specified field
 	 * @throws TInvalidDataValueException if field or data is invalid
+	 * @return mixed value at the specified field
 	 */
 	public static function getDataFieldValue($data, $field)
 	{

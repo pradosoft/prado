@@ -164,6 +164,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * @param TUrlManager the URL manager instance
+	 * @param TUrlManager $manager
 	 */
 	public function __construct(TUrlManager $manager)
 	{
@@ -245,7 +246,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the {@link getPattern Pattern} should be treated as case sensititve. Defaults to true.
+	 * @return bool whether the {@link getPattern Pattern} should be treated as case sensititve. Defaults to true.
 	 */
 	public function getCaseSensitive()
 	{
@@ -253,7 +254,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the {@link getPattern Pattern} should be treated as case sensititve.
+	 * @param bool $value whether the {@link getPattern Pattern} should be treated as case sensititve.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -387,7 +388,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Returns a value indicating whether to use this pattern to construct URL.
-	 * @return boolean whether to enable custom constructUrl. Defaults to true.
+	 * @return bool whether to enable custom constructUrl. Defaults to true.
 	 * @since 3.1.1
 	 */
 	public function getEnableCustomUrl()
@@ -397,7 +398,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Sets a value indicating whether to enable custom constructUrl using this pattern
-	 * @param boolean $value whether to enable custom constructUrl.
+	 * @param bool $value whether to enable custom constructUrl.
 	 */
 	public function setEnableCustomUrl($value)
 	{
@@ -405,7 +406,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this pattern is a wildcard pattern
+	 * @return bool whether this pattern is a wildcard pattern
 	 * @since 3.1.4
 	 */
 	public function getIsWildCardPattern()
@@ -479,7 +480,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * @param array list of GET items to be put in the constructed URL
 	 * @param mixed $getItems
-	 * @return boolean whether this pattern IS the one for constructing the URL with the specified GET items.
+	 * @return bool whether this pattern IS the one for constructing the URL with the specified GET items.
 	 * @since 3.1.1
 	 */
 	public function supportCustomUrl($getItems)
@@ -511,8 +512,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Constructs a URL using this pattern.
 	 * @param array list of GET variables
-	 * @param boolean whether the ampersand should be encoded in the constructed URL
-	 * @param boolean whether the GET variables should be encoded in the constructed URL
+	 * @param bool whether the ampersand should be encoded in the constructed URL
+	 * @param bool whether the GET variables should be encoded in the constructed URL
 	 * @param mixed $getItems
 	 * @param mixed $encodeAmpersand
 	 * @param mixed $encodeGetItems

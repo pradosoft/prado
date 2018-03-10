@@ -167,7 +167,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @return int the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
 	{
@@ -179,7 +179,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer $value the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @param int $value the cellspacing for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -187,7 +187,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @return int the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellPadding()
 	{
@@ -199,7 +199,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer $value the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @param int $value the cellpadding for the table. Defaults to -1, meaning not set.
 	 */
 	public function setCellPadding($value)
 	{

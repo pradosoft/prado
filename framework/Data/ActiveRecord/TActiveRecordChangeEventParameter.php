@@ -31,7 +31,7 @@ class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 	private $_isValid = true;
 
 	/**
-	 * @return boolean whether the event should be performed.
+	 * @return bool whether the event should be performed.
 	 */
 	public function getIsValid()
 	{
@@ -39,7 +39,7 @@ class TActiveRecordChangeEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean $value set to false to prevent the event.
+	 * @param bool $value set to false to prevent the event.
 	 */
 	public function setIsValid($value)
 	{

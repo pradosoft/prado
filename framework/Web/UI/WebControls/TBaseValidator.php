@@ -79,11 +79,11 @@ use Prado\Web\UI\IValidator;
 abstract class TBaseValidator extends TLabel implements IValidator
 {
 	/**
-	 * @var boolean whether the validation succeeds
+	 * @var bool whether the validation succeeds
 	 */
 	private $_isValid = true;
 	/**
-	 * @var boolean whether the validator has been registered with the page
+	 * @var bool whether the validator has been registered with the page
 	 */
 	private $_registered = false;
 	/**
@@ -272,7 +272,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.
-	 * @return boolean true if change, false otherwise.
+	 * @return bool true if change, false otherwise.
 	 */
 	protected function updateControlCssClass()
 	{
@@ -322,7 +322,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * This method overrides parent's implementation by setting {@link setIsValid IsValid} to true if disabled.
-	 * @param boolean $value whether the validator is enabled.
+	 * @param bool $value whether the validator is enabled.
 	 */
 	public function setEnabled($value)
 	{
@@ -350,7 +350,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return boolean whether client-side validation is enabled.
+	 * @return bool whether client-side validation is enabled.
 	 */
 	public function getEnableClientScript()
 	{
@@ -358,7 +358,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param boolean $value whether client-side validation is enabled.
+	 * @param bool $value whether client-side validation is enabled.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -402,7 +402,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return boolean whether to set focus at the validating place if the validation fails. Defaults to false.
+	 * @return bool whether to set focus at the validating place if the validation fails. Defaults to false.
 	 */
 	public function getFocusOnError()
 	{
@@ -410,7 +410,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param boolean $value whether to set focus at the validating place if the validation fails
+	 * @param bool $value whether to set focus at the validating place if the validation fails
 	 */
 	public function setFocusOnError($value)
 	{
@@ -464,7 +464,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	public function getIsValid()
 	{
@@ -473,7 +473,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Sets the value indicating whether the validation succeeds
-	 * @param boolean $value whether the validation succeeds
+	 * @param bool $value whether the validation succeeds
 	 */
 	public function setIsValid($value)
 	{
@@ -481,9 +481,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TControl control to be validated. Null if no control is found.
 	 * @throws TConfigurationException if {@link getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
+	 * @return TControl control to be validated. Null if no control is found.
 	 */
 	public function getValidationTarget()
 	{
@@ -497,8 +497,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Retrieves the property value of the control being validated.
 	 * @param TControl $control control being validated
-	 * @return string property value to be validated
 	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
+	 * @return string property value to be validated
 	 */
 	protected function getValidationValue($control)
 	{
@@ -512,7 +512,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Validates the specified control.
 	 * Do not override this method. Override {@link evaluateIsValid} instead.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	public function validate()
 	{
@@ -563,7 +563,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * This is the major method for validation.
 	 * Derived classes should implement this method to provide customized validation.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	abstract protected function evaluateIsValid();
 

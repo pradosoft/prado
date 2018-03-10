@@ -143,7 +143,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Updates the tab index.
-	 * @param integer $value tab index
+	 * @param int $value tab index
 	 */
 	protected function updateTabIndex($value)
 	{
@@ -162,7 +162,7 @@ class TCallbackPageStateTracker
 	/**
 	 * Hides or shows the control on the client-side. The control must be
 	 * already rendered on the client-side.
-	 * @param boolean $visible true to show the control, false to hide.
+	 * @param bool $visible true to show the control, false to hide.
 	 */
 	protected function updateVisible($visible)
 	{
@@ -175,7 +175,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Enables or Disables the control on the client-side.
-	 * @param boolean $enable true to enable the control, false to disable.
+	 * @param bool $enable true to enable the control, false to disable.
 	 */
 	protected function updateEnabled($enable)
 	{

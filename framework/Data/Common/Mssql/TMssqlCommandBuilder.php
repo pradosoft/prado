@@ -26,7 +26,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 {
 	/**
 	 * Overrides parent implementation. Uses "SELECT @@Identity".
-	 * @return integer last insert id, null if none is found.
+	 * @return int last insert id, null if none is found.
 	 */
 	public function getLastInsertID()
 	{
@@ -74,8 +74,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * </ul>
 	 *
 	 * @param string $sql SQL query string.
-	 * @param integer $limit maximum number of rows, -1 to ignore limit.
-	 * @param integer $offset row offset, -1 to ignore offset.
+	 * @param int $limit maximum number of rows, -1 to ignore limit.
+	 * @param int $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
@@ -94,8 +94,8 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * Rewrite sql to apply $limit > and $offset > 0 for MSSQL database.
 	 * See http://troels.arvin.dk/db/rdbms/#select-limit-offset
 	 * @param string sql query
-	 * @param integer $limit > 0
-	 * @param integer $offset > 0
+	 * @param int $limit > 0
+	 * @param int $offset > 0
 	 * @param mixed $sql
 	 * @return sql modified sql query applied with limit and offset.
 	 */

@@ -76,7 +76,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return boolean whether there should be a visual separator between the frames. Defaults to true.
+	 * @return bool whether there should be a visual separator between the frames. Defaults to true.
 	 */
 	public function getShowBorder()
 	{
@@ -84,7 +84,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param boolean $value whether there should be a visual separator between the frames.
+	 * @param bool $value whether there should be a visual separator between the frames.
 	 */
 	public function setShowBorder($value)
 	{
@@ -150,7 +150,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return integer the width of the control
+	 * @return int the width of the control
 	 */
 	public function getWidth()
 	{
@@ -158,7 +158,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer $value the width of the control
+	 * @param int $value the width of the control
 	 */
 	public function setWidth($value)
 	{
@@ -169,7 +169,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return integer the height of the control
+	 * @return int the height of the control
 	 */
 	public function getHeight()
 	{
@@ -177,7 +177,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer $value the height of the control
+	 * @param int $value the height of the control
 	 */
 	public function setHeight($value)
 	{
@@ -188,7 +188,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return integer the amount of space, in pixels, that should be left between
+	 * @return int the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins. Defaults to -1, meaning not set.
 	 */
 	public function getMarginWidth()
@@ -197,7 +197,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer $value the amount of space, in pixels, that should be left between
+	 * @param int $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins.
 	 */
 	public function setMarginWidth($value)
@@ -209,7 +209,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return integer the amount of space, in pixels, that should be left between
+	 * @return int the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins. Defaults to -1, meaning not set.
 	 */
 	public function getMarginHeight()
@@ -218,7 +218,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param integer $value the amount of space, in pixels, that should be left between
+	 * @param int $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins.
 	 */
 	public function setMarginHeight($value)

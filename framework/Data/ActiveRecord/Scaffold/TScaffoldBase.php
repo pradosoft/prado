@@ -100,6 +100,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	/**
 	 * Copy the view details from another scaffold view instance.
 	 * @param TScaffoldBase scaffold view.
+	 * @param TScaffoldBase $obj
 	 */
 	protected function copyFrom(TScaffoldBase $obj)
 	{
@@ -153,6 +154,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * @param TActiveRecord Active Record instance.
+	 * @param TActiveRecord $value
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{
@@ -184,7 +186,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean enable default stylesheet, default is true.
+	 * @return bool enable default stylesheet, default is true.
 	 */
 	public function getEnableDefaultStyle()
 	{
@@ -192,7 +194,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean $value enable default stylesheet, default is true.
+	 * @param bool $value enable default stylesheet, default is true.
 	 */
 	public function setEnableDefaultStyle($value)
 	{

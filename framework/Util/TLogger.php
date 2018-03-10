@@ -41,7 +41,7 @@ class TLogger extends \Prado\TComponent
 	 */
 	private $_logs = [];
 	/**
-	 * @var integer log levels (bits) to be filtered
+	 * @var int log levels (bits) to be filtered
 	 */
 	private $_levels;
 	/**
@@ -61,7 +61,7 @@ class TLogger extends \Prado\TComponent
 	 * Logs a message.
 	 * Messages logged by this method may be retrieved via {@link getLogs}.
 	 * @param string message to be logged
-	 * @param integer level of the message. Valid values include
+	 * @param int level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string category of the message
@@ -105,7 +105,7 @@ class TLogger extends \Prado\TComponent
 	 * A message whose registered timestamp is less or equal the filter value will be returned.
 	 * Level filter, category filter, control filter and timestamp filter are combinational, i.e., only messages
 	 * satisfying all filter conditions will they be returned.
-	 * @param integer level filter
+	 * @param int level filter
 	 * @param array category filter
 	 * @param array control filter
 	 * @param null|mixed $levels
@@ -167,7 +167,7 @@ class TLogger extends \Prado\TComponent
 	 * A message whose registered timestamp is less or equal the filter value will be returned.
 	 * Level filter, category filter, control filter and timestamp filter are combinational, i.e., only messages
 	 * satisfying all filter conditions will they be returned.
-	 * @param integer level filter
+	 * @param int level filter
 	 * @param array category filter
 	 * @param array control filter
 	 * @param null|mixed $levels

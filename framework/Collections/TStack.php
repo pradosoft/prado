@@ -43,7 +43,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	private $_d = [];
 	/**
 	 * number of items
-	 * @var integer
+	 * @var int
 	 */
 	private $_c = 0;
 
@@ -99,7 +99,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * @param mixed $item the item
-	 * @return boolean whether the stack contains the item
+	 * @return bool whether the stack contains the item
 	 */
 	public function contains($item)
 	{
@@ -109,8 +109,8 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the item at the top of the stack.
 	 * Unlike {@link pop()}, this method does not remove the item from the stack.
-	 * @return mixed item at the top of the stack
 	 * @throws TInvalidOperationException if the stack is empty
+	 * @return mixed item at the top of the stack
 	 */
 	public function peek()
 	{
@@ -123,8 +123,8 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Pops up the item at the top of the stack.
-	 * @return mixed the item at the top of the stack
 	 * @throws TInvalidOperationException if the stack is empty
+	 * @return mixed the item at the top of the stack
 	 */
 	public function pop()
 	{
@@ -157,7 +157,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * @return integer the number of items in the stack
+	 * @return int the number of items in the stack
 	 */
 	public function getCount()
 	{
@@ -167,7 +167,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the number of items in the stack.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the stack.
+	 * @return int number of items in the stack.
 	 */
 	public function count()
 	{

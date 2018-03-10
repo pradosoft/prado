@@ -36,7 +36,7 @@ interface IInstanceCheck
 	 * @param object the object which the behavior is attached to.  default: null
 	 * @param mixed $class
 	 * @param null|mixed $instance
-	 * @return boolean|null if the this or the instance is of type class.  When null, no information could be derived and
+	 * @return null|bool if the this or the instance is of type class.  When null, no information could be derived and
 	 * the default mechanisms take over.
 	 */
 	public function isinstanceof($class, $instance = null);

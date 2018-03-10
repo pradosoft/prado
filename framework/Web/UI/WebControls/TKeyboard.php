@@ -63,7 +63,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the keyboard should be hidden when the textbox is not in focus. Defaults to true.
+	 * @return bool whether the keyboard should be hidden when the textbox is not in focus. Defaults to true.
 	 */
 	public function getAutoHide()
 	{
@@ -71,7 +71,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether the keyboard should be hidden when the textbox is not in focus.
+	 * @param bool $value whether the keyboard should be hidden when the textbox is not in focus.
 	 */
 	public function setAutoHide($value)
 	{

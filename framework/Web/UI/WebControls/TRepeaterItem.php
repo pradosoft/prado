@@ -62,7 +62,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	/**
 	 * Returns a value indicating the zero-based index of the item in the corresponding data control's item collection.
 	 * If the item is not in the collection (e.g. it is a header item), it returns -1.
-	 * @return integer zero-based index of the item.
+	 * @return int zero-based index of the item.
 	 */
 	public function getItemIndex()
 	{
@@ -72,7 +72,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer $value zero-based index of the item.
+	 * @param int $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{
@@ -102,7 +102,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{

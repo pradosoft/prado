@@ -41,6 +41,7 @@ abstract class TRpcProtocol
 	/**
 	 * @param TRpcException the exception with error details
 	 * Creates a proper response for an error condition
+	 * @param TRpcException $exception
 	 * @return a response representing the error
 	 * @abstract
 	 */

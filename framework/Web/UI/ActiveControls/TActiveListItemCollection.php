@@ -35,12 +35,12 @@ class TActiveListItemCollection extends TListItemCollection
 	 */
 	private $_control;
 	/**
-	 * @var boolean true if list items were changed.
+	 * @var bool true if list items were changed.
 	 */
 	private $_hasChanged = false;
 
 	/**
-	 * @return boolean true if active controls can update client-side and
+	 * @return bool true if active controls can update client-side and
 	 * the onLoad event has already been raised.
 	 */
 	protected function canUpdateClientSide()
@@ -51,6 +51,7 @@ class TActiveListItemCollection extends TListItemCollection
 
 	/**
 	 * @param IActiveControl a active list control.
+	 * @param IActiveControl $control
 	 */
 	public function setControl(IActiveControl $control)
 	{
@@ -66,7 +67,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @return boolean true if the list has changed after onLoad event.
+	 * @return bool true if the list has changed after onLoad event.
 	 */
 	public function getListHasChanged()
 	{
@@ -86,7 +87,7 @@ class TActiveListItemCollection extends TListItemCollection
 	/**
 	 * Inserts an item into the collection.
 	 * The new option is added on the client-side during callback.
-	 * @param integer the location where the item will be inserted.
+	 * @param int the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
 	 * @param TListItem the item to be inserted.
 	 * @param mixed $index

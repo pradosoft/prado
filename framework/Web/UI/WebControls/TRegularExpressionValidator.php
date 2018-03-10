@@ -75,7 +75,7 @@ class TRegularExpressionValidator extends TBaseValidator
 	 * The validation succeeds if the input data matches the regular expression.
 	 * The validation always succeeds if ControlToValidate is not specified
 	 * or the regular expression is empty, or the input data is empty.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
 	{

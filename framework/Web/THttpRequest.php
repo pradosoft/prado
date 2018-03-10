@@ -111,7 +111,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_pathInfo;
 	/**
-	 * @var boolean whether the session ID should be kept in cookie only
+	 * @var bool whether the session ID should be kept in cookie only
 	 */
 	private $_cookieOnly;
 	private $_urlFormat = THttpRequestUrlFormat::Get;
@@ -120,7 +120,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	private $_enableCookieValidation = false;
 	private $_cgiFix = 0;
 	/**
-	 * @var boolean whether to cache the TUrlManager class (useful with a lot of TUrlMappings)
+	 * @var bool whether to cache the TUrlManager class (useful with a lot of TUrlMappings)
 	 */
 	private $_enableCache = false;
 	/**
@@ -214,6 +214,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Strips slashes from input data.
 	 * This method is applied when magic quotes is enabled.
 	 * @param mixed input data to be processed
+	 * @param & $data
 	 * @return mixed processed data
 	 */
 	public function stripSlashes(&$data)
@@ -247,7 +248,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Set true to cache the UrlManager instance. Consider to enable this cache
 	 * when the application defines a lot of TUrlMappingPatterns
-	 * @param boolean $value true to cache urlmanager instance.
+	 * @param bool $value true to cache urlmanager instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -255,7 +256,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean true if urlmanager instance should be cached, false otherwise.
+	 * @return bool true if urlmanager instance should be cached, false otherwise.
 	 */
 	public function getEnableCache()
 	{
@@ -269,8 +270,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Saves the current UrlManager instance to cache.
-	 * @return boolean true if UrlManager instance was cached, false otherwise.
 	 * @param mixed $manager
+	 * @return bool true if UrlManager instance was cached, false otherwise.
 	 */
 	protected function cacheUrlManager($manager)
 	{
@@ -405,7 +406,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean $mimetypeOnly whether to return only the mimetype (default: true)
+	 * @param bool $mimetypeOnly whether to return only the mimetype (default: true)
 	 * @return string content type (e.g. 'application/json' or 'text/html; encoding=gzip') or null if not specified
 	 */
 	public function getContentType($mimetypeOnly = true)
@@ -422,7 +423,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean if the request is sent via secure channel (https)
+	 * @return bool if the request is sent via secure channel (https)
 	 */
 	public function getIsSecureConnection()
 	{
@@ -454,7 +455,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param integer|null Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|int Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
 	 * @param null|mixed $case
 	 * @return array
 	 */
@@ -491,7 +492,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean|null whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
+	 * @param null|bool whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
 	 * 						null - keep current schema
 	 * 						true - force https
 	 * 						false - force http
@@ -522,7 +523,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean|null whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
+	 * @param null|bool whether to use HTTPS instead of HTTP even if the current request is sent via HTTP or vice versa
 	 * 						null - keep current schema
 	 * 						true - force https
 	 * 						false - force http
@@ -551,7 +552,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer server port number
+	 * @return int server port number
 	 */
 	public function getServerPort()
 	{
@@ -634,7 +635,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean whether cookies should be validated. Defaults to false.
+	 * @return bool whether cookies should be validated. Defaults to false.
 	 */
 	public function getEnableCookieValidation()
 	{
@@ -642,7 +643,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param boolean $value whether cookies should be validated.
+	 * @param bool $value whether cookies should be validated.
 	 */
 	public function setEnableCookieValidation($value)
 	{
@@ -650,7 +651,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer whether to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME. Defaults to 0.
+	 * @return int whether to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME. Defaults to 0.
 	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
 	 */
 	public function getCgiFix()
@@ -661,7 +662,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Enable this, if you're using PHP via CGI with php.ini setting "cgi.fix_pathinfo=1"
 	 * and have trouble with friendly URL feature. Enable this only if you really know what you are doing!
-	 * @param integer $value enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
+	 * @param int $value enable bitwise to use ORIG_PATH_INFO and/or ORIG_SCRIPT_NAME.
 	 * @see THttpRequest::CGIFIX__PATH_INFO, THttpRequest::CGIFIX__SCRIPT_NAME
 	 */
 	public function setCgiFix($value)
@@ -728,8 +729,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not needed
-	 * @param boolean whether to encode the ampersand in URL, defaults to true.
-	 * @param boolean whether to encode the GET parameters (their names and values), defaults to false.
+	 * @param bool whether to encode the ampersand in URL, defaults to true.
+	 * @param bool whether to encode the GET parameters (their names and values), defaults to false.
 	 * @param mixed $serviceID
 	 * @param mixed $serviceParam
 	 * @param null|mixed $getItems
@@ -793,7 +794,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return boolean true if request is already resolved, false otherwise.
+	 * @return bool true if request is already resolved, false otherwise.
 	 */
 	public function getRequestResolved()
 	{
@@ -847,7 +848,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return integer the number of items in the request
+	 * @return int the number of items in the request
 	 */
 	public function getCount()
 	{
@@ -857,7 +858,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the number of items in the request.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the request.
+	 * @return int number of items in the request.
 	 */
 	public function count()
 	{
@@ -900,8 +901,8 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Removes an item from the request by its key.
 	 * @param mixed the key of the item to be removed
 	 * @param mixed $key
-	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the item cannot be removed
+	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
 	{
@@ -926,7 +927,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param mixed $key the key
-	 * @return boolean whether the request contains an item with the specified key
+	 * @return bool whether the request contains an item with the specified key
 	 */
 	public function contains($key)
 	{
@@ -945,7 +946,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -955,7 +956,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to retrieve element.
+	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -966,7 +967,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to set element
+	 * @param int the offset to set element
 	 * @param mixed the element value
 	 * @param mixed $offset
 	 * @param mixed $item

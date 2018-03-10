@@ -63,12 +63,12 @@ class TWebControlDecorator extends \Prado\TComponent
 {
 
 	/**
-	 * @var boolean tells if there should only be decoration around the inner content
+	 * @var bool tells if there should only be decoration around the inner content
 	 */
 	private $_internalonly;
 
 	/**
-	 * @var boolean tells if the decoration uses state in its templates.  If there are no templates
+	 * @var bool tells if the decoration uses state in its templates.  If there are no templates
 	 * in the instance of the decoration this variable is unused.
 	 */
 	private $_usestate = false;
@@ -84,7 +84,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	private $_outercontrol;
 
 	/**
-	 * @var boolean This tells if the Templates have been
+	 * @var bool This tells if the Templates have been
 	 */
 	private $_addedTemplateDecoration = false;
 
@@ -129,7 +129,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	 * Constructor.
 	 * Initializes the control .
 	 * @param TWebControl $control The control that is to be decorated.
-	 * @param boolean $onlyinternal whether decoration is just around the inner content
+	 * @param bool $onlyinternal whether decoration is just around the inner content
 	 */
 	public function __construct($control, $onlyinternal = false)
 	{
@@ -138,7 +138,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean if the templates in this decoration need state.  This defaults to false
+	 * @return bool if the templates in this decoration need state.  This defaults to false
 	 */
 	public function getUseState()
 	{
@@ -146,7 +146,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value $value true to tell the decoration that the templates need state and should be
+	 * @param bool $value $value true to tell the decoration that the templates need state and should be
 	 * placed in a control step before the state is saved.
 	 */
 	public function setUseState($value)
@@ -231,7 +231,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return TTemplate|null the template before the open tag in the TWebControl.  Defaults to null.
+	 * @return null|TTemplate the template before the open tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPreTagTemplate()
 	{
@@ -250,7 +250,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return TTemplate|null the template after the open tag in the TWebControl.  Defaults to null.
+	 * @return null|TTemplate the template after the open tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPreContentsTemplate()
 	{
@@ -269,7 +269,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return TTemplate|null the template before the close tag in the TWebControl.  Defaults to null.
+	 * @return null|TTemplate the template before the close tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPostContentsTemplate()
 	{
@@ -288,7 +288,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @return TTemplate|null the template after the close tag in the TWebControl.  Defaults to null.
+	 * @return null|TTemplate the template after the close tag in the TWebControl.  Defaults to null.
 	 */
 	public function getPostTagTemplate()
 	{
@@ -333,7 +333,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
 	 * control
 	 * @param null|mixed $param
-	 * @return boolean returns true if the template decorations have been added
+	 * @return bool returns true if the template decorations have been added
 	 */
 	public function ensureTemplateDecoration($sender = null, $param = null)
 	{

@@ -72,7 +72,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_validators = [];
 	/**
-	 * @var boolean if validation has been performed
+	 * @var bool if validation has been performed
 	 */
 	private $_validated = false;
 	/**
@@ -120,15 +120,15 @@ class TPage extends TTemplateControl
 	 */
 	private $_postBackEventParameter;
 	/**
-	 * @var boolean whether the form has been rendered
+	 * @var bool whether the form has been rendered
 	 */
 	protected $_formRendered = false;
 	/**
-	 * @var boolean whether the current rendering is within a form
+	 * @var bool whether the current rendering is within a form
 	 */
 	protected $_inFormRender = false;
 	/**
-	 * @var TControl|string the control or the ID of the element on the page to be focused when the page is sent back to user
+	 * @var string|TControl the control or the ID of the element on the page to be focused when the page is sent back to user
 	 */
 	private $_focus;
 	/**
@@ -136,15 +136,15 @@ class TPage extends TTemplateControl
 	 */
 	private $_pagePath = '';
 	/**
-	 * @var boolean whether page state should be HMAC validated
+	 * @var bool whether page state should be HMAC validated
 	 */
 	private $_enableStateValidation = true;
 	/**
-	 * @var boolean whether page state should be encrypted
+	 * @var bool whether page state should be encrypted
 	 */
 	private $_enableStateEncryption = false;
 	/**
-	 * @var boolean whether page state should be compressed
+	 * @var bool whether page state should be compressed
 	 * @since 3.1.6
 	 */
 	private $_enableStateCompression = true;
@@ -165,11 +165,11 @@ class TPage extends TTemplateControl
 	 */
 	private $_clientState = '';
 	/**
-	 * @var boolean true if loading post data.
+	 * @var bool true if loading post data.
 	 */
 	protected $_isLoadingPostData = false;
 	/**
-	 * @var boolean whether client supports javascript
+	 * @var bool whether client supports javascript
 	 */
 	private $_enableJavaScript = true;
 	/**
@@ -416,6 +416,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Registers a control to raise callback event in the current request.
 	 * @param TControl control registered to raise callback event.
+	 * @param TControl $control
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
@@ -451,6 +452,7 @@ class TPage extends TTemplateControl
 	 * Registers a TForm instance to the page.
 	 * Note, a page can contain at most one TForm instance.
 	 * @param TForm the form on the page
+	 * @param TForm $form
 	 * @throws TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public function setForm(TForm $form)
@@ -514,8 +516,8 @@ class TPage extends TTemplateControl
 	/**
 	 * Returns whether user input is valid or not.
 	 * This method must be invoked after {@link validate} is called.
-	 * @return boolean whether the user input is valid or not.
 	 * @throws TInvalidOperationException if {@link validate} is not invoked yet.
+	 * @return bool whether the user input is valid or not.
 	 */
 	public function getIsValid()
 	{
@@ -747,7 +749,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether the current page request is a postback
+	 * @return bool whether the current page request is a postback
 	 */
 	public function getIsPostBack()
 	{
@@ -755,7 +757,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether this is a callback request
+	 * @return bool whether this is a callback request
 	 */
 	public function getIsCallback()
 	{
@@ -806,7 +808,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @param string $field the field name
-	 * @return boolean whether the specified field is a system field in postback data
+	 * @return bool whether the specified field is a system field in postback data
 	 */
 	protected function isSystemPostField($field)
 	{
@@ -847,6 +849,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Registers a control to raise postback event in the current request.
 	 * @param TControl control registered to raise postback event.
+	 * @param TControl $control
 	 */
 	public function setPostBackEventTarget(TControl $control)
 	{
@@ -877,7 +880,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Processes post data.
 	 * @param TMap $postData post data to be processed
-	 * @param boolean $beforeLoad whether this method is invoked before {@link onLoad OnLoad}.
+	 * @param bool $beforeLoad whether this method is invoked before {@link onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
 	{
@@ -919,7 +922,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean true if loading post data.
+	 * @return bool true if loading post data.
 	 */
 	public function getIsLoadingPostData()
 	{
@@ -949,7 +952,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean Whether form rendering is in progress
+	 * @return bool Whether form rendering is in progress
 	 */
 	public function getInFormRender()
 	{
@@ -1003,7 +1006,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets input focus on a control after the page is rendered to users.
-	 * @param TControl|string $value control to receive focus, or the ID of the element on the page to receive focus
+	 * @param string|TControl $value control to receive focus, or the ID of the element on the page to receive focus
 	 */
 	public function setFocus($value)
 	{
@@ -1011,7 +1014,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether client supports javascript. Defaults to true.
+	 * @return bool whether client supports javascript. Defaults to true.
 	 */
 	public function getClientSupportsJavaScript()
 	{
@@ -1019,7 +1022,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean $value whether client supports javascript. If false, javascript will not be generated for controls.
+	 * @param bool $value whether client supports javascript. If false, javascript will not be generated for controls.
 	 */
 	public function setClientSupportsJavaScript($value)
 	{
@@ -1036,6 +1039,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * @param THead page head
+	 * @param THead $value
 	 * @throws TInvalidOperationException if a head already exists
 	 */
 	public function setHead(THead $value)
@@ -1137,7 +1141,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether page state should be HMAC validated. Defaults to true.
+	 * @return bool whether page state should be HMAC validated. Defaults to true.
 	 */
 	public function getEnableStateValidation()
 	{
@@ -1145,7 +1149,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean $value whether page state should be HMAC validated.
+	 * @param bool $value whether page state should be HMAC validated.
 	 */
 	public function setEnableStateValidation($value)
 	{
@@ -1153,7 +1157,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether page state should be encrypted. Defaults to false.
+	 * @return bool whether page state should be encrypted. Defaults to false.
 	 */
 	public function getEnableStateEncryption()
 	{
@@ -1161,7 +1165,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean $value whether page state should be encrypted.
+	 * @param bool $value whether page state should be encrypted.
 	 */
 	public function setEnableStateEncryption($value)
 	{
@@ -1169,7 +1173,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return boolean whether page state should be compressed. Defaults to true.
+	 * @return bool whether page state should be compressed. Defaults to true.
 	 * @since 3.1.6
 	 */
 	public function getEnableStateCompression()
@@ -1178,7 +1182,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param boolean $value whether page state should be compressed.
+	 * @param bool $value whether page state should be compressed.
 	 * @since 3.1.6
 	 */
 	public function setEnableStateCompression($value)

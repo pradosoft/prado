@@ -121,7 +121,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return boolean whether the calendar window should pop up when the control receives focus
+	 * @return bool whether the calendar window should pop up when the control receives focus
 	 */
 	public function getShowCalendar()
 	{
@@ -130,7 +130,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets whether to pop up the calendar window when the control receives focus
-	 * @param boolean $value whether to show the calendar window
+	 * @param bool $value whether to show the calendar window
 	 */
 	public function setShowCalendar($value)
 	{
@@ -220,7 +220,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Set the first day of week, with 0 as Sunday, 1 as Monday, etc.
-	 * @param integer $value 0 for Sunday, 1 for Monday, 2 for Tuesday, etc.
+	 * @param int $value 0 for Sunday, 1 for Monday, 2 for Tuesday, etc.
 	 */
 	public function setFirstDayOfWeek($value)
 	{
@@ -228,7 +228,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return integer first day of the week
+	 * @return int first day of the week
 	 */
 	public function getFirstDayOfWeek()
 	{
@@ -252,7 +252,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param integer $value date picker starting year, default is 2000.
+	 * @param int $value date picker starting year, default is 2000.
 	 */
 	public function setFromYear($value)
 	{
@@ -260,7 +260,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return integer date picker starting year, default is -5 years
+	 * @return int date picker starting year, default is -5 years
 	 */
 	public function getFromYear()
 	{
@@ -268,7 +268,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param integer $value date picker ending year, default +10 years
+	 * @param int $value date picker ending year, default +10 years
 	 */
 	public function setUpToYear($value)
 	{
@@ -276,7 +276,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return integer date picker ending year, default +10 years
+	 * @return int date picker ending year, default +10 years
 	 */
 	public function getUpToYear()
 	{
@@ -300,7 +300,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return integer current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
+	 * @return int current selected date from the date picker as timestamp, NULL if timestamp is not set previously.
 	 */
 	public function getTimeStamp()
 	{
@@ -330,7 +330,7 @@ class TDatePicker extends TTextBox
 	 * Returns the timestamp selected by the user.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getTimeStamp()}.
-	 * @return integer the timestamp of the TDatePicker control.
+	 * @return int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
 	 */
@@ -343,7 +343,7 @@ class TDatePicker extends TTextBox
 	 * Sets the timestamp represented by this control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setTimeStamp()}.
-	 * @param integer $value the timestamp of the TDatePicker control.
+	 * @param int $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2
 	 */
@@ -397,7 +397,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by \Prado\Web\UI\IValidatable interface.
-	 * @return integer the interger timestamp if valid, otherwise the original text.
+	 * @return int the interger timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
@@ -463,7 +463,7 @@ class TDatePicker extends TTextBox
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -666,7 +666,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Gets the date from the text input using TSimpleDateFormatter
-	 * @return integer current selected date timestamp
+	 * @return int current selected date timestamp
 	 */
 	protected function getTimeStampFromText()
 	{
@@ -811,8 +811,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Adds an additional button such that when clicked it shows the date picker.
-	 * @return THtmlWriter writer
 	 * @param mixed $writer
+	 * @return THtmlWriter writer
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
@@ -829,8 +829,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Adds an additional image button such that when clicked it shows the date picker.
-	 * @return THtmlWriter writer
 	 * @param mixed $writer
+	 * @return THtmlWriter writer
 	 */
 	protected function renderImageButtonDatePicker($writer)
 	{

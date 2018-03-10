@@ -50,7 +50,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	 * Updates DB record(s) with the specified keys and new values
 	 * @param array|TMap $keys keys for specifying the records to be updated
 	 * @param array|TMap $values new values
-	 * @return integer affected rows
+	 * @return int affected rows
 	 */
 	public function update($keys, $values)
 	{
@@ -60,7 +60,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	/**
 	 * Deletes DB row(s) with the specified keys.
 	 * @param array|TMap $keys keys for specifying the rows to be deleted
-	 * @return integer affected rows
+	 * @return int affected rows
 	 */
 	public function delete($keys)
 	{

@@ -47,6 +47,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	/**
 	 * Constructor.
 	 * @param TDbCommand the command generating the query result
+	 * @param TDbCommand $command
 	 */
 	public function __construct(TDbCommand $command)
 	{
@@ -65,6 +66,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * @param int Data type of the parameter
 	 * @param mixed $column
 	 * @param null|mixed $dataType
+	 * @param & $value
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php
 	 */
 	public function bindColumn($column, &$value, $dataType = null)
@@ -98,7 +100,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	/**
 	 * Returns a single column from the next row of a result set.
 	 * @param int $columnIndex zero-based column index
-	 * @return mixed|false the column of the current row, false if no more row available
+	 * @return false|mixed the column of the current row, false if no more row available
 	 */
 	public function readColumn($columnIndex)
 	{
@@ -109,7 +111,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * Returns a single column from the next row of a result set.
 	 * @param string $className class name of the object to be created and populated
 	 * @param array $fields list of column names whose values are to be passed as parameters in the constructor of the class being created
-	 * @return mixed|false the populated object, false if no more row of data available
+	 * @return false|mixed the populated object, false if no more row of data available
 	 */
 	public function readObject($className, $fields)
 	{
@@ -147,7 +149,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	}
 
 	/**
-	 * @return boolean whether the reader is closed or not.
+	 * @return bool whether the reader is closed or not.
 	 */
 	public function getIsClosed()
 	{
@@ -191,7 +193,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	/**
 	 * Returns the index of the current row.
 	 * This method is required by the interface Iterator.
-	 * @return integer the index of the current row.
+	 * @return int the index of the current row.
 	 */
 	public function key()
 	{
@@ -221,7 +223,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	/**
 	 * Returns whether there is a row of data at current position.
 	 * This method is required by the interface Iterator.
-	 * @return boolean whether there is a row of data at current position.
+	 * @return bool whether there is a row of data at current position.
 	 */
 	public function valid()
 	{

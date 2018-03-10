@@ -51,8 +51,8 @@ class TPropertyAccess
 	 * @param string property path.
 	 * @param mixed $object
 	 * @param mixed $path
-	 * @return mixed property value.
 	 * @throws TInvalidDataValueException if property path is invalid.
+	 * @return mixed property value.
 	 */
 	public static function get($object, $path)
 	{
@@ -88,7 +88,7 @@ class TPropertyAccess
 	/**
 	 * @param mixed $object object or array
 	 * @param string $path property path.
-	 * @return boolean true if property path is valid
+	 * @return bool true if property path is valid
 	 */
 	public static function has($object, $path)
 	{
@@ -128,6 +128,7 @@ class TPropertyAccess
 	 * @param mixed new property value.
 	 * @param mixed $path
 	 * @param mixed $value
+	 * @param & $originalObject
 	 * @throws TInvalidDataValueException if property path is invalid.
 	 */
 	public static function set(&$originalObject, $path, $value)

@@ -36,9 +36,9 @@ class TXmlRpcClient extends TRpcClient
 	 * @param array RPC method parameters
 	 * @param mixed $method
 	 * @param mixed $parameters
-	 * @return mixed RPC request result
 	 * @throws TRpcClientRequestException if the client fails to connect to the server
 	 * @throws TRpcClientResponseException if the response represents an RPC fault
+	 * @return mixed RPC request result
 	 */
 	public function __call($method, $parameters)
 	{
@@ -79,7 +79,7 @@ class TXmlRpcClient extends TRpcClient
 	/**
 	 * Creates an instance of TXmlRpcClient
 	 * @param string url of the rpc server
-	 * @param boolean whether the requests are considered to be notifications (completely ignoring the response) (default: false)
+	 * @param bool whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 * @param mixed $type
 	 * @param mixed $serverUrl
 	 * @param mixed $isNotification

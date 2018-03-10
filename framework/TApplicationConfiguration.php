@@ -55,7 +55,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 */
 	private $_includes = [];
 	/**
-	 * @var boolean whether this configuration contains actual stuff
+	 * @var bool whether this configuration contains actual stuff
 	 */
 	private $_empty = true;
 
@@ -77,7 +77,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this configuration contains actual stuff
+	 * @return bool whether this configuration contains actual stuff
 	 */
 	public function getIsEmpty()
 	{

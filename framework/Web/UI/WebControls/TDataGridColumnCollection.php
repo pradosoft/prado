@@ -39,6 +39,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	/**
 	 * Constructor.
 	 * @param TDataGrid the control that owns this collection.
+	 * @param TDataGrid $owner
 	 */
 	public function __construct(TDataGrid $owner)
 	{
@@ -56,7 +57,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by inserting only TDataGridColumn.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
 	 */

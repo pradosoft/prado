@@ -107,7 +107,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Example: $sqlmap->queryWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
 	 * @param string The name of the sql statement to execute.
-	 * @param callback Row delegate handler, a valid callback required.
+	 * @param callable Row delegate handler, a valid callback required.
 	 * @param mixed The object used to set the parameters in the SQL.
 	 * @param TList An Ilist object used to hold the objects,
 	 * pass in null if want to return a list instead.
@@ -133,8 +133,8 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * from a database table.
 	 * @param string $statementName The name of the sql statement to execute.
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
-	 * @param integer $pageSize The maximum number of objects to store in each page.
-	 * @param integer $page The number of the page to initially load into the list.
+	 * @param int $pageSize The maximum number of objects to store in each page.
+	 * @param int $page The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedList($statementName, $parameter = null, $pageSize = 10, $page = 0)
@@ -152,10 +152,10 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Example: $sqlmap->queryForPagedListWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
 	 * @param string The name of the sql statement to execute.
-	 * @param callback Row delegate handler, a valid callback required.
+	 * @param callable Row delegate handler, a valid callback required.
 	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param integer The maximum number of objects to store in each page.
-	 * @param integer The number of the page to initially load into the list.
+	 * @param int The maximum number of objects to store in each page.
+	 * @param int The number of the page to initially load into the list.
 	 * @param mixed $statementName
 	 * @param mixed $delegate
 	 * @param null|mixed $parameter
@@ -201,7 +201,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Example: $sqlmap->queryForMapWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
 	 * @param string The name of the sql statement to execute.
-	 * @param callback Row delegate handler, a valid callback required.
+	 * @param callable Row delegate handler, a valid callback required.
 	 * @param mixed The object used to set the parameters in the SQL.
 	 * @param string The property of the result object to be used as the key.
 	 * @param string The property of the result object to be used as the value.
@@ -255,7 +255,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 *
 	 * @param string $statementName The name of the statement to execute.
 	 * @param mixed $parameter The parameter object.
-	 * @return integer The number of rows effected.
+	 * @return int The number of rows effected.
 	 */
 	public function update($statementName, $parameter = null)
 	{
@@ -267,7 +267,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Executes a Sql DELETE statement.  Delete returns the number of rows effected.
 	 * @param string $statementName The name of the statement to execute.
 	 * @param mixed $parameter The parameter object.
-	 * @return integer The number of rows effected.
+	 * @return int The number of rows effected.
 	 */
 	public function delete($statementName, $parameter = null)
 	{

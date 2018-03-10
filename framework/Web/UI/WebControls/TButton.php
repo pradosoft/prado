@@ -80,7 +80,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -88,7 +88,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -145,7 +145,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether to perform validation if the button is clicked
+	 * @return bool whether to perform validation if the button is clicked
 	 */
 	protected function canCauseValidation()
 	{
@@ -158,7 +158,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value set by a panel to register this button as the default button for the panel.
+	 * @param bool $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
@@ -166,7 +166,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean true if this button is registered as a default button for a panel.
+	 * @return bool true if this button is registered as a default button for a panel.
 	 */
 	public function getIsDefaultButton()
 	{
@@ -174,7 +174,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether the button needs javascript to do postback
+	 * @return bool whether the button needs javascript to do postback
 	 */
 	protected function needPostBackScript()
 	{
@@ -297,7 +297,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation, default is true
+	 * @return bool whether postback event trigger by this button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -305,7 +305,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this button will cause input validation
+	 * @param bool $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{

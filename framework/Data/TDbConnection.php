@@ -157,7 +157,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the DB connection is established
+	 * @return bool whether the DB connection is established
 	 */
 	public function getActive()
 	{
@@ -166,7 +166,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Open or close the DB connection.
-	 * @param boolean $value whether to open or close DB connection
+	 * @param bool $value whether to open or close DB connection
 	 * @throws TDbException if connection fails
 	 */
 	public function setActive($value)
@@ -319,8 +319,8 @@ class TDbConnection extends \Prado\TComponent
 	 * Creates a command for execution.
 	 * @param string SQL statement associated with the new command.
 	 * @param mixed $sql
-	 * @return TDbCommand the DB command
 	 * @throws TDbException if the connection is not active
+	 * @return TDbCommand the DB command
 	 */
 	public function createCommand($sql)
 	{
@@ -346,8 +346,8 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Starts a transaction.
-	 * @return TDbTransaction the transaction initiated
 	 * @throws TDbException if the connection is not active
+	 * @return TDbTransaction the transaction initiated
 	 */
 	public function beginTransaction()
 	{
@@ -520,7 +520,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether creating or updating a DB record will be automatically committed.
+	 * @return bool whether creating or updating a DB record will be automatically committed.
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function getAutoCommit()
@@ -529,7 +529,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether creating or updating a DB record will be automatically committed.
+	 * @param bool $value whether creating or updating a DB record will be automatically committed.
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function setAutoCommit($value)
@@ -538,7 +538,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the connection is persistent or not
+	 * @return bool whether the connection is persistent or not
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function getPersistent()
@@ -547,7 +547,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the connection is persistent or not
+	 * @param bool $value whether the connection is persistent or not
 	 * Some DBMS (such as sqlite) may not support this feature.
 	 */
 	public function setPersistent($value)
@@ -581,7 +581,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the connection performs data prefetching
+	 * @return bool whether the connection performs data prefetching
 	 */
 	public function getPrefetch()
 	{

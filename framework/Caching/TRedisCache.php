@@ -83,7 +83,7 @@ use Prado\Xml\TXmlElement;
 class TRedisCache extends TCache
 {
 	/**
-	 * @var boolean if the module is initialized
+	 * @var bool if the module is initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -95,7 +95,7 @@ class TRedisCache extends TCache
 	 */
 	private $_host = 'localhost';
 	/**
-	 * @var integer the port number of the redis cache server
+	 * @var int the port number of the redis cache server
 	 */
 	private $_port = 6379;
 	/**
@@ -103,7 +103,7 @@ class TRedisCache extends TCache
 	 */
 	private $_socket;
 	/**
-	 * @var integer the database index to use within the redis server.
+	 * @var int the database index to use within the redis server.
 	 */
 	private $_index = 0;
 
@@ -169,7 +169,7 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * @return integer the port number of the redis cache server
+	 * @return int the port number of the redis cache server
 	 */
 	public function getPort()
 	{
@@ -177,7 +177,7 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * @param integer $value the port number of the redis cache server
+	 * @param int $value the port number of the redis cache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setPort($value)
@@ -211,7 +211,7 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * @return integer the database index to use. Defaults to 0.
+	 * @return int the database index to use. Defaults to 0.
 	 */
 	public function getIndex()
 	{
@@ -219,7 +219,7 @@ class TRedisCache extends TCache
 	}
 
 	/**
-	 * @param integer $value the database index to use.
+	 * @param int $value the database index to use.
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setIndex($value)
@@ -248,8 +248,8 @@ class TRedisCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
 	{
@@ -263,8 +263,8 @@ class TRedisCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
 	{
@@ -276,7 +276,7 @@ class TRedisCache extends TCache
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{

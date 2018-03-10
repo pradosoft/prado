@@ -163,7 +163,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return boolean a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
+	 * @return bool a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
 	public function getAutoPostBack()
@@ -172,7 +172,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param boolean $value a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
+	 * @param bool $value a value indicating whether an automatic callback to the server will occur whenever the user modifies the text in the TTextBox control and then tabs out of the component. Defaults to true.
 	 * Note: When set to false, you will need to trigger the callback yourself.
 	 */
 	public function setAutoPostBack($value)
@@ -189,8 +189,8 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
 	 * @param mixed $sender
+	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
 	 */
 	public function onInit($sender)
 	{
@@ -425,12 +425,12 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * Saves the uploaded file.
 	 * @param string the file name used to save the uploaded file
-	 * @param boolean whether to delete the temporary file after saving.
+	 * @param bool whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
 	 * @param mixed $fileName
 	 * @param mixed $deleteTempFile
 	 * @param mixed $index
-	 * @return boolean true if the file saving is successful
+	 * @return bool true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
 	{

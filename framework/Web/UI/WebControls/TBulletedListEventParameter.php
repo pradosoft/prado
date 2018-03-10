@@ -24,13 +24,13 @@ namespace Prado\Web\UI\WebControls;
 class TBulletedListEventParameter extends \Prado\TEventParameter
 {
 	/**
-	 * @var integer index of the item clicked
+	 * @var int index of the item clicked
 	 */
 	private $_index;
 
 	/**
 	 * Constructor.
-	 * @param integer $index index of the item clicked
+	 * @param int $index index of the item clicked
 	 */
 	public function __construct($index)
 	{
@@ -38,7 +38,7 @@ class TBulletedListEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer zero-based index of the item (rendered as a link button) that is clicked
+	 * @return int zero-based index of the item (rendered as a link button) that is clicked
 	 */
 	public function getIndex()
 	{

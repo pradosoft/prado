@@ -179,7 +179,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation, default is true
+	 * @return bool whether postback event trigger by this button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -187,7 +187,7 @@ class TButtonColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this button will cause input validation
+	 * @param bool $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -215,7 +215,7 @@ class TButtonColumn extends TDataGridColumn
 	 * This method overrides the parent implementation.
 	 * It creates a command button within the cell.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)

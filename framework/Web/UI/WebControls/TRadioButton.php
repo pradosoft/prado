@@ -53,11 +53,11 @@ class TRadioButton extends TCheckBox
 	 */
 	private static $_activeButtons = [];
 	/**
-	 * @var integer number of radio buttons created
+	 * @var int number of radio buttons created
 	 */
 	private static $_buttonCount = 0;
 	/**
-	 * @var integer global ID of this radiobutton
+	 * @var int global ID of this radiobutton
 	 */
 	private $_globalID;
 	/**
@@ -107,7 +107,7 @@ class TRadioButton extends TCheckBox
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -225,7 +225,7 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -233,7 +233,7 @@ class TRadioButton extends TCheckBox
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{

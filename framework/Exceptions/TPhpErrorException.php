@@ -25,10 +25,10 @@ class TPhpErrorException extends TSystemException
 {
 	/**
 	 * Constructor.
-	 * @param integer error number
+	 * @param int error number
 	 * @param string error string
 	 * @param string error file
-	 * @param integer error line number
+	 * @param int error line number
 	 * @param mixed $errno
 	 * @param mixed $errstr
 	 * @param mixed $errfile
@@ -58,7 +58,7 @@ class TPhpErrorException extends TSystemException
 	 * Returns if error is one of fatal type.
 	 *
 	 * @param array $error $error error got from error_get_last()
-	 * @return boolean if error is one of fatal type
+	 * @return bool if error is one of fatal type
 	 */
 	public static function isFatalError($error)
 	{

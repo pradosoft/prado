@@ -104,7 +104,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the TValidationSummary component updates itself using client-side script. Defaults to true.
+	 * @return bool whether the TValidationSummary component updates itself using client-side script. Defaults to true.
 	 */
 	public function getEnableClientScript()
 	{
@@ -112,7 +112,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether the TValidationSummary component updates itself using client-side script.
+	 * @param bool $value whether the TValidationSummary component updates itself using client-side script.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -120,7 +120,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the validation summary is displayed in a message box. Defaults to false.
+	 * @return bool whether the validation summary is displayed in a message box. Defaults to false.
 	 */
 	public function getShowMessageBox()
 	{
@@ -128,7 +128,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether the validation summary is displayed in a message box.
+	 * @param bool $value whether the validation summary is displayed in a message box.
 	 */
 	public function setShowMessageBox($value)
 	{
@@ -136,7 +136,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the validation summary is displayed inline. Defaults to true.
+	 * @return bool whether the validation summary is displayed inline. Defaults to true.
 	 */
 	public function getShowSummary()
 	{
@@ -144,7 +144,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether the validation summary is displayed inline.
+	 * @param bool $value whether the validation summary is displayed inline.
 	 */
 	public function setShowSummary($value)
 	{
@@ -152,7 +152,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether scroll summary into viewport or not. Defaults to true.
+	 * @return bool whether scroll summary into viewport or not. Defaults to true.
 	 */
 	public function getScrollToSummary()
 	{
@@ -160,7 +160,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether scroll summary into viewport or not.
+	 * @param bool $value whether scroll summary into viewport or not.
 	 */
 	public function setScrollToSummary($value)
 	{
@@ -168,7 +168,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the validation summary should be anchored. Defaults to false.
+	 * @return bool whether the validation summary should be anchored. Defaults to false.
 	 */
 	public function getShowAnchor()
 	{
@@ -176,7 +176,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether the validation summary should be anchored.
+	 * @param bool $value whether the validation summary should be anchored.
 	 */
 	public function setShowAnchor($value)
 	{
@@ -185,7 +185,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Gets the auto-update for this summary.
-	 * @return boolean automatic client-side summary updates. Defaults to true.
+	 * @return bool automatic client-side summary updates. Defaults to true.
 	 */
 	public function getAutoUpdate()
 	{
@@ -194,7 +194,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the summary to auto-update on the client-side
-	 * @param boolean $value true for automatic summary updates.
+	 * @param bool $value true for automatic summary updates.
 	 */
 	public function setAutoUpdate($value)
 	{
@@ -329,8 +329,8 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Overrides parent implementation by rendering TValidationSummary-specific presentation.
-	 * @return string the rendering result
 	 * @param mixed $writer
+	 * @return string the rendering result
 	 */
 	public function renderContents($writer)
 	{

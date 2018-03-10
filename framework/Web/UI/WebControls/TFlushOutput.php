@@ -38,7 +38,7 @@ use Prado\TPropertyValue;
 class TFlushOutput extends \Prado\Web\UI\TControl
 {
 	/**
-	 * @var boolean whether to continue buffering of output
+	 * @var bool whether to continue buffering of output
 	 */
 	private $_continueBuffering = true;
 
@@ -61,7 +61,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param boolean $value sets whether buffering of output can continue after this point
+	 * @param bool $value sets whether buffering of output can continue after this point
 	 */
 	public function setContinueBuffering($value)
 	{

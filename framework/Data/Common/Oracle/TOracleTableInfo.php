@@ -96,7 +96,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the table is a view, default is false.
+	 * @return bool whether the table is a view, default is false.
 	 */
 	public function getIsView()
 	{

@@ -38,12 +38,12 @@ use Prado\Web\UI\WebControls\TCustomValidator;
 class TActiveCustomValidator extends TCustomValidator implements ICallbackEventHandler, IActiveControl
 {
 	/**
-	 * @var boolean true if validation is made during a callback request.
+	 * @var bool true if validation is made during a callback request.
 	 */
 	private $_isCallback = false;
 
 	/**
-	 * @return boolean true if validation is made during a callback request.
+	 * @return bool true if validation is made during a callback request.
 	 */
 	public function getIsCallback()
 	{
@@ -107,7 +107,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 	}
 
 	/**
-	 * @param boolean $value whether the value is valid; this method will trigger a clientside update if needed
+	 * @param bool $value whether the value is valid; this method will trigger a clientside update if needed
 	 */
 	public function setIsValid($value)
 	{
@@ -167,7 +167,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 
 	/**
 	 * It's mandatory for the EnableClientScript to be activated or the TActiveCustomValidator won't work.
-	 * @return boolean whether client-side validation is enabled.
+	 * @return bool whether client-side validation is enabled.
 	 */
 	public function getEnableClientScript()
 	{

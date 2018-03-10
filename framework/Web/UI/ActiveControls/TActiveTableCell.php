@@ -175,7 +175,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * Returns the zero-based index of the TActiveTableCell within the {@link TTableCellCollection}
 	 * of the parent {@link TTableRow} control. Raises a {@link TConfigurationException} if the cell
 	 * is no member of the cell collection.
-	 * @return integer the zero-based index of the cell
+	 * @return int the zero-based index of the cell
 	 */
 	public function getCellIndex()
 	{

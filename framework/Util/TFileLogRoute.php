@@ -35,11 +35,11 @@ use Prado\TPropertyValue;
 class TFileLogRoute extends TLogRoute
 {
 	/**
-	 * @var integer maximum log file size
+	 * @var int maximum log file size
 	 */
 	private $_maxFileSize = 512; // in KB
 	/**
-	 * @var integer number of log files used for rotation
+	 * @var int number of log files used for rotation
 	 */
 	private $_maxLogFiles = 2;
 	/**
@@ -90,7 +90,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @return integer maximum log file size in kilo-bytes (KB). Defaults to 1024 (1MB).
+	 * @return int maximum log file size in kilo-bytes (KB). Defaults to 1024 (1MB).
 	 */
 	public function getMaxFileSize()
 	{
@@ -98,7 +98,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param integer $value maximum log file size in kilo-bytes (KB).
+	 * @param int $value maximum log file size in kilo-bytes (KB).
 	 * @throws TInvalidDataValueException if the value is smaller than 1.
 	 */
 	public function setMaxFileSize($value)
@@ -110,7 +110,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @return integer number of files used for rotation. Defaults to 2.
+	 * @return int number of files used for rotation. Defaults to 2.
 	 */
 	public function getMaxLogFiles()
 	{
@@ -118,7 +118,7 @@ class TFileLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param integer $value number of files used for rotation.
+	 * @param int $value number of files used for rotation.
 	 */
 	public function setMaxLogFiles($value)
 	{

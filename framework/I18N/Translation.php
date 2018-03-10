@@ -82,9 +82,9 @@ class Translation extends \Prado\TComponent
 
 	/**
 	 * Get the static formatter from this component.
-	 * @return MessageFormat formattter.
 	 * @see localize()
 	 * @param mixed $catalogue
+	 * @return MessageFormat formattter.
 	 */
 	public static function formatter($catalogue = 'messages')
 	{

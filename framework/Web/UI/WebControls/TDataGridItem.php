@@ -35,11 +35,11 @@ use Prado\TPropertyValue;
 class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * @var integer index of the data item in the Items collection of datagrid
+	 * @var int index of the data item in the Items collection of datagrid
 	 */
 	private $_itemIndex = '';
 	/**
-	 * @var integer index of the item from the bound data source
+	 * @var int index of the item from the bound data source
 	 */
 	private $_dataSourceIndex = 0;
 	/**
@@ -55,8 +55,8 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Constructor.
-	 * @param integer $itemIndex zero-based index of the item in the item collection of datagrid
-	 * @param integer $dataSourceIndex
+	 * @param int $itemIndex zero-based index of the item in the item collection of datagrid
+	 * @param int $dataSourceIndex
 	 * @param TListItemType $itemType item type
 	 */
 	public function __construct($itemIndex, $dataSourceIndex, $itemType)
@@ -88,7 +88,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return integer zero-based index of the item in the item collection of datagrid
+	 * @return int zero-based index of the item in the item collection of datagrid
 	 */
 	public function getItemIndex()
 	{
@@ -96,7 +96,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return integer the index of the datagrid item from the bound data source
+	 * @return int the index of the datagrid item from the bound data source
 	 */
 	public function getDataSourceIndex()
 	{
@@ -126,7 +126,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{

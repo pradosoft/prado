@@ -94,6 +94,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects using association table.
 	 * @param array original results.
+	 * @param & $results
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -184,6 +185,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * @param mixed $foreignKeys
 	 * @param mixed $indexValues
 	 * @param mixed $sourceKeys
+	 * @param & $results
 	 */
 	protected function fetchForeignObjects(&$results, $foreignKeys, $indexValues, $sourceKeys)
 	{
@@ -306,7 +308,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	/**
 	 * Updates the associated foreign objects.
-	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 * @return bool true if all update are success (including if no update was required), false otherwise .
 	 */
 	public function updateAssociatedRecords()
 	{

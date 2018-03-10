@@ -28,7 +28,7 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 * @param IUser $user the user to be authorized
 	 * @param string $verb verb, can be empty, 'post' or 'get'.
 	 * @param string $ip the request IP address
-	 * @return boolean whether the user is allowed
+	 * @return bool whether the user is allowed
 	 */
 	public function isUserAllowed($user, $verb, $ip)
 	{
@@ -49,7 +49,7 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added TAuthorizationRule object.
-	 * @param integer the specified position.
+	 * @param int the specified position.
 	 * @param mixed new item
 	 * @param mixed $index
 	 * @param mixed $item

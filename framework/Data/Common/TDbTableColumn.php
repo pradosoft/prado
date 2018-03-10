@@ -66,7 +66,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer PDO bind param/value types, default returns string.
+	 * @param int PDO bind param/value types, default returns string.
 	 */
 	public function getPdoType()
 	{
@@ -103,7 +103,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer zero-based ordinal position of the column in the table.
+	 * @return int zero-based ordinal position of the column in the table.
 	 */
 	public function getColumnIndex()
 	{
@@ -119,7 +119,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean specifies whether value Null is allowed, default is false.
+	 * @return bool specifies whether value Null is allowed, default is false.
 	 */
 	public function getAllowNull()
 	{
@@ -159,7 +159,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this column is a primary key for the table, default is false.
+	 * @return bool whether this column is a primary key for the table, default is false.
 	 */
 	public function getIsPrimaryKey()
 	{
@@ -167,7 +167,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this column is a foreign key, default is false.
+	 * @return bool whether this column is a foreign key, default is false.
 	 */
 	public function getIsForeignKey()
 	{
@@ -183,7 +183,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the column is a sequence.
+	 * @return bool whether the column is a sequence.
 	 */
 	public function hasSequence()
 	{
@@ -191,7 +191,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether this column is excluded from insert and update.
+	 * @return bool whether this column is excluded from insert and update.
 	 */
 	public function getIsExcluded()
 	{

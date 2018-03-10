@@ -207,7 +207,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @return integer minimum number of characters before requesting a suggestion.
+	 * @return int minimum number of characters before requesting a suggestion.
 	 */
 	public function getMinChars()
 	{
@@ -215,7 +215,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @param integer $value minimum number of characters before requesting a suggestion.
+	 * @param int $value minimum number of characters before requesting a suggestion.
 	 * Default is 1
 	 */
 	public function setMinChars($value)

@@ -43,7 +43,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	private $_captionAlign = TTableCaptionAlign::NotSet;
 	/**
-	 * @var integer number of columns that the items should be arranged in
+	 * @var int number of columns that the items should be arranged in
 	 */
 	private $_repeatColumns = 0;
 	/**
@@ -80,8 +80,8 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 * @param mixed $value
+	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -89,7 +89,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer the number of columns that the repeated items should be displayed in. Defaults to 0, meaning not set.
+	 * @return int the number of columns that the repeated items should be displayed in. Defaults to 0, meaning not set.
 	 */
 	public function getRepeatColumns()
 	{
@@ -97,7 +97,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer $value the number of columns that the repeated items should be displayed in.
+	 * @param int $value the number of columns that the repeated items should be displayed in.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -417,9 +417,9 @@ class TRepeatInfo extends \Prado\TComponent
 	 * Renders header.
 	 * @param THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
-	 * @param boolean $tableLayout whether to render using table layout
-	 * @param integer $columns number of columns to be rendered
-	 * @param boolean $needBreak if a line break is needed at the end
+	 * @param bool $tableLayout whether to render using table layout
+	 * @param int $columns number of columns to be rendered
+	 * @param bool $needBreak if a line break is needed at the end
 	 */
 	protected function renderHeader($writer, $user, $tableLayout, $columns, $needBreak)
 	{
@@ -451,8 +451,8 @@ class TRepeatInfo extends \Prado\TComponent
 	 * Renders footer.
 	 * @param THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
-	 * @param boolean $tableLayout whether to render using table layout
-	 * @param integer $columns number of columns to be rendered
+	 * @param bool $tableLayout whether to render using table layout
+	 * @param int $columns number of columns to be rendered
 	 */
 	protected function renderFooter($writer, $user, $tableLayout, $columns)
 	{

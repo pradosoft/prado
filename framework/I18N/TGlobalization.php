@@ -61,7 +61,7 @@ class TGlobalization extends \Prado\TModule
 	private $_translation;
 
 	/**
-	 * @var boolean whether we should translate the default culture
+	 * @var bool whether we should translate the default culture
 	 */
 	private $_translateDefaultCulture = true;
 
@@ -197,7 +197,7 @@ class TGlobalization extends \Prado\TModule
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
-	 * @param TMap|array $config configuration options
+	 * @param array|TMap $config configuration options
 	 */
 	protected function setTranslationConfiguration($config)
 	{

@@ -119,7 +119,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return integer the maximum file size, defaults to 1MB (1048576 bytes).
+	 * @return int the maximum file size, defaults to 1MB (1048576 bytes).
 	 * @see setMaxFileSize
 	 */
 	public function getMaxFileSize()
@@ -142,7 +142,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
+	 * @param int $index the index of the uploaded file, defaults to 0.
 	 * @return string the original full path name of the file on the client machine
 	 */
 	public function getFileName($index = 0)
@@ -152,8 +152,8 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
-	 * @return integer the actual size of the uploaded file in bytes
+	 * @param int $index the index of the uploaded file, defaults to 0.
+	 * @return int the actual size of the uploaded file in bytes
 	 */
 	public function getFileSize($index = 0)
 	{
@@ -162,7 +162,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
+	 * @param int $index the index of the uploaded file, defaults to 0.
 	 * @return string the MIME-type of the uploaded file (such as "image/gif").
 	 * This mime type is not checked on the server side and do not take its value for granted.
 	 */
@@ -173,7 +173,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
+	 * @param int $index the index of the uploaded file, defaults to 0.
 	 * @return string the local name of the file (where it is after being uploaded).
 	 * Note, PHP will delete this file automatically after finishing this round of request.
 	 */
@@ -185,8 +185,8 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Returns an error code describing the status of this file uploading.
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
-	 * @return integer the error code
+	 * @param int $index the index of the uploaded file, defaults to 0.
+	 * @return int the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
 	public function getErrorCode($index = 0)
@@ -196,8 +196,8 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * For backward compatibility, the first file is used by default.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
-	 * @return boolean whether the file is uploaded successfully
+	 * @param int $index the index of the uploaded file, defaults to 0.
+	 * @return bool whether the file is uploaded successfully
 	 */
 	public function getHasFile($index = 0)
 	{
@@ -206,7 +206,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * This method is used for multiple file uploads to indicate if all files were uploaded succsessfully.
-	 * @return boolean whether all files are uploaded successfully
+	 * @return bool whether all files are uploaded successfully
 	 */
 	public function getHasAllFiles()
 	{
@@ -223,10 +223,10 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * Returns an error code describing the status of this file uploading.
 	 * For backward compatibility, the first file is used by default.
 	 * @param string $fileName the file name used to save the uploaded file
-	 * @param boolean $deleteTempFile whether to delete the temporary file after saving.
+	 * @param bool $deleteTempFile whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
-	 * @param integer $index the index of the uploaded file, defaults to 0.
-	 * @return boolean true if the file saving is successful
+	 * @param int $index the index of the uploaded file, defaults to 0.
+	 * @return bool true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
 	{
@@ -238,7 +238,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -281,7 +281,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{

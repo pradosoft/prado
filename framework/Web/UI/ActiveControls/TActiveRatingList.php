@@ -78,7 +78,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @param boolean $value whether the items in the column can be edited
+	 * @param bool $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{

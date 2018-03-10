@@ -51,7 +51,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return integer the cellspacing for the table layout. Defaults to -1, meaning not set.
+	 * @return int the cellspacing for the table layout. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
 	{
@@ -63,7 +63,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param integer $value the cellspacing for the table layout.
+	 * @param int $value the cellspacing for the table layout.
 	 */
 	public function setCellSpacing($value)
 	{
@@ -71,7 +71,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return integer the cellpadding for the table layout. Defaults to -1, meaning not set.
+	 * @return int the cellpadding for the table layout. Defaults to -1, meaning not set.
 	 */
 	public function getCellPadding()
 	{
@@ -83,7 +83,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param integer $value the cellpadding for the table layout
+	 * @param int $value the cellpadding for the table layout
 	 */
 	public function setCellPadding($value)
 	{
@@ -168,8 +168,8 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
 	 * @param mixed $field field name
-	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
+	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)
 	{

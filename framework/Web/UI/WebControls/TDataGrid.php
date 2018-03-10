@@ -197,7 +197,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	private $_emptyTemplate;
 	/**
-	 * @var boolean whether empty template is effective
+	 * @var bool whether empty template is effective
 	 */
 	private $_useEmptyTemplate = false;
 
@@ -265,7 +265,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return integer number of items
+	 * @return int number of items
 	 */
 	public function getItemCount()
 	{
@@ -500,7 +500,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return integer the zero-based index of the selected item in {@link getItems Items}.
+	 * @return int the zero-based index of the selected item in {@link getItems Items}.
 	 * A value -1 means no item selected.
 	 */
 	public function getSelectedItemIndex()
@@ -513,7 +513,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
-	 * @param integer $value the selected item index
+	 * @param int $value the selected item index
 	 */
 	public function setSelectedItemIndex($value)
 	{
@@ -554,7 +554,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return integer the zero-based index of the edit item in {@link getItems Items}.
+	 * @return int the zero-based index of the edit item in {@link getItems Items}.
 	 * A value -1 means no item is in edit mode.
 	 */
 	public function getEditItemIndex()
@@ -566,7 +566,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Edits an item by its index in {@link getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
-	 * @param integer $value the edit item index
+	 * @param int $value the edit item index
 	 */
 	public function setEditItemIndex($value)
 	{
@@ -587,7 +587,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return boolean whether sorting is enabled. Defaults to false.
+	 * @return bool whether sorting is enabled. Defaults to false.
 	 */
 	public function getAllowSorting()
 	{
@@ -595,7 +595,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean $value whether sorting is enabled
+	 * @param bool $value whether sorting is enabled
 	 */
 	public function setAllowSorting($value)
 	{
@@ -603,7 +603,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return boolean whether datagrid columns should be automatically generated. Defaults to true.
+	 * @return bool whether datagrid columns should be automatically generated. Defaults to true.
 	 */
 	public function getAutoGenerateColumns()
 	{
@@ -611,7 +611,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean $value whether datagrid columns should be automatically generated
+	 * @param bool $value whether datagrid columns should be automatically generated
 	 */
 	public function setAutoGenerateColumns($value)
 	{
@@ -619,7 +619,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return boolean whether the header should be displayed. Defaults to true.
+	 * @return bool whether the header should be displayed. Defaults to true.
 	 */
 	public function getShowHeader()
 	{
@@ -627,7 +627,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean $value whether the header should be displayed
+	 * @param bool $value whether the header should be displayed
 	 */
 	public function setShowHeader($value)
 	{
@@ -635,7 +635,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return boolean whether the footer should be displayed. Defaults to false.
+	 * @return bool whether the footer should be displayed. Defaults to false.
 	 */
 	public function getShowFooter()
 	{
@@ -643,7 +643,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param boolean $value whether the footer should be displayed
+	 * @param bool $value whether the footer should be displayed
 	 */
 	public function setShowFooter($value)
 	{
@@ -682,7 +682,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -1109,7 +1109,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Creates a datagrid item instance based on the item type and index.
-	 * @param integer $itemIndex zero-based item index
+	 * @param int $itemIndex zero-based item index
 	 * @param mixed $dataSourceIndex
 	 * @param TListItemType $itemType item type
 	 * @return TDataGridItem created data list item
@@ -1194,7 +1194,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Derived classes may override this method to create additional types of buttons, such as TImageButton.
 	 * @param mixed $pager the container pager instance of TActiveDatagridPager
 	 * @param string $buttonType button type, either LinkButton or PushButton
-	 * @param boolean $enabled whether the button should be enabled
+	 * @param bool $enabled whether the button should be enabled
 	 * @param string $text caption of the button
 	 * @param string $commandName CommandName corresponding to the OnCommand event of the button
 	 * @param string $commandParameter CommandParameter corresponding to the OnCommand event of the button

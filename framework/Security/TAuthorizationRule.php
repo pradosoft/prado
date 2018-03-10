@@ -55,15 +55,15 @@ class TAuthorizationRule extends \Prado\TComponent
 	 */
 	private $_ipRules;
 	/**
-	 * @var boolean if this rule applies to everyone
+	 * @var bool if this rule applies to everyone
 	 */
 	private $_everyone;
 	/**
-	 * @var boolean if this rule applies to guest user
+	 * @var bool if this rule applies to guest user
 	 */
 	private $_guest;
 	/**
-	 * @var boolean if this rule applies to authenticated users
+	 * @var bool if this rule applies to authenticated users
 	 */
 	private $_authenticated;
 
@@ -183,7 +183,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean if this rule applies to everyone
+	 * @return bool if this rule applies to everyone
 	 */
 	public function getGuestApplied()
 	{
@@ -191,7 +191,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean if this rule applies to everyone
+	 * @return bool if this rule applies to everyone
 	 */
 	public function getEveryoneApplied()
 	{
@@ -199,7 +199,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean if this rule applies to authenticated users
+	 * @return bool if this rule applies to authenticated users
 	 */
 	public function getAuthenticatedApplied()
 	{
@@ -212,7 +212,8 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param string the request IP address
 	 * @param mixed $verb
 	 * @param mixed $ip
-	 * @return integer 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
+	 * @param IUser $user
+	 * @return int 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
 	public function isUserAllowed(IUser $user, $verb, $ip)
 	{

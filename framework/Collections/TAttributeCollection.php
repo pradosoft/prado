@@ -48,6 +48,7 @@ class TAttributeCollection extends TMap
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -63,8 +64,8 @@ class TAttributeCollection extends TMap
 	 * a key value if the key exists in the collection.
 	 * @param string the property name or the event name
 	 * @param mixed $name
-	 * @return mixed the property value or the event handler list
 	 * @throws TInvalidOperationException if the property/event is not defined.
+	 * @return mixed the property value or the event handler list
 	 */
 	public function __get($name)
 	{
@@ -87,7 +88,7 @@ class TAttributeCollection extends TMap
 	}
 
 	/**
-	 * @return boolean whether the keys are case-sensitive. Defaults to false.
+	 * @return bool whether the keys are case-sensitive. Defaults to false.
 	 */
 	public function getCaseSensitive()
 	{
@@ -95,7 +96,7 @@ class TAttributeCollection extends TMap
 	}
 
 	/**
-	 * @param boolean $value whether the keys are case-sensitive.
+	 * @param bool $value whether the keys are case-sensitive.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -142,7 +143,7 @@ class TAttributeCollection extends TMap
 	 * Returns whether the specified is in the map.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed $key the key
-	 * @return boolean whether the map contains an item with the specified key
+	 * @return bool whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
@@ -154,7 +155,7 @@ class TAttributeCollection extends TMap
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
 	 * @param string $name the property name
-	 * @return boolean whether the property is defined
+	 * @return bool whether the property is defined
 	 */
 	public function hasProperty($name)
 	{
@@ -166,7 +167,7 @@ class TAttributeCollection extends TMap
 	 * This method overrides parent implementation by returning true
 	 * if the collection contains the named key.
 	 * @param string $name the property name
-	 * @return boolean whether the property can be read
+	 * @return bool whether the property can be read
 	 */
 	public function canGetProperty($name)
 	{
@@ -178,7 +179,7 @@ class TAttributeCollection extends TMap
 	 * This method overrides parent implementation by always returning true
 	 * because you can always add a new value to the collection.
 	 * @param string $name the property name
-	 * @return boolean true
+	 * @return bool true
 	 */
 	public function canSetProperty($name)
 	{

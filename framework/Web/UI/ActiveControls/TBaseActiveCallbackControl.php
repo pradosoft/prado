@@ -134,7 +134,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @return boolean whether callback event trigger by this button will cause
+	 * @return bool whether callback event trigger by this button will cause
 	 * input validation, default is true
 	 */
 	public function getCausesValidation()
@@ -143,7 +143,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @param boolean $value whether callback event trigger by this button will cause
+	 * @param bool $value whether callback event trigger by this button will cause
 	 * input validation
 	 */
 	public function setCausesValidation($value)
@@ -170,7 +170,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @return boolean whether to perform validation if the callback is
+	 * @return bool whether to perform validation if the callback is
 	 * requested.
 	 */
 	public function canCauseValidation()

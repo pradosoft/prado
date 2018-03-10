@@ -94,7 +94,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private $_passwordMode = TUserManagerPasswordMode::MD5;
 	/**
-	 * @var boolean whether the module has been initialized
+	 * @var bool whether the module has been initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -281,7 +281,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 * Validates if the username and password are correct.
 	 * @param string $username user name
 	 * @param string $password password
-	 * @return boolean true if validation is successful, false otherwise.
+	 * @return bool true if validation is successful, false otherwise.
 	 */
 	public function validateUser($username, $password)
 	{

@@ -53,7 +53,7 @@ interface IUserManager
 	 * Validates if the username and password are correct.
 	 * @param string $username user name
 	 * @param string $password password
-	 * @return boolean true if validation is successful, false otherwise.
+	 * @return bool true if validation is successful, false otherwise.
 	 */
 	public function validateUser($username, $password);
 }

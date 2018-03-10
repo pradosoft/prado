@@ -161,7 +161,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	const STATE_DELETED = 2;
 
 	/**
-	 * @var integer record state: 0 = new, 1 = loaded, 2 = deleted.
+	 * @var int record state: 0 = new, 1 = loaded, 2 = deleted.
 	 * @since 3.1.2
 	 */
 	protected $_recordState = 0; // use protected so that serialization is fine
@@ -306,8 +306,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Copies data from an array or another object.
-	 * @throws TActiveRecordException if data is not array or not object.
 	 * @param mixed $data
+	 * @throws TActiveRecordException if data is not array or not object.
 	 */
 	public function copyFrom($data)
 	{
@@ -365,9 +365,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * table does not defined primary keys). The default uses simple == for
 	 * comparison of their values. Set $strict=true for identity comparison (===).
 	 * @param TActiveRecord another record to compare with.
-	 * @param boolean true to perform strict identity comparison
+	 * @param bool true to perform strict identity comparison
 	 * @param mixed $strict
-	 * @return boolean true if $record equals, false otherwise.
+	 * @param TActiveRecord $record
+	 * @return bool true if $record equals, false otherwise.
 	 */
 	public function equals(TActiveRecord $record, $strict = false)
 	{
@@ -431,7 +432,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Saves the current record to the database, insert or update is automatically determined.
-	 * @return boolean true if record was saved successfully, false otherwise.
+	 * @return bool true if record was saved successfully, false otherwise.
 	 */
 	public function save()
 	{
@@ -458,7 +459,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Deletes the current record from the database. Once deleted, this object
 	 * can not be saved again in the same instance.
-	 * @return boolean true if the record was deleted successfully, false otherwise.
+	 * @return bool true if the record was deleted successfully, false otherwise.
 	 */
 	public function delete()
 	{
@@ -810,7 +811,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * </code>
 	 * @param string relationship/property name corresponding to keys in $RELATION array.
 	 * @param mixed $property
-	 * @return boolean true if relationship exists, false otherwise.
+	 * @return bool true if relationship exists, false otherwise.
 	 * @since 3.1.2
 	 */
 	protected function fetchResultsFor($property)
@@ -848,10 +849,10 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $finder->deleteAll('Name = ?', $name);
 	 * $finder->deleteByName($name);
 	 * </code>
-	 * @return mixed single record if method name starts with "findBy", 0 or more records
-	 * if method name starts with "findAllBy"
 	 * @param mixed $method
 	 * @param mixed $args
+	 * @return mixed single record if method name starts with "findBy", 0 or more records
+	 * if method name starts with "findAllBy"
 	 */
 	public function __call($method, $args)
 	{
@@ -900,7 +901,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param TActiveRecordInvalidFinderResult|null $value * @see TActiveRecordManager::setInvalidFinderResult
+	 * @param null|TActiveRecordInvalidFinderResult $value * @see TActiveRecordManager::setInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)
@@ -1059,7 +1060,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * @param string AR property name
 	 * @param mixed $property
-	 * @return boolean whether a relation is declared for the specified AR property
+	 * @return bool whether a relation is declared for the specified AR property
 	 * @since 3.1.2
 	 */
 	public function hasRecordRelation($property)

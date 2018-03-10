@@ -31,7 +31,7 @@ class TRepeaterItemRenderer extends TItemDataRenderer
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{

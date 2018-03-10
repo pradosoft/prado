@@ -40,7 +40,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 * If the column is read-only or if the item is not in edit mode,
 	 * the checkbox will be set disabled.
 	 * @param TTableCell the cell to be initialized.
-	 * @param integer the index to the Columns property that the cell resides in.
+	 * @param int the index to the Columns property that the cell resides in.
 	 * @param string the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 * @param mixed $cell
 	 * @param mixed $columnIndex

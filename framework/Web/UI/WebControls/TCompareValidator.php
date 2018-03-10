@@ -147,7 +147,7 @@ class TCompareValidator extends TBaseValidator
 	 * The validation succeeds if the input data compares successfully.
 	 * The validation always succeeds if ControlToValidate is not specified
 	 * or the input data is empty.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
 	{

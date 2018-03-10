@@ -40,7 +40,7 @@ class TPanelStyle extends TStyle
 	 */
 	private $_scrollBars;
 	/**
-	 * @var boolean whether the content wraps within the panel
+	 * @var bool whether the content wraps within the panel
 	 */
 	private $_wrap;
 
@@ -49,6 +49,7 @@ class TPanelStyle extends TStyle
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -141,7 +142,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return boolean whether the content wraps within the panel. Defaults to true.
+	 * @return bool whether the content wraps within the panel. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -150,7 +151,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the value indicating whether the content wraps within the panel.
-	 * @param boolean $value whether the content wraps within the panel.
+	 * @param bool $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{

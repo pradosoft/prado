@@ -26,15 +26,15 @@ interface IValidator
 	 * Validates certain data.
 	 * The implementation of this function should validate certain data
 	 * (e.g. data entered into TTextBox control).
-	 * @return boolean whether the data passes the validation
+	 * @return bool whether the data passes the validation
 	 */
 	public function validate();
 	/**
-	 * @return boolean whether the previous {@link validate()} is successful.
+	 * @return bool whether the previous {@link validate()} is successful.
 	 */
 	public function getIsValid();
 	/**
-	 * @param boolean $value whether the validator validates successfully
+	 * @param bool $value whether the validator validates successfully
 	 */
 	public function setIsValid($value);
 	/**

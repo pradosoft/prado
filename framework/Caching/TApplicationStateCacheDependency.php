@@ -35,7 +35,7 @@ class TApplicationStateCacheDependency extends TCacheDependency
 	/**
 	 * Performs the actual dependency checking.
 	 * This method returns true if the currently running application is not in performance mode.
-	 * @return boolean whether the dependency is changed or not.
+	 * @return bool whether the dependency is changed or not.
 	 */
 	public function getHasChanged()
 	{

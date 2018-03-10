@@ -124,8 +124,8 @@ abstract class MessageSource implements IMessageSource
 	 * @param mixed $type
 	 * @param mixed $source
 	 * @param mixed $filename
-	 * @return MessageSource a new message source of the specified type.
 	 * @throws InvalidMessageSourceTypeException
+	 * @return MessageSource a new message source of the specified type.
 	 */
 	public static function &factory($type, $source = '.', $filename = '')
 	{
@@ -170,7 +170,7 @@ abstract class MessageSource implements IMessageSource
 	 *
 	 * @param string a catalogue to load
 	 * @param mixed $catalogue
-	 * @return boolean true if loaded, false otherwise.
+	 * @return bool true if loaded, false otherwise.
 	 * @see read()
 	 */
 	public function load($catalogue = 'messages')
@@ -238,6 +238,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Set the cache handler for caching the messages.
 	 * @param MessageCache the cache handler.
+	 * @param MessageCache $cache
 	 */
 	public function setCache(MessageCache $cache)
 	{
@@ -308,7 +309,7 @@ abstract class MessageSource implements IMessageSource
 	/**
 	 * Determine if the source is valid.
 	 * @param string $source catalogue+variant
-	 * @return boolean true if valid, false otherwise.
+	 * @return bool true if valid, false otherwise.
 	 */
 	protected function isValidSource($source)
 	{

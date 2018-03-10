@@ -60,7 +60,7 @@ class TThemeManager extends \Prado\TModule
 	private $_themeClass = self::DEFAULT_THEMECLASS;
 
 	/**
-	 * @var boolean whether this module has been initialized
+	 * @var bool whether this module has been initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -100,7 +100,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string|null $class Theme class name in namespace format
+	 * @param null|string $class Theme class name in namespace format
 	 */
 	public function setThemeClass($class)
 	{
@@ -133,8 +133,8 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string the base path for all themes. It is returned as an absolute path.
 	 * @throws TConfigurationException if base path is not set and "themes" directory does not exist.
+	 * @return string the base path for all themes. It is returned as an absolute path.
 	 */
 	public function getBasePath()
 	{
@@ -165,8 +165,8 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string the base URL for all themes.
 	 * @throws TConfigurationException If base URL is not set and a correct one cannot be determined by Prado.
+	 * @return string the base URL for all themes.
 	 */
 	public function getBaseUrl()
 	{

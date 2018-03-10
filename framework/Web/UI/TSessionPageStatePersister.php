@@ -65,6 +65,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 
 	/**
 	 * @param TPage the page that this persister works for.
+	 * @param TPage $page
 	 */
 	public function setPage(TPage $page)
 	{
@@ -72,7 +73,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	}
 
 	/**
-	 * @return integer maximum number of page states that should be kept in session. Defaults to 10.
+	 * @return int maximum number of page states that should be kept in session. Defaults to 10.
 	 */
 	public function getHistorySize()
 	{
@@ -80,7 +81,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	}
 
 	/**
-	 * @param integer $value maximum number of page states that should be kept in session
+	 * @param int $value maximum number of page states that should be kept in session
 	 * @throws TInvalidDataValueException if the number is smaller than 1.
 	 */
 	public function setHistorySize($value)
@@ -117,8 +118,8 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 
 	/**
 	 * Loads page state from session.
-	 * @return mixed the restored state
 	 * @throws THttpException if page state is corrupted
+	 * @return mixed the restored state
 	 */
 	public function load()
 	{

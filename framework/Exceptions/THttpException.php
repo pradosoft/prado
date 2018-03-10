@@ -30,7 +30,7 @@ class THttpException extends TSystemException
 
 	/**
 	 * Constructor.
-	 * @param integer HTTP status code, such as 404, 500, etc.
+	 * @param int HTTP status code, such as 404, 500, etc.
 	 * @param string error message. This can be a string that is listed
 	 * in the message file. If so, the message in the preferred language
 	 * will be used as the error message. Any rest parameters will be used
@@ -55,7 +55,7 @@ class THttpException extends TSystemException
 	}
 
 	/**
-	 * @return integer HTTP status code, such as 404, 500, etc.
+	 * @return int HTTP status code, such as 404, 500, etc.
 	 */
 	public function getStatusCode()
 	{

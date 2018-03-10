@@ -67,11 +67,11 @@ class TPriorityMap extends TMap
 	 */
 	private $_d = [];
 	/**
-	 * @var boolean whether this list is read-only
+	 * @var bool whether this list is read-only
 	 */
 	private $_r = false;
 	/**
-	 * @var boolean indicates if the _d is currently ordered.
+	 * @var bool indicates if the _d is currently ordered.
 	 */
 	private $_o = false;
 	/**
@@ -79,7 +79,7 @@ class TPriorityMap extends TMap
 	 */
 	private $_fd;
 	/**
-	 * @var integer number of items contain within the map
+	 * @var int number of items contain within the map
 	 */
 	private $_c = 0;
 	/**
@@ -87,17 +87,17 @@ class TPriorityMap extends TMap
 	 */
 	private $_dp = 10;
 	/**
-	 * @var integer the precision of the numeric priorities within this priority list.
+	 * @var int the precision of the numeric priorities within this priority list.
 	 */
 	private $_p = 8;
 
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
-	 * @param map|array|Iterator|TPriorityMap the intial data. Default is null, meaning no initialization.
-	 * @param boolean whether the list is read-only
+	 * @param array|Iterator|map|TPriorityMap the intial data. Default is null, meaning no initialization.
+	 * @param bool whether the list is read-only
 	 * @param numeric the default priority of items without specified priorities.
-	 * @param integer the precision of the numeric priorities
+	 * @param int the precision of the numeric priorities
 	 * @param null|mixed $data
 	 * @param mixed $readOnly
 	 * @param mixed $defaultPriority
@@ -115,7 +115,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @return boolean whether this map is read-only or not. Defaults to false.
+	 * @return bool whether this map is read-only or not. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -123,7 +123,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @param boolean $value whether this list is read-only or not
+	 * @param bool $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -148,7 +148,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @return integer The precision of numeric priorities, defaults to 8
+	 * @return int The precision of numeric priorities, defaults to 8
 	 */
 	public function getPrecision()
 	{
@@ -157,7 +157,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * This must be called internally or when instantiated.
-	 * @param integer $value The precision of numeric priorities.
+	 * @param int $value The precision of numeric priorities.
 	 */
 	protected function setPrecision($value)
 	{
@@ -207,7 +207,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns the number of items in the map.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the map.
+	 * @return int number of items in the map.
 	 */
 	public function count()
 	{
@@ -215,7 +215,7 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * @return integer the number of items in the map
+	 * @return int the number of items in the map
 	 */
 	public function getCount()
 	{
@@ -227,7 +227,7 @@ class TPriorityMap extends TMap
 	 * @param numeric optional priority at which to count items.  if no parameter,
 	 * it will be set to the default {@link getDefaultPriority}
 	 * @param null|mixed $priority
-	 * @return integer the number of items in the map at the specified priority
+	 * @return int the number of items in the map at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
 	{
@@ -289,7 +289,7 @@ class TPriorityMap extends TMap
 	 * This changes an item's priority.  Specify the item and the new priority.
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param mixed $key the key
-	 * @param numeric|null $priority the priority.  default: null, filled in with the default priority numeric.
+	 * @param null|numeric $priority the priority.  default: null, filled in with the default priority numeric.
 	 * @return numeric old priority of the item
 	 */
 	public function setPriorityAt($key, $priority = null)
@@ -341,7 +341,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Retutrns the priority of an item at a particular flattened index.
-	 * @param integer $key index of the item within the map
+	 * @param int $key index of the item within the map
 	 * @return numeric priority of the item in the map
 	 */
 	public function priorityAt($key)
@@ -364,12 +364,12 @@ class TPriorityMap extends TMap
 	 * No duplicate keys are allowed regardless of priority.
 	 * @param mixed key
 	 * @param mixed value
-	 * @param numeric|null priority, default: null, filled in with default priority
+	 * @param null|numeric priority, default: null, filled in with default priority
 	 * @param mixed $key
 	 * @param mixed $value
 	 * @param null|mixed $priority
-	 * @return numeric priority at which the pair was added
 	 * @throws TInvalidOperationException if the map is read-only
+	 * @return numeric priority at which the pair was added
 	 */
 	public function add($key, $value, $priority = null)
 	{
@@ -409,12 +409,12 @@ class TPriorityMap extends TMap
 	 * the default priority is specified, only key-value pairs in that priority
 	 * will be affected.
 	 * @param mixed the key of the item to be removed
-	 * @param numeric|false|null priority.  False is any priority, null is the
+	 * @param null|false|numeric priority.  False is any priority, null is the
 	 * default priority, and numeric is a specific priority
 	 * @param mixed $key
 	 * @param mixed $priority
-	 * @return mixed the removed value, null if no such key exists.
 	 * @throws TInvalidOperationException if the map is read-only
+	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key, $priority = false)
 	{
@@ -474,7 +474,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * @param mixed $key the key
-	 * @return boolean whether the map contains an item with the specified key
+	 * @return bool whether the map contains an item with the specified key
 	 */
 	public function contains($key)
 	{
@@ -496,7 +496,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Combines the map elements which have a priority below the parameter value
 	 * @param numeric the cut-off priority.  All items of priority less than this are returned.
-	 * @param boolean whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
+	 * @param bool whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
 	 * @param mixed $priority
 	 * @param mixed $inclusive
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
@@ -518,7 +518,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Combines the map elements which have a priority above the parameter value
 	 * @param numeric the cut-off priority.  All items of priority greater than this are returned.
-	 * @param boolean whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
+	 * @param bool whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
 	 * @param mixed $priority
 	 * @param mixed $inclusive
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
@@ -597,7 +597,7 @@ class TPriorityMap extends TMap
 	 * Returns whether there is an element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -607,7 +607,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to retrieve element.
+	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -618,7 +618,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to set element
+	 * @param int the offset to set element
 	 * @param mixed the element value
 	 * @param mixed $offset
 	 * @param mixed $item

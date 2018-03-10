@@ -60,7 +60,7 @@ abstract class TDbUser extends TUser
 	 * You may use {@link getDbConnection DbConnection} to deal with database.
 	 * @param string $username username (case-sensitive)
 	 * @param string $password password
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	abstract public function validateUser($username, $password);
 

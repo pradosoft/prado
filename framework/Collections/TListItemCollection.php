@@ -31,7 +31,7 @@ class TListItemCollection extends TList
 	/**
 	 * Creates a list item object.
 	 * This method may be overriden to provide a customized list item object.
-	 * @param integer index where the newly created item is to be inserted at.
+	 * @param int index where the newly created item is to be inserted at.
 	 * If -1, the item will be appended to the end.
 	 * @param mixed $index
 	 * @return TListItem list item object
@@ -48,8 +48,8 @@ class TListItemCollection extends TList
 	}
 
 	/**
-	 * @return TListItem new item.
 	 * @param null|mixed $text
+	 * @return TListItem new item.
 	 */
 	protected function createNewListItem($text = null)
 	{
@@ -62,7 +62,7 @@ class TListItemCollection extends TList
 
 	/**
 	 * Inserts an item into the collection.
-	 * @param integer the location where the item will be inserted.
+	 * @param int the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
 	 * @param TListItem the item to be inserted.
 	 * @param mixed $index
@@ -83,8 +83,8 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the lowest cardinal index of the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
-	 * @param boolean $includeDisabled whether to look for disabled items also
-	 * @return integer the index of the item found, -1 if not found.
+	 * @param bool $includeDisabled whether to look for disabled items also
+	 * @return int the index of the item found, -1 if not found.
 	 */
 	public function findIndexByValue($value, $includeDisabled = true)
 	{
@@ -102,8 +102,8 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the lowest cardinal index of the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
-	 * @param boolean $includeDisabled whether to look for disabled items also
-	 * @return integer the index of the item found, -1 if not found.
+	 * @param bool $includeDisabled whether to look for disabled items also
+	 * @return int the index of the item found, -1 if not found.
 	 */
 	public function findIndexByText($text, $includeDisabled = true)
 	{
@@ -121,7 +121,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
-	 * @param boolean $includeDisabled whether to look for disabled items also
+	 * @param bool $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
 	public function findItemByValue($value, $includeDisabled = true)
@@ -136,7 +136,7 @@ class TListItemCollection extends TList
 	/**
 	 * Finds the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
-	 * @param boolean $includeDisabled whether to look for disabled items also
+	 * @param bool $includeDisabled whether to look for disabled items also
 	 * @return TListItem the item found, null if not found.
 	 */
 	public function findItemByText($text, $includeDisabled = true)
@@ -151,7 +151,7 @@ class TListItemCollection extends TList
 	/**
 	 * Loads state into every item in the collection.
 	 * This method should only be used by framework and control developers.
-	 * @param array|null $state state to be loaded.
+	 * @param null|array $state state to be loaded.
 	 */
 	public function loadState($state)
 	{
@@ -164,7 +164,7 @@ class TListItemCollection extends TList
 	/**
 	 * Saves state of items.
 	 * This method should only be used by framework and control developers.
-	 * @return array|null the saved state
+	 * @return null|array the saved state
 	 */
 	public function saveState()
 	{

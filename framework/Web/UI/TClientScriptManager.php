@@ -124,6 +124,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Constructor.
 	 * @param TPage page that owns this client script manager
+	 * @param TPage $owner
 	 */
 	public function __construct(TPage $owner)
 	{
@@ -131,7 +132,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether THead is required in order to render CSS and js within head
+	 * @return bool whether THead is required in order to render CSS and js within head
 	 * @since 3.1.1
 	 */
 	public function getRequiresHead()
@@ -221,8 +222,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return string Prado javascript library base asset url.
 	 * @param mixed $script
+	 * @return string Prado javascript library base asset url.
 	 */
 	public function getPradoScriptAssetUrl($script = 'prado')
 	{
@@ -236,8 +237,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return string Prado javascript library base asset path in local filesystem.
 	 * @param mixed $script
+	 * @return string Prado javascript library base asset path in local filesystem.
 	 */
 	public function getPradoScriptAssetPath($script = 'prado')
 	{
@@ -378,8 +379,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Register a default button to panel. When the $panel is in focus and
 	 * the 'enter' key is pressed, the $button will be clicked.
-	 * @param TControl|string $panel panel (or its unique ID) to register the default button action
-	 * @param TControl|string $button button (or its unique ID) to trigger a postback
+	 * @param string|TControl $panel panel (or its unique ID) to register the default button action
+	 * @param string|TControl $button button (or its unique ID) to trigger a postback
 	 */
 	public function registerDefaultButton($panel, $button)
 	{
@@ -643,7 +644,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Registers a hidden field to be rendered in the form.
 	 * @param string $name a unique key identifying the hidden field
-	 * @param string|array $value hidden field value, if the value is an array, every element
+	 * @param array|string $value hidden field value, if the value is an array, every element
 	 * in the array will be rendered as a hidden field value.
 	 */
 	public function registerHiddenField($name, $value)
@@ -656,7 +657,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a CSS file registered with the specified key
+	 * @return bool whether there is a CSS file registered with the specified key
 	 */
 	public function isStyleSheetFileRegistered($key)
 	{
@@ -665,7 +666,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a CSS block registered with the specified key
+	 * @return bool whether there is a CSS block registered with the specified key
 	 */
 	public function isStyleSheetRegistered($key)
 	{
@@ -674,7 +675,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a head javascript file registered with the specified key
+	 * @return bool whether there is a head javascript file registered with the specified key
 	 */
 	public function isHeadScriptFileRegistered($key)
 	{
@@ -683,7 +684,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a head javascript block registered with the specified key
+	 * @return bool whether there is a head javascript block registered with the specified key
 	 */
 	public function isHeadScriptRegistered($key)
 	{
@@ -692,7 +693,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a javascript file registered with the specified key
+	 * @return bool whether there is a javascript file registered with the specified key
 	 */
 	public function isScriptFileRegistered($key)
 	{
@@ -701,7 +702,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a beginning javascript block registered with the specified key
+	 * @return bool whether there is a beginning javascript block registered with the specified key
 	 */
 	public function isBeginScriptRegistered($key)
 	{
@@ -710,7 +711,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is an ending javascript block registered with the specified key
+	 * @return bool whether there is an ending javascript block registered with the specified key
 	 */
 	public function isEndScriptRegistered($key)
 	{
@@ -718,7 +719,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean true if any end scripts are registered.
+	 * @return bool true if any end scripts are registered.
 	 */
 	public function hasEndScripts()
 	{
@@ -726,7 +727,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean true if any begin scripts are registered.
+	 * @return bool true if any begin scripts are registered.
 	 */
 	public function hasBeginScripts()
 	{
@@ -735,7 +736,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $key a unique key
-	 * @return boolean whether there is a hidden field registered with the specified key
+	 * @return bool whether there is a hidden field registered with the specified key
 	 */
 	public function isHiddenFieldRegistered($key)
 	{

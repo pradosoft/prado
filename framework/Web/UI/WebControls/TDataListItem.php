@@ -89,7 +89,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	}
 
 	/**
-	 * @return integer zero-based index of the item in the item collection of datalist
+	 * @return int zero-based index of the item in the item collection of datalist
 	 */
 	public function getItemIndex()
 	{
@@ -99,7 +99,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	/**
 	 * Sets the zero-based index for the item.
 	 * If the item is not in the item collection (e.g. it is a header item), -1 should be used.
-	 * @param integer $value zero-based index of the item.
+	 * @param int $value zero-based index of the item.
 	 */
 	public function setItemIndex($value)
 	{
@@ -129,7 +129,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{

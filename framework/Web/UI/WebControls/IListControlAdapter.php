@@ -23,7 +23,7 @@ interface IListControlAdapter
 {
 	/**
 	 * Selects an item based on zero-base index on the client side.
-	 * @param integer $index the index (zero-based) of the item to be selected
+	 * @param int $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index);
 	/**

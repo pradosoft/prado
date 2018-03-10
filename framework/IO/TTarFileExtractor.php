@@ -108,7 +108,7 @@ class TTarFileExtractor
 	 * @param string $p_remove_path  Part of the memorized path that can be
 	 *                               removed if present at the beginning of
 	 *                               the file/dir path.
-	 * @return boolean               true on success, false on error.
+	 * @return bool               true on success, false on error.
 	 * @access public
 	 */
 	protected function extractModify($p_path, $p_remove_path)

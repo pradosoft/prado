@@ -287,7 +287,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * is embedded within the HTML form it was called from.
 	 * @param string $pubkey A public key for reCAPTCHA
 	 * @param string $error The error given by reCAPTCHA (optional, default is null)
-	 * @param boolean $use_ssl Should the request be made over ssl? (optional, default is false)
+	 * @param bool $use_ssl Should the request be made over ssl? (optional, default is false)
 	 * @return string - The HTML to be embedded in the user's form.
 	 */
 	private function recaptcha_get_html($pubkey, $error = null, $use_ssl = false)

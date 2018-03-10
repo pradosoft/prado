@@ -120,8 +120,8 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Loads and parses an XML document.
 	 * @param string $file the XML file path
-	 * @return boolean whether the XML file is parsed successfully
 	 * @throws TIOException if the file fails to be opened.
+	 * @return bool whether the XML file is parsed successfully
 	 */
 	public function loadFromFile($file)
 	{
@@ -136,7 +136,7 @@ class TXmlDocument extends TXmlElement
 	 * Loads and parses an XML string.
 	 * The version and encoding will be determined based on the parsing result.
 	 * @param string $string the XML string
-	 * @return boolean whether the XML string is parsed successfully
+	 * @return bool whether the XML string is parsed successfully
 	 */
 	public function loadFromString($string)
 	{

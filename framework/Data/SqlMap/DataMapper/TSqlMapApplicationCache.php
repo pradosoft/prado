@@ -93,8 +93,8 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @return mixed Gets a cached object with the specified key.
 	 * @param mixed $key
+	 * @return mixed Gets a cached object with the specified key.
 	 */
 	public function get($key)
 	{
@@ -138,11 +138,11 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @throws TSqlMapException not implemented.
 	 * @param mixed $id
 	 * @param mixed $value
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
+	 * @throws TSqlMapException not implemented.
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{

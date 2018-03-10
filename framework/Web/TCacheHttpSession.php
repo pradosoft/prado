@@ -108,7 +108,7 @@ class TCacheHttpSession extends THttpSession
 	 * Session write handler.
 	 * @param string $id session ID
 	 * @param string $data session data
-	 * @return boolean whether session write is successful
+	 * @return bool whether session write is successful
 	 */
 	public function _write($id, $data)
 	{
@@ -119,7 +119,7 @@ class TCacheHttpSession extends THttpSession
 	 * Session destroy handler.
 	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
-	 * @return boolean whether session is destroyed successfully
+	 * @return bool whether session is destroyed successfully
 	 */
 	public function _destroy($id)
 	{

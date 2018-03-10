@@ -136,7 +136,7 @@ class TPageService extends \Prado\TService
 	 */
 	private $_properties = [];
 	/**
-	 * @var boolean whether service is initialized
+	 * @var bool whether service is initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -308,6 +308,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param TTemplateManager template manager
+	 * @param TTemplateManager $value
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
@@ -328,6 +329,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param TThemeManager theme manager
+	 * @param TThemeManager $value
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
@@ -470,9 +472,9 @@ class TPageService extends \Prado\TService
 	 * Creates a page instance based on requested page path.
 	 * @param string requested page path
 	 * @param mixed $pagePath
-	 * @return TPage the requested page instance
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
+	 * @return TPage the requested page instance
 	 */
 	protected function createPage($pagePath)
 	{
@@ -536,8 +538,8 @@ class TPageService extends \Prado\TService
 	 * Constructs a URL with specified page path and GET parameters.
 	 * @param string $pagePath page path
 	 * @param array $getParams list of GET parameters, null if no GET parameters required
-	 * @param boolean $encodeAmpersand whether to encode the ampersand in URL, defaults to true.
-	 * @param boolean $encodeGetItems whether to encode the GET parameters (their names and values), defaults to true.
+	 * @param bool $encodeAmpersand whether to encode the ampersand in URL, defaults to true.
+	 * @param bool $encodeGetItems whether to encode the GET parameters (their names and values), defaults to true.
 	 * @return string URL for the page and GET parameters
 	 */
 	public function constructUrl($pagePath, $getParams = null, $encodeAmpersand = true, $encodeGetItems = true)

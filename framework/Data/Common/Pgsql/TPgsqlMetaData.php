@@ -176,8 +176,8 @@ EOD;
 	/**
 	 * @param string table name, schema name or column name.
 	 * @param mixed $name
-	 * @return string a valid identifier.
 	 * @throws TDbException when table name contains a double quote (").
+	 * @return string a valid identifier.
 	 */
 	protected function assertIdentifier($name)
 	{
@@ -191,7 +191,7 @@ EOD;
 	/**
 	 * @param string $schemaName table schema name
 	 * @param string $tableName table name.
-	 * @return boolean true if the table is a view.
+	 * @return bool true if the table is a view.
 	 */
 	protected function getIsView($schemaName, $tableName)
 	{
@@ -262,9 +262,9 @@ EOD;
 	}
 
 	/**
-	 * @return string serial name if found, null otherwise.
 	 * @param mixed $tableInfo
 	 * @param mixed $src
+	 * @return string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -279,8 +279,8 @@ EOD;
 	}
 
 	/**
-	 * @return boolean true if column type if "numeric", "interval" or begins with "time".
 	 * @param mixed $type
+	 * @return bool true if column type if "numeric", "interval" or begins with "time".
 	 */
 	protected function isPrecisionType($type)
 	{
@@ -420,7 +420,7 @@ EOD;
 	/**
 	 * @param string $columnId column name.
 	 * @param TPgsqlTableInfo $tableInfo table information.
-	 * @return boolean true if column is a foreign key.
+	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)
 	{

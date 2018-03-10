@@ -70,7 +70,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Executes a delete command.
 	 * @param TSqlCriteria $criteria delete conditions and parameters.
-	 * @return integer number of records affected.
+	 * @return int number of records affected.
 	 */
 	public function delete($criteria)
 	{
@@ -85,7 +85,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * Updates the table with new data.
 	 * @param array $data date for update.
 	 * @param TSqlCriteria $criteria update conditions and parameters.
-	 * @return integer number of records affected.
+	 * @return int number of records affected.
 	 */
 	public function update($data, $criteria)
 	{
@@ -99,7 +99,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * @param array $data update for update
 	 * @param array $keys primary key-value name pairs.
-	 * @return integer number of records affected.
+	 * @return int number of records affected.
 	 */
 	public function updateByPk($data, $keys)
 	{
@@ -186,7 +186,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * @param array $keys multiple primary key values or composite value arrays
-	 * @return integer number of rows affected.
+	 * @return int number of rows affected.
 	 */
 	public function deleteByPk($keys)
 	{
@@ -333,7 +333,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * @param TSqlCriteria $criteria $criteria
-	 * @return integer number of records.
+	 * @return int number of records.
 	 */
 	public function count($criteria)
 	{

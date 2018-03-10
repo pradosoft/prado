@@ -39,23 +39,23 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 */
 	private $_dataSource;
 	/**
-	 * @var integer number of items in each page
+	 * @var int number of items in each page
 	 */
 	private $_pageSize = 10;
 	/**
-	 * @var integer current page index
+	 * @var int current page index
 	 */
 	private $_currentPageIndex = 0;
 	/**
-	 * @var boolean whether to allow paging
+	 * @var bool whether to allow paging
 	 */
 	private $_allowPaging = false;
 	/**
-	 * @var boolean whether to allow custom paging
+	 * @var bool whether to allow custom paging
 	 */
 	private $_allowCustomPaging = false;
 	/**
-	 * @var integer user-assigned number of items in data source
+	 * @var int user-assigned number of items in data source
 	 */
 	private $_virtualCount = 0;
 
@@ -85,7 +85,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer number of items in each page. Defaults to 10.
+	 * @return int number of items in each page. Defaults to 10.
 	 */
 	public function getPageSize()
 	{
@@ -93,7 +93,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param integer $value number of items in each page
+	 * @param int $value number of items in each page
 	 */
 	public function setPageSize($value)
 	{
@@ -105,7 +105,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer current page index. Defaults to 0.
+	 * @return int current page index. Defaults to 0.
 	 */
 	public function getCurrentPageIndex()
 	{
@@ -113,7 +113,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param integer $value current page index
+	 * @param int $value current page index
 	 */
 	public function setCurrentPageIndex($value)
 	{
@@ -124,7 +124,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return boolean whether to allow paging. Defaults to false.
+	 * @return bool whether to allow paging. Defaults to false.
 	 */
 	public function getAllowPaging()
 	{
@@ -132,7 +132,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param boolean $value whether to allow paging
+	 * @param bool $value whether to allow paging
 	 */
 	public function setAllowPaging($value)
 	{
@@ -140,7 +140,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return boolean whether to allow custom paging. Defaults to false.
+	 * @return bool whether to allow custom paging. Defaults to false.
 	 */
 	public function getAllowCustomPaging()
 	{
@@ -148,7 +148,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param boolean $value whether to allow custom paging
+	 * @param bool $value whether to allow custom paging
 	 */
 	public function setAllowCustomPaging($value)
 	{
@@ -156,7 +156,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer user-assigned number of items in data source Defaults to 0.
+	 * @return int user-assigned number of items in data source Defaults to 0.
 	 */
 	public function getVirtualItemCount()
 	{
@@ -164,7 +164,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @param integer $value user-assigned number of items in data source
+	 * @param int $value user-assigned number of items in data source
 	 */
 	public function setVirtualItemCount($value)
 	{
@@ -176,7 +176,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer number of items in current page
+	 * @return int number of items in current page
 	 */
 	public function getCount()
 	{
@@ -195,7 +195,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * Returns the number of items in the current page.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the current page.
+	 * @return int number of items in the current page.
 	 */
 	public function count()
 	{
@@ -203,7 +203,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer number of pages
+	 * @return int number of pages
 	 */
 	public function getPageCount()
 	{
@@ -218,7 +218,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return boolean whether the current page is the first page Defaults to false.
+	 * @return bool whether the current page is the first page Defaults to false.
 	 */
 	public function getIsFirstPage()
 	{
@@ -230,7 +230,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return boolean whether the current page is the last page
+	 * @return bool whether the current page is the last page
 	 */
 	public function getIsLastPage()
 	{
@@ -242,7 +242,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer the index of the item in data source, where the item is the first in
+	 * @return int the index of the item in data source, where the item is the first in
 	 * current page
 	 */
 	public function getFirstIndexInPage()
@@ -255,7 +255,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer number of items in data source, if available
+	 * @return int number of items in data source, if available
 	 */
 	public function getDataSourceCount()
 	{

@@ -46,7 +46,7 @@ interface IMessageSource
 	 *
 	 * @param string a catalogue to load
 	 * @param mixed $catalogue
-	 * @return boolean true if loaded, false otherwise.
+	 * @return bool true if loaded, false otherwise.
 	 */
 	public function load($catalogue = 'messages');
 
@@ -72,7 +72,7 @@ interface IMessageSource
 	 * strings to the translation source via the <b>append()</b> method.
 	 * @param string the catalogue to add to
 	 * @param mixed $catalogue
-	 * @return boolean true if saved successfuly, false otherwise.
+	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages');
 
@@ -88,7 +88,7 @@ interface IMessageSource
 	 * Delete a particular message from the specified catalogue.
 	 * @param string $message the source message to delete.
 	 * @param string $catalogue the catalogue to delete from.
-	 * @return boolean true if deleted, false otherwise.
+	 * @return bool true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages');
 
@@ -98,7 +98,7 @@ interface IMessageSource
 	 * @param string $target the new translation string.
 	 * @param string $comments comments
 	 * @param string $catalogue the catalogue of the translation.
-	 * @return boolean true if translation was updated, false otherwise.
+	 * @return bool true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages');
 

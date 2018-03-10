@@ -36,6 +36,7 @@ class TPagedMapIterator implements \Iterator
 	 * @param array the data to be iterated through
 	 * @param mixed $startIndex
 	 * @param mixed $count
+	 * @param TMap $map
 	 */
 	public function __construct(TMap $map, $startIndex, $count)
 	{
@@ -66,7 +67,7 @@ class TPagedMapIterator implements \Iterator
 	/**
 	 * Returns the key of the current array item.
 	 * This method is required by the interface Iterator.
-	 * @return integer the key of the current array item
+	 * @return int the key of the current array item
 	 */
 	public function key()
 	{
@@ -96,7 +97,7 @@ class TPagedMapIterator implements \Iterator
 	/**
 	 * Returns whether there is an item at current position.
 	 * This method is required by the interface Iterator.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function valid()
 	{

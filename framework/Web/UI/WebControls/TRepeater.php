@@ -461,7 +461,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item.
 	 * This method invokes {@link createItem} to create a new repeater item.
-	 * @param integer $itemIndex zero-based item index.
+	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
@@ -480,7 +480,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item and performs databinding.
 	 * This method invokes {@link createItem} to create a new repeater item.
-	 * @param integer $itemIndex zero-based item index.
+	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
 	 * @return TControl the created item, null if item is not created
@@ -504,7 +504,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * Creates a repeater item instance based on the item type and index.
-	 * @param integer $itemIndex zero-based item index
+	 * @param int $itemIndex zero-based item index
 	 * @param TListItemType $itemType item type
 	 * @return TControl created repeater item
 	 */
@@ -692,7 +692,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -760,8 +760,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
 	 * @param mixed $field field name
-	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data is invalid
+	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)
 	{

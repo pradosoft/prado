@@ -35,12 +35,12 @@ interface IButtonControl
 	public function setText($value);
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation
+	 * @return bool whether postback event trigger by this button will cause input validation
 	 */
 	public function getCausesValidation();
 
 	/**
-	 * @param boolean $value whether postback event trigger by this button will cause input validation
+	 * @param bool $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value);
 
@@ -87,12 +87,12 @@ interface IButtonControl
 	public function onCommand($param);
 
 	/**
-	 * @param boolean $value set by a panel to register this button as the default button for the panel.
+	 * @param bool $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value);
 
 	/**
-	 * @return boolean true if this button is registered as a default button for a panel.
+	 * @return bool true if this button is registered as a default button for a panel.
 	 */
 	public function getIsDefaultButton();
 }

@@ -50,11 +50,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	private $_d = [];
 	/**
 	 * number of items
-	 * @var integer
+	 * @var int
 	 */
 	private $_c = 0;
 	/**
-	 * @var boolean whether this list is read-only
+	 * @var bool whether this list is read-only
 	 */
 	private $_r = false;
 
@@ -62,7 +62,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
-	 * @param boolean whether the list is read-only
+	 * @param bool whether the list is read-only
 	 * @param null|mixed $data
 	 * @param mixed $readOnly
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
@@ -76,7 +76,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @return boolean whether this list is read-only or not. Defaults to false.
+	 * @return bool whether this list is read-only or not. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -84,7 +84,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @param boolean $value whether this list is read-only or not
+	 * @param bool $value whether this list is read-only or not
 	 */
 	protected function setReadOnly($value)
 	{
@@ -104,7 +104,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns the number of items in the list.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the list.
+	 * @return int number of items in the list.
 	 */
 	public function count()
 	{
@@ -112,7 +112,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	}
 
 	/**
-	 * @return integer the number of items in the list
+	 * @return int the number of items in the list
 	 */
 	public function getCount()
 	{
@@ -122,10 +122,10 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
-	 * @param integer the index of the item
+	 * @param int the index of the item
 	 * @param mixed $index
-	 * @return mixed the item at the index
 	 * @throws TInvalidDataValueException if the index is out of the range
+	 * @return mixed the item at the index
 	 */
 	public function itemAt($index)
 	{
@@ -140,8 +140,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Appends an item at the end of the list.
 	 * @param mixed new item
 	 * @param mixed $item
-	 * @return integer the zero-based index at which the item is added
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return int the zero-based index at which the item is added
 	 */
 	public function add($item)
 	{
@@ -153,7 +153,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Inserts an item at the specified position.
 	 * Original item at the position and the next items
 	 * will be moved one step towards the end.
-	 * @param integer the specified position.
+	 * @param int the specified position.
 	 * @param mixed new item
 	 * @param mixed $index
 	 * @param mixed $item
@@ -182,9 +182,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * The first item found will be removed from the list.
 	 * @param mixed the item to be removed.
 	 * @param mixed $item
-	 * @return integer the index at which the item is being removed
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return int the index at which the item is being removed
 	 */
 	public function remove($item)
 	{
@@ -202,11 +202,11 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 	/**
 	 * Removes an item at the specified position.
-	 * @param integer the index of the item to be removed.
+	 * @param int the index of the item to be removed.
 	 * @param mixed $index
-	 * @return mixed the removed item.
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
 	{
@@ -241,7 +241,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 	/**
 	 * @param mixed $item the item
-	 * @return boolean whether the list contains the item
+	 * @return bool whether the list contains the item
 	 */
 	public function contains($item)
 	{
@@ -250,7 +250,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 	/**
 	 * @param mixed $item the item
-	 * @return integer the index of the item in the list (0 based), -1 if not found.
+	 * @return int the index of the item in the list (0 based), -1 if not found.
 	 */
 	public function indexOf($item)
 	{
@@ -267,9 +267,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed the item
 	 * @param mixed $baseitem
 	 * @param mixed $item
-	 * @return int the index where the item is inserted
 	 * @throws TInvalidDataValueException if the base item is not within this list
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return int the index where the item is inserted
 	 * @since 3.2a
 	 */
 	public function insertBefore($baseitem, $item)
@@ -293,9 +293,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed the item
 	 * @param mixed $baseitem
 	 * @param mixed $item
-	 * @return int the index where the item is inserted
 	 * @throws TInvalidDataValueException if the base item is not within this list
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return int the index where the item is inserted
 	 * @since 3.2a
 	 */
 	public function insertAfter($baseitem, $item)
@@ -361,8 +361,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to check on
-	 * @return boolean
+	 * @param int $offset the offset to check on
+	 * @return bool
 	 */
 	public function offsetExists($offset)
 	{
@@ -372,10 +372,10 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to retrieve item.
+	 * @param int the offset to retrieve item.
 	 * @param mixed $offset
-	 * @return mixed the item at the offset
 	 * @throws TInvalidDataValueException if the offset is invalid
+	 * @return mixed the item at the offset
 	 */
 	public function offsetGet($offset)
 	{
@@ -385,7 +385,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Sets the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer the offset to set item
+	 * @param int the offset to set item
 	 * @param mixed the item value
 	 * @param mixed $offset
 	 * @param mixed $item
@@ -403,7 +403,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Unsets the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param integer $offset the offset to unset item
+	 * @param int $offset the offset to unset item
 	 */
 	public function offsetUnset($offset)
 	{

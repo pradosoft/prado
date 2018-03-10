@@ -39,7 +39,7 @@ use Prado\TPropertyValue;
 class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 {
 	/**
-	 *	@var boolean ensures the inclusion the id in the tag rendering.
+	 *	@var bool ensures the inclusion the id in the tag rendering.
 	 */
 	private $_ensureid = false;
 
@@ -53,7 +53,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Subclasses can override getEnsureId or just set this property.  eg. If your subclass
 	 * control does work with javascript and your class wants to flag that it requires an id
 	 * to operate properly.  Once set to true, it stays that way.
-	 * @param boolean $value pass true to enable enforcement of the tag attribute id.
+	 * @param bool $value pass true to enable enforcement of the tag attribute id.
 	 */
 	public function setEnsureId($value)
 	{
@@ -69,8 +69,8 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
+	 * @param bool $create
 	 * @return TWebControlDecorator
-	 * @param boolean $create
 	 */
 	public function getDecorator($create = true)
 	{
@@ -85,6 +85,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Properties including AccessKey, ToolTip, TabIndex, Enabled
 	 * and Attributes are copied.
 	 * @param TWebControl source control
+	 * @param TWebControl $control
 	 */
 	public function copyBaseAttributes(TWebControl $control)
 	{
@@ -287,7 +288,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return boolean whether the control has defined any style information
+	 * @return bool whether the control has defined any style information
 	 */
 	public function getHasStyle()
 	{
@@ -342,7 +343,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return integer the tab index of the control
+	 * @return int the tab index of the control
 	 */
 	public function getTabIndex()
 	{
@@ -352,7 +353,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	/**
 	 * Sets the tab index of the control.
 	 * Pass 0 if you want to disable tab index.
-	 * @param integer $value the tab index to be set
+	 * @param int $value the tab index to be set
 	 */
 	public function setTabIndex($value)
 	{

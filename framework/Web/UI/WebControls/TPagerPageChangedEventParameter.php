@@ -30,7 +30,7 @@ use Prado\Web\UI\TControl;
 class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 {
 	/**
-	 * @var integer new page index
+	 * @var int new page index
 	 */
 	private $_newIndex;
 	/**
@@ -41,7 +41,7 @@ class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 	/**
 	 * Constructor.
 	 * @param TControl $source the control originally raises the <b>OnCommand</b> event.
-	 * @param integer $newPageIndex new page index
+	 * @param int $newPageIndex new page index
 	 */
 	public function __construct($source, $newPageIndex)
 	{
@@ -58,7 +58,7 @@ class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer new page index
+	 * @return int new page index
 	 */
 	public function getNewPageIndex()
 	{

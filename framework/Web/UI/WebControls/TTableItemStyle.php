@@ -32,7 +32,7 @@ class TTableItemStyle extends TStyle
 	 */
 	private $_verticalAlign;
 	/**
-	 * @var boolean whether the content wraps within the table item
+	 * @var bool whether the content wraps within the table item
 	 */
 	private $_wrap;
 
@@ -41,6 +41,7 @@ class TTableItemStyle extends TStyle
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -170,7 +171,7 @@ class TTableItemStyle extends TStyle
 	}
 
 	/**
-	 * @return boolean whether the content wraps within the table item. Defaults to true.
+	 * @return bool whether the content wraps within the table item. Defaults to true.
 	 */
 	public function getWrap()
 	{
@@ -179,7 +180,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * Sets the value indicating whether the content wraps within the table item.
-	 * @param boolean $value whether the content wraps within the panel.
+	 * @param bool $value whether the content wraps within the panel.
 	 */
 	public function setWrap($value)
 	{

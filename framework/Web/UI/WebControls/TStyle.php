@@ -50,6 +50,7 @@ class TStyle extends \Prado\TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -183,7 +184,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true if CSS is set or empty.
+	 * @return bool true if CSS is set or empty.
 	 */
 	public function hasCssClass()
 	{
@@ -210,7 +211,7 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true if font is set.
+	 * @return bool true if font is set.
 	 */
 	public function hasFont()
 	{
@@ -306,8 +307,8 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string a single style field value set via {@link setStyleField}. Defaults to empty string.
 	 * @param mixed $name
+	 * @return string a single style field value set via {@link setStyleField}. Defaults to empty string.
 	 */
 	public function getStyleField($name)
 	{
@@ -335,8 +336,8 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether a style field has been defined by {@link setStyleField}
 	 * @param mixed $name
+	 * @return bool whether a style field has been defined by {@link setStyleField}
 	 */
 	public function hasStyleField($name)
 	{

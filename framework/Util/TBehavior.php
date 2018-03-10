@@ -73,7 +73,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	}
 
 	/**
-	 * @return boolean whether this behavior is enabled
+	 * @return bool whether this behavior is enabled
 	 */
 	public function getEnabled()
 	{
@@ -81,7 +81,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	}
 
 	/**
-	 * @param boolean $value whether this behavior is enabled
+	 * @param bool $value whether this behavior is enabled
 	 */
 	public function setEnabled($value)
 	{

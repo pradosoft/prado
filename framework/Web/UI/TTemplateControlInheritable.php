@@ -38,8 +38,8 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * This method should only be used by framework and control developers.
 	 * Uses the controls template if available or the base class template otherwise.
 	 *
-	 * @return void
 	 * @throws TConfigurationException if a template control directive is invalid
+	 * @return void
 	 */
 	public function createChildControls()
 	{
@@ -77,8 +77,8 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * This method creates the template object for the given class
 	 *
 	 * @param string $parentClass The class to create the template from
-	 * @return void
 	 * @throws TConfigurationException if a template control directive is invalid
+	 * @return void
 	 */
 	public function doTemplateForClass($parentClass)
 	{
@@ -101,7 +101,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * A source template control loads its template from external storage,
 	 * such as file, db, rather than from within another template.
 	 *
-	 * @return boolean whether the current control is a source template control
+	 * @return bool whether the current control is a source template control
 	 */
 	public function getIsSourceTemplateControl()
 	{

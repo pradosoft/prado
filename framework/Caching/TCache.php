@@ -74,7 +74,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * @return boolean whether this cache module is used as primary/system cache.
+	 * @return bool whether this cache module is used as primary/system cache.
 	 * A primary cache is used by PRADO core framework to cache data such as
 	 * parsed templates, themes, etc.
 	 */
@@ -84,7 +84,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	}
 
 	/**
-	 * @param boolean $value whether this cache module is used as primary/system cache. Defaults to false.
+	 * @param bool $value whether this cache module is used as primary/system cache. Defaults to false.
 	 * @see getPrimaryCache
 	 */
 	public function setPrimaryCache($value)
@@ -144,9 +144,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 *
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null)
 	{
@@ -163,9 +163,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Nothing will be done if the cache already contains the key or if value is empty.
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
 	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labeled invalid.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{
@@ -179,7 +179,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Deletes a value with the specified key from cache
 	 * @param string $id the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	public function delete($id)
 	{
@@ -217,8 +217,8 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	abstract protected function setValue($key, $value, $expire);
 
@@ -231,8 +231,8 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	abstract protected function addValue($key, $value, $expire);
 
@@ -240,7 +240,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Deletes a value with the specified key from cache
 	 * This method should be implemented by child classes to delete the data from actual cache storage.
 	 * @param string $key the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	abstract protected function deleteValue($key);
 
@@ -248,7 +248,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Returns whether there is a cache entry with a specified key.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param string $id a key identifying the cached value
-	 * @return boolean
+	 * @return bool
 	 */
 	public function offsetExists($id)
 	{
@@ -285,7 +285,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Deletes the value with the specified key from cache
 	 * This method is required by the interface \ArrayAccess.
 	 * @param string $id the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	public function offsetUnset($id)
 	{

@@ -44,11 +44,11 @@ class TListItem extends \Prado\TComponent
 	 */
 	private $_value = '';
 	/**
-	 * @var boolean whether the item is enabled
+	 * @var bool whether the item is enabled
 	 */
 	private $_enabled = true;
 	/**
-	 * @var boolean whether the item is selected
+	 * @var bool whether the item is selected
 	 */
 	private $_selected = false;
 
@@ -56,8 +56,9 @@ class TListItem extends \Prado\TComponent
 	 * Constructor.
 	 * @param string $text text of the item
 	 * @param string $value value of the item
-	 * @param boolean $enabled whether the item is enabled
-	 * @param boolean $selectedwhether the item is selected
+	 * @param bool $enabled whether the item is enabled
+	 * @param bool $selectedwhether the item is selected
+	 * @param mixed $selected
 	 */
 	public function __construct($text = '', $value = '', $enabled = true, $selected = false)
 	{
@@ -72,6 +73,7 @@ class TListItem extends \Prado\TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -94,7 +96,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the item is enabled
+	 * @return bool whether the item is enabled
 	 */
 	public function getEnabled()
 	{
@@ -102,7 +104,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the item is enabled
+	 * @param bool $value whether the item is enabled
 	 */
 	public function setEnabled($value)
 	{
@@ -110,7 +112,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the item is selected
+	 * @return bool whether the item is selected
 	 */
 	public function getSelected()
 	{
@@ -118,7 +120,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the item is selected
+	 * @param bool $value whether the item is selected
 	 */
 	public function setSelected($value)
 	{
@@ -169,7 +171,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the item has any custom attribute
+	 * @return bool whether the item has any custom attribute
 	 */
 	public function getHasAttributes()
 	{
@@ -178,7 +180,7 @@ class TListItem extends \Prado\TComponent
 
 	/**
 	 * @param string $name name of the attribute
-	 * @return boolean whether the named attribute exists
+	 * @return bool whether the named attribute exists
 	 */
 	public function hasAttribute($name)
 	{
@@ -186,8 +188,8 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string the named attribute value, null if attribute does not exist
 	 * @param mixed $name
+	 * @return string the named attribute value, null if attribute does not exist
 	 */
 	public function getAttribute($name)
 	{

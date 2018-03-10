@@ -80,8 +80,8 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Saves the current SqlMap manager to cache.
-	 * @return boolean true if SqlMap manager was cached, false otherwise.
 	 * @param mixed $manager
+	 * @return bool true if SqlMap manager was cached, false otherwise.
 	 */
 	protected function cacheSqlMapManager($manager)
 	{
@@ -146,7 +146,7 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Set true to cache sqlmap instances.
-	 * @param boolean $value true to cache sqlmap instance.
+	 * @param bool $value true to cache sqlmap instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -154,7 +154,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return boolean true if configuration should be cached, false otherwise.
+	 * @return bool true if configuration should be cached, false otherwise.
 	 */
 	public function getEnableCache()
 	{

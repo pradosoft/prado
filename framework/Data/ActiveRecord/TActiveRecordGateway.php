@@ -67,6 +67,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Gets the table name from the 'TABLE' constant of the active record
 	 * class if defined, otherwise use the class name as table name.
 	 * @param TActiveRecord active record instance
+	 * @param TActiveRecord $record
 	 * @return string table name for the given record class.
 	 */
 	protected function getRecordTableName(TActiveRecord $record)
@@ -113,6 +114,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TDbConnection database connection
 	 * @param string table name
 	 * @param mixed $tableName
+	 * @param TDbConnection $connection
 	 * @return TDbTableInfo table details.
 	 */
 	public function getTableInfo(TDbConnection $connection, $tableName)
@@ -207,6 +209,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record instance.
 	 * @param array primary name value pairs
 	 * @param mixed $keys
+	 * @param TActiveRecord $record
 	 * @return array record data
 	 */
 	public function findRecordByPK(TActiveRecord $record, $keys)
@@ -220,6 +223,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record instance.
 	 * @param array list of primary name value pairs
 	 * @param mixed $keys
+	 * @param TActiveRecord $record
 	 * @return array matching data.
 	 */
 	public function findRecordsByPks(TActiveRecord $record, $keys)
@@ -233,9 +237,10 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * return multiple rows as TDbDataReader otherwise it returns the <b>first</b> row data.
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria.
-	 * @param boolean true to return multiple rows as iterator, false returns first row.
+	 * @param bool true to return multiple rows as iterator, false returns first row.
 	 * @param mixed $criteria
 	 * @param mixed $iterator
+	 * @param TActiveRecord $record
 	 * @return mixed matching data.
 	 */
 	public function findRecordsByCriteria(TActiveRecord $record, $criteria, $iterator = false)
@@ -249,6 +254,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria sql query
 	 * @param mixed $criteria
+	 * @param TActiveRecord $record
 	 * @return array result.
 	 */
 	public function findRecordBySql(TActiveRecord $record, $criteria)
@@ -261,6 +267,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria sql query
 	 * @param mixed $criteria
+	 * @param TActiveRecord $record
 	 * @return TDbDataReader result iterator.
 	 */
 	public function findRecordsBySql(TActiveRecord $record, $criteria)
@@ -278,6 +285,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria
 	 * @param mixed $criteria
+	 * @param TActiveRecord $record
 	 * @return int number of records.
 	 */
 	public function countRecords(TActiveRecord $record, $criteria)
@@ -288,6 +296,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Insert a new record.
 	 * @param TActiveRecord new record.
+	 * @param TActiveRecord $record
 	 * @return int number of rows affected.
 	 */
 	public function insert(TActiveRecord $record)
@@ -318,6 +327,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	/**
 	 * @param TActiveRecord record
+	 * @param TActiveRecord $record
 	 * @return array insert values.
 	 */
 	protected function getInsertValues(TActiveRecord $record)
@@ -347,6 +357,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Update the record.
 	 * @param TActiveRecord dirty record.
+	 * @param TActiveRecord $record
 	 * @return int number of rows affected.
 	 */
 	public function update(TActiveRecord $record)
@@ -394,6 +405,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Delete the record.
 	 * @param TActiveRecord record to be deleted.
+	 * @param TActiveRecord $record
 	 * @return int number of rows affected.
 	 */
 	public function delete(TActiveRecord $record)
@@ -417,6 +429,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Delete multiple records using primary keys.
 	 * @param TActiveRecord finder instance.
 	 * @param mixed $keys
+	 * @param TActiveRecord $record
 	 * @return int number of rows deleted.
 	 */
 	public function deleteRecordsByPk(TActiveRecord $record, $keys)
@@ -429,6 +442,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * @param TActiveRecord active record finder instance.
 	 * @param TActiveRecordCriteria search criteria
 	 * @param mixed $criteria
+	 * @param TActiveRecord $record
 	 * @return int number of records.
 	 */
 	public function deleteRecordsByCriteria(TActiveRecord $record, $criteria)

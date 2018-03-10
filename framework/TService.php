@@ -28,7 +28,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	 */
 	private $_id;
 	/**
-	 * @var boolean whether the service is enabled
+	 * @var bool whether the service is enabled
 	 */
 	private $_enabled = true;
 
@@ -58,7 +58,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	}
 
 	/**
-	 * @return boolean whether the service is enabled
+	 * @return bool whether the service is enabled
 	 */
 	public function getEnabled()
 	{
@@ -66,7 +66,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	}
 
 	/**
-	 * @param boolean $value whether the service is enabled
+	 * @param bool $value whether the service is enabled
 	 */
 	public function setEnabled($value)
 	{

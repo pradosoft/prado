@@ -23,8 +23,8 @@ namespace Prado\Data\SqlMap\DataMapper;
 class TSqlMapFifoCache extends TSqlMapCache
 {
 	/**
-	 * @return mixed Gets a cached object with the specified key.
 	 * @param mixed $key
+	 * @return mixed Gets a cached object with the specified key.
 	 */
 	public function get($key)
 	{

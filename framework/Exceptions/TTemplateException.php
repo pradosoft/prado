@@ -61,7 +61,7 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @return integer the line number at which the template has error
+	 * @return int the line number at which the template has error
 	 */
 	public function getLineNumber()
 	{
@@ -69,7 +69,7 @@ class TTemplateException extends TConfigurationException
 	}
 
 	/**
-	 * @param integer $value the line number at which the template has error
+	 * @param int $value the line number at which the template has error
 	 */
 	public function setLineNumber($value)
 	{

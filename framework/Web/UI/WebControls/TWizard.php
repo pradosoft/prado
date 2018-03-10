@@ -155,7 +155,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_finishNavigation;
 	/**
-	 * @var boolean whether ActiveStepIndex was already set
+	 * @var bool whether ActiveStepIndex was already set
 	 */
 	private $_activeStepIndexSet = false;
 	/**
@@ -163,7 +163,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_sideBarDataList;
 	/**
-	 * @var boolean whether navigation should be cancelled (a status set in OnSideBarButtonClick)
+	 * @var bool whether navigation should be cancelled (a status set in OnSideBarButtonClick)
 	 */
 	private $_cancelNavigation = false;
 
@@ -209,7 +209,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return integer the zero-based index of the active wizard step
+	 * @return int the zero-based index of the active wizard step
 	 */
 	public function getActiveStepIndex()
 	{
@@ -217,7 +217,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param integer $value the zero-based index of the wizard step to be activated
+	 * @param int $value the zero-based index of the wizard step to be activated
 	 */
 	public function setActiveStepIndex($value)
 	{
@@ -245,7 +245,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether to display a cancel button in each wizard step. Defaults to false.
+	 * @return bool whether to display a cancel button in each wizard step. Defaults to false.
 	 */
 	public function getShowCancelButton()
 	{
@@ -253,7 +253,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value whether to display a cancel button in each wizard step.
+	 * @param bool $value whether to display a cancel button in each wizard step.
 	 */
 	public function setShowCancelButton($value)
 	{
@@ -261,7 +261,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether to display a side bar that contains links to wizard steps. Defaults to true.
+	 * @return bool whether to display a side bar that contains links to wizard steps. Defaults to true.
 	 */
 	public function getShowSideBar()
 	{
@@ -269,7 +269,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value whether to display a side bar that contains links to wizard steps.
+	 * @param bool $value whether to display a side bar that contains links to wizard steps.
 	 */
 	public function setShowSideBar($value)
 	{
@@ -563,7 +563,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether to use default layout to arrange side bar and the rest wizard components. Defaults to true.
+	 * @return bool whether to use default layout to arrange side bar and the rest wizard components. Defaults to true.
 	 */
 	public function getUseDefaultLayout()
 	{
@@ -571,7 +571,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value whether to use default layout to arrange side bar and the rest wizard components.
+	 * @param bool $value whether to use default layout to arrange side bar and the rest wizard components.
 	 * If true, an HTML table will be used which places the side bar in the left cell
 	 * while the rest components in the right cell.
 	 */
@@ -1255,7 +1255,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Determines the index of the previous step based on history.
-	 * @param boolean $popStack whether the first item in the history stack should be popped
+	 * @param bool $popStack whether the first item in the history stack should be popped
 	 * up after calling this method.
 	 */
 	protected function getPreviousStepIndex($popStack)
@@ -1284,7 +1284,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean whether navigation to the previous step is allowed
+	 * @return bool whether navigation to the previous step is allowed
 	 */
 	protected function allowNavigationToPreviousStep()
 	{
@@ -1296,8 +1296,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param integer $index index of the step
-	 * @return boolean whether navigation to the specified step is allowed
+	 * @param int $index index of the step
+	 * @return bool whether navigation to the specified step is allowed
 	 */
 	protected function allowNavigationToStep($index)
 	{

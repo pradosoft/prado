@@ -139,7 +139,7 @@ abstract class PradoCommandLineAction
 	/**
 	 * Execute the action.
 	 * @param array $args command line parameters
-	 * @return boolean true if action was handled
+	 * @return bool true if action was handled
 	 */
 	abstract public function performAction($args);
 

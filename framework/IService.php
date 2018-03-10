@@ -36,11 +36,11 @@ interface IService
 	 */
 	public function setID($id);
 	/**
-	 * @return boolean whether the service is enabled
+	 * @return bool whether the service is enabled
 	 */
 	public function getEnabled();
 	/**
-	 * @param boolean $value whether the service is enabled
+	 * @param bool $value whether the service is enabled
 	 */
 	public function setEnabled($value);
 	/**

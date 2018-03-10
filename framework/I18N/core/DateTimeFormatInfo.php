@@ -94,8 +94,8 @@ class DateTimeFormatInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
-	 * @return mixed
 	 * @param mixed $name
+	 * @return mixed
 	 */
 	public function __get($name)
 	{
@@ -511,9 +511,9 @@ class DateTimeFormatInfo
 	/**
 	 * Formats the date and time in a culture sensitive paterrn.
 	 * The default is "Date Time".
-	 * @return string date and time formated
 	 * @param mixed $date
 	 * @param mixed $time
+	 * @return string date and time formated
 	 */
 	public function formatDateTime($date, $time)
 	{

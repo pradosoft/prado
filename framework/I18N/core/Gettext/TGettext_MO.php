@@ -73,8 +73,8 @@ class TGettext_MO extends TGettext
 	 * Constructor
 	 *
 	 * @access  public
-	 * @return  object      File_Gettext_MO
 	 * @param   string $file  $file   path to GNU MO file
+	 * @return  object      File_Gettext_MO
 	 */
 	public function __construct($file = '')
 	{
@@ -85,8 +85,8 @@ class TGettext_MO extends TGettext
 	 * _read
 	 *
 	 * @access  private
-	 * @return  mixed
 	 * @param   int $bytes  $bytes
+	 * @return  mixed
 	 */
 	public function _read($bytes = 1)
 	{
@@ -100,8 +100,8 @@ class TGettext_MO extends TGettext
 	 * _readInt
 	 *
 	 * @access  private
-	 * @return  int
 	 * @param   bool $bigendian  $bigendian
+	 * @return  int
 	 */
 	public function _readInt($bigendian = false)
 	{
@@ -114,8 +114,8 @@ class TGettext_MO extends TGettext
 	 * _writeInt
 	 *
 	 * @access  private
-	 * @return  int
 	 * @param   int $int  $int
+	 * @return  int
 	 */
 	public function _writeInt($int)
 	{
@@ -126,8 +126,8 @@ class TGettext_MO extends TGettext
 	 * _write
 	 *
 	 * @access  private
-	 * @return  int
 	 * @param   string $data  $data
+	 * @return  int
 	 */
 	public function _write($data)
 	{
@@ -138,8 +138,8 @@ class TGettext_MO extends TGettext
 	 * _writeStr
 	 *
 	 * @access  private
-	 * @return  int
 	 * @param   string $string  $string
+	 * @return  int
 	 */
 	public function _writeStr($string)
 	{
@@ -150,9 +150,9 @@ class TGettext_MO extends TGettext
 	 * _readStr
 	 *
 	 * @access  private
-	 * @return  string
 	 * @param   array $params $params     associative array with offset and length
 	 *                              of the string
+	 * @return  string
 	 */
 	public function _readStr($params)
 	{
@@ -164,8 +164,8 @@ class TGettext_MO extends TGettext
 	 * Load MO file
 	 *
 	 * @access   public
-	 * @return   mixed   Returns true on success or PEAR_Error on failure.
 	 * @param    string $file  $file
+	 * @return   mixed   Returns true on success or PEAR_Error on failure.
 	 */
 	public function load($file = null)
 	{
@@ -259,8 +259,8 @@ class TGettext_MO extends TGettext
 	 * Save MO file
 	 *
 	 * @access  public
-	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 * @param   string $file  $file
+	 * @return  mixed   Returns true on success or PEAR_Error on failure.
 	 */
 	public function save($file = null)
 	{

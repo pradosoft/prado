@@ -26,6 +26,7 @@ class TEmptyControlCollection extends TControlCollection
 	/**
 	 * Constructor.
 	 * @param TControl the control that owns this collection.
+	 * @param TControl $owner
 	 */
 	public function __construct(TControl $owner)
 	{
@@ -35,7 +36,7 @@ class TEmptyControlCollection extends TControlCollection
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by ignoring new addition.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 */
 	public function insertAt($index, $item)

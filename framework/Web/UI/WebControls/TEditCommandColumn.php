@@ -164,7 +164,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by edit or update button will cause input validation, default is true
+	 * @return bool whether postback event trigger by edit or update button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -172,7 +172,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by edit or update button will cause input validation
+	 * @param bool $value whether postback event trigger by edit or update button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{
@@ -201,7 +201,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 * It creates an update and a cancel button for cell in edit mode.
 	 * Otherwise it creates an edit button.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
@@ -229,7 +229,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 * The button type is determined by {@link getButtonType ButtonType}.
 	 * @param string $commandName command name associated with the button
 	 * @param string $text button caption
-	 * @param boolean $causesValidation whether the button should cause validation
+	 * @param bool $causesValidation whether the button should cause validation
 	 * @param string $validationGroup the validation group that the button belongs to
 	 * @return mixed the newly created button.
 	 */

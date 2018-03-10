@@ -43,6 +43,7 @@ class TRepeaterCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	 * @param TControl $item repeater item responsible for the event
 	 * @param TControl $source original event sender
 	 * @param \Prado\Web\UI\TCommandEventParameter original event parameter
+	 * @param \Prado\Web\UI\TCommandEventParameter $param
 	 */
 	public function __construct($item, $source, \Prado\Web\UI\TCommandEventParameter $param)
 	{

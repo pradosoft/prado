@@ -73,7 +73,7 @@ class TReCaptchaValidator extends TBaseValidator
 	 * The validation succeeds if the input control has the same value
 	 * as the one displayed in the corresponding RECAPTCHA control.
 	 *
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	protected function evaluateIsValid()
 	{

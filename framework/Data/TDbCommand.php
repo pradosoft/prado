@@ -53,6 +53,7 @@ class TDbCommand extends \Prado\TComponent
 	 * @param TDbConnection the database connection
 	 * @param string the SQL statement to be executed
 	 * @param mixed $text
+	 * @param TDbConnection $connection
 	 */
 	public function __construct(TDbConnection $connection, $text)
 	{
@@ -144,6 +145,7 @@ class TDbCommand extends \Prado\TComponent
 	 * @param mixed $name
 	 * @param null|mixed $dataType
 	 * @param null|mixed $length
+	 * @param & $value
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
 	public function bindParameter($name, &$value, $dataType = null, $length = null)
@@ -185,8 +187,8 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement.
 	 * This method is meant only for executing non-query SQL statement.
 	 * No result set will be returned.
-	 * @return integer number of rows affected by the execution.
 	 * @throws TDbException execution failed
+	 * @return int number of rows affected by the execution.
 	 */
 	public function execute()
 	{
@@ -218,8 +220,8 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Executes the SQL statement and returns query result.
 	 * This method is for executing an SQL query that returns result set.
-	 * @return TDbDataReader the reader object for fetching the query result
 	 * @throws TDbException execution failed
+	 * @return TDbDataReader the reader object for fetching the query result
 	 */
 	public function query()
 	{
@@ -239,11 +241,11 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Executes the SQL statement and returns the first row of the result.
 	 * This is a convenient method of {@link query} when only the first row of data is needed.
-	 * @param boolean whether the row should be returned as an associated array with
+	 * @param bool whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
 	 * @param mixed $fetchAssociative
-	 * @return array the first row of the query result, false if no result.
 	 * @throws TDbException execution failed
+	 * @return array the first row of the query result, false if no result.
 	 */
 	public function queryRow($fetchAssociative = true)
 	{
@@ -266,8 +268,8 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement and returns the value of the first column in the first row of data.
 	 * This is a convenient method of {@link query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
-	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
 	 * @throws TDbException execution failed
+	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
 	 */
 	public function queryScalar()
 	{
@@ -294,8 +296,8 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement and returns the first column of the result.
 	 * This is a convenient method of {@link query} when only the first column of data is needed.
 	 * Note, the column returned will contain the first element in each row of result.
-	 * @return array the first column of the query result. Empty array if no result.
 	 * @throws TDbException execution failed
+	 * @return array the first column of the query result. Empty array if no result.
 	 * @since 3.1.2
 	 */
 	public function queryColumn()

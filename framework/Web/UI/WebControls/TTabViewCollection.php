@@ -28,7 +28,7 @@ class TTabViewCollection extends \Prado\Web\UI\TControlCollection
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing sanity check on the type of new item.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TTabView} object.
 	 */
@@ -44,7 +44,7 @@ class TTabViewCollection extends \Prado\Web\UI\TControlCollection
 	/**
 	 * Finds the index of the tab view whose ID is the same as the one being looked for.
 	 * @param string $id the explicit ID of the tab view to be looked for
-	 * @return integer the index of the tab view found, -1 if not found.
+	 * @return int the index of the tab view found, -1 if not found.
 	 */
 	public function findIndexByID($id)
 	{

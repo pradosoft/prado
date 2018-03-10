@@ -240,8 +240,8 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 * identify which skin to be applied. If the control's SkinID is empty,
 	 * the default skin will be applied.
 	 * @param TControl $control the control to be applied with a skin
-	 * @return boolean if a skin is successfully applied
 	 * @throws TConfigurationException if any error happened during the skin application
+	 * @return bool if a skin is successfully applied
 	 */
 	public function applySkin($control)
 	{

@@ -75,7 +75,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * The data source must implement Traversable interface.
 	 * If an array is given, it will be converted to xxx.
 	 * If a string is given, it will be converted to xxx.
-	 * @param Traversable|array|string $value data source object
+	 * @param array|string|Traversable $value data source object
 	 */
 	public function setDataSource($value)
 	{
@@ -106,7 +106,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean if the databound control uses the data source specified
+	 * @return bool if the databound control uses the data source specified
 	 * by {@link setDataSourceID}, or it uses the data source object specified
 	 * by {@link setDataSource}.
 	 */
@@ -129,7 +129,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the databound control has been initialized.
+	 * @return bool whether the databound control has been initialized.
 	 * By default, the control is initialized after its viewstate has been restored.
 	 */
 	protected function getInitialized()
@@ -142,7 +142,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * If initialized, any modification to {@link setDataSource DataSource} or
 	 * {@link setDataSourceID DataSourceID} will set {@link setRequiresDataBinding RequiresDataBinding}
 	 * as true.
-	 * @param boolean $value a value indicating whether the databound control is initialized.
+	 * @param bool $value a value indicating whether the databound control is initialized.
 	 */
 	protected function setInitialized($value)
 	{
@@ -150,7 +150,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether databind has been invoked in the previous page request
+	 * @return bool whether databind has been invoked in the previous page request
 	 */
 	protected function getIsDataBound()
 	{
@@ -158,7 +158,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value if databind has been invoked in this page request
+	 * @param bool $value if databind has been invoked in this page request
 	 */
 	protected function setIsDataBound($value)
 	{
@@ -166,7 +166,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether a databind call is required (by the data bound control)
+	 * @return bool whether a databind call is required (by the data bound control)
 	 */
 	protected function getRequiresDataBinding()
 	{
@@ -174,7 +174,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether paging is enabled. Defaults to false.
+	 * @return bool whether paging is enabled. Defaults to false.
 	 */
 	public function getAllowPaging()
 	{
@@ -182,7 +182,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether paging is enabled
+	 * @param bool $value whether paging is enabled
 	 */
 	public function setAllowPaging($value)
 	{
@@ -190,7 +190,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return boolean whether the custom paging is enabled. Defaults to false.
+	 * @return bool whether the custom paging is enabled. Defaults to false.
 	 */
 	public function getAllowCustomPaging()
 	{
@@ -202,7 +202,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * When the pager is in custom paging mode, the {@link setVirtualItemCount VirtualItemCount}
 	 * property is used to determine the paging, and the data items in the
 	 * {@link setDataSource DataSource} are considered to be in the current page.
-	 * @param boolean $value whether the custom paging is enabled
+	 * @param bool $value whether the custom paging is enabled
 	 */
 	public function setAllowCustomPaging($value)
 	{
@@ -210,7 +210,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer the zero-based index of the current page. Defaults to 0.
+	 * @return int the zero-based index of the current page. Defaults to 0.
 	 */
 	public function getCurrentPageIndex()
 	{
@@ -218,7 +218,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer $value the zero-based index of the current page
+	 * @param int $value the zero-based index of the current page
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 */
 	public function setCurrentPageIndex($value)
@@ -230,7 +230,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer the number of data items on each page. Defaults to 10.
+	 * @return int the number of data items on each page. Defaults to 10.
 	 */
 	public function getPageSize()
 	{
@@ -238,7 +238,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer $value the number of data items on each page.
+	 * @param int $value the number of data items on each page.
 	 * @throws TInvalidDataValueException if the value is less than 1
 	 */
 	public function setPageSize($value)
@@ -250,7 +250,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer number of pages of data items available
+	 * @return int number of pages of data items available
 	 */
 	public function getPageCount()
 	{
@@ -258,7 +258,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return integer virtual number of data items in the data source. Defaults to 0.
+	 * @return int virtual number of data items in the data source. Defaults to 0.
 	 * @see setAllowCustomPaging
 	 */
 	public function getVirtualItemCount()
@@ -267,7 +267,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param integer $value virtual number of data items in the data source.
+	 * @param int $value virtual number of data items in the data source.
 	 * @throws TInvalidDataValueException if the value is less than 0
 	 * @see setAllowCustomPaging
 	 */
@@ -283,7 +283,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets a value indicating whether a databind call is required by the data bound control.
 	 * If true and the control has been prerendered while it uses the data source
 	 * specified by {@link setDataSourceID}, a databind call will be called by this method.
-	 * @param boolean $value whether a databind call is required.
+	 * @param bool $value whether a databind call is required.
 	 */
 	protected function setRequiresDataBinding($value)
 	{
@@ -468,9 +468,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Validates if the parameter is a valid data source.
 	 * If it is a string or an array, it will be converted as a TList object.
-	 * @param Traversable|array|string $value data source to be validated
-	 * @return Traversable the data that is traversable
+	 * @param array|string|Traversable $value data source to be validated
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
+	 * @return Traversable the data that is traversable
 	 */
 	protected function validateDataSource($value)
 	{

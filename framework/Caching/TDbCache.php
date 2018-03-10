@@ -105,19 +105,19 @@ class TDbCache extends TCache
 	 */
 	private $_cacheTable = 'pradocache';
 	/**
-	 * @var integer Interval expired items will be removed from cache
+	 * @var int Interval expired items will be removed from cache
 	 */
 	private $_flushInterval = 60;
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $_cacheInitialized = false;
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $_createCheck = false;
 	/**
-	 * @var boolean whether the cache DB table should be created automatically
+	 * @var bool whether the cache DB table should be created automatically
 	 */
 	private $_autoCreate = true;
 	private $_username = '';
@@ -179,10 +179,10 @@ class TDbCache extends TCache
 	 * If {@link setAutoCreateCacheTable AutoCreateCacheTableName} is 'true' check existence of cache table
 	 * and create table if does not exist.
 	 *
-	 * @param boolean Force override global state check
+	 * @param bool Force override global state check
 	 * @param mixed $force
-	 * @return void
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
+	 * @return void
 	 * @since 3.1.5
 	 */
 	protected function initializeCache($force = false)
@@ -239,7 +239,7 @@ class TDbCache extends TCache
 
 	/**
 	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
-	 * @param boolean override {@link setFlushInterval FlushInterval} and force deletion of expired items
+	 * @param bool override {@link setFlushInterval FlushInterval} and force deletion of expired items
 	 * @param mixed $force
 	 * @return void
 	 * @since 3.1.5
@@ -267,7 +267,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @return integer Interval in sec expired items will be removed from cache. Default to 60
+	 * @return int Interval in sec expired items will be removed from cache. Default to 60
 	 * @since 3.1.5
 	 */
 	public function getFlushInterval()
@@ -281,7 +281,7 @@ class TDbCache extends TCache
 	 * To disable automatic deletion of expired items,
 	 * e.g. for external flushing via cron you can set value to '0'
 	 *
-	 * @param integer $value Interval in sec
+	 * @param int $value Interval in sec
 	 * @since 3.1.5
 	 */
 	public function setFlushInterval($value)
@@ -292,8 +292,8 @@ class TDbCache extends TCache
 	/**
 	 * Creates the DB connection.
 	 * @param string the module ID for TDataSourceConfig
-	 * @return TDbConnection the created DB connection
 	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()
 	{
@@ -441,7 +441,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @return boolean whether the cache DB table should be automatically created if not exists. Defaults to true.
+	 * @return bool whether the cache DB table should be automatically created if not exists. Defaults to true.
 	 * @see setAutoCreateCacheTable
 	 */
 	public function getAutoCreateCacheTable()
@@ -450,7 +450,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @param boolean $value whether the cache DB table should be automatically created if not exists.
+	 * @param bool $value whether the cache DB table should be automatically created if not exists.
 	 * @see setCacheTableName
 	 */
 	public function setAutoCreateCacheTable($value)
@@ -485,8 +485,8 @@ class TDbCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
 	{
@@ -500,8 +500,8 @@ class TDbCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
 	{
@@ -531,7 +531,7 @@ class TDbCache extends TCache
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{

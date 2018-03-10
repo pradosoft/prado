@@ -152,8 +152,8 @@ class TDataSourceConfig extends \Prado\TModule
 	 * Finds the database connection instance from the Application modules.
 	 * @param string Database connection module ID.
 	 * @param mixed $id
-	 * @return TDbConnection database connection.
 	 * @throws TConfigurationException when module is not of TDbConnection or TDataSourceConfig.
+	 * @return TDbConnection database connection.
 	 */
 	protected function findConnectionByID($id)
 	{

@@ -58,8 +58,8 @@ class TTemplateManager extends \Prado\TModule
 
 	/**
 	 * Loads the template corresponding to the specified class name.
-	 * @return ITemplate template for the class name, null if template doesn't exist.
 	 * @param mixed $className
+	 * @return ITemplate template for the class name, null if template doesn't exist.
 	 */
 	public function getTemplateByClassName($className)
 	{
@@ -70,8 +70,8 @@ class TTemplateManager extends \Prado\TModule
 
 	/**
 	 * Loads the template from the specified file.
-	 * @return ITemplate template parsed from the specified file, null if the file doesn't exist.
 	 * @param mixed $fileName
+	 * @return ITemplate template parsed from the specified file, null if the file doesn't exist.
 	 */
 	public function getTemplateByFileName($fileName)
 	{
@@ -115,7 +115,7 @@ class TTemplateManager extends \Prado\TModule
 	/**
 	 * Finds a localized template file.
 	 * @param string $filename template file.
-	 * @return string|null a localized template file if found, null otherwise.
+	 * @return null|string a localized template file if found, null otherwise.
 	 */
 	protected function getLocalizedTemplate($filename)
 	{

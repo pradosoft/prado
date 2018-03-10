@@ -23,7 +23,7 @@ namespace Prado\Web\UI\WebControls;
 interface IStyleable
 {
 	/**
-	 * @return boolean whether the object has defined any style information
+	 * @return bool whether the object has defined any style information
 	 */
 	public function getHasStyle();
 	/**

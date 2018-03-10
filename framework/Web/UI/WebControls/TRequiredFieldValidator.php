@@ -85,7 +85,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	 * number of selected values different from the initial value is greater
 	 * than zero.
 	 *
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	protected function evaluateIsValid()
 	{

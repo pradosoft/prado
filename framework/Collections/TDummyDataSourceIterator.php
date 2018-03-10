@@ -31,7 +31,7 @@ class TDummyDataSourceIterator implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param integer $count number of (virtual) items in the data source.
+	 * @param int $count number of (virtual) items in the data source.
 	 */
 	public function __construct($count)
 	{
@@ -51,7 +51,7 @@ class TDummyDataSourceIterator implements \Iterator
 	/**
 	 * Returns the key of the current array item.
 	 * This method is required by the interface Iterator.
-	 * @return integer the key of the current array item
+	 * @return int the key of the current array item
 	 */
 	public function key()
 	{
@@ -80,7 +80,7 @@ class TDummyDataSourceIterator implements \Iterator
 	/**
 	 * Returns whether there is an item at current position.
 	 * This method is required by the interface Iterator.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function valid()
 	{

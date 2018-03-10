@@ -22,24 +22,24 @@ namespace Prado\Web\UI\WebControls;
 interface IRepeatInfoUser
 {
 	/**
-	 * @return boolean whether the repeat user contains footer
+	 * @return bool whether the repeat user contains footer
 	 */
 	public function getHasFooter();
 	/**
-	 * @return boolean whether the repeat user contains header
+	 * @return bool whether the repeat user contains header
 	 */
 	public function getHasHeader();
 	/**
-	 * @return boolean whether the repeat user contains separators
+	 * @return bool whether the repeat user contains separators
 	 */
 	public function getHasSeparators();
 	/**
-	 * @return integer number of items to be rendered (excluding header, footer and separators)
+	 * @return int number of items to be rendered (excluding header, footer and separators)
 	 */
 	public function getItemCount();
 	/**
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer $index zero-based index of the current rendering item.
+	 * @param int $index zero-based index of the current rendering item.
 	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
 	 */
 	public function generateItemStyle($itemType, $index);
@@ -48,7 +48,7 @@ interface IRepeatInfoUser
 	 * @param THtmlWriter $writer writer for the rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type
-	 * @param integer $index zero-based index of the item being rendered
+	 * @param int $index zero-based index of the item being rendered
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index);
 }

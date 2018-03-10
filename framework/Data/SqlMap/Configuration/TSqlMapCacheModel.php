@@ -89,7 +89,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param integer $value the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @param int $value the number of seconds in which the cached value will expire. 0 means never expire.
 	 */
 	public function setFlushInterval($value)
 	{
@@ -97,7 +97,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer cache duration.
+	 * @return int cache duration.
 	 */
 	public function getFlushInterval()
 	{
@@ -152,7 +152,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapCacheKey|string $key cache key
+	 * @param string|TSqlMapCacheKey $key cache key
 	 * @return mixed cached value.
 	 */
 	public function get($key)
@@ -171,7 +171,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapCacheKey|string cache key
+	 * @param string|TSqlMapCacheKey cache key
 	 * @param mixed value to be cached.
 	 * @param mixed $key
 	 * @param mixed $value

@@ -27,7 +27,7 @@ class TPagedListPageChangedEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param integer $oldPage old page index
+	 * @param int $oldPage old page index
 	 */
 	public function __construct($oldPage)
 	{
@@ -35,7 +35,7 @@ class TPagedListPageChangedEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer the index of the page before the list changed to the new page
+	 * @return int the index of the page before the list changed to the new page
 	 */
 	public function getOldPageIndex()
 	{

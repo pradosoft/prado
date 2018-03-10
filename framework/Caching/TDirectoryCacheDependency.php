@@ -71,7 +71,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @return boolean whether the subdirectories of the directory will also be checked.
+	 * @return bool whether the subdirectories of the directory will also be checked.
 	 * It defaults to true.
 	 */
 	public function getRecursiveCheck()
@@ -80,7 +80,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	}
 
 	/**
-	 * @param boolean $value whether the subdirectories of the directory will also be checked.
+	 * @param bool $value whether the subdirectories of the directory will also be checked.
 	 */
 	public function setRecursiveCheck($value)
 	{
@@ -113,7 +113,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	/**
 	 * Performs the actual dependency checking.
 	 * This method returns true if the directory is changed.
-	 * @return boolean whether the dependency is changed or not.
+	 * @return bool whether the dependency is changed or not.
 	 */
 	public function getHasChanged()
 	{
@@ -126,7 +126,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * By default, it always returns true, meaning the file should be checked.
 	 * You may override this method to check only certain files.
 	 * @param string $fileName the name of the file that may be checked for dependency.
-	 * @return boolean whether this file should be checked.
+	 * @return bool whether this file should be checked.
 	 */
 	protected function validateFile($fileName)
 	{
@@ -139,7 +139,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	 * By default, it always returns true, meaning the subdirectory should be checked.
 	 * You may override this method to check only certain subdirectories.
 	 * @param string $directory the name of the subdirectory that may be checked for dependency.
-	 * @return boolean whether this subdirectory should be checked.
+	 * @return bool whether this subdirectory should be checked.
 	 */
 	protected function validateDirectory($directory)
 	{

@@ -29,7 +29,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing type
 	 * check on the item being added.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
 	 */
@@ -45,7 +45,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	/**
 	 * Finds the lowest cardinal index of the meta tag whose id is the one being looked for.
 	 * @param string $id the ID of the meta tag to be looked for
-	 * @return integer the index of the meta tag found, -1 if not found.
+	 * @return int the index of the meta tag found, -1 if not found.
 	 */
 	public function findIndexByID($id)
 	{

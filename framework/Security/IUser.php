@@ -31,11 +31,11 @@ interface IUser
 	 */
 	public function setName($value);
 	/**
-	 * @return boolean if the user is a guest
+	 * @return bool if the user is a guest
 	 */
 	public function getIsGuest();
 	/**
-	 * @param boolean $value if the user is a guest
+	 * @param bool $value if the user is a guest
 	 */
 	public function setIsGuest($value);
 	/**
@@ -43,13 +43,13 @@ interface IUser
 	 */
 	public function getRoles();
 	/**
-	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
 	 * @param mixed $value
+	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
 	 */
 	public function setRoles($value);
 	/**
 	 * @param string $role role to be tested
-	 * @return boolean whether the user is of this role
+	 * @return bool whether the user is of this role
 	 */
 	public function isInRole($role);
 	/**

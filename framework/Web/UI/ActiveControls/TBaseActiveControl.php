@@ -105,7 +105,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value true to allow fine grain callback updates.
+	 * @param bool $value true to allow fine grain callback updates.
 	 */
 	public function setEnableUpdate($value)
 	{
@@ -113,7 +113,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true to allow fine grain callback updates.
+	 * @return bool true to allow fine grain callback updates.
 	 */
 	public function getEnableUpdate()
 	{
@@ -125,9 +125,9 @@ class TBaseActiveControl extends \Prado\TComponent
 	 * Is is true if the control is initilized, and is a callback request and
 	 * the {@link setEnableUpdate EnableUpdate} property is true and
 	 * the page is not loading post data.
-	 * @return boolean true if the callback response is allowed update
-	 * client-side contents.
 	 * @param mixed $bDontRequireVisibility
+	 * @return bool true if the callback response is allowed update
+	 * client-side contents.
 	 */
 	public function canUpdateClientSide($bDontRequireVisibility = false)
 	{

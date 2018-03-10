@@ -57,11 +57,11 @@ use Prado\Web\UI\IPostBackEventHandler;
 class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler, IPostBackEventHandler, \Prado\Web\UI\IButtonControl
 {
 	/**
-	 * @var integer x coordinate that the image is being clicked at
+	 * @var int x coordinate that the image is being clicked at
 	 */
 	private $_x = 0;
 	/**
-	 * @var integer y coordinate that the image is being clicked at
+	 * @var int y coordinate that the image is being clicked at
 	 */
 	private $_y = 0;
 	private $_dataChanged = false;
@@ -75,7 +75,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -83,7 +83,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -135,7 +135,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @return boolean whether to perform validation if the button is clicked
+	 * @return bool whether to perform validation if the button is clicked
 	 */
 	protected function canCauseValidation()
 	{
@@ -148,7 +148,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @param boolean $value set by a panel to register this button as the default button for the panel.
+	 * @param bool $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
@@ -156,7 +156,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @return boolean true if this button is registered as a default button for a panel.
+	 * @return bool true if this button is registered as a default button for a panel.
 	 */
 	public function getIsDefaultButton()
 	{
@@ -164,7 +164,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @return boolean whether the button needs javascript to do postback
+	 * @return bool whether the button needs javascript to do postback
 	 */
 	protected function needPostBackScript()
 	{
@@ -191,7 +191,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -261,7 +261,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -269,7 +269,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation, default is true
+	 * @return bool whether postback event trigger by this button will cause input validation, default is true
 	 */
 	public function getCausesValidation()
 	{
@@ -277,7 +277,7 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 	}
 
 	/**
-	 * @param boolean $value whether postback event trigger by this button will cause input validation
+	 * @param bool $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{

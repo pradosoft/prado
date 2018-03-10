@@ -152,7 +152,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $createStyle whether to create a style if previously not existing
+	 * @param bool $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for header
 	 */
 	public function getHeaderStyle($createStyle = true)
@@ -205,7 +205,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $createStyle whether to create a style if previously not existing
+	 * @param bool $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for footer
 	 */
 	public function getFooterStyle($createStyle = true)
@@ -218,7 +218,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $createStyle whether to create a style if previously not existing
+	 * @param bool $createStyle whether to create a style if previously not existing
 	 * @return TTableItemStyle the style for item
 	 */
 	public function getItemStyle($createStyle = true)
@@ -247,7 +247,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether cells having the same content should be grouped together. Defaults to false.
+	 * @return bool whether cells having the same content should be grouped together. Defaults to false.
 	 * @since 3.1.1
 	 */
 	public function getEnableCellGrouping()
@@ -256,7 +256,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $value whether cells having the same content should be grouped together.
+	 * @param bool $value whether cells having the same content should be grouped together.
 	 * @since 3.1.1
 	 */
 	public function setEnableCellGrouping($value)
@@ -265,8 +265,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether the column is visible. Defaults to true.
 	 * @param mixed $checkParents
+	 * @return bool whether the column is visible. Defaults to true.
 	 */
 	public function getVisible($checkParents = true)
 	{
@@ -274,7 +274,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param boolean $value whether the column is visible
+	 * @param bool $value whether the column is visible
 	 */
 	public function setVisible($value)
 	{
@@ -339,6 +339,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * @param TDataGrid datagrid object that owns this column
+	 * @param TDataGrid $value
 	 */
 	public function setOwner(TDataGrid $value)
 	{
@@ -363,8 +364,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the data is a component, the field is used as the name of a property.
 	 * @param mixed $data data containing the field of value
 	 * @param string $field the data field
-	 * @return mixed data value at the specified field
 	 * @throws TInvalidDataValueException if the data or the field is invalid.
+	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)
 	{
@@ -380,7 +381,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * will only show static text/image.
 	 * This method can be overriden to provide customized intialization to column cells.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)
@@ -396,7 +397,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Returns a value indicating whether this column allows sorting.
 	 * The column allows sorting only when {@link getSortExpression SortExpression}
 	 * is not empty and the datagrid allows sorting.
-	 * @return boolean whether this column allows sorting
+	 * @return bool whether this column allows sorting
 	 */
 	public function getAllowSorting()
 	{
@@ -415,7 +416,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * a button which issues <b>Sort</b> command upon user click.
 	 *
 	 * @param TTableCell $cell the cell to be initialized
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 */
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
@@ -478,7 +479,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * the cell with a text string specified by {@link getFooterImageUrl FooterImageUrl}
 	 *
 	 * @param TTableCell $cell the cell to be initialized
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 */
 	protected function initializeFooterCell($cell, $columnIndex)
 	{

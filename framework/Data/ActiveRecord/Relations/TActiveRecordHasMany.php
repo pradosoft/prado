@@ -72,6 +72,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects.
 	 * @param array original results.
+	 * @param & $results
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -97,7 +98,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 
 	/**
 	 * Updates the associated foreign objects.
-	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 * @return bool true if all update are success (including if no update was required), false otherwise .
 	 */
 	public function updateAssociatedRecords()
 	{

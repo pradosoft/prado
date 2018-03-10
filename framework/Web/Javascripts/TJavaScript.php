@@ -101,9 +101,9 @@ class TJavaScript
 	}
 
 	/**
+	 * @param mixed $js
 	 * @return Marks a string as a javascript function. Once marke, the string is considered as a
 	 * raw javascript function that is not supposed to be encoded by {@link encode}
-	 * @param mixed $js
 	 */
 	public static function quoteJsLiteral($js)
 	{
@@ -115,9 +115,9 @@ class TJavaScript
 	}
 
 	/**
-	 * @return boolean true if the parameter is marked as a javascript function, i.e. if it's considered as a
-	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 * @param mixed $js
+	 * @return bool true if the parameter is marked as a javascript function, i.e. if it's considered as a
+	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
 	public static function isJsLiteral($js)
 	{
@@ -140,9 +140,9 @@ class TJavaScript
 	 * to serialize and unserialize.
 	 *
 	 * @param mixed PHP variable to be encoded
-	 * @param boolean whether the output is a map or a list.
+	 * @param bool whether the output is a map or a list.
 	 * @since 3.1.5
-	 * @param boolean wether to encode empty strings too. Default to false for BC.
+	 * @param bool wether to encode empty strings too. Default to false for BC.
 	 * @param mixed $value
 	 * @param mixed $toMap
 	 * @param mixed $encodeEmptyStrings
@@ -230,7 +230,7 @@ class TJavaScript
 
 	/**
 	 * Encodes an string or the content of an array to UTF8
-	 * @param string|array|mixed $value
+	 * @param array|mixed|string $value
 	 * @param string $sourceEncoding
 	 */
 	private static function convertToUtf8(&$value, $sourceEncoding)

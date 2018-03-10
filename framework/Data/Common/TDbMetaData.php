@@ -116,8 +116,8 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * This method should be implemented by decendent classes.
-	 * @return TDbTableInfo driver dependent create builder.
 	 * @param mixed $tableName
+	 * @return TDbTableInfo driver dependent create builder.
 	 */
 	abstract protected function createTableInfo($tableName);
 

@@ -54,7 +54,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return boolean whether the items in the column can be edited. Defaults to false.
+	 * @return bool whether the items in the column can be edited. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -62,7 +62,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param boolean $value whether the items in the column can be edited
+	 * @param bool $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -76,7 +76,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	 * If the column is read-only or if the item is not in edit mode,
 	 * the checkbox will be set disabled.
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)

@@ -45,7 +45,7 @@ class TFont extends \Prado\TComponent
 	const IS_SET_NAME = 0x40000;
 
 	/**
-	 * @var integer bits representing various states
+	 * @var int bits representing various states
 	 */
 	private $_flags = 0;
 	/**
@@ -62,6 +62,7 @@ class TFont extends \Prado\TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -78,7 +79,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is in bold face. Defaults to false.
+	 * @return bool whether the font is in bold face. Defaults to false.
 	 */
 	public function getBold()
 	{
@@ -86,7 +87,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the font is in bold face
+	 * @param bool $value whether the font is in bold face
 	 */
 	public function setBold($value)
 	{
@@ -99,7 +100,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is in italic face. Defaults to false.
+	 * @return bool whether the font is in italic face. Defaults to false.
 	 */
 	public function getItalic()
 	{
@@ -107,7 +108,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the font is italic
+	 * @param bool $value whether the font is italic
 	 */
 	public function setItalic($value)
 	{
@@ -120,7 +121,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is overlined. Defaults to false.
+	 * @return bool whether the font is overlined. Defaults to false.
 	 */
 	public function getOverline()
 	{
@@ -128,7 +129,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the font is overlined
+	 * @param bool $value whether the font is overlined
 	 */
 	public function setOverline($value)
 	{
@@ -158,7 +159,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is strikeout. Defaults to false.
+	 * @return bool whether the font is strikeout. Defaults to false.
 	 */
 	public function getStrikeout()
 	{
@@ -166,7 +167,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the font is strikeout
+	 * @param bool $value whether the font is strikeout
 	 */
 	public function setStrikeout($value)
 	{
@@ -179,7 +180,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is underlined. Defaults to false.
+	 * @return bool whether the font is underlined. Defaults to false.
 	 */
 	public function getUnderline()
 	{
@@ -187,7 +188,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value whether the font is underlined
+	 * @param bool $value whether the font is underlined
 	 */
 	public function setUnderline($value)
 	{
@@ -217,7 +218,7 @@ class TFont extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the font is empty
+	 * @return bool whether the font is empty
 	 */
 	public function getIsEmpty()
 	{

@@ -70,7 +70,7 @@ class TCaptcha extends TImage
 	private $_validated = false;
 
 	/**
-	 * @return integer the theme of the token image. Defaults to 0.
+	 * @return int the theme of the token image. Defaults to 0.
 	 */
 	public function getTokenImageTheme()
 	{
@@ -88,7 +88,7 @@ class TCaptcha extends TImage
 	 * Bit 3: whether we should add some scribbles to the image (1) or not (0).
 	 * Bit 4: whether the image background should be morphed (1) or not (0).
 	 * Bit 5: whether the token text should cast a shadow (1) or not (0).
-	 * @param integer $value the theme of the token image. It must be an integer between 0 and 63.
+	 * @param int $value the theme of the token image. It must be an integer between 0 and 63.
 	 */
 	public function setTokenImageTheme($value)
 	{
@@ -101,7 +101,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the font size used for displaying the token in an image. Defaults to 30.
+	 * @return int the font size used for displaying the token in an image. Defaults to 30.
 	 */
 	public function getTokenFontSize()
 	{
@@ -112,7 +112,7 @@ class TCaptcha extends TImage
 	 * Sets the font size used for displaying the token in an image.
 	 * This property affects the generated token image size.
 	 * The image width is proportional to this font size.
-	 * @param integer $value the font size used for displaying the token in an image. It must be an integer between 20 and 100.
+	 * @param int $value the font size used for displaying the token in an image. It must be an integer between 20 and 100.
 	 */
 	public function setTokenFontSize($value)
 	{
@@ -125,7 +125,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the minimum length of the token. Defaults to 4.
+	 * @return int the minimum length of the token. Defaults to 4.
 	 */
 	public function getMinTokenLength()
 	{
@@ -133,7 +133,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer $value the minimum length of the token. It must be between 2 and 40.
+	 * @param int $value the minimum length of the token. It must be between 2 and 40.
 	 */
 	public function setMinTokenLength($value)
 	{
@@ -146,7 +146,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the maximum length of the token. Defaults to 6.
+	 * @return int the maximum length of the token. Defaults to 6.
 	 */
 	public function getMaxTokenLength()
 	{
@@ -154,7 +154,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer $value the maximum length of the token. It must be between 2 and 40.
+	 * @param int $value the maximum length of the token. It must be between 2 and 40.
 	 */
 	public function setMaxTokenLength($value)
 	{
@@ -167,7 +167,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return boolean whether the token should be treated as case-sensitive. Defaults to true.
+	 * @return bool whether the token should be treated as case-sensitive. Defaults to true.
 	 */
 	public function getCaseSensitive()
 	{
@@ -175,7 +175,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param boolean $value whether the token should be treated as case-sensitive. If false, only upper-case letters will appear in the token.
+	 * @param bool $value whether the token should be treated as case-sensitive. If false, only upper-case letters will appear in the token.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -202,7 +202,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the number of seconds that a generated token will remain valid. Defaults to 600 seconds (10 minutes).
+	 * @return int the number of seconds that a generated token will remain valid. Defaults to 600 seconds (10 minutes).
 	 */
 	public function getTokenExpiry()
 	{
@@ -210,7 +210,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer $value the number of seconds that a generated token will remain valid. A value smaller than 1 means the token will not expire.
+	 * @param int $value the number of seconds that a generated token will remain valid. A value smaller than 1 means the token will not expire.
 	 */
 	public function setTokenExpiry($value)
 	{
@@ -218,7 +218,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return boolean whether the background of the token image should be variated during postbacks. Defaults to false.
+	 * @return bool whether the background of the token image should be variated during postbacks. Defaults to false.
 	 */
 	public function getChangingTokenBackground()
 	{
@@ -226,7 +226,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param boolean $value whether the background of the token image should be variated during postbacks.
+	 * @param bool $value whether the background of the token image should be variated during postbacks.
 	 */
 	public function setChangingTokenBackground($value)
 	{
@@ -234,7 +234,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer how many times a generated token can be tested. Defaults to 5.
+	 * @return int how many times a generated token can be tested. Defaults to 5.
 	 */
 	public function getTestLimit()
 	{
@@ -242,7 +242,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @param integer $value how many times a generated token can be tested. For unlimited tests, set it to 0.
+	 * @param int $value how many times a generated token can be tested. For unlimited tests, set it to 0.
 	 */
 	public function setTestLimit($value)
 	{
@@ -250,7 +250,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return boolean whether the currently generated token has expired.
+	 * @return bool whether the currently generated token has expired.
 	 */
 	public function getIsTokenExpired()
 	{
@@ -290,7 +290,7 @@ class TCaptcha extends TImage
 	}
 
 	/**
-	 * @return integer the length of the token to be generated.
+	 * @return int the length of the token to be generated.
 	 */
 	protected function getTokenLength()
 	{
@@ -330,7 +330,7 @@ class TCaptcha extends TImage
 	/**
 	 * Validates a user input with the token.
 	 * @param string $input user input
-	 * @return boolean if the user input is not the same as the token.
+	 * @return bool if the user input is not the same as the token.
 	 */
 	public function validate($input)
 	{
@@ -450,8 +450,8 @@ class TCaptcha extends TImage
 	 * @param string $publicKey public key
 	 * @param string $privateKey private key
 	 * @param mixed $alphabet
-	 * @param integer $tokenLength the length of the token
-	 * @param boolean $caseSensitive whether the token is case sensitive
+	 * @param int $tokenLength the length of the token
+	 * @param bool $caseSensitive whether the token is case sensitive
 	 * @return string the token generated.
 	 */
 	protected function generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive)
@@ -487,7 +487,7 @@ class TCaptcha extends TImage
 	/**
 	 * Checks the requirements needed for generating CAPTCHA images.
 	 * TCaptach requires GD2 with TrueType font support and PNG image support.
-	 * @return boolean whether the requirements are satisfied.
+	 * @return bool whether the requirements are satisfied.
 	 */
 	public static function checkRequirements()
 	{

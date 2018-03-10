@@ -56,7 +56,7 @@ class TUri extends \Prado\TComponent
 	 */
 	private $_host;
 	/**
-	 * @var integer port of the URI
+	 * @var int port of the URI
 	 */
 	private $_port;
 	/**
@@ -133,7 +133,7 @@ class TUri extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer port number of the URI
+	 * @return int port number of the URI
 	 */
 	public function getPort()
 	{

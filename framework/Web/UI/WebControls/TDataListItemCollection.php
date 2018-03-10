@@ -28,7 +28,7 @@ class TDataListItemCollection extends \Prado\Collections\TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by inserting only TControl descendants.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TControl descendant.
 	 */

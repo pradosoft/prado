@@ -32,7 +32,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 
 	/**
 	 * Constructor.
-	 * @param integer $count number of (virtual) items in the data source.
+	 * @param int $count number of (virtual) items in the data source.
 	 */
 	public function __construct($count)
 	{
@@ -40,7 +40,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return integer number of (virtual) items in the data source.
+	 * @return int number of (virtual) items in the data source.
 	 */
 	public function getCount()
 	{
@@ -58,7 +58,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * Returns the number of (virtual) items in the data source.
 	 * This method is required by \Countable interface.
-	 * @return integer number of (virtual) items in the data source.
+	 * @return int number of (virtual) items in the data source.
 	 */
 	public function count()
 	{

@@ -93,7 +93,7 @@ class TValidatorClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param boolean $value true to revalidate when the control to validate changes value.
+	 * @param bool $value true to revalidate when the control to validate changes value.
 	 */
 	public function setObserveChanges($value)
 	{
@@ -101,7 +101,7 @@ class TValidatorClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @return boolean true to observe changes.
+	 * @return bool true to observe changes.
 	 */
 	public function getObserveChanges()
 	{

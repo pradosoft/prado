@@ -146,7 +146,7 @@ class PradoBase
 	}
 
 	/**
-	 * @param integer $logoType the type of "powered logo". Valid values include 0 and 1.
+	 * @param int $logoType the type of "powered logo". Valid values include 0 and 1.
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
 	public static function poweredByPrado($logoType = 0)
@@ -166,10 +166,10 @@ class PradoBase
 	 * This method should be registered as PHP error handler using
 	 * {@link set_error_handler}. The method throws an exception that
 	 * contains the error information.
-	 * @param integer $errno the level of the error raised
+	 * @param int $errno the level of the error raised
 	 * @param string $errstr the error message
 	 * @param string $errfile the filename that the error was raised in
-	 * @param integer $errline the line number the error was raised at
+	 * @param int $errline the line number the error was raised at
 	 */
 	public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
 	{
@@ -274,8 +274,8 @@ class PradoBase
 	 * All parameters passed to this method except the first one (the component type)
 	 * will be supplied as component constructor parameters.
 	 * @param string $requestedType component type
-	 * @return TComponent component instance of the specified type
 	 * @throws TInvalidDataValueException if the component type is unknown
+	 * @return TComponent component instance of the specified type
 	 */
 	public static function createComponent($requestedType)
 	{
@@ -335,7 +335,7 @@ class PradoBase
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
-	 * @param boolean $checkClassExistence whether to check the existence of the class after the class file is included
+	 * @param bool $checkClassExistence whether to check the existence of the class after the class file is included
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
 	public static function using($namespace, $checkClassExistence = true)
@@ -620,7 +620,7 @@ class PradoBase
 	 * and may be recorded in different media, such as file, email, database, using
 	 * {@link TLogRouter}.
 	 * @param string $msg message to be logged
-	 * @param integer $level level of the message. Valid values include
+	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string $category category of the message
@@ -650,8 +650,8 @@ class PradoBase
 	 * This method achieves the similar functionality as var_dump and print_r
 	 * but is more robust when handling complex objects such as PRADO controls.
 	 * @param mixed $var variable to be dumped
-	 * @param integer $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-	 * @param boolean $highlight whether to syntax highlight the output. Defaults to false.
+	 * @param int $depth maximum depth that the dumper should go into the variable. Defaults to 10.
+	 * @param bool $highlight whether to syntax highlight the output. Defaults to false.
 	 * @return string the string representation of the variable
 	 */
 	public static function varDump($var, $depth = 10, $highlight = false)

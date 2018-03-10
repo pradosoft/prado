@@ -42,7 +42,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @return integer the Y coordinate of the bottom side of the rectangle HotSpot region. Defaults to 0.
+	 * @return int the Y coordinate of the bottom side of the rectangle HotSpot region. Defaults to 0.
 	 */
 	public function getBottom()
 	{
@@ -50,7 +50,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer $value the Y coordinate of the bottom side of the rectangle HotSpot region.
+	 * @param int $value the Y coordinate of the bottom side of the rectangle HotSpot region.
 	 */
 	public function setBottom($value)
 	{
@@ -58,7 +58,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @return integer the X coordinate of the right side of the rectangle HotSpot region. Defaults to 0.
+	 * @return int the X coordinate of the right side of the rectangle HotSpot region. Defaults to 0.
 	 */
 	public function getLeft()
 	{
@@ -66,7 +66,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer $value the X coordinate of the right side of the rectangle HotSpot region.
+	 * @param int $value the X coordinate of the right side of the rectangle HotSpot region.
 	 */
 	public function setLeft($value)
 	{
@@ -74,7 +74,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @return integer the X coordinate of the right side of the rectangle HotSpot region. Defaults to 0.
+	 * @return int the X coordinate of the right side of the rectangle HotSpot region. Defaults to 0.
 	 */
 	public function getRight()
 	{
@@ -82,7 +82,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer $value the X coordinate of the right side of the rectangle HotSpot region.
+	 * @param int $value the X coordinate of the right side of the rectangle HotSpot region.
 	 */
 	public function setRight($value)
 	{
@@ -90,7 +90,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @return integer the Y coordinate of the top side of the rectangle HotSpot region. Defaults to 0.
+	 * @return int the Y coordinate of the top side of the rectangle HotSpot region. Defaults to 0.
 	 */
 	public function getTop()
 	{
@@ -98,7 +98,7 @@ class TRectangleHotSpot extends THotSpot
 	}
 
 	/**
-	 * @param integer $value the Y coordinate of the top side of the rectangle HotSpot region.
+	 * @param int $value the Y coordinate of the top side of the rectangle HotSpot region.
 	 */
 	public function setTop($value)
 	{

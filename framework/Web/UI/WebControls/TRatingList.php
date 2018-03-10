@@ -46,7 +46,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @return boolean whether the items in the column can be edited. Defaults to false.
+	 * @return bool whether the items in the column can be edited. Defaults to false.
 	 */
 	public function getReadOnly()
 	{
@@ -54,7 +54,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param boolean $value whether the items in the column can be edited
+	 * @param bool $value whether the items in the column can be edited
 	 */
 	public function setReadOnly($value)
 	{
@@ -63,7 +63,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Wrapper for {@link setReadOnly ReadOnly} property.
-	 * @return boolean whether the rating list can be edited. Defaults to true.
+	 * @return bool whether the rating list can be edited. Defaults to true.
 	 */
 	public function getAllowInput()
 	{
@@ -72,7 +72,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Wrapper for {@link setReadOnly ReadOnly} property.
-	 * @param boolean $value whether the rating list can be edited
+	 * @param bool $value whether the rating list can be edited
 	 */
 	public function setAllowInput($value)
 	{
@@ -81,7 +81,7 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Wrapper for {@link setReadOnly ReadOnly} property.
-	 * @param boolean $value whether the rating list can be edited
+	 * @param bool $value whether the rating list can be edited
 	 */
 	public function setEnabled($value)
 	{
@@ -197,8 +197,8 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @return TRatingListStyle current rating style
 	 * @param mixed $value
+	 * @return TRatingListStyle current rating style
 	 */
 	public function setCaption($value)
 	{

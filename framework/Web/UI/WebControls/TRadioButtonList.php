@@ -29,7 +29,7 @@ use Prado\Exceptions\TNotSupportedException;
 class TRadioButtonList extends TCheckBoxList
 {
 	/**
-	 * @return boolean whether this control supports multiple selection. Always false for radiobutton list.
+	 * @return bool whether this control supports multiple selection. Always false for radiobutton list.
 	 */
 	protected function getIsMultiSelect()
 	{
@@ -50,7 +50,7 @@ class TRadioButtonList extends TCheckBoxList
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -71,8 +71,8 @@ class TRadioButtonList extends TCheckBoxList
 	}
 
 	/**
-	 * @throws TNotSupportedException if this method is invoked
 	 * @param mixed $indices
+	 * @throws TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndices($indices)
 	{

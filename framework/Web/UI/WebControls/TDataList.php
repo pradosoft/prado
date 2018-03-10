@@ -195,7 +195,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return integer number of items
+	 * @return int number of items
 	 */
 	public function getItemCount()
 	{
@@ -665,7 +665,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return integer the zero-based index of the selected item in {@link getItems Items}.
+	 * @return int the zero-based index of the selected item in {@link getItems Items}.
 	 * A value -1 means no item selected.
 	 */
 	public function getSelectedItemIndex()
@@ -678,7 +678,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
-	 * @param integer $value the selected item index
+	 * @param int $value the selected item index
 	 */
 	public function setSelectedItemIndex($value)
 	{
@@ -719,8 +719,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return mixed the key value of the currently selected item
 	 * @throws TInvalidOperationException if {@link getDataKeyField DataKeyField} is empty.
+	 * @return mixed the key value of the currently selected item
 	 */
 	public function getSelectedDataKey()
 	{
@@ -737,7 +737,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return integer the zero-based index of the edit item in {@link getItems Items}.
+	 * @return int the zero-based index of the edit item in {@link getItems Items}.
 	 * A value -1 means no item is in edit mode.
 	 */
 	public function getEditItemIndex()
@@ -749,7 +749,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Edits an item by its index in {@link getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
-	 * @param integer $value the edit item index
+	 * @param int $value the edit item index
 	 */
 	public function setEditItemIndex($value)
 	{
@@ -784,7 +784,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return boolean whether the header should be shown. Defaults to true.
+	 * @return bool whether the header should be shown. Defaults to true.
 	 */
 	public function getShowHeader()
 	{
@@ -792,7 +792,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param boolean $value whether to show header
+	 * @param bool $value whether to show header
 	 */
 	public function setShowHeader($value)
 	{
@@ -800,7 +800,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return boolean whether the footer should be shown. Defaults to true.
+	 * @return bool whether the footer should be shown. Defaults to true.
 	 */
 	public function getShowFooter()
 	{
@@ -808,7 +808,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param boolean $value whether to show footer
+	 * @param bool $value whether to show footer
 	 */
 	public function setShowFooter($value)
 	{
@@ -852,8 +852,8 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 * @param mixed $value
+	 * @return TTableCaptionAlign alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -861,7 +861,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return integer the number of columns that the list should be displayed with. Defaults to 0 meaning not set.
+	 * @return int the number of columns that the list should be displayed with. Defaults to 0 meaning not set.
 	 */
 	public function getRepeatColumns()
 	{
@@ -869,7 +869,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param integer $value the number of columns that the list should be displayed with.
+	 * @param int $value the number of columns that the list should be displayed with.
 	 */
 	public function setRepeatColumns($value)
 	{
@@ -919,7 +919,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -1037,7 +1037,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Returns a value indicating whether this control contains header item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean whether the datalist has header
+	 * @return bool whether the datalist has header
 	 */
 	public function getHasHeader()
 	{
@@ -1047,7 +1047,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Returns a value indicating whether this control contains footer item.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean whether the datalist has footer
+	 * @return bool whether the datalist has footer
 	 */
 	public function getHasFooter()
 	{
@@ -1057,7 +1057,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Returns a value indicating whether this control contains separator items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @return boolean always false.
+	 * @return bool always false.
 	 */
 	public function getHasSeparators()
 	{
@@ -1068,7 +1068,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Returns a style used for rendering items.
 	 * This method is required by {@link IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer $index index of the item being rendered
+	 * @param int $index index of the item being rendered
 	 * @return TStyle item style
 	 */
 	public function generateItemStyle($itemType, $index)
@@ -1088,7 +1088,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param THtmlWriter $writer writer for rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
-	 * @param integer $index zero-based index of the item in the item list
+	 * @param int $index zero-based index of the item in the item list
 	 */
 	public function renderItem($writer, $repeatInfo, $itemType, $index)
 	{
@@ -1101,7 +1101,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param TListItemType $itemType item type
-	 * @param integer $index item index
+	 * @param int $index item index
 	 * @return TControl data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
@@ -1129,7 +1129,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Creates a datalist item.
 	 * This method invokes {@link createItem} to create a new datalist item.
-	 * @param integer $itemIndex zero-based item index.
+	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @return TControl the created item, null if item is not created
 	 */
@@ -1148,7 +1148,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Creates a datalist item and performs databinding.
 	 * This method invokes {@link createItem} to create a new datalist item.
-	 * @param integer $itemIndex zero-based item index.
+	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
 	 * @return TControl the created item, null if item is not created
@@ -1203,7 +1203,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Creates a datalist item instance based on the item type and index.
-	 * @param integer $itemIndex zero-based item index
+	 * @param int $itemIndex zero-based item index
 	 * @param TListItemType $itemType item type
 	 * @return TControl created datalist item
 	 */

@@ -120,6 +120,7 @@ class TConditional extends \Prado\Web\UI\TControl
 
 	/**
 	 * @param ITemplate the template applied when {@link getCondition Condition} is true.
+	 * @param ITemplate $value
 	 */
 	public function setTrueTemplate(ITemplate $value)
 	{
@@ -136,6 +137,7 @@ class TConditional extends \Prado\Web\UI\TControl
 
 	/**
 	 * @param ITemplate the template applied when {@link getCondition Condition} is false.
+	 * @param ITemplate $value
 	 */
 	public function setFalseTemplate(ITemplate $value)
 	{

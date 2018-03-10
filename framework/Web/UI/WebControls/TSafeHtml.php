@@ -37,6 +37,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	/**
 	 * Sets a custom configuration for HTMLPurifier.
 	 * @param \HTMLPurifier_Config custom configuration
+	 * @param \HTMLPurifier_Config $value
 	 */
 	public function setConfig(\HTMLPurifier_Config $value)
 	{

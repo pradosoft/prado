@@ -62,7 +62,7 @@ class TEtcdCache extends TCache
 	protected $_host = 'localhost';
 
 	/**
-	 * @var integer the etcd port
+	 * @var int the etcd port
 	 */
 	protected $_port = 2379;
 
@@ -105,7 +105,7 @@ class TEtcdCache extends TCache
 
 	/**
 	 * Gets the port the etcd instance is running on, defaults to 2379.
-	 * @return integer the etcd port
+	 * @return int the etcd port
 	 */
 	public function getPort()
 	{
@@ -114,7 +114,7 @@ class TEtcdCache extends TCache
 
 	/**
 	 * Sets the port the etcd instance is running on.
-	 * @param integer $value the etcd port
+	 * @param int $value the etcd port
 	 */
 	public function setPort($value)
 	{
@@ -157,8 +157,8 @@ class TEtcdCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
 	{
@@ -176,8 +176,8 @@ class TEtcdCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
 	{
@@ -193,7 +193,7 @@ class TEtcdCache extends TCache
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{

@@ -78,7 +78,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return integer the zero-based index of the current view in the view collection. -1 if no active view. Default is -1.
+	 * @return int the zero-based index of the current view in the view collection. -1 if no active view. Default is -1.
 	 */
 	public function getActiveViewIndex()
 	{
@@ -90,7 +90,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param integer $value the zero-based index of the current view in the view collection. -1 if no active view.
+	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
 	 * @throws TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
@@ -114,8 +114,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return TView the currently active view, null if no active view
 	 * @throws TInvalidDataValueException if the current active view index is invalid
+	 * @return TView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
@@ -151,7 +151,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * Activates the specified view.
 	 * If there is any view currently active, it will be deactivated.
 	 * @param TView $view the view to be activated
-	 * @param boolean $triggerViewChangedEvent whether to trigger OnActiveViewChanged event.
+	 * @param bool $triggerViewChangedEvent whether to trigger OnActiveViewChanged event.
 	 */
 	protected function activateView($view, $triggerViewChangedEvent = true)
 	{
@@ -221,7 +221,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * The method handles view-related command events.
 	 * @param TControl $sender sender of the event
 	 * @param mixed $param event parameter
-	 * @return boolean whether this event is handled
+	 * @return bool whether this event is handled
 	 */
 	public function bubbleEvent($sender, $param)
 	{

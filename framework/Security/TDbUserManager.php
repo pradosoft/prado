@@ -106,7 +106,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * Validates if the username and password are correct.
 	 * @param string $username user name
 	 * @param string $password password
-	 * @return boolean true if validation is successful, false otherwise.
+	 * @return bool true if validation is successful, false otherwise.
 	 */
 	public function validateUser($username, $password)
 	{
@@ -165,8 +165,8 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * Creates the DB connection.
 	 * @param string the module ID for TDataSourceConfig
 	 * @param mixed $connectionID
-	 * @return TDbConnection the created DB connection
 	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
 	{

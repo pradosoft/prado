@@ -75,7 +75,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	}
 
 	/**
-	 * @return boolean whether to check MX record for the email address being validated. Defaults to true.
+	 * @return bool whether to check MX record for the email address being validated. Defaults to true.
 	 */
 	public function getCheckMXRecord()
 	{
@@ -83,7 +83,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	}
 
 	/**
-	 * @param boolean $value whether to check MX record for the email address being validated.
+	 * @param bool $value whether to check MX record for the email address being validated.
 	 * Note, if {@link checkdnsrr} is not available, this check will not be performed.
 	 */
 	public function setCheckMXRecord($value)

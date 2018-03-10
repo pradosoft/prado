@@ -90,8 +90,8 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordManager static instance of record manager.
 	 * @param null|mixed $self
+	 * @return TActiveRecordManager static instance of record manager.
 	 */
 	public static function getInstance($self = null)
 	{

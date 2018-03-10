@@ -86,7 +86,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	private $_configFile;
 	/**
-	 * @var boolean whether to enable custom contructUrl
+	 * @var bool whether to enable custom contructUrl
 	 */
 	private $_customUrl = false;
 	/**
@@ -149,7 +149,7 @@ class TUrlMapping extends TUrlManager
 	 * Returns a value indicating whether to enable custom constructUrl.
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
-	 * @return boolean whether to enable custom constructUrl. Defaults to false.
+	 * @return bool whether to enable custom constructUrl. Defaults to false.
 	 * @since 3.1.1
 	 */
 	public function getEnableCustomUrl()
@@ -161,7 +161,7 @@ class TUrlMapping extends TUrlManager
 	 * Sets a value indicating whether to enable custom constructUrl.
 	 * If true, constructUrl() will make use of the URL mapping rules to
 	 * construct valid URLs.
-	 * @param boolean $value whether to enable custom constructUrl.
+	 * @param bool $value whether to enable custom constructUrl.
 	 * @since 3.1.1
 	 */
 	public function setEnableCustomUrl($value)
@@ -345,8 +345,8 @@ class TUrlMapping extends TUrlManager
 	 * @param string service ID
 	 * @param string service parameter
 	 * @param array GET parameters, null if not provided
-	 * @param boolean whether to encode the ampersand in URL
-	 * @param boolean whether to encode the GET parameters (their names and values)
+	 * @param bool whether to encode the ampersand in URL
+	 * @param bool whether to encode the GET parameters (their names and values)
 	 * @param mixed $serviceID
 	 * @param mixed $serviceParam
 	 * @param mixed $getItems

@@ -163,7 +163,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 *  - <b>Invert</b>, invert the selection.
 	 * @param TControl list control
 	 * @param string selection method
-	 * @param string|int the value or index to select/check.
+	 * @param int|string the value or index to select/check.
 	 * @param string selection control type, either 'check' or 'select'
 	 * @param mixed $control
 	 * @param mixed $method
@@ -228,7 +228,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Client script to check or uncheck a checkbox or radio button.
 	 * @param TControl control element or element id
-	 * @param boolean check or uncheck the checkbox or radio button.
+	 * @param bool check or uncheck the checkbox or radio button.
 	 * @param mixed $checkbox
 	 * @param mixed $checked
 	 */
@@ -484,7 +484,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * will be used for replacement.
 	 * @param TControl control element or HTML element id.
 	 * @param string HTML fragement or the control to be rendered.
-	 * @param boolean whether to fully replace the element or just its inner content.
+	 * @param bool whether to fully replace the element or just its inner content.
 	 * @param mixed $element
 	 * @param mixed $content
 	 * @param mixed $self
@@ -512,7 +512,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Replace the content of an element with new content contained in writer.
 	 * @param TControl control element or HTML element id.
 	 * @param string HTML fragement or the control to be rendered.
-	 * @param boolean whether to fully replace the element or just its inner content, defaults to true.
+	 * @param bool whether to fully replace the element or just its inner content, defaults to true.
 	 * @param mixed $element
 	 * @param mixed $content
 	 * @param mixed $self

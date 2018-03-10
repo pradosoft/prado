@@ -47,7 +47,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * @param boolean $value true to prevent/stop default event action.
+	 * @param bool $value true to prevent/stop default event action.
 	 */
 	public function setPreventDefaultAction($value)
 	{
@@ -55,7 +55,7 @@ class TEventTriggeredCallback extends TTriggeredCallback
 	}
 
 	/**
-	 * @return boolean true to prevent/stop default event action.
+	 * @return bool true to prevent/stop default event action.
 	 */
 	public function getPreventDefaultAction()
 	{

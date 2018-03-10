@@ -52,7 +52,7 @@ interface IMappedStatement
 	 * number of row effected.
 	 * @param IDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
-	 * @return integer The number of row effected.
+	 * @return int The number of row effected.
 	 */
 	public function executeUpdate($connection, $parameter);
 
@@ -62,8 +62,8 @@ interface IMappedStatement
 	 * @param IDbConnection database connection to execute the query
 	 * @param mixed The object used to set the parameters in the SQL.
 	 * @param TList A list to populate the result with.
-	 * @param integer The number of rows to skip over.
-	 * @param integer The maximum number of rows to return.
+	 * @param int The number of rows to skip over.
+	 * @param int The maximum number of rows to return.
 	 * @param mixed $connection
 	 * @param mixed $parameter
 	 * @param null|mixed $result

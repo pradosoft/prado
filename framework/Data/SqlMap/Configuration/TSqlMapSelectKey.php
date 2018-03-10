@@ -59,8 +59,8 @@ class TSqlMapSelectKey extends TSqlMapStatement
 	}
 
 	/**
-	 * @throws TSqlMapConfigurationException extends is unsupported.
 	 * @param mixed $value
+	 * @throws TSqlMapConfigurationException extends is unsupported.
 	 */
 	public function setExtends($value)
 	{
@@ -68,7 +68,7 @@ class TSqlMapSelectKey extends TSqlMapStatement
 	}
 
 	/**
-	 * @return boolean true if key is generated after insert command, false otherwise.
+	 * @return bool true if key is generated after insert command, false otherwise.
 	 */
 	public function getIsAfter()
 	{

@@ -269,7 +269,7 @@ EOD;
 	/**
 	 * @param string $columnId column name.
 	 * @param TPgsqlTableInfo $tableInfo table information.
-	 * @return boolean true if column is a foreign key.
+	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)
 	{

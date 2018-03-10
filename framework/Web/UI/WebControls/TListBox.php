@@ -83,7 +83,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -156,7 +156,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -164,7 +164,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @return boolean whether this control allows multiple selection
+	 * @return bool whether this control allows multiple selection
 	 */
 	protected function getIsMultiSelect()
 	{
@@ -172,7 +172,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @return integer the number of rows to be displayed in the list control
+	 * @return int the number of rows to be displayed in the list control
 	 */
 	public function getRows()
 	{
@@ -180,7 +180,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @param integer $value the number of rows to be displayed in the list control
+	 * @param int $value the number of rows to be displayed in the list control
 	 */
 	public function setRows($value)
 	{

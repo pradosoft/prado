@@ -61,7 +61,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values)
 	{
@@ -116,7 +116,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -199,7 +199,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return boolean whether the checkbox is checked
+	 * @return bool whether the checkbox is checked
 	 */
 	public function getChecked()
 	{
@@ -208,7 +208,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets a value indicating whether the checkbox is to be checked or not.
-	 * @param boolean $value whether the checkbox is to be checked or not.
+	 * @param bool $value whether the checkbox is to be checked or not.
 	 */
 	public function setChecked($value)
 	{
@@ -219,7 +219,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Returns the value indicating whether the checkbox is checked.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getChecked()}.
-	 * @return boolean whether the checkbox is checked.
+	 * @return bool whether the checkbox is checked.
 	 * @see getChecked
 	 * @since 3.1.0
 	 */
@@ -232,7 +232,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Sets the value indicating whether the checkbox is to be checked or not.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setChecked()}.
-	 * @param boolean $value whether the checkbox is to be checked
+	 * @param bool $value whether the checkbox is to be checked
 	 * @see setChecked
 	 * @since 3.1.0
 	 */
@@ -242,7 +242,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return boolean whether clicking on the checkbox will post the page.
+	 * @return bool whether clicking on the checkbox will post the page.
 	 */
 	public function getAutoPostBack()
 	{
@@ -251,7 +251,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets a value indicating whether clicking on the checkbox will post the page.
-	 * @param boolean $value whether clicking on the checkbox will post the page.
+	 * @param bool $value whether clicking on the checkbox will post the page.
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -259,7 +259,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return boolean whether postback event triggered by this checkbox will cause input validation, default is true.
+	 * @return bool whether postback event triggered by this checkbox will cause input validation, default is true.
 	 */
 	public function getCausesValidation()
 	{
@@ -268,7 +268,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets the value indicating whether postback event trigger by this checkbox will cause input validation.
-	 * @param boolean $value whether postback event trigger by this checkbox will cause input validation.
+	 * @param bool $value whether postback event trigger by this checkbox will cause input validation.
 	 */
 	public function setCausesValidation($value)
 	{
@@ -407,7 +407,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -415,7 +415,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{

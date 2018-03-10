@@ -199,7 +199,7 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Check the validators, then tries to save the record.
-	 * @return boolean true if the validators are true, false otherwise.
+	 * @return bool true if the validators are true, false otherwise.
 	 */
 	protected function doSave()
 	{

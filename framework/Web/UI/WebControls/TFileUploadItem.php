@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
 class TFileUploadItem extends \Prado\TComponent
 {
 	/**
-	 * @var integer the size of the uploaded file (in bytes)
+	 * @var int the size of the uploaded file (in bytes)
 	 */
 	private $_fileSize = 0;
 	/**
@@ -42,7 +42,7 @@ class TFileUploadItem extends \Prado\TComponent
 	 */
 	private $_fileType = '';
 	/**
-	 * @var integer error code of the current file upload
+	 * @var int error code of the current file upload
 	 */
 	private $_errorCode = UPLOAD_ERR_NO_FILE;
 
@@ -64,7 +64,7 @@ class TFileUploadItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return integer the actual size of the uploaded file in bytes
+	 * @return int the actual size of the uploaded file in bytes
 	 */
 	public function getFileSize()
 	{
@@ -99,7 +99,7 @@ class TFileUploadItem extends \Prado\TComponent
 
 	/**
 	 * Returns an error code describing the status of this file uploading.
-	 * @return integer the error code
+	 * @return int the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
 	public function getErrorCode()
@@ -109,7 +109,7 @@ class TFileUploadItem extends \Prado\TComponent
 
 	/**
 	 * Sets the error code describing the status of this file uploading.
-	 * @param integer $value the error code
+	 * @param int $value the error code
 	 * @see http://www.php.net/manual/en/features.file-upload.errors.php
 	 */
 	public function setErrorCode($value)
@@ -118,7 +118,7 @@ class TFileUploadItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean whether the file is uploaded successfully
+	 * @return bool whether the file is uploaded successfully
 	 */
 	public function getHasFile()
 	{
@@ -128,9 +128,9 @@ class TFileUploadItem extends \Prado\TComponent
 	/**
 	 * Saves the uploaded file.
 	 * @param string $fileName the file name used to save the uploaded file
-	 * @param boolean $deleteTempFile whether to delete the temporary file after saving.
+	 * @param bool $deleteTempFile whether to delete the temporary file after saving.
 	 * If true, you will not be able to save the uploaded file again.
-	 * @return boolean true if the file saving is successful
+	 * @return bool true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true)
 	{

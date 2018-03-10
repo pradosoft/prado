@@ -59,7 +59,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		'fatal' => TLogger::FATAL
 	];
 	/**
-	 * @var integer log level filter (bits)
+	 * @var int log level filter (bits)
 	 */
 	private $_levels;
 	/**
@@ -76,7 +76,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return integer log level filter
+	 * @return int log level filter
 	 */
 	public function getLevels()
 	{
@@ -84,7 +84,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param integer|string integer log level filter (in bits). If the value is
+	 * @param int|string integer log level filter (in bits). If the value is
 	 * a string, it is assumed to be comma-separated level names. Valid level names
 	 * include 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert' and 'Fatal'.
 	 * @param mixed $levels
@@ -132,7 +132,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param integer $level level value
+	 * @param int $level level value
 	 * @return string level name
 	 */
 	protected function getLevelName($level)
@@ -142,7 +142,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string $level level name
-	 * @return integer level value
+	 * @return int level value
 	 */
 	protected function getLevelValue($level)
 	{
@@ -152,9 +152,9 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * Formats a log message given different fields.
 	 * @param string $message message content
-	 * @param integer $level message level
+	 * @param int $level message level
 	 * @param string $category message category
-	 * @param integer $time timestamp
+	 * @param int $time timestamp
 	 * @return string formatted message
 	 */
 	protected function formatLogMessage($message, $level, $category, $time)
@@ -165,6 +165,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * Retrieves log messages from logger to log route specific destination.
 	 * @param TLogger logger instance
+	 * @param TLogger $logger
 	 */
 	public function collectLogs(TLogger $logger)
 	{

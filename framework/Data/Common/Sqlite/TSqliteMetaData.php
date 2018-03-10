@@ -104,7 +104,7 @@ class TSqliteMetaData extends TDbMetaData
 
 	/**
 	 * @param string $tableName table name.
-	 * @return boolean true if the table is a view.
+	 * @return bool true if the table is a view.
 	 */
 	protected function getIsView($tableName)
 	{
@@ -183,7 +183,7 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 * @param string $columnId column name.
 	 * @param array $foreign foreign key column names.
-	 * @return boolean true if column is a foreign key.
+	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $foreign)
 	{

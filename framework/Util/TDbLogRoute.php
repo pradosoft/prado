@@ -57,7 +57,7 @@ class TDbLogRoute extends TLogRoute
 	 */
 	private $_logTable = 'pradolog';
 	/**
-	 * @var boolean whether the log DB table should be created automatically
+	 * @var bool whether the log DB table should be created automatically
 	 */
 	private $_autoCreate = true;
 
@@ -141,8 +141,8 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Creates the DB connection.
 	 * @param string the module ID for TDataSourceConfig
-	 * @return TDbConnection the created DB connection
 	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()
 	{
@@ -215,7 +215,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @return boolean whether the log DB table should be automatically created if not exists. Defaults to true.
+	 * @return bool whether the log DB table should be automatically created if not exists. Defaults to true.
 	 * @see setAutoCreateLogTable
 	 */
 	public function getAutoCreateLogTable()
@@ -224,7 +224,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param boolean $value whether the log DB table should be automatically created if not exists.
+	 * @param bool $value whether the log DB table should be automatically created if not exists.
 	 * @see setLogTableName
 	 */
 	public function setAutoCreateLogTable($value)

@@ -111,7 +111,7 @@ class ChoiceFormat
 	 * Determine if the given number belongs to a given set
 	 * @param float $number the number to test.
 	 * @param string $set the set, in set notation.
-	 * @return boolean true if number is in the set, false otherwise.
+	 * @return bool true if number is in the set, false otherwise.
 	 */
 	public function isValid($number, $set)
 	{

@@ -90,7 +90,7 @@ use Prado\Xml\TXmlElement;
 class TMemCache extends TCache
 {
 	/**
-	 * @var boolean if the module is initialized
+	 * @var bool if the module is initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -102,14 +102,14 @@ class TMemCache extends TCache
 	 */
 	private $_host = 'localhost';
 	/**
-	 * @var integer the port number of the memcache server
+	 * @var int the port number of the memcache server
 	 */
 	private $_port = 11211;
 
 	private $_timeout = 360;
 
 	/**
-	 * @var integer Controls the minimum value length before attempting to compress automatically.
+	 * @var int Controls the minimum value length before attempting to compress automatically.
 	 */
 	private $_threshold = 0;
 
@@ -119,7 +119,7 @@ class TMemCache extends TCache
 	private $_minSavings = 0.0;
 
 	/**
-	 * @var boolean whether to use memcached or memcache as the underlying caching extension.
+	 * @var bool whether to use memcached or memcache as the underlying caching extension.
 	 * If true {@link http://pecl.php.net/package/memcached memcached} will be used.
 	 * If false {@link http://pecl.php.net/package/memcache memcache}. will be used.
 	 * Defaults to false.
@@ -250,7 +250,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return integer port number of the memcache server
+	 * @return int port number of the memcache server
 	 */
 	public function getPort()
 	{
@@ -258,7 +258,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param integer $value port number of the memcache server
+	 * @param int $value port number of the memcache server
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setPort($value)
@@ -271,7 +271,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return boolean if memcached instead memcache
+	 * @return bool if memcached instead memcache
 	 */
 	public function getUseMemcached()
 	{
@@ -292,7 +292,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return integer minimum value length before attempting to compress
+	 * @return int minimum value length before attempting to compress
 	 */
 	public function getThreshold()
 	{
@@ -300,7 +300,7 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @param integer $value minimum value length before attempting to compress
+	 * @param int $value minimum value length before attempting to compress
 	 * @throws TInvalidOperationException if the module is already initialized
 	 */
 	public function setThreshold($value)
@@ -350,8 +350,8 @@ class TMemCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function setValue($key, $value, $expire)
 	{
@@ -368,8 +368,8 @@ class TMemCache extends TCache
 	 *
 	 * @param string $key the key identifying the value to be cached
 	 * @param string $value the value to be cached
-	 * @param integer $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @return boolean true if the value is successfully stored into cache, false otherwise
+	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
+	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	protected function addValue($key, $value, $expire)
 	{
@@ -384,7 +384,7 @@ class TMemCache extends TCache
 	 * Deletes a value with the specified key from cache
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key the key of the value to be deleted
-	 * @return boolean if no error happens during deletion
+	 * @return bool if no error happens during deletion
 	 */
 	protected function deleteValue($key)
 	{

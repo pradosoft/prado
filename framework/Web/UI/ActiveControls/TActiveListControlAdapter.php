@@ -30,7 +30,7 @@ use Prado\Web\UI\WebControls\IListControlAdapter;
 class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {
 	/**
-	 * @return boolean true if can update client-side attributes.
+	 * @return bool true if can update client-side attributes.
 	 */
 	protected function canUpdateClientSide()
 	{
@@ -39,7 +39,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 
 	/**
 	 * Selects an item based on zero-base index on the client side.
-	 * @param integer $index the index (zero-based) of the item to be selected
+	 * @param int $index the index (zero-based) of the item to be selected
 	 */
 	public function setSelectedIndex($index)
 	{

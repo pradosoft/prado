@@ -62,8 +62,8 @@ class MessageSource_Database extends MessageSource
 	 * Creates the DB connection.
 	 * @param string the module ID for TDataSourceConfig
 	 * @param mixed $connectionID
-	 * @return TDbConnection the created DB connection
 	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
 	{
@@ -127,7 +127,7 @@ class MessageSource_Database extends MessageSource
 	 * Check if a particular catalogue+variant exists in the database.
 	 * @param string catalogue+variant
 	 * @param mixed $variant
-	 * @return boolean true if the catalogue+variant is in the database,
+	 * @return bool true if the catalogue+variant is in the database,
 	 * false otherwise.
 	 */
 	protected function isValidSource($variant)
@@ -196,9 +196,9 @@ class MessageSource_Database extends MessageSource
 
 	/**
 	 * Update the catalogue last modified time.
-	 * @return boolean true if updated, false otherwise.
 	 * @param mixed $cat_id
 	 * @param mixed $variant
+	 * @return bool true if updated, false otherwise.
 	 */
 	private function updateCatalogueTime($cat_id, $variant)
 	{
@@ -223,7 +223,7 @@ class MessageSource_Database extends MessageSource
 	 * strings to the translation source via the <b>append()</b> method.
 	 * @param string the catalogue to add to
 	 * @param mixed $catalogue
-	 * @return boolean true if saved successfuly, false otherwise.
+	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages')
 	{
@@ -274,7 +274,7 @@ class MessageSource_Database extends MessageSource
 	 * Delete a particular message from the specified catalogue.
 	 * @param string $message the source message to delete.
 	 * @param string $catalogue the catalogue to delete from.
-	 * @return boolean true if deleted, false otherwise.
+	 * @return bool true if deleted, false otherwise.
 	 */
 	public function delete($message, $catalogue = 'messages')
 	{
@@ -300,7 +300,7 @@ class MessageSource_Database extends MessageSource
 	 * @param string $target the new translation string.
 	 * @param string $comments comments
 	 * @param string $catalogue the catalogue of the translation.
-	 * @return boolean true if translation was updated, false otherwise.
+	 * @return bool true if translation was updated, false otherwise.
 	 */
 	public function update($text, $target, $comments, $catalogue = 'messages')
 	{

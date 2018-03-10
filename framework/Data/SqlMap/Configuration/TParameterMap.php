@@ -97,8 +97,8 @@ class TParameterMap extends \Prado\TComponent
 	/**
 	 * @param string name of a parameter property.
 	 * @param mixed $index
-	 * @return TParameterProperty parameter property.
 	 * @throws TSqlMapException if index is not string nor integer.
+	 * @return TParameterProperty parameter property.
 	 */
 	public function getProperty($index)
 	{
@@ -113,6 +113,7 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * @param TParameterProperty new parameter property
+	 * @param TParameterProperty $property
 	 */
 	public function addProperty(TParameterProperty $property)
 	{
@@ -124,6 +125,7 @@ class TParameterMap extends \Prado\TComponent
 	 * @param int parameter property index
 	 * @param TParameterProperty new parameter property.
 	 * @param mixed $index
+	 * @param TParameterProperty $property
 	 */
 	public function insertProperty($index, TParameterProperty $property)
 	{
@@ -189,8 +191,8 @@ class TParameterMap extends \Prado\TComponent
 	 * @param TParameterProperty parameter property.
 	 * @param mixed $object
 	 * @param mixed $property
-	 * @return mixed property value.
 	 * @throws TSqlMapException if property access is invalid.
+	 * @return mixed property value.
 	 */
 	protected function getObjectValue($object, $property)
 	{

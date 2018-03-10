@@ -35,7 +35,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	private $_state;
 	/**
-	 * @var boolean whether user state is changed
+	 * @var bool whether user state is changed
 	 */
 	private $_stateChanged = false;
 	/**
@@ -46,6 +46,7 @@ class TUser extends \Prado\TComponent implements IUser
 	/**
 	 * Constructor.
 	 * @param IUserManager user manager
+	 * @param IUserManager $manager
 	 */
 	public function __construct(IUserManager $manager)
 	{
@@ -79,7 +80,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @return boolean if the user is a guest, defaults to true.
+	 * @return bool if the user is a guest, defaults to true.
 	 */
 	public function getIsGuest()
 	{
@@ -87,7 +88,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param boolean $value if the user is a guest
+	 * @param bool $value if the user is a guest
 	 */
 	public function setIsGuest($value)
 	{
@@ -107,8 +108,8 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
 	 * @param mixed $value
+	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
 	 */
 	public function setRoles($value)
 	{
@@ -127,7 +128,7 @@ class TUser extends \Prado\TComponent implements IUser
 
 	/**
 	 * @param string $role role to be tested. Note, role is case-insensitive.
-	 * @return boolean whether the user is of this role
+	 * @return bool whether the user is of this role
 	 */
 	public function isInRole($role)
 	{
@@ -209,7 +210,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @return boolean whether user session state is changed (i.e., setState() is called)
+	 * @return bool whether user session state is changed (i.e., setState() is called)
 	 */
 	public function getStateChanged()
 	{
@@ -217,7 +218,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param boolean $value whether user session state is changed
+	 * @param bool $value whether user session state is changed
 	 */
 	public function setStateChanged($value)
 	{

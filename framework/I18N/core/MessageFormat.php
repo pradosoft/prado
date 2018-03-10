@@ -97,6 +97,7 @@ class MessageFormat
 	 * @param MessageSource the source of translation messages.
 	 * @param string charset for the message output.
 	 * @param mixed $charset
+	 * @param IMessageSource $source
 	 */
 	public function __construct(IMessageSource $source, $charset = 'UTF-8')
 	{

@@ -108,7 +108,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * Format the date according to the pattern.
-	 * @param string|int $value the date to format, either integer or a string readable by strtotime.
+	 * @param int|string $value the date to format, either integer or a string readable by strtotime.
 	 * @return string formatted date.
 	 */
 	public function format($value)
@@ -184,7 +184,7 @@ class TSimpleDateFormatter
 
 	/**
 	 * Gets the time stamp from string or integer.
-	 * @param string|int $value date to parse
+	 * @param int|string $value date to parse
 	 * @return array date info array
 	 */
 	private function getDate($value)
@@ -199,8 +199,8 @@ class TSimpleDateFormatter
 	}
 
 	/**
-	 * @return boolean true if the given value matches with the date pattern.
 	 * @param mixed $value
+	 * @return bool true if the given value matches with the date pattern.
 	 */
 	public function isValidDate($value)
 	{
@@ -213,11 +213,11 @@ class TSimpleDateFormatter
 
 	/**
 	 * Parse the string according to the pattern.
-	 * @param string|int date string or integer to parse
+	 * @param int|string date string or integer to parse
 	 * @param mixed $value
 	 * @param mixed $defaultToCurrentTime
-	 * @return int date time stamp
 	 * @throws TInvalidDataValueException if date string is malformed.
+	 * @return int date time stamp
 	 */
 	public function parse($value, $defaultToCurrentTime = true)
 	{

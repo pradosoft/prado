@@ -27,12 +27,12 @@ interface IValidatable
 	 */
 	public function getValidationPropertyValue();
 	/**
-	 * @return boolean wether this control's validators validated successfully (must default to true)
+	 * @return bool wether this control's validators validated successfully (must default to true)
 	 */
 	public function getIsValid();
 	/**
-	 * @return boolean wether this control's validators validated successfully
 	 * @param mixed $value
+	 * @return bool wether this control's validators validated successfully
 	 */
 	public function setIsValid($value);
 }

@@ -89,8 +89,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * Alters the sql to apply $limit and $offset. Default implementation is applicable
 	 * for PostgreSQL, MySQL and SQLite.
 	 * @param string $sql SQL query string.
-	 * @param integer $limit maximum number of rows, -1 to ignore limit.
-	 * @param integer $offset row offset, -1 to ignore offset.
+	 * @param int $limit maximum number of rows, -1 to ignore limit.
+	 * @param int $offset row offset, -1 to ignore offset.
 	 * @return string SQL with limit and offset.
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
@@ -443,7 +443,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * Create a name-value or position-value if $position=true binding strings.
 	 * @param array $values data for binding.
-	 * @param boolean $position true to bind as position values.
+	 * @param bool $position true to bind as position values.
 	 * @return string update column names with corresponding binding substrings.
 	 */
 	protected function getColumnBindings($values, $position = false)
@@ -508,7 +508,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * @param mixed $value PHP value
-	 * @return integer PDO parameter types.
+	 * @return int PDO parameter types.
 	 */
 	public static function getPdoType($value)
 	{

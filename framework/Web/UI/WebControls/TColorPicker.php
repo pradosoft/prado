@@ -47,7 +47,7 @@ class TColorPicker extends TTextBox
 	private $_clientSide;
 
 	/**
-	 * @return boolean whether the color picker should pop up when the button is clicked.
+	 * @return bool whether the color picker should pop up when the button is clicked.
 	 */
 	public function getShowColorPicker()
 	{
@@ -56,7 +56,7 @@ class TColorPicker extends TTextBox
 
 	/**
 	 * Sets whether to pop up the color picker when the button is clicked.
-	 * @param boolean $value whether to show the color picker popup
+	 * @param bool $value whether to show the color picker popup
 	 */
 	public function setShowColorPicker($value)
 	{

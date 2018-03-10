@@ -71,7 +71,7 @@ class TCaptchaValidator extends TBaseValidator
 	 * The validation succeeds if the input control has the same value
 	 * as the one displayed in the corresponding CAPTCHA control.
 	 *
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	protected function evaluateIsValid()
 	{
@@ -81,8 +81,8 @@ class TCaptchaValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TCaptchaControl the CAPTCHA control to be validated against
 	 * @throws TConfigurationException if the CAPTCHA cannot be found according to {@link setCaptchaControl CaptchaControl}
+	 * @return TCaptchaControl the CAPTCHA control to be validated against
 	 */
 	protected function findCaptchaControl()
 	{

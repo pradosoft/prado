@@ -45,7 +45,7 @@ class TCallChain extends TList implements IDynamicMethods
 
 	/**
 	 * This initializes the list and the name of the method to be called
-	 *	@param string|array this is a callable function as a string or array with
+	 *	@param array|string this is a callable function as a string or array with
 	 *			the object and method name as string
 	 *  @param array The array of arguments to the function call chain
 	 * @param mixed $method

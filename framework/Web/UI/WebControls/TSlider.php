@@ -149,7 +149,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean wether to display a progress indicator or not. Defaults to true.
+	 * @return bool wether to display a progress indicator or not. Defaults to true.
 	 */
 	public function getProgressIndicator()
 	{
@@ -157,7 +157,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param boolean $value wether to display a progress indicator or not. Defaults to true.
+	 * @param bool $value wether to display a progress indicator or not. Defaults to true.
 	 */
 	public function setProgressIndicator($value)
 	{
@@ -223,7 +223,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return boolean a value indicating whether an automatic postback to the server
+	 * @return bool a value indicating whether an automatic postback to the server
 	 * will occur whenever the user modifies the slider value. Defaults to false.
 	 */
 	public function getAutoPostBack()
@@ -235,7 +235,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Sets the value indicating if postback automatically.
 	 * An automatic postback to the server will occur whenever the user
 	 * modifies the slider value.
-	 * @param boolean $value the value indicating if postback automatically
+	 * @param bool $value the value indicating if postback automatically
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -255,7 +255,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Returns a value indicating whether postback has caused the control data change.
 	 * This method is required by the \Prado\Web\UI\IPostBackDataHandler interface.
-	 * @return boolean whether postback has caused the control data change. False if the page is not in postback mode.
+	 * @return bool whether postback has caused the control data change. False if the page is not in postback mode.
 	 */
 	public function getDataChanged()
 	{
@@ -292,7 +292,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method is primarly used by framework developers.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the component has been changed
+	 * @return bool whether the data of the component has been changed
 	 */
 	public function loadPostData($key, $values)
 	{

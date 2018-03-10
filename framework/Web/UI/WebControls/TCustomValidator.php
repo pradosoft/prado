@@ -81,7 +81,7 @@ class TCustomValidator extends TBaseValidator
 	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if {@link onServerValidate} returns true.
-	 * @return boolean whether the validation succeeds
+	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
 	{
@@ -99,7 +99,7 @@ class TCustomValidator extends TBaseValidator
 	 * <b>Note</b> The derived classes should call parent implementation
 	 * to ensure the <b>OnServerValidate</b> event is raised.
 	 * @param string $value the value to be validated
-	 * @return boolean whether the value is valid
+	 * @return bool whether the value is valid
 	 */
 	public function onServerValidate($value)
 	{

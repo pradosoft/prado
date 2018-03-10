@@ -219,7 +219,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean indicate whether or not the select statement's results should be lazy loaded
+	 * @return bool indicate whether or not the select statement's results should be lazy loaded
 	 */
 	public function getLazyLoad()
 	{
@@ -227,7 +227,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param boolean $value indicate whether or not the select statement's results should be lazy loaded
+	 * @param bool $value indicate whether or not the select statement's results should be lazy loaded
 	 */
 	public function setLazyLoad($value)
 	{
@@ -312,7 +312,7 @@ class TResultProperty extends \Prado\TComponent
 	 * Returns true if the result property {@link Type getType()} is of TList type
 	 * or that the actual result object is an instance of TList.
 	 * @param object $target result object
-	 * @return boolean true if the result object is an instance of TList
+	 * @return bool true if the result object is an instance of TList
 	 */
 	public function instanceOfListType($target)
 	{
@@ -326,7 +326,7 @@ class TResultProperty extends \Prado\TComponent
 	 * Returns true if the result property {@link Type getType()} is of \ArrayAccess
 	 * or that the actual result object is an array or implements \ArrayAccess
 	 * @param object $target result object
-	 * @return boolean true if the result object is an instance of \ArrayAccess or is an array.
+	 * @return bool true if the result object is an instance of \ArrayAccess or is an array.
 	 */
 	public function instanceOfArrayType($target)
 	{

@@ -34,7 +34,7 @@ class TMysqlTableColumn extends TDbTableColumn
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
-	 * @return boolean derived PHP primitive type from the column db type.
+	 * @return bool derived PHP primitive type from the column db type.
 	 */
 	public function getPHPType()
 	{
@@ -51,7 +51,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	}
 
 	/**
-	 * @return boolean true if column will auto-increment when the column value is inserted as null.
+	 * @return bool true if column will auto-increment when the column value is inserted as null.
 	 */
 	public function getAutoIncrement()
 	{
@@ -59,7 +59,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	}
 
 	/**
-	 * @return boolean true if auto increment is true.
+	 * @return bool true if auto increment is true.
 	 */
 	public function hasSequence()
 	{

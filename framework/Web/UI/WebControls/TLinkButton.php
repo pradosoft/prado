@@ -67,7 +67,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return boolean whether to render javascript.
+	 * @return bool whether to render javascript.
 	 */
 	public function getEnableClientScript()
 	{
@@ -75,7 +75,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param boolean $value whether to render javascript.
+	 * @param bool $value whether to render javascript.
 	 */
 	public function setEnableClientScript($value)
 	{
@@ -117,7 +117,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param boolean $value set by a panel to register this button as the default button for the panel.
+	 * @param bool $value set by a panel to register this button as the default button for the panel.
 	 */
 	public function setIsDefaultButton($value)
 	{
@@ -125,7 +125,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return boolean true if this button is registered as a default button for a panel.
+	 * @return bool true if this button is registered as a default button for a panel.
 	 */
 	public function getIsDefaultButton()
 	{
@@ -259,7 +259,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return boolean whether postback event trigger by this button will cause input validation
+	 * @return bool whether postback event trigger by this button will cause input validation
 	 */
 	public function getCausesValidation()
 	{

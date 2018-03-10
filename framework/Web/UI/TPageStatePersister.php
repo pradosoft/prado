@@ -42,6 +42,7 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 
 	/**
 	 * @param TPage the page that this persister works for
+	 * @param TPage $page
 	 */
 	public function setPage(TPage $page)
 	{
@@ -59,8 +60,8 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 
 	/**
 	 * Loads page state from hidden fields.
-	 * @return mixed the restored state
 	 * @throws THttpException if page state is corrupted
+	 * @return mixed the restored state
 	 */
 	public function load()
 	{

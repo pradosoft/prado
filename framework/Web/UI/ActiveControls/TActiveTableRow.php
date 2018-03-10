@@ -112,7 +112,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * event if an appropriate event handler is implemented.
 	 * @param TControl $sender the sender of the event
 	 * @param TEventParameter $param event parameter
-	 * @return boolean whether the event bubbling should stop here.
+	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
 	{
@@ -193,7 +193,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * Returns the zero-based index of the TActiveTableRow within the {@link TTableRowCollection}
 	 * of the parent {@link TTable} control. Raises a {@link TConfigurationException} if the row
 	 * is no member of the row collection.
-	 * @return integer the zero-based index of the row
+	 * @return int the zero-based index of the row
 	 */
 	public function getRowIndex()
 	{

@@ -54,6 +54,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * @param TSqlMapXmlConfiguration parent xml configuration.
+	 * @param TSqlMapXmlConfiguration $xmlConfig
 	 */
 	public function __construct(TSqlMapXmlConfiguration $xmlConfig)
 	{

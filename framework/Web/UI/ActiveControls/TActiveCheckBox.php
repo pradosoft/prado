@@ -109,7 +109,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 * Sets a value indicating whether the checkbox is to be checked or not.
 	 * Updates checkbox checked state on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param boolean $value whether the checkbox is to be checked or not.
+	 * @param bool $value whether the checkbox is to be checked or not.
 	 */
 	public function setChecked($value)
 	{

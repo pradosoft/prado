@@ -59,7 +59,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean $value true to hide the textbox after losing focus.
+	 * @param bool $value true to hide the textbox after losing focus.
 	 */
 	public function setAutoHideTextBox($value)
 	{
@@ -67,7 +67,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @return boolean true will hide the textbox after losing focus.
+	 * @return bool true will hide the textbox after losing focus.
 	 */
 	public function getAutoHideTextBox()
 	{
@@ -75,7 +75,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @param boolean $value true to display the edit textbox
+	 * @param bool $value true to display the edit textbox
 	 */
 	public function setDisplayTextBox($value)
 	{
@@ -87,7 +87,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	}
 
 	/**
-	 * @return boolean true to display the edit textbox
+	 * @return bool true to display the edit textbox
 	 */
 	public function getDisplayTextBox()
 	{
@@ -160,7 +160,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Update ClientSide Readonly property
-	 * @param boolean $value value
+	 * @param bool $value value
 	 * @since 3.1.2
 	 */
 	public function setReadOnly($value)

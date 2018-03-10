@@ -191,7 +191,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Displays error to the client user.
 	 * THttpException and errors happened when the application is in <b>Debug</b>
 	 * mode will be displayed to the client user.
-	 * @param integer response status code
+	 * @param int response status code
 	 * @param Exception exception instance
 	 * @param mixed $statusCode
 	 * @param mixed $exception
@@ -335,7 +335,7 @@ class TErrorHandler extends \Prado\TModule
 	 * %%Version%% : the version information of the Web server.
 	 * %%Time%% : the time the exception occurs at
 	 *
-	 * @param integer $statusCode status code (such as 404, 500, etc.)
+	 * @param int $statusCode status code (such as 404, 500, etc.)
 	 * @param Exception $exception the exception to be displayed
 	 * @return string the template content
 	 */

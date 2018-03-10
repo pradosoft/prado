@@ -60,7 +60,7 @@ class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * This tells you if this TagName has deviated from the original
-	 * @return boolean true if TagName has deviated from the default.
+	 * @return bool true if TagName has deviated from the default.
 	 */
 	public function getIsMutated()
 	{

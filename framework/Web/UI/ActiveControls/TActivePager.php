@@ -116,7 +116,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * a TActiveButton or a TActiveImageButton may be created.
 	 *
 	 * @param string button type, either LinkButton or PushButton
-	 * @param boolean whether the button should be enabled
+	 * @param bool whether the button should be enabled
 	 * @param string caption of the button
 	 * @param string CommandName corresponding to the OnCommand event of the button
 	 * @param string CommandParameter corresponding to the OnCommand event of the button

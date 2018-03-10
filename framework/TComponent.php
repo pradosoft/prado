@@ -305,7 +305,7 @@ class TComponent
 	private $_e = [];
 
 	/**
-	 * @var boolean if listening is enabled.  Automatically turned on or off in
+	 * @var bool if listening is enabled.  Automatically turned on or off in
 	 * constructor according to {@link getAutoGlobalListen}.  Default false, off
 	 */
 	private $_listeningenabled = false;
@@ -316,7 +316,7 @@ class TComponent
 	private static $_ue = [];
 
 	/**
-	 * @var boolean if object behaviors are on or off.  default true, on
+	 * @var bool if object behaviors are on or off.  default true, on
 	 */
 	private $_behaviorsenabled = true;
 
@@ -369,7 +369,7 @@ class TComponent
 	 * Override this method by a subclass to change the setting.  When set to true, this
 	 * will enable {@link __construct} to call {@link listen}.
 	 *
-	 * @return boolean whether or not to auto listen to global events during {@link __construct}, default false
+	 * @return bool whether or not to auto listen to global events during {@link __construct}, default false
 	 */
 	public function getAutoGlobalListen()
 	{
@@ -406,7 +406,7 @@ class TComponent
 	/**
 	 * This returns an array of the class name and the names of all its parents.  The base object first,
 	 * {@link TComponent}, and the deepest subclass is last.
-	 * @param boolean optional should the names be all lowercase true/false
+	 * @param bool optional should the names be all lowercase true/false
 	 * @param mixed $lowercase
 	 * @return array array of strings being the class hierarchy of $this.
 	 */
@@ -501,7 +501,7 @@ class TComponent
 
 	/**
 	 * Gets the state of listening to global events
-	 * @return boolean is Listening to global broadcast enabled
+	 * @return bool is Listening to global broadcast enabled
 	 */
 	public function getListeningToGlobalEvents()
 	{
@@ -616,8 +616,8 @@ class TComponent
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string the property name or the event name
 	 * @param mixed $name
-	 * @return mixed the property value or the event handler list as {@link TPriorityList}
 	 * @throws TInvalidOperationException if the property/event is not defined.
+	 * @return mixed the property value or the event handler list as {@link TPriorityList}
 	 */
 	public function __get($name)
 	{
@@ -793,7 +793,7 @@ class TComponent
 	 * A property is defined if there is a getter or setter method
 	 * defined in the class. Note, property names are case-insensitive.
 	 * @param string $name the property name
-	 * @return boolean whether the property is defined
+	 * @return bool whether the property is defined
 	 */
 	public function hasProperty($name)
 	{
@@ -807,7 +807,7 @@ class TComponent
 	 * This also checks for getjs.  When enabled, it loops through all
 	 * active behaviors for the get property when undefined by the object.
 	 * @param string $name the property name
-	 * @return boolean whether the property can be read
+	 * @return bool whether the property can be read
 	 */
 	public function canGetProperty($name)
 	{
@@ -830,7 +830,7 @@ class TComponent
 	 * This also checks for setjs.  When enabled, it loops through all
 	 * active behaviors for the set property when undefined by the object.
 	 * @param string $name the property name
-	 * @return boolean whether the property can be written
+	 * @return bool whether the property can be written
 	 */
 	public function canSetProperty($name)
 	{
@@ -899,7 +899,7 @@ class TComponent
 	 * defined by the behavior.
 	 * Note, event name is case-insensitive.
 	 * @param string $name the event name
-	 * @return boolean
+	 * @return bool
 	 */
 	public function hasEvent($name)
 	{
@@ -920,7 +920,7 @@ class TComponent
 	 * the behaviors for 'on' events when behaviors are enabled.
 	 * 'dy' dynamic events are not handled by this function.
 	 * @param string $name the event name
-	 * @return boolean whether an event has been attached one or several handlers
+	 * @return bool whether an event has been attached one or several handlers
 	 */
 	public function hasEventHandler($name)
 	{
@@ -944,9 +944,9 @@ class TComponent
 	/**
 	 * Returns the list of attached event handlers for an 'on' or 'fx' event.   This function also
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
-	 * @return TPriorityList list of attached event handlers for an event
-	 * @throws TInvalidOperationException if the event is not defined
 	 * @param mixed $name
+	 * @throws TInvalidOperationException if the event is not defined
+	 * @return TPriorityList list of attached event handlers for an event
 	 */
 	public function getEventHandlers($name)
 	{
@@ -1012,8 +1012,8 @@ class TComponent
 	 * new 'on' events, this method will pass through to the behavior transparently.
 	 *
 	 * @param string the event name
-	 * @param callback the event handler
-	 * @param numeric|null the priority of the handler, defaults to null which translates into the
+	 * @param callable the event handler
+	 * @param null|numeric the priority of the handler, defaults to null which translates into the
 	 * default priority of 10.0 within {@link TPriorityList}
 	 * @param mixed $name
 	 * @param mixed $handler
@@ -1030,13 +1030,13 @@ class TComponent
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
 	 * any 'on' events definedb by an objects active behaviors as well.
 	 * @param string event name
-	 * @param callback the event handler to be removed
-	 * @param numeric|false|null the priority of the handler, defaults to false which translates
+	 * @param callable the event handler to be removed
+	 * @param null|false|numeric the priority of the handler, defaults to false which translates
 	 * to an item of any priority within {@link TPriorityList}; null means the default priority
 	 * @param mixed $name
 	 * @param mixed $handler
 	 * @param mixed $priority
-	 * @return boolean if the removal is successful
+	 * @return bool if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
 	{
@@ -1123,9 +1123,9 @@ class TComponent
 	 * @param mixed $param
 	 * @param null|mixed $responsetype
 	 * @param null|mixed $postfunction
-	 * @return mixed the results of the event
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
+	 * @return mixed the results of the event
 	 */
 	public function raiseEvent($name, $sender, $param, $responsetype = null, $postfunction = null)
 	{
@@ -1240,8 +1240,8 @@ class TComponent
 	 *
 	 * @param string PHP expression
 	 * @param mixed $expression
-	 * @return mixed the expression result
 	 * @throws TInvalidOperationException if the expression is invalid
+	 * @return mixed the expression result
 	 */
 	public function evaluateExpression($expression)
 	{
@@ -1271,8 +1271,8 @@ class TComponent
 	 *
 	 * @param string PHP statements
 	 * @param mixed $statements
-	 * @return string content echoed or printed by the PHP statements
 	 * @throws TInvalidOperationException if the statements are invalid
+	 * @return string content echoed or printed by the PHP statements
 	 */
 	public function evaluateStatements($statements)
 	{
@@ -1377,13 +1377,13 @@ class TComponent
 	 * This is done so class behaviors are added last first.
 	 * @param string name the key of the class behavior
 	 * @param object|string class behavior or name of the object behavior per instance
-	 * @param string|class string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param class|string string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
-	 * @param numeric|null priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
+	 * @param null|numeric priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
 	 * @param mixed $name
 	 * @param mixed $behavior
 	 * @param null|mixed $class
@@ -1486,7 +1486,7 @@ class TComponent
 	 *
 	 * @param class or string
 	 * @param mixed $class
-	 * @return boolean whether or not the object or a behavior is an instance of a particular class
+	 * @return bool whether or not the object or a behavior is an instance of a particular class
 	 * @since 3.2.3
 	 */
 	public function isa($class)
@@ -1682,7 +1682,7 @@ class TComponent
 
 	/**
 	 * Returns if all the behaviors are turned on or off for the object.
-	 * @return boolean whether or not all behaviors are enabled (true) or not (false)
+	 * @return bool whether or not all behaviors are enabled (true) or not (false)
 	 * @since 3.2.3
 	 */
 	public function getBehaviorsEnabled()
@@ -1766,6 +1766,7 @@ class TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

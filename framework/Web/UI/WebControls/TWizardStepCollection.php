@@ -33,6 +33,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	/**
 	 * Constructor.
 	 * @param TWizard wizard that owns this collection
+	 * @param TWizard $wizard
 	 */
 	public function __construct(TWizard $wizard)
 	{
@@ -43,7 +44,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This method overrides the parent implementation by checking if
 	 * the item being added is a {@link TWizardStep}.
-	 * @param integer $index the specified position.
+	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
@@ -60,7 +61,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 
 	/**
 	 * Removes an item at the specified position.
-	 * @param integer $index the index of the item to be removed.
+	 * @param int $index the index of the item to be removed.
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)

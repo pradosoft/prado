@@ -89,6 +89,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Constructor, trap errors and exception to let the callback response
 	 * handle them.
+	 * @param TPage $control
 	 */
 	public function __construct(TPage $control)
 	{
@@ -290,6 +291,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Registers a control to raise callback event in the current request.
 	 * @param TControl control registered to raise callback event.
+	 * @param TControl $control
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{

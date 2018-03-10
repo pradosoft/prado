@@ -97,7 +97,7 @@ class TLazyLoadList
 	/**
 	 * Try to fetch the data when any of the proxy collection method is called.
 	 * @param string $method method name.
-	 * @return boolean true if the underlying collection has the corresponding method name.
+	 * @return bool true if the underlying collection has the corresponding method name.
 	 */
 	public function hasMethod($method)
 	{

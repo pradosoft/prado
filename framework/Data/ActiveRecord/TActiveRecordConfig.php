@@ -166,7 +166,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Set true to cache the table meta data.
-	 * @param boolean $value true to cache sqlmap instance.
+	 * @param bool $value true to cache sqlmap instance.
 	 */
 	public function setEnableCache($value)
 	{
@@ -174,7 +174,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return boolean true if table meta data should be cached, false otherwise.
+	 * @return bool true if table meta data should be cached, false otherwise.
 	 */
 	public function getEnableCache()
 	{

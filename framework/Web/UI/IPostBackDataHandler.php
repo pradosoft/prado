@@ -28,7 +28,7 @@ interface IPostBackDataHandler
 	 * data that are meant for the particular control.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return boolean whether the data of the control has been changed
+	 * @return bool whether the data of the control has been changed
 	 */
 	public function loadPostData($key, $values);
 	/**
@@ -38,7 +38,7 @@ interface IPostBackDataHandler
 	 */
 	public function raisePostDataChangedEvent();
 	/**
-	 * @return boolean whether postback causes the data change. Defaults to false for non-postback state.
+	 * @return bool whether postback causes the data change. Defaults to false for non-postback state.
 	 */
 	public function getDataChanged();
 }

@@ -44,7 +44,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	private $_d = [];
 	/**
 	 * number of items
-	 * @var integer
+	 * @var int
 	 */
 	private $_c = 0;
 
@@ -100,7 +100,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * @param mixed $item the item
-	 * @return boolean whether the queue contains the item
+	 * @return bool whether the queue contains the item
 	 */
 	public function contains($item)
 	{
@@ -110,8 +110,8 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the first item at the front of the queue.
 	 * Unlike {@link dequeue()}, this method does not remove the item from the queue.
-	 * @return mixed item at the top of the queue
 	 * @throws TInvalidOperationException if the queue is empty
+	 * @return mixed item at the top of the queue
 	 */
 	public function peek()
 	{
@@ -124,8 +124,8 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Removes and returns the object at the beginning of the queue.
-	 * @return mixed the item at the beginning of the queue
 	 * @throws TInvalidOperationException if the queue is empty
+	 * @return mixed the item at the beginning of the queue
 	 */
 	public function dequeue()
 	{
@@ -158,7 +158,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	}
 
 	/**
-	 * @return integer the number of items in the queue
+	 * @return int the number of items in the queue
 	 */
 	public function getCount()
 	{
@@ -168,7 +168,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the number of items in the queue.
 	 * This method is required by \Countable interface.
-	 * @return integer number of items in the queue.
+	 * @return int number of items in the queue.
 	 */
 	public function count()
 	{

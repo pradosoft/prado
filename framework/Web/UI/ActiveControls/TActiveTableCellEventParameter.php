@@ -32,7 +32,7 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 {
 
 	/**
-	 * @var integer the zero-based index of the cell.
+	 * @var int the zero-based index of the cell.
 	 */
 	private $_selectedCellIndex = -1;
 
@@ -51,7 +51,7 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 	/**
 	 * Returns the zero-based index of the {@link TActiveTableCell} within the
 	 * {@link TTableCellCollection} of the parent {@link TTableRow} control.
-	 * @return integer the zero-based index of the cell.
+	 * @return int the zero-based index of the cell.
 	 */
 	public function getSelectedCellIndex()
 	{

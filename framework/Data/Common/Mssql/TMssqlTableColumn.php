@@ -30,7 +30,7 @@ class TMssqlTableColumn extends TDbTableColumn
 
 	/**
 	 * Overrides parent implementation, returns PHP type from the db type.
-	 * @return boolean derived PHP primitive type from the column db type.
+	 * @return bool derived PHP primitive type from the column db type.
 	 */
 	public function getPHPType()
 	{
@@ -38,7 +38,7 @@ class TMssqlTableColumn extends TDbTableColumn
 	}
 
 	/**
-	 * @return boolean true if the column has identity (auto-increment)
+	 * @return bool true if the column has identity (auto-increment)
 	 */
 	public function getAutoIncrement()
 	{
@@ -46,7 +46,7 @@ class TMssqlTableColumn extends TDbTableColumn
 	}
 
 	/**
-	 * @return boolean true if auto increments.
+	 * @return bool true if auto increments.
 	 */
 	public function hasSequence()
 	{
@@ -54,7 +54,7 @@ class TMssqlTableColumn extends TDbTableColumn
 	}
 
 	/**
-	 * @return boolean true if db type is 'timestamp'.
+	 * @return bool true if db type is 'timestamp'.
 	 */
 	public function getIsExcluded()
 	{

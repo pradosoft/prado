@@ -62,7 +62,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Returns the template object associated with this control object.
-	 * @return ITemplate|null the parsed template, null if none
+	 * @return null|ITemplate the parsed template, null if none
 	 */
 	public function getTemplate()
 	{
@@ -89,7 +89,7 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * @return boolean whether this control is a source template control.
+	 * @return bool whether this control is a source template control.
 	 * A source template control loads its template from external storage,
 	 * such as file, db, rather than from within another template.
 	 */
@@ -190,7 +190,7 @@ class TTemplateControl extends TCompositeControl
 	}
 
 	/**
-	 * @return TTemplateControl|null master control associated with this control, null if none
+	 * @return null|TTemplateControl master control associated with this control, null if none
 	 */
 	public function getMaster()
 	{

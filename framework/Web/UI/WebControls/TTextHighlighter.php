@@ -69,7 +69,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return boolean whether to show line numbers in the highlighted result.
+	 * @return bool whether to show line numbers in the highlighted result.
 	 */
 	public function getShowLineNumbers()
 	{
@@ -77,7 +77,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean $value whether to show line numbers in the highlighted result.
+	 * @param bool $value whether to show line numbers in the highlighted result.
 	 */
 	public function setShowLineNumbers($value)
 	{
@@ -85,7 +85,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return boolean true will show "Copy Code" link. Defaults to false.
+	 * @return bool true will show "Copy Code" link. Defaults to false.
 	 */
 	public function getEnableCopyCode()
 	{
@@ -93,7 +93,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean $value true to show the "Copy Code" link.
+	 * @param bool $value true to show the "Copy Code" link.
 	 */
 	public function setEnableCopyCode($value)
 	{
@@ -117,7 +117,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return integer tab size. Defaults to 4.
+	 * @return int tab size. Defaults to 4.
 	 */
 	public function getTabSize()
 	{
@@ -125,7 +125,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param integer $value tab size
+	 * @param int $value tab size
 	 */
 	public function setTabSize($value)
 	{
@@ -133,7 +133,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return boolean wether the contents are html encoded. Defaults to true.
+	 * @return bool wether the contents are html encoded. Defaults to true.
 	 */
 	public function getEncodeHtml()
 	{
@@ -141,7 +141,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param boolean $value wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
+	 * @param bool $value wether to html-encode the contents using {@link THttpUtility::htmlEncode}.
 	 */
 	public function setEncodeHtml($value)
 	{

@@ -33,7 +33,7 @@ namespace Prado\Web\UI\WebControls;
 class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 {
 	/**
-	 * @var integer new page index
+	 * @var int new page index
 	 */
 	private $_newIndex;
 	/**
@@ -44,7 +44,7 @@ class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 	/**
 	 * Constructor.
 	 * @param TControl $source the control originally raises the <b>OnCommand</b> event.
-	 * @param integer $newPageIndex new page index
+	 * @param int $newPageIndex new page index
 	 */
 	public function __construct($source, $newPageIndex)
 	{
@@ -61,7 +61,7 @@ class TDataGridPageChangedEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer new page index
+	 * @return int new page index
 	 */
 	public function getNewPageIndex()
 	{

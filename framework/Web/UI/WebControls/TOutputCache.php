@@ -97,7 +97,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Returns a value indicating whether body contents are allowed for this control.
 	 * This method overrides the parent implementation by checking if cached
 	 * content is available or not. If yes, it returns false, otherwise true.
-	 * @param boolean whether body contents are allowed for this control.
+	 * @param bool whether body contents are allowed for this control.
 	 */
 	public function getAllowChildControls()
 	{
@@ -219,7 +219,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * cached state if available.
 	 * This method should only be used by framework developers.
 	 * @param array $state the collection of the state
-	 * @param boolean $needViewState whether the viewstate should be loaded
+	 * @param bool $needViewState whether the viewstate should be loaded
 	 */
 	protected function loadStateRecursive(&$state, $needViewState = true)
 	{
@@ -232,7 +232,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by saving state
 	 * into cache if needed.
 	 * This method should only be used by framework developers.
-	 * @param boolean $needViewState whether the viewstate should be saved
+	 * @param bool $needViewState whether the viewstate should be saved
 	 * @return array the collection of the control state (including its children's state).
 	 */
 	protected function &saveStateRecursive($needViewState = true)
@@ -335,7 +335,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @return integer the timestamp of the cached content. This is only valid if the content is being cached.
+	 * @return int the timestamp of the cached content. This is only valid if the content is being cached.
 	 * @since 3.1.1
 	 */
 	public function getCacheTime()
@@ -356,7 +356,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @return boolean whether content enclosed is cached or not
+	 * @return bool whether content enclosed is cached or not
 	 */
 	public function getContentCached()
 	{
@@ -364,7 +364,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @return integer number of seconds that the data can remain in cache. Defaults to 60 seconds.
+	 * @return int number of seconds that the data can remain in cache. Defaults to 60 seconds.
 	 * Note, if cache dependency changes or cache space is limited,
 	 * the data may be purged out of cache earlier.
 	 */
@@ -374,7 +374,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @param integer $value number of seconds that the data can remain in cache. If 0, it means data is not cached.
+	 * @param int $value number of seconds that the data can remain in cache. If 0, it means data is not cached.
 	 * @throws TInvalidDataValueException if the value is smaller than 0.
 	 */
 	public function setDuration($value)
@@ -398,8 +398,8 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * The names should be concatenated by semicolons.
 	 * By setting this value, the output cache will use different cached data
 	 * for each different set of request parameter values.
-	 * @return string a semicolon-separated list of strings used to vary the output cache.
 	 * @param mixed $value
+	 * @return string a semicolon-separated list of strings used to vary the output cache.
 	 */
 	public function setVaryByParam($value)
 	{
@@ -407,7 +407,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @return boolean whether the content being cached should be differentiated according to user sessions. Defaults to false.
+	 * @return bool whether the content being cached should be differentiated according to user sessions. Defaults to false.
 	 */
 	public function getVaryBySession()
 	{
@@ -415,7 +415,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @param boolean $value whether the content being cached should be differentiated according to user sessions.
+	 * @param bool $value whether the content being cached should be differentiated according to user sessions.
 	 */
 	public function setVaryBySession($value)
 	{
@@ -423,7 +423,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	}
 
 	/**
-	 * @return boolean whether cached output will be used on postback requests. Defaults to false.
+	 * @return bool whether cached output will be used on postback requests. Defaults to false.
 	 */
 	public function getCachingPostBack()
 	{
@@ -435,7 +435,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * By default, this is disabled. Be very cautious when enabling it.
 	 * If the cached content including interactive user controls such as
 	 * TTextBox, TDropDownList, your page may fail to render on postbacks.
-	 * @param boolean $value whether cached output will be used on postback requests.
+	 * @param bool $value whether cached output will be used on postback requests.
 	 */
 	public function setCachingPostBack($value)
 	{

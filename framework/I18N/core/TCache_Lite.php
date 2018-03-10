@@ -64,7 +64,7 @@ class TCache_Lite
 	 *
 	 * (can be very usefull for the debug of cached scripts)
 	 *
-	 * @var boolean $_caching
+	 * @var bool $_caching
 	 */
 	protected $_caching = true;
 
@@ -80,7 +80,7 @@ class TCache_Lite
 	 *
 	 * (can avoid cache corruption under bad circumstances)
 	 *
-	 * @var boolean $_fileLocking
+	 * @var bool $_fileLocking
 	 */
 	protected $_fileLocking = true;
 
@@ -106,7 +106,7 @@ class TCache_Lite
 	 * cache reading. Write control can detect some corrupt cache files but
 	 * maybe it's not a perfect control
 	 *
-	 * @var boolean $_writeControl
+	 * @var bool $_writeControl
 	 */
 	protected $_writeControl = true;
 
@@ -116,7 +116,7 @@ class TCache_Lite
 	 * If enabled, a control key is embeded in cache file and this key is
 	 * compared with the one calculated after the reading.
 	 *
-	 * @var boolean $_writeControl
+	 * @var bool $_writeControl
 	 */
 	protected $_readControl = true;
 
@@ -129,7 +129,7 @@ class TCache_Lite
 	 * better choice)
 	 * 'strlen' for a length only test (fastest)
 	 *
-	 * @var boolean $_readControlType
+	 * @var bool $_readControlType
 	 */
 	protected $_readControlType = 'crc32';
 
@@ -152,7 +152,7 @@ class TCache_Lite
 	 *
 	 * NB : There is no lifetime for memory caching !
 	 *
-	 * @var boolean $_memoryCaching
+	 * @var bool $_memoryCaching
 	 */
 	protected $_memoryCaching = false;
 
@@ -160,7 +160,7 @@ class TCache_Lite
 	 * Enable / Disable "Only Memory Caching"
 	 * (be carefull, memory caching is "beta quality")
 	 *
-	 * @var boolean $_onlyMemoryCaching
+	 * @var bool $_onlyMemoryCaching
 	 */
 	protected $_onlyMemoryCaching = false;
 
@@ -193,7 +193,7 @@ class TCache_Lite
 	 * will be used directly in cache file names so be carefull with
 	 * special characters...
 	 *
-	 * @var boolean $fileNameProtection
+	 * @var bool $fileNameProtection
 	 */
 	protected $_fileNameProtection = true;
 
@@ -203,7 +203,7 @@ class TCache_Lite
 	 * it can be used to save directly datas which aren't strings
 	 * (but it's slower)
 	 *
-	 * @var boolean $_serialize
+	 * @var bool $_serialize
 	 */
 	protected $_automaticSerialization = false;
 
@@ -259,7 +259,7 @@ class TCache_Lite
 	 *
 	 * @param string $id cache id
 	 * @param string $group name of the cache group
-	 * @param boolean $doNotTestCacheValidity if set to true, the cache
+	 * @param bool $doNotTestCacheValidity if set to true, the cache
 	 * validity won't be tested
 	 * @return string data of the cache (or false if no cache available)
 	 * @access public
@@ -313,7 +313,7 @@ class TCache_Lite
 	 * if automaticSerialization is on)
 	 * @param string $id cache id
 	 * @param string $group name of the cache group
-	 * @return boolean true if no problem
+	 * @return bool true if no problem
 	 * @access public
 	 */
 	public function save($data, $id = null, $group = 'default')
@@ -350,7 +350,7 @@ class TCache_Lite
 	 *
 	 * @param string $id cache id
 	 * @param string $group name of the cache group
-	 * @return boolean true if no problem
+	 * @return bool true if no problem
 	 * @access public
 	 */
 	public function remove($id, $group = 'default')
@@ -370,7 +370,7 @@ class TCache_Lite
 	 * else only cache files of the specified group will be destroyed
 	 *
 	 * @param string $group name of the cache group
-	 * @return boolean true if no problem
+	 * @return bool true if no problem
 	 * @access public
 	 */
 	public function clean($group = false)
@@ -575,7 +575,7 @@ class TCache_Lite
 	 * Write the given data in the cache file
 	 *
 	 * @param string $data data to put in cache
-	 * @return boolean true if ok
+	 * @return bool true if ok
 	 * @access private
 	 */
 	protected function _write($data)
@@ -605,7 +605,7 @@ class TCache_Lite
 	 * corrupted cache entries
 	 *
 	 * @param string $data data to put in cache
-	 * @return boolean true if the test is ok
+	 * @return bool true if the test is ok
 	 * @access private
 	 */
 	protected function _writeAndControl($data)

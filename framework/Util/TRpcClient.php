@@ -56,7 +56,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	private $_serverUrl;
 
 	/**
-	 * @var boolean whether the request is a notification and therefore should not care about the result (default: false)
+	 * @var bool whether the request is a notification and therefore should not care about the result (default: false)
 	 */
 	private $_isNotification = false;
 
@@ -64,7 +64,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 
 	/**
 	 * @param string url to RPC server
-	 * @param boolean whether requests are considered to be notifications (completely ignoring the response) (default: false)
+	 * @param bool whether requests are considered to be notifications (completely ignoring the response) (default: false)
 	 * @param mixed $serverUrl
 	 * @param mixed $isNotification
 	 */
@@ -78,11 +78,11 @@ class TRpcClient extends \Prado\TApplicationComponent
 
 	/**
 	 * Creates an instance of the requested RPC client type
-	 * @return TRpcClient instance
-	 * @throws TApplicationException if an unsupported RPC client type was specified
 	 * @param mixed $type
 	 * @param mixed $serverUrl
 	 * @param mixed $isNotification
+	 * @throws TApplicationException if an unsupported RPC client type was specified
+	 * @return TRpcClient instance
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{
@@ -130,7 +130,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	// getter/setter
 
 	/**
-	 * @return boolean whether requests are considered to be notifications (completely ignoring the response)
+	 * @return bool whether requests are considered to be notifications (completely ignoring the response)
 	 */
 	public function getIsNotification()
 	{

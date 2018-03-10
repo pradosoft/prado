@@ -95,8 +95,8 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Fetch results for current relationship.
-	 * @return boolean always true.
 	 * @param mixed $obj
+	 * @return bool always true.
 	 */
 	public function fetchResultsInto($obj)
 	{
@@ -226,6 +226,8 @@ abstract class TActiveRecordRelation
 	 * @param array foreign object field names.
 	 * @param mixed $properties
 	 * @param mixed $fields
+	 * @param & $results
+	 * @param & $fkObjects
 	 */
 	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
 	{
@@ -261,6 +263,7 @@ abstract class TActiveRecordRelation
 	 * @param array foreign objects.
 	 * @param mixed $source
 	 * @param mixed $properties
+	 * @param & $collections
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

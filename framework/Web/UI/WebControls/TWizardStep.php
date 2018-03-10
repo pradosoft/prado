@@ -68,7 +68,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @return boolean whether this step can be re-visited. Default to true.
+	 * @return bool whether this step can be re-visited. Default to true.
 	 */
 	public function getAllowReturn()
 	{
@@ -76,7 +76,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param boolean $value whether this step can be re-visited.
+	 * @param bool $value whether this step can be re-visited.
 	 */
 	public function setAllowReturn($value)
 	{

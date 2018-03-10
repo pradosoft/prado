@@ -55,7 +55,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * To trim or not to trim the contents.
-	 * @var boolean
+	 * @var bool
 	 */
 	protected $trim = true;
 
@@ -83,7 +83,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Set the option to trim the contents.
-	 * @param boolean $value trim or not.
+	 * @param bool $value trim or not.
 	 */
 	public function setTrim($value)
 	{
@@ -92,7 +92,7 @@ class TTranslateParameter extends TControl
 
 	/**
 	 * Trim the content or not.
-	 * @return boolean trim or not.
+	 * @return bool trim or not.
 	 */
 	public function getTrim()
 	{

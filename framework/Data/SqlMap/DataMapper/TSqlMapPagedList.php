@@ -49,6 +49,7 @@ class TSqlMapPagedList extends TPagedList
 	 * @param mixed $pageSize
 	 * @param null|mixed $delegate
 	 * @param mixed $page
+	 * @param IMappedStatement $statement
 	 */
 	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate = null, $page = 0)
 	{
@@ -79,8 +80,8 @@ class TSqlMapPagedList extends TPagedList
 	}
 
 	/**
-	 * @throws TSqlMapException custom paging must be enabled.
 	 * @param mixed $value
+	 * @throws TSqlMapException custom paging must be enabled.
 	 */
 	public function setCustomPaging($value)
 	{
@@ -111,7 +112,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Switches to the next page.
-	 * @return integer|boolean the new page index, false if next page is not availabe.
+	 * @return bool|int the new page index, false if next page is not availabe.
 	 */
 	public function nextPage()
 	{
@@ -120,7 +121,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Switches to the previous page.
-	 * @return integer|boolean the new page index, false if previous page is not availabe.
+	 * @return bool|int the new page index, false if previous page is not availabe.
 	 */
 	public function previousPage()
 	{
@@ -184,7 +185,7 @@ class TSqlMapPagedList extends TPagedList
 	}
 
 	/**
-	 * @return boolean true if the next page is available, false otherwise.
+	 * @return bool true if the next page is available, false otherwise.
 	 */
 	public function getIsNextPageAvailable()
 	{
@@ -192,7 +193,7 @@ class TSqlMapPagedList extends TPagedList
 	}
 
 	/**
-	 * @return boolean true if the previous page is available, false otherwise.
+	 * @return bool true if the previous page is available, false otherwise.
 	 */
 	public function getIsPreviousPageAvailable()
 	{
@@ -200,7 +201,7 @@ class TSqlMapPagedList extends TPagedList
 	}
 
 	/**
-	 * @return boolean true if is the very last page, false otherwise.
+	 * @return bool true if is the very last page, false otherwise.
 	 */
 	public function getIsLastPage()
 	{
@@ -208,7 +209,7 @@ class TSqlMapPagedList extends TPagedList
 	}
 
 	/**
-	 * @return boolean true if is not first nor last page, false otherwise.
+	 * @return bool true if is not first nor last page, false otherwise.
 	 */
 	public function getIsMiddlePage()
 	{

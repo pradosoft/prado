@@ -49,7 +49,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	const RETURN_URL_VAR = 'ReturnUrl';
 	/**
-	 * @var boolean if the module has been initialized
+	 * @var bool if the module has been initialized
 	 */
 	private $_initialized = false;
 	/**
@@ -61,7 +61,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	private $_loginPage;
 	/**
-	 * @var boolean whether authorization should be skipped
+	 * @var bool whether authorization should be skipped
 	 */
 	private $_skipAuthorization = false;
 	/**
@@ -69,7 +69,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	private $_returnUrlVarName;
 	/**
-	 * @var boolean whether to allow auto login (using cookie)
+	 * @var bool whether to allow auto login (using cookie)
 	 */
 	private $_allowAutoLogin = false;
 	/**
@@ -77,7 +77,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	private $_userKey;
 	/**
-	 * @var integer authentication expiration time in seconds. Defaults to zero (no expiration)
+	 * @var int authentication expiration time in seconds. Defaults to zero (no expiration)
 	 */
 	private $_authExpire = 0;
 
@@ -120,7 +120,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param string|IUserManager $provider the user manager module ID or the user manager object
+	 * @param IUserManager|string $provider the user manager module ID or the user manager object
 	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
 	 */
 	public function setUserManager($provider)
@@ -245,7 +245,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return boolean whether to allow remembering login so that the user logs on automatically next time. Defaults to false.
+	 * @return bool whether to allow remembering login so that the user logs on automatically next time. Defaults to false.
 	 * @since 3.1.1
 	 */
 	public function getAllowAutoLogin()
@@ -254,7 +254,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param boolean $value whether to allow remembering login so that the user logs on automatically next time. Users have to enable cookie to make use of this feature.
+	 * @param bool $value whether to allow remembering login so that the user logs on automatically next time. Users have to enable cookie to make use of this feature.
 	 * @since 3.1.1
 	 */
 	public function setAllowAutoLogin($value)
@@ -263,7 +263,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return integer authentication expiration time in seconds. Defaults to zero (no expiration).
+	 * @return int authentication expiration time in seconds. Defaults to zero (no expiration).
 	 * @since 3.1.3
 	 */
 	public function getAuthExpire()
@@ -272,7 +272,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param integer $value authentication expiration time in seconds. Defaults to zero (no expiration).
+	 * @param int $value authentication expiration time in seconds. Defaults to zero (no expiration).
 	 * @since 3.1.3
 	 */
 	public function setAuthExpire($value)
@@ -405,7 +405,7 @@ class TAuthManager extends \Prado\TModule
 	 * Switches to a new user.
 	 * This method will logout the current user first and login with a new one (without password.)
 	 * @param string $username the new username
-	 * @return boolean if the switch is successful
+	 * @return bool if the switch is successful
 	 */
 	public function switchUser($username)
 	{
@@ -423,8 +423,8 @@ class TAuthManager extends \Prado\TModule
 	 * If yes, a user object will be created for the application.
 	 * @param string $username username
 	 * @param string $password password
-	 * @param integer $expire number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
-	 * @return boolean if login is successful
+	 * @param int $expire number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
+	 * @return bool if login is successful
 	 */
 	public function login($username, $password, $expire = 0)
 	{

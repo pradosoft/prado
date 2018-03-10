@@ -109,7 +109,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 * Checks the radio button.
 	 * Updates radio button checked state on the client-side if the
 	 * {@link setEnableUpdate EnableUpdate} property is set to true.
-	 * @param boolean $value whether the radio button is to be checked or not.
+	 * @param bool $value whether the radio button is to be checked or not.
 	 */
 	public function setChecked($value)
 	{

@@ -61,8 +61,8 @@ abstract class TSqlMapCache implements ICache
 	}
 
 	/**
-	 * @return object the object removed if exists, null otherwise.
 	 * @param mixed $key
+	 * @return object the object removed if exists, null otherwise.
 	 */
 	public function delete($key)
 	{
@@ -82,11 +82,11 @@ abstract class TSqlMapCache implements ICache
 	}
 
 	/**
-	 * @throws TSqlMapException not implemented.
 	 * @param mixed $id
 	 * @param mixed $value
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
+	 * @throws TSqlMapException not implemented.
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{

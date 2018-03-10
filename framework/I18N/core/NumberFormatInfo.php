@@ -76,8 +76,8 @@ class NumberFormatInfo
 	/**
 	 * Allow functions that begins with 'set' to be called directly
 	 * as an attribute/property to retrieve the value.
-	 * @return mixed
 	 * @param mixed $name
+	 * @return mixed
 	 */
 	public function __get($name)
 	{
@@ -161,8 +161,8 @@ class NumberFormatInfo
 	/**
 	 * Gets the default NumberFormatInfo that is culture-independent
 	 * (invariant).
-	 * @return NumberFormatInfo default NumberFormatInfo.
 	 * @param mixed $type
+	 * @return NumberFormatInfo default NumberFormatInfo.
 	 */
 	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
@@ -507,8 +507,8 @@ class NumberFormatInfo
 
 	/**
 	 * Gets the string to use as the currency symbol.
-	 * @return string currency symbol.
 	 * @param mixed $currency
+	 * @return string currency symbol.
 	 */
 	public function getCurrencySymbol($currency = 'USD')
 	{

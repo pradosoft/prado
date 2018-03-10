@@ -33,11 +33,11 @@ class TTableStyle extends TStyle
 	 */
 	private $_horizontalAlign;
 	/**
-	 * @var integer cellpadding of the table
+	 * @var int cellpadding of the table
 	 */
 	private $_cellPadding;
 	/**
-	 * @var integer cellspacing of the table
+	 * @var int cellspacing of the table
 	 */
 	private $_cellSpacing;
 	/**
@@ -45,7 +45,7 @@ class TTableStyle extends TStyle
 	 */
 	private $_gridLines;
 	/**
-	 * @var boolean whether the table border should be collapsed
+	 * @var bool whether the table border should be collapsed
 	 */
 	private $_borderCollapse;
 
@@ -54,6 +54,7 @@ class TTableStyle extends TStyle
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -227,7 +228,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return integer cellpadding of the table. Defaults to -1, meaning not set.
+	 * @return int cellpadding of the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellPadding()
 	{
@@ -235,7 +236,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param integer $value cellpadding of the table. A value equal to -1 clears up the setting.
+	 * @param int $value cellpadding of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
 	 */
 	public function setCellPadding($value)
@@ -246,7 +247,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return integer cellspacing of the table. Defaults to -1, meaning not set.
+	 * @return int cellspacing of the table. Defaults to -1, meaning not set.
 	 */
 	public function getCellSpacing()
 	{
@@ -254,7 +255,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param integer $value cellspacing of the table. A value equal to -1 clears up the setting.
+	 * @param int $value cellspacing of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
 	 */
 	public function setCellSpacing($value)
@@ -283,7 +284,7 @@ class TTableStyle extends TStyle
 
 
 	/**
-	 * @return boolean whether the table borders should be collapsed. Defaults to false.
+	 * @return bool whether the table borders should be collapsed. Defaults to false.
 	 */
 	public function getBorderCollapse()
 	{
@@ -291,7 +292,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @param boolean $value whether the table borders should be collapsed.
+	 * @param bool $value whether the table borders should be collapsed.
 	 */
 	public function setBorderCollapse($value)
 	{

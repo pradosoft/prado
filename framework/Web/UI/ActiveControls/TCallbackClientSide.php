@@ -205,7 +205,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @return boolean true to post the inputs of the form on callback, default
+	 * @return bool true to post the inputs of the form on callback, default
 	 * is post the inputs on callback.
 	 */
 	public function getPostState()
@@ -214,7 +214,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param boolean $value true to post the inputs of the form with callback
+	 * @param bool $value true to post the inputs of the form with callback
 	 * requests. Default is to post the inputs.
 	 */
 	public function setPostState($value)
@@ -223,7 +223,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @return integer callback request timeout.
+	 * @return int callback request timeout.
 	 */
 	public function getRequestTimeOut()
 	{
@@ -231,7 +231,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @param integer $value callback request timeout
+	 * @param int $value callback request timeout
 	 */
 	public function setRequestTimeOut($value)
 	{
@@ -241,7 +241,7 @@ class TCallbackClientSide extends TClientSideOptions
 	/**
 	 * Set to true to enable the callback response to enable the viewstate
 	 * update. This will automatically set HasPrority to true.
-	 * @param boolean $value true enables the callback response to update the
+	 * @param bool $value true enables the callback response to update the
 	 * viewstate.
 	 */
 	public function setEnablePageStateUpdate($value)
@@ -251,7 +251,7 @@ class TCallbackClientSide extends TClientSideOptions
 	}
 
 	/**
-	 * @return boolean client-side viewstate will be updated on callback
+	 * @return bool client-side viewstate will be updated on callback
 	 * response if true. Default is true.
 	 */
 	public function getEnablePageStateUpdate()

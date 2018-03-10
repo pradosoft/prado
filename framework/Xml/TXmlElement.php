@@ -111,7 +111,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true if this element has child elements
+	 * @return bool true if this element has child elements
 	 */
 	public function getHasElement()
 	{
@@ -119,7 +119,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return boolean true if this element has attributes
+	 * @return bool true if this element has attributes
 	 */
 	public function getHasAttribute()
 	{
@@ -171,8 +171,8 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
 	 * @param mixed $tagName
+	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
 	 */
 	public function getElementByTagName($tagName)
 	{
@@ -187,8 +187,8 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TList list of all child elements that have the specified tag-name
 	 * @param mixed $tagName
+	 * @return TList list of all child elements that have the specified tag-name
 	 */
 	public function getElementsByTagName($tagName)
 	{
@@ -204,8 +204,8 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string string representation of this element
 	 * @param mixed $indent
+	 * @return string string representation of this element
 	 */
 	public function toString($indent = 0)
 	{

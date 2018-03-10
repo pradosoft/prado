@@ -60,7 +60,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * In addition, the render method of all connected pagers is called so they
 	 * get updated when the data source is changed. Also the repeater registers
 	 * itself for rendering in order to get it's content replaced on client side.
-	 * @param Traversable|array|string $value data source object
+	 * @param array|string|Traversable $value data source object
 	 */
 	public function setDataSource($value)
 	{

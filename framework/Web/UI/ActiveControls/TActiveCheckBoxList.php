@@ -69,7 +69,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 * Since at least a control with id is needed to update the content during callback,
 	 * always force the surrounding span to be rendered, so initially empty lists can be
 	 * updated later.
-	 *@return boolean always true
+	 *@return bool always true
 	 */
 	protected function getSpanNeeded()
 	{

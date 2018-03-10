@@ -58,6 +58,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 
 	/**
 	 * Constructor: informs the rpc server of the registered methods
+	 * @param TRpcServer $rpcServer
 	 */
 	public function __construct(TRpcServer $rpcServer)
 	{

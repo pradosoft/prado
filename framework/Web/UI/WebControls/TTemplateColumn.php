@@ -188,7 +188,7 @@ class TTemplateColumn extends TDataGridColumn
 	 * It initializes the cell based on different templates
 	 * (ItemTemplate, EditItemTemplate, HeaderTemplate, FooterTemplate).
 	 * @param TTableCell $cell the cell to be initialized.
-	 * @param integer $columnIndex the index to the Columns property that the cell resides in.
+	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */
 	public function initializeCell($cell, $columnIndex, $itemType)

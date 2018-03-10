@@ -75,6 +75,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects.
 	 * @param array original results.
+	 * @param & $results
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -103,6 +104,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	 * @param array foreign objects.
 	 * @param mixed $source
 	 * @param mixed $properties
+	 * @param & $collections
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{
@@ -120,7 +122,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 
 	/**
 	 * Updates the source object first.
-	 * @return boolean true if all update are success (including if no update was required), false otherwise .
+	 * @return bool true if all update are success (including if no update was required), false otherwise .
 	 */
 	public function updateAssociatedRecords()
 	{

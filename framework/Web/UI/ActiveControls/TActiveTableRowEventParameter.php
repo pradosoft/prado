@@ -31,7 +31,7 @@ namespace Prado\Web\UI\ActiveControls;
 class TActiveTableRowEventParameter extends TCallbackEventParameter
 {
 	/**
-	 * @var integer the zero-based index of the row.
+	 * @var int the zero-based index of the row.
 	 */
 	private $_selectedRowIndex = -1;
 
@@ -50,7 +50,7 @@ class TActiveTableRowEventParameter extends TCallbackEventParameter
 	/**
 	 * Returns the zero-based index of the {@link TActiveTableRow} within the
 	 * {@link TTableRowCollection} of the parent {@link TTable} control.
-	 * @return integer the zero-based index of the row.
+	 * @return int the zero-based index of the row.
 	 */
 	public function getSelectedRowIndex()
 	{

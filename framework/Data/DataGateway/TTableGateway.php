@@ -306,7 +306,7 @@ class TTableGateway extends \Prado\TComponent
 	 * </code>
 	 * @param string $criteria delete condition.
 	 * @param array $parameters condition parameters.
-	 * @return integer number of records deleted.
+	 * @return int number of records deleted.
 	 */
 	public function deleteAll($criteria, $parameters = [])
 	{
@@ -385,7 +385,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param array $data new record data.
 	 * @param string $criteria update condition
 	 * @param array $parameters additional binding name-value pairs.
-	 * @return integer number of records updated.
+	 * @return int number of records updated.
 	 */
 	public function update($data, $criteria, $parameters = [])
 	{
@@ -462,10 +462,10 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->deleteAll('Name = ?', $name);
 	 * $table->deleteByName($name);
 	 * </code>
-	 * @return mixed single record if method name starts with "findBy", 0 or more records
-	 * if method name starts with "findAllBy"
 	 * @param mixed $method
 	 * @param mixed $args
+	 * @return mixed single record if method name starts with "findBy", 0 or more records
+	 * if method name starts with "findAllBy"
 	 */
 	public function __call($method, $args)
 	{

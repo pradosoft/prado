@@ -40,6 +40,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
+	 * @param & $exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
@@ -170,7 +171,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return integer maximum number of pager buttons to be displayed. Defaults to 10.
+	 * @return int maximum number of pager buttons to be displayed. Defaults to 10.
 	 */
 	public function getPageButtonCount()
 	{
@@ -178,7 +179,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param integer $value maximum number of pager buttons to be displayed
+	 * @param int $value maximum number of pager buttons to be displayed
 	 * @throws TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)
@@ -206,7 +207,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return boolean whether the pager is visible. Defaults to true.
+	 * @return bool whether the pager is visible. Defaults to true.
 	 */
 	public function getVisible()
 	{
@@ -214,7 +215,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param boolean $value whether the pager is visible.
+	 * @param bool $value whether the pager is visible.
 	 */
 	public function setVisible($value)
 	{

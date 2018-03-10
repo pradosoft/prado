@@ -59,6 +59,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 * @param IActiveControl active control to adapt.
 	 * @param string Base active control class name.
 	 * @param null|mixed $baseCallbackClass
+	 * @param IActiveControl $control
 	 */
 	public function __construct(IActiveControl $control, $baseCallbackClass = null)
 	{
@@ -126,7 +127,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return boolean true if the viewstate needs to be tracked.
+	 * @return bool true if the viewstate needs to be tracked.
 	 */
 	protected function getIsTrackingPageState()
 	{

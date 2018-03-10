@@ -39,7 +39,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param integer $currentStep current step index
+	 * @param int $currentStep current step index
 	 */
 	public function __construct($currentStep)
 	{
@@ -48,7 +48,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer the zero-based index of the currently active step.
+	 * @return int the zero-based index of the currently active step.
 	 */
 	public function getCurrentStepIndex()
 	{
@@ -56,7 +56,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return integer the zero-based index of the next step. Default to {@link getCurrentStepIndex CurrentStepIndex}.
+	 * @return int the zero-based index of the next step. Default to {@link getCurrentStepIndex CurrentStepIndex}.
 	 */
 	public function getNextStepIndex()
 	{
@@ -64,7 +64,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param integer $index the zero-based index of the next step.
+	 * @param int $index the zero-based index of the next step.
 	 */
 	public function setNextStepIndex($index)
 	{
@@ -72,7 +72,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return boolean whether navigation to the next step should be canceled. Default to false.
+	 * @return bool whether navigation to the next step should be canceled. Default to false.
 	 */
 	public function getCancelNavigation()
 	{
@@ -80,7 +80,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @param boolean $value whether navigation to the next step should be canceled.
+	 * @param bool $value whether navigation to the next step should be canceled.
 	 */
 	public function setCancelNavigation($value)
 	{

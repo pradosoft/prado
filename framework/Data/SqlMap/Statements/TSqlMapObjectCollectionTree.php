@@ -42,7 +42,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	private $_list = [];
 
 	/**
-	 * @return boolean true if the graph is empty
+	 * @return bool true if the graph is empty
 	 */
 	public function isEmpty()
 	{
@@ -89,7 +89,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param string new node id
 	 * @param mixed $parent
 	 * @param mixed $node
-	 * @return boolean true if parent node is found.
+	 * @param & $childs
+	 * @return bool true if parent node is found.
 	 */
 	protected function addNode(&$childs, $parent, $node)
 	{
@@ -121,7 +122,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * @param array list of nodes to check
-	 * @return boolean true if all nodes are leaf nodes, false otherwise
+	 * @param & $nodes
+	 * @return bool true if all nodes are leaf nodes, false otherwise
 	 */
 	protected function hasChildren(&$nodes)
 	{
@@ -139,6 +141,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	 * @param string parent node id
 	 * @param array list of child nodes.
 	 * @param mixed $parent
+	 * @param & $nodes
 	 */
 	protected function collectChildren($parent, &$nodes)
 	{
