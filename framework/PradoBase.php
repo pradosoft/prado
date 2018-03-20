@@ -448,10 +448,8 @@ class PradoBase
 	}
 
 	/**
-	 * @param string alias to the path
-	 * @param string the path corresponding to the alias
-	 * @param mixed $alias
-	 * @param mixed $path
+	 * @param string $alias alias to the path
+	 * @param string $path the path corresponding to the alias
 	 * @throws TInvalidOperationException $alias if the alias is already defined
 	 * @throws TInvalidDataValueException $path if the path is not a valid file path
 	 */

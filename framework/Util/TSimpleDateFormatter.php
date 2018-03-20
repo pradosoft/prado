@@ -63,10 +63,8 @@ class TSimpleDateFormatter
 
 	/**
 	 * Constructor, create a new date time formatter.
-	 * @param string formatting pattern.
-	 * @param string pattern and value charset
-	 * @param mixed $pattern
-	 * @param mixed $charset
+	 * @param string $pattern formatting pattern.
+	 * @param string $charset pattern and value charset
 	 */
 	public function __construct($pattern, $charset = 'UTF-8')
 	{
@@ -213,9 +211,8 @@ class TSimpleDateFormatter
 
 	/**
 	 * Parse the string according to the pattern.
-	 * @param int|string date string or integer to parse
-	 * @param mixed $value
-	 * @param mixed $defaultToCurrentTime
+	 * @param int|string $value date string or integer to parse
+	 * @param bool $defaultToCurrentTime
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 * @return int date time stamp
 	 */

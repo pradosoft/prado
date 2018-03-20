@@ -28,8 +28,7 @@ class TActiveDataGridPagerEventParameter extends TDataGridPagerEventParameter
 {
 	/**
 	 * Constructor.
-	 * @param TActiveDataGridPager datagrid pager related with the corresponding event
-	 * @param TActiveDataGridPager $pager
+	 * @param TActiveDataGridPager $pager datagrid pager related with the corresponding event
 	 */
 	public function __construct(TActiveDataGridPager $pager)
 	{

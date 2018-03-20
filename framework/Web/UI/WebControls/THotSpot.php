@@ -49,10 +49,9 @@ abstract class THotSpot extends \Prado\TComponent
 	 * This function is very useful in defining setter functions for control properties
 	 * that must be kept in viewstate.
 	 * Make sure that the viewstate value must be serializable and unserializable.
-	 * @param string the name of the viewstate value
-	 * @param mixed $key the viewstate value to be set
+	 * @param string $key the name of the viewstate value
+	 * @param mixed $value the viewstate value to be set
 	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
-	 * @param mixed $value
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{

@@ -84,8 +84,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Copies basic control attributes from another control.
 	 * Properties including AccessKey, ToolTip, TabIndex, Enabled
 	 * and Attributes are copied.
-	 * @param TWebControl source control
-	 * @param TWebControl $control
+	 * @param TWebControl $control source control
 	 */
 	public function copyBaseAttributes(TWebControl $control)
 	{

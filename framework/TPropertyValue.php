@@ -153,11 +153,9 @@ class TPropertyValue
 	 *
 	 * For backward compatibility, this method also supports sanity
 	 * check of a string value to see if it is among the given list of strings.
-	 * @param mixed the value to be converted.
-	 * @param mixed class name of the enumerable type, or array of valid enumeration values. If this is not an array,
+	 * @param mixed $value the value to be converted.
+	 * @param mixed $enums class name of the enumerable type, or array of valid enumeration values. If this is not an array,
 	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
-	 * @param mixed $value
-	 * @param mixed $enums
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 * @return string the valid enumeration value
 	 */

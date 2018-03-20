@@ -34,10 +34,8 @@ class TJsonRpcClient extends TRpcClient
 	// magics
 
 	/**
-	 * @param string RPC method name
-	 * @param array RPC method parameters
-	 * @param mixed $method
-	 * @param mixed $parameters
+	 * @param string $method RPC method name
+	 * @param array $parameters RPC method parameters
 	 * @throws TRpcClientRequestException if the client fails to connect to the server
 	 * @throws TRpcClientResponseException if the response represents an RPC fault
 	 * @return mixed RPC request result
@@ -68,10 +66,8 @@ class TJsonRpcClient extends TRpcClient
 	// methods
 
 	/**
-	 * @param string method name
-	 * @param array method parameters
-	 * @param mixed $method
-	 * @param mixed $parameters
+	 * @param string $method method name
+	 * @param array $parameters method parameters
 	 */
 	public function encodeRequest($method, $parameters)
 	{
@@ -87,11 +83,9 @@ class TJsonRpcClient extends TRpcClient
 
 	/**
 	 * Creates an instance of TJsonRpcClient
-	 * @param string url of the rpc server
-	 * @param bool whether the requests are considered to be notifications (completely ignoring the response) (default: false)
-	 * @param mixed $type
-	 * @param mixed $serverUrl
-	 * @param mixed $isNotification
+	 * @param mixed $type unused
+	 * @param string $serverUrl url of the rpc server
+	 * @param bool $isNotification whether the requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{

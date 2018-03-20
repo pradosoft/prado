@@ -177,8 +177,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Encrypts data with {@link getEncryptionKey EncryptionKey}.
-	 * @param string data to be encrypted.
-	 * @param mixed $data
+	 * @param string $data data to be encrypted.
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the encrypted data
 	 */
@@ -195,8 +194,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Decrypts data with {@link getEncryptionKey EncryptionKey}.
-	 * @param string data to be decrypted.
-	 * @param mixed $data
+	 * @param string $data data to be decrypted.
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the decrypted data
 	 */
@@ -224,9 +222,8 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Validates if data is tampered.
-	 * @param string data to be validated. The data must be previously
+	 * @param string $data data to be validated. The data must be previously
 	 * generated using {@link hashData()}.
-	 * @param mixed $data
 	 * @return string the real data with HMAC stripped off. False if the data
 	 * is tampered.
 	 */

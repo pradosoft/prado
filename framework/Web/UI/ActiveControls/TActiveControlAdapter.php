@@ -56,10 +56,8 @@ class TActiveControlAdapter extends TControlAdapter
 
 	/**
 	 * Constructor.
-	 * @param IActiveControl active control to adapt.
-	 * @param string Base active control class name.
-	 * @param null|mixed $baseCallbackClass
-	 * @param IActiveControl $control
+	 * @param IActiveControl $control active control to adapt.
+	 * @param null|string $baseCallbackClass Base active control class name.
 	 */
 	public function __construct(IActiveControl $control, $baseCallbackClass = null)
 	{

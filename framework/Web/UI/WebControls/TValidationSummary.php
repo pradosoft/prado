@@ -234,7 +234,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the javascript for validation summary.
-	 * @param array list of options for validation summary.
 	 */
 	protected function renderJsSummary()
 	{
@@ -356,7 +355,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a simple list.
-	 * @param array list of messages
 	 * @param string $writer the header text
 	 * @return string summary list
 	 */
@@ -376,7 +374,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a paragraph.
-	 * @param array list of messages
 	 * @param string $writer the header text
 	 * @return string summary paragraph
 	 */
@@ -393,7 +390,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a bullet list.
-	 * @param array list of messages
 	 * @param string $writer the header text
 	 * @return string summary bullet list
 	 */

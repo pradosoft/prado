@@ -56,11 +56,8 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 
 	/**
 	 * Overrides parent implementation to use PostgreSQL's ILIKE instead of LIKE (case-sensitive).
-	 * @param string column name.
-	 * @param array keywords
-	 * @param mixed $sql
-	 * @param mixed $limit
-	 * @param mixed $offset
+	 * @param string $column column name.
+	 * @param array $words keywords
 	 * @return string search condition for all words in one column.
 	 */
 	/*

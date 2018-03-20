@@ -50,8 +50,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @param IActiveControl a active list control.
-	 * @param IActiveControl $control
+	 * @param IActiveControl $control a active list control.
 	 */
 	public function setControl(IActiveControl $control)
 	{
@@ -87,11 +86,9 @@ class TActiveListItemCollection extends TListItemCollection
 	/**
 	 * Inserts an item into the collection.
 	 * The new option is added on the client-side during callback.
-	 * @param int the location where the item will be inserted.
+	 * @param int $index the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
-	 * @param TListItem the item to be inserted.
-	 * @param mixed $index
-	 * @param mixed $value
+	 * @param TListItem $value the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
 	public function insertAt($index, $value)

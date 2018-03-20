@@ -84,10 +84,9 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param int|string integer log level filter (in bits). If the value is
+	 * @param int|string $levels integer log level filter (in bits). If the value is
 	 * a string, it is assumed to be comma-separated level names. Valid level names
 	 * include 'Debug', 'Info', 'Notice', 'Warning', 'Error', 'Alert' and 'Fatal'.
-	 * @param mixed $levels
 	 */
 	public function setLevels($levels)
 	{
@@ -164,8 +163,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * Retrieves log messages from logger to log route specific destination.
-	 * @param TLogger logger instance
-	 * @param TLogger $logger
+	 * @param TLogger $logger logger instance
 	 */
 	public function collectLogs(TLogger $logger)
 	{
@@ -178,14 +176,13 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * Processes log messages and sends them to specific destination.
 	 * Derived child classes must implement this method.
-	 * @param array list of messages.  Each array elements represents one message
+	 * @param array $logs list of messages.  Each array elements represents one message
 	 * with the following structure:
 	 * array(
 	 *   [0] => message
 	 *   [1] => level
 	 *   [2] => category
 	 *   [3] => timestamp);
-	 * @param mixed $logs
 	 */
 	abstract protected function processLogs($logs);
 }

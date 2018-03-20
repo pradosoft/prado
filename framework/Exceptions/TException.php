@@ -42,11 +42,10 @@ class TException extends \Exception
 
 	/**
 	 * Constructor.
-	 * @param string error message. This can be a string that is listed
+	 * @param string $errorMessage error message. This can be a string that is listed
 	 * in the message file. If so, the message in the preferred language
 	 * will be used as the error message. Any rest parameters will be used
 	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
-	 * @param mixed $errorMessage
 	 */
 	public function __construct($errorMessage)
 	{

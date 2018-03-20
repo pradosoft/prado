@@ -179,8 +179,7 @@ class TDbCache extends TCache
 	 * If {@link setAutoCreateCacheTable AutoCreateCacheTableName} is 'true' check existence of cache table
 	 * and create table if does not exist.
 	 *
-	 * @param bool Force override global state check
-	 * @param mixed $force
+	 * @param bool $force Force override global state check
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
 	 * @return void
 	 * @since 3.1.5
@@ -239,8 +238,7 @@ class TDbCache extends TCache
 
 	/**
 	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
-	 * @param bool override {@link setFlushInterval FlushInterval} and force deletion of expired items
-	 * @param mixed $force
+	 * @param bool $force override {@link setFlushInterval FlushInterval} and force deletion of expired items
 	 * @return void
 	 * @since 3.1.5
 	 */
@@ -291,7 +289,6 @@ class TDbCache extends TCache
 
 	/**
 	 * Creates the DB connection.
-	 * @param string the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return TDbConnection the created DB connection
 	 */

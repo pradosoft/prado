@@ -115,16 +115,11 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * Override parent implementation to create, depending on the button type, a TActiveLinkButton,
 	 * a TActiveButton or a TActiveImageButton may be created.
 	 *
-	 * @param string button type, either LinkButton or PushButton
-	 * @param bool whether the button should be enabled
-	 * @param string caption of the button
-	 * @param string CommandName corresponding to the OnCommand event of the button
-	 * @param string CommandParameter corresponding to the OnCommand event of the button
-	 * @param mixed $buttonType
-	 * @param mixed $enabled
-	 * @param mixed $text
-	 * @param mixed $commandName
-	 * @param mixed $commandParameter
+	 * @param string $buttonType button type, either LinkButton or PushButton
+	 * @param bool $enabled whether the button should be enabled
+	 * @param string $text caption of the button
+	 * @param string $commandName CommandName corresponding to the OnCommand event of the button
+	 * @param string $commandParameter CommandParameter corresponding to the OnCommand event of the button
 	 * @return mixed the button instance
 	 */
 	protected function createPagerButton($buttonType, $enabled, $text, $commandName, $commandParameter)

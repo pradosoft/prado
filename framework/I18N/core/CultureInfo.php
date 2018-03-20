@@ -169,8 +169,7 @@ class CultureInfo
 	 * culture specified by name. E.g. <code>new CultureInfo('en_AU');</cdoe>
 	 * The culture indentifier must be of the form
 	 * "language_(country/region/variant)".
-	 * @param string a culture name, e.g. "en_AU".
-	 * @param mixed $culture
+	 * @param string $culture a culture name, e.g. "en_AU".
 	 * @return return new CultureInfo.
 	 */
 	public function __construct($culture = 'en')
@@ -532,9 +531,8 @@ class CultureInfo
 	 * culture type. This is an EXPENSIVE function, it needs to traverse
 	 * a list of ICU files in the data directory.
 	 * This function can be called statically.
-	 * @param int culture type, CultureInfo::ALL, CultureInfo::NEUTRAL
+	 * @param int $type culture type, CultureInfo::ALL, CultureInfo::NEUTRAL
 	 * or CultureInfo::SPECIFIC.
-	 * @param mixed $type
 	 * @return array list of culture information available.
 	 */
 	public static function getCultures($type = CultureInfo::ALL)

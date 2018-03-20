@@ -30,15 +30,13 @@ interface IUserManager
 	public function getGuestName();
 	/**
 	 * Returns a user instance given the user name.
-	 * @param string user name, null if it is a guest.
-	 * @param null|mixed $username
+	 * @param null|string $username user name, null if it is a guest.
 	 * @return TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null);
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
-	 * @param THttpCookie the cookie storing user authentication information
-	 * @param mixed $cookie
+	 * @param THttpCookie $cookie the cookie storing user authentication information
 	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */

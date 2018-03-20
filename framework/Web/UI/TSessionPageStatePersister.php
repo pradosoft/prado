@@ -56,7 +56,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	private $_historySize = 10;
 
 	/**
-	 * @param TPage the page that this persister works for
+	 * @return TPage the page that this persister works for
 	 */
 	public function getPage()
 	{
@@ -64,8 +64,7 @@ class TSessionPageStatePersister extends \Prado\TComponent implements IPageState
 	}
 
 	/**
-	 * @param TPage the page that this persister works for.
-	 * @param TPage $page
+	 * @param TPage $page the page that this persister works for.
 	 */
 	public function setPage(TPage $page)
 	{

@@ -60,16 +60,12 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * Logs a message.
 	 * Messages logged by this method may be retrieved via {@link getLogs}.
-	 * @param string message to be logged
-	 * @param int level of the message. Valid values include
+	 * @param string $message message to be logged
+	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
-	 * @param string category of the message
-	 * @param string|TControl control of the message
-	 * @param mixed $message
-	 * @param mixed $level
-	 * @param mixed $category
-	 * @param null|mixed $ctl
+	 * @param string $category category of the message
+	 * @param null|string|TControl $ctl control of the message
 	 */
 	public function log($message, $level, $category = 'Uncategorized', $ctl = null)
 	{
@@ -105,13 +101,10 @@ class TLogger extends \Prado\TComponent
 	 * A message whose registered timestamp is less or equal the filter value will be returned.
 	 * Level filter, category filter, control filter and timestamp filter are combinational, i.e., only messages
 	 * satisfying all filter conditions will they be returned.
-	 * @param int level filter
-	 * @param array category filter
-	 * @param array control filter
-	 * @param null|mixed $levels
-	 * @param null|mixed $categories
-	 * @param null|mixed $controls
-	 * @param null|mixed $timestamp
+	 * @param null|int $levels level filter
+	 * @param null|array $categories category filter
+	 * @param null|array $controls control filter
+	 * @param null|mixed $timestamp filter
 	 * @return array list of messages. Each array elements represents one message
 	 * with the following structure:
 	 * array(
@@ -167,13 +160,10 @@ class TLogger extends \Prado\TComponent
 	 * A message whose registered timestamp is less or equal the filter value will be returned.
 	 * Level filter, category filter, control filter and timestamp filter are combinational, i.e., only messages
 	 * satisfying all filter conditions will they be returned.
-	 * @param int level filter
-	 * @param array category filter
-	 * @param array control filter
-	 * @param null|mixed $levels
-	 * @param null|mixed $categories
-	 * @param null|mixed $controls
-	 * @param null|mixed $timestamp
+	 * @param null|int $levels level filter
+	 * @param null|array $categories category filter
+	 * @param null|array $controls control filter
+	 * @param null|mixed $timestamp timestamp filter
 	 */
 	public function deleteLogs($levels = null, $categories = null, $controls = null, $timestamp = null)
 	{

@@ -157,10 +157,8 @@ class TAuthManager extends \Prado\TModule
 	 * Performs authentication.
 	 * This is the event handler attached to application's Authentication event.
 	 * Do not call this method directly.
-	 * @param mixed sender of the Authentication event
-	 * @param mixed event parameter
-	 * @param mixed $sender
-	 * @param mixed $param
+	 * @param mixed $sender sender of the Authentication event
+	 * @param mixed $param event parameter
 	 */
 	public function doAuthentication($sender, $param)
 	{
@@ -176,10 +174,8 @@ class TAuthManager extends \Prado\TModule
 	 * Performs authorization.
 	 * This is the event handler attached to application's Authorization event.
 	 * Do not call this method directly.
-	 * @param mixed sender of the Authorization event
-	 * @param mixed event parameter
-	 * @param mixed $sender
-	 * @param mixed $param
+	 * @param mixed $sender sender of the Authorization event
+	 * @param mixed $param event parameter
 	 */
 	public function doAuthorization($sender, $param)
 	{
@@ -192,10 +188,8 @@ class TAuthManager extends \Prado\TModule
 	 * Performs login redirect if authorization fails.
 	 * This is the event handler attached to application's EndRequest event.
 	 * Do not call this method directly.
-	 * @param mixed sender of the event
-	 * @param mixed event parameter
-	 * @param mixed $sender
-	 * @param mixed $param
+	 * @param mixed $sender sender of the event
+	 * @param mixed $param event parameter
 	 */
 	public function leave($sender, $param)
 	{

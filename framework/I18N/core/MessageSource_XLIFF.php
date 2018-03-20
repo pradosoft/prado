@@ -153,8 +153,7 @@ class MessageSource_XLIFF extends MessageSource
 	/**
 	 * Traverse through the directory structure to find the catalogues.
 	 * This should only be called by getCatalogueList()
-	 * @param string a particular catalogue.
-	 * @param mixed $catalogue
+	 * @param string $catalogue a particular catalogue.
 	 * @return array a list of catalogues.
 	 * @see getCatalogueList()
 	 */
@@ -230,8 +229,7 @@ class MessageSource_XLIFF extends MessageSource
 
 	/**
 	 * Get the variant for a catalogue depending on the current culture.
-	 * @param string catalogue
-	 * @param mixed $catalogue
+	 * @param string $catalogue
 	 * @return string the variant.
 	 * @see save()
 	 * @see update()
@@ -256,8 +254,7 @@ class MessageSource_XLIFF extends MessageSource
 	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
 	 * strings to the translation source via the <b>append()</b> method.
-	 * @param string the catalogue to add to
-	 * @param mixed $catalogue
+	 * @param string $catalogue the catalogue to add to
 	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages')

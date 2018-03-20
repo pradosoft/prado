@@ -243,8 +243,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param TControlAdapter control adapter
-	 * @param TControlAdapter $adapter
+	 * @param TControlAdapter $adapter control adapter
 	 */
 	public function setAdapter(TControlAdapter $adapter)
 	{
@@ -472,8 +471,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param string the skin ID of this control
-	 * @throws TInvalidOperationException if the SkinID is set in a stage later than PreInit, or if the skin is applied already.
+	 * @return bool if a skin is applied.
 	 */
 	public function getIsSkinApplied()
 	{

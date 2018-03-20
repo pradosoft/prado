@@ -140,7 +140,6 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Creates the DB connection.
-	 * @param string the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return TDbConnection the created DB connection
 	 */

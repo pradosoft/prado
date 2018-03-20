@@ -111,8 +111,7 @@ class NumberFormatInfo
 	 * formatting information. <b>N.B.</b>You should not initialize this
 	 * class directly unless you know what you are doing. Please use use
 	 * NumberFormatInfo::getInstance() to create an instance.
-	 * @param array ICU data for date time formatting.
-	 * @param mixed $data
+	 * @param array $data ICU data for date time formatting.
 	 * @param mixed $type
 	 * @see getInstance()
 	 */
@@ -177,22 +176,16 @@ class NumberFormatInfo
 
 	/**
 	 * Returns the NumberFormatInfo associated with the specified culture.
-	 * @param CultureInfo the culture that gets the NumberFormat property.
-	 * @param int the number formatting type, it should be
-	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
-	 * NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
-	 * @param null|mixed $culture
-	 * @param mixed $type
-	 * @return NumberFormatInfo NumberFormatInfo for the specified
-	 * culture.
+	 * @param null|CultureInfo $culture the culture that gets the NumberFormat property.
+	 * @param int $type the number formatting type, it should be
+	 *   NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
+	 *   NumberFormatInfo::PERCENTAGE, or NumberFormatInfo::SCIENTIFIC
+	 * @return NumberFormatInfo NumberFormatInfo for the specified culture.
 	 * @see getCurrencyInstance();
 	 * @see getPercentageInstance();
 	 * @see getScientificInstance();
 	 */
-	public static function getInstance(
-		$culture = null,
-									   $type = NumberFormatInfo::DECIMAL
-	) {
+	public static function getInstance($culture = null, $type = NumberFormatInfo::DECIMAL) {
 		if ($culture instanceof CultureInfo) {
 			$formatInfo = $culture->NumberFormat;
 			$formatInfo->setPattern($type);
@@ -212,8 +205,7 @@ class NumberFormatInfo
 
 	/**
 	 * Returns the currency format info associated with the specified culture.
-	 * @param CultureInfo the culture that gets the NumberFormat property.
-	 * @param null|mixed $culture
+	 * @param null|CultureInfo $culture the culture that gets the NumberFormat property.
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
@@ -224,8 +216,7 @@ class NumberFormatInfo
 
 	/**
 	 * Returns the percentage format info associated with the specified culture.
-	 * @param CultureInfo the culture that gets the NumberFormat property.
-	 * @param null|mixed $culture
+	 * @param null|CultureInfo $culture the culture that gets the NumberFormat property.
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */
@@ -236,8 +227,7 @@ class NumberFormatInfo
 
 	/**
 	 * Returns the scientific format info associated with the specified culture.
-	 * @param CultureInfo the culture that gets the NumberFormat property.
-	 * @param null|mixed $culture
+	 * @param null|CultureInfo $culture the culture that gets the NumberFormat property.
 	 * @return NumberFormatInfo NumberFormatInfo for the specified
 	 * culture.
 	 */

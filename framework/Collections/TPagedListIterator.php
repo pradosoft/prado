@@ -32,12 +32,9 @@ class TPagedListIterator implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param TList the data to be iterated through
-	 * @param int start index
-	 * @param int number of items to be iterated through
-	 * @param mixed $startIndex
-	 * @param mixed $count
-	 * @param TList $list
+	 * @param TList $list the data to be iterated through
+	 * @param int $startIndex start index
+	 * @param int $count number of items to be iterated through
 	 */
 	public function __construct(TList $list, $startIndex, $count)
 	{

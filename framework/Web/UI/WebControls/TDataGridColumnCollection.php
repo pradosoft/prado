@@ -38,8 +38,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TDataGrid the control that owns this collection.
-	 * @param TDataGrid $owner
+	 * @param TDataGrid $owner the control that owns this collection.
 	 */
 	public function __construct(TDataGrid $owner)
 	{

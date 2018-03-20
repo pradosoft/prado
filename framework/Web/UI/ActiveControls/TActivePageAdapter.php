@@ -114,10 +114,8 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Register a control for defered render() call.
-	 * @param TControl control for defered rendering
-	 * @param THtmlWriter the renderer
-	 * @param mixed $control
-	 * @param mixed $writer
+	 * @param TControl $control control for defered rendering
+	 * @param THtmlWriter $writer the renderer
 	 */
 	public function registerControlToRender($control, $writer)
 	{
@@ -290,8 +288,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl control registered to raise callback event.
-	 * @param TControl $control
+	 * @param TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{

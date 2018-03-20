@@ -69,10 +69,8 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
-	 * @param array|Iterator the intial data. Default is null, meaning no initialization.
-	 * @param bool whether the list is read-only
-	 * @param null|mixed $data
-	 * @param mixed $readOnly
+	 * @param null|array|Iterator $data the intial data. Default is null, meaning no initialization.
+	 * @param bool $readOnly whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false)
@@ -149,8 +147,6 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Adds an item into the map.
 	 * Note, if the specified key already exists, the old value will be overwritten.
-	 * @param mixed key
-	 * @param mixed value
 	 * @param mixed $key
 	 * @param mixed $value
 	 * @throws TInvalidOperationException if the map is read-only
@@ -166,8 +162,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 
 	/**
 	 * Removes an item from the map by its key.
-	 * @param mixed the key of the item to be removed
-	 * @param mixed $key
+	 * @param mixed $key the key of the item to be removed
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return mixed the removed value, null if no such key exists.
 	 */
@@ -275,10 +270,8 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param int the offset to set element
-	 * @param mixed the element value
-	 * @param mixed $offset
-	 * @param mixed $item
+	 * @param int $offset the offset to set element
+	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)
 	{

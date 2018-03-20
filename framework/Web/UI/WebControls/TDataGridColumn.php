@@ -298,9 +298,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 *
 	 * Make sure that the viewstate value must be serializable and unserializable.
 	 * @param string $key the name of the viewstate value
-	 * @param mixed the viewstate value to be set
-	 * @param mixed $value default value. If $value===$defaultValue, the item will be cleared from the viewstate.
-	 * @param null|mixed $defaultValue
+	 * @param mixed $value the viewstate value to be set
+	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the item will be cleared from the viewstate.
 	 */
 	protected function setViewState($key, $value, $defaultValue = null)
 	{
@@ -338,8 +337,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param TDataGrid datagrid object that owns this column
-	 * @param TDataGrid $value
+	 * @param TDataGrid $value datagrid object that owns this column
 	 */
 	public function setOwner(TDataGrid $value)
 	{

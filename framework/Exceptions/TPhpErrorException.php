@@ -25,14 +25,10 @@ class TPhpErrorException extends TSystemException
 {
 	/**
 	 * Constructor.
-	 * @param int error number
-	 * @param string error string
-	 * @param string error file
-	 * @param int error line number
-	 * @param mixed $errno
-	 * @param mixed $errstr
-	 * @param mixed $errfile
-	 * @param mixed $errline
+	 * @param int $errno error number
+	 * @param string $errstr error string
+	 * @param string $errfile error file
+	 * @param int $errline error line number
 	 */
 	public function __construct($errno, $errstr, $errfile, $errline)
 	{

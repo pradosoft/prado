@@ -25,10 +25,8 @@ use Prado\Exceptions\TApplicationException;
 class TRpcClientResponseException extends TApplicationException
 {
 	/**
-	 * @param string error message
-	 * @param int error code (optional)
-	 * @param mixed $errorMessage
-	 * @param null|mixed $errorCode
+	 * @param string $errorMessage error message
+	 * @param null|int $errorCode error code (optional)
 	 */
 	public function __construct($errorMessage, $errorCode = null)
 	{

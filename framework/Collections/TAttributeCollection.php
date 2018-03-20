@@ -62,8 +62,7 @@ class TAttributeCollection extends TMap
 	 * Returns a property value or an event handler list by property or event name.
 	 * This method overrides the parent implementation by returning
 	 * a key value if the key exists in the collection.
-	 * @param string the property name or the event name
-	 * @param mixed $name
+	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property/event is not defined.
 	 * @return mixed the property value or the event handler list
 	 */
@@ -76,10 +75,8 @@ class TAttributeCollection extends TMap
 	 * Sets value of a component property.
 	 * This method overrides the parent implementation by adding a new key value
 	 * to the collection.
-	 * @param string the property name or event name
-	 * @param mixed the property value or event handler
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name the property name or event name
+	 * @param mixed $value the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
@@ -118,8 +115,6 @@ class TAttributeCollection extends TMap
 	/**
 	 * Adds an item into the map.
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
-	 * @param mixed key
-	 * @param mixed value
 	 * @param mixed $key
 	 * @param mixed $value
 	 */

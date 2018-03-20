@@ -66,10 +66,8 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when a new HtmlWriter needs to be created.
 	 * Default implementation calls the attached response createNewHtmlWriter method.
-	 * @param string type of the HTML writer to be created.
-	 * @param ITextWriter the writer responsible for holding the content.
-	 * @param mixed $type
-	 * @param mixed $writer
+	 * @param string $type type of the HTML writer to be created.
+	 * @param ITextWriter $writer the writer responsible for holding the content.
 	 */
 	public function createNewHtmlWriter($type, $writer)
 	{

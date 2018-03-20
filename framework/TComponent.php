@@ -406,8 +406,7 @@ class TComponent
 	/**
 	 * This returns an array of the class name and the names of all its parents.  The base object first,
 	 * {@link TComponent}, and the deepest subclass is last.
-	 * @param bool optional should the names be all lowercase true/false
-	 * @param mixed $lowercase
+	 * @param bool $lowercase optional should the names be all lowercase true/false
 	 * @return array array of strings being the class hierarchy of $this.
 	 */
 	public function getClassHierarchy($lowercase = false)
@@ -525,10 +524,8 @@ class TComponent
 	 * Any intra-object/behavior dynamic events that are not implemented by the behavior
 	 * return the first function paramater or null when no parameters are specified.
 	 *
-	 * @param string method name that doesn't exist and is being called on the object
-	 * @param mixed method parameters
-	 * @param mixed $method
-	 * @param mixed $args
+	 * @param string $method method name that doesn't exist and is being called on the object
+	 * @param mixed $args method parameters
 	 * @throws TInvalidOperationException If the property is not defined or read-only or
 	 * 		method is undefined
 	 * @return mixed result of the method call, or false if 'fx' or 'dy' function but
@@ -614,8 +611,7 @@ class TComponent
 	 * </code>
 	 * When behaviors are enabled, this will return the behavior of a specific
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
-	 * @param string the property name or the event name
-	 * @param mixed $name
+	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property/event is not defined.
 	 * @return mixed the property value or the event handler list as {@link TPriorityList}
 	 */
@@ -668,10 +664,8 @@ class TComponent
 	 * $this->fxEventName=$handler; //global event listener
 	 * </code>
 	 * When behaviors are enabled, this will also set a behaviors properties and events.
-	 * @param string the property name or event name
-	 * @param mixed the property value or event handler
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name the property name or event name
+	 * @param mixed $value the property value or event handler
 	 * @throws TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
@@ -753,8 +747,7 @@ class TComponent
 	 * property or event.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using unset() to set a component property to be null.
-	 * @param string the property name or the event name
-	 * @param mixed $name
+	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property is read only.
 	 * @since 3.2.3
 	 */
@@ -872,10 +865,8 @@ class TComponent
 	 * 'Parent' property value (which should be a component also).
 	 * When a property is not defined by an object, this also loops through all
 	 * active behaviors of the object.
-	 * @param string property path
-	 * @param mixed the property path value
-	 * @param mixed $path
-	 * @param mixed $value
+	 * @param string $path property path
+	 * @param mixed $value the property path value
 	 */
 	public function setSubProperty($path, $value)
 	{
@@ -1011,13 +1002,10 @@ class TComponent
 	 * Due to the nature of {@link getEventHandlers}, any active behaviors defining
 	 * new 'on' events, this method will pass through to the behavior transparently.
 	 *
-	 * @param string the event name
-	 * @param callable the event handler
-	 * @param null|numeric the priority of the handler, defaults to null which translates into the
+	 * @param string $name the event name
+	 * @param callable $handler the event handler
+	 * @param null|numeric $priority the priority of the handler, defaults to null which translates into the
 	 * default priority of 10.0 within {@link TPriorityList}
-	 * @param mixed $name
-	 * @param mixed $handler
-	 * @param null|mixed $priority
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
@@ -1029,13 +1017,10 @@ class TComponent
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
 	 * any 'on' events definedb by an objects active behaviors as well.
-	 * @param string event name
-	 * @param callable the event handler to be removed
-	 * @param null|false|numeric the priority of the handler, defaults to false which translates
+	 * @param string $name event name
+	 * @param callable $handler the event handler to be removed
+	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
 	 * to an item of any priority within {@link TPriorityList}; null means the default priority
-	 * @param mixed $name
-	 * @param mixed $handler
-	 * @param mixed $priority
 	 * @return bool if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
@@ -1111,18 +1096,13 @@ class TComponent
 	 * When handling a catch-all {@link __dycall}, the method name is the name of the event
 	 * and the parameters are the sender, the param, and then the name of the event.
 	 *
-	 * @param string the event name
-	 * @param mixed the event sender object
-	 * @param TEventParameter the event parameter
-	 * @param numeric how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
+	 * @param string $name the event name
+	 * @param mixed $sender the event sender object
+	 * @param TEventParameter $param the event parameter
+	 * @param null|numeric $responsetype how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
 	 *		null responses. optional
-	 * @param function any per handler filtering of the response result needed is passed through
+	 * @param null|function $postfunction any per handler filtering of the response result needed is passed through
 	 *		this if not null. default: null.  optional
-	 * @param mixed $name
-	 * @param mixed $sender
-	 * @param mixed $param
-	 * @param null|mixed $responsetype
-	 * @param null|mixed $postfunction
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
 	 * @return mixed the results of the event
@@ -1238,8 +1218,7 @@ class TComponent
 	 * dyEvaluateExpressionFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
 	 *
-	 * @param string PHP expression
-	 * @param mixed $expression
+	 * @param string $expression PHP expression
 	 * @throws TInvalidOperationException if the expression is invalid
 	 * @return mixed the expression result
 	 */
@@ -1269,8 +1248,7 @@ class TComponent
 	 * dyEvaluateStatementsFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
 	 *
-	 * @param string PHP statements
-	 * @param mixed $statements
+	 * @param string $statements PHP statements
 	 * @throws TInvalidOperationException if the statements are invalid
 	 * @return string content echoed or printed by the PHP statements
 	 */
@@ -1339,11 +1317,11 @@ class TComponent
 
 
 	/**
-	 *	This is the method registered for all instanced objects should a class behavior be added after
+	 *This is the method registered for all instanced objects should a class behavior be added after
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior added to this instance.
-	 * @param $sender the application
-	 * @param $param TClassBehaviorEventParameter
+	 * @param mixed $sender the application
+	 * @param TClassBehaviorEventParameter $param
 	 * @since 3.2.3
 	 */
 	public function fxAttachClassBehavior($sender, $param)
@@ -1358,8 +1336,8 @@ class TComponent
 	 *	This is the method registered for all instanced objects should a class behavior be removed after
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior removed from this instance.
-	 * @param $sender the application
-	 * @param $param TClassBehaviorEventParameter
+	 * @param mixed $sender the application
+	 * @param TClassBehaviorEventParameter $param
 	 * @since 3.2.3
 	 */
 	public function fxDetachClassBehavior($sender, $param)
@@ -1375,19 +1353,15 @@ class TComponent
 	 * This registers the behavior for future instances and pushes the changes to all the instances that are listening as well.
 	 * The universal class behaviors are stored in an inverted stack with the latest class behavior being at the first position in the array.
 	 * This is done so class behaviors are added last first.
-	 * @param string name the key of the class behavior
-	 * @param object|string class behavior or name of the object behavior per instance
-	 * @param class|string string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param string $name name the key of the class behavior
+	 * @param object|string $behavior class behavior or name of the object behavior per instance
+	 * @param null|class|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
-	 * @param null|numeric priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
-	 * @param mixed $name
-	 * @param mixed $behavior
-	 * @param null|mixed $class
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
 	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
@@ -1425,9 +1399,9 @@ class TComponent
 	 *	This will remove a behavior from a class.  It unregisters it from future instances and
 	 * pulls the changes from all the instances that are listening as well.
 	 * PHP 5.3 uses Late Static Binding to derive the static class upon which this method is called.
-	 * @param $name the key of the class behavior
-	 * @param $class string class on which to attach this behavior.  Defaults to null.
-	 * @param $priority numeric|null|false priority.  false is any priority, null is default
+	 * @param string $name the key of the class behavior
+	 * @param string $class class on which to attach this behavior.  Defaults to null.
+	 * @param null|false|numeric $priority priority: false is any priority, null is default
 	 *		{@link TPriorityList} priority, and numeric is a specific priority.
 	 * @throws Exception if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
@@ -1459,8 +1433,7 @@ class TComponent
 	/**
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
-	 * @param string the behavior name
-	 * @param mixed $behaviorname
+	 * @param string $behaviorname the behavior name
 	 * @return IBehavior the behavior object, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
@@ -1484,8 +1457,7 @@ class TComponent
 	 * The behavior {@link IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
-	 * @param class or string
-	 * @param mixed $class
+	 * @param string|mixed $class class or string
 	 * @return bool whether or not the object or a behavior is an instance of a particular class
 	 * @since 3.2.3
 	 */
@@ -1580,12 +1552,10 @@ class TComponent
 	 * to be executed when attachBehavior is called.  All attached behaviors are notified through
 	 * dyAttachBehavior.
 	 *
-	 * @param string the behavior's name. It should uniquely identify this behavior.
-	 * @param mixed the behavior configuration. This is passed as the first
+	 * @param string $name the behavior's name. It should uniquely identify this behavior.
+	 * @param mixed $behavior the behavior configuration. This is passed as the first
 	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
-	 * @param mixed $name
-	 * @param mixed $behavior
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */
@@ -1621,10 +1591,8 @@ class TComponent
 	 * to be executed when detachBehavior is called.  All attached behaviors are notified through
 	 * dyDetachBehavior.
 	 *
-	 * @param string the behavior's name. It uniquely identifies the behavior.
-	 * @param numeric the behavior's priority. This defaults to false, aka any priority.
-	 * @param mixed $name
-	 * @param mixed $priority
+	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @param false|numeric $priority the behavior's priority. This defaults to false, aka any priority.
 	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */

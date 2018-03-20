@@ -118,10 +118,8 @@ class TErrorHandler extends \Prado\TModule
 	 * raised in {@link TApplication}.
 	 * The method mainly uses appropriate template to display the error/exception.
 	 * It terminates the application immediately after the error is displayed.
-	 * @param mixed sender of the event
-	 * @param mixed event parameter (if the event is raised by TApplication, it refers to the exception instance)
-	 * @param mixed $sender
-	 * @param mixed $param
+	 * @param mixed $sender sender of the event
+	 * @param mixed $param event parameter (if the event is raised by TApplication, it refers to the exception instance)
 	 */
 	public function handleError($sender, $param)
 	{
@@ -191,10 +189,8 @@ class TErrorHandler extends \Prado\TModule
 	 * Displays error to the client user.
 	 * THttpException and errors happened when the application is in <b>Debug</b>
 	 * mode will be displayed to the client user.
-	 * @param int response status code
-	 * @param Exception exception instance
-	 * @param mixed $statusCode
-	 * @param mixed $exception
+	 * @param int $statusCode response status code
+	 * @param Exception $exception exception instance
 	 */
 	protected function handleExternalError($statusCode, $exception)
 	{

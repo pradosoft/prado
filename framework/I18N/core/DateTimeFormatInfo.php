@@ -129,8 +129,7 @@ class DateTimeFormatInfo
 	 * information. <b>N.B.</b>You should not initialize this class directly
 	 * unless you know what you are doing. Please use use
 	 * DateTimeFormatInfo::getInstance() to create an instance.
-	 * @param array ICU data for date time formatting.
-	 * @param mixed $data
+	 * @param array $data ICU data for date time formatting.
 	 * @see getInstance()
 	 */
 	public function __construct($data = [])
@@ -170,8 +169,7 @@ class DateTimeFormatInfo
 
 	/**
 	 * Returns the DateTimeFormatInfo associated with the specified culture.
-	 * @param CultureInfo the culture that gets the DateTimeFormat property.
-	 * @param null|mixed $culture
+	 * @param null|CultureInfo|string $culture the culture that gets the DateTimeFormat property.
 	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
 	 * culture.
 	 */

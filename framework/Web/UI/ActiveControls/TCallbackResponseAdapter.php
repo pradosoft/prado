@@ -44,10 +44,8 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	/**
 	 * Returns a new instance of THtmlWriter.
 	 * An instance of TCallbackResponseWriter is created to hold the content.
-	 * @param string writer class name.
-	 * @param THttpResponse http response handler.
-	 * @param mixed $type
-	 * @param mixed $response
+	 * @param string $type writer class name.
+	 * @param THttpResponse $response http response handler.
 	 */
 	public function createNewHtmlWriter($type, $response)
 	{

@@ -271,10 +271,8 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * If the cache already contains such a key, the existing value will be
 	 * replaced with the new ones. To add expiration and dependencies, use the set() method.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param string the key identifying the value to be cached
-	 * @param mixed the value to be cached
-	 * @param mixed $id
-	 * @param mixed $value
+	 * @param string $id the key identifying the value to be cached
+	 * @param mixed $value the value to be cached
 	 */
 	public function offsetSet($id, $value)
 	{

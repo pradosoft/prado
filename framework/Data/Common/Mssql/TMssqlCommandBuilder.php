@@ -93,10 +93,9 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	/**
 	 * Rewrite sql to apply $limit > and $offset > 0 for MSSQL database.
 	 * See http://troels.arvin.dk/db/rdbms/#select-limit-offset
-	 * @param string sql query
+	 * @param string $sql sql query
 	 * @param int $limit > 0
 	 * @param int $offset > 0
-	 * @param mixed $sql
 	 * @return sql modified sql query applied with limit and offset.
 	 */
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)

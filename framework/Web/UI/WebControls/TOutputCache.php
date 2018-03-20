@@ -97,7 +97,6 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Returns a value indicating whether body contents are allowed for this control.
 	 * This method overrides the parent implementation by checking if cached
 	 * content is available or not. If yes, it returns false, otherwise true.
-	 * @param bool whether body contents are allowed for this control.
 	 */
 	public function getAllowChildControls()
 	{
@@ -162,7 +161,6 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * the stack of the output cache in the page. If the data is restored
 	 * from cache, it also recovers the actions associated with the cached data.
 	 * Only framework developers should use this method.
-	 * @param TControl the naming container control
 	 */
 	protected function loadRecursive()
 	{
@@ -199,7 +197,6 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by setting up
 	 * the stack of the output cache in the page.
 	 * Only framework developers should use this method.
-	 * @param TControl the naming container control
 	 */
 	protected function preRenderRecursive()
 	{

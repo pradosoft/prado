@@ -69,16 +69,11 @@ class TAuthorizationRule extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param string action, either 'deny' or 'allow'
-	 * @param string a comma separated user list
-	 * @param string a comma separated role list
-	 * @param string verb, can be empty, 'get', or 'post'
-	 * @param string IP rules (separated by comma, can contain wild card *)
-	 * @param mixed $action
-	 * @param mixed $users
-	 * @param mixed $roles
-	 * @param mixed $verb
-	 * @param mixed $ipRules
+	 * @param string $action action, either 'deny' or 'allow'
+	 * @param string $users a comma separated user list
+	 * @param string $roles a comma separated role list
+	 * @param string $verb verb, can be empty, 'get', or 'post'
+	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
 	 */
 	public function __construct($action, $users, $roles, $verb = '', $ipRules = '')
 	{
@@ -207,12 +202,9 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IUser the user object
-	 * @param string the request verb (GET, PUT)
-	 * @param string the request IP address
-	 * @param mixed $verb
-	 * @param mixed $ip
-	 * @param IUser $user
+	 * @param IUser $user the user object
+	 * @param string $verb the request verb (GET, PUT)
+	 * @param string $ip the request IP address
 	 * @return int 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
 	public function isUserAllowed(IUser $user, $verb, $ip)

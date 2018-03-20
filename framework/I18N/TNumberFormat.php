@@ -144,8 +144,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * Set the numberic value for this control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link setValue()}.
-	 * @param string the number value
-	 * @param mixed $value
+	 * @param string $value the number value
 	 * @see setValue
 	 * @since 3.1.2
 	 */
@@ -165,9 +164,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the formatting type for this control.
-	 * @param string formatting type, either "decimal", "currency","percentage"
-	 * or "scientific"
-	 * @param mixed $type
+	 * @param string $type formatting type, either "decimal", "currency","percentage" or "scientific"
 	 * @throws TPropertyTypeInvalidException
 	 */
 	public function setType($type)

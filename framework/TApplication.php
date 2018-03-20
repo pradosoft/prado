@@ -424,13 +424,10 @@ class TApplication extends \Prado\TComponent
 	 *
 	 * A global value is one that is persistent across users sessions and requests.
 	 * Make sure that the value is serializable and unserializable.
-	 * @param string the name of the value to be set
-	 * @param mixed the global value to be set
-	 * @param mixed the default value. If $key is not found, $defaultValue will be returned
-	 * @param bool wheter to force an immediate GlobalState save. defaults to false
-	 * @param mixed $value
-	 * @param null|mixed $defaultValue
-	 * @param mixed $forceSave
+	 * @param string $key the name of the value to be set
+	 * @param mixed $value the global value to be set
+	 * @param null|mixed $defaultValue the default value. If $key is not found, $defaultValue will be returned
+	 * @param bool $forceSave wheter to force an immediate GlobalState save. defaults to false
 	 */
 	public function setGlobalState($key, $value, $defaultValue = null, $forceSave = false)
 	{
@@ -659,10 +656,8 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Adds a module to application.
 	 * Note, this method does not do module initialization.
-	 * @param string ID of the module
-	 * @param IModule module object or null if the module has not been loaded yet
-	 * @param mixed $id
-	 * @param null|IModule $module
+	 * @param string $id ID of the module
+	 * @param null|IModule $module module object or null if the module has not been loaded yet
 	 */
 	public function setModule($id, IModule $module = null)
 	{
@@ -726,8 +721,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpRequest the request module
-	 * @param THttpRequest $request
+	 * @param THttpRequest $request the request module
 	 */
 	public function setRequest(THttpRequest $request)
 	{
@@ -747,8 +741,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpRequest the request module
-	 * @param THttpResponse $response
+	 * @param THttpRequest $response the request module
 	 */
 	public function setResponse(THttpResponse $response)
 	{
@@ -768,8 +761,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpSession the session module
-	 * @param THttpSession $session
+	 * @param THttpSession $session the session module
 	 */
 	public function setSession(THttpSession $session)
 	{
@@ -789,8 +781,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TErrorHandler the error handler module
-	 * @param TErrorHandler $handler
+	 * @param TErrorHandler $handler the error handler module
 	 */
 	public function setErrorHandler(TErrorHandler $handler)
 	{
@@ -810,8 +801,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSecurityManager the security manager module
-	 * @param TSecurityManager $sm
+	 * @param TSecurityManager $sm the security manager module
 	 */
 	public function setSecurityManager(TSecurityManager $sm)
 	{
@@ -831,8 +821,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TAssetManager asset manager
-	 * @param TAssetManager $value
+	 * @param TAssetManager $value asset manager
 	 */
 	public function setAssetManager(TAssetManager $value)
 	{
@@ -852,8 +841,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IStatePersister  application state persister
-	 * @param IStatePersister $persister
+	 * @param IStatePersister $persister application state persister
 	 */
 	public function setApplicationStatePersister(IStatePersister $persister)
 	{
@@ -869,8 +857,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param ICache the cache module
-	 * @param \Prado\Caching\ICache $cache
+	 * @param \Prado\Caching\ICache $cache the cache module
 	 */
 	public function setCache(\Prado\Caching\ICache $cache)
 	{
@@ -886,8 +873,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IUser the application user
-	 * @param \Prado\Security\IUser $user
+	 * @param \Prado\Security\IUser $user the application user
 	 */
 	public function setUser(\Prado\Security\IUser $user)
 	{
@@ -895,8 +881,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param bool whether to create globalization if it does not exist
-	 * @param mixed $createIfNotExists
+	 * @param bool $createIfNotExists whether to create globalization if it does not exist
 	 * @return TGlobalization globalization module
 	 */
 	public function getGlobalization($createIfNotExists = true)
@@ -909,8 +894,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TGlobalization globalization module
-	 * @param \Prado\I18N\TGlobalization $glob
+	 * @param \Prado\I18N\TGlobalization $glob globalization module
 	 */
 	public function setGlobalization(\Prado\I18N\TGlobalization $glob)
 	{
@@ -958,10 +942,8 @@ class TApplication extends \Prado\TComponent
 	}
 	/**
 	 * Applies an application configuration.
-	 * @param TApplicationConfiguration the configuration
-	 * @param bool whether the configuration is specified within a service.
-	 * @param mixed $config
-	 * @param mixed $withinService
+	 * @param TApplicationConfiguration $config the configuration
+	 * @param bool $withinService whether the configuration is specified within a service.
 	 */
 	public function applyConfiguration($config, $withinService = false)
 	{
@@ -1043,8 +1025,6 @@ class TApplication extends \Prado\TComponent
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
 	 * Afterwards, the requested service is created and initialized.
-	 * @param string configuration file path (absolute or relative to current executing script)
-	 * @param string cache file path, empty if no present or needed
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
 	protected function initApplication()

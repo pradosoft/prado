@@ -415,8 +415,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl control registered to raise callback event.
-	 * @param TControl $control
+	 * @param TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
@@ -451,8 +450,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Registers a TForm instance to the page.
 	 * Note, a page can contain at most one TForm instance.
-	 * @param TForm the form on the page
-	 * @param TForm $form
+	 * @param TForm $form the form on the page
 	 * @throws TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public function setForm(TForm $form)
@@ -848,8 +846,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise postback event in the current request.
-	 * @param TControl control registered to raise postback event.
-	 * @param TControl $control
+	 * @param TControl $control control registered to raise postback event.
 	 */
 	public function setPostBackEventTarget(TControl $control)
 	{
@@ -1038,8 +1035,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param THead page head
-	 * @param THead $value
+	 * @param THead $value page head
 	 * @throws TInvalidOperationException if a head already exists
 	 */
 	public function setHead(THead $value)
@@ -1212,7 +1208,7 @@ class TPage extends TTemplateControl
 	 * in the cache is served to end-users.
 	 * @param string $context context of the action method. This is a property-path
 	 * referring to the context object (e.g. Page, Page.ClientScript).
-	 * @param  $funcName method name of the context object
+	 * @param string $funcName method name of the context object
 	 * @param array $funcParams list of parameters to be passed to the action method
 	 */
 	public function registerCachingAction($context, $funcName, $funcParams)

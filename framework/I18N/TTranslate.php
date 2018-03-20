@@ -182,10 +182,8 @@ class TTranslate extends TI18NControl
 	}
 
 	/**
-	 * @param string parameter name
-	 * @param string value of the parameter
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name parameter name
+	 * @param string $value value of the parameter
 	 */
 	public function setParameter($name, $value)
 	{

@@ -32,10 +32,8 @@ interface IInstanceCheck
 	 * class.  In the case of a Class Behavior, the instance to which the behavior
 	 * is attached may be important to determine if $this is an instance
 	 * of a particular class.
-	 * @param class|string the component that this behavior is checking if it is an instanceof.
-	 * @param object the object which the behavior is attached to.  default: null
-	 * @param mixed $class
-	 * @param null|mixed $instance
+	 * @param class|string $class the component that this behavior is checking if it is an instanceof.
+	 * @param null|object $instance the object which the behavior is attached to.  default: null
 	 * @return null|bool if the this or the instance is of type class.  When null, no information could be derived and
 	 * the default mechanisms take over.
 	 */

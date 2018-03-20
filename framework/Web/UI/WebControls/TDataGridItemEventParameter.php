@@ -37,8 +37,7 @@ class TDataGridItemEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TDataGridItem datagrid item related with the corresponding event
-	 * @param TDataGridItem $item
+	 * @param TDataGridItem $item datagrid item related with the corresponding event
 	 */
 	public function __construct(TDataGridItem $item)
 	{

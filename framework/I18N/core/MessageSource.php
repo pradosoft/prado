@@ -118,12 +118,9 @@ abstract class MessageSource implements IMessageSource
 	 * Custom message source are possible by supplying the a filename parameter
 	 * in the factory method.
 	 *
-	 * @param string the message source type.
-	 * @param string the location of the resource or the ConnectionID.
-	 * @param string the filename of the custom message source.
-	 * @param mixed $type
-	 * @param mixed $source
-	 * @param mixed $filename
+	 * @param string $type the message source type.
+	 * @param string $source the location of the resource or the ConnectionID.
+	 * @param string $filename the filename of the custom message source.
 	 * @throws InvalidMessageSourceTypeException
 	 * @return MessageSource a new message source of the specified type.
 	 */
@@ -168,8 +165,7 @@ abstract class MessageSource implements IMessageSource
 	 *  # [6] store the messages to cache.
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
 	 *
-	 * @param string a catalogue to load
-	 * @param mixed $catalogue
+	 * @param string $catalogue a catalogue to load
 	 * @return bool true if loaded, false otherwise.
 	 * @see read()
 	 */
@@ -237,8 +233,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Set the cache handler for caching the messages.
-	 * @param MessageCache the cache handler.
-	 * @param MessageCache $cache
+	 * @param MessageCache $cache the cache handler.
 	 */
 	public function setCache(MessageCache $cache)
 	{

@@ -48,8 +48,7 @@ class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * Writers a string and terminates it with a newline.
-	 * @param string content to be written
-	 * @param mixed $str
+	 * @param string $str content to be written
 	 * @see write
 	 */
 	public function writeLine($str = '')

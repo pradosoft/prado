@@ -224,10 +224,8 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * Active component developers wanting to register the javascript to initialize
 	 * the active component with additional options offered by the
 	 * {@link getClientSide ClientSide} property.
-	 * @param string client side javascript class name.
-	 * @param array additional callback options.
-	 * @param mixed $class
-	 * @param null|mixed $options
+	 * @param string $class client side javascript class name.
+	 * @param null|array $options additional callback options.
 	 */
 	public function registerCallbackClientScript($class, $options = null)
 	{
@@ -271,7 +269,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @param string callback requestion options as javascript code.
+	 * @return string callback request options as javascript code.
 	 */
 	public function getJsCallbackOptions()
 	{

@@ -31,17 +31,15 @@ abstract class TRpcProtocol
 	// abstracts
 
 	/**
-	 * @param string request payload
+	 * @param string $requestPayload request payload
 	 * Processed the request ans returns the response, if any
-	 * @param mixed $requestPayload
 	 * @return processed response
 	 * @abstract
 	 */
 	abstract public function callMethod($requestPayload);
 	/**
-	 * @param TRpcException the exception with error details
+	 * @param TRpcException $exception the exception with error details
 	 * Creates a proper response for an error condition
-	 * @param TRpcException $exception
 	 * @return a response representing the error
 	 * @abstract
 	 */
@@ -53,16 +51,14 @@ abstract class TRpcProtocol
 	abstract public function createResponseHeaders($response);
 	/**
 	 * Encodes the response
-	 * @param mixed reponse data
-	 * @param mixed $data
+	 * @param mixed $data reponse data
 	 * @return string encoded response
 	 * @abstract
 	 */
 	abstract public function encode($data);
 	/**
 	 * Decodes the request payload
-	 * @param string request payload
-	 * @param mixed $data
+	 * @param string $data request payload
 	 * @return mixed decoded request
 	 * @abstract
 	 */

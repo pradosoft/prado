@@ -137,7 +137,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @param string SQL search condition for list display.
+	 * @return string SQL search condition for list display.
 	 */
 	public function getSearchCondition()
 	{

@@ -133,10 +133,8 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Instantiate the external edit renderer.
-	 * @param TActiveRecord record to be edited
-	 * @param string external edit renderer class name.
-	 * @param mixed $record
-	 * @param mixed $classPath
+	 * @param TActiveRecord $record record to be edited
+	 * @param string $classPath external edit renderer class name.
 	 * @throws TConfigurationException raised when renderer is not an
 	 * instance of IScaffoldEditRenderer.
 	 */

@@ -48,10 +48,8 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * Inserts an item at the specified position.
 	 * This overrides the parent implementation by performing additional
 	 * operations for each newly added THttpCookie object.
-	 * @param int the specified position.
-	 * @param mixed new item
-	 * @param mixed $index
-	 * @param mixed $item
+	 * @param int $index the specified position.
+	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */
 	public function insertAt($index, $item)

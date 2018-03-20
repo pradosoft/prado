@@ -44,8 +44,7 @@ interface IMessageSource
 	 *  # [6] store the messages to cache.
 	 *  # [7] continue with the foreach loop, e.g. goto [2].
 	 *
-	 * @param string a catalogue to load
-	 * @param mixed $catalogue
+	 * @param string $catalogue a catalogue to load
 	 * @return bool true if loaded, false otherwise.
 	 */
 	public function load($catalogue = 'messages');
@@ -70,8 +69,7 @@ interface IMessageSource
 	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
 	 * strings to the translation source via the <b>append()</b> method.
-	 * @param string the catalogue to add to
-	 * @param mixed $catalogue
+	 * @param string $catalogue the catalogue to add to
 	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages');

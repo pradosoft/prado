@@ -86,10 +86,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Parses the application configuration given in terms of a PHP array.
-	 * @param array the PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $config
-	 * @param mixed $configPath
+	 * @param array $config the PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	public function loadFromPhp($config, $configPath)
 	{
@@ -124,10 +122,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Parses the application configuration given in terms of a TXmlElement.
-	 * @param TXmlElement the XML element
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $dom
-	 * @param mixed $configPath
+	 * @param TXmlElement $dom the XML element
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	public function loadFromXml($dom, $configPath)
 	{
@@ -163,10 +159,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the paths PHP array
-	 * @param array the paths PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $pathsNode
-	 * @param mixed $configPath
+	 * @param array $pathsNode the paths PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadPathsPhp($pathsNode, $configPath)
 	{
@@ -197,10 +191,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the paths XML node.
-	 * @param TXmlElement the paths XML node
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $pathsNode
-	 * @param mixed $configPath
+	 * @param TXmlElement $pathsNode the paths XML node
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadPathsXml($pathsNode, $configPath)
 	{
@@ -246,10 +238,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the modules PHP array.
-	 * @param array the modules PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $modulesNode
-	 * @param mixed $configPath
+	 * @param array $modulesNode the modules PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadModulesPhp($modulesNode, $configPath)
 	{
@@ -272,10 +262,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the modules XML node.
-	 * @param TXmlElement the modules XML node
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $modulesNode
-	 * @param mixed $configPath
+	 * @param TXmlElement $modulesNode the modules XML node
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadModulesXml($modulesNode, $configPath)
 	{
@@ -302,10 +290,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the services PHP array.
-	 * @param array the services PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $servicesNode
-	 * @param mixed $configPath
+	 * @param array $servicesNode the services PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadServicesPhp($servicesNode, $configPath)
 	{
@@ -324,10 +310,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the services XML node.
-	 * @param TXmlElement the services XML node
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $servicesNode
-	 * @param mixed $configPath
+	 * @param TXmlElement $servicesNode the services XML node
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadServicesXml($servicesNode, $configPath)
 	{
@@ -351,10 +335,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the parameters PHP array.
-	 * @param array the parameters PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $parametersNode
-	 * @param mixed $configPath
+	 * @param array $parametersNode the parameters PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadParametersPhp($parametersNode, $configPath)
 	{
@@ -375,10 +357,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the parameters XML node.
-	 * @param TXmlElement the parameters XML node
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $parametersNode
-	 * @param mixed $configPath
+	 * @param TXmlElement $parametersNode the parameters XML node
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadParametersXml($parametersNode, $configPath)
 	{
@@ -406,10 +386,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the external PHP array.
-	 * @param array the application PHP array
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $includeNode
-	 * @param mixed $configPath
+	 * @param array $includeNode the application PHP array
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadExternalPhp($includeNode, $configPath)
 	{
@@ -430,10 +408,8 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the external XML configurations.
-	 * @param TXmlElement the application DOM element
-	 * @param string the context path (for specifying relative paths)
-	 * @param mixed $includeNode
-	 * @param mixed $configPath
+	 * @param TXmlElement $includeNode the application DOM element
+	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadExternalXml($includeNode, $configPath)
 	{

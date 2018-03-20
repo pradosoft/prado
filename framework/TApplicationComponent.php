@@ -108,8 +108,7 @@ class TApplicationComponent extends \Prado\TComponent
 
 	/**
 	 * Publishes a file or directory and returns its URL.
-	 * @param string absolute path of the file or directory to be published
-	 * @param mixed $fullPath
+	 * @param string $fullPath absolute path of the file or directory to be published
 	 * @param mixed $checkTimestamp
 	 * @return string URL to the published file or directory
 	 */

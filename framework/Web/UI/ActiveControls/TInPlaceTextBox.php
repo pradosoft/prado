@@ -96,10 +96,8 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Calls the client-side static method for this control class.
-	 * @param string static method name
-	 * @param mixed method parmaeter
-	 * @param mixed $func
-	 * @param mixed $value
+	 * @param string $func static method name
+	 * @param mixed $value method parmaeter
 	 */
 	protected function callClientFunction($func, $value)
 	{

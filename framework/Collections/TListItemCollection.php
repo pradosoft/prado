@@ -31,9 +31,8 @@ class TListItemCollection extends TList
 	/**
 	 * Creates a list item object.
 	 * This method may be overriden to provide a customized list item object.
-	 * @param int index where the newly created item is to be inserted at.
+	 * @param int $index index where the newly created item is to be inserted at.
 	 * If -1, the item will be appended to the end.
-	 * @param mixed $index
 	 * @return TListItem list item object
 	 */
 	public function createListItem($index = -1)
@@ -62,11 +61,9 @@ class TListItemCollection extends TList
 
 	/**
 	 * Inserts an item into the collection.
-	 * @param int the location where the item will be inserted.
+	 * @param int $index the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
-	 * @param TListItem the item to be inserted.
-	 * @param mixed $index
-	 * @param mixed $item
+	 * @param TListItem $item the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
 	public function insertAt($index, $item)

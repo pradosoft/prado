@@ -163,8 +163,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TUrlManager the URL manager instance
-	 * @param TUrlManager $manager
+	 * @param TUrlManager $manager the URL manager instance
 	 */
 	public function __construct(TUrlManager $manager)
 	{
@@ -478,8 +477,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array list of GET items to be put in the constructed URL
-	 * @param mixed $getItems
+	 * @param array $getItems list of GET items to be put in the constructed URL
 	 * @return bool whether this pattern IS the one for constructing the URL with the specified GET items.
 	 * @since 3.1.1
 	 */
@@ -511,12 +509,9 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Constructs a URL using this pattern.
-	 * @param array list of GET variables
-	 * @param bool whether the ampersand should be encoded in the constructed URL
-	 * @param bool whether the GET variables should be encoded in the constructed URL
-	 * @param mixed $getItems
-	 * @param mixed $encodeAmpersand
-	 * @param mixed $encodeGetItems
+	 * @param array $getItems list of GET variables
+	 * @param bool $encodeAmpersand whether the ampersand should be encoded in the constructed URL
+	 * @param bool $encodeGetItems whether the GET variables should be encoded in the constructed URL
 	 * @return string the constructed URL
 	 * @since 3.1.1
 	 */

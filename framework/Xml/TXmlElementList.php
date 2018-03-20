@@ -32,8 +32,7 @@ class TXmlElementList extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TXmlElement owner of this list
-	 * @param TXmlElement $owner
+	 * @param TXmlElement $owner owner of this list
 	 */
 	public function __construct(TXmlElement $owner)
 	{

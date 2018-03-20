@@ -63,10 +63,8 @@ class TRpcClient extends \Prado\TApplicationComponent
 	// magics
 
 	/**
-	 * @param string url to RPC server
-	 * @param bool whether requests are considered to be notifications (completely ignoring the response) (default: false)
-	 * @param mixed $serverUrl
-	 * @param mixed $isNotification
+	 * @param string $serverUrl url to RPC server
+	 * @param bool $isNotification whether requests are considered to be notifications (completely ignoring the response) (default: false)
 	 */
 	public function __construct($serverUrl, $isNotification = false)
 	{
@@ -111,12 +109,9 @@ class TRpcClient extends \Prado\TApplicationComponent
 
 	/**
 	 * Performs the actual request
-	 * @param string RPC server URL
-	 * @param array payload data
-	 * @param string request mime type
-	 * @param mixed $serverUrl
-	 * @param mixed $payload
-	 * @param mixed $mimeType
+	 * @param string $serverUrl RPC server URL
+	 * @param array $payload payload data
+	 * @param string $mimeType request mime type
 	 */
 	protected function performRequest($serverUrl, $payload, $mimeType)
 	{

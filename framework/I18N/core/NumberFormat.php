@@ -85,8 +85,7 @@ class NumberFormat
 	 * with a string that represent a culture/locale. Similarly, passing
 	 * a CultureInfo or NumberFormatInfo instance will instantiated a instance
 	 * for that particular culture.
-	 * @param mixed either null, a CultureInfo, a NumberFormatInfo, or string
-	 * @param null|mixed $formatInfo
+	 * @param null|CultureInfo|NumberFormatInfo|string $formatInfo either null, a CultureInfo, a NumberFormatInfo, or string
 	 * @return NumberFormat
 	 */
 	public function __construct($formatInfo = null)
@@ -107,15 +106,12 @@ class NumberFormat
 	 * For the number for a certain pattern. The valid patterns are
 	 * 'c', 'd', 'e', 'p' or a custom pattern, such as "#.000" for
 	 * 3 decimal places.
-	 * @param mixed the number to format.
-	 * @param string the format pattern, either, 'c', 'd', 'e', 'p'
+	 * @param mixed $number the number to format.
+	 * @param string $pattern the format pattern, either, 'c', 'd', 'e', 'p'
 	 * or a custom pattern. E.g. "#.000" will format the number to
 	 * 3 decimal places.
-	 * @param string 3-letter ISO 4217 code. For example, the code
+	 * @param string $currency 3-letter ISO 4217 code. For example, the code
 	 * "USD" represents the US Dollar and "EUR" represents the Euro currency.
-	 * @param mixed $number
-	 * @param mixed $pattern
-	 * @param mixed $currency
 	 * @param mixed $charset
 	 * @return string formatted number string
 	 */

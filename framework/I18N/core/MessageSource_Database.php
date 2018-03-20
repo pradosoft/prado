@@ -60,8 +60,7 @@ class MessageSource_Database extends MessageSource
 
 	/**
 	 * Creates the DB connection.
-	 * @param string the module ID for TDataSourceConfig
-	 * @param mixed $connectionID
+	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return TDbConnection the created DB connection
 	 */
@@ -125,8 +124,7 @@ class MessageSource_Database extends MessageSource
 
 	/**
 	 * Check if a particular catalogue+variant exists in the database.
-	 * @param string catalogue+variant
-	 * @param mixed $variant
+	 * @param string $variant catalogue+variant
 	 * @return bool true if the catalogue+variant is in the database,
 	 * false otherwise.
 	 */
@@ -163,8 +161,7 @@ class MessageSource_Database extends MessageSource
 
 	/**
 	 * Retrive catalogue details, array($cat_id, $variant, $count).
-	 * @param string catalogue
-	 * @param mixed $catalogue
+	 * @param string $catalogue
 	 * @return array catalogue details, array($cat_id, $variant, $count).
 	 */
 	private function getCatalogueDetails($catalogue = 'messages')
@@ -221,8 +218,7 @@ class MessageSource_Database extends MessageSource
 	 * Save the list of untranslated blocks to the translation source.
 	 * If the translation was not found, you should add those
 	 * strings to the translation source via the <b>append()</b> method.
-	 * @param string the catalogue to add to
-	 * @param mixed $catalogue
+	 * @param string $catalogue the catalogue to add to
 	 * @return bool true if saved successfuly, false otherwise.
 	 */
 	public function save($catalogue = 'messages')

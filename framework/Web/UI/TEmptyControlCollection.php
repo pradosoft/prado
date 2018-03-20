@@ -25,8 +25,7 @@ class TEmptyControlCollection extends TControlCollection
 {
 	/**
 	 * Constructor.
-	 * @param TControl the control that owns this collection.
-	 * @param TControl $owner
+	 * @param TControl $owner the control that owns this collection.
 	 */
 	public function __construct(TControl $owner)
 	{

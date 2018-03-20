@@ -156,11 +156,9 @@ class TAssetManager extends \Prado\TModule
 	 * If the application is not in performance mode, the file modification
 	 * time will be used to make sure the published file is latest or not.
 	 * If not, a file copy will be performed.
-	 * @param string the path to be published
-	 * @param bool If true, file modification time will be checked even if the application
+	 * @param string $path the path to be published
+	 * @param bool $checkTimestamp If true, file modification time will be checked even if the application
 	 * is in performance mode.
-	 * @param mixed $path
-	 * @param mixed $checkTimestamp
 	 * @throws TInvalidDataValueException if the file path to be published is
 	 * invalid
 	 * @return string an absolute URL to the published directory
@@ -199,7 +197,7 @@ class TAssetManager extends \Prado\TModule
 	}
 
 	/**
-	 * @param $values List of published assets
+	 * @param array $values List of published assets
 	 * @since 3.1.6
 	 */
 	protected function setPublished($values = [])
@@ -256,10 +254,8 @@ class TAssetManager extends \Prado\TModule
 	 * Copies a file to a directory.
 	 * Copying is done only when the destination file does not exist
 	 * or has an older file modification time.
-	 * @param string source file path
-	 * @param string destination directory (if not exists, it will be created)
-	 * @param mixed $src
-	 * @param mixed $dst
+	 * @param string $src source file path
+	 * @param string $dst destination directory (if not exists, it will be created)
 	 */
 	protected function copyFile($src, $dst)
 	{
@@ -278,10 +274,8 @@ class TAssetManager extends \Prado\TModule
 	 * Copies a directory recursively as another.
 	 * If the destination directory does not exist, it will be created.
 	 * File modification time is used to ensure the copied files are latest.
-	 * @param string the source directory
-	 * @param string the destination directory
-	 * @param mixed $src
-	 * @param mixed $dst
+	 * @param string $src the source directory
+	 * @param string $dst the destination directory
 	 * @todo a generic solution to ignore certain directories and files
 	 */
 	public function copyDirectory($src, $dst)

@@ -169,8 +169,7 @@ class TActiveRecordRelationContext
 	 * Creates and return the TActiveRecordRelation handler for specific relationships.
 	 * An instance of TActiveRecordHasOne, TActiveRecordBelongsTo, TActiveRecordHasMany,
 	 * or TActiveRecordHasManyAssocation will be returned.
-	 * @param TActiveRecordCriteria search criteria
-	 * @param null|mixed $criteria
+	 * @param null|TActiveRecordCriteria $criteria search criteria
 	 * @throws TActiveRecordException if property is not defined or missing.
 	 * @return TActiveRecordRelation record relationship handler instnace.
 	 */

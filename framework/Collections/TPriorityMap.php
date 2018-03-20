@@ -94,14 +94,10 @@ class TPriorityMap extends TMap
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
-	 * @param array|Iterator|map|TPriorityMap the intial data. Default is null, meaning no initialization.
-	 * @param bool whether the list is read-only
-	 * @param numeric the default priority of items without specified priorities.
-	 * @param int the precision of the numeric priorities
-	 * @param null|mixed $data
-	 * @param mixed $readOnly
-	 * @param mixed $defaultPriority
-	 * @param mixed $precision
+	 * @param null|array|Iterator|map|TPriorityMap $data the intial data. Default is null, meaning no initialization.
+	 * @param bool $readOnly whether the list is read-only
+	 * @param numeric $defaultPriority the default priority of items without specified priorities.
+	 * @param int $precision the precision of the numeric priorities
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
@@ -224,9 +220,8 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Gets the number of items at a priority within the map.
-	 * @param numeric optional priority at which to count items.  if no parameter,
+	 * @param null|numeric $priority optional priority at which to count items.  if no parameter,
 	 * it will be set to the default {@link getDefaultPriority}
-	 * @param null|mixed $priority
 	 * @return int the number of items in the map at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
@@ -264,11 +259,9 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns the item with the specified key.  If a priority is specified, only items
 	 * within that specific priority will be selected
-	 * @param mixed the key
-	 * @param mixed the priority.  null is the default priority, false is any priority,
+	 * @param mixed $key the key
+	 * @param mixed $priority the priority.  null is the default priority, false is any priority,
 	 * and numeric is a specific priority.  default: false, any priority.
-	 * @param mixed $key
-	 * @param mixed $priority
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function itemAt($key, $priority = false)
@@ -309,8 +302,7 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Gets all the items at a specific priority.
-	 * @param numeric priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
 	 * @return array all items at priority in index order, null if there are no items at that priority
 	 */
 	public function itemsAtPriority($priority = null)
@@ -362,12 +354,9 @@ class TPriorityMap extends TMap
 	 * pairs within the array.
 	 * Note, if the specified key already exists, the old value will be overwritten.
 	 * No duplicate keys are allowed regardless of priority.
-	 * @param mixed key
-	 * @param mixed value
-	 * @param null|numeric priority, default: null, filled in with default priority
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority, default: null, filled in with default priority
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return numeric priority at which the pair was added
 	 */
@@ -408,11 +397,9 @@ class TPriorityMap extends TMap
 	 * the priority will be the default priority.  If a priority is specified, or
 	 * the default priority is specified, only key-value pairs in that priority
 	 * will be affected.
-	 * @param mixed the key of the item to be removed
-	 * @param null|false|numeric priority.  False is any priority, null is the
+	 * @param mixed $key the key of the item to be removed
+	 * @param null|false|numeric $priority priority.  False is any priority, null is the
 	 * default priority, and numeric is a specific priority
-	 * @param mixed $key
-	 * @param mixed $priority
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return mixed the removed value, null if no such key exists.
 	 */
@@ -495,10 +482,8 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Combines the map elements which have a priority below the parameter value
-	 * @param numeric the cut-off priority.  All items of priority less than this are returned.
-	 * @param bool whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
-	 * @param mixed $priority
-	 * @param mixed $inclusive
+	 * @param numeric $priority the cut-off priority.  All items of priority less than this are returned.
+	 * @param bool $inclusive whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
@@ -517,10 +502,8 @@ class TPriorityMap extends TMap
 
 	/**
 	 * Combines the map elements which have a priority above the parameter value
-	 * @param numeric the cut-off priority.  All items of priority greater than this are returned.
-	 * @param bool whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
-	 * @param mixed $priority
-	 * @param mixed $inclusive
+	 * @param numeric $priority the cut-off priority.  All items of priority greater than this are returned.
+	 * @param bool $inclusive whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
@@ -540,9 +523,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param mixed the data to be copied from, must be an array, object implementing
-	 * Traversable, or a TPriorityMap
-	 * @param mixed $data
+	 * @param array|Traversable|TPriorityMap $data the data to be copied from, must be an array, object implementing
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
@@ -571,9 +552,8 @@ class TPriorityMap extends TMap
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param mixed the data to be merged with, must be an array, object implementing
-	 * Traversable, or a TPriorityMap
-	 * @param mixed $data
+	 * @param array|Traversable|TPriorityMap $data the data to be merged with, must be an array,
+	 * object implementing Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
@@ -618,10 +598,8 @@ class TPriorityMap extends TMap
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param int the offset to set element
-	 * @param mixed the element value
-	 * @param mixed $offset
-	 * @param mixed $item
+	 * @param int $offset the offset to set element
+	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)
 	{

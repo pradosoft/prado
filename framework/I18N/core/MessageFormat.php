@@ -94,10 +94,8 @@ class MessageFormat
 	 * Constructor.
 	 * Create a new instance of MessageFormat using the messages
 	 * from the supplied message source.
-	 * @param MessageSource the source of translation messages.
-	 * @param string charset for the message output.
-	 * @param mixed $charset
-	 * @param IMessageSource $source
+	 * @param IMessageSource $source the source of translation messages.
+	 * @param string $charset charset for the message output.
 	 */
 	public function __construct(IMessageSource $source, $charset = 'UTF-8')
 	{
@@ -148,15 +146,10 @@ class MessageFormat
 	 * for the $args parameter. A different catalogue can be specified
 	 * using the $catalogue parameter.
 	 * The output charset is determined by $this->getCharset();
-	 * @param string the string to translate.
-	 * @param array a list of string to substitute.
-	 * @param string get the translation from a particular message
-	 * @param string charset, the input AND output charset
-	 * catalogue.
-	 * @param mixed $string
-	 * @param mixed $args
-	 * @param null|mixed $catalogue
-	 * @param null|mixed $charset
+	 * @param string $string the string to translate.
+	 * @param array $args a list of string to substitute.
+	 * @param null|string $catalogue get the translation from a particular message
+	 * @param null|string $charset charset, the input AND output charset catalogue.
 	 * @return string translated string.
 	 */
 	public function format($string, $args = [], $catalogue = null, $charset = null)
@@ -175,13 +168,9 @@ class MessageFormat
 
 	/**
 	 * Do string translation.
-	 * @param string the string to translate.
-	 * @param array a list of string to substitute.
-	 * @param string get the translation from a particular message
-	 * catalogue.
-	 * @param mixed $string
-	 * @param mixed $args
-	 * @param null|mixed $catalogue
+	 * @param string $string the string to translate.
+	 * @param array $args a list of string to substitute.
+	 * @param null|string $catalogue get the translation from a particular message catalogue.
 	 * @return string translated string.
 	 */
 	protected function formatString($string, $args = [], $catalogue = null)

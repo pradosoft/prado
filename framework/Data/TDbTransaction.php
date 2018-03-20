@@ -48,8 +48,7 @@ class TDbTransaction extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TDbConnection the connection associated with this transaction
-	 * @param TDbConnection $connection
+	 * @param TDbConnection $connection the connection associated with this transaction
 	 * @see TDbConnection::beginTransaction
 	 */
 	public function __construct(TDbConnection $connection)

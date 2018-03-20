@@ -97,8 +97,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 
 	/**
-	 * @param string asset file in the self::SCRIPT_PATH directory.
-	 * @param mixed $file
+	 * @param string $file asset file in the self::SCRIPT_PATH directory.
 	 * @return string asset file url.
 	 */
 	protected function getAssetUrl($file = '')
@@ -424,12 +423,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Saves the uploaded file.
-	 * @param string the file name used to save the uploaded file
-	 * @param bool whether to delete the temporary file after saving.
+	 * @param string $fileName the file name used to save the uploaded file
+	 * @param bool $deleteTempFile whether to delete the temporary file after saving.
+	 * @param int $index the index of the uploaded file, defaults to 0.
 	 * If true, you will not be able to save the uploaded file again.
-	 * @param mixed $fileName
-	 * @param mixed $deleteTempFile
-	 * @param mixed $index
 	 * @return bool true if the file saving is successful
 	 */
 	public function saveAs($fileName, $deleteTempFile = true, $index = 0)

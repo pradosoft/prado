@@ -32,8 +32,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TWizard wizard that owns this collection
-	 * @param TWizard $wizard
+	 * @param TWizard $wizard wizard that owns this collection
 	 */
 	public function __construct(TWizard $wizard)
 	{

@@ -45,8 +45,7 @@ class TUser extends \Prado\TComponent implements IUser
 
 	/**
 	 * Constructor.
-	 * @param IUserManager user manager
-	 * @param IUserManager $manager
+	 * @param IUserManager $manager user manager
 	 */
 	public function __construct(IUserManager $manager)
 	{
@@ -171,10 +170,8 @@ class TUser extends \Prado\TComponent implements IUser
 	 * A variable, if stored in user session using {@link setState} can be
 	 * retrieved back using this function.
 	 *
-	 * @param string variable name
-	 * @param mixed default value
-	 * @param mixed $key
-	 * @param null|mixed $defaultValue
+	 * @param string $key variable name
+	 * @param null|mixed $defaultValue default value
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
@@ -192,11 +189,9 @@ class TUser extends \Prado\TComponent implements IUser
 	 * back later using {@link getState}. The variable will be persistent
 	 * across page requests during a user session.
 	 *
-	 * @param string variable name
-	 * @param mixed variable value
-	 * @param mixed default value. If $value===$defaultValue, the variable will be removed from persistent storage.
-	 * @param mixed $key
-	 * @param null|mixed $defaultValue
+	 * @param string $key variable name
+	 * @param mixed $value variable value
+	 * @param null|mixed $defaultValue default value. If $value===$defaultValue, the variable will be removed from persistent storage.
 	 * @see getState
 	 */
 	protected function setState($key, $value, $defaultValue = null)

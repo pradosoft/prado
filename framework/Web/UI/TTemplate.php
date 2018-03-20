@@ -318,7 +318,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a property of a non-control component.
-	 * @param TComponent$component component to be configured
+	 * @param TComponent $component component to be configured
 	 * @param string $name property name
 	 * @param mixed $value property initial value
 	 */

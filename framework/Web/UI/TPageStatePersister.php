@@ -41,8 +41,7 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	}
 
 	/**
-	 * @param TPage the page that this persister works for
-	 * @param TPage $page
+	 * @param TPage $page the page that this persister works for
 	 */
 	public function setPage(TPage $page)
 	{

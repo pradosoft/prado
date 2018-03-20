@@ -82,14 +82,10 @@ class TPriorityList extends TList
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
-	 * @param array|Iterator the intial data. Default is null, meaning no initial data.
-	 * @param bool whether the list is read-only
-	 * @param numeric the default priority of items without specified priorities.
-	 * @param int the precision of the numeric priorities
-	 * @param null|mixed $data
-	 * @param mixed $readOnly
-	 * @param mixed $defaultPriority
-	 * @param mixed $precision
+	 * @param null|array|Iterator $data the intial data. Default is null, meaning no initial data.
+	 * @param bool $readOnly whether the list is read-only
+	 * @param numeric $defaultPriority the default priority of items without specified priorities.
+	 * @param int $precision the precision of the numeric priorities
 	 * @throws TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
@@ -124,8 +120,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Gets the number of items at a priority within the list
-	 * @param numeric optional priority at which to count items.  if no parameter, it will be set to the default {@link getDefaultPriority}
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority optional priority at which to count items.  if no parameter, it will be set to the default {@link getDefaultPriority}
 	 * @return int the number of items in the list at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
@@ -229,8 +224,7 @@ class TPriorityList extends TList
 	/**
 	 * Returns the item at the index of a flattened priority list.
 	 * {@link offsetGet} calls this method.
-	 * @param int the index of the item to get
-	 * @param mixed $index
+	 * @param int $index the index of the item to get
 	 * @throws TInvalidDataValueException Issued when the index is invalid
 	 * @return mixed the element at the offset
 	 */
@@ -246,8 +240,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Gets all the items at a specific priority.
-	 * @param numeric priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
 	 * @return array all items at priority in index order, null if there are no items at that priority
 	 */
 	public function itemsAtPriority($priority = null)
@@ -281,10 +274,8 @@ class TPriorityList extends TList
 	/**
 	 * Appends an item into the list at the end of the specified priority.  The position of the added item may
 	 * not be at the end of the list.
-	 * @param mixed item to add into the list at priority
-	 * @param numeric priority blank or null for the default priority
-	 * @param mixed $item
-	 * @param null|mixed $priority
+	 * @param mixed $item item to add into the list at priority
+	 * @param null|numeric $priority priority blank or null for the default priority
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return int the index within the flattened array
 	 */
@@ -300,10 +291,8 @@ class TPriorityList extends TList
 	/**
 	 * Inserts an item at an index.  It reads the priority of the item at index within the flattened list
 	 * and then inserts the item at that priority-index.
-	 * @param int the specified position in the flattened list.
-	 * @param mixed new item to add
-	 * @param mixed $index
-	 * @param mixed $item
+	 * @param int $index the specified position in the flattened list.
+	 * @param mixed $item new item to add
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
@@ -323,14 +312,10 @@ class TPriorityList extends TList
 	/**
 	 * Inserts an item at the specified index within a priority.  Override and call this method to
 	 * insert your own functionality.
-	 * @param mixed item to add within the list.
-	 * @param int index within the priority to add the item, defaults to false which appends the item at the priority
-	 * @param numeric priority priority of the item.  defaults to null, which sets it to the default priority
-	 * @param bool preserveCache specifies if this is a special quick function or not. This defaults to false.
-	 * @param mixed $item
-	 * @param mixed $index
-	 * @param null|mixed $priority
-	 * @param mixed $preserveCache
+	 * @param mixed $item item to add within the list.
+	 * @param int $index index within the priority to add the item, defaults to false which appends the item at the priority
+	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it to the default priority
+	 * @param bool $preserveCache preserveCache specifies if this is a special quick function or not. This defaults to false.
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
@@ -401,11 +386,9 @@ class TPriorityList extends TList
 	/**
 	 * Removes an item from the priority list.
 	 * The list will search for the item.  The first matching item found will be removed from the list.
-	 * @param mixed item the item to be removed.
-	 * @param numeric priority of item to remove. without this parameter it defaults to false.
+	 * @param mixed $item item the item to be removed.
+	 * @param null|bool|float $priority priority of item to remove. without this parameter it defaults to false.
 	 * A value of false means any priority. null will be filled in with the default priority.
-	 * @param mixed $item
-	 * @param mixed $priority
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int index within the flattened list at which the item is being removed
 	 */
@@ -435,8 +418,7 @@ class TPriorityList extends TList
 
 	/**
 	 * Removes an item at the specified index in the flattened list.
-	 * @param int index of the item to be removed.
-	 * @param mixed $index
+	 * @param int $index index of the item to be removed.
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 * @return mixed the removed item.
@@ -456,10 +438,8 @@ class TPriorityList extends TList
 	/**
 	 * Removes the item at a specific index within a priority.  Override
 	 * and call this method to insert your own functionality.
-	 * @param int index of item to remove within the priority.
-	 * @param numeric priority of the item to remove, defaults to null, or left blank, it is then set to the default priority
-	 * @param mixed $index
-	 * @param null|mixed $priority
+	 * @param int $index index of item to remove within the priority.
+	 * @param null|numeric $priority priority of the item to remove, defaults to null, or left blank, it is then set to the default priority
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return mixed the removed item.
 	 */
@@ -532,11 +512,9 @@ class TPriorityList extends TList
 
 	/**
 	 * Returns the priority of a particular item
-	 * @param mixed the item to look for within the list
-	 * @param bool withindex this specifies if the full positional data of the item within the list is returned.
+	 * @param mixed $item the item to look for within the list
+	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @param mixed $item
-	 * @param mixed $withindex
 	 * @return array|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
@@ -561,11 +539,9 @@ class TPriorityList extends TList
 
 	/**
 	 * Retutrns the priority of an item at a particular flattened index.
-	 * @param int index of the item within the list
-	 * @param bool withindex this specifies if the full positional data of the item within the list is returned.
+	 * @param int $index index of the item within the list
+	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @param mixed $index
-	 * @param mixed $withindex
 	 * @return array|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
@@ -592,10 +568,8 @@ class TPriorityList extends TList
 	/**
 	 * This inserts an item before another item within the list.  It uses the same priority as the
 	 * found index item and places the new item before it.
-	 * @param mixed indexitem the item to index
-	 * @param mixed the item to add before indexitem
-	 * @param mixed $indexitem
-	 * @param mixed $item
+	 * @param mixed $indexitem the item to index
+	 * @param mixed $item the item to add before indexitem
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
 	 */
@@ -617,10 +591,8 @@ class TPriorityList extends TList
 	/**
 	 * This inserts an item after another item within the list.  It uses the same priority as the
 	 * found index item and places the new item after it.
-	 * @param mixed indexitem the item to index
-	 * @param mixed the item to add after indexitem
-	 * @param mixed $indexitem
-	 * @param mixed $item
+	 * @param mixed $indexitem the item to index
+	 * @param mixed $item the item to add after indexitem
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
 	 */
@@ -658,10 +630,8 @@ class TPriorityList extends TList
 
 	/**
 	 * Combines the map elements which have a priority below the parameter value
-	 * @param numeric the cut-off priority.  All items of priority less than this are returned.
-	 * @param bool whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
-	 * @param mixed $priority
-	 * @param mixed $inclusive
+	 * @param numeric $priority the cut-off priority.  All items of priority less than this are returned.
+	 * @param bool $inclusive whether or not the input cut-off priority is inclusive.  Default: false, not inclusive.
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
@@ -680,10 +650,8 @@ class TPriorityList extends TList
 
 	/**
 	 * Combines the map elements which have a priority above the parameter value
-	 * @param numeric the cut-off priority.  All items of priority greater than this are returned.
-	 * @param bool whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
-	 * @param mixed $priority
-	 * @param mixed $inclusive
+	 * @param numeric $priority the cut-off priority.  All items of priority greater than this are returned.
+	 * @param bool $inclusive whether or not the input cut-off priority is inclusive.  Default: true, inclusive.
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
@@ -786,10 +754,8 @@ class TPriorityList extends TList
 	 *
 	 * All together, when setting the location of an item, the item stays in that location, but appending
 	 * an item into a priority list doesn't mean the item is at the end of the list.
-	 * @param int the offset to set element
-	 * @param mixed the element value
-	 * @param mixed $offset
-	 * @param mixed $item
+	 * @param int $offset the offset to set element
+	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)
 	{

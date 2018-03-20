@@ -307,8 +307,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param TTemplateManager template manager
-	 * @param TTemplateManager $value
+	 * @param TTemplateManager $value template manager
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
@@ -328,8 +327,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param TThemeManager theme manager
-	 * @param TThemeManager $value
+	 * @param TThemeManager $value theme manager
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
@@ -470,8 +468,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Creates a page instance based on requested page path.
-	 * @param string requested page path
-	 * @param mixed $pagePath
+	 * @param string $pagePath requested page path
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
 	 * @return TPage the requested page instance
@@ -521,10 +518,8 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Executes a page.
-	 * @param TPage the page instance to be run
-	 * @param array list of initial page properties
-	 * @param mixed $page
-	 * @param mixed $properties
+	 * @param TPage $page the page instance to be run
+	 * @param array $properties list of initial page properties
 	 */
 	protected function runPage($page, $properties)
 	{

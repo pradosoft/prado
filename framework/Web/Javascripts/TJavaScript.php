@@ -139,13 +139,10 @@ class TJavaScript
 	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
 	 * to serialize and unserialize.
 	 *
-	 * @param mixed PHP variable to be encoded
-	 * @param bool whether the output is a map or a list.
+	 * @param mixed $value PHP variable to be encoded
+	 * @param bool $toMap whether the output is a map or a list.
 	 * @since 3.1.5
-	 * @param bool wether to encode empty strings too. Default to false for BC.
-	 * @param mixed $value
-	 * @param mixed $toMap
-	 * @param mixed $encodeEmptyStrings
+	 * @param bool $encodeEmptyStrings wether to encode empty strings too. Default to false for BC.
 	 * @return string the encoded string
 	 */
 	public static function encode($value, $toMap = true, $encodeEmptyStrings = false)
@@ -211,8 +208,7 @@ class TJavaScript
 	/**
 	 * Encodes a PHP variable into javascript string.
 	 * This method invokes json_encode to perform the encoding.
-	 * @param mixed variable to be encoded
-	 * @param mixed $value
+	 * @param mixed $value variable to be encoded
 	 * @param mixed $options
 	 * @return string encoded string
 	 */

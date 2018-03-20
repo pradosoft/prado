@@ -88,9 +88,8 @@ class DateFormat
 
 	/**
 	 * Initialize a new DateFormat.
-	 * @param mixed either, null, a CultureInfo instance,
+	 * @param null|CultureInfo|DateTimeFormatInfo|string $formatInfo either, null, a CultureInfo instance,
 	 * a DateTimeFormatInfo instance, or a locale.
-	 * @param null|mixed $formatInfo
 	 * @return DateFormat instance
 	 */
 	public function __construct($formatInfo = null)
@@ -110,8 +109,7 @@ class DateFormat
 
 	/**
 	 * Format a date according to the pattern.
-	 * @param mixed the time as integer or string in strtotime format.
-	 * @param mixed $time
+	 * @param mixed $time the time as integer or string in strtotime format.
 	 * @param mixed $pattern
 	 * @param mixed $charset
 	 * @return string formatted date time.
@@ -180,8 +178,7 @@ class DateFormat
 	 * and try to find an appropriate pattern and apply
 	 * DateTimeFormatInfo::formatDateTime
 	 * See the tutorial documentation for futher details on the patterns.
-	 * @param mixed a pattern.
-	 * @param mixed $pattern
+	 * @param mixed $pattern a pattern.
 	 * @return string a pattern.
 	 * @see DateTimeFormatInfo::formatDateTime()
 	 */
@@ -581,9 +578,8 @@ class DateFormat
 
 	/**
 	 * Get week in the month.
-	 * @param array getdate format.
-	 * @param mixed $date
-	 * @param mixed $pattern
+	 * @param array $date getdate format.
+	 * @param string $pattern
 	 * @return int week in month
 	 */
 	protected function getWeekInMonth($date, $pattern = 'W')

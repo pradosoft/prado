@@ -50,8 +50,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 * Initializes the stack with an array or an iterable object.
-	 * @param array|Iterator the initial data. Default is null, meaning no initialization.
-	 * @param null|mixed $data
+	 * @param null|array|Iterator $data the initial data. Default is null, meaning no initialization.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null)

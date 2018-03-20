@@ -98,16 +98,11 @@ class TSoapServer extends \Prado\TApplicationComponent
 
 	/**
 	 * Generate a SOAP fault message.
-	 * @param string message title
-	 * @param mixed message details
-	 * @param string message code, defalt is 'SERVER'.
-	 * @param string actors
-	 * @param string message name
-	 * @param mixed $title
-	 * @param mixed $details
-	 * @param mixed $code
-	 * @param mixed $actor
-	 * @param mixed $name
+	 * @param string $title message title
+	 * @param mixed $details message details
+	 * @param string $code message code, defalt is 'SERVER'.
+	 * @param string $actor actors
+	 * @param string $name message name
 	 */
 	public function fault($title, $details = '', $code = 'SERVER', $actor = '', $name = '')
 	{

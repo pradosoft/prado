@@ -56,16 +56,11 @@ class TUrlManager extends \Prado\TModule
 	 * RewriteCond %{REQUEST_FILENAME} !-f
 	 * RewriteRule ^(.*)$ index.php/$1 [L]
 	 * </code>
-	 * @param string service ID
-	 * @param string service parameter
-	 * @param array GET parameters, null if not provided
-	 * @param bool whether to encode the ampersand in URL
-	 * @param bool whether to encode the GET parameters (their names and values)
-	 * @param mixed $serviceID
-	 * @param mixed $serviceParam
-	 * @param mixed $getItems
-	 * @param mixed $encodeAmpersand
-	 * @param mixed $encodeGetItems
+	 * @param string $serviceID service ID
+	 * @param string $serviceParam service parameter
+	 * @param array $getItems GET parameters, null if not provided
+	 * @param bool $encodeAmpersand whether to encode the ampersand in URL
+	 * @param bool $encodeGetItems whether to encode the GET parameters (their names and values)
 	 * @return string URL
 	 * @see parseUrl
 	 */

@@ -147,7 +147,6 @@ class TMemCache extends TCache
 	 * This method is required by the IModule interface. It makes sure that
 	 * UniquePrefix has been set, creates a Memcache instance and connects
 	 * to the memcache server.
-	 * @param TApplication Prado application, can be null
 	 * @param TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */

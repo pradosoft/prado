@@ -139,12 +139,9 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 *
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
 	 *
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string onclick js
-	 * @param mixed $writer
-	 * @param mixed $clientID
-	 * @param mixed $onclick
+	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param string $clientID checkbox id
+	 * @param string $onclick onclick js
 	 */
 	protected function renderInputTag($writer, $clientID, $onclick)
 	{
@@ -178,12 +175,9 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 
 	/**
 	 * Renders a label beside the checkbox.
-	 * @param THtmlWriter the writer for the rendering purpose
-	 * @param string checkbox id
-	 * @param string label text
-	 * @param mixed $writer
-	 * @param mixed $clientID
-	 * @param mixed $text
+	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param string $clientID checkbox id
+	 * @param string $text label text
 	 */
 	protected function renderLabel($writer, $clientID, $text)
 	{

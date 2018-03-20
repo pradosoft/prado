@@ -123,8 +123,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Constructor.
-	 * @param TPage page that owns this client script manager
-	 * @param TPage $owner
+	 * @param TPage $owner page that owns this client script manager
 	 */
 	public function __construct(TPage $owner)
 	{
@@ -871,7 +870,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Flushes all pending script registrations
 	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param null|TControl  $control the control forcing the flush (used only in error messages)
+	 * @param null|TControl $control the control forcing the flush (used only in error messages)
 	 */
 	public function flushScriptFiles($writer, $control = null)
 	{

@@ -49,7 +49,7 @@ use Prado\TPropertyValue;
 class TRadioButton extends TCheckBox
 {
 	/**
-	 * @param array list of radio buttons that are on the current page hierarchy
+	 * @var array list of radio buttons that are on the current page hierarchy
 	 */
 	private static $_activeButtons = [];
 	/**
