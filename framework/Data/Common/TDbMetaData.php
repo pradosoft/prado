@@ -88,8 +88,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * Obtains table meta data information for the current connection and given table name.
-	 * @param string table or view name
-	 * @param null|mixed $tableName
+	 * @param null|string $tableName table or view name
 	 * @return TDbTableInfo table information.
 	 */
 	public function getTableInfo($tableName = null)
@@ -105,8 +104,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * Creates a command builder for a given table name.
-	 * @param string table name.
-	 * @param null|mixed $tableName
+	 * @param null|string $tableName table name.
 	 * @return TDbCommandBuilder command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null)

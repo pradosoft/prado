@@ -81,17 +81,12 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input
 	 * data for the WHERE clause parameter(s) of the SELECT statement.
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param TList An Ilist object used to hold the objects,
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
+	 * @param null|TList $result An Ilist object used to hold the objects,
 	 * pass in null if want to return a list instead.
-	 * @param int The number of rows to skip over.
-	 * @param int The maximum number of rows to return.
-	 * @param mixed $statementName
-	 * @param null|mixed $parameter
-	 * @param null|mixed $result
-	 * @param mixed $skip
-	 * @param mixed $max
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
 	 * @return TList A List of result objects.
 	 */
 	public function queryForList($statementName, $parameter = null, $result = null, $skip = -1, $max = -1)
@@ -106,19 +101,13 @@ class TSqlMapGateway extends \Prado\TComponent
 	 *
 	 * Example: $sqlmap->queryWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param callable Row delegate handler, a valid callback required.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param TList An Ilist object used to hold the objects,
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param callable $delegate Row delegate handler, a valid callback required.
+	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
+	 * @param null|TList $result An Ilist object used to hold the objects,
 	 * pass in null if want to return a list instead.
-	 * @param int The number of rows to skip over.
-	 * @param int The maximum number of rows to return.
-	 * @param mixed $statementName
-	 * @param mixed $delegate
-	 * @param null|mixed $parameter
-	 * @param null|mixed $result
-	 * @param mixed $skip
-	 * @param mixed $max
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
 	 * @return TList A List of result objects.
 	 */
 	public function queryWithRowDelegate($statementName, $delegate, $parameter = null, $result = null, $skip = -1, $max = -1)
@@ -151,16 +140,11 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * Runs paged list query with row delegate
 	 * Example: $sqlmap->queryForPagedListWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param callable Row delegate handler, a valid callback required.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param int The maximum number of objects to store in each page.
-	 * @param int The number of the page to initially load into the list.
-	 * @param mixed $statementName
-	 * @param mixed $delegate
-	 * @param null|mixed $parameter
-	 * @param mixed $pageSize
-	 * @param mixed $page
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param callable $delegate Row delegate handler, a valid callback required.
+	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
+	 * @param int $pageSize The maximum number of objects to store in each page.
+	 * @param int $page The number of the page to initially load into the list.
 	 * @return TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedListWithRowDelegate($statementName, $delegate, $parameter = null, $pageSize = 10, $page = 0)
@@ -176,16 +160,12 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * will be the value of the property specified in the valueProperty
 	 * parameter.  If valueProperty is null, the entire result object will be
 	 * entered.
-	 * @param string The name of the sql statement to execute.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param string The property of the result object to be used as the key.
-	 * @param string The property of the result object to be used as the value.
-	 * @param mixed $statementName
-	 * @param null|mixed $parameter
-	 * @param null|mixed $keyProperty
-	 * @param null|mixed $valueProperty
-	 * @param mixed $skip
-	 * @param mixed $max
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
+	 * @param null|string $keyProperty The property of the result object to be used as the key.
+	 * @param null|string $valueProperty The property of the result object to be used as the value.
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMap($statementName, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
@@ -200,18 +180,13 @@ class TSqlMapGateway extends \Prado\TComponent
 	 *
 	 * Example: $sqlmap->queryForMapWithRowDelegate('getAccounts', array($this, 'rowHandler'));
 	 *
-	 * @param string The name of the sql statement to execute.
-	 * @param callable Row delegate handler, a valid callback required.
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param string The property of the result object to be used as the key.
-	 * @param string The property of the result object to be used as the value.
-	 * @param mixed $statementName
-	 * @param mixed $delegate
-	 * @param null|mixed $parameter
-	 * @param null|mixed $keyProperty
-	 * @param null|mixed $valueProperty
-	 * @param mixed $skip
-	 * @param mixed $max
+	 * @param string $statementName The name of the sql statement to execute.
+	 * @param callable $delegate Row delegate handler, a valid callback required.
+	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
+	 * @param null|string $keyProperty The property of the result object to be used as the key.
+	 * @param null|string $valueProperty The property of the result object to be used as the value.
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
 	 * @return TMap Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
@@ -230,10 +205,8 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * The parameter object is generally used to supply the input data for the
 	 * INSERT values.
 	 *
-	 * @param string The name of the statement to execute.
-	 * @param string The parameter object.
-	 * @param mixed $statementName
-	 * @param null|mixed $parameter
+	 * @param string $statementName The name of the statement to execute.
+	 * @param null|string $parameter The parameter object.
 	 * @return mixed The primary key of the newly inserted row.
 	 * This might be automatically generated by the RDBMS,
 	 * or selected from a sequence table or other source.

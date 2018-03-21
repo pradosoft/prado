@@ -40,16 +40,11 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Create a new SqlMap paged list.
-	 * @param IMappedStatement SqlMap statement.
-	 * @param mixed query parameters
-	 * @param int page size
-	 * @param mixed delegate for each data row retrieved.
-	 * @param int number of page to fetch on initialization
-	 * @param mixed $parameter
-	 * @param mixed $pageSize
-	 * @param null|mixed $delegate
-	 * @param mixed $page
-	 * @param IMappedStatement $statement
+	 * @param IMappedStatement $statement SqlMap statement.
+	 * @param mixed $parameter query parameters
+	 * @param int $pageSize page size
+	 * @param null|mixed $delegate delegate for each data row retrieved.
+	 * @param int $page number of page to fetch on initialization
 	 */
 	public function __construct(IMappedStatement $statement, $parameter, $pageSize, $delegate = null, $page = 0)
 	{
@@ -61,14 +56,10 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Initialize the paged list.
-	 * @param IMappedStatement SqlMap statement.
-	 * @param mixed query parameters
-	 * @param int page size.
-	 * @param int number of page.
-	 * @param mixed $statement
-	 * @param mixed $parameter
-	 * @param mixed $pageSize
-	 * @param mixed $page
+	 * @param IMappedStatement $statement SqlMap statement.
+	 * @param mixed $parameter query parameters
+	 * @param int $pageSize page size.
+	 * @param int $page number of page.
 	 */
 	protected function initialize($statement, $parameter, $pageSize, $page)
 	{
@@ -90,10 +81,8 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Fetch data by executing the SqlMap statement.
-	 * @param TPageList current object.
-	 * @param TPagedListFetchDataEventParameter fetch parameters
-	 * @param mixed $sender
-	 * @param mixed $param
+	 * @param TPageList $sender current object.
+	 * @param TPagedListFetchDataEventParameter $param fetch parameters
 	 */
 	protected function fetchDataFromStatement($sender, $param)
 	{
@@ -130,10 +119,8 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Populate the list with the fetched data.
-	 * @param TPagedListFetchDataEventParameter fetch parameters
-	 * @param array fetched data.
-	 * @param mixed $param
-	 * @param mixed $data
+	 * @param TPagedListFetchDataEventParameter $param fetch parameters
+	 * @param array $data fetched data.
 	 */
 	protected function populateData($param, $data)
 	{

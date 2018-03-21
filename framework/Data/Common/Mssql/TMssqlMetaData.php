@@ -132,10 +132,8 @@ EOD;
 	}
 
 	/**
-	 * @param TMssqlTableInfo table information.
-	 * @param array column information.
-	 * @param mixed $tableInfo
-	 * @param mixed $col
+	 * @param TMssqlTableInfo $tableInfo table information.
+	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -175,8 +173,7 @@ EOD;
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string $col table name.
+	 * @param array $col table informations
 	 * @return TMssqlTableInfo
 	 */
 	protected function createNewTableInfo($col)
@@ -194,8 +191,7 @@ EOD;
 
 	/**
 	 * Gets the primary and foreign key column details for the given table.
-	 * @param string schema name
-	 * @param string $col table name.
+	 * @param array $col table informations
 	 * @return array tuple ($primary, $foreign)
 	 */
 	protected function getConstraintKeys($col)
@@ -223,8 +219,7 @@ EOD;
 
 	/**
 	 * Gets foreign relationship constraint keys and table name
-	 * @param string database name
-	 * @param string $col table name
+	 * @param array $col table informations
 	 * @return array foreign relationship table name and keys.
 	 */
 	protected function getForeignConstraints($col)

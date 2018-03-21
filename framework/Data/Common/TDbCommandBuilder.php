@@ -28,10 +28,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	private $_tableInfo;
 
 	/**
-	 * @param TDbConnection database connection.
-	 * @param TDbTableInfo table information.
-	 * @param null|mixed $connection
-	 * @param null|mixed $tableInfo
+	 * @param null|TDbConnection $connection database connection.
+	 * @param null|TDbTableInfo $tableInfo table information.
 	 */
 	public function __construct($connection = null, $tableInfo = null)
 	{
@@ -64,7 +62,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo table information.
+	 * @return TDbTableInfo table information.
 	 */
 	public function getTableInfo()
 	{
@@ -313,14 +311,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 	/**
 	 * Appends the $where condition to the string "SELECT * FROM tableName WHERE ".
 	 * The tableName is obtained from the {@link setTableInfo TableInfo} property.
-	 * @param string query condition
-	 * @param array condition parameters.
-	 * @param mixed $where
-	 * @param mixed $parameters
-	 * @param mixed $ordering
-	 * @param mixed $limit
-	 * @param mixed $offset
-	 * @param mixed $select
+	 * @param string $where query condition
+	 * @param array $parameters condition parameters.
+	 * @param array $ordering
+	 * @param int $limit
+	 * @param int $offset
+	 * @param string $select
 	 * @return TDbCommand query command.
 	 */
 	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
@@ -349,13 +345,11 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Creates a count(*) command for the table described in {@link setTableInfo TableInfo}.
-	 * @param string count condition.
-	 * @param array binding parameters.
-	 * @param mixed $where
-	 * @param mixed $parameters
-	 * @param mixed $ordering
-	 * @param mixed $limit
-	 * @param mixed $offset
+	 * @param string $where count condition.
+	 * @param array $parameters binding parameters.
+	 * @param array $ordering
+	 * @param int $limit
+	 * @param int $offset
 	 * @return TDbCommand count command.
 	 */
 	public function createCountCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1)
@@ -468,10 +462,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Bind the name-value pairs of $values where the array keys correspond to column names.
-	 * @param TDbCommand database command.
-	 * @param array name-value pairs.
-	 * @param mixed $command
-	 * @param mixed $values
+	 * @param TDbCommand $command database command.
+	 * @param array $values name-value pairs.
 	 */
 	public function bindColumnValues($command, $values)
 	{
@@ -486,10 +478,8 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommand database command
-	 * @param array values for binding.
-	 * @param mixed $command
-	 * @param mixed $values
+	 * @param TDbCommand $command database command
+	 * @param array $values values for binding.
 	 */
 	public function bindArrayValues($command, $values)
 	{

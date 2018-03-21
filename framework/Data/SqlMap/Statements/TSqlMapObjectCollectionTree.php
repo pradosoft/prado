@@ -51,12 +51,9 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Add a new node to the object tree graph.
-	 * @param string parent node id
-	 * @param string new node id
-	 * @param mixed node value
-	 * @param mixed $parent
-	 * @param mixed $node
-	 * @param mixed $object
+	 * @param string $parent parent node id
+	 * @param string $node new node id
+	 * @param mixed $object node value
 	 */
 	public function add($parent, $node, $object = '')
 	{
@@ -84,12 +81,9 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Find the parent node and add the new node as its child.
-	 * @param array list of nodes to check
-	 * @param string parent node id
-	 * @param string new node id
-	 * @param mixed $parent
-	 * @param mixed $node
-	 * @param & $childs
+	 * @param array &$childs list of nodes to check
+	 * @param string $parent parent node id
+	 * @param string $node new node id
 	 * @return bool true if parent node is found.
 	 */
 	protected function addNode(&$childs, $parent, $node)
@@ -121,8 +115,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array list of nodes to check
-	 * @param & $nodes
+	 * @param array &$nodes list of nodes to check
 	 * @return bool true if all nodes are leaf nodes, false otherwise
 	 */
 	protected function hasChildren(&$nodes)
@@ -138,10 +131,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Visit all the child nodes and collect them by removing.
-	 * @param string parent node id
-	 * @param array list of child nodes.
-	 * @param mixed $parent
-	 * @param & $nodes
+	 * @param string $parent parent node id
+	 * @param array &$nodes list of child nodes.
 	 */
 	protected function collectChildren($parent, &$nodes)
 	{
@@ -163,10 +154,8 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Set the object properties for all the child nodes visited.
-	 * @param string parent node id
-	 * @param array list of child nodes visited.
-	 * @param mixed $parent
-	 * @param mixed $nodes
+	 * @param string $parent parent node id
+	 * @param array $nodes list of child nodes visited.
 	 */
 	protected function onChildNodesVisited($parent, $nodes)
 	{

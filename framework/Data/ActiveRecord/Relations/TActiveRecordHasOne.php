@@ -89,8 +89,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 	/**
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects.
-	 * @param array original results.
-	 * @param & $results
+	 * @param array &$results original results.
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -115,11 +114,9 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 
 	/**
 	 * Sets the foreign objects to the given property on the source object.
-	 * @param TActiveRecord source object.
-	 * @param array foreign objects.
-	 * @param mixed $source
-	 * @param mixed $properties
-	 * @param & $collections
+	 * @param TActiveRecord $source source object.
+	 * @param array $properties foreign objects.
+	 * @param array &$collections
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

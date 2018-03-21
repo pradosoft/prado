@@ -118,10 +118,8 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param TMysqlTableInfo table information.
-	 * @param array column information.
-	 * @param mixed $tableInfo
-	 * @param mixed $col
+	 * @param TMysqlTableInfo $tableInfo table information.
+	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -226,8 +224,7 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string $table table name.
+	 * @param string $table table schema name
 	 * @return TMysqlTableInfo
 	 */
 	protected function createNewTableInfo($table)
@@ -247,11 +244,9 @@ class TMysqlMetaData extends TDbMetaData
 	 * For MySQL version 5.0.1 or later we can use SHOW FULL TABLES
 	 * http://dev.mysql.com/doc/refman/5.0/en/show-tables.html
 	 *
-	 * For MySQL version 5.0.1 or ealier, this always return false.
-	 * @param string database name, null to use default connection database.
-	 * @param string table or view name.
-	 * @param mixed $schemaName
-	 * @param mixed $tableName
+	 * For MySQL version 5.0.1 or earlier, this always return false.
+	 * @param string $schemaName database name, null to use default connection database.
+	 * @param string $tableName table or view name.
 	 * @throws TDbException if table or view does not exist.
 	 * @return bool true if is view, false otherwise.
 	 */
@@ -340,10 +335,8 @@ EOD;
 	}
 
 	/**
-	 * @param string database name
-	 * @param string table name
-	 * @param mixed $schemaName
-	 * @param mixed $tableName
+	 * @param string $schemaName database name
+	 * @param string $tableName table name
 	 * @throws TDbException if PHP version is less than 5.1.3
 	 * @return string SQL command to create the table.
 	 */

@@ -34,10 +34,8 @@ class TSqlMapFifoCache extends TSqlMapCache
 	/**
 	 * Stores a value identified by a key into cache.
 	 * The expire and dependency parameters are ignored.
-	 * @param string cache key
-	 * @param mixed value to cache.
-	 * @param mixed $key
-	 * @param mixed $value
+	 * @param string $key cache key
+	 * @param mixed $value value to cache.
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
 	 */

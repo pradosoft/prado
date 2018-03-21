@@ -116,10 +116,8 @@ EOD;
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string table name.
-	 * @param mixed $schemaName
-	 * @param mixed $tableName
+	 * @param string $schemaName table schema name
+	 * @param string $tableName table name.
 	 * @return TOracleTableInfo
 	 */
 	protected function createNewTableInfo($schemaName, $tableName)
@@ -136,8 +134,7 @@ EOD;
 	}
 
 	/**
-	 * @param string table name, schema name or column name.
-	 * @param mixed $name
+	 * @param string $name table name, schema name or column name.
 	 * @throws TDbException when table name contains a double quote (").
 	 * @return string a valid identifier.
 	 */
@@ -173,10 +170,8 @@ EOD;
 	}
 
 	/**
-	 * @param TOracleTableInfo table information.
-	 * @param array column information.
-	 * @param mixed $tableInfo
-	 * @param mixed $col
+	 * @param TOracleTableInfo $tableInfo table information.
+	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
 	{

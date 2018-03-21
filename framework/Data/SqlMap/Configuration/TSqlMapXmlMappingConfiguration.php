@@ -53,8 +53,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	const INLINE_PLACEHOLDER = '`!!!`';
 
 	/**
-	 * @param TSqlMapXmlConfiguration parent xml configuration.
-	 * @param TSqlMapXmlConfiguration $xmlConfig
+	 * @param TSqlMapXmlConfiguration $xmlConfig parent xml configuration.
 	 */
 	public function __construct(TSqlMapXmlConfiguration $xmlConfig)
 	{
@@ -277,10 +276,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load extended SQL statements if application. Replaces global properties
 	 * in the sql text. Extracts inline parameter maps.
-	 * @param TSqlMapStatement mapped statement.
-	 * @param SimpleXmlElement statement node.
-	 * @param mixed $statement
-	 * @param mixed $node
+	 * @param TSqlMapStatement $statement mapped statement.
+	 * @param SimpleXmlElement $node statement node.
 	 */
 	protected function processSqlStatement($statement, $node)
 	{
@@ -305,12 +302,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Extract inline parameter maps.
-	 * @param TSqlMapStatement statement object.
-	 * @param string sql text
-	 * @param SimpleXmlElement statement node.
-	 * @param mixed $statement
-	 * @param mixed $sqlStatement
-	 * @param mixed $node
+	 * @param TSqlMapStatement $statement statement object.
+	 * @param string $sqlStatement sql text
+	 * @param SimpleXmlElement $node statement node.
 	 */
 	protected function applyInlineParameterMap($statement, $sqlStatement, $node)
 	{
@@ -340,12 +334,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Prepare the sql text (may extend to dynamic sql).
-	 * @param TSqlMapStatement mapped statement.
-	 * @param string sql text.
-	 * @param SimpleXmlElement statement node.
-	 * @param mixed $statement
-	 * @param mixed $sqlStatement
-	 * @param mixed $node
+	 * @param TSqlMapStatement $statement mapped statement.
+	 * @param string $sqlStatement sql text.
+	 * @param SimpleXmlElement $node statement node.
 	 * @todo Extend to dynamic sql.
 	 */
 	protected function prepareSql($statement, $sqlStatement, $node)
@@ -410,9 +401,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the selectKey statement from xml mapping.
-	 * @param SimpleXmlElement selectkey node
 	 * @param mixed $insert
-	 * @param mixed $node
+	 * @param SimpleXmlElement $node selectkey node
 	 */
 	protected function loadSelectKeyTag($insert, $node)
 	{
@@ -507,10 +497,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the flush interval
-	 * @param TSqlMapCacheModel cache model
-	 * @param SimpleXmlElement cache node
-	 * @param mixed $cacheModel
-	 * @param mixed $node
+	 * @param TSqlMapCacheModel $cacheModel cache model
+	 * @param SimpleXmlElement $node cache node
 	 */
 	protected function loadFlushInterval($cacheModel, $node)
 	{
@@ -543,12 +531,9 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the flush on cache properties.
-	 * @param TSqlMapCacheModel cache model
-	 * @param SimpleXmlElement parent node.
-	 * @param SimpleXmlElement flush node.
-	 * @param mixed $cacheModel
-	 * @param mixed $parent
-	 * @param mixed $node
+	 * @param TSqlMapCacheModel $cacheModel cache model
+	 * @param SimpleXmlElement $parent parent node.
+	 * @param SimpleXmlElement $node flush node.
 	 */
 	protected function loadFlushOnCache($cacheModel, $parent, $node)
 	{

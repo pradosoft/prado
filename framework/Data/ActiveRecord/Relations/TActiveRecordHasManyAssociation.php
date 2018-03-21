@@ -93,8 +93,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	/**
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects using association table.
-	 * @param array original results.
-	 * @param & $results
+	 * @param array &$results original results.
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -180,12 +179,10 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	/**
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
-	 * @param array field names
-	 * @param array foreign key index values.
-	 * @param mixed $foreignKeys
-	 * @param mixed $indexValues
-	 * @param mixed $sourceKeys
-	 * @param & $results
+	 * @param array &$result &$results original results.
+	 * @param array $foreignKeys field names
+	 * @param array $indexValues foreign key index values.
+	 * @param array $sourceKeys source table column names.
 	 */
 	protected function fetchForeignObjects(&$results, $foreignKeys, $indexValues, $sourceKeys)
 	{
@@ -207,12 +204,9 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @param string active record class name.
-	 * @param array row data
-	 * @param array foreign key column names
-	 * @param mixed $type
-	 * @param mixed $row
-	 * @param mixed $foreignKeys
+	 * @param string $type active record class name.
+	 * @param array $row row data
+	 * @param array $foreignKeys foreign key column names
 	 * @return TActiveRecord
 	 */
 	protected function createFkObject($type, $row, $foreignKeys)
@@ -229,13 +223,10 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	/**
 	 * @param TSqlCriteria
-	 * @param TTableInfo association table info
-	 * @param array field names
-	 * @param array field values
-	 * @param mixed $criteria
-	 * @param mixed $foreignKeys
-	 * @param mixed $indexValues
-	 * @param mixed $sourceKeys
+	 * @param TTableInfo $criteria association table info
+	 * @param array $foreignKeys field names
+	 * @param array $indexValues field values
+	 * @param array $sourceKeys source table column names.
 	 */
 	public function createCommand($criteria, $foreignKeys, $indexValues, $sourceKeys)
 	{

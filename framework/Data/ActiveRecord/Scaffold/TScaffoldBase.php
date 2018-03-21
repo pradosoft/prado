@@ -99,8 +99,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Copy the view details from another scaffold view instance.
-	 * @param TScaffoldBase scaffold view.
-	 * @param TScaffoldBase $obj
+	 * @param TScaffoldBase $obj scaffold view.
 	 */
 	protected function copyFrom(TScaffoldBase $obj)
 	{
@@ -120,8 +119,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	/**
 	 * Gets the current Active Record instance. Creates new instance if the
 	 * primary key value is null otherwise the record is fetched from the db.
-	 * @param array primary key value
-	 * @param null|mixed $pk
+	 * @param null|array $pk primary key value
 	 * @return TActiveRecord record instance
 	 */
 	protected function getRecordObject($pk = null)
@@ -153,8 +151,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord Active Record instance.
-	 * @param TActiveRecord $value
+	 * @param TActiveRecord $value Active Record instance.
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{

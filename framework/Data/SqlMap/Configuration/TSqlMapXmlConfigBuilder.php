@@ -45,12 +45,9 @@ abstract class TSqlMapXmlConfigBuilder
 	 * For each attributes (excluding attribute named in $except) set the
 	 * property of the $obj given by the name of the attribute with the value
 	 * of the attribute.
-	 * @param Object object instance
-	 * @param SimpleXmlNode property node
-	 * @param array exception property name
-	 * @param mixed $obj
-	 * @param mixed $node
-	 * @param mixed $except
+	 * @param object $obj object instance
+	 * @param SimpleXmlNode $node property node
+	 * @param array $except exception property name
 	 */
 	protected function setObjectPropFromNode($obj, $node, $except = [])
 	{
@@ -94,8 +91,7 @@ abstract class TSqlMapXmlConfigBuilder
 	}
 	/**
 	 * Load document using simple xml.
-	 * @param string filename.
-	 * @param mixed $filename
+	 * @param string $filename
 	 * @param TSqlMapXmlConfiguration $config
 	 * @return SimpleXmlElement xml document.
 	 */
@@ -115,10 +111,8 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * Get element node by ID value (try for attribute name ID as case insensitive).
 	 * @param SimpleXmlDocument $document
-	 * @param string tag name.
-	 * @param string id value.
-	 * @param mixed $tag
-	 * @param mixed $value
+	 * @param string $tag tag name.
+	 * @param string $value id value.
 	 * @return SimpleXmlElement node if found, null otherwise.
 	 */
 	protected function getElementByIdValue($document, $tag, $value)

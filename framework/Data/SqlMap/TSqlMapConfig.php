@@ -125,9 +125,8 @@ class TSqlMapConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @param string external configuration file in namespace format. The file
+	 * @param string $value external configuration file in namespace format. The file
 	 * extension must be '.xml'.
-	 * @param mixed $value
 	 * @throws TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)

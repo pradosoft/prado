@@ -95,8 +95,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string name of a parameter property.
-	 * @param mixed $index
+	 * @param string|int $index name of a parameter property.
 	 * @throws TSqlMapException if index is not string nor integer.
 	 * @return TParameterProperty parameter property.
 	 */
@@ -112,8 +111,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TParameterProperty new parameter property
-	 * @param TParameterProperty $property
+	 * @param TParameterProperty $property new parameter property
 	 */
 	public function addProperty(TParameterProperty $property)
 	{
@@ -122,10 +120,8 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int parameter property index
-	 * @param TParameterProperty new parameter property.
-	 * @param mixed $index
-	 * @param TParameterProperty $property
+	 * @param int $index parameter property index
+	 * @param TParameterProperty $property new parameter property.
 	 */
 	public function insertProperty($index, TParameterProperty $property)
 	{
@@ -143,12 +139,9 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * Get the value of a property from the the parameter object.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry.
-	 * @param TParameterProperty parameter proproperty.
-	 * @param mixed parameter object to get the value from.
-	 * @param mixed $registry
-	 * @param mixed $property
-	 * @param mixed $parameterValue
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
+	 * @param TParameterProperty $property parameter proproperty.
+	 * @param mixed $parameterValue parameter object to get the value from.
 	 * @return unknown
 	 */
 	public function getPropertyValue($registry, $property, $parameterValue)
@@ -187,10 +180,8 @@ class TParameterMap extends \Prado\TComponent
 
 
 	/**
-	 * @param mixed object to obtain the property from.
-	 * @param TParameterProperty parameter property.
-	 * @param mixed $object
-	 * @param mixed $property
+	 * @param mixed $object object to obtain the property from.
+	 * @param TParameterProperty $property parameter property.
 	 * @throws TSqlMapException if property access is invalid.
 	 * @return mixed property value.
 	 */

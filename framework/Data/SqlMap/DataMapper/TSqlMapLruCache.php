@@ -38,10 +38,8 @@ class TSqlMapLruCache extends TSqlMapCache
 	/**
 	 * Stores a value identified by a key into cache.
 	 * The expire and dependency parameters are ignored.
-	 * @param string the key identifying the value to be cached
-	 * @param mixed the value to be cached
-	 * @param mixed $key
-	 * @param mixed $value
+	 * @param string $key the key identifying the value to be cached
+	 * @param mixed $value the value to be cached
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
 	 */

@@ -46,10 +46,8 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed new information array value.
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name information array key name
+	 * @param mixed $value new information array value.
 	 */
 	protected function setInfo($name, $value)
 	{
@@ -66,7 +64,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @param int PDO bind param/value types, default returns string.
+	 * @return int PDO bind param/value types, default returns string.
 	 */
 	public function getPdoType()
 	{
@@ -175,7 +173,7 @@ class TDbTableColumn extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string sequence name, only applicable if column is a sequence
+	 * @return string sequence name, only applicable if column is a sequence
 	 */
 	public function getSequenceName()
 	{

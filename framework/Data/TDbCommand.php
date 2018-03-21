@@ -50,10 +50,8 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TDbConnection the database connection
-	 * @param string the SQL statement to be executed
-	 * @param mixed $text
-	 * @param TDbConnection $connection
+	 * @param TDbConnection $connection the database connection
+	 * @param string $text the SQL statement to be executed
 	 */
 	public function __construct(TDbConnection $connection, $text)
 	{
@@ -133,19 +131,15 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Binds a parameter to the SQL statement to be executed.
-	 * @param mixed Parameter identifier. For a prepared statement
+	 * @param mixed $name Parameter identifier. For a prepared statement
 	 * using named placeholders, this will be a parameter name of
 	 * the form :name. For a prepared statement using question mark
 	 * placeholders, this will be the 1-indexed position of the parameter.
 	 * Unlike {@link bindValue}, the variable is bound as a reference and will
 	 * only be evaluated at the time that {@link execute} or {@link query} is called.
-	 * @param mixed Name of the PHP variable to bind to the SQL statement parameter
-	 * @param int SQL data type of the parameter
-	 * @param int length of the data type
-	 * @param mixed $name
-	 * @param null|mixed $dataType
-	 * @param null|mixed $length
-	 * @param & $value
+	 * @param mixed &$value The value to bind to the parameter
+	 * @param null|int $dataType SQL data type of the parameter
+	 * @param null|int $length length of the data type
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php
 	 */
 	public function bindParameter($name, &$value, $dataType = null, $length = null)
@@ -162,15 +156,12 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Binds a value to a parameter.
-	 * @param mixed Parameter identifier. For a prepared statement
+	 * @param mixed $name Parameter identifier. For a prepared statement
 	 * using named placeholders, this will be a parameter name of
 	 * the form :name. For a prepared statement using question mark
 	 * placeholders, this will be the 1-indexed position of the parameter.
-	 * @param mixed The value to bind to the parameter
-	 * @param int SQL data type of the parameter
-	 * @param mixed $name
-	 * @param mixed $value
-	 * @param null|mixed $dataType
+	 * @param mixed $value The value to bind to the parameter
+	 * @param null|int $dataType SQL data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindValue.php
 	 */
 	public function bindValue($name, $value, $dataType = null)
@@ -241,9 +232,8 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Executes the SQL statement and returns the first row of the result.
 	 * This is a convenient method of {@link query} when only the first row of data is needed.
-	 * @param bool whether the row should be returned as an associated array with
+	 * @param bool $fetchAssociative whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
-	 * @param mixed $fetchAssociative
 	 * @throws TDbException execution failed
 	 * @return array the first row of the query result, false if no result.
 	 */

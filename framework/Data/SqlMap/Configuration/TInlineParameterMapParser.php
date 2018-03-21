@@ -53,10 +53,8 @@ class TInlineParameterMapParser
 	/**
 	 * Parse inline parameter with syntax as
 	 * #propertyName,type=string,dbype=Varchar,nullValue=N/A,handler=string#
-	 * @param string parameter token
-	 * @param array file and node details for exception message.
-	 * @param mixed $token
-	 * @param mixed $scope
+	 * @param string $token parameter token
+	 * @param array $scope file and node details for exception message.
 	 */
 	protected function parseMapping($token, $scope)
 	{

@@ -247,7 +247,6 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection database connection.
 	 * @param array $array values
 	 * @return string quoted recursive tuple values, e.g. "('val1', 'val2')".
 	 */
@@ -353,8 +352,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Inserts a new record into the table. Each array key must
 	 * correspond to a column name in the table unless a null value is permitted.
-	 * @param array new record data.
-	 * @param mixed $data
+	 * @param array $data new record data.
 	 * @return mixed last insert id if one column contains a serial or sequence,
 	 * otherwise true if command executes successfully and affected 1 or more rows.
 	 */
@@ -441,10 +439,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * The parameter object is TDataGatewayEventParameter of which the
 	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
-	 * @param TDataGatewayCommand originator $sender
-	 * @param TDataGatewayEventParameter
-	 * @param mixed $command
-	 * @param mixed $criteria
+	 * @param TDataGatewayCommand $command originator $sender
+	 * @param mixed $criteria TDataGatewayEventParameter
 	 */
 	public function onCreateCommand($command, $criteria)
 	{
@@ -457,10 +453,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * {@link TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
 	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
-	 * @param TDataGatewayCommand originator $sender
-	 * @param TDataGatewayResultEventParameter
-	 * @param mixed $command
-	 * @param mixed $result
+	 * @param TDataGatewayCommand $command originator sender
+	 * @param mixed $result TDataGatewayResultEventParameter
 	 */
 	public function onExecuteCommand($command, $result)
 	{

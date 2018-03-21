@@ -88,8 +88,7 @@ abstract class TSqlMapTypeHandler extends \Prado\TComponent
 	 * for this type (e.g. File type), you can simply return the String representation
 	 * as it was passed in.  It is not recommended to return null, unless null was passed
 	 * in.
-	 * @param array result row.
-	 * @param null|mixed $row
+	 * @param null|array $row result row.
 	 * @return mixed
 	 */
 	abstract public function createNewInstance($row = null);

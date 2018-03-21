@@ -220,14 +220,10 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Populate the results with the foreign objects found.
-	 * @param array source results
-	 * @param array source property names
-	 * @param array foreign objects
-	 * @param array foreign object field names.
-	 * @param mixed $properties
-	 * @param mixed $fields
-	 * @param & $results
-	 * @param & $fkObjects
+	 * @param array &$results source results
+	 * @param array $properties source property names
+	 * @param array &$fkObjects foreign objects
+	 * @param array $fields foreign object field names.
 	 */
 	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
 	{
@@ -240,10 +236,9 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Populates the result array with foreign objects (matched using foreign key hashed property values).
-	 * @param array $results
-	 * @param array $collections
-	 * @param array property names
-	 * @param mixed $properties
+	 * @param array &$results
+	 * @param array &$collections
+	 * @param array $properties property names
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
@@ -258,12 +253,9 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Sets the foreign objects to the given property on the source object.
-	 * @param TActiveRecord source object.
-	 * @param array source properties
-	 * @param array foreign objects.
-	 * @param mixed $source
-	 * @param mixed $properties
-	 * @param & $collections
+	 * @param TActiveRecord $source source object.
+	 * @param array $properties source properties
+	 * @param array &$collections foreign objects.
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

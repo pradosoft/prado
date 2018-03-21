@@ -155,10 +155,8 @@ EOD;
 	}
 
 	/**
-	 * @param string table schema name
-	 * @param string table name.
-	 * @param mixed $schemaName
-	 * @param mixed $tableName
+	 * @param string $schemaName table schema name
+	 * @param string $tableName table name.
 	 * @return TPgsqlTableInfo
 	 */
 	protected function createNewTableInfo($schemaName, $tableName)
@@ -174,8 +172,7 @@ EOD;
 	}
 
 	/**
-	 * @param string table name, schema name or column name.
-	 * @param mixed $name
+	 * @param string $name table name, schema name or column name.
 	 * @throws TDbException when table name contains a double quote (").
 	 * @return string a valid identifier.
 	 */
@@ -209,10 +206,8 @@ EOD;
 	}
 
 	/**
-	 * @param TPgsqlTableInfo table information.
-	 * @param array column information.
-	 * @param mixed $tableInfo
-	 * @param mixed $col
+	 * @param TPgsqlTableInfo $tableInfo table information.
+	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
 	{
@@ -366,10 +361,9 @@ EOD;
 
 	/**
 	 * Gets the primary key field names
-	 * @param string pgsql primary key definition
-	 * @param mixed $tableName
-	 * @param mixed $schemaName
-	 * @param mixed $columnIndex
+	 * @param string $tableName
+	 * @param string $schemaName
+	 * @param string $columnIndex
 	 * @return array primary key field names.
 	 */
 	protected function getPrimaryKeys($tableName, $schemaName, $columnIndex)

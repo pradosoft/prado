@@ -138,8 +138,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDiscriminator result class discriminator.
-	 * @param TDiscriminator $value
+	 * @param TDiscriminator $value result class discriminator.
 	 */
 	public function setDiscriminator(TDiscriminator $value)
 	{
@@ -148,8 +147,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Add a TResultProperty to result mapping.
-	 * @param TResultProperty result property.
-	 * @param TResultProperty $property
+	 * @param TResultProperty $property result property.
 	 */
 	public function addResultProperty(TResultProperty $property)
 	{
@@ -158,8 +156,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of the class of this result map.
-	 * @param TSqlMapTypeHandlerRegistry type handler registry.
-	 * @param mixed $registry
+	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
 	 * @throws TSqlMapException
 	 * @return mixed new result object.
 	 */

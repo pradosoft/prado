@@ -36,10 +36,9 @@ class TOracleTableInfo extends \Prado\TComponent
 
 	/**
 	 * Sets the database table meta data information.
-	 * @param array table column information.
-	 * @param mixed $tableInfo
-	 * @param mixed $primary
-	 * @param mixed $foreign
+	 * @param array $tableInfo table column information.
+	 * @param array $primary
+	 * @param array $foreign
 	 */
 	public function __construct($tableInfo = [], $primary = [], $foreign = [])
 	{
@@ -69,10 +68,8 @@ class TOracleTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string information array key name
-	 * @param mixed new information array value.
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name information array key name
+	 * @param mixed $value new information array value.
 	 */
 	protected function setInfo($name, $value)
 	{
@@ -124,7 +121,6 @@ class TOracleTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array list of column Id, empty to get all columns.
 	 * @return array table column names (identifier quoted)
 	 */
 	public function getColumnNames()

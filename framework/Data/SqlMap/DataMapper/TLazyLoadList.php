@@ -31,14 +31,10 @@ class TLazyLoadList
 	/**
 	 * Create a new proxy list that will execute the mapped statement when any
 	 * of the list's method are accessed for the first time.
-	 * @param TMappedStatement statement to be executed to load the data.
-	 * @param mixed parameter value for the statement.
-	 * @param object result object that contains the lazy collection.
-	 * @param string property of the result object to set the loaded collection.
-	 * @param mixed $mappedStatement
-	 * @param mixed $param
-	 * @param mixed $target
-	 * @param mixed $propertyName
+	 * @param TMappedStatement $mappedStatement statement to be executed to load the data.
+	 * @param mixed $param parameter value for the statement.
+	 * @param object $target result object that contains the lazy collection.
+	 * @param string $propertyName property of the result object to set the loaded collection.
 	 */
 	protected function __construct($mappedStatement, $param, $target, $propertyName)
 	{
@@ -71,10 +67,8 @@ class TLazyLoadList
 
 	/**
 	 * Relay the method call to the underlying collection.
-	 * @param string method name.
-	 * @param array method parameters.
-	 * @param mixed $method
-	 * @param mixed $arguments
+	 * @param string $method method name.
+	 * @param array $arguments method parameters.
 	 */
 	public function intercept($method, $arguments)
 	{

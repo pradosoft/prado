@@ -222,10 +222,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Create a new instance of an active record with given $data. The record
 	 * can be saved to the database specified by the $connection object.
 	 *
-	 * @param array optional name value pair record data.
-	 * @param TDbConnection optional database connection this object record use.
-	 * @param mixed $data
-	 * @param null|mixed $connection
+	 * @param array $data optional name value pair record data.
+	 * @param null|TDbConnection $connection optional database connection this object record use.
 	 */
 	public function __construct($data = [], $connection = null)
 	{
@@ -243,8 +241,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Magic method for reading properties.
 	 * This method is overriden to provide read access to the foreign objects via
 	 * the key names declared in the RELATIONS array.
-	 * @param string property name
-	 * @param mixed $name
+	 * @param string $name property name
 	 * @return mixed property value.
 	 * @since 3.1.2
 	 */
@@ -261,10 +258,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Magic method for writing properties.
 	 * This method is overriden to provide write access to the foreign objects via
 	 * the key names declared in the RELATIONS array.
-	 * @param string property name
-	 * @param mixed property value.
-	 * @param mixed $name
-	 * @param mixed $value
+	 * @param string $name property name
+	 * @param mixed $value property value.
 	 * @since 3.1.2
 	 */
 	public function __set($name, $value)
@@ -364,10 +359,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Compare two records using their primary key values (all column values if
 	 * table does not defined primary keys). The default uses simple == for
 	 * comparison of their values. Set $strict=true for identity comparison (===).
-	 * @param TActiveRecord another record to compare with.
-	 * @param bool true to perform strict identity comparison
-	 * @param mixed $strict
-	 * @param TActiveRecord $record
+	 * @param TActiveRecord $record another record to compare with.
+	 * @param bool $strict true to perform strict identity comparison
 	 * @return bool true if $record equals, false otherwise.
 	 */
 	public function equals(TActiveRecord $record, $strict = false)
@@ -398,8 +391,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * This means that event handlers bound to these finder instances are class wide.
 	 * Create a new instance of the ActiveRecord class if you wish to bound the
 	 * event handlers to object instance.
-	 * @param string active record class name.
-	 * @param mixed $className
+	 * @param string $className active record class name.
 	 * @return TActiveRecord active record finder instance.
 	 */
 	public static function finder($className = __CLASS__)
@@ -545,8 +537,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbDataReader data reader
-	 * @param mixed $reader
+	 * @param TDbDataReader $reader data reader
 	 * @return array the AR objects populated by the query result
 	 * @since 3.1.2
 	 */
@@ -563,10 +554,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Create an AR instance specified by the AR class name and initial data.
 	 * If the initial data is empty, the AR object will not be created and null will be returned.
 	 * (You should use the "new" operator to create the AR instance in that case.)
-	 * @param string the AR class name
-	 * @param array initial data to be populated into the AR object.
-	 * @param mixed $type
-	 * @param mixed $data
+	 * @param string $type the AR class name
+	 * @param array $data initial data to be populated into the AR object.
 	 * @return TActiveRecord the initialized AR object. Null if the initial data is empty.
 	 * @since 3.1.2
 	 */
@@ -677,9 +666,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Find records using full SQL, returns corresponding record object.
 	 * The names of the column retrieved must be defined in your Active Record
 	 * class.
-	 * @param string select SQL
+	 * @param string $sql select SQL
 	 * @param array $parameters
-	 * @param mixed $sql
 	 * @return TActiveRecord, null if no result is returned.
 	 */
 	public function findBySql($sql, $parameters = [])
@@ -695,9 +683,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Find records using full SQL, returns corresponding record object.
 	 * The names of the column retrieved must be defined in your Active Record
 	 * class.
-	 * @param string select SQL
+	 * @param string $sql select SQL
 	 * @param array $parameters
-	 * @param mixed $sql
 	 * @return array matching active records. Empty array is returned if no result is found.
 	 */
 	public function findAllBySql($sql, $parameters = [])
@@ -762,8 +749,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Gets a static copy of the relationship context for given property (a key
 	 * in $RELATIONS), returns null if invalid relationship. Keeps a null
 	 * reference to all invalid relations called.
-	 * @param string relationship/property name corresponding to keys in $RELATION array.
-	 * @param mixed $name
+	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
 	 * @return TActiveRecordRelationContext object containing information on
 	 * the active record relationships for given property, null if invalid relationship
 	 * @since 3.1.2
@@ -809,8 +795,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * $team = TeamRecord::finder()->findByPk(1);
 	 * var_dump($team->players); //uses lazy load to fetch 'players' relation
 	 * </code>
-	 * @param string relationship/property name corresponding to keys in $RELATION array.
-	 * @param mixed $property
+	 * @param string $property relationship/property name corresponding to keys in $RELATION array.
 	 * @return bool true if relationship exists, false otherwise.
 	 * @since 3.1.2
 	 */
@@ -1003,8 +988,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Retrieves the column value according to column name.
 	 * This method is used internally.
-	 * @param string the column name (as defined in database schema)
-	 * @param mixed $columnName
+	 * @param string $columnName the column name (as defined in database schema)
 	 * @return mixed the corresponding column value
 	 * @since 3.1.1
 	 */
@@ -1020,10 +1004,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Sets the column value according to column name.
 	 * This method is used internally.
-	 * @param string the column name (as defined in database schema)
-	 * @param mixed the corresponding column value
-	 * @param mixed $columnName
-	 * @param mixed $value
+	 * @param string $columnName the column name (as defined in database schema)
+	 * @param mixed $value the corresponding column value
 	 * @since 3.1.1
 	 */
 	public function setColumnValue($columnName, $value)
@@ -1036,8 +1018,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string relation property name
-	 * @param mixed $property
+	 * @param string $property relation property name
 	 * @return array relation definition for the specified property
 	 * @since 3.1.2
 	 */
@@ -1058,8 +1039,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string AR property name
-	 * @param mixed $property
+	 * @param string $property AR property name
 	 * @return bool whether a relation is declared for the specified AR property
 	 * @since 3.1.2
 	 */

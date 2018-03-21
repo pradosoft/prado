@@ -46,8 +46,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param TDbCommand the command generating the query result
-	 * @param TDbCommand $command
+	 * @param TDbCommand $command the command generating the query result
 	 */
 	public function __construct(TDbCommand $command)
 	{
@@ -59,14 +58,11 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * Binds a column to a PHP variable.
 	 * When rows of data are being fetched, the corresponding column value
 	 * will be set in the variable. Note, the fetch mode must include PDO::FETCH_BOUND.
-	 * @param mixed Number of the column (1-indexed) or name of the column
+	 * @param mixed $column Number of the column (1-indexed) or name of the column
 	 * in the result set. If using the column name, be aware that the name
 	 * should match the case of the column, as returned by the driver.
-	 * @param mixed Name of the PHP variable to which the column will be bound.
-	 * @param int Data type of the parameter
-	 * @param mixed $column
-	 * @param null|mixed $dataType
-	 * @param & $value
+	 * @param mixed &$value Name of the PHP variable to which the column will be bound.
+	 * @param null|int $dataType Data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php
 	 */
 	public function bindColumn($column, &$value, $dataType = null)

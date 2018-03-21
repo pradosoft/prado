@@ -57,7 +57,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string property type of the parameter to be set.
+	 * @return string property type of the parameter to be set.
 	 */
 	public function getType()
 	{

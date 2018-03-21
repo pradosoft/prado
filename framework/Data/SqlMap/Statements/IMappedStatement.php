@@ -59,16 +59,11 @@ interface IMappedStatement
 
 	/**
 	 * Executes the SQL and retuns a subset of the rows selected.
-	 * @param IDbConnection database connection to execute the query
-	 * @param mixed The object used to set the parameters in the SQL.
-	 * @param TList A list to populate the result with.
-	 * @param int The number of rows to skip over.
-	 * @param int The maximum number of rows to return.
-	 * @param mixed $connection
-	 * @param mixed $parameter
-	 * @param null|mixed $result
-	 * @param mixed $skip
-	 * @param mixed $max
+	 * @param IDbConnection $connection database connection to execute the query
+	 * @param mixed $parameter The object used to set the parameters in the SQL.
+	 * @param null|TList $result A list to populate the result with.
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
 	 * @return TList A TList of result objects.
 	 */
 	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1);
