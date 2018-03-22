@@ -295,7 +295,7 @@ class TCache_Lite
 					$data = $this->_read();
 				}
 			}
-			if (($data) and ($this->_memoryCaching)) {
+			if (($data) && ($this->_memoryCaching)) {
 				$this->_memoryCacheAdd($this->_file, $data);
 			}
 			if ($this->_automaticSerialization && is_string($data)) {

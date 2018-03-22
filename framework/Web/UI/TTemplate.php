@@ -391,7 +391,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			}
 		} else {
 			if (substr($name, 0, 2) == 'js') {
-				if ($value and !($value instanceof TJavaScriptLiteral)) {
+				if ($value && !($value instanceof TJavaScriptLiteral)) {
 					$value = new TJavaScriptLiteral($value);
 				}
 			}

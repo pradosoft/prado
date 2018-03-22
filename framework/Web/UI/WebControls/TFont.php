@@ -62,7 +62,7 @@ class TFont extends \Prado\TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
-	 * @param & $exprops
+	 * @param array &$exprops
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

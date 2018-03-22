@@ -38,7 +38,7 @@ class TPreparedStatement extends \Prado\TComponent
 
 	public function getParameterNames($needed = true)
 	{
-		if (!$this->_parameterNames and $needed) {
+		if (!$this->_parameterNames && $needed) {
 			$this->_parameterNames = new TList;
 		}
 		return $this->_parameterNames;
@@ -51,7 +51,7 @@ class TPreparedStatement extends \Prado\TComponent
 
 	public function getParameterValues($needed = true)
 	{
-		if (!$this->_parameterValues and $needed) {
+		if (!$this->_parameterValues && $needed) {
 			$this->_parameterValues = new TMap;
 		}
 		return $this->_parameterValues;
@@ -66,10 +66,10 @@ class TPreparedStatement extends \Prado\TComponent
 	{
 		$exprops = [];
 		$cn = __CLASS__;
-		if (!$this->_parameterNames or !$this->_parameterNames->getCount()) {
+		if (!$this->_parameterNames || !$this->_parameterNames->getCount()) {
 			$exprops[] = "\0$cn\0_parameterNames";
 		}
-		if (!$this->_parameterValues or !$this->_parameterValues->getCount()) {
+		if (!$this->_parameterValues || !$this->_parameterValues->getCount()) {
 			$exprops[] = "\0$cn\0_parameterValues";
 		}
 		return array_diff(parent::__sleep(), $exprops);

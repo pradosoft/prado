@@ -328,7 +328,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function write($str)
 	{
 		// when starting output make sure we send the headers first
-		if (!$this->_bufferOutput and !$this->_httpHeaderSent) {
+		if (!$this->_bufferOutput && !$this->_httpHeaderSent) {
 			$this->ensureHeadersSent();
 		}
 		echo $str;

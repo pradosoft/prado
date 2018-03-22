@@ -57,7 +57,7 @@ class TAssetManagerTest extends PHPUnit_Framework_TestCase {
 	  clearstatcache();
 	  if (is_dir($dir)) {
 	    foreach (scandir($dir) as $content) {
-	      if ($content==='.' or $content==='..') continue; // skip . and ..
+	      if ($content==='.' || $content==='..') continue; // skip . and ..
 	      $content=$dir.'/'.$content;
 	      if (is_dir($content))
 	        $this->removeDirectory ($content); // Recursivly remove directories

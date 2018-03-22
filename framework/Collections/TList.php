@@ -135,7 +135,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 	/**
 	 * Appends an item at the end of the list.
-	 * @param mixed $index new item
+	 * @param mixed $item new item
 	 * @throws TInvalidOperationException if the list is read-only
 	 * @return int the zero-based index at which the item is added
 	 */

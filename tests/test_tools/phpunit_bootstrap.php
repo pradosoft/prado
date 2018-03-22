@@ -6,7 +6,7 @@
  * the right package in unit test and code coverage reports.
  */
 
-defined('PRADO_TEST_RUN') or define('PRADO_TEST_RUN', true);
+defined('PRADO_TEST_RUN') || define('PRADO_TEST_RUN', true);
 // coverage tests waste a lot of memory!
 ini_set('memory_limit', '1G');
 

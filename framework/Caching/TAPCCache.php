@@ -65,7 +65,7 @@ class TAPCCache extends TCache
 			throw new TConfigurationException('apccache_extension_not_enabled');
 		}
 
-		if (substr(php_sapi_name(), 0, 3) === 'cli' and ini_get('apc.enable_cli') == false) {
+		if (substr(php_sapi_name(), 0, 3) === 'cli' && ini_get('apc.enable_cli') == false) {
 			throw new TConfigurationException('apccache_extension_not_enabled_cli');
 		}
 
