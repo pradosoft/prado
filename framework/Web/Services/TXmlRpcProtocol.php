@@ -52,8 +52,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 	/**
 	 * Registers a new RPC method and handler details
 	 * @param string $methodName
-	 * @param array $handlerDetails containing the callback handler
-	 * @param mixed $methodDetails
+	 * @param array $methodDetails Details containing the callback handler
 	 */
 	public function addMethod($methodName, $methodDetails)
 	{

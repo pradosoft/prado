@@ -34,7 +34,7 @@ abstract class TSqlMapCache implements ICache
 
 	/**
 	 * Create a new cache with limited cache size.
-	 * @param TSqlMapCacheModel $cacheModel.
+	 * @param TSqlMapCacheModel $cacheModel
 	 */
 	public function __construct($cacheModel = null)
 	{

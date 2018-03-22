@@ -216,7 +216,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Construct a "pk IN ('key1', 'key2', ...)" criteria.
 	 * @param array $values values for IN predicate
-	 * @param string $values SQL string for primary keys IN a list.
+	 * @return string SQL string for primary keys IN a list.
 	 */
 	protected function getCompositeKeyCondition($values)
 	{

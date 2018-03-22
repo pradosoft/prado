@@ -105,13 +105,12 @@ abstract class TActiveRecordRelation
 	}
 
 	/**
-	 * Returns foreign keys in $fromRecord with source column names as key
+	 * Returns foreign keys in $from with source column names as key
 	 * and foreign column names in the corresponding $matchesRecord as value.
 	 * The method returns the first matching foreign key between these 2 records.
-	 * @param TActiveRecord $fromRecord
+	 * @param TActiveRecord $from
 	 * @param TActiveRecord $matchesRecord
-	 * @param mixed $from
-	 * @param mixed $loose
+	 * @param bool $loose
 	 * @return array foreign keys with source column names as key and foreign column names as value.
 	 */
 	protected function findForeignKeys($from, $matchesRecord, $loose = false)

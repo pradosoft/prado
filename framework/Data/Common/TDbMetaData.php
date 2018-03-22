@@ -130,8 +130,6 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * Quotes a table name for use in a query.
 	 * @param string $name table name
-	 * @param string $lft left delimiter
-	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted table name
 	 */
 	public function quoteTableName($name)
@@ -155,8 +153,6 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * Quotes a column name for use in a query.
 	 * @param string $name column name
-	 * @param string $lft left delimiter
-	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted column name
 	 */
 	public function quoteColumnName($name)
@@ -171,8 +167,6 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * Quotes a column alias for use in a query.
 	 * @param string $name column alias
-	 * @param string $lft left delimiter
-	 * @param string $name $rgt right delimiter
 	 * @return string the properly quoted column alias
 	 */
 	public function quoteColumnAlias($name)

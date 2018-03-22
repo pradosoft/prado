@@ -214,7 +214,6 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Get the array of messages.
-	 * @param parameter
 	 * @return array translation messages.
 	 */
 	public function read()

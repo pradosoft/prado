@@ -400,7 +400,6 @@ class NumberFormatInfo
 	/**
 	 * Gets the string that separates groups of digits to the left
 	 * of the decimal in currency values.
-	 * @param parameter
 	 * @return string currency group separator.
 	 */
 	public function getGroupSeparator()

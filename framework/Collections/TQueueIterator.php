@@ -41,7 +41,6 @@ class TQueueIterator implements \Iterator
 	/**
 	 * Constructor.
 	 * @param array &$data the data to be iterated through
-	 * @param
 	 */
 	public function __construct(&$data)
 	{

@@ -194,7 +194,6 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * array('col1' => 'NULL', '*')
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
 	 * </code>
-	 * @param mixed $value
 	 * @param mixed $data
 	 * @return array of generated fields - use implode(', ', $selectfieldlist) to collapse field list for usage
 	 * @since 3.1.7

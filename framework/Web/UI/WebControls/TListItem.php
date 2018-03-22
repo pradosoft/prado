@@ -57,8 +57,7 @@ class TListItem extends \Prado\TComponent
 	 * @param string $text text of the item
 	 * @param string $value value of the item
 	 * @param bool $enabled whether the item is enabled
-	 * @param bool $selectedwhether the item is selected
-	 * @param mixed $selected
+	 * @param bool $selected whether the item is selected
 	 */
 	public function __construct($text = '', $value = '', $enabled = true, $selected = false)
 	{

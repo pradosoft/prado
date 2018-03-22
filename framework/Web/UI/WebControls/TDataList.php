@@ -242,7 +242,6 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This property takes precedence over {@link getAlternatingItemTemplate AlternatingItemTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
-	 * @param mixed $value
 	 * @see setAlternatingItemTemplate
 	 * @since 3.1.0
 	 */

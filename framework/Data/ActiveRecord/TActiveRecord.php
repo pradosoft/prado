@@ -886,7 +886,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param null|TActiveRecordInvalidFinderResult $value * @see TActiveRecordManager::setInvalidFinderResult
+	 * @param null|TActiveRecordInvalidFinderResult $value
+	 * @see TActiveRecordManager::setInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)
@@ -929,8 +930,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayEventParameter
-	 * @param mixed $param
+	 * @param TDataGatewayEventParameter $param
 	 */
 	public function onCreateCommand($param)
 	{
@@ -947,8 +947,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayResultEventParameter
-	 * @param mixed $param
+	 * @param TDataGatewayResultEventParameter $param
 	 */
 	public function onExecuteCommand($param)
 	{

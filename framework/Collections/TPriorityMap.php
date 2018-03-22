@@ -356,7 +356,7 @@ class TPriorityMap extends TMap
 	 * No duplicate keys are allowed regardless of priority.
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @param null|numeric $priority, default: null, filled in with default priority
+	 * @param null|numeric $priority default: null, filled in with default priority
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return numeric priority at which the pair was added
 	 */

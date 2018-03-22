@@ -107,10 +107,9 @@ class MessageCache
 	 * Get the data from the cache.
 	 * @param string $catalogue The translation section.
 	 * @param string $culture The translation locale, e.g. "en_AU".
-	 * @param string $filename If the source is a file, this file's modified
+	 * @param int $lastmodified If the source is a file, this file's modified
 	 * time is newer than the cache's modified time, no cache hit.
-	 * @param mixed $lastmodified
-	 * @return mixed Boolean FALSE if no cache hit. Otherwise, translation
+	 * @return mixed bool FALSE if no cache hit. Otherwise, translation
 	 * table data for the specified section and locale.
 	 */
 	public function get($catalogue, $culture, $lastmodified = 0)

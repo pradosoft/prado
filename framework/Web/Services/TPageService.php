@@ -169,8 +169,7 @@ class TPageService extends \Prado\TService
 	 * Page context includes path alias settings, namespace usages,
 	 * parameter initialization, module loadings, page initial properties
 	 * and authorization rules.
-	 * @param TPageConfiguration
-	 * @param mixed $pageConfig
+	 * @param TPageConfiguration $pageConfig
 	 */
 	protected function initPageContext($pageConfig)
 	{

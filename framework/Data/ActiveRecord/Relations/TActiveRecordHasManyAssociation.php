@@ -222,8 +222,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @param TSqlCriteria
-	 * @param TTableInfo $criteria association table info
+	 * @param TSqlCriteria $criteria
 	 * @param array $foreignKeys field names
 	 * @param array $indexValues field values
 	 * @param array $sourceKeys source table column names.

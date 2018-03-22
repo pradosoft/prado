@@ -73,7 +73,6 @@ class TI18NControl extends TControl
 
 	/**
 	 * Get the specific culture for this control.
-	 * @param parameter
 	 * @return string culture identifier.
 	 */
 	public function getCulture()
