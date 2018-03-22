@@ -31,6 +31,13 @@ use ReflectionClass;
  */
 class TActiveRecordGateway extends \Prado\TComponent
 {
+  const DEFAULT_DATA_GATEWAY_CLASS = 'System.Data.DataGateway.TDataGatewayCommand';
+
+  /**
+   * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+   * @var string
+   */
+  private $_dataGatewayClass = self::DEFAULT_DATA_GATEWAY_CLASS;
 	private $_manager;
 	private $_tables = []; //table cache
 	private $_meta = []; //meta data cache.
@@ -151,7 +158,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$tableInfo = $this->getRecordTableInfo($record);
 		if (!isset($this->_commandBuilders[$connStr])) {
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
-			$command = new TDataGatewayCommand($builder);
+			$command = Prado::createComponent($this->getDataGatewayClass(), $builder);
 			$command->OnCreateCommand[] = [$this, 'onCreateCommand'];
 			$command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
 			$this->_commandBuilders[$connStr] = $command;
@@ -159,6 +166,23 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
 		$this->_currentRecord = $record;
 		return $this->_commandBuilders[$connStr];
+	}
+
+	/**
+	 * Set implementation class of DataGatewayCommand
+	 * @param string $value
+	 */
+	public function setDataGatewayClass($value)
+	{
+	  $this->_dataGatewayClass = (string) $value;
+	}
+
+	/**
+	 * @return string the implementation class of DataGatewayCommand. Defaults to {@link TActiveRecordGateway::DEFAULT_DATA_GATEWAY_CLASS DEFAULT_DATA_GATEWAY_CLASS}
+	 */
+	public function getDataGatewayClass()
+	{
+	  return $this->_dataGatewayClass;
 	}
 
 	/**
