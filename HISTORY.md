@@ -1,4 +1,4 @@
-## Version 4.0.1 - in development
+## Version 4.0.1 - Apr 1, 2018
 
 CHG: Removed all deprecated code (ctrlaltca)
 CHG: Removed deprecated components based on the prototype jajascript library (ctrlaltca)

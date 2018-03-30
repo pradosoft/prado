@@ -273,7 +273,7 @@ var Prado =
 	 * Version of Prado clientscripts
 	 * @var Version
 	 */
-	Version: '4.0.0',
+	Version: '4.0.1',
 
 	/**
 	 * Registry for Prado components
@@ -453,7 +453,7 @@ Prado.Element =
 			setTimeout(function(){
 				jQuery("#"+element).focus();
 			}, 100);
-		} else {			
+		} else {
 			jQuery("#"+element).focus();
 		}
 	},
@@ -546,7 +546,7 @@ Prado.Element =
 		}
 		if(self)
 		  jQuery('#'+element).replaceWith(content);
-		else 
+		else
 		  jQuery('#'+element).html(content);
 	},
 
