@@ -1,4 +1,4 @@
-Version 4.0.1 - in development
+## Version 4.0.1 - in development
 
 CHG: Removed all deprecated code (ctrlaltca)
 CHG: Removed deprecated components based on the prototype jajascript library (ctrlaltca)
@@ -9,14 +9,14 @@ ENH: Added html5 charset attribute to meta (frkinta)
 BUG: Issue #662 - External links to API manual doesn't work anymore (frkinta)
 BUG: Issue #663 - PHP 7.2 warning messages break active controls (ctrlaltca)
 
-Version 3.3.3 Jan 25, 2018
+## Version 3.3.3 Jan 25, 2018
 
 Backported fixes from master branch:
 BUG: Issue #625 - The url tag produce an extra directory separator before the result (ctrlaltca)
 BUG: Issue #610 - IIS: Page redirect dosn't work (ctrlaltca)
 BUG: Issue #648 - Fix status header in cgi/fpm mode (ctrlaltca)
 
-Version 4.0.0 - November 20, 2017
+## Version 4.0.0 - November 20, 2017
 
 CHG: Add native php namespace support on all classes (ctrlaltca, david0, LCSKJ)
 CHG: Add native composer autoloader support (ctrlaltca, david0, LCSKJ)
@@ -35,7 +35,7 @@ ENH: Added two new cache modules based on key-value stores: Redis and etcd (LCSK
 ENH: Issue #93 - Translation storage in php array (ctrlaltca)
 ENH: Issue #139 - Add support for xdebug (ctrlaltca)
 
-Version 3.3.2 August 23, 2016
+## Version 3.3.2 August 23, 2016
 
 BUG: Issue #592 - Fix TActiveMultiView broken on 3.3.1 (ctrlaltca)
 BUG: Issue #588 - Fix reading values of controls inside TJuiDialog (ctrlaltca)
@@ -48,7 +48,7 @@ ENH: Issue #591 - Support for hyphenated attributes via <prop:*></prop:*> templa
 ENH: Issue #594 - Added ability to check for subcontrols using isset(), empty() (jojoinside)
 ENH: Allow TStyle behaviors (LCSKJ)
 
-Version 3.3.1 April 19, 2016
+## Version 3.3.1 April 19, 2016
 
 BUG: Issue #540 - Fix TActiveFileUpload on IE11 (ctrlaltca)
 BUG: Issue #574 - Fix TActiveCustomValidator validation after error (ctrlaltca)
@@ -71,7 +71,7 @@ ENH: Intercept fatal errors using register_shutdown_function (ctrlaltca)
 ENH: Activecontrols: avoid updating client side if the value didn't change (ctrlaltca)
 ENH: Added TReCaptcha2 / TReCaptcha2Validator (camilohaze)
 
-Version 3.3.0 February 15, 2016
+## Version 3.3.0 February 15, 2016
 
 CHG: Added jQuery and rebased PRADO's effect and controls on it (ctrlaltca)
 ENH: Added jQueryUI and created new controls (ctrlaltca)
@@ -88,7 +88,7 @@ BUG: Issue #539 - Status Code not send when throwing a THttpException (ctrlaltca
 BUG: Issues #528, 538 - Fix errors in Prado.Validation.validateControl (majuca, david0)
 ENH: Issue #559 - Add support for memcached (majuca)
 
-Version 3.2.4 Aug 26, 2014
+## Version 3.2.4 Aug 26, 2014
 
 BUG: Issue #492 - Prado generates json_error when encoding an exception with non UTF-8 data (david0)
 ENH: Issue #494 - Adding toArray() and toJSON() to TActiveRecord (dmarko484)
@@ -115,7 +115,7 @@ BUG: Avoid dependency loop between TRadioButton and TRadioButtonList (ctrlaltca)
 ENH: Dropped Markdown for Parsedown (ctrlaltca)
 ENH: Web site administration tool (WSAT) (Daniel Sampedro)
 
-Version 3.2.3 Nov 26, 2013
+## Version 3.2.3 Nov 26, 2013
 
 BUG: Issue #467 - TSafeHtml error on php 5.5 (ctrlaltca)
 BUG: Issue #470 - Problem escaping characters in TActiveDropDownList (ctrlaltca)
@@ -137,7 +137,7 @@ BUG: TDatePicker can't render css attributes class "datepicker_year_options" (m_
 ENH: Added THtmlArea4 based on TinyMCE4 (ctrlaltca)
 BUG: TDatePicker renders a spurious TTextBox (ctrlaltca)
 
-Version 3.2.2 Jul 20, 2013
+## Version 3.2.2 Jul 20, 2013
 
 ENH: Issue  #50 - TUrlMapping - implement caching for loadUrlMappings (ctrlaltca)
 ENH: Issue #433 - Prado object-creation performance micro-optimizations (gabor)
@@ -161,7 +161,7 @@ ENH: Issue #451 - TRequiredFieldValidator should (automatically?) consider Promp
 BUG: Issue #460 - Minor error in TUrlMappingPattern (raoul@bhatia.at)
 BUG: Issue #464 - Do not issue a callback request if an ActiveControl is disabled (ctrlaltca)
 
-Version 3.2.1 Jan 19, 2013
+## Version 3.2.1 Jan 19, 2013
 
 BUG: Issue  #44 - [895] SDateFormatter cannot parse date earlier than 1970 (ctrlaltca)
 ENH: Issue #180 - Integrate XMLRPC web service (rojaro)
@@ -191,7 +191,7 @@ EHN: Updated TinyMCE to 3.5.6 (ctrlaltca)
 CHG: Rewrite TDateTimeStamp as a wrapper to php's native DateTime and deprecate it (ctrlaltca)
 CHG: Updated prototype to 1.7.1 (ctrlaltca)
 
-Version 3.2.0 Jun 25, 2012
+## Version 3.2.0 Jun 25, 2012
 BUG: Fixed an inconsistency in TRegularExpressionValidator
 ENH: Update TDraggable::revert property to accept "failure" value (Christophe)
 CHG/ENH: Change behavior of THttpRequest::getBaseUrl() & THttpRequest::getAbsoluteApplicationUrl() to make it possible to force either http or https (Yves)
@@ -278,7 +278,7 @@ BUG: Issue #407 - Prado does not allow custom SqlMap data caching strategy/metho
 BUG: Issue #408 - Missing script/stylesheet file(s) halt(s) callback processing (gabor)
 BUG: Issue #410 - Deferred script rendering does not work well with output caching (gabor)
 
-Version 3.1.10 Jul 17, 2011
+## Version 3.1.10 Jul 17, 2011
 BUG: Added missing timeout on TCacheHttpSession (ctrlaltca)
 BUG: Issue#332 - Minor typos (ctrlaltca)
 BUG: Issue#333 - Wrong tracker url on quickstart (ctrlaltca)
@@ -289,7 +289,7 @@ BUG: Issue#349 - Security problem in TActiveFileUpload control (Gabor)
 ENH: Merged a bit TPager's view style with TDataGridPager's one adding first/last buttons to TDataGridPagerStyle (ctrlaltca)
 ENH: Reworked the patch for #103 so that it actually fixes the use of TActiveCustomValidator with normal Postback controls (ctrlaltca)
 
-Version 3.1.9 June 3, 2011
+## Version 3.1.9 June 3, 2011
 BUG: Issue#280 - Documentation has been updated
 BUG: Issue#311 - TDataList : FooterStyle not used (ctrlaltca)
 BUG: Issue#326 - Translation don't work with Prado 3.1.8 (ctrlaltca)
@@ -303,7 +303,7 @@ NEW: Added TActiveRepeater control (LCS Team, Christophe)
 NEW: Add TActiveTableRow (LCS Team)
 NEW: Add TActiveTableCell (LCS Team)
 
-Version 3.1.8 May 29, 2011
+## Version 3.1.8 May 29, 2011
 BUG: Issue#16  - [684] TDatePicker problems (rojaro)
 BUG: Issue#18  - [909] findAllBySql with non-column ORDER BY (rojaro)
 BUG: Issue 58  - TWizard defaults to wrong button (ctrlaltca)
@@ -347,7 +347,7 @@ ENH: Issue#264 - Prado wasting CPU by using ArrayAccess and IteratorAggregate in
 ENH: Issue#199/272 - Updated prototype to 1.7 scriptaculous to 1.9.0 and dropped json.js for json2.js. Adds IE9 support (ctrlaltca)
 ENH: Updated tinyMCE to latest version (3.4.2). The package size grew up a bit (from 3.7 to 5.5 mb) since the new version is bigger in sizea and adds support for a lot of new localizations. Adds IE9 support (ctrlaltca)
 
-Version 3.1.7 February 22, 2010
+## Version 3.1.7 February 22, 2010
 ENH: Issue#24  - Specify needed fields on demand (Yves)
 BUG: Issue#80  - Inconsistencies in TRegularExpressionValidator (Christophe)
 BUG: Issue#86  - THttpSession.CookieMode ignored / Session ID leak (Christophe)
@@ -384,7 +384,7 @@ ENH: Issue#222 - Add Columns property to TInPlaceTextBox (Christophe)
 CHG: Issue#218 - Change URL of Javascript Logger (Christophe)
 EHN: Clientside performance (micro)optimization: Declare local javascript variables explicit as local to avoid scope chain lookups (Yves)
 
-Version 3.1.6 July 22, 2009
+## Version 3.1.6 July 22, 2009
 BUG: Issue#98 - Missing file in quickstart demo (Chrisotphe)
 BUG: Issue#105 - Enabling/disabling TFileUpload on TPanel (Carl)
 BUG: Issue#115 - Clientside registry of serverside controls don't cover all controls: Prado.WebUI.TAutoComplete, Prado.WebUI.TInPlaceTextBox (Yves)
@@ -404,7 +404,7 @@ EHN: Performance optimization in PradoBase::createComponent() (Yves)
 EHN: Add property TPage.EnableStateCompression and related modifications in TPageStateFormatter since it is unnecessary to compress clientstate if TCachePageStatePersister/TSessionPageStatePersister is used (Yves)
 ENH: Add property CssClass to TBrowserLog otuput and hide inline CSS (Carl)
 
-Version 3.1.5 May 24, 2009
+## Version 3.1.5 May 24, 2009
 BUG: Issue#55 - TPropertyAccess.get and has don't recognize magic getter __get (Yves)
 BUG: Issue#68 - TSqlMapConfig::createSqlMapGateway(): assign current connection to cached TSqlMapManager to avoid loosing active transaction (Yves)
 BUG: Issue#87 - TinyMCE : empty string disapears after encoding JS, that's a problem! (Christophe)
@@ -448,7 +448,7 @@ ENH: TBrowserLogRoute: add table-layout:auto and explicit set column with to avo
 ENH: new log route subclass for FirePHP: TFirePhpLogRoute - FirePHP is ideally suited for AJAX development where clean JSON and XML responses are required (Yves)
 ENH: TBaseValidator, TCustomValidator: change visibilty (protected => public) of getValidationTarget() (Yves)
 
-Version 3.1.4 January 11, 2009
+## Version 3.1.4 January 11, 2009
 BUG: Issue#9  - Global page properties are ignored when using external configuration (Christophe)
 BUG: Issue#59 - TPropertyAccess::has() returns false even if the property of an object was found (Carl)
 BUG: Issue#61 - TLogRouter throws exception when using external config file (Michael)
@@ -469,7 +469,7 @@ ENH: Issue#64 - Don't throw exception on wrong value for TListcontrols (Carl)
 ENH: Issue#65 - Improvement of TActiveRecord::populateObjects() (Christophe)
 NEW: Issue#51 - Additional template tag (Carl)
 
-Version 3.1.3 November 1, 2008
+## Version 3.1.3 November 1, 2008
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Michael)
 BUG: Ticket#834 - TDbCommandBuilder::applyOrdering(): Add support for function calls in ORDER BY clause (Knut)
 BUG: Ticket#836 - TRatingList downgrade (Christophe)
@@ -529,7 +529,7 @@ NEW: Ticket#857 - Added Authentication expiration support to TAuthManager (Micha
 NEW: Ticket#853 - Added Drag and drop components (Christophe)
 NEW: Ticket#891 - Added method that returns table name to TActiveRecord (Michael)
 
-Version 3.1.2 April 21, 2008
+## Version 3.1.2 April 21, 2008
 BUG: Ticket#595 - ControlCssClass not applied correctly if using multiple validators on same control (Christophe)
 BUG: Ticket#622 - Changing Display-attribute of a TActiveCheckBox dynamically isn't possible (Michael)
 BUG: Ticket#636 - I18N catalogue problem (Christophe)
@@ -587,7 +587,7 @@ NEW: Ticket#544 - Added TXCache (Wei)
 NEW: Ticket#729 - Added TActivePager (Christophe)
 NEW: Ticket#791 - Added TFirebugLogRoute (Christophe)
 
-Version 3.1.1 October 1, 2007
+## Version 3.1.1 October 1, 2007
 BUG: Ticket#340 - Callbacks and Firebug compatibility problem (Christophe)
 BUG: Ticket#533 - HttpRequest::getBrowser() throws an error if browsercap.ini is invalid (Carl)
 BUG: Ticket#592 - TRadioButton with UniqueGroupName always return false to getChecked (Christophe)
@@ -630,7 +630,7 @@ NEW: Added TConditional (Qiang)
 NEW: Added Indonesian translation to QuickStart, requirements and error messages (Zaenal Mutaqin)
 NEW: Added French translation to the blog tutorial (Eric Marchetti)
 
-Version 3.1.0 July 2, 2007
+## Version 3.1.0 July 2, 2007
 BUG: Ticket#621 - TWizardNavigationButtonStyle could not be found (Qiang)
 BUG: Ticket#627 - Logout did not set correct status to the user object (Qiang)
 BUG: Ticket#650 - Fixed TMysqlMetaData bug about SHOW FULL TABLES (Qiang)
@@ -658,7 +658,7 @@ ENH: Added TAuthManager.ReturnUrlVarName property (Qiang)
 ENH: Added TPageService.DefaultPageUrl property (Qiang)
 NEW: TActiveHiddenField (Carl)
 
-Version 3.1.0 RC May 14, 2007
+## Version 3.1.0 RC May 14, 2007
 BUG: Ticket#525 - SQLMap->queryForList error with offset/limit parameters (Wei)
 BUG: Ticket#547 - SQLMap problem with PDO::DBLIB (Wei)
 BUG: Ticket#578 - ActiveControls broken by presence of THtmlArea in the .page (Wei)
@@ -687,7 +687,7 @@ NEW: Active Record relationships (Wei)
 NEW: New demos including "address-book", "blog-tutorial", "northwind-db", "chat", "currency-converter", "time-tracker". (Qiang, Wei)
 
 
-Version 3.1.0 beta April 9, 2007
+## Version 3.1.0 beta April 9, 2007
 BUG: Ticket#278 - client-side validator enable/disable (conditional) (Wei)
 BUG: Ticket#492 - TDataGridPagerStyle not found error (Qiang)
 BUG: Ticket#500 - URL encode in callback (Wei)
@@ -740,7 +740,7 @@ NEW: Active Record driver for IBM DB2 (Cesar Ramos)
 NEW: TActiveRecord Scaffold support (Wei)
 NEW: TClientScriptLoader combines and loads javascript libraries (Wei)
 
-Version 3.1.0 alpha January 15, 2007
+## Version 3.1.0 alpha January 15, 2007
 BUG: Ticket#188 - Postback js caused controls not inheritable (Qiang)
 ENH: Ticket#99 - TXmlTransform control (Knut)
 ENH: Ticket#117 - added support to configure subproperties in a group. (Qiang)
@@ -761,7 +761,7 @@ NEW: TJsonService
 NEW: TCacheDependency, TFileCacheDependency, TDirectoryCacheDependency (Qiang)
 NEW: TGlobalStateCacheDependency, TChainedCacheDependency, TApplicationStateCacheDependency (Qiang)
 
-Version 3.0.7 April 2, 2007
+## Version 3.0.7 April 2, 2007
 BUG: Ticket#481 - Unable to cancel navigation when handling OnSideBarButtonClickEvent (Qiang)
 BUG: typo in THttpResponse.writeFile() about sending headers (Qiang)
 BUG: Ticket#505 - cultureInfo::getEnglishName does not return an arrary (Wei)
@@ -774,7 +774,7 @@ ENH: Upgraded javascript library Prototype to version 1.5.0 (Wei)
 ENH: Upgraded javascript library Scriptaculous to version 1.7.0 (Wei)
 ENH: Upgraded TinyMCE editor to version 2.1 (Wei)
 
-Version 3.0.6 December 4, 2006
+## Version 3.0.6 December 4, 2006
 BUG: Ticket#400 - TJavascriptLogger incompatible with Firefox 2.0 RC1 (Wei)
 BUG: Ticket#442 - TPageService getBasePath in namespace form (Qiang)
 BUG: Ticket#443 - Template comment tag messed up with HTML comment tag (Qiang)
@@ -800,7 +800,7 @@ CHG: TDataBoundControl will not throw exception if CurrentPageIndex is out of ra
 NEW: TUrlManager (Qiang)
 
 
-Version 3.0.5 October 23, 2006
+## Version 3.0.5 October 23, 2006
 BUG: Ticket#409 - Multiple page services will mess up page caching (Qiang)
 BUG: Ticket#417 - SelectedIndex in template incorrect caused by bug in TList (Qiang)
 CHG: Ticket#358 - TFileUpload::saveAs() now returns false instead of exception when error (Qiang)
@@ -815,7 +815,7 @@ ENH: Added an interactive PHP shell, usage: "prado-cli.php shell" (Wei)
 NEW: TLiteralColumn (Qiang)
 NEW: TUrlMapping (Wei)
 
-Version 3.0.4 September 4, 2006
+## Version 3.0.4 September 4, 2006
 BUG: Fixed a bug that would prevent from using <prop:> tag in skins (Qiang)
 BUG: Fixed a typo in TControl::setCustomData() (Qiang)
 ENH: Ticket#336 - Speed up TSqliteCache with LIMIT SQL clause (Qiang)
@@ -840,7 +840,7 @@ NEW: TDropDownListColumn (Qiang)
 NEW: Added TEnumerable and all needed enumerable types (Qiang)
 
 
-Version 3.0.3 August 6, 2006
+## Version 3.0.3 August 6, 2006
 BUG: Ticket#264 - Typos in some exception throw statements (Knut)
 BUG: Ticket#268 - THttpResponse.redirect() may fail for some browsers (Qiang)
 BUG: Ticket#271 - Page method setFocus doesn't work (Wei)
@@ -873,7 +873,7 @@ ENH: TRequireFieldValidator can be used to validate a valid date (Wei).
 NEW: Added TStyleSheet (Wei)
 
 
-Version 3.0.2 July 2, 2006
+## Version 3.0.2 July 2, 2006
 BUG: Ticket#182 - List and validator controls cause problem in child classes (Qiang)
 BUG: Ticket#191 - Duplicated postbacks occur when using TButton with validators (Qiang)
 BUG: Ticket#207 - Validators ClientSide.OnError triggered twice (Wei)
@@ -904,7 +904,7 @@ NEW: Added TPager (Qiang)
 NEW: Added Dreamweaver taglib extension (Stanislav, Qiang)
 NEW: Prado Command line script to create a new project, see framework/prado-cli.php (Wei)
 
-Version 3.0.1 June 4, 2006
+## Version 3.0.1 June 4, 2006
 BUG: Ticket#28 - OnClick does not work with Safari/KHTML (Wei)
 BUG: Ticket#37 - Changes of config files do not trigger cache update (Qiang)
 BUG: Ticket#44 - THtmlArea (tiny_mce) not working on some systems (Qiang)
@@ -937,7 +937,7 @@ NEW: TTextProcessor (Qiang)
 NEW: TMarkdown (Wei)
 NEW: Blog demo (Qiang)
 
-Version 3.0.0 May 1, 2006
+## Version 3.0.0 May 1, 2006
 BUG: Ticket#68  - 2 TButtons with THtmlArea causes second button to fail to function (Wei)
 BUG: Ticket#70  - Javascript for TDataTypeValidator added (Wei)
 BUG: Ticket#131 - TImageMap and TLinkButton continue to postback even client validator fails (Wei)
@@ -970,7 +970,7 @@ NEW: TListControlValidator (Wei)
 NEW: TClientScript (Wei)
 
 
-Version 3.0RC2 April 16, 2006
+## Version 3.0RC2 April 16, 2006
 BUG: Ticket#54 - recursive reverse() definition (Wei)
 BUG: Ticket#93 - ValidationGroup not working in TImageMap for js validator (Wei)
 BUG: Ticket#97 - Invalid return type value for TSimpleDateFormatter::parse (Wei)
@@ -986,7 +986,7 @@ ENH: Optimized the representation and evaluation of template expressions (Qiang)
 ENH: Added Raw layout to TDataList (Qiang)
 ENH: Added TRepeater.DataKeys and TRepeater.DataKeyField (Qiang)
 
-Version 3.0RC1 April 5, 2006
+## Version 3.0RC1 April 5, 2006
 BUG: Ticket#85 - Undefined TDataGrid::setSelectedIndex (Qiang)
 BUG: Ticket#87 - Typo in IDbConnection (Qiang)
 BUG: Ticket#88 - Unclosed HTML tag in TDatePicker and TColorPicker (Qiang)
@@ -1016,7 +1016,7 @@ NEW: TComponentReflection (Qiang)
 NEW: TParameterModule (Qiang)
 NEW: TPropelLogRoute (Jason)
 
-Version 3.0b March 6, 2006
+## Version 3.0b March 6, 2006
 BUG: fixed many
 CHG: event names must be prefixed with 'On' (Qiang)
 CHG: values of properties whose name ends with 'Template' are parsed directly by template parser (Qiang)
@@ -1027,5 +1027,5 @@ NEW: TAPCCache (Alban)
 NEW: TColorPicker, TDatePicker, TRatingList, TAdodbProvider, TCreoleProvider (Wei)
 NEW: TMultiView, TView, TControlAdapter, TWebControlAdapter, TPagedList, TAttributeCollection (Qiang)
 
-Version 3.0a January 18, 2006
+## Version 3.0a January 18, 2006
 Starting, main feaures ready (Qiang)

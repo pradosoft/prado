@@ -28,7 +28,7 @@ mv composer.phar /usr/local/bin/composer
 ```
 
 Then, create the application structure using composer:
-```sh	
+```sh
 composer create-project pradosoft/prado-app app
 ```
 
