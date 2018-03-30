@@ -18,7 +18,8 @@ class CommandBuilderPgsqlTest extends PHPUnit_Framework_TestCase
 
 	function pgsql_meta_data()
 	{
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
+		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', $cred, $cred);
 		return new TPgsqlMetaData($conn);
 	}
 
