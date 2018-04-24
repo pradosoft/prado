@@ -1,3 +1,7 @@
+## Version 4.x - in development
+
+BUG: Issue #669 - Wrong Gettext class filename (Marcin Haba / gani)
+
 ## Version 4.0.1 - Apr 1, 2018
 
 CHG: Removed all deprecated code (ctrlaltca)

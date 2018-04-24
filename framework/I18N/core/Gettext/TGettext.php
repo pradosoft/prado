@@ -101,14 +101,13 @@ class TGettext
 	public static function factory($format, $file = '')
 	{
 		$format = strToUpper($format);
-		$filename = __DIR__ . '/' . $format . '.php';
+		$class = 'TGettext_' . $format;
+		$filename = __DIR__ . '/' . $class . '.php';
 		if (is_file($filename) == false) {
-			throw new Exception("Class file $file not found");
+			throw new Exception("Class file $filename not found");
 		}
 
 		include_once $filename;
-		$class = 'TGettext_' . $format;
-
 		return new $class($file);
 	}
 
