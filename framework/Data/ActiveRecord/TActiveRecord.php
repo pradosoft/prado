@@ -853,6 +853,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$condition = $method[8] === '_' ? substr($method, 9) : substr($method, 8);
 		} elseif ($delete = strncasecmp($method, 'deleteallby', 11) === 0) {
 			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
+		} elseif (strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+		  return parent::__call($method, $args);
 		} else {
 			if ($this->getInvalidFinderResult() == TActiveRecordInvalidFinderResult::Exception) {
 				throw new TActiveRecordException('ar_invalid_finder_method', $method);
