@@ -303,12 +303,14 @@ Prado.WebUI.TColorPicker = jQuery.klass(Prado.WebUI.Control, {
 	{
 		if(!this.showing)
 		{
-			var pos = jQuery(this.input).position();
-			pos['top'] += this.input.offsetHeight;
+			var controlOffset = jQuery(this.input).offset();
+			var parentOffset = jQuery(this.input).offsetParent().offset();
 
-			this.element.style.top = (pos['top']-1) + "px";
-			this.element.style.left = pos['left'] + "px";
-			this.element.style.display = "block";
+			jQuery(this.element).css({
+				top: controlOffset['top'] - parentOffset['top'] + this.input.offsetHeight - 1,
+				left: controlOffset['left'] - parentOffset['left'],
+				display: "block"
+			});
 
 			//observe for clicks on the document body
 			this._documentClickEvent = jQuery.bind(this.hideOnClick, this, type);

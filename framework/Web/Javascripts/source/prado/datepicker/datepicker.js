@@ -571,12 +571,26 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 
 		if(!this.showing)
 		{
-			var pos = jQuery(this.control).position();
+			var controlOffset = jQuery(this.control).offset();
+			var parentOffset = jQuery(this.control).offsetParent().offset();
 
-			pos['top'] += this.getDatePickerOffsetHeight();
-			this._calDiv.style.top = (pos['top']-1) + "px";
-			this._calDiv.style.display = "block";
-			this._calDiv.style.left = pos['left'] + "px";
+			if(this.positionMode=='Top')
+			{
+				jQuery(this._calDiv).css({
+					display: "block"
+				});
+				// _calDiv must be visible to get its offsetHeight
+				jQuery(this._calDiv).css({
+					top: controlOffset['top'] - parentOffset['top'] - this._calDiv.offsetHeight,
+					left: controlOffset['left'] - parentOffset['left'],
+				});
+			} else {
+				jQuery(this._calDiv).css({
+					top: controlOffset['top'] - parentOffset['top'] + this.getDatePickerOffsetHeight() - 1,
+					left: controlOffset['left'] - parentOffset['left'],
+					display: "block"
+				});
+			}
 
 			this.documentClickEvent = jQuery.bind(this.hideOnClick, this);
 			this.documentKeyDownEvent = jQuery.bind(this.keyPressed, this);
@@ -589,11 +603,6 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 			}
 			this.observe(document,"keydown", this.documentKeyDownEvent);
 			this.showing = true;
-
-			if(this.positionMode=='Top')
-			{
-				this._calDiv.style.top = ((pos['top']-1) - this.getDatePickerOffsetHeight() - this._calDiv.offsetHeight) + 'px';
-			}
 		}
 	},
 

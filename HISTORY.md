@@ -1,6 +1,7 @@
 ## Version 4.x - in development
 
 BUG: Issue #669 - Wrong Gettext class filename (Marcin Haba / gani)
+BUG: Issue #675 - TDatePicker position problems with jQuery 3.3 (ctrlaltca)
 
 ## Version 4.0.1 - Apr 1, 2018
 
