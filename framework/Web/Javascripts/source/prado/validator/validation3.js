@@ -1172,9 +1172,11 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 getRawValidationValue : function(control)
 	 {
 	 	if(!control)
-	 		control = this.control
+	 		control = this.control;
 	 	switch(this.options.ControlType)
 	 	{
+			case 'TCheckBox':
+				return control.checked;
 	 		case 'TDatePicker':
 	 			if(control.type == "text")
 	 			{
@@ -1199,18 +1201,15 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 			if(typeof tinyMCE != "undefined")
 					tinyMCE.triggerSave();
 				return control.value;
+			case 'TCheckBoxList':
+			case 'TListBox':
+ 				return this.getFirstSelectedListValue();
 			case 'TRadioButton':
-			case 'TActiveRadioButton':
 				if(this.options.GroupName)
 					return this.getRadioButtonGroupValue();
-			case 'TCheckBox':
-			case 'TActiveCheckBox':
-				return control.checked;
-	 		default:
-	 			if(this.isListControlType())
-	 				return this.getFirstSelectedListValue();
-	 			else
-		 			return jQuery(control).val();
+			case 'TReCaptcha2':
+ 			default:
+	 			return jQuery(control).val();
 	 	}
 	 },
 
@@ -1226,26 +1225,21 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 {
 	 	var value = this.getRawValidationValue(control);
 		if(!control)
-			control = this.control
+			control = this.control;
 		switch(this.options.ControlType)
 		{
-			case 'TDatePicker':
-				return value;
-			case 'THtmlArea':
-			case 'THtmlArea4':
-				return this.trim(value);
-			case 'TRadioButton':
 			case 'TCheckBox':
-			case 'TActiveCheckBox':
-			case 'TActiveRadioButton':
+			case 'TCheckBoxList':
+			case 'TDatePicker':
+			case 'TListBox':
+			case 'TRadioButton':
 				return value;
             case 'TReCaptcha2':
                 return document.getElementById(this.options.ResponseFieldName).value;
+			case 'THtmlArea':
+			case 'THtmlArea4':
 			default:
-				if(this.isListControlType())
-					return value;
-				else
-					return this.trim(value);
+				return this.trim(value);
 		}
 	 },
 
@@ -1315,7 +1309,8 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	{
 		switch(this.options.ControlType)
 		{
-			case 'TCheckBoxList': case 'TRadioButtonList':
+			case 'TCheckBoxList':
+			case 'TRadioButtonList':
 				var elements = [];
 				for(var i = 0; i < this.options.TotalItems; i++)
 				{
@@ -1353,17 +1348,6 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 			return type == "checkbox" || type == "radio";
 		}
 		return false;
-	},
-
-	/**
-	 * Check if control to validate is a TListControl type.
-	 * @function {boolean} ?
-	 * @return True if control to validate is a TListControl type.
-	 */
-	isListControlType : function()
-	{
-		var list = ['TCheckBoxList', 'TRadioButtonList', 'TListBox'];
-		return (jQuery.inArray(this.options.ControlType, list)!=-1);
 	},
 
 	/**
@@ -2023,7 +2007,7 @@ Prado.WebUI.TReCaptcha2 = jQuery.klass(Prado.WebUI.Control,
         for (key in options) { this[key] = options[key]; }
         this.options['callback'] = jQuery.proxy(this.callback,this);
         this.options['expired-callback'] = jQuery.proxy(this.callbackExpired,this);
-        
+
         Prado.WebUI.TReCaptcha2Instances[this.element.id] = this;
     },
     build: function()

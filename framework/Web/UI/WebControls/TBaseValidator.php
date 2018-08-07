@@ -95,7 +95,18 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * them specially.
 	 * @var array list of control class names
 	 */
-	private static $_clientClass = ['THtmlArea', 'THtmlArea4', 'TDatePicker', 'TListBox', 'TCheckBoxList'];
+	private static $_clientClass = [
+		// normal controls needing special handling to extract their values
+		'Prado\Web\UI\WebControls\TCheckBox' => 'TCheckBox',
+		'Prado\Web\UI\WebControls\TDatePicker' => 'TDatePicker',
+		'Prado\Web\UI\WebControls\THtmlArea' => 'THtmlArea',
+		'Prado\Web\UI\WebControls\THtmlArea4' => 'THtmlArea4',
+		'Prado\Web\UI\WebControls\TReCaptcha2' => 'TReCaptcha2',
+		// list controls
+		'Prado\Web\UI\WebControls\TCheckBoxList' => 'TCheckBoxList',
+		'Prado\Web\UI\WebControls\TListBox' => 'TListBox',
+		'Prado\Web\UI\WebControls\TRadioButton' => 'TRadioButton',
+	];
 
 	/**
 	 * Constructor.
@@ -193,9 +204,9 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	private function getClientControlClass($control)
 	{
-		foreach (self::$_clientClass as $type) {
-			if ($control instanceof $type) {
-				return $type;
+		foreach (self::$_clientClass as $fullName => $shortName) {
+			if ($control instanceof $fullName) {
+				return $shortName;
 			}
 		}
 		$reflectionClass = new \ReflectionClass($control);

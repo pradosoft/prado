@@ -1,7 +1,8 @@
 ## Version 4.x - in development
 
-BUG: Issue #669 - Wrong Gettext class filename (Marcin Haba / gani)
+BUG: Issue #669 - Wrong Gettext class filename (gani)
 BUG: Issue #675 - TDatePicker position problems with jQuery 3.3 (ctrlaltca)
+BUG: Issue #683 - TRequiredFieldValidator doesn't work with TActiveListBox (gani, ctrlaltca)
 
 ## Version 4.0.1 - Apr 1, 2018
 
