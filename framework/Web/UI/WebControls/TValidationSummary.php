@@ -215,7 +215,7 @@ class TValidationSummary extends TWebControl
 	protected function addAttributesToRender($writer)
 	{
 		$display=$this->getDisplay();
-		$visible=$this->getEnabled(true) && count($this->getErrorMessages()) > 0;
+		$visible=$this->getEnabled(true) && $this->getValidationFailed();
 		if(!$visible)
 		{
 			if($display===TValidationSummaryDisplayStyle::None || $display===TValidationSummaryDisplayStyle::Dynamic)
@@ -301,6 +301,7 @@ class TValidationSummary extends TWebControl
 	{
 		return new TClientSideValidationSummaryOptions;
 	}
+
 	/**
 	 * Get the list of validation error messages.
 	 * @return array list of validator error messages.
@@ -316,6 +317,21 @@ class TValidationSummary extends TWebControl
 				$messages[] = $msg;
 		}
 		return $messages;
+	}
+
+	/**
+	 * Checked if at least one validator failed.
+	 * @return bool wether validation failed
+	 */
+	protected function getValidationFailed()
+	{
+		$validators = $this->getPage()->getValidators($this->getValidationGroup());
+		foreach ($validators as $validator) {
+			if (!$validator->getIsValid()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
