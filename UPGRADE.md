@@ -7,6 +7,10 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.0.1
+---------------------
+- List controls (eg. TDropDownList) now renders empty PromptValues. Before, they would use PromptText in order to fill PromptValue when empty or not specified.
+
 Upgrading from v4.0.0
 ---------------------
 - Prado 4.0.1 requires Php >= 5.4.0

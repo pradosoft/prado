@@ -725,7 +725,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @param string $value the prompt selection value. If empty, {@link getPromptText PromptText} will be used as the value.
+	 * @param string $value the prompt selection value.
 	 * @see setPromptText
 	 * @since 3.1.1
 	 */
@@ -766,10 +766,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		$text = $this->getPromptText();
 		$value = $this->getPromptValue();
-		if ($value === '') {
-			$value = $text;
-		}
-		if ($value !== '') {
+		if ($value !== '' || $text !== '') {
 			$writer->addAttribute('value', $value);
 			$writer->renderBeginTag('option');
 			$writer->write(THttpUtility::htmlEncode($text));
