@@ -19,6 +19,7 @@ Prado.WebUI.THtmlArea4 = jQuery.klass(Prado.WebUI.Control,
     onInit : function(options)
 	{
 		this.options = options;
+		this.registerAjaxHook();
 		tinyMCE.init(this.options.EditorOptions);
 	},
 
@@ -32,27 +33,44 @@ Prado.WebUI.THtmlArea4 = jQuery.klass(Prado.WebUI.Control,
 			}
 	},
 
+	checkInstance: function()
+	{
+		if (!document.getElementById(this.ID))
+			this.deinitialize();
+	},
+
+	registerAjaxHook: function()
+	{
+		jQuery(document).on('ajaxComplete', this.ajaxresponder.bind(this));
+	},
+
+
+	deRegisterAjaxHook: function()
+	{
+		jQuery(document).off('ajaxComplete', this.ajaxresponder.bind(this));
+	},
+
+	ajaxresponder: function(request)
+	{
+		this.checkInstance();
+	},
+
 	onDone: function()
 	{
 		// check for previous tinyMCE registration, and try to remove it gracefully first
 		var prev = tinyMCE.get(this.ID);
 		if (prev)
-		try
 		{
 			tinyMCE.execCommand('mceFocus', false, this.ID);
 			// when removed, tinyMCE restores its content to the textarea. If the textarea content has been
 			// updated in this same callback, it will be overwritten with the old content. Workaround this.
-		//	var curtext = jQuery(this.ID).html();
-			tinyMCE.execCommand('mceRemoveControl', false, this.ID);
-		//	jQuery(this.ID).html(curtext);
-		}
-		catch (e)
-		{
-			// suppress error here in case editor can't be properly removed
-			// (happens when <textarea> has been removed from DOM tree without deinitialzing the tinyMCE editor first)
+			var curtext = jQuery('#'+this.ID).get(0).value;
+			prev.remove();
+			jQuery('#'+this.ID).get(0).value = curtext;
 		}
 
 		// doublecheck editor instance here and remove manually from tinyMCE-registry if neccessary
 		this.removePreviousInstance();
+		this.deRegisterAjaxHook();
 	}
 });

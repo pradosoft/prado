@@ -19,13 +19,9 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
     onInit : function(options)
 	{
 		this.options = options;
-
 		this.registerAjaxHook();
-
 		this.registerInstance();
 	},
-
-
 
 	registerInstance: function()
 	{
@@ -108,8 +104,7 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 
 	ajaxresponder: function(request)
 	{
-		if(request && (request instanceof Prado.CallbackRequest))
-			this.checkInstance();
+		this.checkInstance();
 	},
 
 	onDone: function()
@@ -134,7 +129,6 @@ Prado.WebUI.THtmlArea = jQuery.klass(Prado.WebUI.Control,
 
 		// doublecheck editor instance here and remove manually from tinyMCE-registry if neccessary
 		this.removePreviousInstance();
-
 		this.deRegisterAjaxHook();
 	}
 });
