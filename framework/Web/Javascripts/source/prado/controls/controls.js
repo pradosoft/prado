@@ -11,11 +11,12 @@ Prado.WebUI.Control = jQuery.klass({
 		this.element = jQuery("#" + this.ID).get(0);
 		this.observers = new Array();
 		this.intervals = new Array();
-		var e;
-		if (jQuery.inArray(this.ID, Prado.Registry) == -1)
+
+		if (typeof Prado.Registry[this.ID] == 'undefined') {
 			this.register(options);
-		else
+		} else {
 			this.replace(Prado.Registry[this.ID], options);
+		}
 
 		if (this === Prado.Registry[this.ID])
 		{
@@ -68,9 +69,10 @@ Prado.WebUI.Control = jQuery.klass({
 
 		// for now this method is simply deinitializing and deregistering the old wrapper,
 		// and then registering the new wrapper for the control id
-
 		if (oldwrapper.deinitialize)
+		{
 			oldwrapper.deinitialize();
+		}
 
 		return this.register(options);
 	},
