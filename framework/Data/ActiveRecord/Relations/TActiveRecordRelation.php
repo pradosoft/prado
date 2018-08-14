@@ -242,7 +242,7 @@ abstract class TActiveRecordRelation
 	protected function setResultCollection(&$results, &$collections, $properties)
 	{
 		if (is_array($results) || $results instanceof \ArrayAccess) {
-			for ($i = 0,$k = count($results);$i < $k;$i++) {
+			for ($i = 0, $k = count($results); $i < $k; $i++) {
 				$this->setObjectProperty($results[$i], $properties, $collections);
 			}
 		} else {

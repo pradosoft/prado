@@ -143,6 +143,11 @@ abstract class PradoCommandLineAction
 	 */
 	abstract public function performAction($args);
 
+	/**
+	 * Creates a directory and sets its mode
+	 * @param string $dir directory name
+	 * @param integer $mask directory mode mask suitable for chmod()
+	 */
 	protected function createDirectory($dir, $mask)
 	{
 		if (!is_dir($dir)) {
@@ -154,6 +159,11 @@ abstract class PradoCommandLineAction
 		}
 	}
 
+	/**
+	 * Creates a file and fills it with content
+	 * @param string $filename file name
+	 * @param integer $content file contents
+	 */
 	protected function createFile($filename, $content)
 	{
 		if (!is_file($filename)) {
@@ -162,12 +172,20 @@ abstract class PradoCommandLineAction
 		}
 	}
 
+	/**
+	 * Checks if specified parameters are suitable for the specified action
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function isValidAction($args)
 	{
 		return 0 == strcasecmp($args[0], $this->action) &&
 			count($args) - 1 >= count($this->parameters);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function renderHelp()
 	{
 		$params = [];
@@ -191,6 +209,11 @@ abstract class PradoCommandLineAction
 EOD;
 	}
 
+	/**
+	 * Initalize a Prado application inside the specified directory
+	 * @param string $directory directory name
+	 * @return false|TApplication
+	 */
 	protected function initializePradoApplication($directory)
 	{
 		$_SERVER['SCRIPT_FILENAME'] = $directory . '/index.php';
@@ -228,6 +251,10 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 	protected $optional = [];
 	protected $description = 'Creates a Prado project skeleton for the given <directory>.';
 
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function performAction($args)
 	{
 		PradoCommandLineInterpreter::printGreeting();
@@ -275,6 +302,9 @@ class PradoCommandLineCreateProject extends PradoCommandLineAction
 		$this->createFile($defaultPageFile, $this->renderDefaultPage());
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function renderIndexFile()
 	{
 		$framework = realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'framework' . DIRECTORY_SEPARATOR . 'prado.php';
@@ -302,6 +332,10 @@ $application->run();
 ';
 	}
 
+	/**
+	 * @param array $appName application id
+	 * @return string
+	 */
 	protected function renderConfigFile($appName)
 	{
 		return <<<EOD
@@ -347,12 +381,17 @@ $application->run();
 EOD;
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function renderHtaccessFile()
 	{
 		return 'deny from all';
 	}
 
-
+	/**
+	 * @return string
+	 */
 	protected function renderDefaultPage()
 	{
 		return <<<EOD
@@ -381,6 +420,10 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 	protected $optional = [];
 	protected $description = 'Create test fixtures in the given <directory>.';
 
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function performAction($args)
 	{
 		PradoCommandLineInterpreter::printGreeting();
@@ -388,6 +431,9 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 		return true;
 	}
 
+	/**
+	 * @param string $dir directory name
+	 */
 	protected function createTestFixtures($dir)
 	{
 		if (strlen(trim($dir)) == 0) {
@@ -412,6 +458,9 @@ class PradoCommandLineCreateTests extends PradoCommandLineAction
 		$this->createFile($functional_test_index, $this->renderFunctionalTestFixture());
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function renderUnitTestFixture()
 	{
 		$tester = realpath(dirname(__DIR__)) . '/tests/test_tools/unit_tests.php';
@@ -427,6 +476,9 @@ $tester->run(new HtmlReporter());
 ';
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function renderFunctionalTestFixture()
 	{
 		$tester = realpath(dirname(__DIR__)) . '/tests/test_tools/functional_tests.php';
@@ -455,6 +507,10 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 	protected $optional = ['directory'];
 	protected $description = 'Runs a PHP interactive interpreter. Initializes the Prado application in the given [directory].';
 
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function performAction($args)
 	{
 		if (count($args) > 1) {
@@ -480,6 +536,10 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected $description = 'Generate Active Record skeleton for <table> to <output> file using application.xml in [directory]. May also generate [soap] properties.';
 	private $_soap = false;
 
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function performAction($args)
 	{
 		$app_dir = count($args) > 3 ? $this->getAppDir($args[3]) : $this->getAppDir();
@@ -496,6 +556,10 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return true;
 	}
 
+	/**
+	 * @param string $dir application directory
+	 * @return string|false
+	 */
 	protected function getAppDir($dir = ".")
 	{
 		if (is_dir($dir)) {
@@ -508,6 +572,10 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @return string|false
+	 */
 	protected function getXmlFile($app_dir)
 	{
 		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
@@ -520,6 +588,10 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @return string|false
+	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
 		if (false === ($xml = $this->getXmlFile($app_dir))) {
@@ -537,6 +609,11 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @param string $namespace output file in namespace format
+	 * @return string|false
+	 */
 	protected function getOutputFile($app_dir, $namespace)
 	{
 		if (is_file($namespace) && strpos($namespace, $app_dir) === 0) {
@@ -552,6 +629,12 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $config database configuration
+	 * @param string $tablename table name
+	 * @param string $output output file name
+	 * @return bool
+	 */
 	protected function generateActiveRecord($config, $tablename, $output)
 	{
 		$manager = TActiveRecordManager::getInstance();
@@ -577,6 +660,11 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 		}
 	}
 
+	/**
+	 * @param string $field php variable name
+	 * @param string $column database column name
+	 * @return string
+	 */
 	protected function generateProperty($field, $column)
 	{
 		$prop = '';
@@ -596,6 +684,12 @@ EOD;
 		return $prop;
 	}
 
+	/**
+	 * @param array $properties class varibles
+	 * @param string $tablename database table name
+	 * @param string $class php class name
+	 * @return string
+	 */
 	protected function generateClass($properties, $tablename, $class)
 	{
 		$props = implode("\n", $properties);
@@ -639,6 +733,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 	private $_postfix = '';
 	private $_overwrite = false;
 
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
 	public function performAction($args)
 	{
 		$app_dir = count($args) > 2 ? $this->getAppDir($args[2]) : $this->getAppDir();
@@ -691,6 +789,9 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		return true;
 	}
 
+	/**
+	 * @param string $l commandline
+	 */
 	public function generate($l)
 	{
 		$input = explode(" ", trim($l));
@@ -710,6 +811,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		}
 	}
 
+	/**
+	 * @param string $dir application directory
+	 * @return string|false
+	 */
 	protected function getAppDir($dir = ".")
 	{
 		if (is_dir($dir)) {
@@ -722,6 +827,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @return string|false
+	 */
 	protected function getXmlFile($app_dir)
 	{
 		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
@@ -734,6 +843,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @return string|false
+	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
 		if (false === ($xml = $this->getXmlFile($app_dir))) {
@@ -751,6 +864,11 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 		return false;
 	}
 
+	/**
+	 * @param string $app_dir application directory
+	 * @param string $namespace output file in namespace format
+	 * @return string|false
+	 */
 	protected function getOutputFile($app_dir, $namespace)
 	{
 		if (is_file($namespace) && strpos($namespace, $app_dir) === 0) {

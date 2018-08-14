@@ -53,7 +53,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return Tells whether buffering of output can continue after this point
+	 * @return bool Tells whether buffering of output can continue after this point
 	 */
 	public function getContinueBuffering()
 	{

@@ -317,7 +317,7 @@ class PradoBase
 				break;
 				default:
 					$s = '$args[1]';
-					for ($i = 2;$i < $n;++$i) {
+					for ($i = 2; $i < $n; ++$i) {
 						$s .= ",\$args[$i]";
 					}
 					eval("\$component=new $type($s);");

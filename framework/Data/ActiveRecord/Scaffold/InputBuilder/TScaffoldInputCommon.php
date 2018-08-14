@@ -67,6 +67,9 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		return $control;
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function getDefaultControlValue($container, $column, $record)
 	{
 		$control = $container->findControl(self::DEFAULT_ID);
@@ -172,11 +175,11 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	{
 		$value = $this->getRecordPropertyValue($column, $record);
 		$hours = [];
-		for ($i = 0;$i < 24;$i++) {
+		for ($i = 0; $i < 24; $i++) {
 			$hours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		}
 		$mins = [];
-		for ($i = 0;$i < 60;$i++) {
+		for ($i = 0; $i < 60; $i++) {
 			$mins[] = str_pad($i, 2, '0', STR_PAD_LEFT);
 		}
 		$hour = (int) (@date('H'));

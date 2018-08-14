@@ -59,7 +59,7 @@ class TFirePhpLogRoute extends TLogRoute
 
 		$first = $logs[0][3];
 		$c = count($logs);
-		for ($i = 0,$n = $c;$i < $n;++$i) {
+		for ($i = 0, $n = $c; $i < $n; ++$i) {
 			$message = $logs[$i][0];
 			$level = $logs[$i][1];
 			$category = $logs[$i][2];

@@ -591,7 +591,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 			$controls->add("\n");
 		}
 
-		for ($i = $startPageIndex;$i <= $endPageIndex;++$i) {
+		for ($i = $startPageIndex; $i <= $endPageIndex; ++$i) {
 			if ($i === $pageIndex) {
 				$label = $this->createPagerButton($buttonType, false, "$i", self::CMD_PAGE, '');
 				$controls->add($label);

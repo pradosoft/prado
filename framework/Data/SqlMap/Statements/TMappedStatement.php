@@ -97,7 +97,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TSqlMapper The SqlMap used by this MappedStatement
+	 * @return TSqlMapManager The SqlMap used by this MappedStatement
 	 */
 	public function getManager()
 	{
@@ -122,7 +122,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Creates a new mapped statement.
-	 * @param TSqlMapper $sqlMap an sqlmap.
+	 * @param TSqlMapManager $sqlMap an sqlmap.
 	 * @param TSqlMapStatement $statement An SQL statement.
 	 */
 	public function __construct(TSqlMapManager $sqlMap, TSqlMapStatement $statement)
@@ -337,8 +337,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Raises delegate handler.
 	 * This method is invoked for each new list item. It is the responsibility
 	 * of the handler to add the item to the list.
-	 * @param object $handler event parameter
-	 * @param mixed $param
+	 * @param callable $handler to be executed
+	 * @param mixed $param event parameter
 	 */
 	protected function raiseRowDelegate($handler, $param)
 	{

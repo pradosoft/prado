@@ -257,7 +257,7 @@ EOD;
 	}
 
 	/**
-	 * @param mixed $tableInfo
+	 * @param TPgsqlTableInfo $tableInfo
 	 * @param mixed $src
 	 * @return string serial name if found, null otherwise.
 	 */

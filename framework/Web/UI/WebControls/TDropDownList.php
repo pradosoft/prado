@@ -127,7 +127,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by \Prado\Web\UI\IValidatable interface.
-	 * @return mixed the value of the property to be validated.
+	 * @return string the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()
 	{

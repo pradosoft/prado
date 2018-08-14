@@ -943,7 +943,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			}
 			$selectedIndex = $this->getSelectedItemIndex();
 			$editIndex = $this->getEditItemIndex();
-			for ($index = 0;$index < $itemCount;++$index) {
+			for ($index = 0; $index < $itemCount; ++$index) {
 				if ($index === 0) {
 					if ($allowPaging) {
 						$this->_topPager = $this->createPager();
@@ -1311,7 +1311,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			$controls->add("\n");
 		}
 
-		for ($i = $startPageIndex;$i <= $endPageIndex;++$i) {
+		for ($i = $startPageIndex; $i <= $endPageIndex; ++$i) {
 			if ($i === $pageIndex) {
 				$label = $this->createPagerButton($pager, $buttonType, false, "$i", '', '');
 				$controls->add($label);
@@ -1494,7 +1494,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			if ($this->_columns && $itemType !== TListItemType::Pager) {
 				$n = $this->_columns->getCount();
 				$cells = $item->getCells();
-				for ($i = 0;$i < $n;++$i) {
+				for ($i = 0; $i < $n; ++$i) {
 					$cell = $cells->itemAt($i);
 					$column = $this->_columns->itemAt($i);
 					if (!$column->getVisible()) {

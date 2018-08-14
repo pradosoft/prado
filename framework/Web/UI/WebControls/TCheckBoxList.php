@@ -368,7 +368,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 		$this->_repeatedControl->setValidationGroup($this->getValidationGroup());
 		$page = $this->getPage();
 		$n = $this->getItemCount();
-		for ($i = 0;$i < $n;++$i) {
+		for ($i = 0; $i < $n; ++$i) {
 			$this->_repeatedControl->setID("c$i");
 			$page->registerRequiresPostData($this->_repeatedControl);
 		}

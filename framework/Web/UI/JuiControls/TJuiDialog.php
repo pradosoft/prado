@@ -168,6 +168,10 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 		$this->triggerClientMethod('close');
 	}
 
+	/**
+	 * Executes a method on the dialog
+	 * @param string $method name
+	 */
 	private function triggerClientMethod($method)
 	{
 		$cs = $this->getPage()->getClientScript();

@@ -410,7 +410,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->getActiveView();  // determine the active view
+		// determine the active view
+		$this->getActiveView();
 		$this->registerStyleSheet();
 	}
 

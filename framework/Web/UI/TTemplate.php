@@ -476,7 +476,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$c = 0;
 		$this->_directive = null;
 		try {
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				$match = &$matches[$i];
 				$str = $match[0][0];
 				$matchStart = $match[0][1];
@@ -705,7 +705,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$pattern = '/([\w\.\-]+)\s*=\s*(\'.*?\'|".*?"|<%.*?%>)/msS';
 		$attributes = [];
 		$n = preg_match_all($pattern, $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
-		for ($i = 0;$i < $n;++$i) {
+		for ($i = 0; $i < $n; ++$i) {
 			$match = &$matches[$i];
 			$name = strtolower($match[1][0]);
 			if (isset($attributes[$name])) {
@@ -746,7 +746,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			$isDataBind = false;
 			$textStart = 0;
 			$expr = '';
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				$match = $matches[0][$i];
 				$token = $match[0];
 				$offset = $match[1];
@@ -812,7 +812,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 				} else {
 					// a simple property
-					if (! ($class->hasMethod('set' . $name) || $class->hasMethod('setjs' . $name) || $this->isClassBehaviorMethod($class, 'set' . $name))) {
+					if (!($class->hasMethod('set' . $name) || $class->hasMethod('setjs' . $name) || $this->isClassBehaviorMethod($class, 'set' . $name))) {
 						if ($class->hasMethod('get' . $name) || $class->hasMethod('getjs' . $name)) {
 							throw new TConfigurationException('template_property_readonly', $type, $name);
 						} else {
@@ -878,7 +878,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$srcFile = $this->_tplFile;
 
 		if (($n = count($this->_includedFiles)) > 0) { // need to adjust error row number and file name
-			for ($i = $n - 1;$i >= 0;--$i) {
+			for ($i = $n - 1; $i >= 0; --$i) {
 				if ($this->_includeAtLine[$i] <= $line) {
 					if ($line < $this->_includeAtLine[$i] + $this->_includeLines[$i]) {
 						$line = $line - $this->_includeAtLine[$i] + 1;
@@ -908,7 +908,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	protected function preprocess($input)
 	{
 		if ($n = preg_match_all('/<%include(.*?)%>/', $input, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				$filePath = Prado::getPathOfNamespace(trim($matches[$i][1][0]), TTemplateManager::TEMPLATE_FILE_EXT);
 				if ($filePath !== null && is_file($filePath)) {
 					$this->_includedFiles[] = $filePath;
@@ -918,7 +918,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				}
 			}
 			$base = 0;
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				$ext = file_get_contents($this->_includedFiles[$i]);
 				$length = strlen($matches[$i][0][0]);
 				$offset = $base + $matches[$i][0][1];

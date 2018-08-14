@@ -291,11 +291,11 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Returns the comma separated list of original file names as the property value to be validated.
 	 * This method is required by \Prado\Web\UI\IValidatable property.
-	 * @return mixed the property value to be validated
+	 * @return string the property value to be validated
 	 */
 	public function getValidationPropertyValue()
 	{
-		return implode(',', array_map(function ($file) {
+		return implode(',', array_map(function($file) {
 			return $file->getFileName();
 		}, $this->_files));
 	}

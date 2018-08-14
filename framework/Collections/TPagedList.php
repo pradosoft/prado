@@ -324,7 +324,7 @@ class TPagedList extends TList
 	public function indexOf($item)
 	{
 		$c = $this->getCount();
-		for ($i = 0;$i < $c;++$i) {
+		for ($i = 0; $i < $c; ++$i) {
 			if ($this->itemAt($i) === $item) {
 				return $i;
 			}
@@ -362,7 +362,7 @@ class TPagedList extends TList
 	{
 		$c = $this->getCount();
 		$array = [];
-		for ($i = 0;$i < $c;++$i) {
+		for ($i = 0; $i < $c; ++$i) {
 			$array[$i] = $this->itemAt($i);
 		}
 		return $array;

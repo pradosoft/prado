@@ -109,7 +109,7 @@ class TCustomValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TControl control to be validated. Null if no control is found.
+	 * @return TControl|null control to be validated. Null if no control is found.
 	 */
 	public function getValidationTarget()
 	{

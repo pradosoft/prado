@@ -547,7 +547,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getStyleSheetUrls()
 	{
 		$stylesheets = array_values(
-			array_map(function ($e) {
+			array_map(function($e) {
 				return is_array($e) ? $e[0] : $e;
 			}, $this->_styleSheetFiles)
 		);

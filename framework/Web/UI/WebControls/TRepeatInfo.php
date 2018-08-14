@@ -189,7 +189,7 @@ class TRepeatInfo extends \Prado\TComponent
 		// render items
 		$hasSeparators = $user->getHasSeparators();
 		$itemCount = $user->getItemCount();
-		for ($i = 0;$i < $itemCount;++$i) {
+		for ($i = 0; $i < $itemCount; ++$i) {
 			$user->renderItem($writer, $this, 'Item', $i);
 			if ($hasSeparators && $i != $itemCount - 1) {
 				$user->renderItem($writer, $this, 'Separator', $i);
@@ -222,7 +222,7 @@ class TRepeatInfo extends \Prado\TComponent
 		if ($tableLayout) {
 			$writer->renderBeginTag('tbody');
 			$column = 0;
-			for ($i = 0;$i < $itemCount;++$i) {
+			for ($i = 0; $i < $itemCount; ++$i) {
 				if ($column == 0) {
 					$writer->renderBeginTag('tr');
 				}
@@ -248,7 +248,7 @@ class TRepeatInfo extends \Prado\TComponent
 					if ($hasSeparators) {
 						$restColumns = $restColumns ? $restColumns + $restColumns + 1 : 1;
 					}
-					for ($j = 0;$j < $restColumns;++$j) {
+					for ($j = 0; $j < $restColumns; ++$j) {
 						$writer->write("<td></td>\n");
 					}
 				}
@@ -261,7 +261,7 @@ class TRepeatInfo extends \Prado\TComponent
 			$writer->renderEndTag();
 		} else {
 			$column = 0;
-			for ($i = 0;$i < $itemCount;++$i) {
+			for ($i = 0; $i < $itemCount; ++$i) {
 				$user->renderItem($writer, $this, 'Item', $i);
 				if ($hasSeparators && $i != $itemCount - 1) {
 					$user->renderItem($writer, $this, 'Separator', $i);
@@ -315,10 +315,10 @@ class TRepeatInfo extends \Prado\TComponent
 		if ($tableLayout) {
 			$writer->renderBeginTag('tbody');
 			$renderedItems = 0;
-			for ($row = 0;$row < $rows;++$row) {
+			for ($row = 0; $row < $rows; ++$row) {
 				$index = $row;
 				$writer->renderBeginTag('tr');
-				for ($col = 0;$col < $columns;++$col) {
+				for ($col = 0; $col < $columns; ++$col) {
 					if ($renderedItems >= $itemCount) {
 						break;
 					}
@@ -363,7 +363,7 @@ class TRepeatInfo extends \Prado\TComponent
 					if ($hasSeparators) {
 						$restColumns += $restColumns;
 					}
-					for ($col = 0;$col < $restColumns;++$col) {
+					for ($col = 0; $col < $restColumns; ++$col) {
 						$writer->write("<td></td>\n");
 					}
 				}
@@ -373,9 +373,9 @@ class TRepeatInfo extends \Prado\TComponent
 			$writer->renderEndTag();
 		} else {
 			$renderedItems = 0;
-			for ($row = 0;$row < $rows;++$row) {
+			for ($row = 0; $row < $rows; ++$row) {
 				$index = $row;
-				for ($col = 0;$col < $columns;++$col) {
+				for ($col = 0; $col < $columns; ++$col) {
 					if ($renderedItems >= $itemCount) {
 						break;
 					}

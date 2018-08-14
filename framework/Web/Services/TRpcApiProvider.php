@@ -79,7 +79,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 	}
 
 	/**
-	 * @return rpc server instance
+	 * @return TRpcServer rpc server instance
 	 */
 	public function getRpcServer()
 	{

@@ -308,7 +308,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 		if (($total = count($fkObjects)) > 0) {
 			$source = $this->getSourceRecord();
 			$builder = $this->getAssociationTableCommandBuilder();
-			for ($i = 0;$i < $total;$i++) {
+			for ($i = 0; $i < $total; $i++) {
 				$success = $fkObjects[$i]->save() && $success;
 			}
 			return $this->updateAssociationTable($obj, $fkObjects, $builder) && $success;

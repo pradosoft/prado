@@ -461,7 +461,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	{
 		if ($this->_items) {
 			$n = $this->_items->getCount();
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				if ($this->_items->itemAt($i)->getSelected()) {
 					return $i;
 				}
@@ -498,7 +498,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		$selections = [];
 		if ($this->_items) {
 			$n = $this->_items->getCount();
-			for ($i = 0;$i < $n;++$i) {
+			for ($i = 0; $i < $n; ++$i) {
 				if ($this->_items->itemAt($i)->getSelected()) {
 					$selections[] = $i;
 				}

@@ -281,7 +281,7 @@ class MessageSource_XLIFF extends MessageSource
 		$dom->load($filename);
 
 		//find the body element
-		$xpath = new DomXPath($dom);
+		$xpath = new DOMXpath($dom);
 		$body = $xpath->query('//body')->item(0);
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
@@ -352,7 +352,7 @@ class MessageSource_XLIFF extends MessageSource
 		$dom = DOMDocument::load($filename);
 
 		//find the body element
-		$xpath = new DomXPath($dom);
+		$xpath = new DOMXpath($dom);
 		$units = $xpath->query('//trans-unit');
 
 		//for each of the existin units
@@ -438,7 +438,7 @@ class MessageSource_XLIFF extends MessageSource
 		$dom = DOMDocument::load($filename);
 
 		//find the body element
-		$xpath = new DomXPath($dom);
+		$xpath = new DOMXpath($dom);
 		$units = $xpath->query('//trans-unit');
 
 		//for each of the existin units
@@ -468,6 +468,9 @@ class MessageSource_XLIFF extends MessageSource
 		return false;
 	}
 
+	/**
+	 * @param string $catalogue name, defaults to "messages"
+	 */
 	protected function createMessageTemplate($catalogue)
 	{
 		if ($catalogue === null) {

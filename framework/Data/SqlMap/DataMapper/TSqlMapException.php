@@ -31,7 +31,7 @@ class TSqlMapException extends TException
 		array_shift($args);
 		$n = count($args);
 		$tokens = [];
-		for ($i = 0;$i < $n;++$i) {
+		for ($i = 0; $i < $n; ++$i) {
 			if ($args[$i] instanceof SimpleXMLElement) {
 				$tokens['{' . $i . '}'] = $this->implodeNode($args[$i]);
 			} else {

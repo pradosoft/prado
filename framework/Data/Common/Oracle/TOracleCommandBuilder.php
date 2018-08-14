@@ -148,7 +148,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 
 		************************* */
 		$offset = (int) $offset;
-		$toReg = $offset + $limit ;
+		$toReg = $offset + $limit;
 		$fullTableName = $this->getTableInfo()->getTableFullName();
 		if (empty($sORDERBY)) {
 			$sORDERBY = "ROWNUM";

@@ -39,7 +39,7 @@ class TBrowserLogRoute extends TLogRoute
 		$even = true;
 		$response = $this->getApplication()->getResponse();
 		$response->write($this->renderHeader());
-		for ($i = 0,$n = count($logs);$i < $n;++$i) {
+		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
 			if ($i < $n - 1) {
 				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];
 				$timing['total'] = $logs[$i + 1][3] - $first;
@@ -69,6 +69,9 @@ class TBrowserLogRoute extends TLogRoute
 		return TPropertyValue::ensureString($this->_cssClass);
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function renderHeader()
 	{
 		$string = '';
@@ -100,6 +103,11 @@ EOD;
 		return $string;
 	}
 
+	/**
+	 * @param $log
+	 * @param $info
+	 * @return string
+	 */
 	protected function renderMessage($log, $info)
 	{
 		$string = '';

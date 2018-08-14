@@ -1341,7 +1341,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 		if (($separatorStyle = $this->getViewState('SeparatorStyle', null)) !== null && $this->getHasSeparators()) {
 			$controls = $this->getControls();
 			$count = $controls->getCount();
-			for ($i = $this->_header ? 2 : 1;$i < $count;$i += 2) {
+			for ($i = $this->_header ? 2 : 1; $i < $count; $i += 2) {
 				if (($separator = $controls->itemAt($i)) instanceof IStyleable) {
 					$separator->getStyle()->mergeWith($separatorStyle);
 				}
@@ -1399,7 +1399,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 			$editIndex = $this->getEditItemIndex();
 			$hasSeparator = $this->_separatorTemplate !== null || $this->getSeparatorRenderer() !== '';
 			$this->_header = $this->createItemInternal(-1, TListItemType::Header);
-			for ($i = 0;$i < $itemCount;++$i) {
+			for ($i = 0; $i < $itemCount; ++$i) {
 				if ($hasSeparator && $i > 0) {
 					$this->createItemInternal($i - 1, TListItemType::Separator);
 				}

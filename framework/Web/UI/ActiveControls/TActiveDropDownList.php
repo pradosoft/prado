@@ -69,7 +69,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	/**
 	 * No client class for this control.
 	 * This method overrides the parent implementation.
-	 * @return null no javascript class name.
+	 * @return string javascript class name.
 	 */
 	protected function getClientClassName()
 	{

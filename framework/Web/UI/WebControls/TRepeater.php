@@ -629,7 +629,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 			$items = $this->getItems();
 			$hasSeparator = $this->_separatorTemplate !== null || $this->getSeparatorRenderer() !== '';
 			$this->_header = $this->createItemInternal(-1, TListItemType::Header);
-			for ($i = 0;$i < $itemCount;++$i) {
+			for ($i = 0; $i < $itemCount; ++$i) {
 				if ($hasSeparator && $i > 0) {
 					$this->createItemInternal($i - 1, TListItemType::Separator);
 				}
@@ -759,7 +759,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * as the field name, the property value will be returned.
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
-	 * @param mixed $field field name
+	 * @param string $field field name
 	 * @throws TInvalidDataValueException if the data is invalid
 	 * @return mixed data value at the specified field
 	 */

@@ -74,7 +74,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	/**
 	 * Javascript client class for this control.
 	 * This method overrides the parent implementation.
-	 * @return null no javascript class name.
+	 * @return string javascript class name.
 	 */
 	protected function getClientClassName()
 	{

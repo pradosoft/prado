@@ -149,7 +149,7 @@ class TFileLogRoute extends TLogRoute
 	protected function rotateFiles()
 	{
 		$file = $this->getLogPath() . DIRECTORY_SEPARATOR . $this->getLogFile();
-		for ($i = $this->_maxLogFiles;$i > 0;--$i) {
+		for ($i = $this->_maxLogFiles; $i > 0; --$i) {
 			$rotateFile = $file . '.' . $i;
 			if (is_file($rotateFile)) {
 				if ($i === $this->_maxLogFiles) {

@@ -111,7 +111,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * @param string $key a key identifying a value to be cached
-	 * @return sring a key generated from the provided key which ensures the uniqueness across applications
+	 * @return string a key generated from the provided key which ensures the uniqueness across applications
 	 */
 	protected function generateUniqueKey($key)
 	{

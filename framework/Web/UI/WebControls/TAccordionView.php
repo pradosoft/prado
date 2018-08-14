@@ -32,7 +32,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	private $_active = false;
 
 	/**
-	 * @return the tag name for the view element
+	 * @return string the tag name for the view element
 	 */
 	protected function getTagName()
 	{

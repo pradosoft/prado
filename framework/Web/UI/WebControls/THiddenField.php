@@ -110,7 +110,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by \Prado\Web\UI\IValidatable interface.
-	 * @return mixed the value of the property to be validated.
+	 * @return string the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()
 	{

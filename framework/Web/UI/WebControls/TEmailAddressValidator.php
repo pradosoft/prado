@@ -54,12 +54,12 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 
 	/**
 	 * Returns an array of javascript validator options.
-	 * @return array javascript validator options.
+	 * @return bool javascript validator options.
 	 */
 	public function evaluateIsValid()
 	{
 		$value = $this->getValidationValue($this->getValidationTarget());
-		$valid = $valid = is_string($value) && strlen($value) <= 254 && parent::evaluateIsValid();
+		$valid = is_string($value) && strlen($value) <= 254 && parent::evaluateIsValid();
 
 		if ($valid && $this->getCheckMXRecord() && function_exists('checkdnsrr')) {
 			if ($value !== '') {

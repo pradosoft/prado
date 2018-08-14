@@ -41,7 +41,7 @@ class TTemplateColumn extends TDataGridColumn
 {
 	/**
 	 * Various item templates
-	 * @var string
+	 * @var ITemplate
 	 */
 	private $_itemTemplate;
 	private $_editItemTemplate;

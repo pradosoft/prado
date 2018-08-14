@@ -38,7 +38,7 @@ class TRadioButtonList extends TCheckBoxList
 
 	/**
 	 * Creates a control used for repetition (used as a template).
-	 * @return TControl the control to be repeated
+	 * @return TRadioButtonItem the control to be repeated
 	 */
 	protected function createRepeatedControl()
 	{

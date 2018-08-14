@@ -722,7 +722,7 @@ class TDatePicker extends TTextBox
 		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 		$days = [];
 		$requiresPadding = $formatter->getDayPattern() === 'dd';
-		for ($i = 1;$i <= 31;$i++) {
+		for ($i = 1; $i <= 31; $i++) {
 			$days[$i] = $requiresPadding ? str_pad($i, 2, '0', STR_PAD_LEFT) : $i;
 		}
 		return $days;
@@ -765,12 +765,13 @@ class TDatePicker extends TTextBox
 			case 'MMM': return $info->getAbbreviatedMonthNames();
 			case 'MM':
 				$array = [];
-				for ($i = 1;$i <= 12;$i++) {
+				for ($i = 1; $i <= 12; $i++) {
 					$array[$i - 1] = $i < 10 ? '0' . $i : $i;
 				}
 				return $array;
 			case 'M':
-				$array = []; for ($i = 1;$i <= 12;$i++) {
+				$array = [];
+				for ($i = 1; $i <= 12; $i++) {
 					$array[$i - 1] = $i;
 				}
 				return $array;

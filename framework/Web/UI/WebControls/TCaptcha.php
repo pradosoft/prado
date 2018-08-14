@@ -386,7 +386,9 @@ class TCaptcha extends TImage
 	 */
 	protected function getTokenImageOptions()
 	{
-		$privateKey = $this->getPrivateKey();  // call this method to ensure private key is generated
+		// call this method to ensure private key is generated
+		$privateKey = $this->getPrivateKey();
+
 		$token = $this->getToken();
 		$options = [];
 		$options['publicKey'] = $this->getPublicKey();
@@ -474,7 +476,7 @@ class TCaptcha extends TImage
 		$hexLength = strlen($hex);
 		$base = strlen($alphabet);
 		$result = '';
-		for ($i = 0;$i < $hexLength;$i += 6) {
+		for ($i = 0; $i < $hexLength; $i += 6) {
 			$number = hexdec(substr($hex, $i, 6));
 			while ($number) {
 				$result .= $alphabet[$number % $base];

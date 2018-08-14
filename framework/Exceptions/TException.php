@@ -55,7 +55,7 @@ class TException extends \Exception
 		array_shift($args);
 		$n = count($args);
 		$tokens = [];
-		for ($i = 0;$i < $n;++$i) {
+		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
 		parent::__construct(strtr($errorMessage, $tokens));

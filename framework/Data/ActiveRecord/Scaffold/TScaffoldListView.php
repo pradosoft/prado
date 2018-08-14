@@ -68,7 +68,7 @@ class TScaffoldListView extends TScaffoldBase
 			$fname = ucwords(str_replace('_', ' ', $name));
 			$sorts[$name . ' ASC'] = $fname . ' Ascending';
 			$sorts[$name . ' DESC'] = $fname . ' Descending';
-			$headers[] = $fname ;
+			$headers[] = $fname;
 		}
 		$this->_sort->setDataSource($sorts);
 		$this->_sort->dataBind();

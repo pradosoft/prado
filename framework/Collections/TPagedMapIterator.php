@@ -57,7 +57,7 @@ class TPagedMapIterator implements \Iterator
 	public function rewind()
 	{
 		$this->_iterator->rewind();
-		for ($i = 0;$i < $this->_startIndex;++$i) {
+		for ($i = 0; $i < $this->_startIndex; ++$i) {
 			$this->_iterator->next();
 		}
 		$this->_index = 0;

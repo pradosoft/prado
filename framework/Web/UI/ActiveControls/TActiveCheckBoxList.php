@@ -87,7 +87,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 
 	/**
 	 * Creates a control used for repetition (used as a template).
-	 * @return TControl the control to be repeated
+	 * @return TActiveCheckBoxListItem the control to be repeated
 	 */
 	protected function createRepeatedControl()
 	{

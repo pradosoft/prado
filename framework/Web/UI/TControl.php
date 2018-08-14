@@ -567,7 +567,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function getVisible($checkParents = true)
 	{
 		if ($checkParents) {
-			for ($control = $this;$control;$control = $control->_parent) {
+			for ($control = $this; $control; $control = $control->_parent) {
 				if (!$control->getVisible(false)) {
 					return false;
 				}
@@ -599,7 +599,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function getEnabled($checkParents = false)
 	{
 		if ($checkParents) {
-			for ($control = $this;$control;$control = $control->_parent) {
+			for ($control = $this; $control; $control = $control->_parent) {
 				if (!$control->getViewState('Enabled', true)) {
 					return false;
 				}
@@ -704,7 +704,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function getEnableViewState($checkParents = false)
 	{
 		if ($checkParents) {
-			for ($control = $this;$control !== null;$control = $control->getParent()) {
+			for ($control = $this; $control !== null; $control = $control->getParent()) {
 				if ($control->_flags & self::IS_DISABLE_VIEWSTATE) {
 					return false;
 				}

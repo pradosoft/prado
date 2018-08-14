@@ -183,7 +183,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Returns the value of the TSlider control.
 	 * This method is required by {@link \Prado\IDataRenderer}.
 	 * It is the same as {@link getValue()}.
-	 * @return string the value of the TSlider control.
+	 * @return float the value of the TSlider control.
 	 * @see getValue
 	 */
 	public function getData()
@@ -484,7 +484,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$step = ($maxValue - $minValue) / self::MAX_STEPS;
 			}
 			$values = [];
-			for ($i = $minValue;$i <= $maxValue;$i += $step) {
+			for ($i = $minValue; $i <= $maxValue; $i += $step) {
 				$values[] = $i;
 			}
 			// Add max if it's not in the array because of step

@@ -150,7 +150,7 @@ EOD;
 	/**
 	 * @param string $schemaName table schema name
 	 * @param string $tableName table name.
-	 * @return bool true if the table is a view.
+	 * @return integer 1 if the table is a view.
 	 */
 	protected function getIsView($schemaName, $tableName)
 	{
@@ -181,7 +181,7 @@ EOD;
 		$info['ColumnName'] = $columnId; //NOT quote the column names!
 		$info['ColumnId'] = $columnId;
 		$info['ColumnIndex'] = $col['index'];
-		if (! (bool) $col['attnotnull']) {
+		if (!(bool) $col['attnotnull']) {
 			$info['AllowNull'] = true;
 		}
 		if (in_array($columnId, $tableInfo->getPrimaryKeys())) {

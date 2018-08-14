@@ -116,7 +116,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			$flag = false;
 			if ($n === count($list2)) {
 				sort($list, SORT_NUMERIC);
-				for ($i = 0;$i < $n;++$i) {
+				for ($i = 0; $i < $n; ++$i) {
 					if ($list[$i] !== $list2[$i]) {
 						$flag = true;
 						break;
@@ -210,7 +210,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	/**
 	 * Returns the value to be validated.
 	 * This methid is required by \Prado\Web\UI\IValidatable interface.
-	 * @return mixed the value of the property to be validated.
+	 * @return string the value of the property to be validated.
 	 */
 	public function getValidationPropertyValue()
 	{

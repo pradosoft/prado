@@ -239,6 +239,11 @@ class MessageSource_PHP extends MessageSource
 		return false;
 	}
 
+	/**
+	 * @param string $php included php file
+	 * @param string $filename destination file
+	 * @param string $variant catalogue variant
+	 */
 	protected function internalSaveFile($php, $filename, $variant)
 	{
 		$php['info']['date'] = @date('Y-m-d\TH:i:s\Z');
@@ -368,6 +373,9 @@ class MessageSource_PHP extends MessageSource
 		return false;
 	}
 
+	/**
+	 * @param string $catalogue the catalogue name, defaults to "messages"
+	 */
 	protected function createMessageTemplate($catalogue)
 	{
 		if ($catalogue === null) {

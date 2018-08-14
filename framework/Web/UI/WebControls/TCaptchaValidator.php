@@ -82,7 +82,7 @@ class TCaptchaValidator extends TBaseValidator
 
 	/**
 	 * @throws TConfigurationException if the CAPTCHA cannot be found according to {@link setCaptchaControl CaptchaControl}
-	 * @return TCaptchaControl the CAPTCHA control to be validated against
+	 * @return TCaptcha the CAPTCHA control to be validated against
 	 */
 	protected function findCaptchaControl()
 	{
@@ -115,9 +115,13 @@ class TCaptchaValidator extends TBaseValidator
 		return $options;
 	}
 
+	/**
+	 * @param string $token
+	 * @return string hash
+	 */
 	private function generateTokenHash($token)
 	{
-		for ($h = 0,$i = strlen($token) - 1;$i >= 0;--$i) {
+		for ($h = 0, $i = strlen($token) - 1; $i >= 0; --$i) {
 			$h += ord($token[$i]);
 		}
 		return $h;
