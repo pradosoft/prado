@@ -260,6 +260,11 @@ class MysqlColumnTest extends PHPUnit_Framework_TestCase
 				$ofAssert= var_export($assert,true);
 				$value = $column->{$property};
 				$ofValue = var_export($value, true);
+
+				// workaround: mariadb and mysql diverged on this
+				if($assert === 'CURRENT_TIMESTAMP' && $value == 'current_timestamp()')
+					$value = $assert;
+
 				$this->assertEquals($value, $assert,
 					"Column [{$id}] {$property} value {$ofValue} did not match {$ofAssert}");
 			}
