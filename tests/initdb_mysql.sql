@@ -94,17 +94,17 @@ DROP TABLE IF EXISTS `address`;
 CREATE TABLE `address` (
   `username` VARCHAR(255) NOT NULL,
   `phone` VARCHAR(255) NOT NULL,
-  `field1_boolean` TINYINT(1) NOT NULL,
-  `field2_date` DATE NOT NULL,
-  `field3_double` DOUBLE NOT NULL,
-  `field4_integer` INT(10) NOT NULL,
-  `field5_text` TEXT NOT NULL,
-  `field6_time` TIME NOT NULL,
-  `field7_timestamp` TIMESTAMP NOT NULL,
-  `field8_money` DECIMAL(19,4) NOT NULL,
-  `field9_numeric` NUMERIC NOT NULL,
-  `int_fk1` INT(10) NOT NULL,
-  `int_fk2` INT(10) NOT NULL,
+  `field1_boolean` TINYINT(1) NOT NULL DEFAULT 0,
+  `field2_date` DATE NOT NULL DEFAULT '2000-01-01',
+  `field3_double` DOUBLE NOT NULL DEFAULT 0,
+  `field4_integer` INT(10) NOT NULL DEFAULT 0,
+  `field5_text` TEXT NULL,
+  `field6_time` TIME NOT NULL DEFAULT 0,
+  `field7_timestamp` TIMESTAMP NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `field8_money` DECIMAL(19,4) NOT NULL DEFAULT 0,
+  `field9_numeric` NUMERIC NOT NULL DEFAULT 0,
+  `int_fk1` INT(10) NOT NULL DEFAULT 0,
+  `int_fk2` INT(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`username`)
 )
 AUTO_INCREMENT=1
@@ -116,14 +116,14 @@ INSERT INTO address (username, phone) VALUES
 ('fabio', '2222222');
 
 DROP TABLE IF EXISTS `Accounts`;
-CREATE TABLE `Accounts` 
-( 
-  Account_Id INTEGER NOT NULL PRIMARY KEY, 
-  Account_FirstName VARCHAR(32) NOT NULL, 
-  Account_LastName VARCHAR(32) NOT NULL, 
-  Account_Email VARCHAR(128), 
-  Account_Banner_Option VARCHAR(255), 
-  Account_Cart_Option INT 
+CREATE TABLE `Accounts`
+(
+  Account_Id INTEGER NOT NULL PRIMARY KEY,
+  Account_FirstName VARCHAR(32) NOT NULL,
+  Account_LastName VARCHAR(32) NOT NULL,
+  Account_Email VARCHAR(128),
+  Account_Banner_Option VARCHAR(255),
+  Account_Cart_Option INT
 );
 
 INSERT INTO Accounts VALUES(1,'Joe', 'Dalton', 'Joe.Dalton@somewhere.com', 'Oui', 200);
