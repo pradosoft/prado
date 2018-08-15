@@ -62,20 +62,33 @@ Prado.CallbackRequestManager =
 	/**
 	 * Formats the exception message for display in console.
 	 */
-	formatException : function(e)
+	logFormatException : function(log, e)
 	{
-		var msg = e.type + " with message \""+e.message+"\"";
-		msg += " in "+e.file+"("+e.line+")\n";
-		msg += "Stack trace:\n";
+		log.info(e.type + " with message \""+e.message+"\" in "+e.file+"("+e.line+")");
+		log.info("Stack trace:");
 		var trace = e.trace;
 		for(var i = 0; i<trace.length; i++)
 		{
-			msg += "  #"+i+" "+trace[i].file;
-			msg += "("+trace[i].line+"): ";
-			msg += trace[i]["class"]+"->"+trace[i]["function"]+"()"+"\n";
+			var msg = "#"+i+" "+trace[i].file+"("+trace[i].line+")";
+			if(i == 0)
+			{
+				if(typeof log.group === "function")
+					log.group(msg);
+				else
+					log.info(msg);
+			} else {
+				if(typeof log.groupCollapsed === "function")
+					log.groupCollapsed(msg);
+				else
+					log.info(msg);
+			}
+
+			log.info(trace[i]["class"]+"->"+trace[i]["function"]+"("+trace[i]["args"].join(", ")+")");
+
+			if(typeof log.groupEnd === "function")
+				log.groupEnd();
 		}
-		msg += e.version+" "+e.time+"\n";
-		return msg;
+		log.info(e.version+" "+e.time);
 	},
 
 	/*! jQuery Ajax Queue - v0.1.2pre - 2013-03-19
@@ -363,7 +376,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 				{
 					errorData = jQuery.parseJSON(errorData);
 					if(typeof(errorData) == "object")
-						log.info(Prado.CallbackRequestManager.formatException(errorData));
+						Prado.CallbackRequestManager.logFormatException(log, errorData);
 				}
 			}
 		}

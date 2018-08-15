@@ -18,6 +18,7 @@ use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Util\TVarDumper;
 
 /**
  * TCallbackErrorHandler class.
@@ -74,15 +75,29 @@ class TCallbackErrorHandler extends TErrorHandler
 	private function getExceptionStackTrace($exception)
 	{
 		$data['code'] = $exception->getCode() > 0 ? $exception->getCode() : 500;
-		$data['file'] = $exception->getFile();
+		$data['file'] = $this->hidePrivatePathParts($exception->getFile());
 		$data['line'] = $exception->getLine();
 		$data['trace'] = $exception->getTrace();
+		foreach($data['trace'] as $k => $v)
+		{
+			if(isset($v['file']))
+				$data['trace'][$k]['file'] = $this->hidePrivatePathParts($v['file']);
+
+			if(isset($v['args']))
+			{
+				$argsout = [];
+				foreach($v['args'] as $kArg => $vArg)
+				{
+					$data['trace'][$k]['args'][$kArg] = TVarDumper::dump($vArg, 0, false);
+				}
+			}
+		}
 		if ($exception instanceof TPhpErrorException) {
 			// if PHP exception, we want to show the 2nd stack level context
 			// because the 1st stack level is of little use (it's in error handler)
-			if (isset($trace[0]) && isset($trace[0]['file']) && isset($trace[0]['line'])) {
-				$data['file'] = $trace[0]['file'];
-				$data['line'] = $trace[0]['line'];
+			if (isset($data['trace'][0]) && isset($data['trace'][0]['file']) && isset($data['trace'][0]['line'])) {
+				$data['file'] = $data['trace'][0]['file'];
+				$data['line'] = $data['trace'][0]['line'];
 			}
 		}
 		$data['type'] = get_class($exception);

@@ -244,6 +244,22 @@ class TErrorHandler extends \Prado\TModule
 		}
 	}
 
+	protected function hidePrivatePathParts($value)
+	{
+		static $aRpl;
+		if($aRpl === null)
+		{
+			$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
+			$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
+			$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;
+			if (isset($aRpl[DIRECTORY_SEPARATOR])) {
+				unset($aRpl[DIRECTORY_SEPARATOR]);
+			}
+			$aRpl = array_reverse($aRpl, true);
+		}
+
+		return str_replace(array_keys($aRpl), $aRpl, $value);
+	}
 	/**
 	 * Displays exception information.
 	 * Exceptions are displayed with rich context information, including
@@ -287,7 +303,7 @@ class TErrorHandler extends \Prado\TModule
 		$tokens = [
 			'%%ErrorType%%' => get_class($exception),
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
-			'%%SourceFile%%' => htmlspecialchars($fileName) . ' (' . $errorLine . ')',
+			'%%SourceFile%%' => htmlspecialchars($this->hidePrivatePathParts($fileName)) . ' (' . $errorLine . ')',
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
@@ -401,14 +417,14 @@ class TErrorHandler extends \Prado\TModule
 					$func = 'unknown';
 				}
 
-				$txt .= '#' . $row . ' ' . $line['file'] . '(' . $line['line'] . '): ' . $func . "\n";
+				$txt .= '#' . $row . ' ' . $this->hidePrivatePathParts($line['file']) . '(' . $line['line'] . '): ' . $func . "\n";
 				$row++;
 			}
 
 			return $txt;
 		}
 
-		return $exception->getTraceAsString();
+		return $this->hidePrivatePathParts($exception->getTraceAsString());
 	}
 
 	private function getPropertyAccessTrace($trace, $pattern)
@@ -430,7 +446,7 @@ class TErrorHandler extends \Prado\TModule
 		$endLine = $errorLine + self::SOURCE_LINES <= count($lines) ? $errorLine + self::SOURCE_LINES : count($lines);
 
 		$source = '';
-		for ($i = $beginLine;$i < $endLine;++$i) {
+		for ($i = $beginLine; $i < $endLine; ++$i) {
 			if ($i === $errorLine - 1) {
 				$line = htmlspecialchars(sprintf("%04d: %s", $i + 1, str_replace("\t", '    ', $lines[$i])));
 				$source .= "<div class=\"error\">" . $line . "</div>";
