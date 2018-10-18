@@ -38,10 +38,19 @@ class TPageStateFormatter
 	public static function serialize($page, $data)
 	{
 		$sm = $page->getApplication()->getSecurityManager();
-		if ($page->getEnableStateValidation()) {
-			$str = $sm->hashData(serialize($data));
+		if($page->getEnableStateIGBinary() && extension_loaded('igbinary'))
+		{
+			if ($page->getEnableStateValidation()) {
+				$str = $sm->hashData(igbinary_serialize($data));
+			} else {
+				$str = igbinary_serialize($data);
+			}
 		} else {
-			$str = serialize($data);
+			if ($page->getEnableStateValidation()) {
+				$str = $sm->hashData(serialize($data));
+			} else {
+				$str = serialize($data);
+			}
 		}
 		if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
 			$str = gzcompress($str);
@@ -71,12 +80,24 @@ class TPageStateFormatter
 			if ($page->getEnableStateCompression() && extension_loaded('zlib')) {
 				$str = @gzuncompress($str);
 			}
-			if ($page->getEnableStateValidation()) {
-				if (($str = $sm->validateData($str)) !== false) {
-					return unserialize($str);
+
+			if($page->getEnableStateIGBinary() && extension_loaded('igbinary'))
+			{
+				if ($page->getEnableStateValidation()) {
+					if (($str = $sm->validateData($str)) !== false) {
+						return igbinary_unserialize($str);
+					}
+				} else {
+					return igbinary_unserialize($str);
 				}
 			} else {
-				return unserialize($str);
+				if ($page->getEnableStateValidation()) {
+					if (($str = $sm->validateData($str)) !== false) {
+						return unserialize($str);
+					}
+				} else {
+					return unserialize($str);
+				}
 			}
 		}
 		return null;

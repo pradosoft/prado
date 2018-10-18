@@ -149,6 +149,11 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableStateCompression = true;
 	/**
+	 * @var bool whether to use the igbinary serializer if available
+	 * @since 4.1
+	 */
+	private $_enableStateIGBinary = true;
+	/**
 	 * @var string page state persister class name
 	 */
 	private $_statePersisterClass = '\Prado\Web\UI\TPageStatePersister';
@@ -1185,6 +1190,24 @@ class TPage extends TTemplateControl
 	public function setEnableStateCompression($value)
 	{
 		$this->_enableStateCompression = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool whether page state should be serialized using igbinary if available. Defaults to true.
+	 * @since 4.1
+	 */
+	public function getEnableStateIGBinary()
+	{
+		return $this->_enableStateIGBinary;
+	}
+
+	/**
+	 * @param bool $value whether page state should be serialized using igbinary if available.
+	 * @since 4.1
+	 */
+	public function setEnableStateIGBinary($value)
+	{
+		$this->_enableStateIGBinary = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
