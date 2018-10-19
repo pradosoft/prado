@@ -31,6 +31,10 @@ Prado.CallbackRequestManager =
 	 */
 	ERROR_HEADER : 'X-PRADO-ERROR',
 	/**
+	 * Response debug header name.
+	 */
+	DEBUG_HEADER : 'X-PRADO-DEBUG',
+	/**
 	 * Page state header name.
 	 */
 	PAGESTATE_HEADER : 'X-PRADO-PAGESTATE',
@@ -89,6 +93,24 @@ Prado.CallbackRequestManager =
 				log.groupEnd();
 		}
 		log.info(e.version+" "+e.time);
+	},
+
+	/**
+	 * Formats the debug message for display in console.
+	 */
+	logDebug : function(log, blocks)
+	{
+		var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
+		if(typeof log[groupFunc] === "function")
+			log[groupFunc]("Callback logs ("+blocks.length+" entries)");
+
+		for(var i = 0; i<blocks.length; i++)
+		{
+			log[blocks[i][0]]("["+blocks[i][1]+"] ["+blocks[i][2]+"] "+blocks[i][3]);
+		}
+
+		if(typeof log.groupEnd === "function")
+			log.groupEnd();
 	},
 
 	/*! jQuery Ajax Queue - v0.1.2pre - 2013-03-19
@@ -445,6 +467,8 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 		if (redirectUrl)
 				document.location.href = redirectUrl;
 
+		this.outputDebug(this, data);
+
 		try {
 			this.updatePageState(this, data);
 			this.checkHiddenFields(this, data);
@@ -717,6 +741,22 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	},
 
 	/**
+	 * Output callback response debug.
+	 */
+	outputDebug : function(request, datain)
+	{
+		var data = this.extractContent(Prado.CallbackRequestManager.DEBUG_HEADER);
+		if (typeof(data) == "string" && data.length > 0 && (log = this.getLogger()))
+		{
+			json = jQuery.parseJSON(data);
+			if(typeof(json) == "object")
+			{
+				Prado.CallbackRequestManager.logDebug(log, json);
+			}
+		}
+	},
+
+	/**
 	 * Prase and evaluate a Callback clien-side action
 	 */
 	__run : function(request, command)
@@ -864,7 +904,7 @@ if (typeof(Prado.AssetManagerClass)=="undefined") {
 		markAssetAsLoaded: function(url) {
 			url = this.makeFullUrl(url);
 			if (jQuery.inArray(url, this.loadedAssets)==-1)
-				this.loadedAssets.push(url);
+				this.loadedAssets.push(url)
 		},
 
 		assetReadyStateChanged: function(url, element, callback, finalevent) {

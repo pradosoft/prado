@@ -46,6 +46,10 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	const CALLBACK_ERROR_HEADER = 'X-PRADO-ERROR';
 	/**
+	 * Callback error header name.
+	 */
+	const CALLBACK_DEBUG_HEADER = 'X-PRADO-DEBUG';
+	/**
 	 * Callback page state header name.
 	 */
 	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
