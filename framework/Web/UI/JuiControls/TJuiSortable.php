@@ -281,7 +281,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	{
 		parent::dataBind();
 		if ($this->getPage()->getIsCallback()) {
-			$this->renderSortables($this->getResponse()->createHtmlWriter());
+			$this->render($this->getResponse()->createHtmlWriter());
 		}
 	}
 
