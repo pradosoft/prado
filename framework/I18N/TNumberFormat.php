@@ -15,10 +15,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 
 /**
- * Get the parent control class.
- */
-
-/**
  * To format numbers in locale sensitive manner use
  * <code>
  * <com:TNumberFormat Pattern="0.##" value="2.0" />
@@ -48,7 +44,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
 	 * Cached NumberFormatters set to the application culture.
-	 * @var NumberFormat
+	 * @var NumberFormatter
 	 */
 	protected static $formatters;
 
@@ -193,7 +189,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * If the culture is not specified, the default application
 	 * culture will be used.
 	 * @param string $culture
-	 * @param string $type
+	 * @param mixed $type
 	 * @return NumberFormatter
 	 */
 	protected function getFormatter($culture, $type)
@@ -234,9 +230,9 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		if($type === \NumberFormatter::CURRENCY)
 		{
-			$result = $formatter->formatCurrency($this->getValue(), $this->getCurrency());
+			$result = $formatter->formatCurrency($value, $this->getCurrency());
 		} else {
-			$result = $formatter->format($this->getValue());
+			$result = $formatter->format($value);
 		}
 
 		return $this->I18N_toEncoding($result, $this->getCharset());

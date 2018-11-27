@@ -32,7 +32,7 @@ use Exception;
  * The CultureInfo class holds culture-specific information, such as the
  * associated language, sublanguage, country/region, calendar, and cultural
  * conventions. This class also provides access to culture-specific
- * instances of DateTimeFormatInfo. These objects
+ * instances. These objects
  * contain the information required for culture-specific operations,
  * such as formatting dates, numbers and currency.
  *
@@ -82,12 +82,6 @@ class CultureInfo
 		'Countries' => 'ICUDATA-region',
 		'zoneStrings' => 'ICUDATA-zone',
 	];
-
-	/**
-	 * The current date time format info.
-	 * @var DateTimeFormatInfo
-	 */
-	private $dateTimeFormat;
 
 	/**
 	 * A list of properties that are accessable/writable.
@@ -361,30 +355,6 @@ class CultureInfo
 	public function getName()
 	{
 		return $this->culture;
-	}
-
-	/**
-	 * Gets the DateTimeFormatInfo that defines the culturally appropriate
-	 * format of displaying dates and times.
-	 * @return DateTimeFormatInfo date time format information for the culture.
-	 */
-	public function getDateTimeFormat()
-	{
-		if($this->dateTimeFormat === null)
-		{
-			$this->setDateTimeFormat(new DateTimeFormatInfo($this));
-		}
-
-		return $this->dateTimeFormat;
-	}
-
-	/**
-	 * Set the date time format information.
-	 * @param DateTimeFormatInfo $dateTimeFormat the new date time format info.
-	 */
-	public function setDateTimeFormat($dateTimeFormat)
-	{
-		$this->dateTimeFormat = $dateTimeFormat;
 	}
 
 	/**

@@ -182,8 +182,6 @@ return [
 'TTemplateException' => 'Prado\Exceptions\TTemplateException',
 'ChoiceFormat' => 'Prado\I18N\core\ChoiceFormat',
 'CultureInfo' => 'Prado\I18N\core\CultureInfo',
-'DateFormat' => 'Prado\I18N\core\DateFormat',
-'DateTimeFormatInfo' => 'Prado\I18N\core\DateTimeFormatInfo',
 'TGettext' => 'Prado\I18N\core\Gettext\TGettext',
 'TGettext_MO' => 'Prado\I18N\core\Gettext\TGettext_MO',
 'TGettext_PO' => 'Prado\I18N\core\Gettext\TGettext_PO',
