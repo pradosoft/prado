@@ -17,7 +17,6 @@ use Prado\Web\UI\TControl;
  * TI18NControl class.
  *
  * Base class for I18N components, providing Culture and Charset properties.
- * Namespace: System.I18N
  *
  * Properties
  * - <b>Culture</b>, string,

@@ -15,6 +15,10 @@ namespace Prado\I18N;
  * TGlobalizationAutoDetect class will automatically try to resolve the default
  * culture using the user browser language settings.
  *
+ * You can specify the list of available cultures on the website by setting the {@link setAvailableLanguages AvailableLanguages} property, eg:
+ * <code>
+ * <module id="globalization" class="TGlobalizationAutoDetect" charset="UTF-8" DefaultCulture="it" TranslateDefaultCulture="false" AvailableLanguages="it, en">
+ * </code>
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @package Prado\I18N
  */
@@ -36,7 +40,14 @@ class TGlobalizationAutoDetect extends TGlobalization
 	 * First language accepted by the browser
 	 * @var string
 	 */
-	private $_detectedLanguage;
+	private $detectedLanguage;
+
+	/**
+	 * A list of languages accepted by the website.
+	 * If empty or not defined, any language is accepted.
+	 * @var array
+	 */
+	protected $validLanguages;
 
 	public function init($xml)
 	{
@@ -44,15 +55,21 @@ class TGlobalizationAutoDetect extends TGlobalization
 
 		//set the culture according to browser language settings
 		$languages = $this->getLanguages();
-		if (count($languages) > 0) {
-			$this->_detectedLanguage = $languages[0];
-			$this->setCulture($languages[0]);
+		foreach ($languages as $lang) {
+			$mainLang = $lang; // strstr($lang, '_', true);
+			if (count($this->validLanguages) > 0 && !in_array($mainLang, $this->validLanguages)) {
+				continue;
+			}
+
+			$this->detectedLanguage = $mainLang;
+			$this->setCulture($mainLang);
+			return;
 		}
 	}
 
 	public function getDetectedLanguage()
 	{
-		return $this->_detectedLanguage;
+		return $this->detectedLanguage;
 	}
 
 	/**
@@ -142,5 +159,22 @@ class TGlobalizationAutoDetect extends TGlobalization
 		}
 
 		return $this->charsets;
+	}
+	/**
+	 * Get the available languages.
+	 * @return array of languages
+	 */
+	public function getAvailableLanguages()
+	{
+		return $this->validLangs;
+	}
+
+	/**
+	 * Set the available languages.
+	 * @param Comma separated string of available languages.
+	 */
+	public function setAvailableLanguages($langs)
+	{
+		$this->validLanguages = array_map('trim', explode(',', $langs));
 	}
 }

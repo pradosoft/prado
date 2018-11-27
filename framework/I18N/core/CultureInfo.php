@@ -177,7 +177,6 @@ class CultureInfo
 	}
 
 	/**
-<<<<<<< HEAD
 	 * Get the default directory for the ICU data.
 	 * The default is the "data" directory for this class.
 	 * @return string directory containing the ICU data.
