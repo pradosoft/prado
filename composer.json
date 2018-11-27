@@ -41,6 +41,7 @@
 		"php": ">=5.4.0",
 		"ext-ctype": "*",
 		"ext-dom": "*",
+		"ext-intl": "*",
 		"ext-json": "*",
 		"ext-pcre": "*",
 		"ext-spl": "*",
