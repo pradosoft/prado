@@ -329,7 +329,6 @@ class CultureInfo
 					$result = array_merge($result, $info);
 				else
 					return $info;
-				}
 			}
 		}
 

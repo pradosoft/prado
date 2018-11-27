@@ -18,6 +18,7 @@
  */
 
 namespace Prado\I18N\core;
+
 use Exception;
 
 /**
@@ -71,7 +72,7 @@ use Exception;
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @package Prado\I18N\core
- * @deprecated since 4.0.0
+ * @deprecated since 4.0.2
  */
 class DateTimeFormatInfo
 {
@@ -125,15 +126,16 @@ class DateTimeFormatInfo
 	 * information. <b>N.B.</b>You should not initialize this class directly
 	 * unless you know what you are doing. Please use use
 	 * DateTimeFormatInfo::getInstance() to create an instance.
-	 * @param array $data ICU data for date time formatting.
+	 * @param CultureInfo $cultureInfo
 	 * @see getInstance()
 	 */
 	public function __construct($cultureInfo)
 	{
 		$this->properties = get_class_methods($this);
 
-		if(!($cultureInfo instanceof CultureInfo))
+		if (!($cultureInfo instanceof CultureInfo)) {
 			throw new Exception('Please provide a CultureInfo instance.');
+		}
 
 		$this->cultureInfo = $cultureInfo;
 	}
@@ -143,11 +145,10 @@ class DateTimeFormatInfo
 	 * (invariant).
 	 * @return DateTimeFormatInfo default DateTimeFormatInfo.
 	 */
-	static public function getInvariantInfo()
+	public static function getInvariantInfo()
 	{
 		static $invariant;
-		if($invariant === null)
-		{
+		if ($invariant === null) {
 			$culture = CultureInfo::getInvariantCulture();
 			$invariant = $culture->getDateTimeFormat();
 		}
@@ -160,13 +161,11 @@ class DateTimeFormatInfo
 	 * @return DateTimeFormatInfo DateTimeFormatInfo for the specified
 	 * culture.
 	 */
-	public static function getInstance($culture=null)
+	public static function getInstance($culture = null)
 	{
-
-		if ($culture instanceof CultureInfo)
-		{
+		if ($culture instanceof CultureInfo) {
 			return $culture->getDateTimeFormat();
-		} elseif(is_string($culture)) {
+		} elseif (is_string($culture)) {
 			$cultureInfo = CultureInfo::getInstance($culture);
 			return $cultureInfo->getDateTimeFormat();
 		} else {
@@ -178,8 +177,7 @@ class DateTimeFormatInfo
 	public function getInfoByPath($path)
 	{
 		static $basePath = null;
-		if($basePath === null)
-		{
+		if ($basePath === null) {
 			$basePath = 'calendar/' . $this->cultureInfo->getCalendar() . '/';
 		}
 
@@ -245,10 +243,11 @@ class DateTimeFormatInfo
 	public function getAbbreviatedMonthNames()
 	{
 		$info = $this->getInfoByPath('monthNames/format/abbreviated');
-		if ($info)
+		if ($info) {
 			return $info;
-		else
+		} else {
 			return $this->getMonthNames();
+		}
 	}
 
 	/**

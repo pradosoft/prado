@@ -18,6 +18,7 @@
  */
 
 namespace Prado\I18N\core;
+
 use Exception;
 
 /**
@@ -49,7 +50,7 @@ class NumberFormatInfo
 	 * Parent instance containing data
 	 * @var CultureInfo
 	 */
-	private $cultureInfo = array();
+	private $cultureInfo = [];
 
 	/**
 	 * ICU number formatting data.
@@ -113,7 +114,7 @@ class NumberFormatInfo
 	 * formatting information. <b>N.B.</b>You should not initialize this
 	 * class directly unless you know what you are doing. Please use use
 	 * NumberFormatInfo::getInstance() to create an instance.
-	 * @param array $data ICU data for date time formatting.
+	 * @param CultureInfo $cultureInfo
 	 * @param mixed $type
 	 * @see getInstance()
 	 */
@@ -121,8 +122,9 @@ class NumberFormatInfo
 	{
 		$this->properties = get_class_methods($this);
 
-		if(!($cultureInfo instanceof CultureInfo))
+		if (!($cultureInfo instanceof CultureInfo)) {
 			throw new Exception('Please provide a CultureInfo instance.');
+		}
 
 		$this->cultureInfo = $cultureInfo;
 
@@ -132,8 +134,7 @@ class NumberFormatInfo
 	public function getInfoByPath($path)
 	{
 		static $basePath = null;
-		if($basePath === null)
-		{
+		if ($basePath === null) {
 			$basePath = 'NumberElements/' . $this->cultureInfo->getDefaultNumberFormat() . '/';
 		}
 
@@ -145,11 +146,11 @@ class NumberFormatInfo
 	 * NumberFormatInfo::DECIMAL, NumberFormatInfo::CURRENCY,
 	 * NumberFormatInfo::PERCENTAGE, NumberFormatInfo::SCIENTIFIC or
 	 * NumberFormatInfo::ACCOUNTING
-	 * @param int pattern type.
+	 * @param mixed $type pattern type
 	 */
 	public function setPattern($type = NumberFormatInfo::DECIMAL)
 	{
-		$info = $this->getInfoByPath('patterns/'.$type);
+		$info = $this->getInfoByPath('patterns/' . $type);
 		$this->pattern = $this->parsePattern($info);
 	}
 
@@ -164,11 +165,10 @@ class NumberFormatInfo
 	 * @param mixed $type
 	 * @return NumberFormatInfo default NumberFormatInfo.
 	 */
-	public static function getInvariantInfo($type=NumberFormatInfo::DECIMAL)
+	public static function getInvariantInfo($type = NumberFormatInfo::DECIMAL)
 	{
 		static $invariant;
-		if($invariant === null)
-		{
+		if ($invariant === null) {
 			$culture = CultureInfo::getInvariantCulture();
 			$invariant = $culture->NumberFormat;
 			$invariant->setPattern($type);
@@ -187,14 +187,13 @@ class NumberFormatInfo
 	 * @see getPercentageInstance();
 	 * @see getScientificInstance();
 	 */
-	public static function getInstance($culture=null, $type=NumberFormatInfo::DECIMAL)
+	public static function getInstance($culture = null, $type = NumberFormatInfo::DECIMAL)
 	{
-		if ($culture instanceof CultureInfo)
-		{
+		if ($culture instanceof CultureInfo) {
 			$formatInfo = $culture->NumberFormat;
 			$formatInfo->setPattern($type);
 			return $formatInfo;
-		} elseif(is_string($culture)) {
+		} elseif (is_string($culture)) {
 			$cultureInfo = new CultureInfo($culture);
 			$formatInfo = $cultureInfo->NumberFormat;
 			$formatInfo->setPattern($type);
@@ -492,11 +491,12 @@ class NumberFormatInfo
 
 	/**
 	 * Gets the string to use as the currency symbol.
+	 * @param mixed $currency
 	 * @return string currency symbol.
 	 */
-	public function getCurrencySymbol($currency='USD')
+	public function getCurrencySymbol($currency = 'USD')
 	{
-		$fmt = new \NumberFormatter( $this->cultureInfo->getName()."@currency=$currency", \NumberFormatter::CURRENCY );
+		$fmt = new \NumberFormatter($this->cultureInfo->getName() . "@currency=$currency", \NumberFormatter::CURRENCY);
 		return $fmt->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
 	}
 }
