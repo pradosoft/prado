@@ -177,25 +177,6 @@ class CultureInfo
 	}
 
 	/**
-	 * Get the default directory for the ICU data.
-	 * The default is the "data" directory for this class.
-	 * @return string directory containing the ICU data.
-	 */
-	protected static function dataDir()
-	{
-		return __DIR__ . '/data/';
-	}
-
-	/**
-	 * Get the filename extension for ICU data. Default is ".dat".
-	 * @return string filename extension for ICU data.
-	 */
-	protected static function fileExt()
-	{
-		return '.dat';
-	}
-
-	/**
 	 * Gets the CultureInfo that for this culture string
 	 * @param mixed $culture
 	 * @return CultureInfo invariant culture info is "en".
@@ -505,7 +486,8 @@ class CultureInfo
 		for($i = 0, $k = count($array); $i<$k; ++$i)
 		{
 			$key = key($array);
-			if (is_array($array[$key])
+			if ($key !== null
+				&& is_array($array[$key])
 				&& count($array[$key]) == 1) {
 				$array[$key] = $array[$key][0];
 			}
@@ -532,7 +514,7 @@ class CultureInfo
 		static $arr;
 		if($arr === null)
 		{
-			$arr = $this->findInfo('Currencies', true, 'Currencies');
+			$arr = $this->findInfo('Currencies', false, 'Currencies');
 			foreach($arr as $k => $v)
 				$arr[$k] = $this->simplify($v);
 		}
@@ -567,7 +549,7 @@ class CultureInfo
 		if($arr === null)
 		{
 			$validPrefixes = array('Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Etc', 'Europe', 'Indian', 'Pacific');
-			$tmp = $this->findInfo('zoneStrings', true, 'zoneStrings');
+			$tmp = $this->findInfo('zoneStrings', false, 'zoneStrings');
 			foreach($tmp as $k => $v)
 			{
 				foreach($validPrefixes as $prefix)

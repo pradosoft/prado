@@ -29,9 +29,9 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
     $specificCultures = CultureInfo::getCultures(CultureInfo::SPECIFIC);
 
     //there should be 246 cultures all together.
-    $this->assertEquals(count($allCultures),246);
-    $this->assertEquals(count($neutralCultures),76);
-    $this->assertEquals(count($specificCultures),170);
+    $this->assertEquals(count($allCultures),722);
+    $this->assertEquals(count($neutralCultures),122);
+    $this->assertEquals(count($specificCultures),600);
   }
 
   function testParentCultures() {
@@ -67,15 +67,9 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
   }
 
   function testTimeZones() {
-    $culture = new CultureInfo('fi');
-    $zone = array(
-		  "America/Los_Angeles",
-		  "Tyynenmeren normaaliaika",
-		  "PST",
-		  "Tyynenmeren kesäaika",
-		  "PDT",
-		  "Los Angeles");
-    $this->assertEquals($culture->TimeZones[1],$zone);
+    $culture = new CultureInfo('it');
+    $zone = "Africa/Abidjan";
+    $this->assertEquals($culture->TimeZones[0], $zone);
   }
 
   function test_missing_english_names_returns_culture_code()
