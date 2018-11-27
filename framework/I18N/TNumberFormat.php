@@ -11,11 +11,7 @@
 
 namespace Prado\I18N;
 
-/**
- * Get the NumberFormat class.
- */
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\I18N\core\NumberFormat;
 use Prado\Prado;
 
 /**
@@ -28,9 +24,9 @@ use Prado\Prado;
  * <com:TNumberFormat Pattern="0.##" value="2.0" />
  * </code>
  *
- * Numbers can be formatted as currency, percentage, decimal or scientific
- * numbers by specifying the Type attribute. The known types are
- * "currency", "percentage", "decimal" and "scientific".
+ * The format used for numbers can be selected by specifying the Type attribute.
+ * The known types are "decimal", "currency", "percentage", "scientific",
+ * "spellout", "ordinal" and "duration"
  *
  * If someone from US want to see sales figures from a store in
  * Germany (say using the EURO currency), formatted using the german
@@ -44,34 +40,17 @@ use Prado\Prado;
  * <com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" />
  * </code>
  *
- * Namespace: System.I18N
- *
- * Properties
- * - <b>Value</b>, number,
- *   <br>Gets or sets the number to format. The tag content is used as Value
- *   if the Value property is not specified.
- * - <b>Type</b>, string,
- *   <br>Gets or sets the formatting type. The valid types are
- *    'decimal', 'currency', 'percentage' and 'scientific'.
- * - <b>Currency</b>, string,
- *   <br>Gets or sets the currency symbol for the currency format.
- *   The default is 'USD' if the Currency property is not specified.
- * - <b>Pattern</b>, string,
- *   <br>Gets or sets the custom number formatting pattern.
- * - <b>DefaultText</b>, string,
- * <br>Gets or sets the default text. If Value is not set, DefaultText will be
- * shown instead of the default currency Value/Pattern.
- *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @package Prado\I18N
  */
 class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
-	 * Default NumberFormat, set to the application culture.
+	 * Cached NumberFormatters set to the application culture.
 	 * @var NumberFormat
 	 */
-	protected static $formatter;
+	protected static $formatters;
 
 	/**
 	 * Get the number formatting pattern.
@@ -159,12 +138,12 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getType()
 	{
-		return $this->getViewState('Type', 'd');
+		return $this->getViewState('Type', \NumberFormatter::DECIMAL);
 	}
 
 	/**
 	 * Set the formatting type for this control.
-	 * @param string $type formatting type, either "decimal", "currency","percentage" or "scientific"
+	 * @param string $type formatting type, either "decimal", "currency", "percentage", "scientific", "spellout", "ordinal" or "duration"
 	 * @throws TPropertyTypeInvalidException
 	 */
 	public function setType($type)
@@ -173,13 +152,19 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		switch ($type) {
 			case 'decimal':
-				$this->setViewState('Type', 'd', ''); break;
+				$this->setViewState('Type', \NumberFormatter::DECIMAL); break;
 			case 'currency':
-				$this->setViewState('Type', 'c', ''); break;
+				$this->setViewState('Type', \NumberFormatter::CURRENCY); break;
 			case 'percentage':
-				$this->setViewState('Type', 'p', ''); break;
+				$this->setViewState('Type', \NumberFormatter::PERCENT); break;
 			case 'scientific':
-				$this->setViewState('Type', 'e', ''); break;
+				$this->setViewState('Type', \NumberFormatter::SCIENTIFIC); break;
+			case 'spellout':
+				$this->setViewState('Type', \NumberFormatter::SPELLOUT); break;
+			case 'ordinal':
+				$this->setViewState('Type', \NumberFormatter::ORDINAL); break;
+			case 'duration':
+				$this->setViewState('Type', \NumberFormatter::DURATION); break;
 			default:
 				throw new TInvalidDataValueException('numberformat_type_invalid', $type);
 		}
@@ -207,6 +192,24 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * Formats the localized number, be it currency or decimal, or percentage.
 	 * If the culture is not specified, the default application
 	 * culture will be used.
+	 * @param string $culture
+	 * @param string $type
+	 * @return NumberFormatter
+	 */
+	protected function getFormatter($culture, $type)
+	{
+		if(!isset(self::$formatters[$culture]))
+			self::$formatters[$culture] = [];
+		if(!isset(self::$formatters[$culture][$type]))
+			self::$formatters[$culture][$type] = new \NumberFormatter($culture, $type);
+
+		return self::$formatters[$culture][$type];
+	}
+
+	/**
+	 * Formats the localized number, be it currency or decimal, or percentage.
+	 * If the culture is not specified, the default application
+	 * culture will be used.
 	 * @return string formatted number
 	 */
 	protected function getFormattedValue()
@@ -217,38 +220,46 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 			return $this->getDefaultText();
 		}
 
-		$app = $this->getApplication()->getGlobalization();
-		//initialized the default class wide formatter
-		if (self::$formatter === null) {
-			self::$formatter = new NumberFormat($app->getCulture());
-		}
-
-		$pattern = strlen($this->getPattern()) > 0
-						? $this->getPattern() : $this->getType();
-
 		$culture = $this->getCulture();
-		//return the specific cultural formatted number
-		if (!empty($culture) && $app->getCulture() != $culture) {
-			$formatter = new NumberFormat($culture);
-			return $formatter->format(
-				$this->getValue(),
-				$pattern,
-									  $this->getCurrency(),
-									  $this->getCharset()
-			);
+		$type = $this->getType();
+		$pattern = $this->getPattern();
+
+		if(empty($pattern))
+		{
+			$formatter = $this->getFormatter($culture, $type);
+		} else {
+			$formatter = new \NumberFormatter($culture, \NumberFormatter::PATTERN_DECIMAL);
+			$formatter->setPattern($pattern);
 		}
 
-		//return the application wide culture formatted number.
-		return self::$formatter->format(
-			$this->getValue(),
-			$pattern,
-										$this->getCurrency(),
-										$this->getCharset()
-		);
+		if($type === \NumberFormatter::CURRENCY)
+		{
+			$result = $formatter->formatCurrency($this->getValue(), $this->getCurrency());
+		} else {
+			$result = $formatter->format($this->getValue());
+		}
+
+		return $this->I18N_toEncoding($result, $this->getCharset());
 	}
 
 	public function render($writer)
 	{
 		$writer->write($this->getFormattedValue());
+	}
+
+	/**
+	 * Convert UTF-8 strings to a different encoding. NB. The result
+	 * may not have been encoded if iconv fails.
+	 * @param string $string the UTF-8 string for conversion
+	 * @param string $to detination encoding
+	 * @return string encoded string.
+	 */
+	protected function I18N_toEncoding($string, $to)
+	{
+		if ($to != 'UTF-8') {
+			$s = iconv('UTF-8', $to, $string);
+			return $s !== false ? $s : $string;
+		}
+		return $string;
 	}
 }

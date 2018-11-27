@@ -32,7 +32,7 @@ use Exception;
  * The CultureInfo class holds culture-specific information, such as the
  * associated language, sublanguage, country/region, calendar, and cultural
  * conventions. This class also provides access to culture-specific
- * instances of DateTimeFormatInfo and NumberFormatInfo. These objects
+ * instances of DateTimeFormatInfo. These objects
  * contain the information required for culture-specific operations,
  * such as formatting dates, numbers and currency.
  *
@@ -88,12 +88,6 @@ class CultureInfo
 	 * @var DateTimeFormatInfo
 	 */
 	private $dateTimeFormat;
-
-	/**
-	 * The current number format info.
-	 * @var NumberFormatInfo
-	 */
-	private $numberFormat;
 
 	/**
 	 * A list of properties that are accessable/writable.
@@ -469,38 +463,6 @@ class CultureInfo
 	public function getIsNeutralCulture()
 	{
 		return strlen($this->culture) == 2;
-	}
-
-	/**
-	 * Gets the NumberFormatInfo that defines the culturally appropriate
-	 * format of displaying numbers, currency, and percentage.
-	 * @return NumberFormatInfo the number format info for current culture.
-	 */
-	public function getNumberFormat()
-	{
-		if($this->numberFormat === null)
-		{
-			$this->setNumberFormat(new NumberFormatInfo($this));
-		}
-		return $this->numberFormat;
-	}
-
-	/**
-	 * Set the number format information.
-	 * @param NumberFormatInfo $numberFormat the new number format info.
-	 */
-	public function setNumberFormat($numberFormat)
-	{
-		$this->numberFormat = $numberFormat;
-	}
-
-	/**
-	 * Gets the default number format used by the culture, e.g. "latn".
-	 * @return string the default number format.
-	 */
-	public function getDefaultNumberFormat()
-	{
-		return $this->findInfo('NumberElements/default');
 	}
 
 	/**

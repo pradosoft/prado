@@ -196,8 +196,6 @@ return [
 'MessageSource_gettext' => 'Prado\I18N\core\MessageSource_gettext',
 'MessageSource_PHP' => 'Prado\I18N\core\MessageSource_PHP',
 'MessageSource_XLIFF' => 'Prado\I18N\core\MessageSource_XLIFF',
-'NumberFormat' => 'Prado\I18N\core\NumberFormat',
-'NumberFormatInfo' => 'Prado\I18N\core\NumberFormatInfo',
 'TCache_Lite' => 'Prado\I18N\core\TCache_Lite',
 'TMessageSourceIOException' => 'Prado\I18N\core\TMessageSourceIOException',
 'TChoiceFormat' => 'Prado\I18N\TChoiceFormat',

@@ -24,22 +24,22 @@ class DateFormatTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals($wants, $dateFormatter->format($time, 'D'));
     //var_dump(date('c',strtotime($dateFormatter->format($time,'D'))));
 
-    //for Full date and time  "MMMM d, yyyy h:mm a"
-    $wants = 'September 1, 2004 9:09 AM';
+    //for Full date and time  "MMMM d, yyyy, h:mm a"
+    $wants = 'September 1, 2004, 9:09 AM';
     $this->assertEquals($wants, $dateFormatter->format($time, 'f'));
     //var_dump(date('c',strtotime($dateFormatter->format($time,'f'))));
 
-    //for FullDateTimePattern  "MMMM d, yyyy h:mm:ss a z"
-    $wants = 'September 1, 2004 9:09:09 AM '.$zone;
+    //for FullDateTimePattern  "MMMM d, yyyy, h:mm:ss a z"
+    $wants = 'September 1, 2004, 9:09:09 AM '.$zone;
     $this->assertEquals($wants, $dateFormatter->format($time, 'F'));
 
-    //for General "M/d/yy h:mm a"
-    $wants = '9/1/04 9:09 AM';
+    //for General "M/d/yy, h:mm a"
+    $wants = '9/1/04, 9:09 AM';
     $this->assertEquals($wants, $dateFormatter->format($time, 'g'));
     //var_dump(date('c',strtotime($dateFormatter->format($time,'g'))));
 
-    //for General "M/d/yy h:mm:ss a z"
-    $wants = '9/1/04 9:09:09 AM '.$zone;
+    //for General "M/d/yy, h:mm:ss a z"
+    $wants = '9/1/04, 9:09:09 AM '.$zone;
     $this->assertEquals($wants, $dateFormatter->format($time, 'G'));
 
     //for MonthDayPattern  "MMMM dd" (invariant)
