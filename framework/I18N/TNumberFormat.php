@@ -13,6 +13,7 @@ namespace Prado\I18N;
 
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
+use Prado\Util\TUtf8Converter;
 
 /**
  * To format numbers in locale sensitive manner use
@@ -235,27 +236,11 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 			$result = $formatter->format($value);
 		}
 
-		return $this->I18N_toEncoding($result, $this->getCharset());
+		return TUtf8Converter::fromUTF8($result, $this->getCharset());
 	}
 
 	public function render($writer)
 	{
 		$writer->write($this->getFormattedValue());
-	}
-
-	/**
-	 * Convert UTF-8 strings to a different encoding. NB. The result
-	 * may not have been encoded if iconv fails.
-	 * @param string $string the UTF-8 string for conversion
-	 * @param string $to detination encoding
-	 * @return string encoded string.
-	 */
-	protected function I18N_toEncoding($string, $to)
-	{
-		if ($to != 'UTF-8') {
-			$s = iconv('UTF-8', $to, $string);
-			return $s !== false ? $s : $string;
-		}
-		return $string;
 	}
 }
