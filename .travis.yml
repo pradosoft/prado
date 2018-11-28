@@ -7,8 +7,8 @@ services:
 
 php:
   - 5.6
-  - 7.0
   - 7.1
+  - 7.2
 
 before_script:
   - composer self-update
@@ -16,7 +16,7 @@ before_script:
   - export PATH=./bin/:$PATH
   - mysql -u root < ./tests/initdb_mysql.sql
   - createdb prado_unitest
-  - psql -a -w prado_unitest -f ./tests/initdb_pgsql.sql 
+  - psql -a -w prado_unitest -f ./tests/initdb_pgsql.sql
 
 script:
   - composer unittest
