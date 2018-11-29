@@ -31,10 +31,7 @@ use Exception;
  *
  * The CultureInfo class holds culture-specific information, such as the
  * associated language, sublanguage, country/region, calendar, and cultural
- * conventions. This class also provides access to culture-specific
- * instances. These objects
- * contain the information required for culture-specific operations,
- * such as formatting dates, numbers and currency.
+ * conventions.
  *
  * The culture names follow the format "<languagecode>_<country/regioncode>",
  * where <languagecode> is a lowercase two-letter code derived from ISO 639
@@ -260,9 +257,10 @@ class CultureInfo
 	 * E.g. The currency data for a variant, say "en_AU" contains one
 	 * entry, the currency for AUD, the other currency data are stored
 	 * in the "en" data file. Thus to retrieve all the data regarding
-	 * currency for "en_AU", you need to use findInfo("Currencies,true);.
+	 * currency for "en_AU", you need to use findInfo("Currencies", true);.
 	 * @param string $path the data you want to find.
 	 * @param bool $merge merge the data from its parents.
+	 * @param string $key bundle name.
 	 * @return mixed the specific ICU data.
 	 */
 	public function findInfo($path='/', $merge=false, $key = null)
@@ -318,10 +316,12 @@ class CultureInfo
 		$resource = $info;
 		for($i = 0, $k = count($index); $i < $k; ++$i)
 		{
-
-			$resource = $resource->get($index[$i], false);
 			if($resource === null)
 				return null;
+			elseif(is_string($resource))
+				return [$resource];
+			elseif(is_object($resource))
+				$resource = $resource->get($index[$i], false);
 		}
 
 		return $this->simplify($resource);
