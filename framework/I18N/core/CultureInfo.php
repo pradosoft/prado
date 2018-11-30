@@ -51,22 +51,16 @@ use Exception;
 class CultureInfo
 {
 	/**
-	 * The ICU data array.
+	 * The ICU data array, shared by all instances of this class.
 	 * @var array
 	 */
-	private $data = [];
+	protected static $data = [];
 
 	/**
 	 * The current culture.
 	 * @var string
 	 */
-	private $culture;
-
-	/**
-	 * A list of CLDR resource bundles loaded
-	 * @var array
-	 */
-	private $resourceBundles = array();
+	protected $culture;
 
 	/**
 	 * A list of resource bundles keys
@@ -116,7 +110,6 @@ class CultureInfo
 	{
 		return $this->getName();
 	}
-
 
 	/**
 	 * Allow functions that begins with 'set' to be called directly
@@ -168,9 +161,6 @@ class CultureInfo
 		}
 
 		$this->setCulture($culture);
-
-		$this->loadCultureData('root');
-		$this->loadCultureData($culture);
 	}
 
 	/**
@@ -180,11 +170,10 @@ class CultureInfo
 	 */
 	public static function getInstance($culture)
 	{
-		static $instances = [];
-		if (!isset($instances[$culture])) {
-			$instances[$culture] = new CultureInfo($culture);
+		if (!isset(self::$instances[$culture])) {
+			self::$instances[$culture] = new CultureInfo($culture);
 		}
-		return $instances[$culture];
+		return self::$instances[$culture];
 	}
 
 	/**
@@ -218,32 +207,17 @@ class CultureInfo
 	 * Load the ICU culture data for the specific culture identifier.
 	 * @param string $culture the culture identifier.
 	 */
-	protected function loadCultureData($cultureName)
+	protected function loadCultureData($key)
 	{
-		$culture_parts = explode('_', $cultureName);
-		$current_part = $culture_parts[0];
-
-		$culturesToLoad = [$current_part];
-		for($i = 1, $k = count($culture_parts); $i < $k; ++$i)
+		foreach(self::$bundleNames as $bundleKey => $bundleName)
 		{
-			$current_part .= '_'.$culture_parts[$i];
-			$culturesToLoad[] = $current_part;
-		}
-
-		foreach(self::$bundleNames as $key => $bundleName)
-		{
-			if(!array_key_exists($key, $this->data))
-				$this->data[$key] = [];
-		}
-		foreach($culturesToLoad as $culture)
-		{
-			if(in_array($culture, $this->resourceBundles))
-				continue;
-
-			array_unshift($this->resourceBundles, $culture);
-			foreach(self::$bundleNames as $key => $bundleName)
+			if($key == $bundleKey)
 			{
-				$this->data[$key][$culture] = \ResourceBundle::create($culture, $bundleName, false);
+				if(!array_key_exists($this->culture, self::$data))
+					self::$data[$this->culture] = [];
+
+				self::$data[$this->culture][$bundleKey] = \ResourceBundle::create($this->culture, $bundleName, true);
+				break;
 			}
 		}
 	}
@@ -253,20 +227,12 @@ class CultureInfo
 	 * The path to the specific ICU data is separated with a slash "/".
 	 * E.g. To find the default calendar used by the culture, the path
 	 * "calendar/default" will return the corresponding default calendar.
-	 * Use merge=true to return the ICU including the parent culture.
-	 * E.g. The currency data for a variant, say "en_AU" contains one
-	 * entry, the currency for AUD, the other currency data are stored
-	 * in the "en" data file. Thus to retrieve all the data regarding
-	 * currency for "en_AU", you need to use findInfo("Currencies", true);.
 	 * @param string $path the data you want to find.
-	 * @param bool $merge merge the data from its parents.
 	 * @param string $key bundle name.
 	 * @return mixed the specific ICU data.
 	 */
-	public function findInfo($path='/', $merge=false, $key = null)
+	public function findInfo($path='/', $key = null)
 	{
-		$result = [];
-
 		if($key === null)
 		{
 			// try to guess the bundle from the path. Always defaults to "Core".
@@ -281,24 +247,12 @@ class CultureInfo
 			}
 		}
 
-		if(!array_key_exists($key, $this->data))
-			return $result;
-		foreach($this->resourceBundles as $culture)
-		{
-			$res = $this->data[$key][$culture];
-			if($res === null)
-				continue;
-			$info = $this->searchResources($res, $path);
-			if($info)
-			{
-				if($merge)
-					$result = array_merge($result, $info);
-				else
-					return $info;
-			}
-		}
+		if(!array_key_exists($this->culture, self::$data))
+			$this->loadCultureData($key);
+		if(!array_key_exists($this->culture, self::$data) || !array_key_exists($key, self::$data[$this->culture]))
+			return [];
 
-		return $result;
+		return $this->searchResources(self::$data[$this->culture][$key], $path);
 	}
 
 	/**
@@ -309,19 +263,13 @@ class CultureInfo
 	 * @param string $path slash "/" separated array path.
 	 * @return mixed the value array using the path
 	 */
-	private function searchResources($info, $path='/')
+	private function searchResources($resource, $path='/')
 	{
 		$index = explode('/', $path);
-
-		$resource = $info;
 		for($i = 0, $k = count($index); $i < $k; ++$i)
 		{
-			if($resource === null)
-				return null;
-			elseif(is_string($resource))
-				return [$resource];
-			elseif(is_object($resource))
-				$resource = $resource->get($index[$i], false);
+			if(is_object($resource))
+				$resource = $resource->get($index[$i]);
 		}
 
 		return $this->simplify($resource);
@@ -416,21 +364,6 @@ class CultureInfo
 	}
 
 	/**
-	 * Gets the CultureInfo that represents the parent culture of the
-	 * current CultureInfo
-	 * @return CultureInfo parent culture information.
-	 */
-	public function getParent()
-	{
-		if (strlen($this->culture) == 2) {
-			return $this->getInvariantCulture();
-		}
-
-		$lang = substr($this->culture, 0, 2);
-		return new CultureInfo($lang);
-	}
-
-	/**
 	 * Gets the list of supported cultures filtered by the specified
 	 * culture type. This is an EXPENSIVE function, it needs to traverse
 	 * a list of ICU files in the data directory.
@@ -476,7 +409,7 @@ class CultureInfo
 		if(is_scalar($obj)) {
 			return $obj;
 		} elseif($obj instanceof \ResourceBundle) {
-			$array = array();
+			$array = [];
 			foreach($obj as $k => $v)
 				$array[$k] = $v;
 		} else {
@@ -502,7 +435,7 @@ class CultureInfo
 	 */
 	public function getCountries()
 	{
-		return $this->simplify($this->findInfo('Countries', true, 'Countries'));
+		return $this->simplify($this->findInfo('Countries', 'Countries'));
 	}
 
 	/**
@@ -514,7 +447,7 @@ class CultureInfo
 		static $arr;
 		if($arr === null)
 		{
-			$arr = $this->findInfo('Currencies', false, 'Currencies');
+			$arr = $this->findInfo('Currencies', 'Currencies');
 			foreach($arr as $k => $v)
 				$arr[$k] = $this->simplify($v);
 		}
@@ -527,7 +460,7 @@ class CultureInfo
 	 */
 	public function getLanguages()
 	{
-		return $this->simplify($this->findInfo('Languages', true, 'Languages'));
+		return $this->simplify($this->findInfo('Languages', 'Languages'));
 	}
 
 	/**
@@ -536,7 +469,7 @@ class CultureInfo
 	 */
 	public function getScripts()
 	{
-		return $this->simplify($this->findInfo('Scripts', true, 'Languages'));
+		return $this->simplify($this->findInfo('Scripts', 'Languages'));
 	}
 
 	/**
@@ -549,7 +482,7 @@ class CultureInfo
 		if($arr === null)
 		{
 			$validPrefixes = array('Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Etc', 'Europe', 'Indian', 'Pacific');
-			$tmp = $this->findInfo('zoneStrings', false, 'zoneStrings');
+			$tmp = $this->findInfo('zoneStrings', 'zoneStrings');
 			foreach($tmp as $k => $v)
 			{
 				foreach($validPrefixes as $prefix)
