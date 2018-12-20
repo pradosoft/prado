@@ -11,15 +11,8 @@
 
 namespace Prado\I18N;
 
-/**
- * Get the DateFormat class.
- */
-use Prado\I18N\core\DateFormat;
 use Prado\Prado;
-
-/**
- * Get the parent control class.
- */
+use Prado\Util\TUtf8Converter;
 
 /**
  * To format dates and/or time according to the current locale use
@@ -28,6 +21,15 @@ use Prado\Prado;
  *</code>
  * The date will be formatted according to the current locale (or culture)
  * using the format specified by 'Pattern' attribute.
+ * The 'Pattern' attribute can also contain two of the predefined presets,
+ * the first one for the date part and the second for the time part:
+ * 'full', 'long', 'medium', 'short', 'none'.
+ * If only one preset is present, it will be used for both the date and the
+ * time parts.
+ * <code>
+ * <com:TDateFormat Pattern="medium long" Value="01/01/2001 15:30:45" />
+ * <com:TDateFormat Pattern="full" Value="01/01/2001 15:30:45" />
+ *</code>
  *
  * To format date and/or time for a locale (e.g. de_DE) include a Culture
  * attribute, for example:
@@ -41,43 +43,37 @@ use Prado\Prado;
  * then the current date will be used. E.g.: <code><com:TDateFormat /></code>
  * will result in the current date, formatted with default localized pattern.
  *
- * Namespace: System.I18N
- *
- * Properties
- * - <b>Value</b>, date,
- *   <br>Gets or sets the date to format. The tag content is used as Value
- *   if the Value property is not specified.
- * - <b>Pattern</b>, string,
- *   <br>Gets or sets the formatting pattern. The predefined patterns are
- *   'fulldate',           'longdate', 'mediumdate', 'shortdate', 'fulltime',
- * 'longtime', 'mediumtime', and 'shorttime'. Custom patterns can   specified
- * when the Pattern property does not match the predefined   patterns.
- * - <b>DefaultText</b>, string,
- * <br>Gets or sets the default text. If Value is not set, DefaultText will be
- * shown instead of todays date and time.
- *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @package Prado\I18N
  */
 class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
-	 * Default DateFormat, set to the application culture.
-	 * @var DateFormat
+	 * Cached IntlDateFormatter set to the application culture.
+	 * @var IntlDateFormatter
 	 */
-	protected static $formatter;
+	protected static $formatters;
 
 	/**
 	 * A set of pattern presets and their respective formatting shorthand.
 	 * @var array
 	 */
 	private static $_patternPresets = [
-			'fulldate' => 'P', 'full' => 'P',
-			'longdate' => 'D', 'long' => 'd',
-			'mediumdate' => 'p', 'medium' => 'p',
-			'shortdate' => 'd', 'short' => 'd',
-			'fulltime' => 'Q', 'longtime' => 'T',
-			'mediumtime' => 'q', 'shorttime' => 't'];
+		'fulldate' => \IntlDateFormatter::FULL,
+		'full' => \IntlDateFormatter::FULL,
+		'fulltime' => \IntlDateFormatter::FULL,
+		'longdate' => \IntlDateFormatter::LONG,
+		'long' => \IntlDateFormatter::LONG,
+		'longtime' => \IntlDateFormatter::LONG,
+		'mediumdate' => \IntlDateFormatter::MEDIUM,
+		'medium' => \IntlDateFormatter::MEDIUM,
+		'mediumtime' => \IntlDateFormatter::MEDIUM,
+		'shortdate' => \IntlDateFormatter::SHORT,
+		'short' => \IntlDateFormatter::SHORT,
+		'shorttime' => \IntlDateFormatter::SHORT,
+		'none' => \IntlDateFormatter::NONE,
+	];
 
 	/**
 	 * Sets the date time formatting pattern.
@@ -85,6 +81,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setPattern($value)
 	{
+
 		$this->setViewState('Pattern', $value, '');
 	}
 
@@ -94,36 +91,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function getPattern()
 	{
-		$string = $this->getViewState('Pattern', '');
-
-		$pattern = null;
-
-		//try the subpattern of "date time" presets
-		$subpatterns = explode(' ', $string, 2);
-		$datetime = [];
-		if (count($subpatterns) == 2) {
-			$datetime[] = $this->getPreset($subpatterns[0]);
-			$datetime[] = $this->getPreset($subpatterns[1]);
-		}
-
-		//we have a good subpattern
-		if (count($datetime) == 2
-			&& strlen($datetime[0]) == 1
-			&& strlen($datetime[1]) == 1) {
-			$pattern = $datetime;
-		} else { //no subpattern, try the presets
-			$pattern = $this->getPreset($string);
-		}
-
-		//no presets found, use the string as the pattern
-		//and let the DateFormat handle it.
-		if ($pattern === null) {
-			$pattern = $string;
-		}
-		if (!is_array($pattern) && strlen($pattern) == 0) {
-			$pattern = null;
-		}
-		return $pattern;
+		return $this->getViewState('Pattern', '');
 	}
 
 	/**
@@ -139,6 +107,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 				return $preset;
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -211,6 +180,27 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	}
 
 	/**
+	 * Formats the localized number, be it currency or decimal, or percentage.
+	 * If the culture is not specified, the default application
+	 * culture will be used.
+	 * @param string $culture
+	 * @param mixed $datetype
+	 * @param mixed $timetype
+	 * @return NumberFormatter
+	 */
+	protected function getFormatter($culture, $datetype, $timetype)
+	{
+		if(!isset(self::$formatters[$culture]))
+			self::$formatters[$culture] = [];
+		if(!isset(self::$formatters[$culture][$datetype]))
+			self::$formatters[$culture][$datetype] = [];
+		if(!isset(self::$formatters[$culture][$datetype][$timetype]))
+			self::$formatters[$culture][$datetype][$timetype] = new \IntlDateFormatter($culture, $datetype, $timetype);
+
+		return self::$formatters[$culture][$datetype][$timetype];
+	}
+
+	/**
 	 * Renders the localized version of the date-time value.
 	 * If the culture is not specified, the default application
 	 * culture will be used.
@@ -224,31 +214,61 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 			return $this->getDefaultText();
 		}
 
-		$app = $this->getApplication()->getGlobalization();
-
-		//initialized the default class wide formatter
-		if (self::$formatter === null) {
-			self::$formatter = new DateFormat($app->getCulture());
+		// get a date object from textual value
+		if (is_numeric($value)) { //assumes unix epoch
+			$value = (float) $value;
+		} elseif (is_string($value)) {
+			$value = @strtotime($value);
 		}
+
+		$date = new \DateTime;
+		$date->setTimestamp($value);
 
 		$culture = $this->getCulture();
+		$pattern = $this->getPattern();
+		$datetype = \IntlDateFormatter::LONG;
+		$timetype = \IntlDateFormatter::LONG;
 
-		//return the specific cultural formatted date time
-		if (strlen($culture) && $app->getCulture() !== $culture) {
-			$formatter = new DateFormat($culture);
-			return $formatter->format(
-				$value,
-									  $this->getPattern(),
-									  $this->getCharset()
-			);
+		// try the "date time" pattern format
+		if(!empty($pattern))
+		{
+			$subs = explode(' ', $pattern, 2);
+			if (count($subs) == 2) {
+				$sub0 = $this->getPreset($subs[0]);
+				$sub1 = $this->getPreset($subs[1]);
+
+				if($sub0 !== null && $sub1 !== null)
+				{
+					$datetype = $sub0;
+					$timetype = $sub1;
+					$pattern = null;
+				}
+			}
 		}
-		//return the application wide culture formatted date time.
-		$result = self::$formatter->format(
-			$value,
-										$this->getPattern(),
-										$this->getCharset()
-		);
-		return $result;
+
+		// try the "date" pattern format
+		if(!empty($pattern))
+		{
+			$sub = $this->getPreset($pattern);
+			if($sub !== null)
+			{
+				$datetype = $sub;
+				$timetype = $sub;
+				$pattern = null;
+			}
+		}
+
+		if(empty($pattern))
+		{
+			$formatter = $this->getFormatter($culture, $datetype, $timetype);
+		} else {
+			$formatter = new \IntlDateFormatter($culture, $datetype, $timetype);
+			$formatter->setPattern($pattern);
+		}
+
+		$result = $formatter->format($date);
+
+		return TUtf8Converter::fromUTF8($result, $this->getCharset());
 	}
 
 	public function render($writer)

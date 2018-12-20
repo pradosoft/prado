@@ -18,10 +18,7 @@
 
 namespace Prado\I18N\core;
 
-/**
- * Get the encoding utilities
- */
-require_once(__DIR__ . '/util.php');
+use Prado\Util\TUtf8Converter;
 
 /**
  * MessageFormat class.
@@ -160,10 +157,10 @@ class MessageFormat
 
 		//force args as UTF-8
 		foreach ($args as $k => $v) {
-			$args[$k] = I18N_toUTF8($v, $charset);
+			$args[$k] = TUtf8Converter::toUTF8($v, $charset);
 		}
-		$s = $this->formatString(I18N_toUTF8($string, $charset), $args, $catalogue);
-		return I18N_toEncoding($s, $charset);
+		$s = $this->formatString(TUtf8Converter::toUTF8($string, $charset), $args, $catalogue);
+		return TUtf8Converter::fromUTF8($s, $charset);
 	}
 
 	/**

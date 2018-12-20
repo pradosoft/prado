@@ -576,10 +576,10 @@ class TDatePicker extends TTextBox
 			return [];
 		}
 
-		$date = $this->getLocalizedCalendarInfo();
-		$options['MonthNames'] = $date->getMonthNames();
-		$options['AbbreviatedMonthNames'] = $date->getAbbreviatedMonthNames();
-		$options['ShortWeekDayNames'] = $date->getAbbreviatedDayNames();
+		$info = $this->getLocalizedCalendarInfo();
+		$options['MonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/wide');
+		$options['AbbreviatedMonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/abbreviated');
+		$options['ShortWeekDayNames'] = $info->findInfo('calendar/gregorian/dayNames/format/short');
 
 		return $options;
 	}
@@ -602,7 +602,7 @@ class TDatePicker extends TTextBox
 		//expensive operations
 		$culture = $this->getCurrentCulture();
 		$info = new CultureInfo($culture);
-		return $info->getDateTimeFormat();
+		return $info;
 	}
 
 	/**
@@ -745,7 +745,7 @@ class TDatePicker extends TTextBox
 		$writer->renderBeginTag('select');
 		$this->renderDropDownListOptions(
 			$writer,
-					$this->getLocalizedMonthNames($info),
+			$this->getLocalizedMonthNames($info),
 			$selected - 1
 		);
 		$writer->renderEndTag();
@@ -762,7 +762,7 @@ class TDatePicker extends TTextBox
 	{
 		$formatter = new TSimpleDateFormatter($this->getDateFormat());
 		switch ($formatter->getMonthPattern()) {
-			case 'MMM': return $info->getAbbreviatedMonthNames();
+			case 'MMM': return $info->findInfo('calendar/gregorian/monthNames/format/abbreviated');
 			case 'MM':
 				$array = [];
 				for ($i = 1; $i <= 12; $i++) {
@@ -775,7 +775,8 @@ class TDatePicker extends TTextBox
 					$array[$i - 1] = $i;
 				}
 				return $array;
-			default:	return $info->getMonthNames();
+			default:
+				return $info->findInfo('calendar/gregorian/monthNames/format/wide');
 		}
 	}
 

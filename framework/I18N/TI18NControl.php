@@ -17,7 +17,6 @@ use Prado\Web\UI\TControl;
  * TI18NControl class.
  *
  * Base class for I18N components, providing Culture and Charset properties.
- * Namespace: System.I18N
  *
  * Properties
  * - <b>Culture</b>, string,
@@ -77,7 +76,17 @@ class TI18NControl extends TControl
 	 */
 	public function getCulture()
 	{
-		return $this->getViewState('Culture', '');
+		$app = $this->getApplication()->getGlobalization(false);
+
+		//instance charset
+		$culture = $this->getViewState('Culture', '');
+
+		//fall back to globalization charset
+		if (empty($culture)) {
+			$culture = ($app === null) ? '' : $app->getCulture();
+		}
+
+		return $culture;
 	}
 
 	/**
