@@ -20,5 +20,4 @@ vendor/*
 /nbproject
 
 sauce_connect.log
-*.php
 tests/unit/Data/SqlMap/sqlite/tests.db
