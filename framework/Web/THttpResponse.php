@@ -600,7 +600,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function clear()
 	{
-		if ($this->_bufferOutput) {
+		if ($this->_bufferOutput && ob_get_length() > 0) {
 			ob_clean();
 		}
 		Prado::trace("Clearing output", 'Prado\Web\THttpResponse');
