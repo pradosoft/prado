@@ -416,15 +416,18 @@ class CultureInfo
 			$array = $obj;
 		}
 
-		for($i = 0, $k = count($array); $i<$k; ++$i)
+		if(is_array($array))
 		{
-			$key = key($array);
-			if ($key !== null
-				&& is_array($array[$key])
-				&& count($array[$key]) == 1) {
-				$array[$key] = $array[$key][0];
+			for($i = 0, $k = count($array); $i<$k; ++$i)
+			{
+				$key = key($array);
+				if ($key !== null
+					&& is_array($array[$key])
+					&& count($array[$key]) == 1) {
+					$array[$key] = $array[$key][0];
+				}
+				next($array);
 			}
-			next($array);
 		}
 		return $array;
 	}
