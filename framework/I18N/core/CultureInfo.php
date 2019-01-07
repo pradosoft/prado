@@ -325,7 +325,7 @@ class CultureInfo
 		$culture = $this->getInvariantCulture();
 
 		$language = $culture->findInfo("Languages/{$lang}");
-		if (count($language) == 0) {
+		if ($language === null) {
 			return $this->culture;
 		}
 
