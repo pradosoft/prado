@@ -33,17 +33,6 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
     $this->assertGreaterThanOrEqual(500, count($specificCultures));
   }
 
-  function testParentCultures() {
-    $zh_CN = new CultureInfo('zh_CN');
-    $parent = $zh_CN->Parent;
-    $grandparent = $parent->Parent;
-
-    $this->assertEquals($zh_CN->Name, 'zh_CN');
-    $this->assertEquals($parent->Name, 'zh');
-    $this->assertEquals($grandparent->Name, 'en');
-    $this->assertEquals($grandparent->Parent->Name, 'en');
-  }
-
   function testCountryNames() {
     $culture = new CultureInfo('fr_FR');
     $this->assertEquals($culture->Countries['AE'], 'Émirats arabes unis');
@@ -56,7 +45,7 @@ class CultureInfoTest extends PHPUnit_Framework_TestCase {
   }
 
   function testLanguages() {
-    $culture = new CultureInfo('fr_BE');
+    $culture = new CultureInfo('fr');
     $this->assertEquals($culture->Languages['fr'], 'français');
   }
 
