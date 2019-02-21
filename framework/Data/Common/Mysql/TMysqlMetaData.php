@@ -43,6 +43,14 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
+	 * @return string TDbTableColumn class name.
+	 */
+	protected function getTableColumnClass()
+	{
+		return '\Prado\Data\Common\Mysql\TMysqlTableColumn';
+	}
+
+	/**
 	 * Quotes a table name for use in a query.
 	 * @param string $name $name table name
 	 * @return string the properly quoted table name
@@ -170,7 +178,8 @@ class TMysqlMetaData extends TDbMetaData
 			}
 		}
 
-		$tableInfo->Columns[$columnId] = new TMysqlTableColumn($info);
+		$class = $this->getTableColumnClass();
+		$tableInfo->Columns[$columnId] = new $class($info);
 	}
 
 	/**
