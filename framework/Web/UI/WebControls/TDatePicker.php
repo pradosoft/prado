@@ -579,7 +579,7 @@ class TDatePicker extends TTextBox
 		$info = $this->getLocalizedCalendarInfo();
 		$options['MonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/wide');
 		$options['AbbreviatedMonthNames'] = $info->findInfo('calendar/gregorian/monthNames/format/abbreviated');
-		$options['ShortWeekDayNames'] = $info->findInfo('calendar/gregorian/dayNames/format/short');
+		$options['ShortWeekDayNames'] = $info->findInfo('calendar/gregorian/dayNames/format/abbreviated');
 
 		return $options;
 	}
