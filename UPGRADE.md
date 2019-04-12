@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.0.1
+# Upgrading Instructions for PRADO Framework v4.0.2
 
 ### !!!IMPORTANT!!!
 
@@ -9,7 +9,7 @@ for both A and B.
 
 Upgrading from v4.0.1
 ---------------------
-- List controls (eg. TDropDownList) now renders empty PromptValues. Before, they would use PromptText in order to fill PromptValue when empty or not specified.
+- List controls (eg. TDropDownList) can now render empty an PromptValue. Previously, they would use PromptText in order to fill PromptValue when it was empty or not specified.
 - A few internal classes from the Prado\I18N\core namespace have been removed: DateFormat, DateTimeFormatInfo, HTTPNegotiator, NumberFormat, NumberFormatInfo; The related components TDateFormat and TNumberFormat are still available, but they are based on php's intl extension.
 
 Upgrading from v4.0.0

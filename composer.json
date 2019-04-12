@@ -69,7 +69,7 @@
 		"pradosoft/prado-apigen-theme" : "*"
 	},
 	"provide" : {
-		"pradosoft/prado" : "4.0.1"
+		"pradosoft/prado" : "4.0.2"
 	},
 	"suggest" : {
 		"ext-apc" : "Enables the use of TAPCCache as a cache handler",

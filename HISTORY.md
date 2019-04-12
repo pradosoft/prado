@@ -1,4 +1,4 @@
-## Version 4.x - in development
+## Version 4.0.2 - Apr 12, 2019
 
 BUG: Issue #669 - Wrong Gettext class filename (gani)
 BUG: Issue #671 - THtmlArea4 in TActiveRepeater (ctrlaltca)
