@@ -5,8 +5,11 @@ BUG: Issue #671 - THtmlArea4 in TActiveRepeater (ctrlaltca)
 BUG: Issue #674 - Fix TValidationSummary when no validator has an ErrorMessage set and js is disabled (ctrlaltca)
 BUG: Issue #675 - TDatePicker position problems with jQuery 3.3 (ctrlaltca)
 BUG: Issue #683 - TRequiredFieldValidator doesn't work with TActiveListBox (gani, ctrlaltca)
+BUG: Issue #533 - Mitigate CVE-2011-4718 by regenerating the session id when TAuthManager swiches user (david0)
+BUG: Issue #439 - Remove internal I18n data; use php's intl instead (ctrlaltca)
 ENH: Added support for igbinary serializator (ctrlaltca)
 ENH: Added TGlobalizationAutoDetect::AvailableLanguages property to set the list of available cultures on the website (ctrlaltca)
+ENH: Make TableColumnClass in TMysqlMetaData variable (LCSKJ)
 
 ## Version 4.0.1 - Apr 1, 2018
 

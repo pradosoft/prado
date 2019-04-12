@@ -391,6 +391,7 @@ class TAuthManager extends \Prado\TModule
 				throw new TConfigurationException('authmanager_session_required');
 			} else {
 				$session->add($this->getUserKey(), $user->saveToString());
+				$session->regenerate(true);
 			}
 		}
 	}
