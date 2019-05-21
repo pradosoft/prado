@@ -1,3 +1,7 @@
+## Version 4.0.x - In development
+
+BUG: Issue #694 - Undefined variable: conn notice in Active Record Scaffold (ganiuszka)
+
 ## Version 4.0.2 - Apr 12, 2019
 
 BUG: Issue #669 - Wrong Gettext class filename (gani)
