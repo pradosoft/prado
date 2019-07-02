@@ -57,7 +57,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 		$languages = $this->getLanguages();
 		foreach ($languages as $lang) {
 			$mainLang = $lang; // strstr($lang, '_', true);
-			if (count($this->validLanguages) > 0 && !in_array($mainLang, $this->validLanguages)) {
+			if ($this->validLanguages !== null && count($this->validLanguages) > 0 && !in_array($mainLang, $this->validLanguages)) {
 				continue;
 			}
 
