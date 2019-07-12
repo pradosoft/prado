@@ -9,6 +9,7 @@ php:
   - 5.6
   - 7.1
   - 7.2
+  - 7.3
 
 before_script:
   - composer self-update
@@ -20,6 +21,3 @@ before_script:
 
 script:
   - composer unittest
-
-after_script:
-  - php ./bin/coveralls -v
