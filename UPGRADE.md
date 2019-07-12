@@ -7,6 +7,10 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.0.2
+---------------------
+- Php 5.6 is now required, >= 7.1 is preferred.
+
 Upgrading from v4.0.1
 ---------------------
 - List controls (eg. TDropDownList) can now render empty an PromptValue. Previously, they would use PromptText in order to fill PromptValue when it was empty or not specified.
