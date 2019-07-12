@@ -891,7 +891,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	protected function getPostSelectKeys($resultMap, $property, $row)
 	{
 		$value = $property->getColumn();
-		if (is_int(strpos($value . ',', 0)) || is_int(strpos($value, '=', 0))) {
+		if (is_int(strpos($value, ',', 0)) || is_int(strpos($value, '=', 0))) {
 			$keys = [];
 			foreach (explode(',', $value) as $entry) {
 				$pair = explode('=', $entry);
