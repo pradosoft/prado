@@ -20,6 +20,6 @@
 	</filter>
 	<logging>
 		<log type="testdox-html" target="./build/tests/index.html"/>
-		<log type="coverage-html" target="./build/tests/coverage" lowUpperBound="35" highLowerBound="70"/>
+<!--		<log type="coverage-html" target="./build/tests/coverage" lowUpperBound="35" highLowerBound="70"/> -->
 	</logging>
 </phpunit>
