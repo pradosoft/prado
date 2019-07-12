@@ -277,7 +277,7 @@ class PradoBase
 	 * @throws TInvalidDataValueException if the component type is unknown
 	 * @return TComponent component instance of the specified type
 	 */
-	public static function createComponent($requestedType)
+	public static function createComponent($requestedType, ...$params)
 	{
 		$type = static::prado3NamespaceToPhpNamespace($requestedType);
 		if (!isset(self::$classExists[$type])) {
@@ -300,30 +300,8 @@ class PradoBase
 			$type = substr($type, $pos + 1);
 		}
 
-		if (($n = func_num_args()) > 1) {
-			$args = func_get_args();
-			switch ($n) {
-				case 2:
-					return new $type($args[1]);
-				break;
-				case 3:
-					return new $type($args[1], $args[2]);
-				break;
-				case 4:
-					return new $type($args[1], $args[2], $args[3]);
-				break;
-				case 5:
-					return new $type($args[1], $args[2], $args[3], $args[4]);
-				break;
-				default:
-					$s = '$args[1]';
-					for ($i = 2; $i < $n; ++$i) {
-						$s .= ",\$args[$i]";
-					}
-					eval("\$component=new $type($s);");
-					return $component;
-				break;
-			}
+		if (count($params) > 0) {
+			return new $type(...$params);
 		} else {
 			return new $type;
 		}
