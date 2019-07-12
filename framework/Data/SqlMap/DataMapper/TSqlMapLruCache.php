@@ -7,7 +7,6 @@ namespace Prado\Data\SqlMap\DataMapper;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
- * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Data\SqlMap\DataMapper
  */

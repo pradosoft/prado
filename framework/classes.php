@@ -7,7 +7,6 @@
  * and their equivalent, php-namespaced name in Prado4.
  *
  * @link https://github.com/pradosoft/prado
- * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado
  */

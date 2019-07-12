@@ -2,7 +2,6 @@
 /**
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @link https://github.com/pradosoft/prado
- * @copyright 2010 Bigpoint GmbH
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
  * @package Prado\Web\Services
@@ -166,7 +165,7 @@ class TRpcService extends \Prado\TService
 		if (($_providerId = $_request->getServiceParameter()) == "") {
 			throw new THttpException(400, 'RPC API-Provider id required');
 		}
-		
+
 		if (($_method = $_request->getRequestType()) != 'POST') {
 			throw new THttpException(405, 'Invalid request method "' . $_method . '"!');
 		} // TODO Exception muss "Allow POST" Header setzen

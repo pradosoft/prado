@@ -4,7 +4,6 @@
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
- * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
  * @package Prado\Caching
  */

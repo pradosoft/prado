@@ -5,7 +5,6 @@
  *
  * @author Cristian Camilo Naranjo Valencia
  * @link http://icolectiva.co
- * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package System.Web.UI.WebControls
  */

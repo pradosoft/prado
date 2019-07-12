@@ -5,7 +5,6 @@
  * class file.
  *
  * @license http://opensource.org/licenses/mozilla1.1.php Mozilla Public License
- * @copyright 2005, diemeisterei GmbH. All rights reserved.
  * @author $Author: tobias $
  * @version $Revision: 1.5 $  $Date: 2006/01/03 19:08:05 $
  * @package Lithron

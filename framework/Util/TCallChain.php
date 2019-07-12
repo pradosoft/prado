@@ -4,7 +4,6 @@
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link https://github.com/pradosoft/prado
- * @copyright Copyright &copy; 2008-2015 Pradosoft
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 

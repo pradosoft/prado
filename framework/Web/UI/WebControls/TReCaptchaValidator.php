@@ -5,7 +5,6 @@
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @link http://www.devworx.hu/
- * @copyright Copyright &copy; 2011 DevWorx
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\WebControls
  */
@@ -95,7 +94,7 @@ class TReCaptchaValidator extends TBaseValidator
 		// communicate validation status to the client side
 		$value = $this->_isvalid === false ? '0' : '1';
 		$cs->registerHiddenField($this->getClientID() . '_1', $value);
-		
+
 		// update validator display
 		if ($control = $this->getValidationTarget()) {
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();

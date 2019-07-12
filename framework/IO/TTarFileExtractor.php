@@ -3,7 +3,6 @@
  * TTarFileExtractor class file
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @copyright Copyright &copy; 1997-2003 The PHP Group
  * @package Prado\IO
  */
 

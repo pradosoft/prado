@@ -42,7 +42,6 @@ use Exception;
  *
  * @package System.I18N.core
  * @author Fabien MARTY <fab@php.net>
- * @copyright  1997-2005 The PHP Group
  * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
  * @link       http://pear.php.net/package/Cache_Lite
  */

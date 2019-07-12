@@ -5,7 +5,6 @@
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @link http://www.devworx.hu/
- * @copyright Copyright &copy; 2011 DevWorx
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\WebControls
  */

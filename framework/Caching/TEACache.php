@@ -4,7 +4,6 @@
  *
  * @author Dario rigolin <drigolin@e-portaltech.it>
  * @link http://www.pradosoft.com/
- * @copyright Copyright &copy; 2005-2014 PradoSoft
  * @license http://www.pradosoft.com/license/
  * @package Prado\Caching
  */

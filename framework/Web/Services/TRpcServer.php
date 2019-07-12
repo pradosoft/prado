@@ -2,7 +2,6 @@
 /**
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @link https://github.com/pradosoft/prado
- * @copyright 2010 Bigpoint GmbH
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
  * @package Prado\Web\Services
@@ -40,7 +39,7 @@ class TRpcServer extends \Prado\TModule
 	{
 		$this->handler = $protocolHandler;
 	}
-	
+
 	/**
 	 * Registers the method in the protocol handler
 	 * @param string $methodName

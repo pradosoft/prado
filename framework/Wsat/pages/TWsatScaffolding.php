@@ -3,7 +3,6 @@
 /**
  * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
  * @link https://github.com/pradosoft/prado
- * @copyright Copyright &copy; 2005-2016 The PRADO Group
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.3
  * @package Prado\Wsat\pages
@@ -56,7 +55,7 @@ class TWsatScaffolding extends TPage
 						$scf_generator->generateCRUD($tableName);
 					}
 				}
-								
+
 				$this->feedback_panel->CssClass = "green_panel";
 				$this->generation_msg->Text = "The code has been generated successfully.";
 			} catch (Exception $ex) {
