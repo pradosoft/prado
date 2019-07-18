@@ -28,6 +28,6 @@ class QuickstartDataGrid4TestCase extends PradoDemosSelenium2Test
 		$this->assertAttribute('ctl0_body_DataGrid_ctl1_ctl5@checked', null);
 		$this->byLinkText("Rating")->click();
 		$this->pause(50);
-		$this->assertAttribute('ctl0_body_DataGrid_ctl4_ctl5@checked', null);
+		$this->assertAttribute('ctl0_body_DataGrid_ctl6_ctl5@checked', null);
 	}
 }

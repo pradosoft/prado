@@ -15,6 +15,15 @@ class Ticket722TestCase extends PradoGenericSelenium2Test
 		$textbox = $this->byID("{$base}InPlaceTextBox");
 		$this->assertTrue($textbox->displayed());
 
+		// calling clear() would trigger an onBlur event on the textbox
+		// so we empty the textbox one char at a time
+		$textbox->click();
+		$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
+		for($i=0; $i < 13; ++$i)
+		{
+			$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::BACKSPACE);
+		}
+
 		$this->type($base.'InPlaceTextBox',"Prado");
 		$this->pause(800);
 		$this->assertFalse($textbox->displayed());

@@ -9,10 +9,8 @@ class Ticket922TestCase extends PradoGenericSelenium2Test
 		$base = 'ctl0_Content_';
 
 		$this->type($base.'Text', 'two words');
-		$this->byName('ctl0$Content$ctl0')->click();
 		$this->pause(50);
 		$this->assertText($base.'Result','two words');
-
 	}
 }
 

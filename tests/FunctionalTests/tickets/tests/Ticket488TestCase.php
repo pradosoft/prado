@@ -32,10 +32,4 @@ class Ticket488TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 	}
-
-	function test_more()
-	{
-		$this->url('tickets/index.php?page=Ticket488');
-		//add test assertions here.
-	}
 }

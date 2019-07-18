@@ -15,7 +15,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		array(
 			'name'    => 'Chrome on OSX',
 			'browserName' => 'chrome',
-			'sessionStrategy' => 'shared',
+//			'sessionStrategy' => 'shared',
 			'host'    => '127.0.0.1',
 			'port'    => 4444,
 		),
@@ -59,7 +59,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function setUp()
 	{
-		self::shareSession(true);
+		// Workaroun for https://github.com/giorgiosironi/phpunit-selenium/issues/436
+		$this->setDesiredCapabilities([
+		    'goog:chromeOptions' => [
+		        'w3c' => false
+		    ]
+		]);
+//		self::shareSession(true);
 		$this->setBrowserUrl(static::$baseurl);
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
 	}

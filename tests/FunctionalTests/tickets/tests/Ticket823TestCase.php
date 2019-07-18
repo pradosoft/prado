@@ -6,7 +6,8 @@ class Ticket823TestCase extends PradoGenericSelenium2Test {
 		$this->url('tickets/index.php?page=Ticket823');
 		$this->assertEquals($this->title(), "Verifying Ticket 823");
 		$base = 'ctl0_Content_';
-		$this->assertElementPresent('//option[@value="Choose..."]');
+		$this->assertElementPresent('//option[@value=""]');
+		$this->assertElementPresent('//option[.="Choose..."]');
 	}
 }
 

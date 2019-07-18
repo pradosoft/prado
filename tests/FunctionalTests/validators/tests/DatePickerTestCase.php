@@ -4,8 +4,8 @@ class DatePickerTestCase extends PradoGenericSelenium2Test
 {
 	function test()
 	{
-		$year=2012;
-		$year2=2013;
+		$year=date('Y');
+		$year2=$year + 1;
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=DatePicker");
 		$this->assertSourceContains("Date Picker validation Test");
