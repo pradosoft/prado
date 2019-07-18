@@ -4,7 +4,7 @@ use Prado\Caching\TFileCacheDependency;
 /**
  * @package System.Caching
  */
-class TFileCacheDependencyTest extends PHPUnit_Framework_TestCase
+class TFileCacheDependencyTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()
 	{

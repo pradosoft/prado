@@ -124,7 +124,7 @@ class SkillRecord extends BaseFkRecord
 /**
  * @package System.Data.ActiveRecord
  */
-class ForeignObjectUpdateTest extends PHPUnit_Framework_TestCase
+class ForeignObjectUpdateTest extends PHPUnit\Framework\TestCase
 {
 	function test_add_has_one()
 	{

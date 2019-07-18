@@ -12,14 +12,14 @@ if(!defined('TEST_DB_FILE'))
 /**
  * @package System.Data.PDO
  */
-class TDbCommandTest extends PHPUnit_Framework_TestCase
+class TDbCommandTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
 	public function setUp()
 	{
 		@unlink(TEST_DB_FILE);
-    
+
 		// create application just to provide application mode
 		new TApplication(__DIR__, false ,TApplication::CONFIG_TYPE_PHP);
 

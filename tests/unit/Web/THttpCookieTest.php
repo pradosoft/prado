@@ -6,7 +6,7 @@ use Prado\Web\THttpCookie;
 /**
  * @package System.Web
  */
-class THttpCookieTest extends PHPUnit_Framework_TestCase {
+class THttpCookieTest extends PHPUnit\Framework\TestCase {
 
   public function testConstruct() {
     $cookie=new THttpCookie('name','value');

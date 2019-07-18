@@ -5,7 +5,7 @@ Prado::using('System.Data.DataGateway.TTableGateway');
 /**
  * @package System.Data.TableGateway
  */
-class BaseGateway extends PHPUnit_Framework_TestCase
+class BaseGateway extends PHPUnit\Framework\TestCase
 {
 	protected $gateway1;
 	protected $gateway2;

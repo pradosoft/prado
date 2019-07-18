@@ -137,6 +137,8 @@ class ParameterMapTest extends BaseCase
 
 			$this->assertSame($category->getName(), $categoryRead->getName());
 			$this->assertSame('', $categoryRead->getGuidString());
+		} else {
+			throw new PHPUnit\Framework\IncompleteTestError();
 		}
 	}
 

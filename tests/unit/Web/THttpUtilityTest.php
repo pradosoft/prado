@@ -6,7 +6,7 @@ use Prado\Web\THttpUtility;
 /**
  * @package System.Web
  */
-class THttpUtilityTest extends PHPUnit_Framework_TestCase {
+class THttpUtilityTest extends PHPUnit\Framework\TestCase {
 
 	public function testHtmlEncode() {
 		$html = THttpUtility::htmlEncode('<tag key="value">');

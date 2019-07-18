@@ -8,7 +8,7 @@ use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 /**
  * @package System.Web.UI.WebControls
  */
-class TRequiredFieldValidatorTest extends PHPUnit_Framework_TestCase {
+class TRequiredFieldValidatorTest extends PHPUnit\Framework\TestCase {
 
   public function testGetEmptyInitialValue() {
     $validator = new TRequiredFieldValidator();

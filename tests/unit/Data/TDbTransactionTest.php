@@ -10,7 +10,7 @@ if(!defined('TEST_DB_FILE'))
 /**
  * @package System.Data.PDO
  */
-class TDbTransactionTest extends PHPUnit_Framework_TestCase
+class TDbTransactionTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;
 

@@ -12,7 +12,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * @package System.Security
  */
-class TUserManagerTest extends PHPUnit_Framework_TestCase {
+class TUserManagerTest extends PHPUnit\Framework\TestCase {
 
 	public static $app=null;
 	public static $config=null;

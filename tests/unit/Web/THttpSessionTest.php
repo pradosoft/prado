@@ -7,42 +7,42 @@ use Prado\Web\THttpSessionCookieMode;
 /**
  * @package System.Web
  */
-class THttpSessionTest extends PHPUnit_Framework_TestCase {
+class THttpSessionTest extends PHPUnit\Framework\TestCase {
 
   public function testInit() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testOpen() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testClose() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testDestroy() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testGetIsStarted() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetSessionID() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetSessionName() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetSavePath() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetUseCustomStorage() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   /**
@@ -83,66 +83,66 @@ class THttpSessionTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testSetAutoStart() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetGProbability() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetUseTransparentSessionID() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetTimeout() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testGetIterator() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testGetCount() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testGetKeys() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testItemAt() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testAdd() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testRemove() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testContains() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testToArray() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testOffsetExists() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testOffsetGet() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testOffsetSet() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testOffsetUnset() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 }

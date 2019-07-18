@@ -6,7 +6,7 @@ Prado::using('System.Data.DataGateway.TTableGateway');
 /**
  * @package System.Data.DbCommon
  */
-class SqliteColumnTest extends PHPUnit_Framework_TestCase
+class SqliteColumnTest extends PHPUnit\Framework\TestCase
 {
 	/**
 	 * @return TSqliteMetaData
@@ -21,6 +21,7 @@ class SqliteColumnTest extends PHPUnit_Framework_TestCase
 	{
 		//$table = $this->meta_data()->getTableInfo('foo');
 		//var_dump($table);
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	function test_table()
@@ -28,5 +29,6 @@ class SqliteColumnTest extends PHPUnit_Framework_TestCase
 		$conn = new TDbConnection('sqlite:c:/test.db');
 		//$table = new TTableGateway('Accounts', $conn);
 //		var_dump($table->findAll()->readAll());
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 }

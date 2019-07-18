@@ -80,7 +80,7 @@ class Cover extends SqliteRecord
 /**
  * @package System.Data.ActiveRecord
  */
-class ForeignKeyTest extends PHPUnit_Framework_TestCase
+class ForeignKeyTest extends PHPUnit\Framework\TestCase
 {
 	function test_has_many()
 	{

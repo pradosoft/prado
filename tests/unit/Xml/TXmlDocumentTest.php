@@ -8,7 +8,7 @@ use Prado\Xml\TXmlElement;
 /**
  * @package System.Xml
  */
-class TXmlDocumentTest extends PHPUnit_Framework_TestCase {
+class TXmlDocumentTest extends PHPUnit\Framework\TestCase {
 
 	public function testConstruct() {
 		$xmldoc=new TXmlDocument ('1.0', 'utf-8');

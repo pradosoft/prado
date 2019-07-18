@@ -32,7 +32,7 @@ class MyPagedList extends TPagedList {
 /**
  * @package System.Collections
  */
-class TPagedListTest extends PHPUnit_Framework_TestCase {
+class TPagedListTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -65,12 +65,8 @@ class TPagedListTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotSetInvalidPageSize() {
 		$list = new TPagedList();
-		try {
-			$list->PageSize = 0;
-		} catch(TInvalidDataValueException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidDataValueException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		$list->PageSize = 0;
 	}
 
 	public function testCurrentPageIndex() {

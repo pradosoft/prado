@@ -9,7 +9,7 @@ class BaseRecordTest extends TActiveRecord
 /**
  * @package System.Data.ActiveRecord
  */
-class BaseActiveRecordTest extends PHPUnit_Framework_TestCase
+class BaseActiveRecordTest extends PHPUnit\Framework\TestCase
 {
 	function test_finder_returns_same_instance()
 	{

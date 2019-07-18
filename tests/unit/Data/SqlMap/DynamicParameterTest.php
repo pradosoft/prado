@@ -10,7 +10,7 @@ use Prado\TApplication;
 /**
  * @package System.Data.SqlMap
  */
-class DynamicParameterTest extends PHPUnit_Framework_TestCase
+class DynamicParameterTest extends PHPUnit\Framework\TestCase
 {
 
 	protected function getMysqlSqlMapManager()

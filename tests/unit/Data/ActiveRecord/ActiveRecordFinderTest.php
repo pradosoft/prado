@@ -5,7 +5,7 @@ require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class ActiveRecordFinderTest extends PHPUnit_Framework_TestCase
+class ActiveRecordFinderTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

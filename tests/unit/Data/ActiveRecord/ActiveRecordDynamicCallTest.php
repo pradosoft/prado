@@ -6,7 +6,7 @@ require_once(dirname(__FILE__).'/records/DepSections.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
+class ActiveRecordDynamicCallTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{
@@ -38,31 +38,15 @@ class ActiveRecordDynamicCallTest extends PHPUnit_Framework_TestCase
 	function test_dynamic_call_missing_parameters_throws_exception()
 	{
 		$finder = DepartmentRecord::finder();
-		try
-		{
-			$rs = $finder->findByNameAndActive('Marketing');
-			$this->fail();
-		}
-		catch(\Prado\Exceptions\TDbException $e)
-		{
-			return;
-		}
-		$this->fail();
+		self::expectException('Prado\\Exceptions\\TDbException');
+		$rs = $finder->findByNameAndActive('Marketing');
 	}
 
 	function test_dynamic_call_extras_parameters_ok()
 	{
 		$finder = DepartmentRecord::finder();
-		try
-		{
-			$rs = $finder->findByNameAndActive('Marketing',true,true);
-			$this->fail();
-		}
-		catch(\Prado\Exceptions\TDbException $e)
-		{
-			return;
-		}
-		$this->fail();
+		self::expectException('Prado\\Exceptions\\TDbException');
+		$rs = $finder->findByNameAndActive('Marketing',true,true);
 	}
 
 	function test_dynamic_delete_by()

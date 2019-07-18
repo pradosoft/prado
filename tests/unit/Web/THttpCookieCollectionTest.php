@@ -9,7 +9,7 @@ use Prado\Web\THttpCookieCollection;
 /**
  * @package System.Web
  */
-class THttpCookieCollectionTest extends PHPUnit_Framework_TestCase {
+class THttpCookieCollectionTest extends PHPUnit\Framework\TestCase {
 
   public function testConstruct() {
     $coll=new THttpCookieCollection();

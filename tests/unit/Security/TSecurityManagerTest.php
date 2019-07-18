@@ -9,7 +9,7 @@ use Prado\TApplication;
 /**
  * @package System.Security
  */
-class TSecurityManagerTest extends PHPUnit_Framework_TestCase {
+class TSecurityManagerTest extends PHPUnit\Framework\TestCase {
 	public static $app;
 
 	public function setUp() {

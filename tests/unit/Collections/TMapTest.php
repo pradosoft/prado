@@ -12,7 +12,7 @@ class TMapTest_MapItem {
 /**
  * @package System.Collections
  */
-class TMapTest extends PHPUnit_Framework_TestCase {
+class TMapTest extends PHPUnit\Framework\TestCase {
   protected $map;
   protected $item1,$item2,$item3;
 
@@ -64,12 +64,8 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotAddWhenReadOnly() {
 		$map = new TMap(array(), true);
-		try {
-			$map->add('key', 'value');
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$map->add('key', 'value');
 	}
 
 	public function testRemove()
@@ -81,12 +77,8 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotRemoveWhenReadOnly() {
 		$map = new TMap(array('key' => 'value'), true);
-		try {
-			$map->remove('key');
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$map->remove('key');
 	}
 
 	public function testClear()
@@ -107,15 +99,9 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$array=array('key3'=>$this->item3,'key4'=>$this->item1);
 		$this->map->copyFrom($array);
 		$this->assertTrue($this->map->getCount()==2 && $this->map['key3']===$this->item3 && $this->map['key4']===$this->item1);
-		try
-		{
-			$this->map->copyFrom($this);
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$this->map->copyFrom($this);
 			$this->fail('no exception raised when copying a non-traversable object');
-		}
-		catch(TInvalidDataTypeException $e)
-		{
-
-		}
 	}
 
 	public function testMergeWith()
@@ -123,15 +109,8 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$array=array('key2'=>$this->item1,'key3'=>$this->item3);
 		$this->map->mergeWith($array);
 		$this->assertTrue($this->map->getCount()==3 && $this->map['key2']===$this->item1 && $this->map['key3']===$this->item3);
-		try
-		{
-			$this->map->mergeWith($this);
-			$this->fail('no exception raised when copying a non-traversable object');
-		}
-		catch(TInvalidDataTypeException $e)
-		{
-
-		}
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$this->map->mergeWith($this);
 	}
 
 	public function testArrayRead()
@@ -149,15 +128,6 @@ class TMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($this->map['key1']===$this->item3 && $this->map->getCount()===3);
 		unset($this->map['key2']);
 		$this->assertTrue($this->map->getCount()===2 && !$this->map->contains('key2'));
-		try
-		{
-			unset($this->map['unknown key']);
-
-		}
-		catch(Exception $e)
-		{
-			$this->fail('exception raised when unsetting element with unknown key');
-		}
 	}
 
 	public function testArrayForeach()

@@ -5,54 +5,54 @@
 /**
  * @package System.Web.UI
  */
-class TControlAdapterTest extends PHPUnit_Framework_TestCase {
+class TControlAdapterTest extends PHPUnit\Framework\TestCase {
 
 	public function testConstruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetControl() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetPage() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testCreateChildControls() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLoadState() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testSaveState() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnInit() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnLoad() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnPreRender() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnUnload() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testRender() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testRenderChildren() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

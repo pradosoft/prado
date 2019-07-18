@@ -6,7 +6,7 @@ require_once(dirname(__FILE__).'/records/DepSections.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class FindByPksTest extends PHPUnit_Framework_TestCase
+class FindByPksTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

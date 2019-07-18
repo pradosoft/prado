@@ -7,7 +7,7 @@ Prado::using('System.Data.DataGateway.TTableGateway');
 /**
  * @package System.Data.DbCommon
  */
-class MssqlColumnTest extends PHPUnit_Framework_TestCase
+class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

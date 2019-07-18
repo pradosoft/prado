@@ -11,7 +11,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * @package System.Security
  */
-class TAuthManagerTest extends PHPUnit_Framework_TestCase {
+class TAuthManagerTest extends PHPUnit\Framework\TestCase {
 
 	public static $app = null;
 	public static $usrMgr = null;
@@ -72,7 +72,7 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testDoAuthentication() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 		// Not yet finished, Session won't start because of headers :( :(
 
 		$authManager=new TAuthManager ();
@@ -84,35 +84,35 @@ class TAuthManagerTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testDoAuthorization() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLeave() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testReturnUrl() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnAuthenticate() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOnAuthorize() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testUpdateSessionUser() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLogin() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLogout() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

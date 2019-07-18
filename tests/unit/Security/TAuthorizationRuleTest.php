@@ -4,7 +4,7 @@
 /**
  * @package System.Security
  */
-class TAuthorizationRuleTest extends PHPUnit_Framework_TestCase {
+class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -13,35 +13,35 @@ class TAuthorizationRuleTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testConstruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testAction() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testUsers() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testRoles() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testVerb() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGuestApplied() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testEveryoneApplied() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testIsUserAllowed() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

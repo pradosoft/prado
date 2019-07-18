@@ -10,7 +10,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * @package System.Security
  */
-class TUserTest extends PHPUnit_Framework_TestCase {
+class TUserTest extends PHPUnit\Framework\TestCase {
 	public static $app=null;
 	public static $mgr=null;
 
@@ -101,7 +101,7 @@ class TUserTest extends PHPUnit_Framework_TestCase {
 
 	/* getState & setState are protected methods, will be tested with other tests.
 	public function testState() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 	*/
 

@@ -7,7 +7,7 @@ use Prado\TApplication;
 /**
  * @package System.Caching
  */
-class TMemCacheTest extends PHPUnit_Framework_TestCase {
+class TMemCacheTest extends PHPUnit\Framework\TestCase {
 
 	protected $app = null;
 	protected static $cache = null;
@@ -33,7 +33,7 @@ class TMemCacheTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testInit() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testPrimaryCache() {

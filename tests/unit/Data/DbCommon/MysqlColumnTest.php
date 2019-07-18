@@ -5,7 +5,7 @@ Prado::using('System.Data.Common.Mysql.TMysqlMetaData');
 /**
  * @package System.Data.DbCommon
  */
-class MysqlColumnTest extends PHPUnit_Framework_TestCase
+class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

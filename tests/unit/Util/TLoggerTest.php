@@ -4,7 +4,7 @@
 /**
  * @package System.Util
  */
-class TLoggerTest extends PHPUnit_Framework_TestCase {
+class TLoggerTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -13,11 +13,11 @@ class TLoggerTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testLog() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetLogs() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

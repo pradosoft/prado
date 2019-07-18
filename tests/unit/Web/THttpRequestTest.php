@@ -16,7 +16,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * @package System.Web
  */
-class THttpRequestTest extends PHPUnit_Framework_TestCase {
+class THttpRequestTest extends PHPUnit\Framework\TestCase {
 
 	public static $app = null;
 
@@ -226,7 +226,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
 				else
 					self::fail ('Exception raised : '.$e->getMessage());
 		}*/
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testGetUserAgent() {
@@ -266,7 +266,7 @@ class THttpRequestTest extends PHPUnit_Framework_TestCase {
     $acceptLanguages=array('fr', 'en-us','fr-fr','en');
     self::assertEquals($acceptLanguages, $request->getUserLanguages());
     */
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testSetEnableCookieValidation() {

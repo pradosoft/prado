@@ -6,7 +6,7 @@ Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
 /**
  * @package System.Data.DbCommon
  */
-class PgsqlColumnTest extends PHPUnit_Framework_TestCase
+class PgsqlColumnTest extends PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {

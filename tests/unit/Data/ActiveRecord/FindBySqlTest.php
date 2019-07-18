@@ -19,7 +19,7 @@ class SqlTest extends TActiveRecord
 /**
  * @package System.Data.ActiveRecord
  */
-class FindBySqlTest extends PHPUnit_Framework_TestCase
+class FindBySqlTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

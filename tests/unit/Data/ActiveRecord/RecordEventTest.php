@@ -5,7 +5,7 @@ require_once(dirname(__FILE__).'/records/UserRecord.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class RecordEventTest extends PHPUnit_Framework_TestCase
+class RecordEventTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

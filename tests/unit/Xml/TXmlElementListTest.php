@@ -8,7 +8,7 @@ use Prado\Xml\TXmlElementList;
 /**
  * @package System.Xml
  */
-class TXmlElementListTest extends PHPUnit_Framework_TestCase {
+class TXmlElementListTest extends PHPUnit\Framework\TestCase {
 
 	public function testConstruct() {
 		$element=new TXmlElement('tag');

@@ -8,7 +8,7 @@ use Prado\Exceptions\TInvalidOperationException;
 /**
  * @package System.Collections
  */
-class TStackTest extends PHPUnit_Framework_TestCase {
+class TStackTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -38,12 +38,8 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 	public function testCanNotCopyFromNonTraversableTypes() {
 		$stack = new TStack();
 		$data = new stdClass();
-		try {
-			$stack->copyFrom($data);
-		} catch(TInvalidDataTypeException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidDataTypeException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$stack->copyFrom($data);
 	}
 
 	public function testClear() {
@@ -65,12 +61,8 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotPeekAnEmptyStack() {
 		$stack = new TStack();
-		try {
-			$item = $stack->peek();
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$item = $stack->peek();
 	}
 
 	public function testPop() {
@@ -82,12 +74,8 @@ class TStackTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotPopAnEmptyStack() {
 		$stack = new TStack();
-		try {
-			$item = $stack->pop();
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$item = $stack->pop();
 	}
 
 	public function testPush() {

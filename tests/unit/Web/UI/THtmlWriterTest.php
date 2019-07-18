@@ -45,7 +45,7 @@ class TestWriter extends TComponent implements ITextWriter
 /**
  * @package System.Web.UI
  */
-class THtmlWriterTest extends PHPUnit_Framework_TestCase {
+class THtmlWriterTest extends PHPUnit\Framework\TestCase {
 
 	private static $output=null;
 

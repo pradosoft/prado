@@ -6,7 +6,7 @@ require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class CountRecordsTest extends PHPUnit_Framework_TestCase
+class CountRecordsTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

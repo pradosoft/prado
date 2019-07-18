@@ -7,7 +7,7 @@ use Prado\Exceptions\TInvalidOperationException;
 /**
  * @package System.Collections
  */
-class TAttributeCollectionTest extends PHPUnit_Framework_TestCase {
+class TAttributeCollectionTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -25,12 +25,8 @@ class TAttributeCollectionTest extends PHPUnit_Framework_TestCase {
 	public function testCanNotGetUndefinedProperty() {
 		$collection = new TAttributeCollection(array(), true);
 		self::assertEquals(false, $collection->canGetProperty('Property'));
-		try {
-			$value = $collection->Property;
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$value = $collection->Property;
 	}
 
 	public function testCanSetProperty() {
@@ -42,12 +38,8 @@ class TAttributeCollectionTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotSetPropertyIfReadOnly() {
 		$collection = new TAttributeCollection(array(), true);
-		try {
-			$collection->Property = 'value';
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$collection->Property = 'value';
 	}
 
 	public function testGetCaseSensitive() {

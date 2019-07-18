@@ -4,18 +4,18 @@
 /**
  * @package System.IO
  */
-class TTarFileExtractorTest extends PHPUnit_Framework_TestCase {
+class TTarFileExtractorTest extends PHPUnit\Framework\TestCase {
 
 	public function testConstruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testDestruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testExtract() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

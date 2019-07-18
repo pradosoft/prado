@@ -8,7 +8,7 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
 /**
  * @package System.Data.SqlMap
  */
-class BaseCase extends PHPUnit_Framework_TestCase
+class BaseCase extends PHPUnit\Framework\TestCase
 {
 	protected $sqlmap;
 	protected $connection;

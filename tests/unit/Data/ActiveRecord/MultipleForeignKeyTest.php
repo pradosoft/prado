@@ -120,7 +120,7 @@ class CategoryX extends MultipleFKSqliteRecord
 /**
  * @package System.Data.ActiveRecord
  */
-class MultipleForeignKeyTest extends PHPUnit_Framework_TestCase
+class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 {
 	function testBelongsTo()
 	{

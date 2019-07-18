@@ -33,7 +33,7 @@ class FooRecord extends TComponent
 /**
  * @package System.Data.PDO
  */
-class TDbDataReaderTest extends PHPUnit_Framework_TestCase
+class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
@@ -119,6 +119,7 @@ class TDbDataReaderTest extends PHPUnit_Framework_TestCase
 	public function testRowCount()
 	{
 		// unable to test because SQLite doesn't support row count
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testColumnCount()

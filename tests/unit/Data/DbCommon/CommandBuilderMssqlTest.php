@@ -6,7 +6,7 @@ Prado::using('System.Data.Common.Mssql.TMssqlCommandBuilder');
 /**
  * @package System.Data.DbCommon
  */
-class CommandBuilderMssqlTest extends PHPUnit_Framework_TestCase
+class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 {
 	protected static $sql = array(
 		'simple' => 'SELECT username, age FROM accounts',

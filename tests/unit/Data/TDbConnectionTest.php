@@ -16,7 +16,7 @@ if(!defined('TEST_DB_FILE2'))
 /**
  * @package System.Data.PDO
  */
-class TDbConnectionTest extends PHPUnit_Framework_TestCase
+class TDbConnectionTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection1;
 	private $_connection2;

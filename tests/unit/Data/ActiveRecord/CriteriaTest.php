@@ -7,7 +7,7 @@ require_once(dirname(__FILE__).'/records/DepSections.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class CriteriaTest extends PHPUnit_Framework_TestCase
+class CriteriaTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

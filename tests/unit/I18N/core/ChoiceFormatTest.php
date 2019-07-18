@@ -6,7 +6,7 @@ use Prado\I18N\core\ChoiceFormat;
 /**
  * @package System.I18N.core
  */
-class ChoiceFormatTest extends PHPUnit_Framework_TestCase
+class ChoiceFormatTest extends PHPUnit\Framework\TestCase
 {
 	function testChoices()
 	{

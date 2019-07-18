@@ -9,7 +9,7 @@ use Prado\Web\TCacheHttpSession;
 /**
  * @package System.Web
  */
-class TCacheHttpSessionTest extends PHPUnit_Framework_TestCase
+class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 {
     protected $app = null;
 	protected static $cache = null;

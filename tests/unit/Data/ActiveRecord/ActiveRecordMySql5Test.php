@@ -5,7 +5,7 @@ require_once(dirname(__FILE__).'/records/Blogs.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class ActiveRecordMySql5Test extends PHPUnit_Framework_TestCase
+class ActiveRecordMySql5Test extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

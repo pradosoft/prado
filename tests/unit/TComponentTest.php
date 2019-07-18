@@ -416,7 +416,7 @@ class TDynamicClassBehavior extends TClassBehavior implements IDynamicMethods {
 /**
  * @package System
  */
-class TComponentTest extends PHPUnit_Framework_TestCase {
+class TComponentTest extends PHPUnit\Framework\TestCase {
 
   protected $component;
 
@@ -1805,6 +1805,7 @@ class TComponentTest extends PHPUnit_Framework_TestCase {
 
   public function testGlobalEventListenerInRaiseEvent() {
     //TODO Test the Global Event Listener
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
 
@@ -1926,7 +1927,8 @@ class TComponentTest extends PHPUnit_Framework_TestCase {
       $statements='$a=new NewComponent; echo $a->button;';
       $button=$this->component->evaluateStatements($statements);
       $this->fail('exception not raised when evaluating an invalid statement');
-    } catch(Exception $e) {
+    } catch(TInvalidOperationException $e) {
+    	ob_end_flush();
     }
   }
 

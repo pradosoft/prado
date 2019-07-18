@@ -7,7 +7,7 @@ use Prado\Data\DataGateway\TSqlCriteria;
 /**
  * @package System.Data.DataGateway
  */
-class TSqlCriteriaTest extends PHPUnit_Framework_TestCase {
+class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -16,7 +16,7 @@ class TSqlCriteriaTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testConstruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testConditionWithOrderByColumnNames() {
@@ -84,27 +84,27 @@ class TSqlCriteriaTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testParameters() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testIsNamedParameters() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOrdersBy() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testLimit() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testOffset() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testToString() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

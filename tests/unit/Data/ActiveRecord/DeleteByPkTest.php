@@ -7,7 +7,7 @@ require_once(dirname(__FILE__).'/records/DepSections.php');
 /**
  * @package System.Data.ActiveRecord
  */
-class DeleteByPkTest extends PHPUnit_Framework_TestCase
+class DeleteByPkTest extends PHPUnit\Framework\TestCase
 {
 	function setup()
 	{

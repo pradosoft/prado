@@ -6,7 +6,7 @@ use Prado\Util\TSimpleDateFormatter;
 /**
  * @package System.Util
  */
-class TSimpleDateFormatterTest extends PHPUnit_Framework_TestCase {
+class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -15,27 +15,27 @@ class TSimpleDateFormatterTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testConstruct() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testPattern() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testCharset() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testFormat() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testMonthPattern() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testDayPattern() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testYearPattern() {
@@ -49,15 +49,15 @@ class TSimpleDateFormatterTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testDayMonthYearOrdering() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testIsValidDate() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testParse() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 }

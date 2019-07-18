@@ -11,7 +11,7 @@ use Prado\Web\TAssetManager;
 /**
  * @package System.Web
  */
-class TAssetManagerTest extends PHPUnit_Framework_TestCase {
+class TAssetManagerTest extends PHPUnit\Framework\TestCase {
 
 	public static $app = null;
 	public static $assetDir = null;

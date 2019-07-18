@@ -5,7 +5,7 @@ Prado::using('System.Data.SqlMap.TSqlMapConfig');
 /**
  * @package System.Data.SqlMap
  */
-class StatementExtendsTest extends PHPUnit_Framework_TestCase
+class StatementExtendsTest extends PHPUnit\Framework\TestCase
 {
 	protected $sqlmap;
 

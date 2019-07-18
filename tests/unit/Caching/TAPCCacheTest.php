@@ -9,7 +9,7 @@ use Prado\TApplication;
 /**
  * @package System.Caching
  */
-class TAPCCacheTest extends PHPUnit_Framework_TestCase {
+class TAPCCacheTest extends PHPUnit\Framework\TestCase {
 
 	protected $app = null;
 	protected static $cache = null;
@@ -40,7 +40,7 @@ class TAPCCacheTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testInit() {
-		throw new PHPUnit_Framework_IncompleteTestError();
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	public function testPrimaryCache() {

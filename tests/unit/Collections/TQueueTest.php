@@ -8,7 +8,7 @@ use Prado\Exceptions\TInvalidOperationException;
 /**
  * @package System.Collections
  */
-class TQueueTest extends PHPUnit_Framework_TestCase {
+class TQueueTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}
@@ -38,12 +38,8 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 	public function testCanNotCopyFromNonTraversableTypes() {
 		$queue = new TQueue();
 		$data = new stdClass();
-		try {
-			$queue->copyFrom($data);
-		} catch(TInvalidDataTypeException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidDataTypeException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$queue->copyFrom($data);
 	}
 
 	public function testClear() {
@@ -65,12 +61,8 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotPeekAnEmptyQueue() {
 		$queue = new TQueue();
-		try {
-			$item = $queue->peek();
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$item = $queue->peek();
 	}
 
 	public function testDequeue() {
@@ -82,12 +74,8 @@ class TQueueTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotDequeueAnEmptyQueue() {
 		$queue = new TQueue();
-		try {
-			$item = $queue->dequeue();
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$item = $queue->dequeue();
 	}
 
 	public function testEnqueue() {

@@ -12,7 +12,7 @@ class TPriorityMapTest_MapItem {
 /**
  * @package System.Collections
  */
-class TPriorityMapTest extends PHPUnit_Framework_TestCase {
+class TPriorityMapTest extends PHPUnit\Framework\TestCase {
   protected $map;
   protected $item1,$item2,$item3,$item4,$item5;
 
@@ -57,8 +57,7 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(-1,$map3->getPrecision());
   }
 
-  /* Test that TPriorityMap complies with TMap   */
-
+  	/* Test that TPriorityMap complies with TMap   */
 
 	public function testGetReadOnly() {
 		$map = new TPriorityMap(null, true);
@@ -67,14 +66,14 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
 	}
 
-  public function testGetCount() {
-    $this->assertEquals(2,$this->map->getCount());
-  }
+	public function testGetCount() {
+		$this->assertEquals(2,$this->map->getCount());
+	}
 
-  public function testGetKeys() {
-    $keys=$this->map->getKeys();
-    $this->assertTrue(count($keys)===2 && $keys[0]==='key1' && $keys[1]==='key2');
-  }
+	public function testGetKeys() {
+		$keys=$this->map->getKeys();
+		$this->assertTrue(count($keys)===2 && $keys[0]==='key1' && $keys[1]==='key2');
+	}
 
 	public function testAdd()
 	{
@@ -84,12 +83,8 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotAddWhenReadOnly() {
 		$map = new TPriorityMap(array(), true);
-		try {
-			$map->add('key', 'value');
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$map->add('key', 'value');
 	}
 
 	public function testRemove()
@@ -101,12 +96,8 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 
 	public function testCanNotRemoveWhenReadOnly() {
 		$map = new TPriorityMap(array('key' => 'value'), true);
-		try {
-			$map->remove('key');
-		} catch(TInvalidOperationException $e) {
-			return;
-		}
-		self::fail('An expected TInvalidOperationException was not raised');
+		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		$map->remove('key');
 	}
 
 	public function testClear()
@@ -127,15 +118,8 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$array=array('key3'=>$this->item3,'key4'=>$this->item1);
 		$this->map->copyFrom($array);
 		$this->assertTrue($this->map->getCount()==2 && $this->map['key3']===$this->item3 && $this->map['key4']===$this->item1);
-		try
-		{
-			$this->map->copyFrom($this);
-			$this->fail('no exception raised when copying a non-traversable object');
-		}
-		catch(TInvalidDataTypeException $e)
-		{
-
-		}
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$this->map->copyFrom($this);
 	}
 
 	public function testMergeWith()
@@ -145,15 +129,8 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(3,$this->map->getCount());
 		$this->assertTrue($this->map['key2']===$this->item1);
 		$this->assertTrue($this->map['key3']===$this->item3);
-		try
-		{
-			$this->map->mergeWith($this);
-			$this->fail('no exception raised when copying a non-traversable object');
-		}
-		catch(TInvalidDataTypeException $e)
-		{
-
-		}
+		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		$this->map->mergeWith($this);
 	}
 
 	public function testArrayRead()
@@ -174,15 +151,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		unset($this->map['key2']);
 		$this->assertEquals(2,$this->map->getCount());
 		$this->assertFalse($this->map->contains('key2'));
-		try
-		{
-			unset($this->map['unknown key']);
-
-		}
-		catch(Exception $e)
-		{
-			$this->fail('exception raised when unsetting element with unknown key');
-		}
 	}
 
 	public function testArrayForeach()
@@ -212,11 +180,7 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		self::assertEquals(array('key' => 'value'), $map->toArray());
 	}
 
-
-
-
 	/* Test the priority functionality of TPriorityMap  */
-
 
 	public function testDefaultPriorityAndPrecision() {
 
@@ -229,8 +193,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 
 		$this->map->Precision = 0;
 		$this->assertEquals(0, $this->map->getPrecision());
-
-		;
 
 		$this->assertEquals(5, $this->map->add('key3', $this->item3));
 		$this->assertEquals(10, $this->map->add('key4', $this->item1, 10));
@@ -282,8 +244,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->map->remove('key5', 50);
 		$this->assertEquals(5, $this->map->getCount());
 
-
-
 		$this->assertEquals(array('key3'=>$this->item3), $this->map->itemsAtPriority(0));
 		$this->assertEquals(array('key1'=>$this->item1, 'key2'=>$this->item2), $this->map->itemsAtPriority($this->map->DefaultPriority));
 
@@ -298,6 +258,7 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->item5, $this->map->remove('key5'));
 		$this->assertEquals(3, $this->map->getCount());
 	}
+
 	public function testIteratorAndArrayWithPriorities() {
 
 		$this->setUpPriorities();
@@ -346,7 +307,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(null, $iter->current());
 	}
 
-
 	public function testGetPriorities() {
 		$this->setUpPriorities();
 
@@ -358,7 +318,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(100, $priorities[3]);
 		$this->assertEquals(false, isset($priorities[4]));
 	}
-
 
 	public function testCopyAndMergeWithPriorities() {
 		$this->setUpPriorities();
@@ -384,8 +343,6 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->item1, $ordered_values[2]);
 		$this->assertEquals($this->item2, $ordered_values[3]);
 		$this->assertEquals($this->item4, $ordered_values[4]);
-
-
 
 		$map2 = new TPriorityMap();
 		$map2->add('startkey', 'startvalue', -1000);
@@ -486,7 +443,4 @@ class TPriorityMapTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(5, count($array));
 	}
 
-
-
 }
-

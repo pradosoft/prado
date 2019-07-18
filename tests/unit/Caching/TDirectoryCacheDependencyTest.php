@@ -5,7 +5,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 /**
  * @package System.Caching
  */
-class TDirectoryCacheDependencyTest extends PHPUnit_Framework_TestCase
+class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()
 	{

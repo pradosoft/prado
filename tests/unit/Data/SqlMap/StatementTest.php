@@ -167,7 +167,7 @@ class StatementTest extends BaseCase
 		//list = $this->sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
 
 		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
-
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	// TODO: Test Execute QueryForList With ResultMap With Dynamic Element
@@ -184,6 +184,7 @@ class StatementTest extends BaseCase
 		//list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
 
 		//$this->assertSame(0, $list->getCount());
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 
@@ -217,6 +218,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(enumClass.Day, Days.Mon);
 		//$this->assertSame(enumClass.Color, Colors.Blue);
 		//$this->assertSame(enumClass.Month, Months.September);*/
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -563,6 +565,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(3, $list[2]->getID());
 		//$this->assertSame(4, $list[3]->getID());
 		//$this->assertSame(5, $list[4]->getID());
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion
@@ -768,6 +771,7 @@ class StatementTest extends BaseCase
 		$order->setStreet("rue Durand");
 
 		$this->sqlmap->Insert("InsertOrderViaPublicFields", $order);
+		$this->assertTrue(true);
 
 		$this->initScript('account-init.sql');
 		$this->initScript('order-init.sql');
@@ -966,6 +970,7 @@ class StatementTest extends BaseCase
 		$other->setLong(789456321);
 
 		$this->sqlmap->Insert("InsertBool", $other);
+		$this->assertTrue(true);
 	}
 
 	/**
@@ -1015,6 +1020,7 @@ class StatementTest extends BaseCase
 		string cacheStats = $this->sqlmap->GetDataCacheStats();
 
 		$this->assertNotNull(cacheStats);*/
+		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
 	#endregion

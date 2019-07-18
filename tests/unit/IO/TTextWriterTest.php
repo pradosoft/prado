@@ -6,7 +6,7 @@ use Prado\IO\TTextWriter;
 /**
  * @package System.IO
  */
-class TTextWriterTest extends PHPUnit_Framework_TestCase {
+class TTextWriterTest extends PHPUnit\Framework\TestCase {
 
 	public function testFlush() {
 		$writer = new TTextWriter();

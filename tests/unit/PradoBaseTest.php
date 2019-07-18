@@ -5,7 +5,7 @@ use Prado\Prado;
 /**
  * @package System
  */
-class PradoBaseTest extends PHPUnit_Framework_TestCase
+class PradoBaseTest extends PHPUnit\Framework\TestCase
 {
     const INTERFACE_FQN = 'Prado\\Web\\UI\\IValidatable';
     const INTERFACE_SHORT_NAME = 'IValidatable';

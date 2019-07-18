@@ -5,7 +5,7 @@ Prado::using('System.Data.SqlMap.TSqlMapManager');
 /**
  * @package System.Data.SqlMap
  */
-class Ticket589Test extends PHPUnit_Framework_TestCase
+class Ticket589Test extends PHPUnit\Framework\TestCase
 {
 	function test()
 	{

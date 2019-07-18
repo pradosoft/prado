@@ -7,7 +7,7 @@ use Prado\Xml\TXmlElement;
 /**
  * @package System.Xml
  */
-class TXmlElementTest extends PHPUnit_Framework_TestCase {
+class TXmlElementTest extends PHPUnit\Framework\TestCase {
 
 	public function setUp() {
 	}

@@ -10,7 +10,7 @@ use Prado\Web\UI\WebControls\TXmlTransform;
 /**
  * @package System.Web.UI.WebControls
  */
-class TXmlTransformTest extends PHPUnit_Framework_TestCase {
+class TXmlTransformTest extends PHPUnit\Framework\TestCase {
 
   private $documentContent;
   private $transformContent;
@@ -73,7 +73,7 @@ class TXmlTransformTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testAddParameter() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 
   public function testRenderWithDocumentContentAndTransformContent() {
@@ -125,7 +125,7 @@ class TXmlTransformTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testRenderWithBodyAsDocumentAndTransformPath() {
-    throw new PHPUnit_Framework_IncompleteTestError();
+    throw new PHPUnit\Framework\IncompleteTestError();
   }
 }
 
