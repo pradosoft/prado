@@ -15,6 +15,14 @@ use Prado\Data\ActiveRecord\TActiveRecordManager;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Prado;
 
+/**
+ * TWsatBaseGenerator class
+ *
+ * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
+ * @since 3.3
+ * @package Prado\Wsat
+ */
+
 class TWsatBaseGenerator
 {
 

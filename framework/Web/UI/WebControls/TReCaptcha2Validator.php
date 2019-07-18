@@ -6,7 +6,7 @@
  * @author Cristian Camilo Naranjo Valencia
  * @link http://icolectiva.co
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -24,7 +24,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * to be the ID path of the {@link TReCaptcha} control.
  *
  * @author Cristian Camilo Naranjo Valencia
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.3.1
  */
 

@@ -12,6 +12,14 @@ namespace Prado\Wsat;
 
 use Prado\Prado;
 
+/**
+ * TWsatScaffoldingGenerator class
+ *
+ * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
+ * @since 3.3
+ * @package Prado\Wsat
+ */
+
 class TWsatScaffoldingGenerator extends TWsatBaseGenerator
 {
 

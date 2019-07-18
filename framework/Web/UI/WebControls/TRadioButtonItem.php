@@ -10,6 +10,13 @@
 
 namespace Prado\Web\UI\WebControls;
 
+/**
+ * TRadioButtonItem class.
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @package Prado\Web\UI\WebControls
+ */
+
 class TRadioButtonItem extends TRadioButton
 {
 	/**

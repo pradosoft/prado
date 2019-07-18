@@ -10,6 +10,13 @@
 
 namespace Prado\Web\UI\WebControls;
 
+/**
+ * TCheckBoxItem class
+ *
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @package Prado\Web\UI\WebControls
+ */
+
 class TCheckBoxItem extends TCheckBox
 {
 	/**

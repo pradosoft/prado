@@ -39,7 +39,12 @@ use Prado\Web\UI\TThemeManager;
  * and generate code and configure your site.
  *
  * Warning: You should only use Wsat in development mode.
+ *
+ * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
+ * @since 3.3
+ * @package Prado\Wsat
  */
+
 class TWsatService extends TPageService
 {
 	const PAGE_NAMESPACE_PREFIX = 'Prado\\Wsat\\pages\\';

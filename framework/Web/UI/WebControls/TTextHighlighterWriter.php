@@ -8,6 +8,11 @@
  * @package Prado\Web\UI\WebControls
  */
 
+namespace Prado\Web\UI\WebControls;
+
+use Prado\Prado;
+use Prado\Web\THttpUtility;
+
 /**
  * TTextHighlighterWriter class.
  *
@@ -18,11 +23,6 @@
  * @package Prado\Web\UI\WebControls
  * @since 4.0
  */
-
-namespace Prado\Web\UI\WebControls;
-
-use Prado\Prado;
-use Prado\Web\THttpUtility;
 
 class TTextHighlighterWriter extends \Prado\Web\UI\THtmlWriter
 {

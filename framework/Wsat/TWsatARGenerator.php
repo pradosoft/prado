@@ -14,6 +14,14 @@ use Exception;
 use PDO;
 use Prado\Prado;
 
+/**
+ * TWsatARGenerator class
+ *
+ * @author Daniel Sampedro Bello <darthdaniel85@gmail.com>
+ * @since 3.3
+ * @package Prado\Wsat
+ */
+
 class TWsatARGenerator extends TWsatBaseGenerator
 {
 

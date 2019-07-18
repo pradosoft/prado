@@ -12,6 +12,13 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Exceptions\TConfigurationException;
 
+/**
+ * TScaffoldInputBase class.
+ *
+ * @link https://github.com/pradosoft/prado
+ * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
+ */
+
 class TScaffoldInputBase
 {
 	const DEFAULT_ID = 'scaffold_input';

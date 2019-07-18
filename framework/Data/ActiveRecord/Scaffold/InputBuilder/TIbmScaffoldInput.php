@@ -12,6 +12,14 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
+/**
+ * TIbmScaffoldInput class.
+ *
+ * @author Cesar Ramos <cramos[at]gmail[dot]com>
+ * @link https://github.com/pradosoft/prado
+ * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
+ */
+
 class TIbmScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)

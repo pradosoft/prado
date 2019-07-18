@@ -11,6 +11,13 @@ namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Prado;
 
+/**
+ * TSqliteScaffoldInput class.
+ *
+ * @link https://github.com/pradosoft/prado
+ * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
+ */
+
 class TSqliteScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)

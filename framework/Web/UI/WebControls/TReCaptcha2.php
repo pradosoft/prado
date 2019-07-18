@@ -6,7 +6,7 @@
  * @author Cristian Camilo Naranjo Valencia
  * @link http://icolectiva.co
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -54,7 +54,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * </code>
  *
  * @author Cristian Camilo Naranjo Valencia
- * @package System.Web.UI.WebControls
+ * @package Prado\Web\UI\WebControls
  * @since 3.3.1
  */
 

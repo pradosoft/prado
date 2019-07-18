@@ -5,7 +5,7 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package \Prado\Web\UI\JuiControls
+ * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;

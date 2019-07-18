@@ -26,6 +26,13 @@ use Prado\Web\UI\WebControls\TTextBoxMode;
 use Prado\Web\UI\WebControls\TValidationDataType;
 use Prado\Web\UI\WebControls\TValidatorDisplayStyle;
 
+/**
+ * TScaffoldInputCommon class.
+ *
+ * @link https://github.com/pradosoft/prado
+ * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
+ */
+
 class TScaffoldInputCommon extends TScaffoldInputBase
 {
 	protected function setDefaultProperty($container, $control, $column, $record)
