@@ -1,4 +1,4 @@
-## Version 4.0.x - In development
+## Version 4.1.0 - In development
 
 BUG: Issue #694 - Undefined variable: conn notice in Active Record Scaffold (ganiuszka)
 

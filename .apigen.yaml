@@ -17,7 +17,7 @@ annotationGroups:
   - todo
   - deprecated
 groups: auto
-title: Prado 4.0.2 API Manual
+title: Prado 4.1.0 API Manual
 tree: true
 version: true
 sourceCode: no

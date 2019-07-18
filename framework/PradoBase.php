@@ -90,7 +90,7 @@ class PradoBase
 	 */
 	public static function getVersion()
 	{
-		return '4.0.2';
+		return '4.1.0';
 	}
 
 	public static function init()

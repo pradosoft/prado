@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.0.2
+# Upgrading Instructions for PRADO Framework v4.1.0
 
 ### !!!IMPORTANT!!!
 
@@ -9,7 +9,7 @@ for both A and B.
 
 Upgrading from v4.0.2
 ---------------------
-- Php 5.6 is now required, >= 7.1 is preferred.
+- Php 7.1 is now required.
 
 Upgrading from v4.0.1
 ---------------------

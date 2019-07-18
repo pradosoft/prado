@@ -1,6 +1,6 @@
 # Prado PHP Framework
 
-PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 5 and 7.
+PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 7.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
 [![Build Status](https://travis-ci.org/pradosoft/prado.png?branch=master)](https://travis-ci.org/pradosoft/prado)
