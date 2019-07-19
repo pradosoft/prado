@@ -13,6 +13,7 @@
 	<logging>
 		<log type="testdox-html" target="./build/tests/index.html"/>
 		<log type="coverage-html" target="./build/tests/coverage" lowUpperBound="35" highLowerBound="70"/>
+		<log type="coverage-clover" target="./build/tests/coverage.xml"/>
 	</logging>
 	<php>
 		<!-- selenium test cases can take up to 20 mins -->
