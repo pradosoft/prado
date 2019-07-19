@@ -264,13 +264,12 @@ class TMysqlMetaData extends TDbMetaData
 			return false;
 		}
 		if ($schemaName !== null) {
-			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE :table";
+			$sql = "SHOW FULL TABLES FROM `{$schemaName}` LIKE '{$tableName}'";
 		} else {
-			$sql = "SHOW FULL TABLES LIKE :table";
+			$sql = "SHOW FULL TABLES LIKE '{$tableName}'";
 		}
 
 		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindValue(':table', $tableName);
 		try {
 			return count($result = $command->queryRow()) > 0 && $result['Table_type'] === 'VIEW';
 		} catch (TDbException $e) {
