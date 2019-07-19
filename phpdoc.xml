@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+	<title>Prado 4.1.0 API Manual</title>
+	<parser>
+		<target>build/docs</target>
+	</parser>
+	<transformer>
+		<target>build/docs</target>
+	</transformer>
+	<transformations>
+		<template name="new-black"/>
+	</transformations>
+	<files>
+		<directory>framework</directory>
+		<ignore>framework/Web/Javascripts/*packages.php</ignore>
+		<ignore>framework/I18N/core/*</ignore>
+		<ignore>framework/Web/UI/WebControls/assets/*</ignore>
+		<ignore>framework/Wsat/pages/*</ignore>
+		<ignore>framework/Wsat/themes/*</ignore>
+	</files>
+</phpdoc>
