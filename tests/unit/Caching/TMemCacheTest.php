@@ -13,8 +13,8 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase {
 	protected static $cache = null;
 
 	protected function setUp() {
-		if(!extension_loaded('memcache')) {
-			self::markTestSkipped('The memcache extension is not available');
+		if(!extension_loaded('memcached')) {
+			self::markTestSkipped('The memcached extension is not available');
 		} else {
 				$basePath = dirname(__FILE__).'/mockapp';
 				$runtimePath = $basePath.'/runtime';
@@ -29,7 +29,7 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase {
 
 	protected function tearDown() {
 		$this->app = null;
-		$this->cache = null;
+		self::$cache = null;
 	}
 
 	public function testInit() {

@@ -45,7 +45,7 @@ use Prado\Xml\TXmlElement;
  * Also note, there is no security measure to protected data in memcache.
  * All data in memcache can be accessed by any process running in the system.
  *
- * To use this module, the memcache PHP extension must be loaded.
+ * To use this module, the memcached PHP extension must be loaded.
  *
  * Some usage examples of TMemCache are as follows,
  * <code>
@@ -80,7 +80,7 @@ use Prado\Xml\TXmlElement;
  * of TMemCache.
  *
  * Automatic compression of values may be used (using zlib extension) by setting {@link getThreshold Threshold} and {@link getMinSavings MinSavings} properties.
- * NB : MemCache server(s) must be restarted to apply settings. Require (PECL memcache >= 2.0.0) or memcached if {@link useMemcached} is true.
+ * NB : MemCache server(s) must be restarted to apply settings.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Caching
@@ -118,14 +118,6 @@ class TMemCache extends TCache
 	private $_minSavings = 0.0;
 
 	/**
-	 * @var bool whether to use memcached or memcache as the underlying caching extension.
-	 * If true {@link http://pecl.php.net/package/memcached memcached} will be used.
-	 * If false {@link http://pecl.php.net/package/memcache memcache}. will be used.
-	 * Defaults to false.
-	 */
-	private $_useMemcached = false;
-
-	/**
 	 * @var array list of servers available
 	 */
 	private $_servers = [];
@@ -136,8 +128,9 @@ class TMemCache extends TCache
 	 */
 	public function __destruct()
 	{
-		if ($this->_cache !== null && !$this->_useMemcached) {
-			$this->_cache->close();
+		if ($this->_cache !== null) {
+			// Quit() is available only for memcached >= 2
+			// $this->_cache->quit();
 		}
 	}
 
@@ -151,14 +144,11 @@ class TMemCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('memcache') && !$this->_useMemcached) {
-			throw new TConfigurationException('memcache_extension_required');
-		}
-		if (!extension_loaded('memcached') && $this->_useMemcached) {
+		if (!extension_loaded('memcached')) {
 			throw new TConfigurationException('memcached_extension_required');
 		}
 
-		$this->_cache = $this->_useMemcached ? new Memcached : new Memcache;
+		$this->_cache = new \Memcached;
 		$this->loadConfig($config);
 		if (count($this->_servers)) {
 			foreach ($this->_servers as $server) {
@@ -269,23 +259,23 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return bool if memcached instead memcache
+	 * @return bool if memcached is used instead of memcache
+	 * @deprecated since Prado 4.1, only memecached is available
 	 */
 	public function getUseMemcached()
 	{
-		return $this->_useMemcached;
+		return true;
 	}
 
 	/**
 	 * @param string $value if memcached instead memcache
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws TInvalidOperationException if the module is already initialized or usage of the old, unsupported memcache extension has been requested
+	 * @deprecated since Prado 4.1, only memecached is available
 	 */
 	public function setUseMemcached($value)
 	{
-		if ($this->_initialized) {
+		if ($this->_initialized || $value === false) {
 			throw new TInvalidOperationException('memcache_host_unchangeable');
-		} else {
-			$this->_useMemcached = $value;
 		}
 	}
 
@@ -353,11 +343,7 @@ class TMemCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		if ($this->_useMemcached) {
-			return $this->_cache->set($key, $value, $expire);
-		} else {
-			return $this->_cache->set($key, $value, 0, $expire);
-		}
+		return $this->_cache->set($key, $value, $expire);
 	}
 
 	/**
@@ -371,11 +357,7 @@ class TMemCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-		if ($this->_useMemcached) {
-			$this->_cache->add($key, $value, $expire);
-		} else {
-			return $this->_cache->add($key, $value, 0, $expire);
-		}
+		$this->_cache->add($key, $value, $expire);
 	}
 
 	/**
