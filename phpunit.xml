@@ -5,6 +5,14 @@
 	convertNoticesToExceptions="true"
 	convertWarningsToExceptions="true"
 	stopOnFailure="false">
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">./tests/unit</directory>
+		</testsuite>
+		<testsuite name="functional">
+			<directory suffix="TestCase.php">./tests/FunctionalTests</directory>
+		</testsuite>
+	</testsuites>
 	<filter>
 		<whitelist>
 			<directory suffix=".php">framework/</directory>

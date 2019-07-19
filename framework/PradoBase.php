@@ -313,14 +313,15 @@ class PradoBase
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
-	 * @param bool $checkClassExistence whether to check the existence of the class after the class file is included
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
-	public static function using($namespace, $checkClassExistence = true)
+	public static function using($namespace)
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
-		if (isset(self::$_usings[$namespace]) || class_exists($namespace, false)) {
+		if (isset(self::$_usings[$namespace]) ||
+			class_exists($namespace, false) ||
+			interface_exists($namespace, false)) {
 			return;
 		}
 
@@ -347,29 +348,17 @@ class PradoBase
 					}
 				}
 			}
-
-			if ($checkClassExistence && !class_exists($namespace, false) && !interface_exists($namespace, false)) {
-				throw new TInvalidOperationException('prado_component_unknown', $namespace, '');
-			}
 		} elseif (($path = self::getPathOfNamespace($namespace, self::CLASS_FILE_EXT)) !== null) {
 			$className = substr($namespace, $pos + 1);
 			if ($className === '*') {  // a directory
 				self::$_usings[substr($namespace, 0, $pos)] = $path;
 			} else {  // a file
-				//self::$_usings[$namespace]=$path;
-				if (!$checkClassExistence || (!class_exists($className, false) && !interface_exists($className, false))) {
-					try {
-						include_once($path);
-						if (class_exists($namespace, false) || interface_exists($namespace, false)) {
-							class_alias($namespace, $className);
-						}
-					} catch (\Exception $e) {
-						if ($checkClassExistence && !class_exists($className, false)) {
-							throw new TInvalidOperationException('prado_component_unknown', $className, $e->getMessage());
-						} else {
-							throw $e;
-						}
-					}
+				if (class_exists($className, false) || interface_exists($className, false))
+					return;
+
+				include_once($path);
+				if (!class_exists($className, false) && !interface_exists($className, false)) {
+					class_alias($namespace, $className);
 				}
 			}
 		}

@@ -101,8 +101,8 @@
 	},
     "scripts": {
         "gendoc": "phpdoc",
-        "unittest": "phpunit tests/unit",
-        "functionaltest": "phpunit --test-suffix TestCase.php tests/FunctionalTests"
+        "unittest": "phpunit --testsuite unit",
+        "functionaltest": "phpunit --testsuite functional"
     },
 	"bin" : [
 		"bin/prado-cli"
