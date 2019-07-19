@@ -5,33 +5,32 @@ Prado::using('System.Web.UI.IValidatable');
 class Ticket284Component extends TTemplateControl implements IValidatable
 {
 	private $_isValid;
- 	public function onPreRender($param)
- 	{
-		if (!$this->ShowHours && $this->ShowMinutes)
-		{
+	public function onPreRender($param)
+	{
+		if (!$this->ShowHours && $this->ShowMinutes) {
 			throw new TConfigurationException(
 				'Invalid OPSDatePicker Config: You cannot specify ShowMinutes="true" while ShowHours="false"'
 			);
 		}
 	}
 
-    public function getDatePicker()
-    {
-        $this->ensureChildControls();
-        return $this->getRegisteredObject('datePicker');
-    }
-    
-    public function getHourPicker()
-    {
-        $this->ensureChildControls();
-        return $this->getRegisteredObject('hourPicker');
-    }
-    
-    public function getMinutePicker()
-    {
-        $this->ensureChildControls();
-        return $this->getRegisteredObject('minutePicker');
-    }
+	public function getDatePicker()
+	{
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('datePicker');
+	}
+	
+	public function getHourPicker()
+	{
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('hourPicker');
+	}
+	
+	public function getMinutePicker()
+	{
+		$this->ensureChildControls();
+		return $this->getRegisteredObject('minutePicker');
+	}
 	
 	public function getShowHours()
 	{
@@ -69,11 +68,11 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 	public function getDate()
 	{
 		$dateStr = $this->DatePicker->Date;
-		if ($this->ShowHours){
-			$dateStr .= ' '.$this->HourPicker->SelectedValue;
+		if ($this->ShowHours) {
+			$dateStr .= ' ' . $this->HourPicker->SelectedValue;
 		}
-		if ($this->ShowMinutes){
-			$dateStr .= ':'.$this->MinutePicker->SelectedValue;
+		if ($this->ShowMinutes) {
+			$dateStr .= ':' . $this->MinutePicker->SelectedValue;
 		}
 		return $dateStr;
 	}
@@ -86,19 +85,18 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 	
 	public function getValidationPropertyValue()
 	{
-		if ($this->DatePicker->Date === ''){
+		if ($this->DatePicker->Date === '') {
 			return '';
-		}
-		else{
+		} else {
 			return $this->TimeStamp;
 		}
 	}
-        public function getIsValid()
-        {
-            return $this->_isValid;
-        }
-        public function setIsValid($value)
-        {
-            $this->_isValid=TPropertyValue::ensureBoolean($value);
-        }
+	public function getIsValid()
+	{
+		return $this->_isValid;
+	}
+	public function setIsValid($value)
+	{
+		$this->_isValid = TPropertyValue::ensureBoolean($value);
+	}
 }

@@ -368,7 +368,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 			} else {
 				array_pop($params);
 				foreach ($params as $param) {
-					list($key, $value) = explode($this->_separator, $param, 2);
+					[$key, $value] = explode($this->_separator, $param, 2);
 					$matches[$key] = $value;
 				}
 			}

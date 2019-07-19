@@ -6,14 +6,16 @@ class Ticket603 extends TPage
 {
 	protected $_isHtml;
 
-	public function onLoad($param) {
+	public function onLoad($param)
+	{
 		parent::onLoad($param);
 		$this->_isHtml = true;
 	}
 
-	public function switchContentTypeClicked( $sender, $param ) {
+	public function switchContentTypeClicked($sender, $param)
+	{
 		$this->_isHtml = !$this->_isHtml;
-		if ( $this->_isHtml ) {
+		if ($this->_isHtml) {
 			$this->EditHtmlTextBox->EnableVisualEdit = true;
 			$this->EditHtmlTextBox->Text = '<b>somehtml</b>';
 		} else {
@@ -22,7 +24,8 @@ class Ticket603 extends TPage
 		}
 	}
 
-	public function switchContentTypeCallback( $sender, $param ) {
-		$this->ContentPanel->render( $param->NewWriter );
+	public function switchContentTypeCallback($sender, $param)
+	{
+		$this->ContentPanel->render($param->NewWriter);
 	}
 }

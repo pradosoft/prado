@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseGateway.php');
+require_once(__DIR__ . '/BaseGateway.php');
 
 /**
  * @package System.Data.TableGateway
  */
 class TableInfoGatewayTest extends BaseGateway
 {
-	function test_table_info()
+	public function test_table_info()
 	{
 		$conn = $this->getGateway()->getDbConnection();
 		$this->add_record1();

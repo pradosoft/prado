@@ -37,8 +37,7 @@ class TPageStateFormatter
 	public static function serialize($page, $data)
 	{
 		$sm = $page->getApplication()->getSecurityManager();
-		if($page->getEnableStateIGBinary() && extension_loaded('igbinary'))
-		{
+		if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
 			if ($page->getEnableStateValidation()) {
 				$str = $sm->hashData(igbinary_serialize($data));
 			} else {
@@ -80,8 +79,7 @@ class TPageStateFormatter
 				$str = @gzuncompress($str);
 			}
 
-			if($page->getEnableStateIGBinary() && extension_loaded('igbinary'))
-			{
+			if ($page->getEnableStateIGBinary() && extension_loaded('igbinary')) {
 				if ($page->getEnableStateValidation()) {
 					if (($str = $sm->validateData($str)) !== false) {
 						return igbinary_unserialize($str);

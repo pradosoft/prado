@@ -5,18 +5,20 @@
 /**
  * @package System.Web.UI
  */
-class TPageStatePersisterTest extends PHPUnit\Framework\TestCase {
-
-	public function testSetAndGetPage() {
+class TPageStatePersisterTest extends PHPUnit\Framework\TestCase
+{
+	public function testSetAndGetPage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSave() {
+	public function testSave()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testLoad() {
+	public function testLoad()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

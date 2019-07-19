@@ -87,7 +87,7 @@ class TTimeTriggeredCallback extends TCallback
 	{
 		$this->setViewState(
 			'StartTimerOnLoad',
-				TPropertyValue::ensureBoolean($value),
+			TPropertyValue::ensureBoolean($value),
 			false
 		);
 	}

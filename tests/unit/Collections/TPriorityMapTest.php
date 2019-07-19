@@ -5,84 +5,98 @@ use Prado\Collections\TPriorityMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
-class TPriorityMapTest_MapItem {
-  public $data='data';
+class TPriorityMapTest_MapItem
+{
+	public $data = 'data';
 }
 
 /**
  * @package System.Collections
  */
-class TPriorityMapTest extends PHPUnit\Framework\TestCase {
-  protected $map;
-  protected $item1,$item2,$item3,$item4,$item5;
+class TPriorityMapTest extends PHPUnit\Framework\TestCase
+{
+	protected $map;
+	protected $item1;
+	protected $item2;
+	protected $item3;
+	protected $item4;
+	protected $item5;
 
-  public function setUp() {
-  	// test that TPriorityMap complies with TMap
-    $this->map=new TPriorityMap;
-    $this->item1=new TPriorityMapTest_MapItem;
-    $this->item2=new TPriorityMapTest_MapItem;
-    $this->item3=new TPriorityMapTest_MapItem;
-    $this->item4=new TPriorityMapTest_MapItem;
-    $this->item5=new TPriorityMapTest_MapItem;
-    $this->map->add('key1',$this->item1);
-    $this->map->add('key2',$this->item2);
+	public function setUp()
+	{
+		// test that TPriorityMap complies with TMap
+		$this->map = new TPriorityMap;
+		$this->item1 = new TPriorityMapTest_MapItem;
+		$this->item2 = new TPriorityMapTest_MapItem;
+		$this->item3 = new TPriorityMapTest_MapItem;
+		$this->item4 = new TPriorityMapTest_MapItem;
+		$this->item5 = new TPriorityMapTest_MapItem;
+		$this->map->add('key1', $this->item1);
+		$this->map->add('key2', $this->item2);
 
-    //Test the priority capabilities
-  }
+		//Test the priority capabilities
+	}
 
-  public function setUpPriorities() {
-	$this->map->add('key3', $this->item3, 0);
-	$this->map->add('key4', $this->item4, 100);
-	$this->map->add('key5', $this->item5, 1);
-  }
+	public function setUpPriorities()
+	{
+		$this->map->add('key3', $this->item3, 0);
+		$this->map->add('key4', $this->item4, 100);
+		$this->map->add('key5', $this->item5, 1);
+	}
 
-  public function tearDown() {
-    $this->map=null;
-    $this->item1=null;
-    $this->item2=null;
-    $this->item3=null;
-  }
+	public function tearDown()
+	{
+		$this->map = null;
+		$this->item1 = null;
+		$this->item2 = null;
+		$this->item3 = null;
+	}
 
-  public function testConstruct() {
-    $a=array(1,2,'key3'=>3);
-    $map=new TPriorityMap($a);
-    $this->assertEquals(3,$map->getCount());
-    $map2=new TPriorityMap($this->map);
-    $this->assertEquals(2,$map2->getCount());
+	public function testConstruct()
+	{
+		$a = [1, 2, 'key3' => 3];
+		$map = new TPriorityMap($a);
+		$this->assertEquals(3, $map->getCount());
+		$map2 = new TPriorityMap($this->map);
+		$this->assertEquals(2, $map2->getCount());
 
-	/* Test the priority functionality of TPriorityMap  */
+		/* Test the priority functionality of TPriorityMap  */
 
-    $map3=new TPriorityMap($this->map, false, 100, -1);
-    $this->assertEquals(100,$map3->getDefaultPriority());
-    $this->assertEquals(-1,$map3->getPrecision());
-  }
+		$map3 = new TPriorityMap($this->map, false, 100, -1);
+		$this->assertEquals(100, $map3->getDefaultPriority());
+		$this->assertEquals(-1, $map3->getPrecision());
+	}
 
-  	/* Test that TPriorityMap complies with TMap   */
+	/* Test that TPriorityMap complies with TMap   */
 
-	public function testGetReadOnly() {
+	public function testGetReadOnly()
+	{
 		$map = new TPriorityMap(null, true);
 		self::assertEquals(true, $map->getReadOnly(), 'List is not read-only');
 		$map = new TList(null, false);
 		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
 	}
 
-	public function testGetCount() {
-		$this->assertEquals(2,$this->map->getCount());
+	public function testGetCount()
+	{
+		$this->assertEquals(2, $this->map->getCount());
 	}
 
-	public function testGetKeys() {
-		$keys=$this->map->getKeys();
-		$this->assertTrue(count($keys)===2 && $keys[0]==='key1' && $keys[1]==='key2');
+	public function testGetKeys()
+	{
+		$keys = $this->map->getKeys();
+		$this->assertTrue(count($keys) === 2 && $keys[0] === 'key1' && $keys[1] === 'key2');
 	}
 
 	public function testAdd()
 	{
-		$this->map->add('key3',$this->item3);
-		$this->assertTrue($this->map->getCount()==3 && $this->map->contains('key3'));
+		$this->map->add('key3', $this->item3);
+		$this->assertTrue($this->map->getCount() == 3 && $this->map->contains('key3'));
 	}
 
-	public function testCanNotAddWhenReadOnly() {
-		$map = new TPriorityMap(array(), true);
+	public function testCanNotAddWhenReadOnly()
+	{
+		$map = new TPriorityMap([], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$map->add('key', 'value');
 	}
@@ -90,12 +104,13 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 	public function testRemove()
 	{
 		$this->map->remove('key1');
-		$this->assertTrue($this->map->getCount()==1 && !$this->map->contains('key1'));
-		$this->assertTrue($this->map->remove('unknown key')===null);
+		$this->assertTrue($this->map->getCount() == 1 && !$this->map->contains('key1'));
+		$this->assertTrue($this->map->remove('unknown key') === null);
 	}
 
-	public function testCanNotRemoveWhenReadOnly() {
-		$map = new TPriorityMap(array('key' => 'value'), true);
+	public function testCanNotRemoveWhenReadOnly()
+	{
+		$map = new TPriorityMap(['key' => 'value'], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$map->remove('key');
 	}
@@ -103,7 +118,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 	public function testClear()
 	{
 		$this->map->clear();
-		$this->assertTrue($this->map->getCount()==0 && !$this->map->contains('key1') && !$this->map->contains('key2'));
+		$this->assertTrue($this->map->getCount() == 0 && !$this->map->contains('key1') && !$this->map->contains('key2'));
 	}
 
 	public function testContains()
@@ -115,75 +130,77 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 
 	public function testCopyFrom()
 	{
-		$array=array('key3'=>$this->item3,'key4'=>$this->item1);
+		$array = ['key3' => $this->item3, 'key4' => $this->item1];
 		$this->map->copyFrom($array);
-		$this->assertTrue($this->map->getCount()==2 && $this->map['key3']===$this->item3 && $this->map['key4']===$this->item1);
+		$this->assertTrue($this->map->getCount() == 2 && $this->map['key3'] === $this->item3 && $this->map['key4'] === $this->item1);
 		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
 		$this->map->copyFrom($this);
 	}
 
 	public function testMergeWith()
 	{
-		$array=array('key2'=>$this->item1,'key3'=>$this->item3);
+		$array = ['key2' => $this->item1, 'key3' => $this->item3];
 		$this->map->mergeWith($array);
-		$this->assertEquals(3,$this->map->getCount());
-		$this->assertTrue($this->map['key2']===$this->item1);
-		$this->assertTrue($this->map['key3']===$this->item3);
+		$this->assertEquals(3, $this->map->getCount());
+		$this->assertTrue($this->map['key2'] === $this->item1);
+		$this->assertTrue($this->map['key3'] === $this->item3);
 		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
 		$this->map->mergeWith($this);
 	}
 
 	public function testArrayRead()
 	{
-		$this->assertTrue($this->map['key1']===$this->item1);
-		$this->assertTrue($this->map['key2']===$this->item2);
-		$this->assertEquals(null,$this->map['key3']);
+		$this->assertTrue($this->map['key1'] === $this->item1);
+		$this->assertTrue($this->map['key2'] === $this->item2);
+		$this->assertEquals(null, $this->map['key3']);
 	}
 
 	public function testArrayWrite()
 	{
-		$this->map['key3']=$this->item3;
-		$this->assertTrue($this->map['key3']===$this->item3);
-		$this->assertEquals(3,$this->map->getCount());
-		$this->map['key1']=$this->item3;
-		$this->assertTrue($this->map['key1']===$this->item3);
-		$this->assertEquals(3,$this->map->getCount());
+		$this->map['key3'] = $this->item3;
+		$this->assertTrue($this->map['key3'] === $this->item3);
+		$this->assertEquals(3, $this->map->getCount());
+		$this->map['key1'] = $this->item3;
+		$this->assertTrue($this->map['key1'] === $this->item3);
+		$this->assertEquals(3, $this->map->getCount());
 		unset($this->map['key2']);
-		$this->assertEquals(2,$this->map->getCount());
+		$this->assertEquals(2, $this->map->getCount());
 		$this->assertFalse($this->map->contains('key2'));
 	}
 
 	public function testArrayForeach()
 	{
-		$n=0;
-		$found=0;
-		foreach($this->map as $index=>$item)
-		{
+		$n = 0;
+		$found = 0;
+		foreach ($this->map as $index => $item) {
 			$n++;
-			if($index==='key1' && $item===$this->item1)
+			if ($index === 'key1' && $item === $this->item1) {
 				$found++;
-			if($index==='key2' && $item===$this->item2)
+			}
+			if ($index === 'key2' && $item === $this->item2) {
 				$found++;
+			}
 		}
-		$this->assertTrue($n==2 && $found==2);
+		$this->assertTrue($n == 2 && $found == 2);
 	}
 
 	public function testArrayMisc()
 	{
-		$this->assertEquals($this->map->Count,count($this->map));
+		$this->assertEquals($this->map->Count, count($this->map));
 		$this->assertTrue(isset($this->map['key1']));
 		$this->assertFalse(isset($this->map['unknown key']));
 	}
 
-	public function testToArray() {
-		$map = new TPriorityMap(array('key' => 'value'));
-		self::assertEquals(array('key' => 'value'), $map->toArray());
+	public function testToArray()
+	{
+		$map = new TPriorityMap(['key' => 'value']);
+		self::assertEquals(['key' => 'value'], $map->toArray());
 	}
 
 	/* Test the priority functionality of TPriorityMap  */
 
-	public function testDefaultPriorityAndPrecision() {
-
+	public function testDefaultPriorityAndPrecision()
+	{
 		$this->assertEquals(10, $this->map->DefaultPriority);
 
 		$this->map->DefaultPriority = 5;
@@ -204,8 +221,8 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(5, $this->map->getCount());
 	}
 
-	public function testAddWithPriorityAndPriorityOfAt() {
-
+	public function testAddWithPriorityAndPriorityOfAt()
+	{
 		$this->setUpPriorities();
 
 		$this->assertEquals(5, $this->map->getCount());
@@ -222,11 +239,10 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(1, $this->map->priorityAt('key5'));
 		$this->assertEquals(false, $this->map->priorityAt(null));
 		$this->assertEquals(false, $this->map->priorityAt('foo'));
-
 	}
 
-	public function testRemoveWithPriorityAndItemsAtWithPriority() {
-
+	public function testRemoveWithPriorityAndItemsAtWithPriority()
+	{
 		$this->setUpPriorities();
 
 		$this->assertEquals(5, $this->map->getCount());
@@ -244,8 +260,8 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->map->remove('key5', 50);
 		$this->assertEquals(5, $this->map->getCount());
 
-		$this->assertEquals(array('key3'=>$this->item3), $this->map->itemsAtPriority(0));
-		$this->assertEquals(array('key1'=>$this->item1, 'key2'=>$this->item2), $this->map->itemsAtPriority($this->map->DefaultPriority));
+		$this->assertEquals(['key3' => $this->item3], $this->map->itemsAtPriority(0));
+		$this->assertEquals(['key1' => $this->item1, 'key2' => $this->item2], $this->map->itemsAtPriority($this->map->DefaultPriority));
 
 		$this->assertEquals($this->item2, $this->map->itemAt('key2'));
 		$this->assertEquals($this->item2, $this->map->itemAt('key2', 10));
@@ -259,8 +275,8 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(3, $this->map->getCount());
 	}
 
-	public function testIteratorAndArrayWithPriorities() {
-
+	public function testIteratorAndArrayWithPriorities()
+	{
 		$this->setUpPriorities();
 
 		// This is the primary reason for a TPriorityMap
@@ -307,7 +323,8 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(null, $iter->current());
 	}
 
-	public function testGetPriorities() {
+	public function testGetPriorities()
+	{
 		$this->setUpPriorities();
 
 		$priorities = $this->map->getPriorities();
@@ -319,7 +336,8 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(false, isset($priorities[4]));
 	}
 
-	public function testCopyAndMergeWithPriorities() {
+	public function testCopyAndMergeWithPriorities()
+	{
 		$this->setUpPriorities();
 
 		$map1 = new TPriorityMap();
@@ -369,14 +387,14 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals($this->item1, $ordered_values[3]);
 		$this->assertEquals($this->item2, $ordered_values[4]);
 		$this->assertEquals($this->item4, $ordered_values[5]);
-		$this->assertEquals('endvalue',   $ordered_values[6]);
+		$this->assertEquals('endvalue', $ordered_values[6]);
 
 		$this->assertEquals(1, $map2->priorityAt('key5'));
 		$this->assertEquals(1, $map2->priorityOf($this->item5));
 	}
 
-	public function testSetPriorityAt() {
-
+	public function testSetPriorityAt()
+	{
 		$this->assertEquals(10, $this->map->priorityAt('key2'));
 		$this->assertEquals(10, $this->map->setPriorityAt('key2', 1));
 		$this->assertEquals(1, $this->map->priorityAt('key2'));
@@ -384,39 +402,41 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals(10, $this->map->priorityAt('key2'));
 	}
 
-	public function testToArrayBelowPriority() {
+	public function testToArrayBelowPriority()
+	{
 		$this->setUpPriorities();
 
 		$array = $this->map->toArrayBelowPriority(1);
-		$this->assertEquals(array('key3'=> $this->item3), $array);
+		$this->assertEquals(['key3' => $this->item3], $array);
 		$this->assertEquals(1, count($array));
 
 		$array = $this->map->toArrayBelowPriority(1, true);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5], $array);
 		$this->assertEquals(2, count($array));
 
 		$array = $this->map->toArrayBelowPriority(2);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5], $array);
 		$this->assertEquals(2, count($array));
 
 		$array = $this->map->toArrayBelowPriority(10);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5], $array);
 		$this->assertEquals(2, count($array));
 
 		$array = $this->map->toArrayBelowPriority(10, true);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5, 'key1' => $this->item1, 'key2' => $this->item2), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2], $array);
 		$this->assertEquals(4, count($array));
 
 		$array = $this->map->toArrayBelowPriority(100);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5, 'key1' => $this->item1, 'key2' => $this->item2), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2], $array);
 		$this->assertEquals(4, count($array));
 
 		$array = $this->map->toArrayBelowPriority(100, true);
-		$this->assertEquals(array('key3'=> $this->item3, 'key5'=> $this->item5, 'key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4], $array);
 		$this->assertEquals(5, count($array));
 	}
 
-	public function testToArrayAbovePriority() {
+	public function testToArrayAbovePriority()
+	{
 		$this->setUpPriorities();
 
 		$array = $this->map->toArrayAbovePriority(100, false);
@@ -424,23 +444,22 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase {
 
 		$array = $this->map->toArrayAbovePriority(100, true);
 		$this->assertEquals(1, count($array));
-		$this->assertEquals(array('key4' => $this->item4), $array);
+		$this->assertEquals(['key4' => $this->item4], $array);
 
 		$array = $this->map->toArrayAbovePriority(11);
-		$this->assertEquals(array('key4' => $this->item4), $array);
+		$this->assertEquals(['key4' => $this->item4], $array);
 		$this->assertEquals(1, count($array));
 
 		$array = $this->map->toArrayAbovePriority(10, false);
-		$this->assertEquals(array('key4' => $this->item4), $array);
+		$this->assertEquals(['key4' => $this->item4], $array);
 		$this->assertEquals(1, count($array));
 
 		$array = $this->map->toArrayAbovePriority(10);
-		$this->assertEquals(array('key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4), $array);
+		$this->assertEquals(['key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4], $array);
 		$this->assertEquals(3, count($array));
 
 		$array = $this->map->toArrayAbovePriority(0);
-		$this->assertEquals(array('key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4), $array);
+		$this->assertEquals(['key3' => $this->item3, 'key5' => $this->item5, 'key1' => $this->item1, 'key2' => $this->item2, 'key4' => $this->item4], $array);
 		$this->assertEquals(5, count($array));
 	}
-
 }

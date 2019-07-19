@@ -5,12 +5,12 @@
  
 class ActiveControl extends TPage
 {
-	static private $_colors = array('red', 'green', 'blue', 'purple','black','orange');
+	private static $_colors = ['red', 'green', 'blue', 'purple', 'black', 'orange'];
 	
 	public function slowResponse($sender, $param)
 	{
 		//sleep(1);
-		$this->label1->setText("The time is ".time()." from ".$sender->ID);
+		$this->label1->setText("The time is " . time() . " from " . $sender->ID);
 		$this->label1->setForeColor($this->getColor());
 		$this->label1->renderControl($param->getOutput());
 
@@ -24,7 +24,7 @@ class ActiveControl extends TPage
 	
 	public function onButtonClicked($sender, $param)
 	{
-		$this->label2->setText("Muahaha !!! the time is ".time()." from ".$sender->ID);
+		$this->label2->setText("Muahaha !!! the time is " . time() . " from " . $sender->ID);
 	}
 	
 	public function fastResponse($sender, $param)
@@ -37,6 +37,6 @@ class ActiveControl extends TPage
 	
 	private function getColor()
 	{
-		return self::$_colors[rand(0,count(self::$_colors)-1)];
+		return self::$_colors[rand(0, count(self::$_colors) - 1)];
 	}
 }

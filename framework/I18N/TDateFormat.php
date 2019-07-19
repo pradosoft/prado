@@ -80,7 +80,6 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	public function setPattern($value)
 	{
-
 		$this->setViewState('Pattern', $value, '');
 	}
 
@@ -189,12 +188,15 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	protected function getFormatter($culture, $datetype, $timetype)
 	{
-		if(!isset(self::$formatters[$culture]))
+		if (!isset(self::$formatters[$culture])) {
 			self::$formatters[$culture] = [];
-		if(!isset(self::$formatters[$culture][$datetype]))
+		}
+		if (!isset(self::$formatters[$culture][$datetype])) {
 			self::$formatters[$culture][$datetype] = [];
-		if(!isset(self::$formatters[$culture][$datetype][$timetype]))
+		}
+		if (!isset(self::$formatters[$culture][$datetype][$timetype])) {
 			self::$formatters[$culture][$datetype][$timetype] = new \IntlDateFormatter($culture, $datetype, $timetype);
+		}
 
 		return self::$formatters[$culture][$datetype][$timetype];
 	}
@@ -229,15 +231,13 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		$timetype = \IntlDateFormatter::LONG;
 
 		// try the "date time" pattern format
-		if(!empty($pattern))
-		{
+		if (!empty($pattern)) {
 			$subs = explode(' ', $pattern, 2);
 			if (count($subs) == 2) {
 				$sub0 = $this->getPreset($subs[0]);
 				$sub1 = $this->getPreset($subs[1]);
 
-				if($sub0 !== null && $sub1 !== null)
-				{
+				if ($sub0 !== null && $sub1 !== null) {
 					$datetype = $sub0;
 					$timetype = $sub1;
 					$pattern = null;
@@ -246,19 +246,16 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		}
 
 		// try the "date" pattern format
-		if(!empty($pattern))
-		{
+		if (!empty($pattern)) {
 			$sub = $this->getPreset($pattern);
-			if($sub !== null)
-			{
+			if ($sub !== null) {
 				$datetype = $sub;
 				$timetype = $sub;
 				$pattern = null;
 			}
 		}
 
-		if(empty($pattern))
-		{
+		if (empty($pattern)) {
 			$formatter = $this->getFormatter($culture, $datetype, $timetype);
 		} else {
 			$formatter = new \IntlDateFormatter($culture, $datetype, $timetype);

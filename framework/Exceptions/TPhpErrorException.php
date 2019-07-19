@@ -45,7 +45,7 @@ class TPhpErrorException extends TSystemException
 			E_USER_NOTICE => "User Notice",
 			E_STRICT => "Runtime Notice"
 		];
-		$errorType = isset($errorTypes[$errno]) ? $errorTypes[$errno] : 'Unknown Error';
+		$errorType = $errorTypes[$errno] ?? 'Unknown Error';
 		parent::__construct("[$errorType] $errstr (@line $errline in file $errfile).");
 	}
 

@@ -3,7 +3,7 @@
 //New Test
 class RangeValidatorTestCase extends PradoGenericSelenium2Test
 {
-	function testIntegerRange()
+	public function testIntegerRange()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RangeValidatorInteger");
@@ -40,10 +40,9 @@ class RangeValidatorTestCase extends PradoGenericSelenium2Test
 		$this->type("{$base}text3", "10");
 		$this->byXPath("//input[@type='submit' and @value='Test']")->click();
 		$this->assertNotVisible("{$base}validator3");
-
 	}
 
-	function testFloatRange()
+	public function testFloatRange()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RangeValidatorFloat");
@@ -82,7 +81,7 @@ class RangeValidatorTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator3");
 	}
 
-	function testDateRange()
+	public function testDateRange()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RangeValidatorDate");
@@ -122,7 +121,7 @@ class RangeValidatorTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator3");
 	}
 
-	function testStringRange()
+	public function testStringRange()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RangeValidatorString");
@@ -163,4 +162,3 @@ class RangeValidatorTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator3");
 	}
 }
-

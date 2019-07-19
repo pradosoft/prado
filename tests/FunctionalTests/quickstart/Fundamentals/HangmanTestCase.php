@@ -2,7 +2,7 @@
 
 class QuickstartHangmanTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Fundamentals.Samples.Hangman.Home&amp;notheme=true&amp;lang=en");
 		$this->assertEquals("Hangman Game", $this->title());

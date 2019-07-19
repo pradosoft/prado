@@ -1,9 +1,10 @@
 <?php
+
 require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
 
 class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 {
-	public static $browsers = array(
+	public static $browsers = [
 /*
 		array(
 			'name'    => 'Firefox on OSX',
@@ -12,13 +13,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 			'port'    => 4444,
 		),
 */
-		array(
-			'name'    => 'Chrome on OSX',
+		[
+			'name' => 'Chrome on OSX',
 			'browserName' => 'chrome',
 //			'sessionStrategy' => 'shared',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
+			'host' => '127.0.0.1',
+			'port' => 4444,
+		],
 /*
 		array(
 			'name'    => 'Safari on OSX',
@@ -42,28 +43,28 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 			'port'    => 4445,
 		)
 */
-	);
+	];
 
-	static $baseurl='http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
 
-	static $timeout=5; //seconds
+	public static $timeout = 5; //seconds
 
-    public function prepareSession()
-    {
-        $session = parent::prepareSession();
-        // Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/295
-        $this->url('/dummy.html');
+	public function prepareSession()
+	{
+		$session = parent::prepareSession();
+		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/295
+		$this->url('/dummy.html');
 
-        return $session;
-    }
+		return $session;
+	}
 
 	protected function setUp()
 	{
 		// Workaroun for https://github.com/giorgiosironi/phpunit-selenium/issues/436
 		$this->setDesiredCapabilities([
-		    'goog:chromeOptions' => [
-		        'w3c' => false
-		    ]
+			'goog:chromeOptions' => [
+				'w3c' => false
+			]
 		]);
 //		self::shareSession(true);
 		$this->setBrowserUrl(static::$baseurl);
@@ -72,14 +73,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertAttribute($idattr, $txt)
 	{
-		list($id, $attr) = explode('@', $idattr);
+		[$id, $attr] = explode('@', $idattr);
 
 		$element = $this->getElement($id);
-		$value=$element->attribute($attr);
+		$value = $element->attribute($attr);
 
-		if(strpos($txt, 'regexp:')===0)
-		{
-			$this->assertRegExp('/'.substr($txt, 7).'/', $value);
+		if (strpos($txt, 'regexp:') === 0) {
+			$this->assertRegExp('/' . substr($txt, 7) . '/', $value);
 		} else {
 			$this->assertEquals($txt, $value);
 		}
@@ -87,13 +87,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function getElement($id)
 	{
-		if(strpos($id, 'id=')===0) {
+		if (strpos($id, 'id=') === 0) {
 			return $this->byId(substr($id, 3));
-		} elseif(strpos($id, 'name=')===0) {
+		} elseif (strpos($id, 'name=') === 0) {
 			return $this->byName(substr($id, 5));
-		} elseif(strpos($id, '//')===0) {
+		} elseif (strpos($id, '//') === 0) {
 			return $this->byXPath($id);
-		} elseif(strpos($id, '$')!==false) {
+		} elseif (strpos($id, '$') !== false) {
 			return $this->byName($id);
 		} else {
 			return $this->byId($id);
@@ -107,7 +107,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertValue($id, $txt)
 	{
-		try{
+		try {
 			$this->assertEquals($txt, $this->getElement($id)->value());
 		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
 			//stale element reference. try second time.
@@ -118,7 +118,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertVisible($id)
 	{
-		try{
+		try {
 			$this->assertTrue($this->getElement($id)->displayed());
 		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
 			//stale element reference. try second time.
@@ -129,7 +129,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertNotVisible($id)
 	{
-		try{
+		try {
 			$this->assertFalse($this->getElement($id)->displayed());
 		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
 			//stale element reference. try second time.
@@ -140,7 +140,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertElementPresent($id)
 	{
-		$this->assertTrue($this->getElement($id)!==null);
+		$this->assertTrue($this->getElement($id) !== null);
 	}
 
 	protected function assertElementNotPresent($id)
@@ -151,10 +151,10 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 			$this->assertEquals(PHPUnit_Extensions_Selenium2TestCase_WebDriverException::NoSuchElement, $e->getCode());
 			return;
 		}
-		$this->fail('The element '.$id.' shouldn\'t exist.');
+		$this->fail('The element ' . $id . ' shouldn\'t exist.');
 	}
 
-	protected function type($id, $txt='')
+	protected function type($id, $txt = '')
 	{
 		$element = $this->getElement($id);
 		$element->clear();
@@ -163,7 +163,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$this->byCssSelector('body')->click();
 	}
 
-	protected function typeSpecial($id, $txt='')
+	protected function typeSpecial($id, $txt = '')
 	{
 		$element = $this->getElement($id);
 		// clear the textbox without using clear() that triggers onchange()
@@ -173,17 +173,18 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		// sequences of end+backspace and start+delete
 
 		$element->click();
-		while(strlen($element->value())>0)
-		{
+		while (strlen($element->value()) > 0) {
 			$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
 			// the number 100 is purely empiric
-			for($i=0;$i<100;$i++)
+			for ($i = 0;$i < 100;$i++) {
 				$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::BACKSPACE);
+			}
 
 			$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::HOME);
 			// the number 100 is purely empiric
-			for($i=0;$i<100;$i++)
+			for ($i = 0;$i < 100;$i++) {
 				$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::DELETE);
+			}
 		}
 
 		$element->value($txt);
@@ -221,20 +222,18 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertSelectedIndex($id, $value)
 	{
-		$options=parent::select($this->getElement($id))->selectOptionValues();
-		$curval=parent::select($this->getElement($id))->selectedValue();
+		$options = parent::select($this->getElement($id))->selectOptionValues();
+		$curval = parent::select($this->getElement($id))->selectedValue();
 
-		$i=0;
-		foreach($options as $option)
-		{
-			if($option==$curval)
-			{
+		$i = 0;
+		foreach ($options as $option) {
+			if ($option == $curval) {
 				$this->assertEquals($i, $value);
 				return;
 			}
 			$i++;
 		}
-		$this->fail('Current value '.$curval.' not found in: '.implode(',', $options));
+		$this->fail('Current value ' . $curval . ' not found in: ' . implode(',', $options));
 	}
 
 	protected function assertSelected($id, $label)
@@ -244,7 +243,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function assertNotSomethingSelected($id)
 	{
-		$this->assertSame(array(), $this->getSelectedLabels($id));
+		$this->assertSame([], $this->getSelectedLabels($id));
 	}
 
 	protected function assertSelectedValue($id, $index)
@@ -255,7 +254,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	protected function assertAlertNotPresent()
 	{
 		try {
-			$foo=$this->alertText();
+			$foo = $this->alertText();
 		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
 			$this->assertEquals(PHPUnit_Extensions_Selenium2TestCase_WebDriverException::NoAlertOpenError, $e->getCode());
 			return;
@@ -265,13 +264,13 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 	protected function pause($msec)
 	{
-		usleep($msec*1000);
+		usleep($msec * 1000);
 	}
 
 	public function assertSourceContains($text)
 	{
 		$found = strpos($this->source(), $text) !== false;
-		for($i=0;$i<10 && ! $found; $i++) {
+		for ($i = 0;$i < 10 && ! $found; $i++) {
 			$this->pause(20);
 			$found = strpos($this->source(), $text) !== false;
 		}
@@ -281,7 +280,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	public function assertSourceNotContains($text)
 	{
 		$found = strpos($this->source(), $text) !== false;
-		for($i=0;$i<10 && $found; $i++) {
+		for ($i = 0;$i < 10 && $found; $i++) {
 			$this->pause(20);
 			$found = strpos($this->source(), $text) !== false;
 		}
@@ -291,5 +290,5 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 class PradoDemosSelenium2Test extends PradoGenericSelenium2Test
 {
-	static $baseurl='http://127.0.0.1/prado-demos/';
+	public static $baseurl = 'http://127.0.0.1/prado-demos/';
 }

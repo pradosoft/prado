@@ -171,7 +171,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		if (!isset($this->_registeredScripts[$name])) {
 			if (self::$_scripts === null) {
 				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::PACKAGES_FILE;
-				list($folders, $packages, $deps) = include($packageFile);
+				[$folders, $packages, $deps] = include($packageFile);
 				self::$_scriptsFolders = $folders;
 				self::$_scripts = $deps;
 				self::$_scriptsPackages = $packages;
@@ -190,8 +190,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 					foreach (self::$_scripts[$p] as $dep) {
 						foreach (self::$_scriptsPackages[$dep] as $script) {
 							if (!isset($this->_expandedScripts[$script])) {
-								list($base, $subPath) = $this->getScriptPackageFolder($script);
-								list($path, $baseUrl) = $this->getPackagePathUrl($base);
+								[$base, $subPath] = $this->getScriptPackageFolder($script);
+								[$path, $baseUrl] = $this->getPackagePathUrl($base);
 
 								$this->_expandedScripts[$script] = true;
 								if ($isDebug) {
@@ -282,7 +282,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	protected function getScriptPackageFolder($script)
 	{
-		list($base, $subPath) = explode("/", $script, 2);
+		[$base, $subPath] = explode("/", $script, 2);
 
 		if (!array_key_exists($base, self::$_scriptsFolders)) {
 			throw new TInvalidOperationException('csmanager_pradostyle_invalid', $base);
@@ -302,7 +302,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	protected function getStylePackageFolder($script)
 	{
-		list($base, $subPath) = explode("/", $script, 2);
+		[$base, $subPath] = explode("/", $script, 2);
 
 		if (!array_key_exists($base, self::$_stylesFolders)) {
 			throw new TInvalidOperationException('csmanager_pradostyle_invalid', $base);
@@ -453,7 +453,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 		if (!isset($this->_registeredStyles[$name])) {
 			if (self::$_styles === null) {
 				$packageFile = Prado::getFrameworkPath() . DIRECTORY_SEPARATOR . self::CSS_PACKAGES_FILE;
-				list($folders, $packages, $deps) = include($packageFile);
+				[$folders, $packages, $deps] = include($packageFile);
 				self::$_stylesFolders = $folders;
 				self::$_styles = $deps;
 				self::$_stylesPackages = $packages;
@@ -472,8 +472,8 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 					foreach (self::$_styles[$p] as $dep) {
 						foreach (self::$_stylesPackages[$dep] as $style) {
 							if (!isset($this->_expandedStyles[$style])) {
-								list($base, $subPath) = $this->getStylePackageFolder($style);
-								list($path, $baseUrl) = $this->getPackagePathUrl($base);
+								[$base, $subPath] = $this->getStylePackageFolder($style);
+								[$path, $baseUrl] = $this->getPackagePathUrl($base);
 
 								$this->_expandedStyles[$style] = true;
 								// TODO minify css?
@@ -546,7 +546,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getStyleSheetUrls()
 	{
 		$stylesheets = array_values(
-			array_map(function($e) {
+			array_map(function ($e) {
 				return is_array($e) ? $e[0] : $e;
 			}, $this->_styleSheetFiles)
 		);

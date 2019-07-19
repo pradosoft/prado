@@ -232,7 +232,7 @@ class MessageSource_Database extends MessageSource
 		$details = $this->getCatalogueDetails($catalogue);
 
 		if ($details) {
-			list($cat_id, $variant, $count) = $details;
+			[$cat_id, $variant, $count] = $details;
 		} else {
 			return false;
 		}
@@ -276,7 +276,7 @@ class MessageSource_Database extends MessageSource
 	{
 		$details = $this->getCatalogueDetails($catalogue);
 		if ($details) {
-			list($cat_id, $variant, $count) = $details;
+			[$cat_id, $variant, $count] = $details;
 		} else {
 			return false;
 		}
@@ -302,7 +302,7 @@ class MessageSource_Database extends MessageSource
 	{
 		$details = $this->getCatalogueDetails($catalogue);
 		if ($details) {
-			list($cat_id, $variant, $count) = $details;
+			[$cat_id, $variant, $count] = $details;
 		} else {
 			return false;
 		}

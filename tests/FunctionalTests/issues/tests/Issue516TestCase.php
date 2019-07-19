@@ -2,13 +2,13 @@
 
 class Issue516TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url('issues/index.php?page=Issue516');
 		$this->assertSourceContains('Issue 516 Test');
-		$base='ctl0_Content_';
-		$row1='DataGrid_ctl1_';
-		$row2='DataGrid_ctl2_';
+		$base = 'ctl0_Content_';
+		$row1 = 'DataGrid_ctl1_';
+		$row2 = 'DataGrid_ctl2_';
 
 		// click "edit" and check for textbox
 		$this->byID("{$base}{$row1}ctl3")->click();
@@ -26,7 +26,7 @@ class Issue516TestCase extends PradoGenericSelenium2Test
 		// click "edit" and check for textbox on the second row
 		$this->byID("{$base}{$row2}ctl3")->click();
 		$this->pause(800);
-		$this->assertTrue($this->getElement("{$base}{$row2}TextBox")!==null);
+		$this->assertTrue($this->getElement("{$base}{$row2}TextBox") !== null);
 		// click "save" and ensure bvalidation has been successfull
 		$this->byID("{$base}{$row2}ctl3")->click();
 		$this->pause(800);

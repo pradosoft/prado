@@ -5,181 +5,225 @@
 /**
  * @package System.Web.UI
  */
-class TPageTest extends PHPUnit\Framework\TestCase {
-
-	public function testConstruct() {
+class TPageTest extends PHPUnit\Framework\TestCase
+{
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRun() {
+	public function testRun()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetCallbackClient() {
+	public function testSetAndGetCallbackClient()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetCallbackEventTarget() {
+	public function testSetAndGetCallbackEventTarget()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetCallbackEventParameter() {
+	public function testSetAndGetCallbackEventParameter()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetForm() {
+	public function testSetAndGetForm()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetValidators() {
+	public function testGetValidators()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testValidate() {
+	public function testValidate()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsValid() {
+	public function testGetIsValid()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetTheme() {
+	public function testSetAndGetTheme()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetStyleSheetTheme() {
+	public function testSetAndGetStyleSheetTheme()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testApplyControlSkin() {
+	public function testApplyControlSkin()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testApplyControlStyleSheet() {
+	public function testApplyControlStyleSheet()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetClientScript() {
+	public function testGetClientScript()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnPreInit() {
+	public function testOnPreInit()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnInitComplete() {
+	public function testOnInitComplete()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnPreLoad() {
+	public function testOnPreLoad()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnLoadComplete() {
+	public function testOnLoadComplete()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnPreRenderComplete() {
+	public function testOnPreRenderComplete()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnSaveStateComplete() {
+	public function testOnSaveStateComplete()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsPostBack() {
+	public function testGetIsPostBack()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsCallback() {
+	public function testGetIsCallback()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSaveState() {
+	public function testSaveState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testLoadState() {
+	public function testLoadState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRegisterRequiresPostData() {
+	public function testRegisterRequiresPostData()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetPostBackEventTarget() {
+	public function testSetAndGetPostBackEventTarget()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetPostBackEventParameter() {
+	public function testSetAndGetPostBackEventParameter()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsLoadingPostData() {
+	public function testGetIsLoadingPostData()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testEnsureRenderInForm() {
+	public function testEnsureRenderInForm()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testBeginFormRender() {
+	public function testBeginFormRender()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testEndFormRender() {
+	public function testEndFormRender()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetFocus() {
+	public function testSetFocus()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetClientSupportsJavaScript() {
+	public function testGetClientSupportsJavaScript()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetHead() {
+	public function testSetAndGetHead()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetTitle() {
+	public function testSetAndGetTitle()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetClientState() {
+	public function testSetAndGetClientState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetRequestClientState() {
+	public function testGetRequestClientState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetStatePersisterClass() {
+	public function testSetAndGetStatePersisterClass()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetStatePersister() {
+	public function testGetStatePersister()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnableStateValidation() {
+	public function testSetAndGetEnableStateValidation()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnableStateEncryption() {
+	public function testSetAndGetEnableStateEncryption()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetPagePath() {
+	public function testSetAndGetPagePath()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRegisterCachingAction() {
+	public function testRegisterCachingAction()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetCachingStack() {
+	public function testGetCachingStack()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 }

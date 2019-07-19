@@ -1,25 +1,26 @@
 <?php
+
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
-require_once(dirname(__FILE__).'/records/UserRecord.php');
+require_once(__DIR__ . '/records/UserRecord.php');
 
 /**
  * @package System.Data.ActiveRecord
  */
 class RecordEventTest extends PHPUnit\Framework\TestCase
 {
-	function setup()
+	public function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
-	function testFindByPk()
+	public function testFindByPk()
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
 	}
 
-	function logger($sender, $param)
+	public function logger($sender, $param)
 	{
 		//var_dump($param);
 	}

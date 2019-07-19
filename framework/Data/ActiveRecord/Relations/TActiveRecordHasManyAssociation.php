@@ -96,7 +96,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 */
 	protected function collectForeignObjects(&$results)
 	{
-		list($sourceKeys, $foreignKeys) = $this->getRelationForeignKeys();
+		[$sourceKeys, $foreignKeys] = $this->getRelationForeignKeys();
 		$properties = array_values($sourceKeys);
 		$indexValues = $this->getIndexValues($properties, $results);
 		$this->fetchForeignObjects($results, $foreignKeys, $indexValues, $sourceKeys);
@@ -182,6 +182,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	 * @param array $foreignKeys field names
 	 * @param array $indexValues foreign key index values.
 	 * @param array $sourceKeys source table column names.
+	 * @param mixed $results
 	 */
 	protected function fetchForeignObjects(&$results, $foreignKeys, $indexValues, $sourceKeys)
 	{

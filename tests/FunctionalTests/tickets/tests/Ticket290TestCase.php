@@ -1,11 +1,11 @@
 <?php
 
 /**
-*
-*/
+ *
+ */
 class Ticket290TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket290');
@@ -24,4 +24,3 @@ class Ticket290TestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label2", "Button 2 (default) Clicked!");
 	}
 }
-

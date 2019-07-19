@@ -2,7 +2,7 @@
 
 class RequiredFieldTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RequiredFieldValidator");
@@ -71,7 +71,7 @@ class RequiredFieldTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator8");
 	}
 
-	function testInitialValue()
+	public function testInitialValue()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RequiredFieldValidator");

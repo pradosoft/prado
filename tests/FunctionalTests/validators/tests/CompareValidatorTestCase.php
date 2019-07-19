@@ -3,7 +3,7 @@
 //New Test
 class CompareValidatorTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 
@@ -40,6 +40,5 @@ class CompareValidatorTestCase extends PradoGenericSelenium2Test
 
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
-
 	}
 }

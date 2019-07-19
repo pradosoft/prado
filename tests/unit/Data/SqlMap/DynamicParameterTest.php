@@ -6,30 +6,29 @@ use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\TApplication;
 
-
 /**
  * @package System.Data.SqlMap
  */
 class DynamicParameterTest extends PHPUnit\Framework\TestCase
 {
-
 	protected function getMysqlSqlMapManager()
 	{
 		static $conn;
 		static $sqlMapManager;
 
-		if(Prado::getApplication() === null)
-			Prado::setApplication(new TApplication(dirname(__FILE__).'/app'));
+		if (Prado::getApplication() === null) {
+			Prado::setApplication(new TApplication(__DIR__ . '/app'));
+		}
 
-		if($conn === null)
+		if ($conn === null) {
 			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+		}
 
 		$conn->setActive(true);
 
-		if($sqlMapManager === null)
-		{
+		if ($sqlMapManager === null) {
 			$sqlMapManager = new TSqlMapManager($conn);
-			$sqlMapManager->configureXml( dirname(__FILE__) . '/DynamicParameterTestMap.xml');
+			$sqlMapManager->configureXml(__DIR__ . '/DynamicParameterTestMap.xml');
 		}
 
 		return $sqlMapManager;
@@ -64,17 +63,17 @@ class DynamicParameterTest extends PHPUnit\Framework\TestCase
 		$mapper = $this->getMysqlSqlMapManager();
 		$gateway = $mapper->getSqlmapGateway();
 
-		$aParams = array(
+		$aParams = [
 			'tablename' => 'dynamicparametertest1',
-			'testname'	=> 'dynamictable'
-		);
+			'testname' => 'dynamictable'
+		];
 		$value = $gateway->queryForObject('SelectDynamicComplex', $aParams);
 		self::assertEquals('#dynamictableparametertest1$', $value);
 
-		$aParams = array(
+		$aParams = [
 			'tablename' => 'dynamicparametertest2',
-			'testname'	=> 'dynamictable'
-		);
+			'testname' => 'dynamictable'
+		];
 		$value = $gateway->queryForObject('SelectDynamicComplex', $aParams);
 		self::assertEquals('#dynamictableparametertest2$', $value);
 	}
@@ -104,7 +103,5 @@ class DynamicParameterTest extends PHPUnit\Framework\TestCase
 
 		$value = $gateway->queryForObject('SelectInlineEscapeParam', '"1234567*123$456789$012345" AS foobar');
 		self::assertEquals('1234567*123$456789$012345', $value);
-
 	}
-
 }

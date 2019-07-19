@@ -68,8 +68,8 @@ class TInlineParameterMapParser
 				$mapping->{'set' . $name}($value);
 			} else {
 				throw new TSqlMapUndefinedException(
-						'sqlmap_undefined_property_inline_map',
-						$name,
+					'sqlmap_undefined_property_inline_map',
+					$name,
 					$scope['file'],
 					$scope['node'],
 					$token

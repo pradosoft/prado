@@ -90,7 +90,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 			return false;
 		}
 		$this->ensureDataBound();
-		$selections = isset($values[$key]) ? $values[$key] : null;
+		$selections = $values[$key] ?? null;
 		if ($selections !== null) {
 			$items = $this->getItems();
 			if ($this->getSelectionMode() === TListSelectionMode::Single) {

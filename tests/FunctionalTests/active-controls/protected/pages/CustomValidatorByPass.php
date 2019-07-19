@@ -4,7 +4,6 @@ class CustomValidatorByPass extends TPage
 {
 	public function onLoad($param)
 	{
-
 		parent::onLoad($param);
 
 		$Client = $this->validator2->getActiveControl()->getClientSide();
@@ -14,22 +13,19 @@ class CustomValidatorByPass extends TPage
 
 		//$Client->setOnValidationError('alert(\'Authentication Failed\');');
 		//$Client->setOnValidationSuccess('new Effect.Fade(\'loginBox\')');
-
 	}
 
-	public function validateUser($sender,$param)
+	public function validateUser($sender, $param)
 	{
-		$param->IsValid = $this->Password->Text=='test';
+		$param->IsValid = $this->Password->Text == 'test';
 	}
 
-	public function doLogin($sender,$param)
+	public function doLogin($sender, $param)
 	{
 
 		/* This isnt even getting called */
-		if($this->Page->IsValid)
-		{
+		if ($this->Page->IsValid) {
 			// Re-Render the active panel
 		}
-
 	}
 }

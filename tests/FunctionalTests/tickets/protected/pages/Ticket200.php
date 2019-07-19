@@ -2,13 +2,11 @@
 
 class Ticket200 extends TPage
 {
-	function linkButton1_Clicked()
+	public function linkButton1_Clicked()
 	{
-		
 	}
 	
-	function linkButton2_Clicked()
+	public function linkButton2_Clicked()
 	{
-		
 	}
 }

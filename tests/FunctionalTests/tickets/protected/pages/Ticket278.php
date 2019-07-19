@@ -2,20 +2,20 @@
 
 class Ticket278 extends TPage
 {
-	function validator2_onValidate($sender, $param)
+	public function validator2_onValidate($sender, $param)
 	{
 		$sender->Enabled = $this->check1->Checked;
 	}
 	
-	function validate2_onPostValidate($sender, $param)
+	public function validate2_onPostValidate($sender, $param)
 	{
 		$sender->Enabled = true;
 	}
 	
-	function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
-		$this->panel1->Style = 
-			$this->check1->Checked ? "display:block" : "display:none";		
+		$this->panel1->Style =
+			$this->check1->Checked ? "display:block" : "display:none";
 	}
 }

@@ -2,34 +2,34 @@
 
 class TActiveCheckBoxListTest extends TPage
 {
-	function list1_callback($sender, $param)
+	public function list1_callback($sender, $param)
 	{
 		$values = $sender->getSelectedValues();
-		$this->label1->setText("Selection: ".implode(', ', $values));
+		$this->label1->setText("Selection: " . implode(', ', $values));
 	}
 	
-	function select_index_123()
+	public function select_index_123()
 	{
-		$this->list1->setSelectedIndices(array(1,2,3));
+		$this->list1->setSelectedIndices([1, 2, 3]);
 	}
 	
-	function select_index_4()
+	public function select_index_4()
 	{
 		$this->list1->setSelectedIndex(4);
 	}
 	
-	function clear_selections()
+	public function clear_selections()
 	{
 		$this->list1->clearSelection();
 	}
 	
-	function select_value_1()
+	public function select_value_1()
 	{
 		$this->list1->setSelectedValue("value 1");
 	}
 	
-	function select_values_25()
+	public function select_values_25()
 	{
-		$this->list1->setSelectedValues(array('value 2', 'value 5'));
+		$this->list1->setSelectedValues(['value 2', 'value 5']);
 	}
 }

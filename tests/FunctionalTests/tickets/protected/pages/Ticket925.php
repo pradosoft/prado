@@ -49,27 +49,23 @@ class Ticket925 extends TPage
 		$this->timer1->setInterval(1);
 	}
 	
-	public function timer1callback ($sender, $param)
+	public function timer1callback($sender, $param)
 	{
-		$this->timer1result->Text .= ($this->Timer1Value+=$this->timer1->Interval).'... ';
-		if ($this->Timer1Value > 20) 
-		{
-			$this->timer1Value=0;
-			$this->timer1result->Text='';
+		$this->timer1result->Text .= ($this->Timer1Value += $this->timer1->Interval) . '... ';
+		if ($this->Timer1Value > 20) {
+			$this->timer1Value = 0;
+			$this->timer1result->Text = '';
 			$this->timer1->stopTimer();
 		}
-		
 	}
 	
-	public function timer2callback ($sender, $param)
+	public function timer2callback($sender, $param)
 	{
-		$this->timer2result->Text .= ($this->Timer2Value+=$this->timer2->Interval).'... ';
-		if ($this->Timer2Value > 20) 
-		{
-			$this->timer2Value=0;			
-			$this->timer2result->Text='';
+		$this->timer2result->Text .= ($this->Timer2Value += $this->timer2->Interval) . '... ';
+		if ($this->Timer2Value > 20) {
+			$this->timer2Value = 0;
+			$this->timer2result->Text = '';
 			$this->timer2->stopTimer();
 		}
 	}
-
 }

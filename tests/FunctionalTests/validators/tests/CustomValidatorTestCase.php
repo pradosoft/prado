@@ -3,7 +3,7 @@
 //New Test
 class CustomValidatorTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=CustomValidator");
@@ -24,6 +24,5 @@ class CustomValidatorTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->byXPath("//input[@type='submit' and @value='Test']")->click();
 		$this->assertNotVisible("{$base}validator1");
-
 	}
 }

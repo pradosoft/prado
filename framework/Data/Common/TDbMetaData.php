@@ -136,8 +136,8 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$name = str_replace(self::$delimiterIdentifier, '', $name);
 
 		$args = func_get_args();
-		$rgt = $lft = isset($args[1]) ? $args[1] : '';
-		$rgt = isset($args[2]) ? $args[2] : $rgt;
+		$rgt = $lft = $args[1] ?? '';
+		$rgt = $args[2] ?? $rgt;
 
 		if (strpos($name, '.') === false) {
 			return $lft . $name . $rgt;
@@ -157,8 +157,8 @@ abstract class TDbMetaData extends \Prado\TComponent
 	public function quoteColumnName($name)
 	{
 		$args = func_get_args();
-		$rgt = $lft = isset($args[1]) ? $args[1] : '';
-		$rgt = isset($args[2]) ? $args[2] : $rgt;
+		$rgt = $lft = $args[1] ?? '';
+		$rgt = $args[2] ?? $rgt;
 
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}
@@ -171,8 +171,8 @@ abstract class TDbMetaData extends \Prado\TComponent
 	public function quoteColumnAlias($name)
 	{
 		$args = func_get_args();
-		$rgt = $lft = isset($args[1]) ? $args[1] : '';
-		$rgt = isset($args[2]) ? $args[2] : $rgt;
+		$rgt = $lft = $args[1] ?? '';
+		$rgt = $args[2] ?? $rgt;
 
 		return $lft . str_replace(self::$delimiterIdentifier, '', $name) . $rgt;
 	}

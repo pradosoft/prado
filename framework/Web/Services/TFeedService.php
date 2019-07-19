@@ -112,7 +112,7 @@ class TFeedService extends \Prado\TService
 				if (isset($feedConfig['class'])) {
 					$feed = Prado::createComponent($feedConfig['class']);
 					if ($service instanceof IFeedContentProvider) {
-						$properties = isset($feedConfig['properties']) ? $feedConfig['properties'] : [];
+						$properties = $feedConfig['properties'] ?? [];
 					} else {
 						throw new TConfigurationException('jsonservice_response_type_invalid', $id);
 					}

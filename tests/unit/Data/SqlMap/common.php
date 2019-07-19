@@ -2,46 +2,46 @@
 
 Prado::using('System.Data.TDbConnection');
 
-if(!defined('SQLMAP_TESTS'))
-	define('SQLMAP_TESTS', realpath(dirname(__FILE__)));
+if (!defined('SQLMAP_TESTS')) {
+	define('SQLMAP_TESTS', realpath(__DIR__));
+}
 
-if(!class_exists('Account', false))
-{
-	include(SQLMAP_TESTS.'/domain/A.php');
-	include(SQLMAP_TESTS.'/domain/Account.php');
-	include(SQLMAP_TESTS.'/domain/AccountBis.php');
-	include(SQLMAP_TESTS.'/domain/AccountCollection.php');
-	include(SQLMAP_TESTS.'/domain/B.php');
-	include(SQLMAP_TESTS.'/domain/Document.php');
-	include(SQLMAP_TESTS.'/domain/Book.php');
-	include(SQLMAP_TESTS.'/domain/C.php');
-	include(SQLMAP_TESTS.'/domain/Category.php');
-	include(SQLMAP_TESTS.'/domain/Complex.php');
-	include(SQLMAP_TESTS.'/domain/D.php');
-	include(SQLMAP_TESTS.'/domain/DocumentCollection.php');
-	include(SQLMAP_TESTS.'/domain/E.php');
-	include(SQLMAP_TESTS.'/domain/F.php');
-	include(SQLMAP_TESTS.'/domain/LineItem.php');
-	include(SQLMAP_TESTS.'/domain/LineItemCollection.php');
-	include(SQLMAP_TESTS.'/domain/Newspaper.php');
-	include(SQLMAP_TESTS.'/domain/Order.php');
-	include(SQLMAP_TESTS.'/domain/Other.php');
-	include(SQLMAP_TESTS.'/domain/Sample.php');
-	include(SQLMAP_TESTS.'/domain/Search.php');
-	include(SQLMAP_TESTS.'/domain/User.php');
+if (!class_exists('Account', false)) {
+	include(SQLMAP_TESTS . '/domain/A.php');
+	include(SQLMAP_TESTS . '/domain/Account.php');
+	include(SQLMAP_TESTS . '/domain/AccountBis.php');
+	include(SQLMAP_TESTS . '/domain/AccountCollection.php');
+	include(SQLMAP_TESTS . '/domain/B.php');
+	include(SQLMAP_TESTS . '/domain/Document.php');
+	include(SQLMAP_TESTS . '/domain/Book.php');
+	include(SQLMAP_TESTS . '/domain/C.php');
+	include(SQLMAP_TESTS . '/domain/Category.php');
+	include(SQLMAP_TESTS . '/domain/Complex.php');
+	include(SQLMAP_TESTS . '/domain/D.php');
+	include(SQLMAP_TESTS . '/domain/DocumentCollection.php');
+	include(SQLMAP_TESTS . '/domain/E.php');
+	include(SQLMAP_TESTS . '/domain/F.php');
+	include(SQLMAP_TESTS . '/domain/LineItem.php');
+	include(SQLMAP_TESTS . '/domain/LineItemCollection.php');
+	include(SQLMAP_TESTS . '/domain/Newspaper.php');
+	include(SQLMAP_TESTS . '/domain/Order.php');
+	include(SQLMAP_TESTS . '/domain/Other.php');
+	include(SQLMAP_TESTS . '/domain/Sample.php');
+	include(SQLMAP_TESTS . '/domain/Search.php');
+	include(SQLMAP_TESTS . '/domain/User.php');
 }
 
 class DefaultScriptRunner
 {
-	function runScript($connection, $script)
+	public function runScript($connection, $script)
 	{
 		$sql = file_get_contents($script);
 		$lines = explode(';', $sql);
-		foreach($lines as $line)
-		{
+		foreach ($lines as $line) {
 			$line = trim($line);
-			if(strlen($line) > 0)
+			if (strlen($line) > 0) {
 				$connection->createCommand($line)->execute();
+			}
 		}
 	}
 }
@@ -57,7 +57,7 @@ class CopyFileScriptRunner
 		$this->targetFile = $target;
 	}
 
-	function runScript($connection, $script)
+	public function runScript($connection, $script)
 	{
 		copy($this->baseFile, $this->targetFile);
 	}
@@ -70,11 +70,11 @@ class SQLiteBaseTestConfig extends BaseTestConfig
 
 	public function __construct()
 	{
-		$this->_sqlmapConfigFile = SQLMAP_TESTS.'/sqlite.xml';
-		$this->_scriptDir = SQLMAP_TESTS.'/scripts/sqlite/';
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/sqlite.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/sqlite/';
 
-		$this->targetFile = realpath(SQLMAP_TESTS.'/sqlite/tests.db');
-		$this->baseFile = realpath(SQLMAP_TESTS.'/sqlite/backup.db');
+		$this->targetFile = realpath(SQLMAP_TESTS . '/sqlite/tests.db');
+		$this->baseFile = realpath(SQLMAP_TESTS . '/sqlite/backup.db');
 		$file = realpath($this->targetFile);
 		$this->_connection = new TDbConnection("sqlite:{$file}");
 	}
@@ -89,9 +89,9 @@ class MySQLBaseTestConfig extends BaseTestConfig
 {
 	public function __construct()
 	{
-		$this->_sqlmapConfigFile = SQLMAP_TESTS.'/mysql.xml';
-		$this->_scriptDir = SQLMAP_TESTS.'/scripts/mysql/';
-		$this->_features = array('insert_id');
+		$this->_sqlmapConfigFile = SQLMAP_TESTS . '/mysql.xml';
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/mysql/';
+		$this->_features = ['insert_id'];
 		$dsn = 'mysql:host=localhost;dbname=prado_unitest;port=3306';
 		$this->_connection = new TDbConnection($dsn, 'prado_unitest', 'prado_unitest');
 	}
@@ -101,10 +101,10 @@ class MSSQLBaseTestConfig extends BaseTestConfig
 {
 	public function __construct()
 	{
-		$this->_sqlmap = SQLMAP_TESTS.'/mssql.xml';
+		$this->_sqlmap = SQLMAP_TESTS . '/mssql.xml';
 		$this->_connectionString = 'odbc_mssql://sqlmap_tests';
-		$this->_scriptDir = SQLMAP_TESTS.'/scripts/mssql/';
-		$this->_features = array('insert_id');
+		$this->_scriptDir = SQLMAP_TESTS . '/scripts/mssql/';
+		$this->_features = ['insert_id'];
 	}
 }
 
@@ -150,4 +150,3 @@ class BaseTestConfig
 		//return new MSSQLBaseTestConfig();
 	}
 }
-

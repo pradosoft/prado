@@ -206,15 +206,15 @@ class CultureInfo
 	/**
 	 * Load the ICU culture data for the specific culture identifier.
 	 * @param string $culture the culture identifier.
+	 * @param mixed $key
 	 */
 	protected function loadCultureData($key)
 	{
-		foreach(self::$bundleNames as $bundleKey => $bundleName)
-		{
-			if($key == $bundleKey)
-			{
-				if(!array_key_exists($this->culture, self::$data))
+		foreach (self::$bundleNames as $bundleKey => $bundleName) {
+			if ($key == $bundleKey) {
+				if (!array_key_exists($this->culture, self::$data)) {
 					self::$data[$this->culture] = [];
+				}
 
 				self::$data[$this->culture][$bundleKey] = \ResourceBundle::create($this->culture, $bundleName, true);
 				break;
@@ -231,26 +231,25 @@ class CultureInfo
 	 * @param string $key bundle name.
 	 * @return mixed the specific ICU data.
 	 */
-	public function findInfo($path='/', $key = null)
+	public function findInfo($path = '/', $key = null)
 	{
-		if($key === null)
-		{
+		if ($key === null) {
 			// try to guess the bundle from the path. Always defaults to "Core".
 			$key = 'Core';
-			foreach(self::$bundleNames as $bundleName => $icuBundleName)
-			{
-				if(strpos($path, $bundleName) === 0)
-				{
+			foreach (self::$bundleNames as $bundleName => $icuBundleName) {
+				if (strpos($path, $bundleName) === 0) {
 					$key = $bundleName;
 					break;
 				}
 			}
 		}
 
-		if(!array_key_exists($this->culture, self::$data))
+		if (!array_key_exists($this->culture, self::$data)) {
 			$this->loadCultureData($key);
-		if(!array_key_exists($this->culture, self::$data) || !array_key_exists($key, self::$data[$this->culture]))
+		}
+		if (!array_key_exists($this->culture, self::$data) || !array_key_exists($key, self::$data[$this->culture])) {
 			return [];
+		}
 
 		return $this->searchResources(self::$data[$this->culture][$key], $path);
 	}
@@ -261,15 +260,16 @@ class CultureInfo
 	 * the path "hello/world" will return the corresponding value.
 	 * @param array $info the array for search
 	 * @param string $path slash "/" separated array path.
+	 * @param mixed $resource
 	 * @return mixed the value array using the path
 	 */
-	private function searchResources($resource, $path='/')
+	private function searchResources($resource, $path = '/')
 	{
 		$index = explode('/', $path);
-		for($i = 0, $k = count($index); $i < $k; ++$i)
-		{
-			if(is_object($resource))
+		for ($i = 0, $k = count($index); $i < $k; ++$i) {
+			if (is_object($resource)) {
 				$resource = $resource->get($index[$i]);
+			}
 		}
 
 		return $this->simplify($resource);
@@ -306,10 +306,11 @@ class CultureInfo
 		$reg = substr($this->culture, 3, 2);
 		$language = $this->findInfo("Languages/{$lang}");
 		$region = $this->findInfo("Countries/{$reg}");
-		if($region)
-			return $language.' ('.$region.')';
-		else
+		if ($region) {
+			return $language . ' (' . $region . ')';
+		} else {
 			return $language;
+		}
 	}
 
 	/**
@@ -330,10 +331,11 @@ class CultureInfo
 		}
 
 		$region = $culture->findInfo("Countries/{$reg}");
-		if($region)
-			return $language.' ('.$region.')';
-		else
+		if ($region) {
+			return $language . ' (' . $region . ')';
+		} else {
 			return $language;
+		}
 	}
 
 	/**
@@ -372,26 +374,25 @@ class CultureInfo
 	 * or CultureInfo::SPECIFIC.
 	 * @return array list of culture information available.
 	 */
-	public static function getCultures($type=CultureInfo::ALL)
+	public static function getCultures($type = CultureInfo::ALL)
 	{
 		$all = \ResourceBundle::getLocales('');
 
-		switch($type)
-		{
-			case CultureInfo::ALL :
+		switch ($type) {
+			case CultureInfo::ALL:
 				return $all;
-			case CultureInfo::NEUTRAL :
-				foreach($all as $key => $culture)
-				{
-					if(strlen($culture) != 2)
+			case CultureInfo::NEUTRAL:
+				foreach ($all as $key => $culture) {
+					if (strlen($culture) != 2) {
 						unset($all[$key]);
+					}
 				}
 				return $all;
-			case CultureInfo::SPECIFIC :
-				foreach($all as $key => $culture)
-				{
-					if(strlen($culture) == 2)
+			case CultureInfo::SPECIFIC:
+				foreach ($all as $key => $culture) {
+					if (strlen($culture) == 2) {
 						unset($all[$key]);
+					}
 				}
 				return $all;
 		}
@@ -402,24 +403,24 @@ class CultureInfo
 	 * E.g. <code>array(0 => array('hello'), 1 => 'world');</code>
 	 * becomes <code>array(0 => 'hello', 1 => 'world');</code>
 	 * @param array $array with single elements arrays
+	 * @param mixed $obj
 	 * @return array simplified array.
 	 */
 	protected function simplify($obj)
 	{
-		if(is_scalar($obj)) {
+		if (is_scalar($obj)) {
 			return $obj;
-		} elseif($obj instanceof \ResourceBundle) {
+		} elseif ($obj instanceof \ResourceBundle) {
 			$array = [];
-			foreach($obj as $k => $v)
+			foreach ($obj as $k => $v) {
 				$array[$k] = $v;
+			}
 		} else {
 			$array = $obj;
 		}
 
-		if(is_array($array))
-		{
-			for($i = 0, $k = count($array); $i<$k; ++$i)
-			{
+		if (is_array($array)) {
+			for ($i = 0, $k = count($array); $i < $k; ++$i) {
 				$key = key($array);
 				if ($key !== null
 					&& is_array($array[$key])
@@ -448,11 +449,11 @@ class CultureInfo
 	public function getCurrencies()
 	{
 		static $arr;
-		if($arr === null)
-		{
+		if ($arr === null) {
 			$arr = $this->findInfo('Currencies', 'Currencies');
-			foreach($arr as $k => $v)
+			foreach ($arr as $k => $v) {
 				$arr[$k] = $this->simplify($v);
+			}
 		}
 		return $arr;
 	}
@@ -482,16 +483,12 @@ class CultureInfo
 	public function getTimeZones()
 	{
 		static $arr;
-		if($arr === null)
-		{
-			$validPrefixes = array('Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Etc', 'Europe', 'Indian', 'Pacific');
+		if ($arr === null) {
+			$validPrefixes = ['Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Etc', 'Europe', 'Indian', 'Pacific'];
 			$tmp = $this->findInfo('zoneStrings', 'zoneStrings');
-			foreach($tmp as $k => $v)
-			{
-				foreach($validPrefixes as $prefix)
-				{
-					if(strpos($k, $prefix) === 0)
-					{
+			foreach ($tmp as $k => $v) {
+				foreach ($validPrefixes as $prefix) {
+					if (strpos($k, $prefix) === 0) {
 						$arr[] = str_replace(':', '/', $k);
 						break;
 					}

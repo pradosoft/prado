@@ -1,40 +1,41 @@
 <?php
+
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
-require_once(dirname(__FILE__).'/records/UserRecord.php');
+require_once(__DIR__ . '/records/UserRecord.php');
 
 /**
  * @package System.Data.ActiveRecord
  */
 class UserRecordTest extends PHPUnit\Framework\TestCase
 {
-	function setup()
+	public function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
-	function testFindByPk()
+	public function testFindByPk()
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
 	}
 
-	function test_same_data_returns_different_instance()
+	public function test_same_data_returns_different_instance()
 	{
 		$user1 = UserRecord::finder()->findByPk('admin');
 		$this->assertNotNull($user1);
 
 		$user2 = UserRecord::finder()->findByPk('admin');
-		$this->assertFalse($user1===$user2);
+		$this->assertFalse($user1 === $user2);
 	}
 
-	function testFindByPk_returns_null()
+	public function testFindByPk_returns_null()
 	{
 		$user = UserRecord::finder()->findByPk('me');
 		$this->assertNull($user);
 	}
 
-	function test_Create_new_user_returns_true()
+	public function test_Create_new_user_returns_true()
 	{
 		$user = new UserRecord;
 		$user->username = 'hello';
@@ -56,12 +57,13 @@ class UserRecordTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($user->delete());
 	}
 
-	function assertSameUser($user,$check)
+	public function assertSameUser($user, $check)
 	{
-		$props = array('username', 'password', 'email', 'first_name', 'last_name', 'job_title',
+		$props = ['username', 'password', 'email', 'first_name', 'last_name', 'job_title',
 						'work_phone', 'work_fax', 'active', 'department_id', 'salutation',
-						'hint_question', 'hint_answer');
-		foreach($props as $prop)
-			$this->assertEquals($user->$prop,$check->$prop);
+						'hint_question', 'hint_answer'];
+		foreach ($props as $prop) {
+			$this->assertEquals($user->$prop, $check->$prop);
+		}
 	}
 }

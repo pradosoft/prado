@@ -2,7 +2,7 @@
 
 class QuickstartActiveButtonTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=ActiveControls.Samples.TActiveButton.Home&amp;notheme=true&amp;lang=en");
 

@@ -259,6 +259,6 @@ abstract class TActiveRecordRelation
 	{
 		$hash = $this->getObjectHash($source, $properties);
 		$prop = $this->getContext()->getProperty();
-		$source->$prop = isset($collections[$hash]) ? $collections[$hash] : [];
+		$source->$prop = $collections[$hash] ?? [];
 	}
 }

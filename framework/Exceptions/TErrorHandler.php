@@ -199,7 +199,7 @@ class TErrorHandler extends \Prado\TModule
 
 		$content = $this->getErrorTemplate($statusCode, $exception);
 
-		$serverAdmin = isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : '';
+		$serverAdmin = $_SERVER['SERVER_ADMIN'] ?? '';
 
 		$isDebug = $this->getApplication()->getMode() === TApplicationMode::Debug;
 
@@ -246,8 +246,7 @@ class TErrorHandler extends \Prado\TModule
 	protected function hidePrivatePathParts($value)
 	{
 		static $aRpl;
-		if($aRpl === null)
-		{
+		if ($aRpl === null) {
 			$aRpl[$_SERVER['DOCUMENT_ROOT']] = '${DocumentRoot}';
 			$aRpl[str_replace('/', DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'])] = '${DocumentRoot}';
 			$aRpl[PRADO_DIR . DIRECTORY_SEPARATOR] = '${PradoFramework}' . DIRECTORY_SEPARATOR;

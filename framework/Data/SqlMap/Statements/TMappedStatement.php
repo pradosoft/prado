@@ -141,6 +141,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Execute SQL Query.
 	 * @param IDbConnection $connection database connection
 	 * @param array $sql SQL statement and parameters.
+	 * @param mixed $command
+	 * @param mixed $max
+	 * @param mixed $skip
 	 * @throws TSqlMapExecutionException if execution error or false record set.
 	 * @throws TSqlMapQueryExecutionException if any execution error
 	 * @return mixed record set if applicable.
@@ -345,7 +348,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 			call_user_func($handler, $this, $param);
 		} elseif (is_callable($handler, true)) {
 			// an array: 0 - object, 1 - method name/path
-			list($object, $method) = $handler;
+			[$object, $method] = $handler;
 			if (is_string($object)) {	// static method call
 				call_user_func($handler, $this, $param);
 			} else {
@@ -474,7 +477,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$mappedStatement = $this->getManager()->getMappedStatement($selectKey->getID());
 		$generatedKey = $mappedStatement->executeQueryForObject(
-									$connection,
+			$connection,
 			$parameter,
 			null
 		);
@@ -863,7 +866,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				$values = TLazyLoadList::newInstance(
 					$statement,
 					$key,
-								$resultObject,
+					$resultObject,
 					$property->getProperty()
 				);
 				TPropertyAccess::set($resultObject, $property->getProperty(), $values);

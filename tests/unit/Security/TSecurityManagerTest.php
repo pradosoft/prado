@@ -5,93 +5,103 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
 use Prado\TApplication;
 
-
 /**
  * @package System.Security
  */
-class TSecurityManagerTest extends PHPUnit\Framework\TestCase {
+class TSecurityManagerTest extends PHPUnit\Framework\TestCase
+{
 	public static $app;
 
-	public function setUp() {
+	public function setUp()
+	{
 		if (self::$app === null) {
-			self::$app = new TApplication (dirname(__FILE__).'/app');
+			self::$app = new TApplication(__DIR__ . '/app');
 		}
 	}
 
-	public function tearDown() {
+	public function tearDown()
+	{
 	}
 
-	public function testInit() {
-		$sec=new TSecurityManager ();
+	public function testInit()
+	{
+		$sec = new TSecurityManager();
 		$sec->init(null);
-		self::assertEquals ($sec, self::$app->getSecurityManager());
+		self::assertEquals($sec, self::$app->getSecurityManager());
 	}
 
-	public function testValidationKey() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testValidationKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		// Random validation key
-		$valkey=$sec->getValidationKey ();
+		$valkey = $sec->getValidationKey();
 		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_VALIDATION_KEY));
 
-		$sec->setValidationKey ('aKey');
-		self::assertEquals('aKey',$sec->getValidationKey());
+		$sec->setValidationKey('aKey');
+		self::assertEquals('aKey', $sec->getValidationKey());
 
 		try {
-			$sec->setValidationKey ('');
-			self::fail ('Expected TInvalidDataValueException not thrown');
-		} catch (TInvalidDataValueException $e) {}
+			$sec->setValidationKey('');
+			self::fail('Expected TInvalidDataValueException not thrown');
+		} catch (TInvalidDataValueException $e) {
+		}
 	}
 
-	public function testEncryptionKey() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testEncryptionKey()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		// Random encryption key
-		$valkey=$sec->getEncryptionKey ();
+		$valkey = $sec->getEncryptionKey();
 		self::assertEquals($valkey, self::$app->getGlobalState(TSecurityManager::STATE_ENCRYPTION_KEY));
 
-		$sec->setEncryptionKey ('aKey');
-		self::assertEquals('aKey',$sec->getEncryptionKey());
+		$sec->setEncryptionKey('aKey');
+		self::assertEquals('aKey', $sec->getEncryptionKey());
 
 		try {
-			$sec->setEncryptionKey ('');
-			self::fail ('Expected TInvalidDataValueException not thrown');
-		} catch (TInvalidDataValueException $e) {}
+			$sec->setEncryptionKey('');
+			self::fail('Expected TInvalidDataValueException not thrown');
+		} catch (TInvalidDataValueException $e) {
+		}
 	}
 
-	public function testValidation() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
-		$sec->setHashAlgorithm ('md5');
-		self::assertEquals('md5',$sec->getHashAlgorithm());
-		$sec->setHashAlgorithm ('sha256');
-		self::assertEquals('sha256',$sec->getHashAlgorithm());
+	public function testValidation()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
+		$sec->setHashAlgorithm('md5');
+		self::assertEquals('md5', $sec->getHashAlgorithm());
+		$sec->setHashAlgorithm('sha256');
+		self::assertEquals('sha256', $sec->getHashAlgorithm());
 		try {
-			$sec->setHashAlgorithm ('BAD');
-			self::fail ('Expected TInvalidDataValueException not thrown');
-		} catch (TInvalidDataValueException $e) {}
+			$sec->setHashAlgorithm('BAD');
+			self::fail('Expected TInvalidDataValueException not thrown');
+		} catch (TInvalidDataValueException $e) {
+		}
 	}
 
-	public function testEncryption() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testEncryption()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		try {
 			$sec->setCryptAlgorithm('NotExisting');
-			$foo=$sec->encrypt('dummy');
-			self::fail ('Expected TNotSupportedException not thrown');
+			$foo = $sec->encrypt('dummy');
+			self::fail('Expected TNotSupportedException not thrown');
 		} catch (\Prado\Exceptions\TInvalidDataValueException $e) {
 			self::assertEquals('NotExisting', $sec->getCryptAlgorithm());
 		}
 	}
 
-	public function testEncryptDecrypt() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testEncryptDecrypt()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		// loop through different string size
 		$testText = md5('a text (not) full of entrophy');
-		for($i=1; $i<strlen($testText); $i++)
-		{
-			$sec->setEncryptionKey ('aKey');
+		for ($i = 1; $i < strlen($testText); $i++) {
+			$sec->setEncryptionKey('aKey');
 			$plainText = substr($testText, 0, $i);
 			try {
 				$encrypted = $sec->encrypt($plainText);
@@ -100,50 +110,49 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase {
 				return;
 			}
 			$decrypted = $sec->decrypt($encrypted);
-			self::assertEquals($plainText,$decrypted);
+			self::assertEquals($plainText, $decrypted);
 
 			// try change key
-			$sec->setEncryptionKey ('anotherKey');
+			$sec->setEncryptionKey('anotherKey');
 			self::assertNotEquals($plainText, $sec->decrypt($encrypted));
 		}
 	}
 
 
-	public function testHashData() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testHashData()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		$sec->setValidationKey('aKey');
 		$sec->setHashAlgorithm('sha256');
-		$hashed=$sec->hashData('A text to hash');
+		$hashed = $sec->hashData('A text to hash');
 		// Lenght of sha256 hashed data must be 78 (64 + strlen data)
-		self::assertEquals (78, strlen($hashed));
+		self::assertEquals(78, strlen($hashed));
 		// The initial text should be after the initial hash
-		self::assertEquals ('A text to hash', substr($hashed,64));
+		self::assertEquals('A text to hash', substr($hashed, 64));
 
 		// Same tests with MD5
 		$sec->setValidationKey('AnotherKey');
 		$sec->setHashAlgorithm('md5');
-		$hashed=$sec->hashData('A text to hash');
+		$hashed = $sec->hashData('A text to hash');
 		// Lenght of md5 hashed data must be 46 (32 + strlen data)
-		self::assertEquals (46, strlen($hashed));
+		self::assertEquals(46, strlen($hashed));
 		// The initial text should be after the initial hash
-		self::assertEquals ('A text to hash', substr($hashed,32));
+		self::assertEquals('A text to hash', substr($hashed, 32));
 	}
 
-	public function testValidateData() {
-		$sec=new TSecurityManager ();
-		$sec->init (null);
+	public function testValidateData()
+	{
+		$sec = new TSecurityManager();
+		$sec->init(null);
 		$sec->setValidationKey('aKey');
 		$sec->setHashAlgorithm('sha256');
-		$hashed=$sec->hashData('A text to hash');
+		$hashed = $sec->hashData('A text to hash');
 		self::assertEquals('A text to hash', $sec->validateData($hashed));
 		// try to alter the hashed data
-		$hashed[45]="z";
+		$hashed[45] = "z";
 		self::assertFalse($sec->validateData($hashed));
 		// and a test without tampered data
 		self::assertFalse($sec->validateData('bad'));
 	}
-
-
 }
-

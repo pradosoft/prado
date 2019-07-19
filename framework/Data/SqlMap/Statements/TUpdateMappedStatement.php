@@ -24,7 +24,7 @@ class TUpdateMappedStatement extends TMappedStatement
 	public function executeInsert($connection, $parameter)
 	{
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_insert',
+			'sqlmap_cannot_execute_insert',
 			get_class($this),
 			$this->getID()
 		);
@@ -34,13 +34,13 @@ class TUpdateMappedStatement extends TMappedStatement
 		$connection,
 		$parameter,
 		$keyProperty,
-											$valueProperty = null,
+		$valueProperty = null,
 		$skip = -1,
 		$max = -1,
 		$delegate = null
 	) {
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_map',
+			'sqlmap_cannot_execute_query_for_map',
 			get_class($this),
 			$this->getID()
 		);
@@ -50,12 +50,12 @@ class TUpdateMappedStatement extends TMappedStatement
 		$connection,
 		$parameter,
 		$result = null,
-										$skip = -1,
+		$skip = -1,
 		$max = -1,
 		$delegate = null
 	) {
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_list',
+			'sqlmap_cannot_execute_query_for_list',
 			get_class($this),
 			$this->getID()
 		);
@@ -64,7 +64,7 @@ class TUpdateMappedStatement extends TMappedStatement
 	public function executeQueryForObject($connection, $parameter, $result = null)
 	{
 		throw new TSqlMapExecutionException(
-				'sqlmap_cannot_execute_query_for_object',
+			'sqlmap_cannot_execute_query_for_object',
 			get_class($this),
 			$this->getID()
 		);

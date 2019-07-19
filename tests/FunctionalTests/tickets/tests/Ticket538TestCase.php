@@ -2,9 +2,9 @@
 
 class Ticket538TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base="ctl0_Content_";
+		$base = "ctl0_Content_";
 		$this->url('tickets/index.php?page=Ticket538');
 		$this->assertEquals("Verifying Ticket 538", $this->title());
 

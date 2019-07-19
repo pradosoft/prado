@@ -1,4 +1,5 @@
 <?php
+
 class UserRecord extends TActiveRecord
 {
 	public $username;
@@ -9,15 +10,15 @@ class UserRecord extends TActiveRecord
 	public $job_title;
 	public $work_phone;
 	public $work_fax;
-	public $active=true;
+	public $active = true;
 	public $department_id;
 	public $salutation;
 	public $hint_question;
 	public $hint_answer;
 
-	private $_level=-1;
+	private $_level = -1;
 
-	const TABLE='Users';
+	const TABLE = 'Users';
 
 	public function getLevel()
 	{
@@ -26,10 +27,10 @@ class UserRecord extends TActiveRecord
 
 	public function setLevel($level)
 	{
-		$this->_level=TPropertyValue::ensureInteger($level);
+		$this->_level = TPropertyValue::ensureInteger($level);
 	}
 
-	public static function finder($className=__CLASS__)
+	public static function finder($className = __CLASS__)
 	{
 		return parent::finder($className);
 	}

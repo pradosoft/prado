@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
 
@@ -9,7 +9,7 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
  */
 class InheritanceTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -18,7 +18,7 @@ class InheritanceTest extends BaseCase
 	}
 
 	/// Test All document with no formula
-	function testGetAllDocument()
+	public function testGetAllDocument()
 	{
 		$list = $this->sqlmap->queryForList("GetAllDocument");
 
@@ -43,7 +43,7 @@ class InheritanceTest extends BaseCase
 	}
 
 	/// Test All document in a typed collection
-	function testGetTypedCollection()
+	public function testGetTypedCollection()
 	{
 		$list = $this->sqlmap->queryForList("GetTypedCollection");
 
@@ -69,7 +69,7 @@ class InheritanceTest extends BaseCase
 	}
 
 	/// Test All document with Custom Type Handler
-	function testGetAllDocumentWithCustomTypeHandler()
+	public function testGetAllDocumentWithCustomTypeHandler()
 	{
 
 		//register the custom inheritance type handler
@@ -97,20 +97,20 @@ class InheritanceTest extends BaseCase
 		$this->assertNewspaper($news, 4, "Le Canard enchaine", "Paris");
 	}
 
-	function AssertDocument(Document $document, $id, $title)
+	public function AssertDocument(Document $document, $id, $title)
 	{
 		$this->assertEquals($id, $document->getID());
 		$this->assertEquals($title, $document->getTitle());
 	}
 
-	function AssertBook(Book $book, $id, $title, $pageNumber)
+	public function AssertBook(Book $book, $id, $title, $pageNumber)
 	{
 		$this->assertEquals($id, $book->getId());
 		$this->assertEquals($title, $book->getTitle());
-		$this->assertEquals($pageNumber, (int)$book->getPageNumber());
+		$this->assertEquals($pageNumber, (int) $book->getPageNumber());
 	}
 
-	function AssertNewspaper(Newspaper $news, $id, $title, $city)
+	public function AssertNewspaper(Newspaper $news, $id, $title, $city)
 	{
 		$this->assertEquals($id, $news->getId());
 		$this->assertEquals($title, $news->getTitle());
@@ -123,8 +123,7 @@ class CustomInheritance extends TSqlMapTypeHandler
 {
 	public function getResult($type)
 	{
-		switch ($type)
-		{
+		switch ($type) {
 			case 'Monograph': case 'Book':
 				return 'Book';
 			case 'Tabloid': case 'Broadsheet': case 'Newspaper':
@@ -139,7 +138,7 @@ class CustomInheritance extends TSqlMapTypeHandler
 		throw new TDataMapperException('not implemented');
 	}
 
-	public function createNewInstance($data=null)
+	public function createNewInstance($data = null)
 	{
 		throw new TDataMapperException('can not create');
 	}

@@ -7,8 +7,8 @@
  *
  */
 
-prado::using ('Application.controls.ToggleImageButton');
+prado::using('Application.controls.ToggleImageButton');
 
-class ExtendedToggleImageButton extends ToggleImageButton {
-
+class ExtendedToggleImageButton extends ToggleImageButton
+{
 }

@@ -7,12 +7,12 @@ class Calculator2 extends TPage
 {
 	public function do_sum($sender, $param)
 	{
-		$this->c->Text = floatval($this->a->Text) + floatval($this->b->Text);	
+		$this->c->Text = (float) ($this->a->Text) + (float) ($this->b->Text);
 	}
 	
 	public function update_callback($sender, $param)
 	{
 		$this->do_sum($this->sum, null);
-		$this->panel1->renderControl($param->Output); 
+		$this->panel1->renderControl($param->Output);
 	}
 }

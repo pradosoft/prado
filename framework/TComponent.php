@@ -581,7 +581,7 @@ class TComponent
 			if ($this instanceof IDynamicMethods) {
 				return $this->__dycall($method, $args);
 			}
-			return isset($args[0]) ? $args[0] : null;
+			return $args[0] ?? null;
 		}
 
 		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
@@ -1153,7 +1153,7 @@ class TComponent
 						$response = call_user_func($handler, $sender, $param, $name);
 					}
 				} elseif (is_callable($handler, true)) {
-					list($object, $method) = $handler;
+					[$object, $method] = $handler;
 					if (is_string($object)) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
@@ -1456,7 +1456,7 @@ class TComponent
 	 * The behavior {@link IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
-	 * @param string|mixed $class class or string
+	 * @param mixed|string $class class or string
 	 * @return bool whether or not the object or a behavior is an instance of a particular class
 	 * @since 3.2.3
 	 */

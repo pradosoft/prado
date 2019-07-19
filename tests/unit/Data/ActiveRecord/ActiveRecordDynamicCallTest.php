@@ -1,62 +1,63 @@
 <?php
+
 \Prado\Prado::using('System.Data.ActiveRecord.TActiveRecord');
-require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
-require_once(dirname(__FILE__).'/records/DepSections.php');
+require_once(__DIR__ . '/records/DepartmentRecord.php');
+require_once(__DIR__ . '/records/DepSections.php');
 
 /**
  * @package System.Data.ActiveRecord
  */
 class ActiveRecordDynamicCallTest extends PHPUnit\Framework\TestCase
 {
-	function setup()
+	public function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
-	function test_multiple_field_and_or()
+	public function test_multiple_field_and_or()
 	{
 		$finder = DepartmentRecord::finder();
 		$r2 = $finder->findAllByName_And_Description_Or_Active_Or_Order('Facilities', null, false, 1);
 		$this->assertNotNull($r2);
 	}
 
-	function test_dynamic_call()
+	public function test_dynamic_call()
 	{
 		$finder = DepartmentRecord::finder();
 		$r2 = $finder->findByName('Facilities');
 		$this->assertNotNull($r2);
 	}
 
-	function test_dynamic_multiple_field_call()
+	public function test_dynamic_multiple_field_call()
 	{
 		$finder = DepartmentRecord::finder();
-		$rs = $finder->findByNameAndActive('Marketing',true);
+		$rs = $finder->findByNameAndActive('Marketing', true);
 		$this->assertNotNull($rs);
 	}
 
-	function test_dynamic_call_missing_parameters_throws_exception()
+	public function test_dynamic_call_missing_parameters_throws_exception()
 	{
 		$finder = DepartmentRecord::finder();
 		self::expectException('Prado\\Exceptions\\TDbException');
 		$rs = $finder->findByNameAndActive('Marketing');
 	}
 
-	function test_dynamic_call_extras_parameters_ok()
+	public function test_dynamic_call_extras_parameters_ok()
 	{
 		$finder = DepartmentRecord::finder();
 		self::expectException('Prado\\Exceptions\\TDbException');
-		$rs = $finder->findByNameAndActive('Marketing',true,true);
+		$rs = $finder->findByNameAndActive('Marketing', true, true);
 	}
 
-	function test_dynamic_delete_by()
+	public function test_dynamic_delete_by()
 	{
 		$finder = DepartmentRecord::finder();
 		//$finder->RecordManager->OnDelete[] = array($this, 'assertDeleteSql');
 		$this->assertEquals($finder->deleteByName('tasds'), 0);
 	}
 
-	function assertDeleteSql($sender, $param)
+	public function assertDeleteSql($sender, $param)
 	{
 	}
 }

@@ -5,42 +5,50 @@
 /**
  * @package System.Web.UI
  */
-class TTemplateControlTest extends PHPUnit\Framework\TestCase {
-
-	public function testSetAndGetTemplate() {
+class TTemplateControlTest extends PHPUnit\Framework\TestCase
+{
+	public function testSetAndGetTemplate()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsSourceTemplateControl() {
+	public function testGetIsSourceTemplateControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetTemplateDirectory() {
+	public function testGetTemplateDirectory()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testCreateChildControls() {
+	public function testCreateChildControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRegisterContent() {
+	public function testRegisterContent()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRegisterContentPlaceHolder() {
+	public function testRegisterContentPlaceHolder()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetMasterClass() {
+	public function testSetAndGetMasterClass()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetMaster() {
+	public function testGetMaster()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testInjectContent() {
+	public function testInjectContent()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

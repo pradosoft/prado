@@ -157,7 +157,7 @@ class TSqlCriteria extends \Prado\TComponent
 			// condition contains limit
 			$value = str_replace($matches[0], '', $value); // remove limit from query
 			if (strpos($matches[1], ',')) { // both offset and limit given
-				list($offset, $limit) = explode(',', $matches[1]);
+				[$offset, $limit] = explode(',', $matches[1]);
 				$this->_limit = (int) $limit;
 				$this->_offset = (int) $offset;
 			} else { // only limit given
@@ -223,7 +223,7 @@ class TSqlCriteria extends \Prado\TComponent
 			$orderBys = [];
 			foreach (explode(',', $value) as $orderBy) {
 				$vs = explode(' ', trim($orderBy));
-				$orderBys[$vs[0]] = isset($vs[1]) ? $vs[1] : 'asc';
+				$orderBys[$vs[0]] = $vs[1] ?? 'asc';
 			}
 			$this->_ordersBy->copyFrom($orderBys);
 		}

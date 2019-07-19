@@ -1,6 +1,5 @@
 <?php
 
-class MyControl extends TTemplateControl 
+class MyControl extends TTemplateControl
 {
-
 }

@@ -1,6 +1,6 @@
 <?php
 
-require(__DIR__.'/../../../vendor/autoload.php');
+require(__DIR__ . '/../../../vendor/autoload.php');
 
-$app=new \Prado\TApplication;
+$app = new \Prado\TApplication;
 $app->run();

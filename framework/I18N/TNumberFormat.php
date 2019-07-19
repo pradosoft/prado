@@ -194,10 +194,12 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 */
 	protected function getFormatter($culture, $type)
 	{
-		if(!isset(self::$formatters[$culture]))
+		if (!isset(self::$formatters[$culture])) {
 			self::$formatters[$culture] = [];
-		if(!isset(self::$formatters[$culture][$type]))
+		}
+		if (!isset(self::$formatters[$culture][$type])) {
 			self::$formatters[$culture][$type] = new \NumberFormatter($culture, $type);
+		}
 
 		return self::$formatters[$culture][$type];
 	}
@@ -220,16 +222,14 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 		$type = $this->getType();
 		$pattern = $this->getPattern();
 
-		if(empty($pattern))
-		{
+		if (empty($pattern)) {
 			$formatter = $this->getFormatter($culture, $type);
 		} else {
 			$formatter = new \NumberFormatter($culture, \NumberFormatter::PATTERN_DECIMAL);
 			$formatter->setPattern($pattern);
 		}
 
-		if($type === \NumberFormatter::CURRENCY)
-		{
+		if ($type === \NumberFormatter::CURRENCY) {
 			$result = $formatter->formatCurrency($value, $this->getCurrency());
 		} else {
 			$result = $formatter->format($value);

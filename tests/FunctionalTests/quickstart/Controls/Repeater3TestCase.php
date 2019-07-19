@@ -2,7 +2,7 @@
 
 class QuickstartRepeater3TestCase extends PradoDemosSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TRepeater.Sample3&amp;notheme=true&amp;lang=en");
 
@@ -19,7 +19,7 @@ class QuickstartRepeater3TestCase extends PradoDemosSelenium2Test
 		$this->assertVisible('ctl0_body_Repeater_ctl0_ctl1');
 
 		// perform postback
-		$this->byId("ctl0_body_Repeater_ctl0_ProductImported",'')->click();
+		$this->byId("ctl0_body_Repeater_ctl0_ProductImported", '')->click();
 		$this->type("ctl0_body_Repeater_ctl0_ProductName", "Mother Board");
 		$this->type("ctl0_body_Repeater_ctl0_ProductPrice", "99.01");
 		$this->select("ctl0_body_Repeater_ctl3_ProductCategory", "Accessories");
@@ -28,8 +28,8 @@ class QuickstartRepeater3TestCase extends PradoDemosSelenium2Test
 		$this->assertNotVisible('ctl0_body_Repeater_ctl0_ctl1');
 
 		// verify postback results
-		$this->assertElementPresent("//td[text()='Mother Board']",'');
-		$this->assertElementNotPresent("//td[text()='Input Devices']",'');
-		$this->assertElementPresent("//td[text()='99.01']",'');
+		$this->assertElementPresent("//td[text()='Mother Board']", '');
+		$this->assertElementNotPresent("//td[text()='Input Devices']", '');
+		$this->assertElementPresent("//td[text()='99.01']", '');
 	}
 }

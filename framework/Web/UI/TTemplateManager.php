@@ -81,7 +81,7 @@ class TTemplateManager extends \Prado\TModule
 			} else {
 				$array = $cache->get(self::TEMPLATE_CACHE_PREFIX . $fileName);
 				if (is_array($array)) {
-					list($template, $timestamps) = $array;
+					[$template, $timestamps] = $array;
 					if ($this->getApplication()->getMode() === TApplicationMode::Performance) {
 						return $template;
 					}

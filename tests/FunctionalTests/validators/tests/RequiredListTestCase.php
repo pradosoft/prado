@@ -2,8 +2,7 @@
 
 class RequiredListTestCase extends PradoGenericSelenium2Test
 {
-
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=RequiredListValidator");

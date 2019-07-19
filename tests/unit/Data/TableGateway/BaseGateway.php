@@ -1,4 +1,5 @@
 <?php
+
 Prado::using('System.Data.*');
 Prado::using('System.Data.DataGateway.TTableGateway');
 
@@ -13,11 +14,10 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	/**
 	 * @return TTableGateway
 	 */
-	function getGateway()
+	public function getGateway()
 	{
-		if($this->gateway1===null)
-		{
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		if ($this->gateway1 === null) {
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 			$this->gateway1 = new TTableGateway('address', $conn);
 		}
 		return $this->gateway1;
@@ -26,34 +26,33 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	/**
 	 * @return TTableGateway
 	 */
-	function getGateway2()
+	public function getGateway2()
 	{
-		if($this->gateway2===null)
-		{
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		if ($this->gateway2 === null) {
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 			$this->gateway2 = new TTableGateway('department_sections', $conn);
 		}
 		return $this->gateway2;
 	}
 
-	function setup()
+	public function setup()
 	{
 		$this->delete_all();
 	}
 
-	function add_record1()
+	public function add_record1()
 	{
 		$result = $this->getGateway()->insert($this->get_record1());
-		$this->assertTrue(intval($result) > 0);
+		$this->assertTrue((int) $result > 0);
 	}
-	function add_record2()
+	public function add_record2()
 	{
 		$result = $this->getGateway()->insert($this->get_record2());
-		$this->assertTrue(intval($result) > 0);
+		$this->assertTrue((int) $result > 0);
 	}
-	function get_record1()
+	public function get_record1()
 	{
-		return array(
+		return [
 			'username' => 'Username',
 			'phone' => 121987,
 			'field1_boolean' => true,
@@ -65,15 +64,15 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 			'field7_timestamp' => '2007-12-25 12:40:00',
 			'field8_money' => '121.12',
 			'field9_numeric' => 98.2232,
-			'int_fk1'=>1,
-			'int_fk2'=>1,
-		);
+			'int_fk1' => 1,
+			'int_fk2' => 1,
+		];
 	}
 
 
-	function get_record2()
+	public function get_record2()
 	{
-		return array(
+		return [
 			'username' => 'record2',
 			'phone' => 45233,
 			'field1_boolean' => false,
@@ -85,11 +84,11 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 			'field7_timestamp' => '2004-10-05 22:40:00',
 			'field8_money' => '1121.12',
 			'field9_numeric' => 8.2213,
-			'int_fk1'=>1,
-			'int_fk2'=>1,
-		);
+			'int_fk1' => 1,
+			'int_fk2' => 1,
+		];
 	}
-	function delete_all()
+	public function delete_all()
 	{
 		$this->getGateway()->deleteAll('1=1');
 	}

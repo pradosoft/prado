@@ -2,8 +2,7 @@
 
 class Ticket28TestCase extends PradoGenericSelenium2Test
 {
-
-	function test()
+	public function test()
 	{
 		$this->url('tickets/index.php?page=Ticket28');
 		$this->assertSourceContains('Label 1');

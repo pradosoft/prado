@@ -2,7 +2,7 @@
 
 class Issue120TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url('tickets/index.php?page=Issue120');
 		$this->assertSourceContains('TActiveDropDownList PromptValue Test');

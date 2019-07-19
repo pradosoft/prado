@@ -2,7 +2,7 @@
 
 class QuickstartMultiViewTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en");
 
@@ -11,7 +11,7 @@ class QuickstartMultiViewTestCase extends PradoDemosSelenium2Test
 		// view 1 : type in a string
 		$this->assertElementNotPresent('ctl0_body_Result1');
 		$this->assertElementNotPresent('ctl0_body_Result2');
-		$this->type('ctl0_body_Memo','test');
+		$this->type('ctl0_body_Memo', 'test');
 		$this->byName('ctl0$body$ctl0')->click(); // view 2 to select the dropdown
 		$this->pause(50);
 		$this->byName('ctl0$body$ctl4')->click();

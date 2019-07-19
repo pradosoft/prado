@@ -57,8 +57,8 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 			if ($index >= 0 && $index <= $this->getControl()->getItemCount()) {
 				$this->getPage()->getCallbackClient()->select(
 					$this->getControl(),
-				'Index',
-				$index
+					'Index',
+					$index
 			);
 			}
 		}
@@ -108,7 +108,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 		if ($this->canUpdateClientSide()) {
 			$this->updateListItems();
 			$this->getPage()->getCallbackClient()->select(
-					$this->getControl(),
+				$this->getControl(),
 				'Value',
 				$value
 			);

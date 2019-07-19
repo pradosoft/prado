@@ -237,7 +237,7 @@ class TRatingList extends TRadioButtonList
 	{
 		$this->setViewState(
 			'HalfRating',
-				TPropertyValue::ensureArray($value),
+			TPropertyValue::ensureArray($value),
 			[0.3, 0.7]
 		);
 	}

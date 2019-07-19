@@ -78,7 +78,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 			return false;
 		}
 		$this->ensureDataBound();
-		$selection = isset($values[$key]) ? $values[$key] : null;
+		$selection = $values[$key] ?? null;
 		if ($selection !== null) {
 			$index = $this->getItems()->findIndexByValue($selection, false);
 			if ($this->getSelectedIndex() !== $index) {

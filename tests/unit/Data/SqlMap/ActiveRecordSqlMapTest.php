@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 Prado::using('System.Data.ActiveRecord.*');
 
@@ -14,9 +14,9 @@ class ActiveAccount extends TActiveRecord
 	public $Account_Banner_Option;
 	public $Account_Cart_Option;
 
-	const TABLE='Accounts';
+	const TABLE = 'Accounts';
 
-	public static function finder($className=__CLASS__)
+	public static function finder($className = __CLASS__)
 	{
 		return parent::finder($className);
 	}
@@ -27,7 +27,7 @@ class ActiveAccount extends TActiveRecord
  */
 class ActiveRecordSqlMapTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
@@ -36,32 +36,33 @@ class ActiveRecordSqlMapTest extends BaseCase
 		//$this->initScript('account-init.sql');
 	}
 
-	function testLoadWithSqlMap_SaveWithActiveRecord()
+	public function testLoadWithSqlMap_SaveWithActiveRecord()
 	{
 		$this->markTestSkipped('Needs fixing');
-/*
-		$record = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
-		$record->Account_FirstName = "Testing 123";
-
-		$this->assertTrue($record->save());
-
-		$check1 = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
-		$finder = ActiveAccount::finder();
-		$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
-
-
-		$this->assertSameAccount($record,$check1);
-		$this->assertSameAccount($record,$check2);
-
-		$this->initScript('account-init.sql');
-*/
+		/*
+				$record = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
+				$record->Account_FirstName = "Testing 123";
+		
+				$this->assertTrue($record->save());
+		
+				$check1 = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
+				$finder = ActiveAccount::finder();
+				$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
+		
+		
+				$this->assertSameAccount($record,$check1);
+				$this->assertSameAccount($record,$check2);
+		
+				$this->initScript('account-init.sql');
+		*/
 	}
 
-	function assertSameAccount($account1,$account2)
+	public function assertSameAccount($account1, $account2)
 	{
-		$props = array('Account_Id', 'Account_FirstName', 'Account_LastName',
-						'Account_Email', 'Account_Banner_Option', 'Account_Cart_Option');
-		foreach($props as $prop)
+		$props = ['Account_Id', 'Account_FirstName', 'Account_LastName',
+						'Account_Email', 'Account_Banner_Option', 'Account_Cart_Option'];
+		foreach ($props as $prop) {
 			$this->assertEquals($account1->{$prop}, $account2->{$prop});
+		}
 	}
 }

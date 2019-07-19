@@ -1,4 +1,5 @@
 <?php
+
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
 
@@ -17,24 +18,21 @@ class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
 
 	public function testDirectoryName()
 	{
-		$directory=realpath(dirname(__FILE__).'/temp');
-		$dependency=new TDirectoryCacheDependency(dirname(__FILE__).'/temp');
-		$this->assertEquals($dependency->getDirectory(),$directory);
+		$directory = realpath(__DIR__ . '/temp');
+		$dependency = new TDirectoryCacheDependency(__DIR__ . '/temp');
+		$this->assertEquals($dependency->getDirectory(), $directory);
 
-		try
-		{
-			$dependency=new TDirectoryCacheDependency(dirname(__FILE__).'/temp2');
+		try {
+			$dependency = new TDirectoryCacheDependency(__DIR__ . '/temp2');
 			$this->fail("Expected exception is not raised");
-		}
-		catch(TInvalidDataValueException $e)
-		{
+		} catch (TInvalidDataValueException $e) {
 		}
 	}
 
 	public function testRecursiveCheck()
 	{
-		$directory=realpath(dirname(__FILE__).'/temp');
-		$dependency=new TDirectoryCacheDependency(dirname(__FILE__).'/temp');
+		$directory = realpath(__DIR__ . '/temp');
+		$dependency = new TDirectoryCacheDependency(__DIR__ . '/temp');
 		$this->assertTrue($dependency->getRecursiveCheck());
 		$dependency->setRecursiveCheck(false);
 		$this->assertFalse($dependency->getRecursiveCheck());
@@ -42,39 +40,39 @@ class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
 
 	public function testRecursiveLevel()
 	{
-		$directory=realpath(dirname(__FILE__).'/temp');
-		$dependency=new TDirectoryCacheDependency(dirname(__FILE__).'/temp');
-		$this->assertEquals($dependency->getRecursiveLevel(),-1);
+		$directory = realpath(__DIR__ . '/temp');
+		$dependency = new TDirectoryCacheDependency(__DIR__ . '/temp');
+		$this->assertEquals($dependency->getRecursiveLevel(), -1);
 		$dependency->setRecursiveLevel(5);
-		$this->assertEquals($dependency->getRecursiveLevel(),5);
+		$this->assertEquals($dependency->getRecursiveLevel(), 5);
 	}
 
 	public function testHasChanged()
 	{
-		$tempFile=dirname(__FILE__).'/temp/foo.txt';
+		$tempFile = __DIR__ . '/temp/foo.txt';
 		@unlink($tempFile);
-		$fw=fopen($tempFile,"w");
-		fwrite($fw,"test");
+		$fw = fopen($tempFile, "w");
+		fwrite($fw, "test");
 		fclose($fw);
 		clearstatcache();
 
-		$dependency=new TDirectoryCacheDependency(dirname($tempFile));
-		$str=serialize($dependency);
+		$dependency = new TDirectoryCacheDependency(dirname($tempFile));
+		$str = serialize($dependency);
 
 		// test directory not changed
 		sleep(2);
-		$dependency=unserialize($str);
+		$dependency = unserialize($str);
 		$this->assertFalse($dependency->getHasChanged());
 
 		// change file
-		$fw=fopen($tempFile,"w");
-		fwrite($fw,"test again");
+		$fw = fopen($tempFile, "w");
+		fwrite($fw, "test again");
 		fclose($fw);
 		clearstatcache();
 
 		// test file changed
 		sleep(2);
-		$dependency=unserialize($str);
+		$dependency = unserialize($str);
 		$this->assertTrue($dependency->getHasChanged());
 
 		@unlink($tempFile);

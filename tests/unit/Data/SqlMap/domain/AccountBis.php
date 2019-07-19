@@ -8,4 +8,3 @@ class AccountBis
 	public $EmailAddress;
 	public $More;
 }
-

@@ -1,12 +1,13 @@
 <?php
-require_once(dirname(__FILE__).'/BaseCase.php');
+
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class TestQueryForMap extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
@@ -15,9 +16,9 @@ class TestQueryForMap extends BaseCase
 	/**
 	 * Test ExecuteQueryForMap : Hashtable.
 	 */
-	function testExecuteQueryForMap()
+	public function testExecuteQueryForMap()
 	{
-		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName",null,0,2);
+		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName", null, 0, 2);
 		$this->assertSame(2, count($map));
 		$this->assertAccount1($map["Joe"]);
 
@@ -29,10 +30,16 @@ class TestQueryForMap extends BaseCase
 	 * Test ExecuteQueryForMap with value property :
 	 * "FirstName" as key, "EmailAddress" as value
 	 */
-	function testExecuteQueryForMapWithValueProperty()
+	public function testExecuteQueryForMapWithValueProperty()
 	{
-		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null,
-						"FirstName", "EmailAddress",1,3);
+		$map = $this->sqlmap->QueryForMap(
+			"GetAllAccountsViaResultClass",
+			null,
+			"FirstName",
+			"EmailAddress",
+			1,
+			3
+		);
 
 		$this->assertSame(3, count($map));
 
@@ -40,5 +47,4 @@ class TestQueryForMap extends BaseCase
 		$this->assertNull($map["William"]);
 		$this->assertSame("Jack.Dalton@somewhere.com", $map["Jack"]);
 	}
-
 }

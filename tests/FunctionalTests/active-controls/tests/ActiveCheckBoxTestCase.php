@@ -2,9 +2,9 @@
 
 class ActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base='ctl0_Content_';
+		$base = 'ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveCheckBoxTest");
 		$this->assertSourceContains("Active CheckBox Test");
 
@@ -55,6 +55,5 @@ class ActiveCheckBoxTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}checkbox2")->click();
 		$this->pause(800);
 		$this->assertText("{$base}label1", "Label 1:CheckBox 2 World Not Checked");
-
 	}
 }

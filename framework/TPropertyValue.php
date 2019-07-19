@@ -171,7 +171,7 @@ class TPropertyValue
 				throw new TInvalidDataValueException(
 					'propertyvalue_enumvalue_invalid',
 					$value,
-						implode(' | ', $types[$enums]->getConstants())
+					implode(' | ', $types[$enums]->getConstants())
 				);
 			}
 		} elseif (!is_array($enums)) {

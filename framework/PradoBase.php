@@ -34,7 +34,7 @@ if (!defined('PRADO_CHMOD')) {
 // Defines the Composer's vendor/ path.
 if (!defined('PRADO_VENDORDIR')) {
 	$reflector = new \ReflectionClass('\Composer\Autoload\ClassLoader');
-	define('PRADO_VENDORDIR', dirname(dirname($reflector->getFileName())));
+	define('PRADO_VENDORDIR', dirname($reflector->getFileName(), 2));
 }
 
 /**
@@ -273,6 +273,7 @@ class PradoBase
 	 * All parameters passed to this method except the first one (the component type)
 	 * will be supplied as component constructor parameters.
 	 * @param string $requestedType component type
+	 * @param array $params
 	 * @throws TInvalidDataValueException if the component type is unknown
 	 * @return TComponent component instance of the specified type
 	 */
@@ -659,7 +660,7 @@ class PradoBase
 		}
 
 		if ($catalogue === null) {
-			$catalogue = isset($config['catalogue']) ? $config['catalogue'] : 'messages';
+			$catalogue = $config['catalogue'] ?? 'messages';
 		}
 
 		Translation::init($catalogue);

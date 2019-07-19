@@ -3,7 +3,7 @@
 //New Test
 class ValidationSummaryTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 

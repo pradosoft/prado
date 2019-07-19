@@ -543,7 +543,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function itemAt($key)
 	{
-		return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+		return $_SESSION[$key] ?? null;
 	}
 
 	/**
@@ -617,7 +617,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function offsetGet($offset)
 	{
-		return isset($_SESSION[$offset]) ? $_SESSION[$offset] : null;
+		return $_SESSION[$offset] ?? null;
 	}
 
 	/**

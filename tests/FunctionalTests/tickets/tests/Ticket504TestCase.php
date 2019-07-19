@@ -2,7 +2,7 @@
 
 class Ticket504TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket504');
@@ -46,6 +46,5 @@ class Ticket504TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}panelC");
 		$this->assertVisible("{$base}panelD");
 		$this->assertText("status", "panelD updated");
-
 	}
 }

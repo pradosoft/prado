@@ -918,7 +918,7 @@ class TApplication extends \Prado\TComponent
 
 	protected function internalLoadModule($id, $force = false)
 	{
-		list($moduleClass, $initProperties, $configElement) = $this->_lazyModules[$id];
+		[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
 		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
 			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", '\Prado\TApplication');
 			$this->setModule($id, null);
@@ -1060,7 +1060,7 @@ class TApplication extends \Prado\TComponent
 	public function startService($serviceID)
 	{
 		if (isset($this->_services[$serviceID])) {
-			list($serviceClass, $initProperties, $configElement) = $this->_services[$serviceID];
+			[$serviceClass, $initProperties, $configElement] = $this->_services[$serviceID];
 			$service = Prado::createComponent($serviceClass);
 			if (!($service instanceof IService)) {
 				throw new THttpException(500, 'application_service_invalid', $serviceClass);

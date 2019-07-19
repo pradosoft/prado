@@ -274,7 +274,7 @@ class TCache_Lite
 				if (isset($this->_memoryCachingArray[$this->_file])) {
 					if ($this->_automaticSerialization) {
 						return unserialize(
-									$this->_memoryCachingArray[$this->_file]
+							$this->_memoryCachingArray[$this->_file]
 						);
 					} else {
 						return $this->_memoryCachingArray[$this->_file];

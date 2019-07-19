@@ -80,8 +80,8 @@ class TStyleDiff extends TViewStateDiff
 	protected function getStyleDiff()
 	{
 		$diff = array_diff_assoc(
-					$this->getCombinedStyle($this->_new),
-					$this->getCombinedStyle($this->_old)
+			$this->getCombinedStyle($this->_new),
+			$this->getCombinedStyle($this->_old)
 		);
 		return count($diff) > 0 ? $diff : null;
 	}

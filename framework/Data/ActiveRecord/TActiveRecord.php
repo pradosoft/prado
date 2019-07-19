@@ -756,7 +756,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	protected function createRelationContext($name)
 	{
 		if (($definition = $this->getRecordRelation($name)) !== null) {
-			list($property, $relation) = $definition;
+			[$property, $relation] = $definition;
 			return new TActiveRecordRelationContext($this, $property, $relation);
 		} else {
 			return null;
@@ -853,7 +853,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		} elseif ($delete = strncasecmp($method, 'deleteallby', 11) === 0) {
 			$condition = $method[11] === '_' ? substr($method, 12) : substr($method, 11);
 		} elseif (strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
-		  return parent::__call($method, $args);
+			return parent::__call($method, $args);
 		} else {
 			if ($this->getInvalidFinderResult() == TActiveRecordInvalidFinderResult::Exception) {
 				throw new TActiveRecordException('ar_invalid_finder_method', $method);

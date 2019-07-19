@@ -7,10 +7,12 @@
  *
  */
 
-prado::using ('Application.pages.ExtendedToggleImageButton');
+prado::using('Application.pages.ExtendedToggleImageButton');
 
-class Ticket659 extends TPage {
-	public function clickToggleButton ($sender, $param) {
-		$this->lbl->Text=$sender->State;
+class Ticket659 extends TPage
+{
+	public function clickToggleButton($sender, $param)
+	{
+		$this->lbl->Text = $sender->State;
 	}
 }

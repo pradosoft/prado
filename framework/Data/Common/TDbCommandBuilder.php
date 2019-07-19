@@ -385,7 +385,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	public function createInsertCommand($data)
 	{
 		$table = $this->getTableInfo()->getTableFullName();
-		list($fields, $bindings) = $this->getInsertFieldBindings($data);
+		[$fields, $bindings] = $this->getInsertFieldBindings($data);
 		$command = $this->createCommand("INSERT INTO {$table}({$fields}) VALUES ($bindings)");
 		$this->bindColumnValues($command, $data);
 		return $command;

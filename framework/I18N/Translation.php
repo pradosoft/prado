@@ -50,8 +50,8 @@ class Translation extends \Prado\TComponent
 			$config = $app->getTranslationConfiguration();
 			$source = MessageSource::factory(
 				$config['type'],
-											$config['source'],
-											$config['filename']
+				$config['source'],
+				$config['filename']
 			);
 
 			$source->setCulture($app->getCulture());
@@ -71,7 +71,7 @@ class Translation extends \Prado\TComponent
 			// Do it only once !
 			if (!$saveEventHandlerAttached && TPropertyValue::ensureBoolean($config['autosave'])) {
 				Prado::getApplication()->attachEventHandler(
-				'OnEndRequest',
+					'OnEndRequest',
 					['Translation', 'saveMessages']
 				);
 				$saveEventHandlerAttached = true;

@@ -3,7 +3,7 @@
  * Created on 28/04/2006
  */
 
-class LabeledTextBox extends TTemplateControl
+class LabeledTextbox extends TTemplateControl
 {
 	public function __construct()
 	{
@@ -20,5 +20,4 @@ class LabeledTextBox extends TTemplateControl
 	{
 		return $this->getRegisteredObject('label');
 	}
-} 
-
+}

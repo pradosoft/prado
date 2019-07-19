@@ -5,30 +5,35 @@
 /**
  * @package System.Web.UI
  */
-class TFormTest extends PHPUnit\Framework\TestCase {
-
-	public function testOnInit() {
+class TFormTest extends PHPUnit\Framework\TestCase
+{
+	public function testOnInit()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRender() {
+	public function testRender()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetDefaultButton() {
+	public function testSetAndGetDefaultButton()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetMethod() {
+	public function testSetAndGetMethod()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnctype() {
+	public function testSetAndGetEnctype()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetName() {
+	public function testGetName()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

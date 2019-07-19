@@ -5,26 +5,30 @@
 /**
  * @package System.Web.UI
  */
-class TThemeManagerTest extends PHPUnit\Framework\TestCase {
-
-	public function testInit() {
+class TThemeManagerTest extends PHPUnit\Framework\TestCase
+{
+	public function testInit()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetTheme() {
+	public function testGetTheme()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetAvailableThemes() {
+	public function testGetAvailableThemes()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetBasePath() {
+	public function testSetAndGetBasePath()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetBaseUrl() {
+	public function testSetAndGetBaseUrl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

@@ -187,7 +187,7 @@ class TDbConnection extends \Prado\TComponent
 				$this->_pdo = new PDO(
 					$this->getConnectionString(),
 					$this->getUsername(),
-									$this->getPassword(),
+					$this->getPassword(),
 					$this->_attributes
 				);
 				// This attribute is only useful for PDO::MySql driver.

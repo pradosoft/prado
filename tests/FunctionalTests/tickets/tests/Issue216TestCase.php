@@ -2,7 +2,7 @@
 
 class Issue216TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url('tickets/index.php?page=Issue216');
 		$this->assertSourceContains('TTabPanel doesn\'t preserve active tab on callback request');

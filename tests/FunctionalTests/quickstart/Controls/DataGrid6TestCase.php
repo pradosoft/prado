@@ -2,7 +2,7 @@
 
 class QuickstartDataGrid6TestCase extends PradoDemosSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample6&amp;notheme=true&amp;lang=en");
 

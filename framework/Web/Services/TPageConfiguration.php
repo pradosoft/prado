@@ -196,7 +196,7 @@ class TPageConfiguration extends \Prado\TComponent
 		if (isset($config['authorization']) && is_array($config['authorization'])) {
 			$rules = [];
 			foreach ($config['authorization'] as $authorization) {
-				$patterns = isset($authorization['pages']) ? $authorization['pages'] : '';
+				$patterns = $authorization['pages'] ?? '';
 				$ruleApplies = false;
 				if (empty($patterns) || trim($patterns) === '*') { // null or empty string
 					$ruleApplies = true;
@@ -221,11 +221,11 @@ class TPageConfiguration extends \Prado\TComponent
 					}
 				}
 				if ($ruleApplies) {
-					$action = isset($authorization['action']) ? $authorization['action'] : '';
-					$users = isset($authorization['users']) ? $authorization['users'] : '';
-					$roles = isset($authorization['roles']) ? $authorization['roles'] : '';
-					$verb = isset($authorization['verb']) ? $authorization['verb'] : '';
-					$ips = isset($authorization['ips']) ? $authorization['ips'] : '';
+					$action = $authorization['action'] ?? '';
+					$users = $authorization['users'] ?? '';
+					$roles = $authorization['roles'] ?? '';
+					$verb = $authorization['verb'] ?? '';
+					$ips = $authorization['ips'] ?? '';
 					$rules[] = new TAuthorizationRule($action, $users, $roles, $verb, $ips);
 				}
 			}

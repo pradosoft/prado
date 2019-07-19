@@ -1,21 +1,24 @@
 <?php
-require_once(dirname(__FILE__).'/BaseCase.php');
+
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class DelegateTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
 	}
 
-	function testListDelegate()
+	public function testListDelegate()
 	{
 		$list = $this->sqlmap->queryWithRowDelegate(
-					"GetAllAccountsViaResultMap", array($this, 'listHandler'));
+			"GetAllAccountsViaResultMap",
+			[$this, 'listHandler']
+		);
 
 		$this->assertSame(5, count($list));
 		$this->assertAccount1($list[0]);
@@ -29,10 +32,14 @@ class DelegateTest extends BaseCase
 	/**
 	 * Test ExecuteQueryForMap : Hashtable.
 	 */
-	function testExecuteQueryForMap()
+	public function testExecuteQueryForMap()
 	{
 		$map = $this->sqlmap->QueryForMapWithRowDelegate(
-				"GetAllAccountsViaResultClass", array($this, 'mapHandler'), null, "FirstName");
+			"GetAllAccountsViaResultClass",
+			[$this, 'mapHandler'],
+			null,
+			"FirstName"
+		);
 
 		$this->assertSame(5, count($map));
 		$this->assertAccount1($map["Joe"]);
@@ -58,5 +65,3 @@ class DelegateTest extends BaseCase
 		$this->assertTrue($param->getValue() instanceof Account);
 	}
 }
-
-

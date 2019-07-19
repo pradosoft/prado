@@ -53,7 +53,7 @@ class TRadioButtonList extends TCheckBoxList
 	 */
 	public function loadPostData($key, $values)
 	{
-		$value = isset($values[$key]) ? $values[$key] : '';
+		$value = $values[$key] ?? '';
 		$oldSelection = $this->getSelectedIndex();
 		$this->ensureDataBound();
 		foreach ($this->getItems() as $index => $item) {

@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class PropertyAccessTest extends BaseCase
 {
-	function testGetPublicProperty()
+	public function testGetPublicProperty()
 	{
 		$account = new AccountBis();
 
@@ -29,7 +29,7 @@ class PropertyAccessTest extends BaseCase
 		$this->assertSame(6, TPropertyAccess::get($account, 'More.More.Id'));
 	}
 
-	function testSetPublicProperty()
+	public function testSetPublicProperty()
 	{
 		$account = new AccountBis();
 
@@ -52,15 +52,17 @@ class PropertyAccessTest extends BaseCase
 		$this->assertSame(12, TPropertyAccess::get($account, 'More.Id'));
 		$this->assertSame(6, TPropertyAccess::get($account, 'More.More.Id'));
 
-		$this->assertSame('hahaha',
-				TPropertyAccess::get($account, 'More.More.EmailAddress'));
+		$this->assertSame(
+			'hahaha',
+			TPropertyAccess::get($account, 'More.More.EmailAddress')
+		);
 	}
 
-	function testArrayAccessProperty()
+	public function testArrayAccessProperty()
 	{
 		$account = new AccountBis();
 		$things['more'] = 1;
-		$things['accounts']  = $this->NewAccount6();
+		$things['accounts'] = $this->NewAccount6();
 		$account->More = $things;
 
 		$this->assertSame(6, TPropertyAccess::get($account, 'More.accounts.ID'));
@@ -70,6 +72,4 @@ class PropertyAccessTest extends BaseCase
 
 		$this->assertSame(1, TPropertyAccess::get($things, 'more'));
 	}
-
 }
-

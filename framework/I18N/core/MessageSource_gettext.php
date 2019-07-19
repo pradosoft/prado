@@ -219,9 +219,9 @@ class MessageSource_gettext extends MessageSource
 		$variants = $this->getVariants($catalogue);
 
 		if ($variants) {
-			list($variant, $MOFile, $POFile) = $variants;
+			[$variant, $MOFile, $POFile] = $variants;
 		} else {
-			list($variant, $MOFile, $POFile) = $this->createMessageTemplate($catalogue);
+			[$variant, $MOFile, $POFile] = $this->createMessageTemplate($catalogue);
 		}
 
 		if (is_writable($MOFile) == false) {
@@ -277,7 +277,7 @@ class MessageSource_gettext extends MessageSource
 	{
 		$variants = $this->getVariants($catalogue);
 		if ($variants) {
-			list($variant, $MOFile, $POFile) = $variants;
+			[$variant, $MOFile, $POFile] = $variants;
 		} else {
 			return false;
 		}
@@ -326,7 +326,7 @@ class MessageSource_gettext extends MessageSource
 	{
 		$variants = $this->getVariants($catalogue);
 		if ($variants) {
-			list($variant, $MOFile, $POFile) = $variants;
+			[$variant, $MOFile, $POFile] = $variants;
 		} else {
 			return false;
 		}
@@ -395,7 +395,7 @@ class MessageSource_gettext extends MessageSource
 				&& preg_match('/^[a-z]{2}(_[A-Z]{2,3})?$/', $file)) {
 				$catalogue = array_merge(
 					$catalogue,
-								$this->getCatalogues($dir . '/' . $file, $file)
+					$this->getCatalogues($dir . '/' . $file, $file)
 				);
 			}
 

@@ -2,7 +2,7 @@
 
 class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=ConditionalValidation");
@@ -30,7 +30,7 @@ class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
-		$this->type("{$base}text1" ,"");
+		$this->type("{$base}text1", "");
 		$this->byId("{$base}check1")->click();
 		$this->byId("{$base}submit1")->click();
 		$this->assertVisible("{$base}validator1");
@@ -48,8 +48,5 @@ class ConditionalValidationTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}submit1")->click();
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
-
 	}
-
 }
-

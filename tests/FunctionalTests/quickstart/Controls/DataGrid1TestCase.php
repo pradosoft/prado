@@ -2,7 +2,7 @@
 
 class QuickstartDataGrid1TestCase extends PradoDemosSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample1&amp;notheme=true&amp;lang=en");
 
@@ -24,6 +24,6 @@ class QuickstartDataGrid1TestCase extends PradoDemosSelenium2Test
 
 		// verify specific table tags
 		$this->assertElementPresent("ctl0_body_DataGrid");
-		$this->assertAttribute("ctl0_body_DataGrid@cellpadding","2");
+		$this->assertAttribute("ctl0_body_DataGrid@cellpadding", "2");
 	}
 }

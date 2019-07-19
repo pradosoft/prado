@@ -287,7 +287,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 				$commandText = (string) $superNode . $commandText;
 			} else {
 				throw new TSqlMapConfigurationException(
-						'sqlmap_unable_to_find_parent_sql',
+					'sqlmap_unable_to_find_parent_sql',
 					$extend,
 					$this->_configFile,
 					$node

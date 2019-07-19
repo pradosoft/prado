@@ -74,6 +74,9 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 	}
 
 	/**
+	 * @param mixed $container
+	 * @param mixed $column
+	 * @param mixed $record
 	 * @return string
 	 */
 	protected function getDefaultControlValue($container, $column, $record)

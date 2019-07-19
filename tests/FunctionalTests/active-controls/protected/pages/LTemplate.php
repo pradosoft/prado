@@ -20,51 +20,47 @@
 
 class LTemplate extends TTemplateControl
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->setEnableViewState(false);
 	}
 
-	function setSize($value)
+	public function setSize($value)
 	{
 		$this->setViewState("Size", $value);
 	}
 
-	function getSize()
+	public function getSize()
 	{
 		return $this->getViewState("Size", "Small");
 	}
 
-	function onInit($param)
+	public function onInit($param)
 	{
 		parent :: onInit($param);
 		$this->Controls[] = "OnInit";
 	}
 
-	function onLoad($param)
+	public function onLoad($param)
 	{
 		parent :: onLoad($param);
 		$this->Controls[] = "OnLoad";
 		$this->adjustLayout();
 	}
 
-	function onPreRender($param)
+	public function onPreRender($param)
 	{
 		parent :: onPreRender($param);
 		$this->Controls[] = "OnPreRender";
 	}
 
-	function adjustLayout()
+	public function adjustLayout()
 	{
-		if ($this->getSize() == "Large")
-		{
+		if ($this->getSize() == "Large") {
 			$this->Small->setVisible(false);
-		}
-		else
-		{
+		} else {
 			$this->Large->setVisible(false);
 		}
 	}
-
 }

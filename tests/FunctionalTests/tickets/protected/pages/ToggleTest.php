@@ -7,10 +7,12 @@
  *
  */
 
-prado::using ('Application.controls.ToggleImageButton');
+prado::using('Application.controls.ToggleImageButton');
 
-class ToggleTest extends TPage {
-	public function clickToggleButton ($sender, $param) {
-		$this->lbl->Text=$sender->State;
+class ToggleTest extends TPage
+{
+	public function clickToggleButton($sender, $param)
+	{
+		$this->lbl->Text = $sender->State;
 	}
 }

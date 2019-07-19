@@ -2,7 +2,7 @@
 
 class Ticket578TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket578');
@@ -13,12 +13,12 @@ class Ticket578TestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertText("{$base}label1", "Button 1 was clicked :");
 
-		$text="helloworld";
+		$text = "helloworld";
 
-		$this->execute(array(
+		$this->execute([
 			'script' => "tinyMCE.get('{$base}text1').setContent('{$text}')",
-			'args'   => array()
-		));
+			'args' => []
+		]);
 
 		$this->byId("{$base}button1")->click();
 		$this->pause(800);

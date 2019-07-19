@@ -2,9 +2,9 @@
 
 class CalculatorTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base='ctl0_Content_';
+		$base = 'ctl0_Content_';
 		$this->url("active-controls/index.php?page=Calculator");
 		$this->assertSourceContains("Callback Enabled Calculator");
 		$this->assertNotVisible("{$base}summary");

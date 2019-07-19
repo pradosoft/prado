@@ -2,7 +2,7 @@
 
 class CustomTemplateComponent extends TTemplateControl
 {
-	public function suboncallback ($sender, $param)
+	public function suboncallback($sender, $param)
 	{
 		$sender->setText("Foo");
 	}

@@ -30,13 +30,13 @@ use ReflectionClass;
  */
 class TActiveRecordGateway extends \Prado\TComponent
 {
-  const DEFAULT_DATA_GATEWAY_CLASS = 'System.Data.DataGateway.TDataGatewayCommand';
+	const DEFAULT_DATA_GATEWAY_CLASS = 'System.Data.DataGateway.TDataGatewayCommand';
 
-  /**
-   * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
-   * @var string
-   */
-  private $_dataGatewayClass = self::DEFAULT_DATA_GATEWAY_CLASS;
+	/**
+	 * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @var string
+	 */
+	private $_dataGatewayClass = self::DEFAULT_DATA_GATEWAY_CLASS;
 	private $_manager;
 	private $_tables = []; //table cache
 	private $_meta = []; //meta data cache.
@@ -173,7 +173,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	public function setDataGatewayClass($value)
 	{
-	  $this->_dataGatewayClass = (string) $value;
+		$this->_dataGatewayClass = (string) $value;
 	}
 
 	/**
@@ -181,7 +181,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 */
 	public function getDataGatewayClass()
 	{
-	  return $this->_dataGatewayClass;
+		return $this->_dataGatewayClass;
 	}
 
 	/**
@@ -365,7 +365,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function update(TActiveRecord $record)
 	{
 		//$this->updateAssociatedRecords($record,true);
-		list($data, $keys) = $this->getUpdateValues($record);
+		[$data, $keys] = $this->getUpdateValues($record);
 		$result = $this->getCommand($record)->updateByPk($data, $keys);
 		//$this->updateAssociatedRecords($record);
 		return $result;

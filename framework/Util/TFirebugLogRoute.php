@@ -26,7 +26,6 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  */
 class TFirebugLogRoute extends TBrowserLogRoute
 {
-
 	public function processLogs($logs)
 	{
 		$page = $this->getService()->getRequestedPage();
@@ -40,7 +39,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		$first = $logs[0][3];
 		$even = true;
 
-		$blocks = [ [ 'info', 'Tot Time', 'Time    ', '[Level] [Category] [Message]' ] ];
+		$blocks = [['info', 'Tot Time', 'Time    ', '[Level] [Category] [Message]']];
 		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
 			if ($i < $n - 1) {
 				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];

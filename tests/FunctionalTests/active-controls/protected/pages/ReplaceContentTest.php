@@ -2,39 +2,38 @@
 
 class ReplaceContentTest extends TPage
 {
-	function appendContent($sender, $param)
+	public function appendContent($sender, $param)
 	{
 		$this->CallbackClient->appendContent($this->subpanel, $this->replacementContent());
 	}
 
-	function prependContent($sender, $param)
+	public function prependContent($sender, $param)
 	{
 		$this->CallbackClient->prependContent($this->subpanel, $this->replacementContent());
 	}
 
-	function insertContentBefore($sender, $param)
+	public function insertContentBefore($sender, $param)
 	{
 		$this->CallbackClient->insertContentBefore($this->subpanel, $this->replacementContent());
 	}
 
-	function insertContentAfter($sender, $param)
+	public function insertContentAfter($sender, $param)
 	{
 		$this->CallbackClient->insertContentAfter($this->subpanel, $this->replacementContent());
 	}
 
-	function replaceContent($sender, $param)
+	public function replaceContent($sender, $param)
 	{
 		$this->CallbackClient->replaceContent($this->subpanel, $this->replacementContent());
 	}
 
-	function replacementContent()
+	public function replacementContent()
 	{
-		if($this->check1->Checked)
-		{
-			$this->newPanel->Visible=true;
+		if ($this->check1->Checked) {
+			$this->newPanel->Visible = true;
 			return $this->newPanel;
-		}
-		else
+		} else {
 			return $this->content->Text;
+		}
 	}
 }

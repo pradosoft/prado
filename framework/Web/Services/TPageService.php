@@ -192,7 +192,7 @@ class TPageService extends \Prado\TService
 		$pagePath = $this->getRequestedPagePath();
 		// external configurations
 		foreach ($config->getExternalConfigurations() as $filePath => $params) {
-			list($configPagePath, $condition) = $params;
+			[$configPagePath, $condition] = $params;
 			if ($condition !== true) {
 				$condition = $this->evaluateExpression($condition);
 			}
@@ -244,7 +244,7 @@ class TPageService extends \Prado\TService
 			$currentTimestamp = [];
 			$arr = $cache->get(self::CONFIG_CACHE_PREFIX . $this->getID() . $pagePath);
 			if (is_array($arr)) {
-				list($pageConfig, $timestamps) = $arr;
+				[$pageConfig, $timestamps] = $arr;
 				if ($application->getMode() !== TApplicationMode::Performance) {
 					foreach ($timestamps as $fileName => $timestamp) {
 						if ($fileName === 0) { // application config file

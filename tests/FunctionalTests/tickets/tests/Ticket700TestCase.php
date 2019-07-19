@@ -1,7 +1,8 @@
 <?php
+
 class Ticket700TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		// page: Home
 		$this->url('tickets/index700.php');
@@ -18,8 +19,8 @@ class Ticket700TestCase extends PradoGenericSelenium2Test
 		// page: admin.Home
 		$this->byId('pageAdminHome')->click();
 		$this->assertTitleEquals('UserLogin');
-		$this->type('ctl0_Main_Username','AdminUser');
-		$this->type('ctl0_Main_Password','demo');
+		$this->type('ctl0_Main_Username', 'AdminUser');
+		$this->type('ctl0_Main_Password', 'demo');
 		$this->byId('ctl0_Main_LoginButton')->click();
 		$this->pause(50);
 		$this->byId('pageAdminHome')->click();
@@ -41,14 +42,14 @@ class Ticket700TestCase extends PradoGenericSelenium2Test
 		// page: admin.users.Home
 		$this->byId('pageAdminUsersHome')->click();
 		$this->assertTitleEquals('UserLogin');
-		$this->type('ctl0_Main_Username','NormalUser');
-		$this->type('ctl0_Main_Password','demo');
+		$this->type('ctl0_Main_Username', 'NormalUser');
+		$this->type('ctl0_Main_Password', 'demo');
 		$this->byId('ctl0_Main_LoginButton')->click();
 		$this->pause(50);
 		$this->byId('pageAdminUsersHome')->click();
 		$this->assertTitleEquals('UserLogin');
-		$this->type('ctl0_Main_Username','AdminUser');
-		$this->type('ctl0_Main_Password','demo');
+		$this->type('ctl0_Main_Username', 'AdminUser');
+		$this->type('ctl0_Main_Password', 'demo');
 		$this->byId('ctl0_Main_LoginButton')->click();
 		$this->pause(50);
 		$this->byId('pageAdminUsersHome')->click();
@@ -79,5 +80,4 @@ class Ticket700TestCase extends PradoGenericSelenium2Test
 		$this->pause(50);
 		$this->assertEquals($this->title(), $title);
 	}
-
 }

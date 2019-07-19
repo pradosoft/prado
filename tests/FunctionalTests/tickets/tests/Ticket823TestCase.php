@@ -1,8 +1,9 @@
 <?php
 
-class Ticket823TestCase extends PradoGenericSelenium2Test {
-
-	public function test() {
+class Ticket823TestCase extends PradoGenericSelenium2Test
+{
+	public function test()
+	{
 		$this->url('tickets/index.php?page=Ticket823');
 		$this->assertEquals($this->title(), "Verifying Ticket 823");
 		$base = 'ctl0_Content_';
@@ -10,4 +11,3 @@ class Ticket823TestCase extends PradoGenericSelenium2Test {
 		$this->assertElementPresent('//option[.="Choose..."]');
 	}
 }
-

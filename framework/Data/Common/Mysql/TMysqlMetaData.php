@@ -86,7 +86,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName, $tableName) = $this->getSchemaTableName($table);
+		[$schemaName, $tableName] = $this->getSchemaTableName($table);
 		$find = $schemaName === null ? "`{$tableName}`" : "`{$schemaName}`.`{$tableName}`";
 		$colCase = $this->getDbConnection()->getColumnCase();
 		if ($colCase != TDbColumnCaseMode::Preserved) {
@@ -237,13 +237,13 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function createNewTableInfo($table)
 	{
-		list($schemaName, $tableName) = $this->getSchemaTableName($table);
+		[$schemaName, $tableName] = $this->getSchemaTableName($table);
 		$info['SchemaName'] = $schemaName;
 		$info['TableName'] = $tableName;
 		if ($this->getIsView($schemaName, $tableName)) {
 			$info['IsView'] = true;
 		}
-		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
+		[$primary, $foreign] = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
 		return new $class($info, $primary, $foreign);
 	}
@@ -363,7 +363,7 @@ EOD;
 		}
 		$command = $this->getDbConnection()->createCommand($sql);
 		$result = $command->queryRow();
-		return isset($result['Create Table']) ? $result['Create Table'] : (isset($result['Create View']) ? $result['Create View'] : '');
+		return $result['Create Table'] ?? ($result['Create View'] ?? '');
 	}
 
 	/**

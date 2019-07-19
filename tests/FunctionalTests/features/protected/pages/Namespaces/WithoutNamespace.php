@@ -2,5 +2,4 @@
 
 class WithoutNamespace extends TPage
 {
-
 }

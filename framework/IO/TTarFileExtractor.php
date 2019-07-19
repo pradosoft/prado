@@ -119,7 +119,7 @@ class TTarFileExtractor
 			$v_result = $this->_extractList(
 				$p_path,
 				$v_list_detail,
-											"complete",
+				"complete",
 				0,
 				$p_remove_path
 			);
@@ -275,7 +275,7 @@ class TTarFileExtractor
 			"a100filename/a8mode/a8uid/a8gid/a12size/a12mtime/"
 						 . "a8checksum/a1typeflag/a100link/a6magic/a2version/"
 						 . "a32uname/a32gname/a8devmajor/a8devminor",
-						 $v_binary_data
+			$v_binary_data
 		);
 
 		// ----- Extract the checksum
@@ -336,7 +336,7 @@ class TTarFileExtractor
 		$p_path,
 		&$p_list_detail,
 		$p_mode,
-						  $p_file_list,
+		$p_file_list,
 		$p_remove_path
 	) {
 		$v_result = true;
@@ -428,8 +428,8 @@ class TTarFileExtractor
 			&& (substr($v_header['filename'], 0, $p_remove_path_size)
 				== $p_remove_path)) {
 					$v_header['filename'] = substr(
-			$v_header['filename'],
-										 $p_remove_path_size
+						$v_header['filename'],
+						$p_remove_path_size
 		  );
 				}
 				if (($p_path != './') && ($p_path != '/')) {

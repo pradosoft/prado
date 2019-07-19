@@ -2,7 +2,7 @@
 
 class QuickstartHtmlAreaTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.THtmlArea.Home&amp;notheme=true&amp;lang=en");
 

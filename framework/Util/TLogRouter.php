@@ -90,7 +90,7 @@ class TLogRouter extends \Prado\TModule
 		if (is_array($config)) {
 			if (isset($config['routes']) && is_array($config['routes'])) {
 				foreach ($config['routes'] as $route) {
-					$properties = isset($route['properties']) ? $route['properties'] : [];
+					$properties = $route['properties'] ?? [];
 					if (!isset($route['class'])) {
 						throw new TConfigurationException('logrouter_routeclass_required');
 					}

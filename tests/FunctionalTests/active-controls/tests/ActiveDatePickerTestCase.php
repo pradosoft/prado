@@ -1,9 +1,10 @@
 <?php
+
 class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base='ctl0_Content_';
+		$base = 'ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveDatePicker");
 		$this->assertSourceContains("TActiveDatePicker test");
 		$this->assertText("{$base}status", "");
@@ -45,7 +46,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
-		$dateToCheck=strtotime('+ 1 day');
+		$dateToCheck = strtotime('+ 1 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -53,7 +54,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}increaseButton")->click();
 		$this->pause(800);
-		$dateToCheck=strtotime('+ 2 day');
+		$dateToCheck = strtotime('+ 2 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -61,7 +62,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}todayButton")->click();
 		$this->pause(800);
-		$dateToCheck=time();
+		$dateToCheck = time();
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -69,7 +70,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}decreaseButton")->click();
 		$this->pause(800);
-		$dateToCheck=strtotime('- 1 day');
+		$dateToCheck = strtotime('- 1 day');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -79,7 +80,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->byCssSelector("input.todayButton")->click();
 		$this->pause(800);
-		$dateToCheck=time();
+		$dateToCheck = time();
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -87,7 +88,7 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 
 		$this->byCssSelector("input.nextMonthButton")->click();
 		$this->pause(800);
-		$dateToCheck=strtotime('+ 1 month');
+		$dateToCheck = strtotime('+ 1 month');
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
@@ -97,23 +98,23 @@ class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 
 		$this->assertText("{$base}status2", "");
-		$dateToCheck=time();
+		$dateToCheck = time();
 		$this->assertSelected("{$base}datepicker2_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker2_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker2_year", date('Y', $dateToCheck));
-		$this->select("{$base}datepicker2_year", date('Y')+1);
+		$this->select("{$base}datepicker2_year", date('Y') + 1);
 		$this->pause(800);
-		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
+		$dateToCheck = mktime(0, 0, 0, (int) date('m'), (int) date('d'), date('Y') + 1);
 		$this->assertText("{$base}status2", date('m-d-Y', $dateToCheck));
 
 
 		$this->assertText("{$base}status3", "");
-		$dateToCheck=time();
+		$dateToCheck = time();
 		$this->assertSelected("{$base}datepicker3_month", date('F', $dateToCheck));
 		$this->assertSelected("{$base}datepicker3_year", date('Y', $dateToCheck));
-		$this->select("{$base}datepicker3_year", date('Y')+1);
+		$this->select("{$base}datepicker3_year", date('Y') + 1);
 		$this->pause(800);
-		$dateToCheck=mktime(0,0,0,(int)date('m'),(int)date('d'), date('Y')+1);
+		$dateToCheck = mktime(0, 0, 0, (int) date('m'), (int) date('d'), date('Y') + 1);
 		$this->assertText("{$base}status3", date('m/Y', $dateToCheck));
 	}
 }

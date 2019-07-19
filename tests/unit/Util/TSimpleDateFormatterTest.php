@@ -2,63 +2,73 @@
 
 use Prado\Util\TSimpleDateFormatter;
 
-
 /**
  * @package System.Util
  */
-class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase {
-
-	public function setUp() {
+class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
+{
+	public function setUp()
+	{
 	}
 
-	public function tearDown() {
+	public function tearDown()
+	{
 	}
 
-	public function testConstruct() {
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testPattern() {
+	public function testPattern()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testCharset() {
+	public function testCharset()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFormat() {
+	public function testFormat()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testMonthPattern() {
+	public function testMonthPattern()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testDayPattern() {
+	public function testDayPattern()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testYearPattern() {
+	public function testYearPattern()
+	{
 		$formatter = new TSimpleDateFormatter("yyyy");
 		self::assertEquals("2008-01-01", date('Y-m-d', $formatter->parse("2008")));
 	}
 
-	public function testMissingYearPattern() {
+	public function testMissingYearPattern()
+	{
 		$formatter = new TSimpleDateFormatter("MM/dd");
 		self::assertEquals(date("Y-10-22"), date('Y-m-d', $formatter->parse("10/22")));
 	}
 
-	public function testDayMonthYearOrdering() {
+	public function testDayMonthYearOrdering()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsValidDate() {
+	public function testIsValidDate()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testParse() {
+	public function testParse()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }
-

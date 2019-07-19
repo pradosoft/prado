@@ -240,8 +240,8 @@ class TUrlMapping extends TUrlManager
 		if (is_array($config)) {
 			if (isset($config['urls']) && is_array($config['urls'])) {
 				foreach ($config['urls'] as $url) {
-					$class = isset($url['class']) ? $url['class'] : $defaultClass;
-					$properties = isset($url['properties']) ? $url['properties'] : [];
+					$class = $url['class'] ?? $defaultClass;
+					$properties = $url['properties'] ?? [];
 					$this->buildUrlMapping($class, $properties, $url);
 				}
 			}
@@ -272,15 +272,15 @@ class TUrlMapping extends TUrlManager
 				$text = preg_replace('/(\s+)/S', '', $text);
 				if (($regExp = $pattern->getRegularExpression()) !== '') {
 					trigger_error(
-					sPrintF(
-					'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
-				get_class($pattern),
-				$regExp,
-				$pattern->getServiceID(),
-				$pattern->getServiceParameter(),
-				$text
+						sPrintF(
+						'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
+						get_class($pattern),
+						$regExp,
+						$pattern->getServiceID(),
+						$pattern->getServiceParameter(),
+						$text
 				),
-				E_USER_NOTICE
+						E_USER_NOTICE
 				);
 				}
 				$pattern->setRegularExpression($text);

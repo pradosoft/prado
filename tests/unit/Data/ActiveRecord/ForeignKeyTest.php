@@ -1,7 +1,7 @@
 <?php
 
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
-require_once(dirname(__FILE__).'/records/ItemRecord.php');
+require_once(__DIR__ . '/records/ItemRecord.php');
 
 abstract class SqliteRecord extends TActiveRecord
 {
@@ -9,8 +9,9 @@ abstract class SqliteRecord extends TActiveRecord
 
 	public function getDbConnection()
 	{
-		if(self::$conn===null)
-			self::$conn = new TDbConnection('sqlite:'.dirname(__FILE__).'/fk_tests.db');
+		if (self::$conn === null) {
+			self::$conn = new TDbConnection('sqlite:' . __DIR__ . '/fk_tests.db');
+		}
 		return self::$conn;
 	}
 }
@@ -19,18 +20,18 @@ class Album extends SqliteRecord
 {
 	public $title;
 
-	public $Tracks = array();
-	public $Artists = array();
+	public $Tracks = [];
+	public $Artists = [];
 
 	public $cover;
 
-	public static $RELATIONS = array(
-		'Tracks' => array(self::HAS_MANY, 'Track'),
-		'Artists' => array(self::MANY_TO_MANY, 'Artist', 'album_artists'),
-		'cover' => array(self::HAS_ONE, 'Cover')
-	);
+	public static $RELATIONS = [
+		'Tracks' => [self::HAS_MANY, 'Track'],
+		'Artists' => [self::MANY_TO_MANY, 'Artist', 'album_artists'],
+		'cover' => [self::HAS_ONE, 'Cover']
+	];
 
-	public static function finder($class=__CLASS__)
+	public static function finder($class = __CLASS__)
 	{
 		return parent::finder($class);
 	}
@@ -40,14 +41,13 @@ class Artist extends SqliteRecord
 {
 	public $name;
 
-	public $Albums = array();
+	public $Albums = [];
 
-	public static $RELATIONS=array
-	(
-		'Albums' => array(self::MANY_TO_MANY, 'Album', 'album_artists')
-	);
+	public static $RELATIONS = [
+		'Albums' => [self::MANY_TO_MANY, 'Album', 'album_artists']
+	];
 
-	public static function finder($class=__CLASS__)
+	public static function finder($class = __CLASS__)
 	{
 		return parent::finder($class);
 	}
@@ -61,11 +61,11 @@ class Track extends SqliteRecord
 
 	public $Album;
 
-	public static $RELATIONS = array(
-		'Album' => array(self::BELONGS_TO, 'Album'),
-	);
+	public static $RELATIONS = [
+		'Album' => [self::BELONGS_TO, 'Album'],
+	];
 
-	public static function finder($class=__CLASS__)
+	public static function finder($class = __CLASS__)
 	{
 		return parent::finder($class);
 	}
@@ -82,7 +82,7 @@ class Cover extends SqliteRecord
  */
 class ForeignKeyTest extends PHPUnit\Framework\TestCase
 {
-	function test_has_many()
+	public function test_has_many()
 	{
 		$albums = Album::finder()->withTracks()->findAll();
 		$this->assertEquals(count($albums), 2);
@@ -104,7 +104,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($albums[1]->Tracks[1]->song_name, 'Track B');
 	}
 
-	function test_has_one()
+	public function test_has_one()
 	{
 		$albums = Album::finder()->with_cover()->findAll();
 		$this->assertEquals(count($albums), 2);
@@ -122,7 +122,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(count($albums[1]->Tracks), 0);
 	}
 
-	function test_belongs_to()
+	public function test_belongs_to()
 	{
 		$track = Track::finder()->withAlbum()->find('id = ?', 1);
 
@@ -131,7 +131,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($track->Album->title, "Album 1");
 	}
 
-	function test_has_many_associate()
+	public function test_has_many_associate()
 	{
 		$album = Album::finder()->withArtists()->find('title = ?', 'Album 2');
 		$this->assertEquals($album->title, 'Album 2');
@@ -142,7 +142,7 @@ class ForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($album->Artists[2]->name, 'Tom');
 	}
 
-	function test_multiple_fk()
+	public function test_multiple_fk()
 	{
 		$album = Album::finder()->withArtists()->withTracks()->with_cover()->find('title = ?', 'Album 1');
 

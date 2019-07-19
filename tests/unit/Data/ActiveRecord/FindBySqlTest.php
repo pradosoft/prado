@@ -1,7 +1,8 @@
 <?php
+
 Prado::using('System.Data.ActiveRecord.TActiveRecord');
-require_once(dirname(__FILE__).'/records/DepartmentRecord.php');
-require_once(dirname(__FILE__).'/records/UserRecord.php');
+require_once(__DIR__ . '/records/DepartmentRecord.php');
+require_once(__DIR__ . '/records/UserRecord.php');
 
 class UserRecord2 extends UserRecord
 {
@@ -13,7 +14,7 @@ class SqlTest extends TActiveRecord
 	public $category;
 	public $item;
 
-	const TABLE='items';
+	const TABLE = 'items';
 }
 
 /**
@@ -21,13 +22,13 @@ class SqlTest extends TActiveRecord
  */
 class FindBySqlTest extends PHPUnit\Framework\TestCase
 {
-	function setup()
+	public function setup()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest','prado_unitest');
+		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);
 	}
 
-	function test_find_by_sql()
+	public function test_find_by_sql()
 	{
 		$deps = DepartmentRecord::finder()->findBySql('SELECT * FROM departments');
 		$this->assertNotNull($deps);

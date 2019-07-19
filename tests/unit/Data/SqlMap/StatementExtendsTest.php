@@ -9,14 +9,14 @@ class StatementExtendsTest extends PHPUnit\Framework\TestCase
 {
 	protected $sqlmap;
 
-	function setup()
+	public function setup()
 	{
 		$config = new TSqlMapConfig();
-		$config->ConfigFile = dirname(__FILE__).'/maps/tests.xml';
+		$config->ConfigFile = __DIR__ . '/maps/tests.xml';
 		$this->sqlmap = $config->getClient();
 	}
 
-	function test_extends1()
+	public function test_extends1()
 	{
 		$manager = $this->sqlmap->SqlMapManager;
 		$sql = $manager->getMappedStatement('test')->getSqlString();

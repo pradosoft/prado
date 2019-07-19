@@ -5,42 +5,50 @@
 /**
  * @package System.Web.UI
  */
-class TTemplateTest extends PHPUnit\Framework\TestCase {
-
-	public function testConstruct() {
+class TTemplateTest extends PHPUnit\Framework\TestCase
+{
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetTemplateFile() {
+	public function testGetTemplateFile()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIsSourceTemplate() {
+	public function testGetIsSourceTemplate()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetContextPath() {
+	public function testGetContextPath()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetDirective() {
+	public function testGetDirective()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHashCode() {
+	public function testGetHashCode()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetItems() {
+	public function testGetItems()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testInstantiateIn() {
+	public function testInstantiateIn()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetIncludedFiles() {
+	public function testGetIncludedFiles()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

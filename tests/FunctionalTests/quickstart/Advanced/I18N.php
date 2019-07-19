@@ -3,7 +3,7 @@
 //New Test
 class QuickstartI18NTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?notheme=true&page=Advanced.Samples.I18N.Home&amp;lang=en&amp;notheme=true");
 		$this->assertSourceContains("Internationlization in PRADO");
@@ -47,6 +47,5 @@ class QuickstartI18NTestCase extends PradoDemosSelenium2Test
 		$this->assertContains("US$ 12,40", $this->source());
 		$this->assertContains("46.412,42 €", $this->source());
 		$this->assertSourceContains("€100.00");
-
 	}
 }

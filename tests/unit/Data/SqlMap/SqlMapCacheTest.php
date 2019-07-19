@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class SqlMapCacheTest extends PHPUnit\Framework\TestCase
 {
-	function testFIFOCache()
+	public function testFIFOCache()
 	{
 		$fifo = new TSqlMapFifoCache();
 		$fifo->setCacheSize(2);
@@ -40,7 +40,7 @@ class SqlMapCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($object1 === $fifo->get($key1));
 	}
 
-	function testLruCache()
+	public function testLruCache()
 	{
 		$lru = new TSqlMapLruCache();
 		$lru->setCacheSize(2);
@@ -73,4 +73,3 @@ class SqlMapCacheTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($object3 === $lru->get($key3));
 	}
 }
-

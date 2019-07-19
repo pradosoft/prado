@@ -2,13 +2,13 @@
 
 class Issue504 extends TPage
 {
-	function buttonOkClick($sender, $param)
+	public function buttonOkClick($sender, $param)
 	{
-		$this->label1->Text="buttonOkClick";
+		$this->label1->Text = "buttonOkClick";
 	}
 
-	function buttonDummyClick($sender, $param)
+	public function buttonDummyClick($sender, $param)
 	{
-		$this->label1->Text="buttonDummyClick";
+		$this->label1->Text = "buttonDummyClick";
 	}
 }

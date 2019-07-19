@@ -2,9 +2,9 @@
 
 class ActiveImageButtonTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base='ctl0_Content_';
+		$base = 'ctl0_Content_';
 		$this->url("active-controls/index.php?page=ActiveImageButtonTest");
 		$this->assertSourceContains("TActiveImageButton Functional Test");
 		$this->assertText("{$base}label1", "Label 1");

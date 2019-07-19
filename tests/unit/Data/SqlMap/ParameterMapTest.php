@@ -1,19 +1,19 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class ParameterMapTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
 	}
 
-	function setup()
+	public function setup()
 	{
 		$this->initScript('account-init.sql');
 //		$this->initScript('account-procedure.sql');
@@ -23,7 +23,7 @@ class ParameterMapTest extends BaseCase
 	}
 
 	/// Test null replacement in ParameterMap property
-	function testNullValueReplacement()
+	public function testNullValueReplacement()
 	{
 		$account = $this->newAccount6();
 
@@ -36,7 +36,7 @@ class ParameterMapTest extends BaseCase
 	}
 
 	/// Test Test Null Value Replacement Inline
-	function testNullValueReplacementInline()
+	public function testNullValueReplacementInline()
 	{
 		$account = $this->newAccount6();
 
@@ -48,7 +48,7 @@ class ParameterMapTest extends BaseCase
 	}
 
 	/// Test Test Null Value Replacement Inline
-	function testSpecifiedType()
+	public function testSpecifiedType()
 	{
 		$account = $this->newAccount6();
 		$account->setEmailAddress(null);
@@ -59,7 +59,7 @@ class ParameterMapTest extends BaseCase
 
 
 	/// Test Test Null Value Replacement Inline
-	function testUnknownParameterClass()
+	public function testUnknownParameterClass()
 	{
 		$account = $this->newAccount6();
 		$account->setEmailAddress(null);
@@ -71,7 +71,7 @@ class ParameterMapTest extends BaseCase
 
 	/// Test null replacement in ParameterMap property
 	/// for System.DateTime.MinValue
-	function testNullValueReplacementForDateTimeMinValue()
+	public function testNullValueReplacementForDateTimeMinValue()
 	{
 		$account = $this->newAccount6();
 		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
@@ -96,7 +96,7 @@ class ParameterMapTest extends BaseCase
 
 	/// Test null replacement in ParameterMap/Hahstable property
 	/// for System.DateTime.MinValue
-	function testNullValueReplacementForDateTimeWithHashtable()
+	public function testNullValueReplacementForDateTimeWithHashtable()
 	{
 		$account = $this->newAccount6();
 
@@ -123,10 +123,9 @@ class ParameterMapTest extends BaseCase
 
 	/// Test null replacement in ParameterMap property
 	/// for Guid
-	function testNullValueReplacementForGuidValue()
+	public function testNullValueReplacementForGuidValue()
 	{
-		if($this->hasSupportFor('last_insert_id'))
-		{
+		if ($this->hasSupportFor('last_insert_id')) {
 			$category = new Category();
 			$category->setName("Totoasdasd");
 			$category->setGuidString('00000000-0000-0000-0000-000000000000');
@@ -144,7 +143,7 @@ class ParameterMapTest extends BaseCase
 
 
 
-/// Test complex mapping Via hasTable
+	/// Test complex mapping Via hasTable
 	/// <example>
 	///
 	/// map.Add("Item", Item);
@@ -155,7 +154,7 @@ class ParameterMapTest extends BaseCase
 	/// </statement>
 	///
 	/// </example>
-	function testComplexMappingViaHasTable()
+	public function testComplexMappingViaHasTable()
 	{
 		$a = new Account();
 		$a->setFirstName("Joe");
@@ -171,56 +170,56 @@ class ParameterMapTest extends BaseCase
 		$this->assertAccount1($accountTest);
 	}
 
-/*
-	/// Test ByteArrayTypeHandler via Picture Property
-	function testByteArrayTypeHandler()
-	{
-		$account = $this->newAccount6();
-
-		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
-
-		$order = new Order();
-		$order->setId(99);
-		$order->setCardExpiry("09/11");
-		$order->setAccount($account);
-		$order->setCardNumber("154564656");
-		$order->setCardType("Visa");
-		$order->setCity("Lyon");
-		$order->setDate(0);
-		$order->setPostalCode("69004");
-		$order->setProvince("Rhone");
-		$order->setStreet("rue Durand");
-
-		$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
-
-		$item = new LineItem();
-		$item->setId(99);
-		$item->setCode("test");
-		$item->setPrice(-99.99);
-		$item->setQuantity(99);
-		$item->setOrder($order);
-		$item->setPicture(null);
-
-		// Check insert
-		$this->sqlmap->insert("InsertLineItemWithPicture", $item);
-
-		// select
-		$item = null;
-
-		$param["LineItem_ID"] = 99;
-		$param["Order_ID"] = 99;
-
-		$item = $this->sqlmap->queryForObject("GetSpecificLineItemWithPicture", $param);
-
-		$this->assertNotNull($item->getId());
-//		$this->assertNotNull($item->getPicture());
-//		$this->assertSame( GetSize(item.Picture), this.GetSize( this.GetPicture() ));
-	}
-*/
+	/*
+		/// Test ByteArrayTypeHandler via Picture Property
+		function testByteArrayTypeHandler()
+		{
+			$account = $this->newAccount6();
+	
+			$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
+	
+			$order = new Order();
+			$order->setId(99);
+			$order->setCardExpiry("09/11");
+			$order->setAccount($account);
+			$order->setCardNumber("154564656");
+			$order->setCardType("Visa");
+			$order->setCity("Lyon");
+			$order->setDate(0);
+			$order->setPostalCode("69004");
+			$order->setProvince("Rhone");
+			$order->setStreet("rue Durand");
+	
+			$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
+	
+			$item = new LineItem();
+			$item->setId(99);
+			$item->setCode("test");
+			$item->setPrice(-99.99);
+			$item->setQuantity(99);
+			$item->setOrder($order);
+			$item->setPicture(null);
+	
+			// Check insert
+			$this->sqlmap->insert("InsertLineItemWithPicture", $item);
+	
+			// select
+			$item = null;
+	
+			$param["LineItem_ID"] = 99;
+			$param["Order_ID"] = 99;
+	
+			$item = $this->sqlmap->queryForObject("GetSpecificLineItemWithPicture", $param);
+	
+			$this->assertNotNull($item->getId());
+	//		$this->assertNotNull($item->getPicture());
+	//		$this->assertSame( GetSize(item.Picture), this.GetSize( this.GetPicture() ));
+		}
+	*/
 
 	/// Test extend parameter map capacity
 	/// (Support Requests 1043181)
-	function testInsertOrderViaExtendParameterMap()
+	public function testInsertOrderViaExtendParameterMap()
 	{
 		$this->sqlmap->getSqlMapManager()->getTypeHandlers()->registerTypeHandler(new HundredsBool());
 
@@ -245,5 +244,5 @@ class ParameterMapTest extends BaseCase
 
 		$this->assertSame($order->getCity(), $orderTest->getCity());
 	}
-/**/
+	/**/
 }

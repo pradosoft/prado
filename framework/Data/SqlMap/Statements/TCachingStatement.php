@@ -112,7 +112,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		return $this->_mappedStatement->getCommand()->create(
 			$this->getManager(),
-					$connection,
+			$connection,
 			$this->getStatement(),
 			$parameter,
 			$skip,

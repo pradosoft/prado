@@ -94,7 +94,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string|int $index name of a parameter property.
+	 * @param int|string $index name of a parameter property.
 	 * @throws TSqlMapException if index is not string nor integer.
 	 * @return TParameterProperty parameter property.
 	 */

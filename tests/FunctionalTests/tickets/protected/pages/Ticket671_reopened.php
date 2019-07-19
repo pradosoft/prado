@@ -1,29 +1,30 @@
 <?php
 
-Prado::Using ('System.Web.UI.ActiveControls.*');
+Prado::Using('System.Web.UI.ActiveControls.*');
 
 class Ticket671_reopened extends TPage
 {
-	
-	public function save( $sender, $param )
+	public function save($sender, $param)
 	{
-		$txt="Save callback called ";
-		if ( $this->isValid )
+		$txt = "Save callback called ";
+		if ($this->isValid) {
 			$txt .= "DATA OK";
-		else
+		} else {
 			$txt .= "DATA NOK";
-		$this->Result->Text.= ' --- ' . $txt;
+		}
+		$this->Result->Text .= ' --- ' . $txt;
 	}
 	
-	public function check( $sender, $param )
-	{		
+	public function check($sender, $param)
+	{
 		//$c=$this->CheckCount;
-		$this->Result->Text="Check callback called (".++$this->CheckCount.")";
+		$this->Result->Text = "Check callback called (" . ++$this->CheckCount . ")";
 		//$this->CheckCount=$c;
-		if ( $this->testField->getText() == 'Test' )
+		if ($this->testField->getText() == 'Test') {
 			$param->isValid = true;
-		else
+		} else {
 			$param->isValid = false;
+		}
 	}
 	
 	public function setCheckCount($value)

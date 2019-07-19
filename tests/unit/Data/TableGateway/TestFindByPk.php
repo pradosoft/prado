@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseGateway.php');
+require_once(__DIR__ . '/BaseGateway.php');
 
 /**
  * @package System.Data.TableGateway
  */
 class TestFindByPk extends BaseGateway
 {
-	function test_one_key()
+	public function test_one_key()
 	{
 		$this->add_record1();
 		$id = $this->getGateway()->getLastInsertId();
@@ -19,32 +19,31 @@ class TestFindByPk extends BaseGateway
 		unset($result['id']);
 		unset($result['field7_timestamp']);
 		unset($record1['field7_timestamp']);
-		$result['phone'] = intval($result['phone']);
-		$result['field9_numeric'] = floatval($result['field9_numeric']);
+		$result['phone'] = (int) ($result['phone']);
+		$result['field9_numeric'] = (float) ($result['field9_numeric']);
 
 		$this->assertEquals($record1, $result);
 	}
 
-	function test_composite_key()
+	public function test_composite_key()
 	{
 		$gateway = $this->getGateway2();
 
-		$result = $gateway->findByPk(1,1);
-		$expect = array("department_id" => 1, "section_id" => 1, "order" =>  0);
+		$result = $gateway->findByPk(1, 1);
+		$expect = ["department_id" => 1, "section_id" => 1, "order" => 0];
 		$this->assertEquals($expect, $result);
 	}
 
-	function test_find_all_keys()
+	public function test_find_all_keys()
 	{
 		$gateway = $this->getGateway2();
 
-		$result = $gateway->findAllByPks(array(1,1), array(3,13))->readAll();
+		$result = $gateway->findAllByPks([1, 1], [3, 13])->readAll();
 
-		$expect = array(
-			array("department_id" => 1, "section_id" => 1, "order" =>  0),
-			array("department_id" => 3, "section_id" => 13, "order" =>  0));
+		$expect = [
+			["department_id" => 1, "section_id" => 1, "order" => 0],
+			["department_id" => 3, "section_id" => 13, "order" => 0]];
 
 		$this->assertEquals($expect, $result);
-
 	}
 }

@@ -8,15 +8,15 @@ Prado::using('System.Data.Common.Mssql.TMssqlCommandBuilder');
  */
 class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 {
-	protected static $sql = array(
+	protected static $sql = [
 		'simple' => 'SELECT username, age FROM accounts',
 		'multiple' => 'select a.username, b.name from accounts a, table1 b where a.age = b.id1',
 		'ordering' => 'select a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 order by age DESC, name',
 		'index' => 'select a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 ORDER BY 1 DESC, 2 ASC',
 		//'compute' => 'SELECT username, age FROM accounts order by age compute avg(age)',
-	);
+	];
 
-	function test_limit()
+	public function test_limit()
 	{
 		$builder = new TMssqlCommandBuilder();
 
@@ -41,7 +41,7 @@ class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 		$expect = 'SELECT * FROM (SELECT TOP 3 * FROM (SELECT TOP 5 a.username, b.name, a.age from accounts a, table1 b where a.age = b.id1 ORDER BY 1 DESC, 2 ASC) as [__inner top table__] ORDER BY 1 ASC, 2 DESC) as [__outer top table__] ORDER BY 1 DESC, 2 ASC';
 		$this->assertEquals($expect, $sql);
 
-	//	$sql = $builder->applyLimitOffset(self::$sql['compute'], 3, 2);
+		//	$sql = $builder->applyLimitOffset(self::$sql['compute'], 3, 2);
 	//	var_dump($sql);
 	}
 }

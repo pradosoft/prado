@@ -6,7 +6,7 @@
  */
 class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=JuiControls.Samples.TJuiAutoComplete.Home&amp;notheme=true&amp;lang=en");
 
@@ -45,6 +45,5 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 		$this->pause(500);
 		$this->assertValue("{$base}AutoComplete2", "John,George");
 		$this->assertText("{$base}Selection2", "Selected ID: 3");
-
 	}
 }

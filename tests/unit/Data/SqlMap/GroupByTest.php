@@ -1,9 +1,10 @@
 <?php
-require_once(dirname(__FILE__).'/BaseCase.php');
+
+require_once(__DIR__ . '/BaseCase.php');
 
 class AccountWithOrders extends Account
 {
-	private $_orders = array();
+	private $_orders = [];
 
 	public function setOrders($orders)
 	{
@@ -21,18 +22,19 @@ class AccountWithOrders extends Account
  */
 class GroupByTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
 	}
 
-	function testAccountWithOrders()
+	public function testAccountWithOrders()
 	{
 		$this->initScript('account-init.sql');
 		$accounts = $this->sqlmap->queryForList("getAccountWithOrders");
 		$this->assertSame(5, count($accounts));
-		foreach($accounts as $account)
+		foreach ($accounts as $account) {
 			$this->assertSame(2, count($account->getOrders()));
+		}
 	}
 }

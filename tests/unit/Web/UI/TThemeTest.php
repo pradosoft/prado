@@ -5,34 +5,40 @@
 /**
  * @package System.Web.UI
  */
-class TThemeTest extends PHPUnit\Framework\TestCase {
-
-	public function testConstruct() {
+class TThemeTest extends PHPUnit\Framework\TestCase
+{
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetName() {
+	public function testGetName()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetBaseUrl() {
+	public function testGetBaseUrl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetBasePath() {
+	public function testGetBasePath()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testApplySkin() {
+	public function testApplySkin()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetStyleSheetFiles() {
+	public function testGetStyleSheetFiles()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetJavaScriptFiles() {
+	public function testGetJavaScriptFiles()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

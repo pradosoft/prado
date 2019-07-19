@@ -5,7 +5,7 @@
 
 class ListControlTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=ListControl");
@@ -41,8 +41,5 @@ class ListControlTestCase extends PradoGenericSelenium2Test
 		$this->assertVisible("{$base}validator2");
 		$this->assertVisible("{$base}validator3");
 		$this->assertVisible("{$base}validator4");
-
 	}
-
 }
-

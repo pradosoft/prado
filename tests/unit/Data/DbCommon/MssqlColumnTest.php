@@ -9,16 +9,16 @@ Prado::using('System.Data.DataGateway.TTableGateway');
  */
 class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {
-    protected function setUp()
-    {
-        if (!extension_loaded('mssql')) {
-            $this->markTestSkipped(
-              'The mssql extension is not available.'
-            );
-        }
-    }
+	protected function setUp()
+	{
+		if (!extension_loaded('mssql')) {
+			$this->markTestSkipped(
+				'The mssql extension is not available.'
+			);
+		}
+	}
 
-	function get_conn()
+	public function get_conn()
 	{
 		return new TDbConnection('mssql:host=localhost\\sqlexpress', 'test', 'test01');
 	}
@@ -26,23 +26,23 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 	/**
 	 * @return TMssqlMetaData
 	 */
-	function meta_data()
+	public function meta_data()
 	{
 		return new TMssqlMetaData($this->get_conn());
 	}
 
-	function test_insert()
+	public function test_insert()
 	{
 		$table = new TTableGateway('table1', $this->get_conn());
-		$this->assertTrue(is_int($table->insert(array('name'=>'cool'))));
+		$this->assertTrue(is_int($table->insert(['name' => 'cool'])));
 	}
 
-/*	function test_meta()
-	{
-		$result = $this->meta_data()->getTableInfo("bar");
-		var_dump($result);
-	}
-*/
+	/*	function test_meta()
+		{
+			$result = $this->meta_data()->getTableInfo("bar");
+			var_dump($result);
+		}
+	*/
 	/*function test_insert()
 	{
 		$table = new TTableGateway('table1', $this->get_conn());

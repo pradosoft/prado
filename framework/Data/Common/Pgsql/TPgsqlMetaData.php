@@ -102,7 +102,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($schemaName, $tableName) = $this->getSchemaTableName($table);
+		[$schemaName, $tableName] = $this->getSchemaTableName($table);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -165,7 +165,7 @@ EOD;
 		if ($this->getIsView($schemaName, $tableName)) {
 			$info['IsView'] = true;
 		}
-		list($primary, $foreign) = $this->getConstraintKeys($schemaName, $tableName);
+		[$primary, $foreign] = $this->getConstraintKeys($schemaName, $tableName);
 		$class = $this->getTableInfoClass();
 		return new $class($info, $primary, $foreign);
 	}

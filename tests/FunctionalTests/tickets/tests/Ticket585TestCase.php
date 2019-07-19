@@ -2,7 +2,7 @@
 
 class Ticket585TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket585');

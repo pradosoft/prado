@@ -207,7 +207,7 @@ class TActiveRecordRelationContext
 	{
 		$success = true;
 		foreach ($this->_record->getRecordRelations() as $data) {
-			list($property, $relation) = $data;
+			[$property, $relation] = $data;
 			$belongsTo = $relation[0] == TActiveRecord::BELONGS_TO;
 			if (($updateBelongsTo && $belongsTo) || (!$updateBelongsTo && !$belongsTo)) {
 				$obj = $this->getSourceRecord();

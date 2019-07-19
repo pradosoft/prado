@@ -2,9 +2,9 @@
 
 class PostLoadingTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base="ctl0_Content_";
+		$base = "ctl0_Content_";
 		$this->url('active-controls/index.php?page=PostLoadingTest');
 		$this->assertSourceContains('PostLoading Test');
 

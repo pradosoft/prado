@@ -3,7 +3,7 @@
 //New Test
 class QuickstartLabelTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true&amp;lang=en");
 		$this->assertEquals("PRADO QuickStart Sample", $this->title());
@@ -12,7 +12,7 @@ class QuickstartLabelTestCase extends PradoDemosSelenium2Test
 		$this->assertSourceContains("This is a label with empty Text property and <b>nonempty body</b>");
 		$this->assertSourceContains("This is a disabled label");
 
-		$this->assertAttribute("ctl0_body_Label2@disabled","regexp:true|disabled");
+		$this->assertAttribute("ctl0_body_Label2@disabled", "regexp:true|disabled");
 
 		//$this->assertAttribute("ctl0_body_Label1@for","ctl0_body_test");
 

@@ -267,7 +267,7 @@ class TPriorityMap extends TMap
 	{
 		if ($priority === false) {
 			$map = $this->flattenPriorities();
-			return isset($map[$key]) ? $map[$key] : null;
+			return $map[$key] ?? null;
 		} else {
 			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
@@ -522,7 +522,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param array|Traversable|TPriorityMap $data the data to be copied from, must be an array, object implementing
+	 * @param array|TPriorityMap|Traversable $data the data to be copied from, must be an array, object implementing
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
@@ -551,7 +551,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param array|Traversable|TPriorityMap $data the data to be merged with, must be an array,
+	 * @param array|TPriorityMap|Traversable $data the data to be merged with, must be an array,
 	 * object implementing Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */

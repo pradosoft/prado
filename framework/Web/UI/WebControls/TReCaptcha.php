@@ -182,7 +182,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		if (!
 			  (
-			($challenge = @$_POST[$this->getChallengeFieldName()])
+			  	($challenge = @$_POST[$this->getChallengeFieldName()])
 			and
 			($response = @$_POST[$this->getResponseFieldName()])
 			  )
@@ -244,7 +244,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 		if (!$this->Page->IsCallback) {
 			$writer->write(TJavaScript::renderScriptBlock(
-					'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
+				'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
 				));
 
 			$html = $this->recaptcha_get_html($this->getPublicKey());
@@ -377,7 +377,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		$response = $this->recaptcha_http_post(
 			self::RECAPTCHA_VERIFY_SERVER,
 			"/recaptcha/api/verify",
-		[
+			[
 			'privatekey' => $privkey,
 			'remoteip' => $remoteip,
 			'challenge' => $challenge,

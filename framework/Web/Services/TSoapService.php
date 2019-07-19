@@ -164,7 +164,7 @@ class TSoapService extends \Prado\TService
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 			if (is_array($config)) {
 				foreach ($config['soap'] as $id => $server) {
-					$properties = isset($server['properties']) ? $server['properties'] : [];
+					$properties = $server['properties'] ?? [];
 					if (isset($this->_servers[$id])) {
 						throw new TConfigurationException('soapservice_serverid_duplicated', $id);
 					}

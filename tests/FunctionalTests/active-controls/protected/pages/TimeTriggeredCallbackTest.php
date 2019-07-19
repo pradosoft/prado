@@ -2,24 +2,25 @@
 
 class TimeTriggeredCallbackTest extends TPage
 {
-	function start_timer($sender, $param)
+	public function start_timer($sender, $param)
 	{
 		$this->timer1->startTimer();
 		$this->setViewState('count', 0);
 	}
 
-	function stop_timer($sender, $param)
+	public function stop_timer($sender, $param)
 	{
 		$this->timer1->stopTimer();
 	}
 
-	function tick($sender, $param)
+	public function tick($sender, $param)
 	{
-		$count = intval($this->getViewState('count'));
+		$count = (int) ($this->getViewState('count'));
 		$this->setViewState('count', ++$count);
-		if($count > 10)
+		if ($count > 10) {
 			$this->timer1->stopTimer();
-		else
-			$this->label1->Text .= " ".$count;
+		} else {
+			$this->label1->Text .= " " . $count;
+		}
 	}
 }

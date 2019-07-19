@@ -3,23 +3,26 @@
 
 use Prado\Data\DataGateway\TSqlCriteria;
 
-
 /**
  * @package System.Data.DataGateway
  */
-class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
-
-	public function setUp() {
+class TSqlCriteriaTest extends PHPUnit\Framework\TestCase
+{
+	public function setUp()
+	{
 	}
 
-	public function tearDown() {
+	public function tearDown()
+	{
 	}
 
-	public function testConstruct() {
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testConditionWithOrderByColumnNames() {
+	public function testConditionWithOrderByColumnNames()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references ORDER BY field1 ASC, field2 DESC";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -29,7 +32,8 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals('DESC', $criteria->OrdersBy['field2']);
 	}
 
-	public function testConditionWithOrderByExpression() {
+	public function testConditionWithOrderByExpression()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references ORDER BY RAND()";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -37,14 +41,16 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals('asc', $criteria->OrdersBy['RAND()']);
 	}
 
-	public function testConditionWithOrderByAndLimit() {
+	public function testConditionWithOrderByAndLimit()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references ORDER BY field1 ASC, field2 DESC LIMIT 2";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
 		self::assertEquals(2, $criteria->Limit);
 	}
 
-	public function testConditionWithOrderByAndLimitAndOffset() {
+	public function testConditionWithOrderByAndLimitAndOffset()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references ORDER BY field1 ASC, field2 DESC LIMIT 3, 2";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -52,7 +58,8 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals(3, $criteria->Offset);
 	}
 
-	public function testConditionWithOrderByAndLimitAndOffsetVariant() {
+	public function testConditionWithOrderByAndLimitAndOffsetVariant()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references ORDER BY field1 ASC, field2 DESC LIMIT 2 OFFSET 3";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -60,14 +67,16 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals(3, $criteria->Offset);
 	}
 
-	public function testConditionWithLimit() {
+	public function testConditionWithLimit()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references LIMIT 2";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
 		self::assertEquals(2, $criteria->Limit);
 	}
 
-	public function testConditionWithLimitAndOffset() {
+	public function testConditionWithLimitAndOffset()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references LIMIT 3, 2";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -75,7 +84,8 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals(3, $criteria->Offset);
 	}
 
-	public function testConditionWithLimitAndOffsetVariant() {
+	public function testConditionWithLimitAndOffsetVariant()
+	{
 		$criteria = new TSqlCriteria();
 		$criteria->Condition = "SELECT * FROM table_references LIMIT 2 OFFSET 3";
 		self::assertEquals("SELECT * FROM table_references", $criteria->Condition);
@@ -83,29 +93,33 @@ class TSqlCriteriaTest extends PHPUnit\Framework\TestCase {
 		self::assertEquals(3, $criteria->Offset);
 	}
 
-	public function testParameters() {
+	public function testParameters()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsNamedParameters() {
+	public function testIsNamedParameters()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOrdersBy() {
+	public function testOrdersBy()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testLimit() {
+	public function testLimit()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOffset() {
+	public function testOffset()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testToString() {
+	public function testToString()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }
-

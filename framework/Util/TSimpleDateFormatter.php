@@ -294,7 +294,7 @@ class TSimpleDateFormatter
 				$month = $this->getInteger(
 					$value,
 					$i_val,
-									$this->length($token),
+					$this->length($token),
 					2
 				);
 				$iMonth = (int) $month;
@@ -308,7 +308,7 @@ class TSimpleDateFormatter
 				$day = $this->getInteger(
 					$value,
 					$i_val,
-									$this->length($token),
+					$this->length($token),
 					2
 				);
 				$iDay = (int) $day;

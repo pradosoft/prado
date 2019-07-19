@@ -102,7 +102,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 */
 	public function updateByPk($data, $keys)
 	{
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
+		[$where, $parameters] = $this->getPrimaryKeyCondition((array) $keys);
 		return $this->update($data, new TSqlCriteria($where, $parameters));
 	}
 	/**
@@ -154,7 +154,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		if ($keys === null) {
 			return null;
 		}
-		list($where, $parameters) = $this->getPrimaryKeyCondition((array) $keys);
+		[$where, $parameters] = $this->getPrimaryKeyCondition((array) $keys);
 		$command = $this->getBuilder()->createFindCommand($where, $parameters);
 		$this->onCreateCommand($command, new TSqlCriteria($where, $parameters));
 		return $this->onExecuteCommand($command, $command->queryRow());
@@ -279,7 +279,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		foreach ($primary as $key) {
 			$column = $this->getTableInfo()->getColumn($key)->getColumnName();
 			$criteria[] = $column . ' = :' . $key;
-			$bindings[$key] = isset($values[$key]) ? $values[$key] : $values[$i++];
+			$bindings[$key] = $values[$key] ?? $values[$i++];
 		}
 		return [implode(' AND ', $criteria), $bindings];
 	}

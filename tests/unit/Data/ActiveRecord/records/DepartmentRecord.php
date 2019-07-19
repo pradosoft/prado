@@ -1,4 +1,5 @@
 <?php
+
 class DepartmentRecord extends TActiveRecord
 {
 	public $department_id;
@@ -9,7 +10,7 @@ class DepartmentRecord extends TActiveRecord
 
 	const TABLE = 'departments';
 
-	public static function finder($className=__CLASS__)
+	public static function finder($className = __CLASS__)
 	{
 		return parent::finder($className);
 	}

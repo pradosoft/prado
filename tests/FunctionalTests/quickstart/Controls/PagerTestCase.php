@@ -2,7 +2,7 @@
 
 class QuickstartPagerTestCase extends PradoDemosSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TPager.Sample1&amp;notheme=true&amp;lang=en");
 
@@ -43,7 +43,7 @@ class QuickstartPagerTestCase extends PradoDemosSelenium2Test
 		$this->assertSourceNotContains('ITN002');
 		$this->assertSourceNotContains('ITN005');
 
-		$this->assertSelected("ctl0_body_Pager3_ctl0","2");
+		$this->assertSelected("ctl0_body_Pager3_ctl0", "2");
 		$this->selectAndWait("ctl0_body_Pager3_ctl0", "5");
 		$this->assertSourceContains('ITN009');
 		$this->assertSourceContains('ITN010');

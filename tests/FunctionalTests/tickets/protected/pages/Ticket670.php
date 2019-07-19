@@ -1,8 +1,9 @@
 <?php
-class Ticket670 extends TPage 
+
+class Ticket670 extends TPage
 {
-	public function clickOk($sender,$param)
+	public function clickOk($sender, $param)
 	{
-		$this->lbl->Text=$this->datePicker->getDate();
+		$this->lbl->Text = $this->datePicker->getDate();
 	}
 }

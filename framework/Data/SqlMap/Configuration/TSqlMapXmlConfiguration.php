@@ -148,7 +148,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 					} else {
 						throw new TSqlMapConfigurationException(
 							'sqlmap_unable_to_find_result_mapping',
-								$resultMap,
+							$resultMap,
 							$this->_configFile,
 							$entry->getID()
 						);

@@ -73,13 +73,13 @@ class TGlobalizationAutoDetect extends TGlobalization
 
 	/**
 	 * Checks wether the specified locale is valid and available
+	 * @param mixed $locale
 	 * @return bool
 	 */
 	protected function getIsValidLocale($locale)
 	{
 		static $allLocales;
-		if($allLocales === null)
-		{
+		if ($allLocales === null) {
 			$all = \ResourceBundle::getLocales('');
 		}
 		return in_array($locale, $all);
@@ -171,6 +171,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 	/**
 	 * Set the available languages.
 	 * @param Comma separated string of available languages.
+	 * @param mixed $langs
 	 */
 	public function setAvailableLanguages($langs)
 	{

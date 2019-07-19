@@ -1215,13 +1215,13 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 				$template = $this->_itemTemplate;
 				break;
 			case TListItemType::AlternatingItem:
-				list($classPath, $template) = $this->getAlternatingItemDisplay();
+				[$classPath, $template] = $this->getAlternatingItemDisplay();
 				break;
 			case TListItemType::SelectedItem:
-				list($classPath, $template) = $this->getSelectedItemDisplay($itemIndex);
+				[$classPath, $template] = $this->getSelectedItemDisplay($itemIndex);
 				break;
 			case TListItemType::EditItem:
-				list($classPath, $template) = $this->getEditItemDisplay($itemIndex);
+				[$classPath, $template] = $this->getEditItemDisplay($itemIndex);
 				break;
 			case TListItemType::Header:
 				$classPath = $this->getHeaderRenderer();

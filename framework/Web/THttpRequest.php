@@ -400,7 +400,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getRequestType()
 	{
-		return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : null;
+		return $_SERVER['REQUEST_METHOD'] ?? null;
 	}
 
 	/**
@@ -441,7 +441,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getQueryString()
 	{
-		return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : null;
+		return $_SERVER['QUERY_STRING'] ?? null;
 	}
 
 	/**
@@ -449,7 +449,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getHttpProtocolVersion()
 	{
-		return isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : null;
+		return $_SERVER['SERVER_PROTOCOL'] ?? null;
 	}
 
 	/**
@@ -516,7 +516,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			return $_SERVER['ORIG_SCRIPT_NAME'];
 		}
 
-		return isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : null;
+		return $_SERVER['SCRIPT_NAME'] ?? null;
 	}
 
 	/**
@@ -537,7 +537,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getApplicationFilePath()
 	{
-		return realpath(isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : null);
+		return realpath($_SERVER['SCRIPT_FILENAME'] ?? null);
 	}
 
 	/**
@@ -545,7 +545,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerName()
 	{
-		return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
+		return $_SERVER['SERVER_NAME'] ?? null;
 	}
 
 	/**
@@ -553,7 +553,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerPort()
 	{
-		return isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null;
+		return $_SERVER['SERVER_PORT'] ?? null;
 	}
 
 	/**
@@ -561,7 +561,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUrlReferrer()
 	{
-		return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+		return $_SERVER['HTTP_REFERER'] ?? null;
 	}
 
 	/**
@@ -570,7 +570,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getServerSoftware()
 	{
-		return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
+		return $_SERVER['SERVER_SOFTWARE'] ?? null;
 	}
 
 	/**
@@ -591,7 +591,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserAgent()
 	{
-		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+		return $_SERVER['HTTP_USER_AGENT'] ?? null;
 	}
 
 	/**
@@ -599,7 +599,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHostAddress()
 	{
-		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+		return $_SERVER['REMOTE_ADDR'] ?? null;
 	}
 
 	/**
@@ -607,7 +607,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUserHost()
 	{
-		return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
+		return $_SERVER['REMOTE_HOST'] ?? null;
 	}
 
 	/**
@@ -616,7 +616,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getAcceptTypes()
 	{
 		// TBD: break it into array??
-		return isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null;
+		return $_SERVER['HTTP_ACCEPT'] ?? null;
 	}
 
 	/**

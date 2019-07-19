@@ -98,7 +98,7 @@ class TParameterModule extends \Prado\TModule
 		if (is_array($config)) {
 			foreach ($config as $id => $parameter) {
 				if (is_array($parameter) && isset($parameter['class'])) {
-					$properties = isset($parameter['properties']) ? $parameter['properties'] : [];
+					$properties = $parameter['properties'] ?? [];
 					$parameters[$id] = [$parameter['class'], $properties];
 				} else {
 					$parameters[$id] = $parameter;

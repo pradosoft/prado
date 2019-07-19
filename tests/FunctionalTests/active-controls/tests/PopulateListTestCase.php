@@ -2,9 +2,9 @@
 
 class PopulateListTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
-		$base='ctl0_Content_';
+		$base = 'ctl0_Content_';
 		$this->url("active-controls/index.php?page=PopulateActiveList");
 		$this->assertSourceContains("Populate active list controls");
 		$this->assertText("{$base}label1", "");

@@ -2,7 +2,7 @@
 
 class QuickstartDropDownListTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TDropDownList.Home&amp;notheme=true&amp;lang=en");
 
@@ -12,15 +12,15 @@ class QuickstartDropDownListTestCase extends PradoDemosSelenium2Test
 		$this->assertElementPresent("ctl0\$body\$ctl0");
 
 		// dropdown list with initial options
-		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl1"), array('item 1', 'item 2', 'item 3', 'item 4'));
-		$this->assertSelected("ctl0\$body\$ctl1","item 2");
+		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl1"), ['item 1', 'item 2', 'item 3', 'item 4']);
+		$this->assertSelected("ctl0\$body\$ctl1", "item 2");
 
 		// dropdown list with customized styles
-		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl2"), array('item 1', 'item 2', 'item 3', 'item 4'));
-		$this->assertSelected("ctl0\$body\$ctl2","item 2");
+		$this->assertEquals($this->getSelectOptions("ctl0\$body\$ctl2"), ['item 1', 'item 2', 'item 3', 'item 4']);
+		$this->assertSelected("ctl0\$body\$ctl2", "item 2");
 
 		// a disabled dropdown list
-		$this->assertAttribute("ctl0\$body\$ctl3@disabled","regexp:true|disabled");
+		$this->assertAttribute("ctl0\$body\$ctl3@disabled", "regexp:true|disabled");
 
 		// an auto postback dropdown list
 		$this->assertNotContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());

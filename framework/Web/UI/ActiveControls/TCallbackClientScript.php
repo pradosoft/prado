@@ -162,7 +162,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	{
 		$method = TPropertyValue::ensureEnum(
 			$method,
-				'Value',
+			'Value',
 			'Index',
 			'Clear',
 			'Indices',
@@ -180,7 +180,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 		$this->callClientFunction(
 			'Prado.Element.select',
-				[$control, $type . $method, $value, $total]
+			[$control, $type . $method, $value, $total]
 		);
 	}
 

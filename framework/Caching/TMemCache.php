@@ -93,7 +93,7 @@ class TMemCache extends TCache
 	 */
 	private $_initialized = false;
 	/**
-	 * @var Memcache the Memcache instance
+	 * @var Memcached the Memcached instance
 	 */
 	private $_cache;
 	/**

@@ -4,45 +4,53 @@
 /**
  * @package System.Security
  */
-class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase {
-
-	public function setUp() {
+class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
+{
+	public function setUp()
+	{
 	}
 
-	public function tearDown() {
+	public function tearDown()
+	{
 	}
 
-	public function testConstruct() {
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAction() {
+	public function testAction()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testUsers() {
+	public function testUsers()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRoles() {
+	public function testRoles()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testVerb() {
+	public function testVerb()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGuestApplied() {
+	public function testGuestApplied()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testEveryoneApplied() {
+	public function testEveryoneApplied()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsUserAllowed() {
+	public function testIsUserAllowed()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }
-

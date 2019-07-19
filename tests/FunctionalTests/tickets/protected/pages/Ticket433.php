@@ -6,8 +6,9 @@ class Ticket433 extends TPage
 {
 	public function onLoad($param)
 	{
-		if(!$this->IsPostBack)
+		if (!$this->IsPostBack) {
 			$this->VoteClick->Text = "BEFORE click";
+		}
 	}
 
 	public function onUpdateVoteClick($sender, $param)

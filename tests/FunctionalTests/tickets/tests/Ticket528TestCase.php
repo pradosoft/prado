@@ -2,7 +2,7 @@
 
 class Ticket528TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket528');
@@ -25,6 +25,5 @@ class Ticket528TestCase extends PradoGenericSelenium2Test
 
 		$this->assertValue("{$base}Codigo", "N");
 		$this->assertValue("{$base}Descricao", "Noite");
-
 	}
 }

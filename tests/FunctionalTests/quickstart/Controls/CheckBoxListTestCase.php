@@ -3,7 +3,7 @@
 //New Test
 class QuickstartCheckBoxListTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TCheckBoxList.Home&amp;notheme=true&amp;lang=en");
 

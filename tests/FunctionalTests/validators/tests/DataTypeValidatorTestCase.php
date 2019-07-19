@@ -5,7 +5,7 @@
 
 class DataTypeValidatorTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = "ctl0_Content_";
 		$this->url("validators/index.php?page=DataTypeValidator");
@@ -46,6 +46,4 @@ class DataTypeValidatorTestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator2");
 		$this->assertVisible("{$base}validator3");
 	}
-
 }
-

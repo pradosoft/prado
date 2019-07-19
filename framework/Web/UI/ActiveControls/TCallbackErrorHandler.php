@@ -77,16 +77,14 @@ class TCallbackErrorHandler extends TErrorHandler
 		$data['file'] = $this->hidePrivatePathParts($exception->getFile());
 		$data['line'] = $exception->getLine();
 		$data['trace'] = $exception->getTrace();
-		foreach($data['trace'] as $k => $v)
-		{
-			if(isset($v['file']))
+		foreach ($data['trace'] as $k => $v) {
+			if (isset($v['file'])) {
 				$data['trace'][$k]['file'] = $this->hidePrivatePathParts($v['file']);
+			}
 
-			if(isset($v['args']))
-			{
+			if (isset($v['args'])) {
 				$argsout = [];
-				foreach($v['args'] as $kArg => $vArg)
-				{
+				foreach ($v['args'] as $kArg => $vArg) {
 					$data['trace'][$k]['args'][$kArg] = TVarDumper::dump($vArg, 0, false);
 				}
 			}

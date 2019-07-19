@@ -3,7 +3,6 @@
 
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
-
 /**
  * @package System.Data.DataMapper
  */
@@ -151,13 +150,13 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 
 	public function testArrayAccess()
 	{
-		$thingamajig = array(
-			'a'	=> 'foo',
-			'b'	=> 'bar',
+		$thingamajig = [
+			'a' => 'foo',
+			'b' => 'bar',
 			'c' => new _PropertyAccessTestHelperPublicVar(),
 			'd' => new _PropertyAccessTestHelperStaticProperties(),
 			'e' => new _PropertyAccessTestHelperDynamicProperties(),
-		);
+		];
 
 		$testobj = new _PropertyAccessTestHelperPublicVar();
 		TPropertyAccess::set($testobj, 'a', $thingamajig);
@@ -238,8 +237,7 @@ class _PropertyAccessTestHelperDynamicProperties
 
 	public function __set($name, $value)
 	{
-		switch(strToLower($name))
-		{
+		switch (strToLower($name)) {
 			case 'a':
 				$this -> _a = $value;
 			break;
@@ -251,8 +249,7 @@ class _PropertyAccessTestHelperDynamicProperties
 
 	public function __get($name)
 	{
-		switch(strToLower($name))
-		{
+		switch (strToLower($name)) {
 			case 'a':
 				return $this -> _a;
 			break;

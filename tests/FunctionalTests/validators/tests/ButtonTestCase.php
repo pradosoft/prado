@@ -2,7 +2,7 @@
 
 class ButtonTestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url('validators/index.php?page=Button');
 

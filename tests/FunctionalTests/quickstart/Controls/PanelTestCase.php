@@ -2,7 +2,7 @@
 
 class QuickstartPanelTestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TPanel.Home&amp;notheme=true&amp;lang=en");
 		$this->assertSourceContains("This is panel content with");

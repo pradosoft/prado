@@ -6,8 +6,9 @@ class Ticket21 extends TPage
 	{
 		parent::onLoad($param);
 
-		if(!$this->IsPostBack)
+		if (!$this->IsPostBack) {
 			$this->setViewState("clicks", 0);
+		}
 	}
 
 	public function doClick($sender, $param)

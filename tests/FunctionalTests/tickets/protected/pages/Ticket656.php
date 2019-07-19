@@ -1,7 +1,8 @@
 <?php
-class Ticket656 extends TPage 
+
+class Ticket656 extends TPage
 {
-	public function updateLbl ($sender,$param)
+	public function updateLbl($sender, $param)
 	{
 		$this->lblStatus->setText($this->datePicker->getDate());
 	}

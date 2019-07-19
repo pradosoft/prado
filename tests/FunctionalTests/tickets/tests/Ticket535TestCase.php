@@ -2,7 +2,7 @@
 
 class Ticket535TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket535');
@@ -30,5 +30,4 @@ class Ticket535TestCase extends PradoGenericSelenium2Test
 		$this->pause(800);
 		$this->assertText("{$base}label1", 'bad_radio1 checked:{} bad_radio2 checked:{1}');
 	}
-
 }

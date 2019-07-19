@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(__FILE__).'/common.php');
+require_once(__DIR__ . '/common.php');
 Prado::using('System.Data.SqlMap.TSqlMapManager');
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
@@ -40,14 +40,16 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	public function __destruct()
 	{
-		if(!is_null($this->mapper))
+		if (null !== $this->mapper) {
 			$this->mapper->cacheConfiguration();
+		}
 	}
 
-	function getConnection()
+	public function getConnection()
 	{
-		if(is_null($this->connection))
+		if (null === $this->connection) {
 			$this->connection = $this->config->getConnection();
+		}
 		$this->connection->setActive(true);
 		return $this->connection;
 	}
@@ -65,11 +67,12 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	/**
 	 * Run a sql batch for the datasource.
+	 * @param mixed $script
 	 */
 	protected function initScript($script)
 	{
 		$runner = $this->config->getScriptRunner();
-		$runner->runScript($this->getConnection(), $this->ScriptDirectory.$script);
+		$runner->runScript($this->getConnection(), $this->ScriptDirectory . $script);
 	}
 
 	/**
@@ -87,6 +90,7 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	/**
 	 * Verify that the input account is equal to the account(id=1).
+	 * @param Account $account
 	 */
 	protected function assertAccount1(Account $account)
 	{
@@ -97,6 +101,7 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	/**
 	 * Verify that the input account is equal to the account(id=6).
+	 * @param Account $account
 	 */
 	protected function assertAccount6(Account $account)
 	{
@@ -108,16 +113,18 @@ class BaseCase extends PHPUnit\Framework\TestCase
 
 	/**
 	 * Verify that the input order is equal to the order(id=1).
+	 * @param Order $order
 	 */
 	protected function assertOrder1(Order $order)
 	{
-		$date = @mktime(8,15,0,2,15,2003);
+		$date = @mktime(8, 15, 0, 2, 15, 2003);
 
-		$this->assertSame((int)$order->getID(), 1);
-		if($order->getDate() instanceof TDateTime)
+		$this->assertSame((int) $order->getID(), 1);
+		if ($order->getDate() instanceof TDateTime) {
 			$this->assertSame($order->getDate()->getTimestamp(), $date);
-		else
+		} else {
 			$this->fail();
+		}
 		$this->assertSame($order->getCardType(), 'VISA');
 		$this->assertSame($order->getCardNumber(), '999999999999');
 		$this->assertSame($order->getCardExpiry(), '05/03');
@@ -126,23 +133,24 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		$this->assertSame($order->getPostalCode(), 'C4B 4F4');
 	}
 
-	function assertAccount1AsHashArray($account)
+	public function assertAccount1AsHashArray($account)
 	{
-		$this->assertSame(1, (int)$account["Id"]);
+		$this->assertSame(1, (int) $account["Id"]);
 		$this->assertSame("Joe", $account["FirstName"]);
 		$this->assertSame("Dalton", $account["LastName"]);
 		$this->assertSame("Joe.Dalton@somewhere.com", $account["EmailAddress"]);
 	}
 
-	function AssertOrder1AsHashArray($order)
+	public function AssertOrder1AsHashArray($order)
 	{
-		$date = @mktime(8,15,0,2,15,2003);
+		$date = @mktime(8, 15, 0, 2, 15, 2003);
 
 		$this->assertSame(1, $order["Id"]);
-		if($order['Date'] instanceof TDateTime)
+		if ($order['Date'] instanceof TDateTime) {
 			$this->assertSame($date, $order["Date"]->getTimestamp());
-		else
+		} else {
 			$this->fail();
+		}
 		$this->assertSame("VISA", $order["CardType"]);
 		$this->assertSame("999999999999", $order["CardNumber"]);
 		$this->assertSame("05/03", $order["CardExpiry"]);
@@ -151,30 +159,32 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		$this->assertSame("BC", $order["Province"]);
 		$this->assertSame("C4B 4F4", $order["PostalCode"]);
 	}
-
 }
 
 class HundredsBool extends TSqlMapTypeHandler
 {
 	public function getResult($string)
 	{
-		$value = intval($string);
-		if($value == 100)
+		$value = (int) $string;
+		if ($value == 100) {
 			return true;
-		if($value == 200)
+		}
+		if ($value == 200) {
 			return false;
+		}
 		//throw new Exception('unexpected value '.$value);
 	}
 
 	public function getParameter($parameter)
 	{
-		if($parameter)
+		if ($parameter) {
 			return 100;
-		else
+		} else {
 			return 200;
+		}
 	}
 
-	public function createNewInstance($data=null)
+	public function createNewInstance($data = null)
 	{
 		throw new TDataMapperException('can not create');
 	}
@@ -187,22 +197,25 @@ class OuiNonBool extends TSqlMapTypeHandler
 
 	public function getResult($string)
 	{
-		if($string === self::YES)
+		if ($string === self::YES) {
 			return true;
-		if($string === self::NO)
+		}
+		if ($string === self::NO) {
 			return false;
+		}
 		//throw new Exception('unexpected value '.$string);
 	}
 
 	public function getParameter($parameter)
 	{
-		if($parameter)
+		if ($parameter) {
 			return self::YES;
-		else
+		} else {
 			return self::NO;
+		}
 	}
 
-	public function createNewInstance($data=null)
+	public function createNewInstance($data = null)
 	{
 		throw new TDataMapperException('can not create');
 	}
@@ -223,13 +236,14 @@ class TDateTimeHandler extends TSqlMapTypeHandler
 
 	public function getParameter($parameter)
 	{
-		if($parameter instanceof TDateTime)
+		if ($parameter instanceof TDateTime) {
 			return $parameter->getTimestamp();
-		else
+		} else {
 			return $parameter;
+		}
 	}
 
-	public function createNewInstance($data=null)
+	public function createNewInstance($data = null)
 	{
 		return new TDateTime;
 	}
@@ -239,10 +253,11 @@ class TDateTime
 {
 	private $_datetime;
 
-	public function __construct($datetime=null)
+	public function __construct($datetime = null)
 	{
-		if(!is_null($datetime))
+		if (null !== $datetime) {
 			$this->setDatetime($datetime);
+		}
 	}
 
 	public function getTimestamp()

@@ -144,10 +144,10 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	{
 		if (isset($config['users']) && is_array($config['users'])) {
 			foreach ($config['users'] as $user) {
-				$name = trim(strtolower(isset($user['name']) ? $user['name'] : ''));
-				$password = isset($user['password']) ? $user['password'] : '';
+				$name = trim(strtolower($user['name'] ?? ''));
+				$password = $user['password'] ?? '';
 				$this->_users[$name] = $password;
-				$roles = isset($user['roles']) ? $user['roles'] : '';
+				$roles = $user['roles'] ?? '';
 				if ($roles !== '') {
 					foreach (explode(',', $roles) as $role) {
 						if (($role = trim($role)) !== '') {
@@ -159,8 +159,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		}
 		if (isset($config['roles']) && is_array($config['roles'])) {
 			foreach ($config['roles'] as $role) {
-				$name = isset($role['name']) ? $role['name'] : '';
-				$users = isset($role['users']) ? $role['users'] : '';
+				$name = $role['name'] ?? '';
+				$users = $role['users'] ?? '';
 				foreach (explode(',', $users) as $user) {
 					if (($user = trim($user)) !== '') {
 						$this->_roles[strtolower($user)][] = $name;
@@ -330,7 +330,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		if (($data = $cookie->getValue()) !== '') {
 			$data = unserialize($data);
 			if (is_array($data) && count($data) === 2) {
-				list($username, $token) = $data;
+				[$username, $token] = $data;
 				if (isset($this->_users[$username]) && $token === md5($username . $this->_users[$username])) {
 					return $this->getUser($username);
 				}

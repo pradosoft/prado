@@ -91,7 +91,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		if (($cache = $this->getApplication()->getCache()) !== null) {
 			$array = $cache->get(self::THEME_CACHE_PREFIX . $themePath);
 			if (is_array($array)) {
-				list($skins, $cssFiles, $jsFiles, $timestamp) = $array;
+				[$skins, $cssFiles, $jsFiles, $timestamp] = $array;
 				if ($this->getApplication()->getMode() !== TApplicationMode::Performance) {
 					if (($dir = opendir($themePath)) === false) {
 						throw new TIOException('theme_path_inexistent', $themePath);
@@ -144,7 +144,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 							throw new TConfigurationException('theme_control_nested', $skin[1], dirname($themePath));
 						}
 						$type = $skin[1];
-						$id = isset($skin[2]['skinid']) ? $skin[2]['skinid'] : 0;
+						$id = $skin[2]['skinid'] ?? 0;
 						unset($skin[2]['skinid']);
 						if (isset($this->_skins[$type][$id])) {
 							throw new TConfigurationException('theme_skinid_duplicated', $type, $id, dirname($themePath));

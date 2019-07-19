@@ -89,7 +89,7 @@ class TSqlMapPagedList extends TPagedList
 		$connection = $this->_statement->getManager()->getDbConnection();
 		$data = $this->_statement->executeQueryForList(
 			$connection,
-						$this->_parameter,
+			$this->_parameter,
 			null,
 			$limit[0],
 			$limit[1],

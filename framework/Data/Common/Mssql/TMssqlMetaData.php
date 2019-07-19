@@ -71,7 +71,7 @@ class TMssqlMetaData extends TDbMetaData
 	 */
 	protected function createTableInfo($table)
 	{
-		list($catalogName, $schemaName, $tableName) = $this->getCatalogSchemaTableName($table);
+		[$catalogName, $schemaName, $tableName] = $this->getCatalogSchemaTableName($table);
 		$this->getDbConnection()->setActive(true);
 		$sql = <<<EOD
 				SELECT t.*,
@@ -183,7 +183,7 @@ EOD;
 		if ($col['TABLE_TYPE'] === 'VIEW') {
 			$info['IsView'] = true;
 		}
-		list($primary, $foreign) = $this->getConstraintKeys($col);
+		[$primary, $foreign] = $this->getConstraintKeys($col);
 		$class = $this->getTableInfoClass();
 		return new $class($info, $primary, $foreign);
 	}

@@ -277,9 +277,9 @@ class MessageSource_PHP extends MessageSource
 		$variants = $this->getVariants($catalogue);
 
 		if ($variants) {
-			list($variant, $filename) = $variants;
+			[$variant, $filename] = $variants;
 		} else {
-			list($variant, $filename) = $this->createMessageTemplate($catalogue);
+			[$variant, $filename] = $this->createMessageTemplate($catalogue);
 		}
 
 		if (is_writable($filename) == false) {
@@ -313,7 +313,7 @@ class MessageSource_PHP extends MessageSource
 		$variants = $this->getVariants($catalogue);
 
 		if ($variants) {
-			list($variant, $filename) = $variants;
+			[$variant, $filename] = $variants;
 		} else {
 			return false;
 		}
@@ -350,7 +350,7 @@ class MessageSource_PHP extends MessageSource
 	{
 		$variants = $this->getVariants($catalogue);
 		if ($variants) {
-			list($variant, $filename) = $variants;
+			[$variant, $filename] = $variants;
 		} else {
 			return false;
 		}

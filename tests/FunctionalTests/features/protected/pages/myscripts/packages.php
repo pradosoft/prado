@@ -1,8 +1,8 @@
 <?php
 
-$packages['test'] = array('test.js');
+$packages['test'] = ['test.js'];
 
-$deps['test'] = array('test');
-$deps['test2'] = array('test');
+$deps['test'] = ['test'];
+$deps['test2'] = ['test'];
 
-return array($packages,$deps);
+return [$packages, $deps];

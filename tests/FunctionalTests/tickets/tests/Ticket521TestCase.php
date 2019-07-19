@@ -2,7 +2,7 @@
 
 class Ticket521TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url("tickets/index.php?page=Ticket521");
@@ -14,5 +14,4 @@ class Ticket521TestCase extends PradoGenericSelenium2Test
 
 		$this->assertText("{$base}label1", "Button 1 was clicked on callback");
 	}
-
 }

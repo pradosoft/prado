@@ -267,7 +267,7 @@ class TTranslate extends TI18NControl
 		//translate it
 		return Translation::formatter($catalogue)->format(
 			$text,
-										$subs,
+			$subs,
 			$catalogue,
 			$this->getCharset()
 		);

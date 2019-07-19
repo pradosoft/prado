@@ -4,65 +4,78 @@
 /**
  * @package System.Collections
  */
-class TPagedDataSourceTest extends PHPUnit\Framework\TestCase {
-
-	public function setUp() {
+class TPagedDataSourceTest extends PHPUnit\Framework\TestCase
+{
+	public function setUp()
+	{
 	}
 
-	public function tearDown() {
+	public function tearDown()
+	{
 	}
 
-	public function testDataSource() {
+	public function testDataSource()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testPageSize() {
+	public function testPageSize()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testCurrentPageIndex() {
+	public function testCurrentPageIndex()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAllowPaging() {
+	public function testAllowPaging()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAllowCustomPaging() {
+	public function testAllowCustomPaging()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testVirtualItemCount() {
+	public function testVirtualItemCount()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testCount() {
+	public function testCount()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testPageCount() {
+	public function testPageCount()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsFirstPage() {
+	public function testIsFirstPage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsLastPage() {
+	public function testIsLastPage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFirstIndexInPage() {
+	public function testFirstIndexInPage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testDataSourceCount() {
+	public function testDataSourceCount()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIterator() {
+	public function testIterator()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }
-

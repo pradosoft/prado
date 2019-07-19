@@ -2,7 +2,7 @@
 
 class QuickstartWizard1TestCase extends PradoDemosSelenium2Test
 {
-	function test ()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TWizard.Sample1&amp;notheme=true&amp;lang=en");
 
@@ -12,7 +12,7 @@ class QuickstartWizard1TestCase extends PradoDemosSelenium2Test
 		$this->assertSourceContains('Wizard Step 1');
 		$this->assertSourceNotContains('Wizard Step 2');
 		$this->assertVisible('ctl0_body_Wizard1_SideBarList_ctl0_SideBarButton');
-		$this->assertAttribute('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton@disabled','regexp:true|disabled');
+		$this->assertAttribute('ctl0_body_Wizard1_SideBarList_ctl1_SideBarButton@disabled', 'regexp:true|disabled');
 		$this->select('ctl0$body$Wizard1$DropDownList1', "Purple");
 		$this->byName('ctl0$body$Wizard1$ctl6$ctl1')->click();
 

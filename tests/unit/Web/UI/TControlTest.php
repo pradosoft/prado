@@ -5,274 +5,340 @@
 /**
  * @package System.Web.UI
  */
-class TControlTest extends PHPUnit\Framework\TestCase {
-
-	public function testConstruct() {
+class TControlTest extends PHPUnit\Framework\TestCase
+{
+	public function testConstruct()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function test__get() {
+	public function test__get()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasAdapter() {
+	public function testGetHasAdapter()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetAdapter() {
+	public function testSetAndGetAdapter()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetParent() {
+	public function testGetParent()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetNamingContainer() {
+	public function testGetNamingContainer()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetPage() {
+	public function testSetAndGetPage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetTemplateControl() {
+	public function testSetAndGetTemplateControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetSourceTemplateControl() {
+	public function testGetSourceTemplateControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetControlStage() {
+	public function testSetAndGetControlStage()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetID() {
+	public function testSetAndGetID()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetUniqueID() {
+	public function testGetUniqueID()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFocus() {
+	public function testFocus()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetClientID() {
+	public function testGetClientID()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetSkinID() {
+	public function testSetAndGetSkinID()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnableTheming() {
+	public function testSetAndGetEnableTheming()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetCustomData() {
+	public function testSetAndGetCustomData()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasControls() {
+	public function testGetHasControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetControls() {
+	public function testGetControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetVisible() {
+	public function testSetAndGetVisible()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnabled() {
+	public function testSetAndGetEnabled()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasAttributes() {
+	public function testGetHasAttributes()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetAttributes() {
+	public function testGetAttributes()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testHasAttribute() {
+	public function testHasAttribute()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetAttribute() {
+	public function testSetAndGetAttribute()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRemoveAttribute() {
+	public function testRemoveAttribute()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetEnableViewState() {
+	public function testSetAndGetEnableViewState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetControlState() {
+	public function testSetAndGetControlState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testTrackViewState() {
+	public function testTrackViewState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSetAndGetViewState() {
+	public function testSetAndGetViewState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testClearViewState() {
+	public function testClearViewState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testBindProperty() {
+	public function testBindProperty()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testUnbindProperty() {
+	public function testUnbindProperty()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAutoBindProperty() {
+	public function testAutoBindProperty()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testDataBind() {
+	public function testDataBind()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testEnsureChildControls() {
+	public function testEnsureChildControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testCreateChildControls() {
+	public function testCreateChildControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFindControl() {
+	public function testFindControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFindControlsByType() {
+	public function testFindControlsByType()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testFindControlsByID() {
+	public function testFindControlsByID()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testClearNamingContainer() {
+	public function testClearNamingContainer()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRegisterObject() {
+	public function testRegisterObject()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testUnregisterObject() {
+	public function testUnregisterObject()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testIsObjectRegistered() {
+	public function testIsObjectRegistered()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasChildInitialized() {
+	public function testGetHasChildInitialized()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasInitialized() {
+	public function testGetHasInitialized()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasLoadedPostData() {
+	public function testGetHasLoadedPostData()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasLoaded() {
+	public function testGetHasLoaded()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetHasPreRendered() {
+	public function testGetHasPreRendered()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetRegisteredObject() {
+	public function testGetRegisteredObject()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testGetAllowChildControls() {
+	public function testGetAllowChildControls()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAddParsedObject() {
+	public function testAddParsedObject()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testAddedControl() {
+	public function testAddedControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRemovedControl() {
+	public function testRemovedControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnInit() {
+	public function testOnInit()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnLoad() {
+	public function testOnLoad()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnDataBinding() {
+	public function testOnDataBinding()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnUnload() {
+	public function testOnUnload()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testOnPreRender() {
+	public function testOnPreRender()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testBubbleEvent() {
+	public function testBubbleEvent()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testBroadcastEvent() {
+	public function testBroadcastEvent()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRenderControl() {
+	public function testRenderControl()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRender() {
+	public function testRender()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testRenderChildren() {
+	public function testRenderChildren()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testSaveState() {
+	public function testSaveState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testLoadState() {
+	public function testLoadState()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
-	public function testApplyStyleSheetSkin() {
+	public function testApplyStyleSheetSkin()
+	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
 }

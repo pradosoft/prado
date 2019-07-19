@@ -171,7 +171,7 @@ class TResultMap extends \Prado\TComponent
 		} catch (TSqlMapException $e) {
 			throw new TSqlMapException(
 				'sqlmap_unable_to_create_new_instance',
-					$this->getClass(),
+				$this->getClass(),
 				get_class($handler),
 				$this->getID()
 			);

@@ -4,10 +4,9 @@
  */
 
 class CustomValidator extends TPage
-{ 
-	function CustomValidation($sender, $params) 
+{
+	public function CustomValidation($sender, $params)
 	{
 		$params->isValid = $this->text1->Text == "Prado";
-	}	
+	}
 }
-

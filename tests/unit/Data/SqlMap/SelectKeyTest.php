@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class SelectKeyTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->initSqlMap();
@@ -17,13 +17,18 @@ class SelectKeyTest extends BaseCase
 		new Order;
 		new LineItem;
 		new LineItemCollection;
-		new A; new B; new C; new D; new E; new F;
+		new A;
+		new B;
+		new C;
+		new D;
+		new E;
+		new F;
 	}
 
 	/**
 	 * Test Insert with post GeneratedKey
 	 */
-	function testInsertPostKey()
+	public function testInsertPostKey()
 	{
 		$this->initScript('line-item-init.sql');
 
@@ -42,7 +47,7 @@ class SelectKeyTest extends BaseCase
 		$this->assertSame(99, $item->getId());
 
 		$param["Order_ID"] = 9;
-		$param["LineItem_ID"] =10;
+		$param["LineItem_ID"] = 10;
 		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
@@ -54,7 +59,7 @@ class SelectKeyTest extends BaseCase
 	/**
 	 * Test Insert pre GeneratedKey
 	 */
-	function testInsertPreKey()
+	public function testInsertPreKey()
 	{
 		$this->initScript('line-item-init.sql');
 
@@ -86,7 +91,7 @@ class SelectKeyTest extends BaseCase
 	/**
 	 * Test Test Insert No Key
 	 */
-	function testInsertNoKey()
+	public function testInsertNoKey()
 	{
 		$this->initScript('line-item-init.sql');
 

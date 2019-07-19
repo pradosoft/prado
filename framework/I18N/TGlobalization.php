@@ -82,7 +82,7 @@ class TGlobalization extends \Prado\TModule
 
 		if ($config !== null) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-				$translation = isset($config['translate']) ? $config['translate'] : null;
+				$translation = $config['translate'] ?? null;
 			} else {
 				$t = $config->getElementByTagName('translation');
 				$translation = ($t) ? $t->getAttributes() : null;
@@ -206,8 +206,8 @@ class TGlobalization extends \Prado\TModule
 				if (!is_dir($config['source'])) {
 					if (@mkdir($config['source']) === false) {
 						throw new TConfigurationException(
-						'globalization_source_path_failed',
-						$config['source']
+							'globalization_source_path_failed',
+							$config['source']
 					);
 					}
 					chmod($config['source'], PRADO_CHMOD); //make it deletable

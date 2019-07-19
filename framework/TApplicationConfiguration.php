@@ -299,7 +299,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				throw new TConfigurationException('appconfig_servicetype_required');
 			}
 			$type = $service['class'];
-			$properties = isset($service['properties']) ? $service['properties'] : [];
+			$properties = $service['properties'] ?? [];
 			unset($service['properties']);
 			$properties['id'] = $id;
 			$this->_services[$id] = [$type, $properties, $service];
@@ -344,7 +344,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				if (isset($parameter['class'])) {
 					$type = $parameter['class'];
 					unset($parameter['class']);
-					$properties = isset($service['properties']) ? $service['properties'] : [];
+					$properties = $service['properties'] ?? [];
 					$properties['id'] = $id;
 					$this->_parameters[$id] = [$type, $properties];
 				}

@@ -2,7 +2,7 @@
 
 class Ticket653TestCase extends PradoGenericSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		// Open with 'Friendly URL'
 		$this->url('tickets/index.php/ticket653');

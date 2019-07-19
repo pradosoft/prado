@@ -1,13 +1,13 @@
 <?php
 
-require_once(dirname(__FILE__).'/BaseCase.php');
+require_once(__DIR__ . '/BaseCase.php');
 
 /**
  * @package System.Data.SqlMap
  */
 class CacheTest extends BaseCase
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -17,7 +17,7 @@ class CacheTest extends BaseCase
 		new Account;
 	}
 
-	function resetDatabase()
+	public function resetDatabase()
 	{
 		$this->initScript('account-init.sql');
 	}
@@ -25,19 +25,19 @@ class CacheTest extends BaseCase
 	/**
 	 * Test for JIRA 29
 	 */
-	function testJIRA28()
+	public function testJIRA28()
 	{
 		$this->markTestSkipped('Needs fixing');
-/*
-		$account = $this->sqlmap->queryForObject("GetNoAccountWithCache",-99);
-		$this->assertNull($account);
-*/
+		/*
+				$account = $this->sqlmap->queryForObject("GetNoAccountWithCache",-99);
+				$this->assertNull($account);
+		*/
 	}
 
 	/**
 	 * Test Cache query
 	 */
-	function testQueryWithCache()
+	public function testQueryWithCache()
 	{
 		$this->resetDatabase();
 
@@ -64,7 +64,7 @@ class CacheTest extends BaseCase
 	/**
 	 * Test flush Cache
 	 */
-	function testFlushDataCache()
+	public function testFlushDataCache()
 	{
 		$list1 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
 		$list2 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
@@ -80,7 +80,7 @@ class CacheTest extends BaseCase
 	/**
 	 *
 	 */
-	function testFlushDataCacheOnExecute()
+	public function testFlushDataCacheOnExecute()
 	{
 		$list1 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
@@ -96,10 +96,10 @@ class CacheTest extends BaseCase
 
 	/**
 	 */
-	protected function 	getCacheModel()
+	protected function getCacheModel()
 	{
 		$cache = new TSqlMapCacheModel();
-	//	$cache->setFlushInterval(5*60);
+		//	$cache->setFlushInterval(5*60);
 		$cache->setImplementation('LRU');
 		$cache->initialize();
 		return $cache;
@@ -108,7 +108,7 @@ class CacheTest extends BaseCase
 	/**
 	 * Test CacheHit
 	 */
-	function testCacheHit()
+	public function testCacheHit()
 	{
 		$cache = $this->getCacheModel();
 		$key = new TSqlMapCacheKey('testkey');
@@ -126,7 +126,7 @@ class CacheTest extends BaseCase
 	/**
 	 * Test CacheMiss
 	 */
-	function testCacheMiss()
+	public function testCacheMiss()
 	{
 		$cache = $this->getCacheModel();
 		$key = new TSqlMapCacheKey('testKey');
@@ -144,7 +144,7 @@ class CacheTest extends BaseCase
 	/**
 	 * Test CacheHitMiss
 	 */
-	function testCacheHitMiss()
+	public function testCacheHitMiss()
 	{
 		$cache = $this->getCacheModel();
 		$key = new TSqlMapCacheKey('testKey');

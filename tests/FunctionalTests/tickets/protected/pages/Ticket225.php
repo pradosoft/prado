@@ -2,7 +2,7 @@
 
 class Ticket225 extends TPage
 {
-	function button4_Clicked()
+	public function button4_Clicked()
 	{
 		$this->label1->setText($this->getGroupIDs($this->button1));
 	}
@@ -10,8 +10,9 @@ class Ticket225 extends TPage
 	private function getGroupIDs($radio)
 	{
 		$ids = '';
-		foreach($radio->getRadioButtonsInGroup() as $control)
-			$ids .= " ".$control->getUniqueID();
+		foreach ($radio->getRadioButtonsInGroup() as $control) {
+			$ids .= " " . $control->getUniqueID();
+		}
 		return $ids;
 	}
 }

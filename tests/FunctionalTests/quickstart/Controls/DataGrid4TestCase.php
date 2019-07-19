@@ -2,7 +2,7 @@
 
 class QuickstartDataGrid4TestCase extends PradoDemosSelenium2Test
 {
-	function test()
+	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TDataGrid.Sample4&amp;notheme=true&amp;lang=en");
 
@@ -10,8 +10,8 @@ class QuickstartDataGrid4TestCase extends PradoDemosSelenium2Test
 		$this->assertSourceContains("Design Patterns: Elements of Reusable Object-Oriented Software");
 		$this->assertSourceContains("Addison-Wesley Professional");
 		$this->assertSourceContains("$47.04");
-		$this->assertAttribute('ctl0_body_DataGrid_ctl2_ctl5@checked','regexp:true|checked');
-		$this->assertAttribute('ctl0_body_DataGrid_ctl2_ctl5@disabled','regexp:true|disabled');
+		$this->assertAttribute('ctl0_body_DataGrid_ctl2_ctl5@checked', 'regexp:true|checked');
+		$this->assertAttribute('ctl0_body_DataGrid_ctl2_ctl5@disabled', 'regexp:true|disabled');
 
 		// verify sorting
 		$this->byLinkText("Book Title")->click();

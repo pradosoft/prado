@@ -145,7 +145,7 @@ abstract class PradoCommandLineAction
 	/**
 	 * Creates a directory and sets its mode
 	 * @param string $dir directory name
-	 * @param integer $mask directory mode mask suitable for chmod()
+	 * @param int $mask directory mode mask suitable for chmod()
 	 */
 	protected function createDirectory($dir, $mask)
 	{
@@ -161,7 +161,7 @@ abstract class PradoCommandLineAction
 	/**
 	 * Creates a file and fills it with content
 	 * @param string $filename file name
-	 * @param integer $content file contents
+	 * @param int $content file contents
 	 */
 	protected function createFile($filename, $content)
 	{
@@ -557,7 +557,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	/**
 	 * @param string $dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getAppDir($dir = ".")
 	{
@@ -573,7 +573,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	/**
 	 * @param string $app_dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getXmlFile($app_dir)
 	{
@@ -589,7 +589,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 
 	/**
 	 * @param string $app_dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
@@ -611,7 +611,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	/**
 	 * @param string $app_dir application directory
 	 * @param string $namespace output file in namespace format
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getOutputFile($app_dir, $namespace)
 	{
@@ -812,7 +812,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 
 	/**
 	 * @param string $dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getAppDir($dir = ".")
 	{
@@ -828,7 +828,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 
 	/**
 	 * @param string $app_dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getXmlFile($app_dir)
 	{
@@ -844,7 +844,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 
 	/**
 	 * @param string $app_dir application directory
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
@@ -866,7 +866,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 	/**
 	 * @param string $app_dir application directory
 	 * @param string $namespace output file in namespace format
-	 * @return string|false
+	 * @return false|string
 	 */
 	protected function getOutputFile($app_dir, $namespace)
 	{
