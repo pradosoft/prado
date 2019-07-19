@@ -15,15 +15,12 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * TAPCCache class
  *
- * TAPCCache implements a cache application module based on {@link http://www.php.net/apc APC}.
+ * TAPCCache implements a cache application module based on {@link http://www.php.net/apcu APCu}.
  *
  * By definition, cache does not ensure the existence of a value
  * even if it never expires. Cache is not meant to be an persistent storage.
  *
- * To use this module, the APC PHP extension must be loaded and set in the php.ini file the following:
- * <code>
- * apc.cache_by_default=0
- * </code>
+ * To use this module, the APCu PHP extension must be loaded and set in the php.ini file.
  *
  * Some usage examples of TAPCCache are as follows,
  * <code>
@@ -56,7 +53,7 @@ class TAPCCache extends TCache
 	 */
 	public function init($config)
 	{
-		if (!extension_loaded('apc')) {
+		if (!extension_loaded('apcu')) {
 			throw new TConfigurationException('apccache_extension_required');
 		}
 
@@ -79,7 +76,7 @@ class TAPCCache extends TCache
 	 */
 	protected function getValue($key)
 	{
-		return apc_fetch($key);
+		return apcu_fetch($key);
 	}
 
 	/**
@@ -93,7 +90,7 @@ class TAPCCache extends TCache
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		return apc_store($key, $value, $expire);
+		return apcu_store($key, $value, $expire);
 	}
 
 	/**
@@ -107,7 +104,7 @@ class TAPCCache extends TCache
 	 */
 	protected function addValue($key, $value, $expire)
 	{
-		return apc_add($key, $value, $expire);
+		return apcu_add($key, $value, $expire);
 	}
 
 	/**
@@ -118,7 +115,7 @@ class TAPCCache extends TCache
 	 */
 	protected function deleteValue($key)
 	{
-		return apc_delete($key);
+		return apcu_delete($key);
 	}
 
 	/**
@@ -127,6 +124,6 @@ class TAPCCache extends TCache
 	 */
 	public function flush()
 	{
-		return apc_clear_cache('user');
+		return apcu_clear_cache();
 	}
 }

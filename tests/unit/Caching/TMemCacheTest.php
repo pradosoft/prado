@@ -35,7 +35,7 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testInit()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->assertInstanceOf(TMemCache::class, self::$cache);
 	}
 
 	public function testPrimaryCache()

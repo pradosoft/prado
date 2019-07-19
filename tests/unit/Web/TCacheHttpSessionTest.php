@@ -16,8 +16,8 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if (!extension_loaded('memcache')) {
-			self::markTestSkipped('The memcache extension is not available');
+		if (!extension_loaded('memcached')) {
+			self::markTestSkipped('The memcached extension is not available');
 		} else {
 			$basePath = __DIR__ . '/app';
 			$runtimePath = $basePath . '/runtime';
@@ -29,44 +29,40 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 			self::$cache->setKeyPrefix('MyCache');
 			self::$cache->init(null);
 			$this->app->setModule('MyCache', self::$cache);
+			self::$session = new TCacheHttpSession();
+			self::$session->setCacheModuleID('MyCache');
+			self::$session->init(null);
 		}
 	}
 
 	protected function tearDown()
 	{
 		$this->app = null;
-		$this->cache = null;
-		$this->session = null;
+		self::$cache = null;
+		self::$session = null;
 	}
 
-	public function testInit()
+	public function testInitOne()
 	{
 		$session = new TCacheHttpSession();
-		try {
-			$session->init(null);
-			$this->fail("Expected TConfigurationException is not raised");
-		} catch (TConfigurationException $e) {
-		}
-		unset($session);
+		self::expectException('Prado\\Exceptions\\TConfigurationException');
+		$session->init(null);
+	}
 
+	public function testInitTwo()
+	{
 		$session = new TCacheHttpSession();
-		try {
-			$session->setCacheModuleID('MaiCache');
-			$session->init(null);
-			$this->fail("Expected TConfigurationException is not raised");
-			$session->open();
-		} catch (TConfigurationException $e) {
-		}
-		unset($session);
+		self::expectException('Prado\\Exceptions\\TConfigurationException');
+		$session->setCacheModuleID('MaiCache');
+		$session->init(null);
+	}
 
-		self::$session = new TCacheHttpSession();
-		try {
-			self::$session->setCacheModuleID('MyCache');
-			self::$session->init(null);
-		} catch (TConfigurationException $e) {
-			$this->fail('TConfigurationException is not expected');
-			self::markTestSkipped('Cannot continue this test');
-		}
+	public function testInitThree()
+	{
+		$session = new TCacheHttpSession();
+		$session->setCacheModuleID('MyCache');
+		$session->init(null);
+		$this->assertInstanceOf(TCacheHttpSession::class, $session);
 	}
 
 	public function testGetCache()

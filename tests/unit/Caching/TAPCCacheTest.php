@@ -15,8 +15,8 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp()
 	{
-		if (!extension_loaded('apc')) {
-			self::markTestSkipped('The APC extension is not available');
+		if (!extension_loaded('apcu')) {
+			self::markTestSkipped('The APCu extension is not available');
 		} else {
 			$basePath = __DIR__ . '/mockapp';
 			$runtimePath = $basePath . '/runtime';
@@ -41,7 +41,7 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 
 	public function testInit()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->assertInstanceOf(TAPCCache::class, self::$cache);
 	}
 
 	public function testPrimaryCache()
