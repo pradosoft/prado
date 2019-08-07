@@ -177,6 +177,7 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 			CausesValidation : true,
 			ValidationGroup : null,
 			PostInputs : true,
+			RetryLimit : 1,
 
 			type: "POST",
 			context:  this,
@@ -279,6 +280,23 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 	getValidationGroup : function()
 	{
 		return this.options['ValidationGroup'];
+	},
+
+	/**
+	 * Sets the number of retries before an ajax callback is considered failed
+	 * @param {integer}
+	 */
+	setRetryLimit : function(limit)
+	{
+		this.options['RetryLimit'] = limit;
+	},
+
+	/**
+	 * @return {integer} number of retries before an ajax callback is considered failed
+	 */
+	getRetryLimit : function()
+	{
+		return this.options['RetryLimit'];
 	},
 
 	dispatch: function()
@@ -400,6 +418,14 @@ Prado.CallbackRequest = jQuery.klass(Prado.PostBack,
 					if(typeof(errorData) == "object")
 						Prado.CallbackRequestManager.logFormatException(log, errorData);
 				}
+			}
+		}
+
+		if (textStatus == 'timeout') {
+			if (--this.options.RetryLimit) {
+				//try again
+				this.dispatch();
+				return;
 			}
 		}
 

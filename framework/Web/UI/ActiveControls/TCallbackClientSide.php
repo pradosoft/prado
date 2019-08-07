@@ -43,6 +43,7 @@ use Prado\Web\UI\TControl;
  *
  * - <b>PostState</b> true to collect the form inputs and post them during callback, default is true.
  * - <b>RequestTimeOut</b> The request timeout in milliseconds.
+ * - <b>RetryLimit</b> The number of times the request is retried when it timeouts, default 1
  * - <b>EnablePageStateUpdate</b> enable the callback response to enable the
  *   viewstate update.
  *
@@ -292,5 +293,25 @@ class TCallbackClientSide extends TClientSideOptions
 	public function setPostBackParameter($value)
 	{
 		$this->setOption('EventParameter', $value);
+	}
+
+	/**
+	 * @return int number of retries before an ajax callback is considered failed
+	 * @since 4.1
+	 */
+	public function getRetryLimit()
+	{
+		return $this->getOption('RetryLimit');
+	}
+
+	/**
+	 * @param bool $value number of retries before an ajax callback is considered failed.
+	 * The request will be retried only when it fails for timeout.
+	 * The default is 1 (do not retry).
+	 * @since 4.1
+	 */
+	public function setRetryLimit($value)
+	{
+		$this->setOption('RetryLimit', TPropertyValue::ensureInteger($value));
 	}
 }
