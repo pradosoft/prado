@@ -37,7 +37,7 @@ class TJuiControlOptions
 	/**
 	 * @var TMap map of javascript options.
 	 */
-	private $_options;
+	protected $_options;
 	/**
 	 * @var TControl parent control.
 	 */

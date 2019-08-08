@@ -301,13 +301,13 @@ class TComponent
 	/**
 	 * @var array event handler lists
 	 */
-	private $_e = [];
+	protected $_e = [];
 
 	/**
 	 * @var bool if listening is enabled.  Automatically turned on or off in
 	 * constructor according to {@link getAutoGlobalListen}.  Default false, off
 	 */
-	private $_listeningenabled = false;
+	protected $_listeningenabled = false;
 
 	/**
 	 * @var array static registered global event handler lists
@@ -317,12 +317,12 @@ class TComponent
 	/**
 	 * @var bool if object behaviors are on or off.  default true, on
 	 */
-	private $_behaviorsenabled = true;
+	protected $_behaviorsenabled = true;
 
 	/**
 	 * @var TPriorityMap list of object behaviors
 	 */
-	private $_m;
+	protected $_m;
 
 	/**
 	 * @var array static global class behaviors, these behaviors are added upon instantiation of a class
@@ -1738,16 +1738,16 @@ class TComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		if ($this->_listeningenabled === false) {
-			$exprops[] = "\0Prado\TComponent\0_listeningenabled";
+			$exprops[] = "\0*\0_listeningenabled";
 		}
 		if ($this->_behaviorsenabled === true) {
-			$exprops[] = "\0Prado\TComponent\0_behaviorsenabled";
+			$exprops[] = "\0*\0_behaviorsenabled";
 		}
 		if ($this->_e === []) {
-			$exprops[] = "\0Prado\TComponent\0_e";
+			$exprops[] = "\0*\0_e";
 		}
 		if ($this->_m === null) {
-			$exprops[] = "\0Prado\TComponent\0_m";
+			$exprops[] = "\0*\0_m";
 		}
 	}
 }

@@ -25,15 +25,15 @@ class TTableItemStyle extends TStyle
 	/**
 	 * @var THorizontalAlign horizontal alignment of the contents within the table item
 	 */
-	private $_horizontalAlign;
+	protected $_horizontalAlign;
 	/**
 	 * @var TVerticalAlign vertical alignment of the contents within the table item
 	 */
-	private $_verticalAlign;
+	protected $_verticalAlign;
 	/**
 	 * @var bool whether the content wraps within the table item
 	 */
-	private $_wrap;
+	protected $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -46,13 +46,13 @@ class TTableItemStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_horizontalAlign === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_horizontalAlign";
+			$exprops[] = "\0*\0_horizontalAlign";
 		}
 		if ($this->_verticalAlign === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_verticalAlign";
+			$exprops[] = "\0*\0_verticalAlign";
 		}
 		if ($this->_wrap === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableItemStyle\0_wrap";
+			$exprops[] = "\0*\0_wrap";
 		}
 	}
 

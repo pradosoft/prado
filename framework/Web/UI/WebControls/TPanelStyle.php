@@ -25,23 +25,23 @@ class TPanelStyle extends TStyle
 	/**
 	 * @var string the URL of the background image for the panel component
 	 */
-	private $_backImageUrl;
+	protected $_backImageUrl;
 	/**
 	 * @var string alignment of the content in the panel.
 	 */
-	private $_direction;
+	protected $_direction;
 	/**
 	 * @var string horizontal alignment of the contents within the panel
 	 */
-	private $_horizontalAlign;
+	protected $_horizontalAlign;
 	/**
 	 * @var string visibility and position of scroll bars
 	 */
-	private $_scrollBars;
+	protected $_scrollBars;
 	/**
 	 * @var bool whether the content wraps within the panel
 	 */
-	private $_wrap;
+	protected $_wrap;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -54,19 +54,19 @@ class TPanelStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_backImageUrl";
+			$exprops[] = "\0*\0_backImageUrl";
 		}
 		if ($this->_direction === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_direction";
+			$exprops[] = "\0*\0_direction";
 		}
 		if ($this->_horizontalAlign === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_horizontalAlign";
+			$exprops[] = "\0*\0_horizontalAlign";
 		}
 		if ($this->_scrollBars === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_scrollBars";
+			$exprops[] = "\0*\0_scrollBars";
 		}
 		if ($this->_wrap === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TPanelStyle\0_wrap";
+			$exprops[] = "\0*\0_wrap";
 		}
 	}
 

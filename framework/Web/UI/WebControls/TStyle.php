@@ -26,23 +26,23 @@ class TStyle extends \Prado\TComponent
 	/**
 	 * @var array storage of CSS fields
 	 */
-	private $_fields = [];
+	protected $_fields = [];
 	/**
 	 * @var TFont font object
 	 */
-	private $_font;
+	protected $_font;
 	/**
 	 * @var string CSS class name
 	 */
-	private $_class;
+	protected $_class;
 	/**
 	 * @var string CSS style string (those not represented by specific fields of TStyle)
 	 */
-	private $_customStyle;
+	protected $_customStyle;
 	/**
 	 * @var string display style
 	 */
-	private $_displayStyle = 'Fixed';
+	protected $_displayStyle = 'Fixed';
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -55,19 +55,19 @@ class TStyle extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_fields === []) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_fields";
+			$exprops[] = "\0*\0_fields";
 		}
 		if ($this->_font === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_font";
+			$exprops[] = "\0*\0_font";
 		}
 		if ($this->_class === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_class";
+			$exprops[] = "\0*\0_class";
 		}
 		if ($this->_customStyle === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_customStyle";
+			$exprops[] = "\0*\0_customStyle";
 		}
 		if ($this->_displayStyle === 'Fixed') {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TStyle\0_displayStyle";
+			$exprops[] = "\0*\0_displayStyle";
 		}
 	}
 

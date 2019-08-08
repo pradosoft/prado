@@ -26,27 +26,27 @@ class TTableStyle extends TStyle
 	/**
 	 * @var TVerticalAlign the URL of the background image for the table
 	 */
-	private $_backImageUrl;
+	protected $_backImageUrl;
 	/**
 	 * @var THorizontalAlign horizontal alignment of the contents within the table
 	 */
-	private $_horizontalAlign;
+	protected $_horizontalAlign;
 	/**
 	 * @var int cellpadding of the table
 	 */
-	private $_cellPadding;
+	protected $_cellPadding;
 	/**
 	 * @var int cellspacing of the table
 	 */
-	private $_cellSpacing;
+	protected $_cellSpacing;
 	/**
 	 * @var TTableGridLines grid line setting of the table
 	 */
-	private $_gridLines;
+	protected $_gridLines;
 	/**
 	 * @var bool whether the table border should be collapsed
 	 */
-	private $_borderCollapse;
+	protected $_borderCollapse;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -59,22 +59,22 @@ class TTableStyle extends TStyle
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_backImageUrl === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_backImageUrl";
+			$exprops[] = "\0*\0_backImageUrl";
 		}
 		if ($this->_horizontalAlign === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_horizontalAlign";
+			$exprops[] = "\0*\0_horizontalAlign";
 		}
 		if ($this->_cellPadding === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellPadding";
+			$exprops[] = "\0*\0_cellPadding";
 		}
 		if ($this->_cellSpacing === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_cellSpacing";
+			$exprops[] = "\0*\0_cellSpacing";
 		}
 		if ($this->_gridLines === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_gridLines";
+			$exprops[] = "\0*\0_gridLines";
 		}
 		if ($this->_borderCollapse === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TTableStyle\0_borderCollapse";
+			$exprops[] = "\0*\0_borderCollapse";
 		}
 	}
 

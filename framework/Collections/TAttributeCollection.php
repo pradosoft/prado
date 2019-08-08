@@ -40,7 +40,7 @@ use Prado\TPropertyValue;
  */
 class TAttributeCollection extends TMap
 {
-	private $_caseSensitive = false;
+	protected $_caseSensitive = false;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -53,7 +53,7 @@ class TAttributeCollection extends TMap
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_caseSensitive === false) {
-			$exprops[] = "\0Prado\Collections\TAttributeCollection\0_caseSensitive";
+			$exprops[] = "\0*\0_caseSensitive";
 		}
 	}
 

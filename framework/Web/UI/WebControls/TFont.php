@@ -46,15 +46,15 @@ class TFont extends \Prado\TComponent
 	/**
 	 * @var int bits representing various states
 	 */
-	private $_flags = 0;
+	protected $_flags = 0;
 	/**
 	 * @var string font name
 	 */
-	private $_name = '';
+	protected $_name = '';
 	/**
 	 * @var string font size
 	 */
-	private $_size = '';
+	protected $_size = '';
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -67,13 +67,13 @@ class TFont extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_flags === 0) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_flags";
+			$exprops[] = "\0*\0_flags";
 		}
 		if ($this->_name === '') {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_name";
+			$exprops[] = "\0*\0_name";
 		}
 		if ($this->_size === '') {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TFont\0_size";
+			$exprops[] = "\0*\0_size";
 		}
 	}
 

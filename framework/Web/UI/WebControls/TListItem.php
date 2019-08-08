@@ -33,23 +33,23 @@ class TListItem extends \Prado\TComponent
 	/**
 	 * @var TMap list of custom attributes
 	 */
-	private $_attributes;
+	protected $_attributes;
 	/**
 	 * @var string text of the item
 	 */
-	private $_text = '';
+	protected $_text = '';
 	/**
 	 * @var string value of the item
 	 */
-	private $_value = '';
+	protected $_value = '';
 	/**
 	 * @var bool whether the item is enabled
 	 */
-	private $_enabled = true;
+	protected $_enabled = true;
 	/**
 	 * @var bool whether the item is selected
 	 */
-	private $_selected = false;
+	protected $_selected = false;
 
 	/**
 	 * Constructor.
@@ -77,19 +77,19 @@ class TListItem extends \Prado\TComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		if ($this->_attributes === null) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_attributes";
+			$exprops[] = "\0*\0_attributes";
 		}
 		if ($this->_text === '') {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_text";
+			$exprops[] = "\0*\0_text";
 		}
 		if ($this->_value === '') {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_value";
+			$exprops[] = "\0*\0_value";
 		}
 		if ($this->_enabled === true) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_enabled";
+			$exprops[] = "\0*\0_enabled";
 		}
 		if ($this->_selected === false) {
-			$exprops[] = "\0Prado\Web\UI\WebControls\TListItem\0_selected";
+			$exprops[] = "\0*\0_selected";
 		}
 	}
 
