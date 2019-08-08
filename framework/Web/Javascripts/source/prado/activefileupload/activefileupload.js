@@ -76,7 +76,7 @@ Prado.WebUI.TActiveFileUpload = jQuery.klass(Prado.WebUI.Control,
 		this.flag.value = '';
 		this.indicator.style.display = 'none';
 			// show the complete indicator.
-			if ((this.finishoptions.errorCode == 0) && (success)) {
+			if (/^[0\[\],]+$/.test(this.finishoptions.errorCode) && success) {
 				this.complete.style.display = '';
 				this.input.value = '';
 			} else {

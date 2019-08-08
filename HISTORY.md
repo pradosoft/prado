@@ -2,6 +2,7 @@
 
 BUG: Issue #694 - Undefined variable: conn notice in Active Record Scaffold (ganiuszka)
 BUG: Issue #696 - SQL error when trying to disable PDO::ATTR_EMULATE_PREPARES option for MySQL (ganiuszka)
+BUG: Issue #698 - TActiveFileUpload - multi upload always shows a red X for incomplete upload (ctrlaltca)
 ENH: Added ClientSide.RetryLimit to retry timeout out ajax requests (ctrlaltca)
 
 ## Version 4.0.2 - Apr 12, 2019
