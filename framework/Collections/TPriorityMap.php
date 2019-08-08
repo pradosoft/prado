@@ -62,14 +62,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TPriorityMap extends TMap
 {
 	/**
-	 * @var array internal data storage
-	 */
-	private $_d = [];
-	/**
-	 * @var bool whether this list is read-only
-	 */
-	private $_r = false;
-	/**
 	 * @var bool indicates if the _d is currently ordered.
 	 */
 	private $_o = false;
@@ -107,22 +99,6 @@ class TPriorityMap extends TMap
 		$this->setReadOnly($readOnly);
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
-	}
-
-	/**
-	 * @return bool whether this map is read-only or not. Defaults to false.
-	 */
-	public function getReadOnly()
-	{
-		return $this->_r;
-	}
-
-	/**
-	 * @param bool $value whether this list is read-only or not
-	 */
-	protected function setReadOnly($value)
-	{
-		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**
@@ -197,16 +173,6 @@ class TPriorityMap extends TMap
 			$this->_fd = array_merge($this->_fd, $itemsatpriority);
 		}
 		return $this->_fd;
-	}
-
-	/**
-	 * Returns the number of items in the map.
-	 * This method is required by \Countable interface.
-	 * @return int number of items in the map.
-	 */
-	public function count()
-	{
-		return $this->getCount();
 	}
 
 	/**
@@ -570,48 +536,5 @@ class TPriorityMap extends TMap
 		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
 		}
-	}
-
-	/**
-	 * Returns whether there is an element at the specified offset.
-	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed $offset the offset to check on
-	 * @return bool
-	 */
-	public function offsetExists($offset)
-	{
-		return $this->contains($offset);
-	}
-
-	/**
-	 * Returns the element at the specified offset.
-	 * This method is required by the interface \ArrayAccess.
-	 * @param int $offset the offset to retrieve element.
-	 * @return mixed the element at the offset, null if no element is found at the offset
-	 */
-	public function offsetGet($offset)
-	{
-		return $this->itemAt($offset);
-	}
-
-	/**
-	 * Sets the element at the specified offset.
-	 * This method is required by the interface \ArrayAccess.
-	 * @param int $offset the offset to set element
-	 * @param mixed $item the element value
-	 */
-	public function offsetSet($offset, $item)
-	{
-		$this->add($offset, $item);
-	}
-
-	/**
-	 * Unsets the element at the specified offset.
-	 * This method is required by the interface \ArrayAccess.
-	 * @param mixed $offset the offset to unset element
-	 */
-	public function offsetUnset($offset)
-	{
-		$this->remove($offset);
 	}
 }
