@@ -21,7 +21,7 @@ ENH: Make TableColumnClass in TMysqlMetaData variable (LCSKJ)
 ## Version 4.0.1 - Apr 1, 2018
 
 CHG: Removed all deprecated code (ctrlaltca)
-CHG: Removed deprecated components based on the prototype jajascript library (ctrlaltca)
+CHG: Removed deprecated components based on the prototype javascript library (ctrlaltca)
 CHG: Removed bundled copy of JSMin-php library, get it from composer instead (ctrlaltca)
 ENH: Added composer script commands to run phpunit and apigen (ctrlaltca)
 BUG: Issue #660 - Wsat redirect broken (ctrlaltca)

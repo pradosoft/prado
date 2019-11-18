@@ -260,7 +260,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @return bool if memcached is used instead of memcache
-	 * @deprecated since Prado 4.1, only memecached is available
+	 * @deprecated since Prado 4.1, only memcached is available
 	 */
 	public function getUseMemcached()
 	{
@@ -270,7 +270,7 @@ class TMemCache extends TCache
 	/**
 	 * @param string $value if memcached instead memcache
 	 * @throws TInvalidOperationException if the module is already initialized or usage of the old, unsupported memcache extension has been requested
-	 * @deprecated since Prado 4.1, only memecached is available
+	 * @deprecated since Prado 4.1, only memcached is available
 	 */
 	public function setUseMemcached($value)
 	{

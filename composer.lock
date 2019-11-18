@@ -2879,12 +2879,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pradosoft/ApiGen.git",
-                "reference": "a45f5f9f08dc3f19e09a7b5673cd1badce49edb4"
+                "reference": "d930c84c1a6efa0e6d081b8696bf4f8ff792f193"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pradosoft/ApiGen/zipball/a45f5f9f08dc3f19e09a7b5673cd1badce49edb4",
-                "reference": "a45f5f9f08dc3f19e09a7b5673cd1badce49edb4",
+                "url": "https://api.github.com/repos/pradosoft/ApiGen/zipball/d930c84c1a6efa0e6d081b8696bf4f8ff792f193",
+                "reference": "d930c84c1a6efa0e6d081b8696bf4f8ff792f193",
                 "shasum": ""
             },
             "require": {
@@ -2937,21 +2937,21 @@
             ],
             "authors": [
                 {
-                    "name": "David Grudl",
-                    "homepage": "http://davidgrudl.com"
-                },
-                {
-                    "name": "Ondřej Nešpor",
-                    "homepage": "https://github.com/andrewsville"
+                    "name": "Tomáš Votruba",
+                    "email": "tomas.vot@gmail.com",
+                    "homepage": "https://tomasvotruba.cz"
                 },
                 {
                     "name": "Jaroslav Hanslík",
                     "homepage": "https://github.com/kukulich"
                 },
                 {
-                    "name": "Tomáš Votruba",
-                    "email": "tomas.vot@gmail.com",
-                    "homepage": "https://tomasvotruba.cz"
+                    "name": "Ondřej Nešpor",
+                    "homepage": "https://github.com/andrewsville"
+                },
+                {
+                    "name": "David Grudl",
+                    "homepage": "http://davidgrudl.com"
                 }
             ],
             "description": "PHP source code API generator - Prado fork",
@@ -2962,20 +2962,20 @@
                 "generator",
                 "phpdoc"
             ],
-            "time": "2017-04-19T07:32:33+00:00"
+            "time": "2019-11-18T15:36:33+00:00"
         },
         {
             "name": "pradosoft/prado-apigen-theme",
-            "version": "1.0",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pradosoft/prado-apigen-theme.git",
-                "reference": "664a2f0748eb012858bc3fba8f5073afcd4e9bb2"
+                "reference": "e5e93fa60810be262a8d19620726b21fe6594ba0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pradosoft/prado-apigen-theme/zipball/664a2f0748eb012858bc3fba8f5073afcd4e9bb2",
-                "reference": "664a2f0748eb012858bc3fba8f5073afcd4e9bb2",
+                "url": "https://api.github.com/repos/pradosoft/prado-apigen-theme/zipball/e5e93fa60810be262a8d19620726b21fe6594ba0",
+                "reference": "e5e93fa60810be262a8d19620726b21fe6594ba0",
                 "shasum": ""
             },
             "type": "library",
@@ -2990,9 +2990,9 @@
                     "role": "Developer"
                 }
             ],
-            "description": "ApiGen theme for Prado4",
-            "homepage": "https://github.com/pradosoft/prado4-apigen-theme",
-            "time": "2016-11-21T16:03:31+00:00"
+            "description": "ApiGen theme for Prado4 documentation",
+            "homepage": "https://github.com/pradosoft/prado-apigen-theme",
+            "time": "2019-11-18T15:36:49+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
