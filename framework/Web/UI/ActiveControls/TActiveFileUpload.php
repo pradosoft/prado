@@ -337,7 +337,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 		$this->_target = new TInlineFrame;
 		$this->_target->setID('Target');
-		$this->_target->setFrameUrl($this->getAssetUrl('ActiveFileUploadBlank.html'));
+		$this->_target->setFrameUrl('about:blank');
 		$this->_target->setStyle("width:0px; height:0px;");
 		$this->_target->setShowBorder(false);
 		$this->getControls()->add($this->_target);
