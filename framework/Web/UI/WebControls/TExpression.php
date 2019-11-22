@@ -30,14 +30,14 @@ class TExpression extends \Prado\Web\UI\TControl
 	/**
 	 * @var string PHP expression to be evaluated
 	 */
-	private $_e = '';
+	private $_exp = '';
 
 	/**
 	 * @return string the expression to be evaluated
 	 */
 	public function getExpression()
 	{
-		return $this->_e;
+		return $this->_exp;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class TExpression extends \Prado\Web\UI\TControl
 	 */
 	public function setExpression($value)
 	{
-		$this->_e = $value;
+		$this->_exp = $value;
 	}
 
 	/**
@@ -54,8 +54,8 @@ class TExpression extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if ($this->_e !== '') {
-			$writer->write($this->evaluateExpression($this->_e));
+		if ($this->_exp !== '') {
+			$writer->write($this->evaluateExpression($this->_exp));
 		}
 	}
 }
