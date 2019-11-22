@@ -103,7 +103,10 @@
     "scripts": {
         "gendoc": "apigen generate --config=.apigen.yaml",
         "unittest": "phpunit --testsuite unit",
-        "functionaltest": "phpunit --testsuite functional"
+        "functionaltest": [
+        	"Composer\\Config::disableProcessTimeout",
+        	"phpunit --testsuite functional"
+        ]
     },
 	"bin" : [
 		"bin/prado-cli"
