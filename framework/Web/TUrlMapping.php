@@ -36,7 +36,7 @@ use Prado\Xml\TXmlElement;
  * in the application configuration like the following,
  * <code>
  *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
- *  <module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="true">
+ *  <module id="friendly-url" class="Prado\Web.TUrlMapping" EnableCustomUrl="true">
  *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
  *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
  *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
@@ -95,7 +95,7 @@ class TUrlMapping extends TUrlManager
 
 	private $_urlPrefix = '';
 
-	private $_defaultMappingClass = 'System.Web.TUrlMappingPattern';
+	private $_defaultMappingClass = '\Prado\Web\TUrlMappingPattern';
 
 	/**
 	 * Initializes this module.

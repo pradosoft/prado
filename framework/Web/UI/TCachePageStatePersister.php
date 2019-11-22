@@ -44,7 +44,7 @@ use Prado\TPropertyValue;
  * Or one can configure the pages to use TCachePageStatePersister in page configurations
  * as follows,
  * <code>
- *   <pages StatePersisterClass="System.Web.UI.TCachePageStatePersister"
+ *   <pages StatePersisterClass="Prado\Web\UI\TCachePageStatePersister"
  *          StatePersister.CacheModuleID="mycache"
  *          StatePersister.CacheTimeout="3600" />
  * </code>
@@ -56,7 +56,7 @@ use Prado\TPropertyValue;
  * To configure individual pages to use TCachePageStatePersister, use
  * <code>
  *   <pages>
- *     <page id="PageID" StatePersisterClass="System.Web.UI.TCachePageStatePersister" />
+ *     <page id="PageID" StatePersisterClass="Prado\Web\UI\TCachePageStatePersister" />
  *   </pages>
  * </code>
  *

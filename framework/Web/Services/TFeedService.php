@@ -26,10 +26,10 @@ use Prado\Exceptions\THttpException;
  *
  * To use TFeedService, configure it in application configuration as follows,
  * <code>
- *  <service id="feed" class="System.Web.Services.TFeedService">
- *    <feed id="ch1" class="Path.To.FeedClass1" .../>
- *    <feed id="ch2" class="Path.To.FeedClass2" .../>
- *    <feed id="ch3" class="Path.To.FeedClass3" .../>
+ *  <service id="feed" class="Prado\Web\Services\TFeedService">
+ *    <feed id="ch1" class="Path\To\FeedClass1" .../>
+ *    <feed id="ch2" class="Path\To\FeedClass2" .../>
+ *    <feed id="ch3" class="Path\To\FeedClass3" .../>
  *  </service>
  * </code>
  * where each &lt;feed&gt; element specifies a feed identified by its "id" value (case-sensitive).
@@ -39,7 +39,7 @@ use Prado\Exceptions\THttpException;
  * array(
  *   'feed' => array(
  *	   'ch1' => array(
- *       'class' => 'Path.To.FeedClass1',
+ *       'class' => 'Path\To\FeedClass1',
  *       'properties' => array(
  *          ...
  *        ),

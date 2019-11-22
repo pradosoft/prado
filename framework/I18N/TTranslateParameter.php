@@ -32,8 +32,6 @@ use Prado\Web\UI\TControl;
  * </com:TTranslate>
  * </code>
  *
- * Namespace: System.I18N
- *
  * Properties
  * - <b>Key</b>, string, <b>required</b>.
  *   <br>Gets or sets the string in TTranslate to substitute.

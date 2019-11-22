@@ -34,7 +34,7 @@ use Prado\TPropertyValue;
  *
  * THttpResponse may be configured in application configuration file as follows
  *
- * <module id="response" class="System.Web.THttpResponse" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
+ * <module id="response" class="Prado\Web\THttpResponse" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
  *
  * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
  * and {@link getBufferOutput BufferOutput} are optional properties of THttpResponse.

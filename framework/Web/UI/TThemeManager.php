@@ -32,7 +32,7 @@ use Prado\Web\Services\TPageService;
  *
  * TThemeManager may be configured within page service tag in application
  * configuration file as follows,
- * <module id="themes" class="System.Web.UI.TThemeManager"
+ * <module id="themes" class="Prado\Web\UI\TThemeManager"
  *         BasePath="Application.themes" BaseUrl="/themes" />
  * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
@@ -51,7 +51,7 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * default theme class
 	 */
-	const DEFAULT_THEMECLASS = 'TTheme';
+	const DEFAULT_THEMECLASS = '\Prado\Web\UI\TTheme';
 
 	/**
 	 * @var string

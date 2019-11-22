@@ -23,7 +23,7 @@ use Prado\Xml\TXmlDocument;
  * TUserManager manages a static list of users {@link TUser}.
  * The user information is specified via module configuration using the following XML syntax,
  * <code>
- * <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+ * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
  *   <user name="Joe" password="demo" />
  *   <user name="John" password="demo" />
  *   <role name="Administrator" users="John" />
@@ -35,7 +35,7 @@ use Prado\Xml\TXmlDocument;
  * <code>
  * array(
  *   'users' => array(
- *      'class' => 'System.Security.TUserManager',
+ *      'class' => 'Prado\Security\TUserManager',
  *      'properties' => array(
  *         'PasswordMode' => 'Clear',
  *       ),

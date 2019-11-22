@@ -27,9 +27,9 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * To use TJsonService, configure it in application configuration as follows,
  * <code>
- *  <service id="json" class="System.Web.Services.TJsonService">
- *    <json id="get_article" class="Path.To.JsonResponseClass1" .../>
- *    <json id="register_rating" class="Path.To.JsonResponseClass2" .../>
+ *  <service id="json" class="Prado\Web\Services\TJsonService">
+ *    <json id="get_article" class="Path\To\JsonResponseClass1" .../>
+ *    <json id="register_rating" class="Path\To\JsonResponseClass2" .../>
  *  </service>
  * </code>
  * where each JSON response is specified via a &lt;json&gt; element.
@@ -40,7 +40,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * <code>
  *  'services' => array(
  *    'get_article' => array(
- *     'class' => 'Path.To.JsonResponseClass1',
+ *     'class' => 'Path\To\JsonResponseClass1',
  *     'properties' => array(
  *       ...
  *	    )

@@ -35,7 +35,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TXCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TXCache" />
+ * <module id="cache" class="Prado\Caching\TXCache" />
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

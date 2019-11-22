@@ -35,7 +35,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TAPCCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TAPCCache" />
+ * <module id="cache" class="Prado\Caching\TAPCCache" />
  * </code>
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>

@@ -28,7 +28,7 @@ use Prado\Xml\TXmlDocument;
  * or an external configuration file specified by {@link setConfigFile ConfigFile}.
  * The format is as follows,
  * <code>
- *   <route class="TFileLogRoute" Categories="System.Web.UI" Levels="Warning" />
+ *   <route class="TFileLogRoute" Categories="Prado\Web\UI" Levels="Warning" />
  *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@prado.local" />
  * </code>
  * PHP configuration style:

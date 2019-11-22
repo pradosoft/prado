@@ -58,12 +58,12 @@ use Prado\Xml\TXmlElement;
  * You can configure TMemCache two different ways. If you only need one memcache server
  * you may use the method as follows.
  * <code>
- * <module id="cache" class="System.Caching.TMemCache" Host="localhost" Port="11211" />
+ * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
  * </code>
  *
  * If you want a more complex configuration, you may use the method as follows.
  * <code>
- * <module id="cache" classs="System.Caching.TMemCache">
+ * <module id="cache" class="Prado\Caching\TMemCache">
  *     <server Host="localhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
  *     <server Host="anotherhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
  * </module>
@@ -74,7 +74,7 @@ use Prado\Xml\TXmlElement;
  *
  * TMemCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TMemCache" Host="localhost" Port="11211" />
+ * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
  * </code>
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.

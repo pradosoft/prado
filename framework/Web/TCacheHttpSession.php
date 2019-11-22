@@ -25,8 +25,8 @@ use Prado\Exceptions\TConfigurationException;
  * The following example shows how we configure TCacheHttpSession:
  * <code>
  *  <modules>
- *    <module id="cache" class="System.Caching.TMemCache" Host="localhost" Port="11211" />
- *    <module id="session" class="System.Web.TCacheHttpSession"
+ *    <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
+ *    <module id="session" class="Prado\Web\TCacheHttpSession"
  *         CacheModuleID="cache" SessionName="SSID"
  *         CookieMode="Allow" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />

@@ -32,7 +32,7 @@ use Prado\Web\UI\TThemeManager;
  * <code>
  *   <services>
  *     ...
- *     <service id="wsat" class="System.Wsat.TWsatService" Password="my_secret_password" />
+ *     <service id="wsat" class="Prado\Wsat\TWsatService" Password="my_secret_password" />
  *   </services>
  * </code>
  * ...and then you need to go to http://localhost/yoursite/index.php?wsat=TWsatLogin
@@ -67,15 +67,15 @@ class TWsatService extends TPageService
 
 	public function getBasePath()
 	{
-		$basePath = Prado::getPathOfNamespace("System.Wsat.pages");
+		$basePath = Prado::getPathOfNamespace("Prado\Wsat\pages");
 		return realpath($basePath);
 	}
 
 	private function _startThemeManager()
 	{
 		$themeManager = new TThemeManager;
-		$themeManager->BasePath = "System.Wsat.themes";
-		$url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('System.Wsat'));
+		$themeManager->BasePath = "Prado\Wsat\themes";
+		$url = Prado::getApplication()->getAssetManager()->publishFilePath(Prado::getPathOfNamespace('Prado\Wsat'));
 		$themeManager->BaseUrl = "$url/themes";
 
 		$themeManager->init(null);

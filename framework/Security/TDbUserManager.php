@@ -26,14 +26,14 @@ use Prado\Prado;
  * the application configuration like following:
  * <code>
  * <module id="db"
- *     class="System.Data.TDataSourceConfig" ..../>
+ *     class="Prado\Data\TDataSourceConfig" ..../>
  * <module id="users"
- *     class="System.Security.TDbUserManager"
- *     UserClass="Path.To.MyUserClass"
+ *     class="Prado\Security\TDbUserManager"
+ *     UserClass="Path\To\MyUserClass"
  *     ConnectionID="db" />
  * <module id="auth"
- *     class="System.Security.TAuthManager"
- *     UserManager="users" LoginPage="Path.To.LoginPage" />
+ *     class="Prado\Security\TAuthManager"
+ *     UserManager="users" LoginPage="Path\To\LoginPage" />
  * </code>
  *
  * In the above, {@link setUserClass UserClass} specifies what class will be used

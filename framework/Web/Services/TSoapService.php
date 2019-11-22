@@ -31,7 +31,7 @@ use Prado\Xml\TXmlDocument;
  * To use TSoapService, configure it in the application specification like following:
  * <code>
  *   <services>
- *     <service id="soap" class="System.Web.Services.TSoapService">
+ *     <service id="soap" class="Prado\Web\Services\TSoapService">
  *       <soap id="stockquote" provider="MyStockQuote" />
  *     </service>
  *   </services>
@@ -40,7 +40,7 @@ use Prado\Xml\TXmlDocument;
  * <code>
  *  'services' => array(
  *    'soap' => array(
- *     'class' => 'System.Web.Services.TSoapService'
+ *     'class' => 'Prado\Web\Services\TSoapService'
  *     'properties' => array(
  *       'provider' => 'MyStockQuote'
  *	   )
@@ -79,7 +79,7 @@ use Prado\Xml\TXmlDocument;
  * the user session (that means a MyStockQuote object will be stored in session)
  * <code>
  *   <services>
- *     <service id="soap" class="System.Web.Services.TSoapService">
+ *     <service id="soap" class="Prado\Web\Services\TSoapService">
  *       <soap id="stockquote" provider="MyStockQuote" SessionPersistent="true" />
  *     </service>
  *   </services>

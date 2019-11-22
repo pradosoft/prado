@@ -26,7 +26,7 @@ use Prado\TPropertyValue;
  *
  * By default, TException looks for a message file by calling
  * {@link getErrorMessageFile()} method, which uses the "message-xx.txt"
- * file located under "System.Exceptions" folder, where "xx" is the
+ * file located under "Prado\Exceptions" folder, where "xx" is the
  * code of the user preferred language. If such a file is not found,
  * "message.txt" will be used instead.
  *

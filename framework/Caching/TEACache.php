@@ -38,7 +38,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TEACache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TEACache" />
+ * <module id="cache" class="Prado\Caching\TEACache" />
  * </code>
  *
  * @author Dario Rigolin <drigolin@e-portaltech.it>

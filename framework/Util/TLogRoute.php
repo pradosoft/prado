@@ -22,7 +22,7 @@ namespace Prado\Util;
  * To specify level filter, set {@link setLevels Levels} property,
  * which takes a string of comma-separated desired level names (e.g. 'Error, Debug').
  * To specify category filter, set {@link setCategories Categories} property,
- * which takes a string of comma-separated desired category names (e.g. 'System.Web, System.IO').
+ * which takes a string of comma-separated desired category names (e.g. 'Prado\Web, Prado\IO').
  *
  * Level filter and category filter are combinational, i.e., only messages
  * satisfying both filter conditions will they be returned.

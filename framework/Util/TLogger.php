@@ -87,9 +87,9 @@ class TLogger extends \Prado\TComponent
 	 * For example, (TLogger::INFO | TLogger::WARNING) specifies INFO and WARNING levels.
 	 * A category filter is specified by an array of categories to filter.
 	 * A message whose category name starts with any filtering category
-	 * will be returned. For example, a category filter array('System.Web','System.IO')
-	 * will return messages under categories such as 'System.Web', 'System.IO',
-	 * 'System.Web.UI', 'System.Web.UI.WebControls', etc.
+	 * will be returned. For example, a category filter array('Prado\Web','Prado\IO')
+	 * will return messages under categories such as 'Prado\Web', 'Prado\IO',
+	 * 'Prado\Web\UI', 'Prado\Web\UI\WebControls', etc.
 	 * A control client id filter is specified by an array of control client id
 	 * A message whose control client id starts with any filtering naming panels
 	 * will be returned. For example, a category filter array('ctl0_body_header',
@@ -146,9 +146,9 @@ class TLogger extends \Prado\TComponent
 	 * For example, (TLogger::INFO | TLogger::WARNING) specifies INFO and WARNING levels.
 	 * A category filter is specified by an array of categories to filter.
 	 * A message whose category name starts with any filtering category
-	 * will be deleted. For example, a category filter array('System.Web','System.IO')
-	 * will delete messages under categories such as 'System.Web', 'System.IO',
-	 * 'System.Web.UI', 'System.Web.UI.WebControls', etc.
+	 * will be deleted. For example, a category filter array('Prado\Web','Prado\IO')
+	 * will delete messages under categories such as 'Prado\Web', 'Prado\IO',
+	 * 'Prado\Web\UI', 'Prado\Web\UI\WebControls', etc.
 	 * A control client id filter is specified by an array of control client id
 	 * A message whose control client id starts with any filtering naming panels
 	 * will be deleted. For example, a category filter array('ctl0_body_header',

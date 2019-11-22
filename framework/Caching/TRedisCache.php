@@ -66,11 +66,11 @@ use Prado\Xml\TXmlElement;
  *
  * TRedisCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TRedisCache" Host="localhost" Port="6379" />
+ * <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
  * </code>
  * or
  * <code>
- * <module id="cache" class="System.Caching.TRedisCache" Socket="var/run/redis/redis.sock" Index="2" />
+ * <module id="cache" class="Prado\Caching\TRedisCache" Socket="var/run/redis/redis.sock" Index="2" />
  * </code>
  * where {@link setHost Host} and {@link setPort Port} or {@link setSocket Socket} are configurable properties
  * of TRedisCache.

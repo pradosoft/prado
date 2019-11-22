@@ -38,7 +38,7 @@ use Prado\Xml\TXmlElement;
  * In addition, any content enclosed within the module tag is also treated
  * as parameters, e.g.,
  * <code>
- * <module class="System.Util.TParameterModule">
+ * <module class="Prado\Util\TParameterModule">
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
  * </module>

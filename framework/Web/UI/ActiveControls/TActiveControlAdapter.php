@@ -51,7 +51,7 @@ class TActiveControlAdapter extends TControlAdapter
 	/**
 	 * @var string view state tracker class.
 	 */
-	private $_stateTrackerClass = 'TCallbackPageStateTracker';
+	private $_stateTrackerClass = '\Prado\Web\UI\ActiveControls\TCallbackPageStateTracker';
 
 	/**
 	 * Constructor.

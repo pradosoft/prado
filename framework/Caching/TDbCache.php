@@ -82,7 +82,7 @@ use Prado\TPropertyValue;
  *
  * TDbCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TDbCache" />
+ * <module id="cache" class="Prado\Caching\TDbCache" />
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

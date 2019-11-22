@@ -40,7 +40,7 @@ use Exception;
  * Memory Caching is from an original idea of
  * Mike BENOIT <ipso@snappymail.ca>
  *
- * @package System.I18N.core
+ * @package Prado\I18N\core
  * @author Fabien MARTY <fab@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
  * @link       http://pear.php.net/package/Cache_Lite

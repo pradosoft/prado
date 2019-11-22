@@ -21,7 +21,7 @@ use \Prado\Prado;
  * and if possible, using languages preferred by the client user.
  * Note, PHP parsing errors cannot be caught and handled by TErrorHandler.
  *
- * The templates used to format the error output are stored under System.Exceptions.
+ * The templates used to format the error output are stored under Prado\Exceptions.
  * You may choose to use your own templates, should you not like the templates
  * provided by Prado. Simply set {@link setErrorTemplatePath ErrorTemplatePath}
  * to the path (in namespace format) storing your own templates.
@@ -45,7 +45,7 @@ use \Prado\Prado;
  * by the application object to handle errors.
  *
  * TErrorHandler may be configured in application configuration file as follows
- * <module id="error" class="TErrorHandler" ErrorTemplatePath="System.Exceptions" />
+ * <module id="error" class="TErrorHandler" ErrorTemplatePath="Prado\Exceptions" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Exceptions
@@ -98,7 +98,7 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * Sets the path storing all error and exception template files.
-	 * The path must be in namespace format, such as System.Exceptions (which is the default).
+	 * The path must be in namespace format, such as Prado\Exceptions (which is the default).
 	 * @param string $value template path in namespace format
 	 * @throws TConfigurationException if the template path is invalid
 	 */

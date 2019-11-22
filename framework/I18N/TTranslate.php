@@ -46,8 +46,6 @@ use Prado\Web\UI\TControl;
  * More complex string substitution can be applied using the
  * TTranslateParameter component.
  *
- * Namespace: System.I18N
- *
  * Properties
  * - <b>Text</b>, string,
  *   <br>Gets or sets the string to translate.

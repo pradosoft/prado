@@ -34,8 +34,8 @@ use Prado\Web\THttpCookie;
  * since the user will be logged in again on authentication expiration.
  *
  * To load TAuthManager, configure it in application configuration as follows,
- * <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="login" />
- * <module id="users" class="System.Security.TUserManager" />
+ * <module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="login" />
+ * <module id="users" class="Prado\Security\TUserManager" />
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Security

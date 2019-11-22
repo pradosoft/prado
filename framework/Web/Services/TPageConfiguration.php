@@ -49,13 +49,13 @@ class TPageConfiguration extends \Prado\TComponent
 	 */
 	private $_includes = [];
 	/**
-	 * @var string the currently request page in the format of Path.To.PageName
+	 * @var string the currently request page in the format of Path\To\PageName
 	 */
 	private $_pagePath = '';
 
 	/**
 	 * Constructor.
-	 * @param string $pagePath the currently request page in the format of Path.To.PageName
+	 * @param string $pagePath the currently request page in the format of Path\To\PageName
 	 */
 	public function __construct($pagePath)
 	{
@@ -133,7 +133,7 @@ class TPageConfiguration extends \Prado\TComponent
 	 */
 	public function loadFromFile($fname, $configPagePath)
 	{
-		Prado::trace("Loading page configuration file $fname", 'System.Web.Services.TPageService');
+		Prado::trace("Loading page configuration file $fname", 'Prado\Web\Services\TPageService');
 		if (empty($fname) || !is_file($fname)) {
 			return;
 		}

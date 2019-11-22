@@ -40,7 +40,7 @@ use Prado\Xml\TXmlElement;
  * To define an rpc service, add the proper application configuration:
  *
  * <code>
- * <service id="rpc" class="System.Web.Services.TRpcService">
+ * <service id="rpc" class="Prado\Web\Services\TRpcService">
  * 	 <rpcapi id="customers" class="Application.Api.CustomersApi" />
  *   <modules>
  *     <!--  register any module needed by the service here -->

@@ -444,7 +444,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @return string clientscript manager class in namespace format. Defaults to 'System.Web.UI.TClientScriptManager'.
+	 * @return string clientscript manager class in namespace format. Defaults to 'Prado\Web\UI\TClientScriptManager'.
 	 * @since 3.1.7
 	 */
 	public function getClientScriptManagerClass()

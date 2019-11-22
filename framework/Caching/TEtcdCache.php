@@ -45,7 +45,7 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TEtcdCache may be configured in application configuration file as follows
  * <code>
- * <module id="cache" class="System.Caching.TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
+ * <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
  * </code>
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>

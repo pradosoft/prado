@@ -22,7 +22,7 @@ use Prado\TPropertyValue;
  * Example: application.xml configuration
  * <code>
  * <modules>
- * 	<module class="System.Data.ActiveRecord.TActiveRecordConfig" EnableCache="true">
+ * 	<module class="Prado\Data\Data\ActiveRecord\TActiveRecordConfig" EnableCache="true">
  * 		<database ConnectionString="mysql:host=localhost;dbname=test"
  * 			Username="dbuser" Password="dbpass" />
  * 	</module>
@@ -72,8 +72,8 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordConfig extends TDataSourceConfig
 {
-	const DEFAULT_MANAGER_CLASS = 'System.Data.ActiveRecord.TActiveRecordManager';
-	const DEFAULT_GATEWAY_CLASS = 'System.Data.ActiveRecord.TActiveRecordGateway';
+	const DEFAULT_MANAGER_CLASS = '\Prado\Data\ActiveRecordTActiveRecordManager';
+	const DEFAULT_GATEWAY_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordGateway';
 
 	/**
 	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}

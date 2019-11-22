@@ -90,7 +90,7 @@ class TDbConnection extends \Prado\TComponent
 	 *
 	 * @since 3.1.7
 	 */
-	const DEFAULT_TRANSACTION_CLASS = 'System.Data.TDbTransaction';
+	const DEFAULT_TRANSACTION_CLASS = '\Prado\Data\TDbTransaction';
 
 	private $_dsn = '';
 	private $_username = '';
@@ -354,7 +354,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string Transaction class name to be created by calling {@link TDbConnection::beginTransaction}. Defaults to 'System.Data.TDbTransaction'.
+	 * @return string Transaction class name to be created by calling {@link TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
 	 * @since 3.1.7
 	 */
 	public function getTransactionClass()

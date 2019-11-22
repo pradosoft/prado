@@ -29,7 +29,7 @@ class TFirePhpLogRoute extends TLogRoute
 	/**
 	 * Default group label
 	 */
-	const DEFAULT_LABEL = 'System.Util.TLogRouter(TFirePhpLogRoute)';
+	const DEFAULT_LABEL = 'Prado\Util\TLogRouter(TFirePhpLogRoute)';
 
 	private $_groupLabel;
 

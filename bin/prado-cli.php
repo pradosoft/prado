@@ -351,7 +351,7 @@ $application->run();
   <!-- configurations for modules -->
   <modules>
     <!-- Remove this comment mark to enable caching
-    <module id="cache" class="System.Caching.TDbCache" />
+    <module id="cache" class="Prado\Caching\TDbCache" />
     -->
 
     <!-- Remove this comment mark to enable PATH url format
@@ -359,7 +359,7 @@ $application->run();
     -->
 
     <!-- Remove this comment mark to enable logging
-    <module id="log" class="System.Util.TLogRouter">
+    <module id="log" class="Prado\Util\TLogRouter">
       <route class="TBrowserLogRoute" Categories="System" />
     </module>
     -->
@@ -597,7 +597,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {
-			Prado::using('System.Data.ActiveRecord.TActiveRecordConfig');
+			Prado::using('Prado\Data\ActiveRecord\TActiveRecordConfig');
 			foreach ($app->getModules() as $module) {
 				if ($module instanceof TActiveRecordConfig) {
 					return $module;
@@ -852,7 +852,7 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {
-			Prado::using('System.Data.ActiveRecord.TActiveRecordConfig');
+			Prado::using('Prado\Data\ActiveRecord\TActiveRecordConfig');
 			foreach ($app->getModules() as $module) {
 				if ($module instanceof TActiveRecordConfig) {
 					return $module;
