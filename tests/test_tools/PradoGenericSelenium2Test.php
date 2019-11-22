@@ -16,7 +16,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		[
 			'name' => 'Chrome on OSX',
 			'browserName' => 'chrome',
-//			'sessionStrategy' => 'shared',
+			'sessionStrategy' => 'shared',
 			'host' => '127.0.0.1',
 			'port' => 4444,
 		],
@@ -69,6 +69,11 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 //		self::shareSession(true);
 		$this->setBrowserUrl(static::$baseurl);
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
+	}
+
+	public function url($t)
+	{
+		parent::url(static::$baseurl . $t);
 	}
 
 	protected function assertAttribute($idattr, $txt)
