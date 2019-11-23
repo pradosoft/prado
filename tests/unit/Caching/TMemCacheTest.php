@@ -3,9 +3,6 @@
 use Prado\Caching\TMemCache;
 use Prado\TApplication;
 
-/**
- * @package System.Caching
- */
 class TMemCacheTest extends PHPUnit\Framework\TestCase
 {
 	protected $app;

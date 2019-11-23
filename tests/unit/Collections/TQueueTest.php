@@ -4,9 +4,6 @@ use Prado\Collections\TQueue;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
-/**
- * @package System.Collections
- */
 class TQueueTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

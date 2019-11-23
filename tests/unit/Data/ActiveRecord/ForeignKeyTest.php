@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(__DIR__ . '/records/ItemRecord.php');
 
 abstract class SqliteRecord extends TActiveRecord
@@ -77,9 +76,6 @@ class Cover extends SqliteRecord
 	public $content;
 }
 
-/**
- * @package System.Data.ActiveRecord
- */
 class ForeignKeyTest extends PHPUnit\Framework\TestCase
 {
 	public function test_has_many()

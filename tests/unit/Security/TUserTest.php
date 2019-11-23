@@ -6,9 +6,6 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-/**
- * @package System.Security
- */
 class TUserTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;

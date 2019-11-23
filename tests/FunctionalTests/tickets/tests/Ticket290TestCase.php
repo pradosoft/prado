@@ -18,7 +18,7 @@ class Ticket290TestCase extends PradoGenericSelenium2Test
 
 		$this->byId("{$base}textbox1")->click();
 		$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::ENTER);
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$this->assertText("{$base}label1", "Doing Validation");
 		$this->assertText("{$base}label2", "Button 2 (default) Clicked!");

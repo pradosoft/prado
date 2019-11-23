@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TControlTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

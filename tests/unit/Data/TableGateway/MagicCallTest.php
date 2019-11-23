@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-/**
- * @package System.Data.TableGateway
- */
 class MagicCallTest extends BaseGateway
 {
 	public function test_magic_call()

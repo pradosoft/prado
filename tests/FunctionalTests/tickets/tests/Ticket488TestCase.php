@@ -14,7 +14,7 @@ class Ticket488TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator2");
 
 		$this->byId("{$base}checkLogin")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 
@@ -22,13 +22,13 @@ class Ticket488TestCase extends PradoGenericSelenium2Test
 		$this->type("{$base}Password", 'mmama');
 
 		$this->byId("{$base}checkLogin")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertVisible("{$base}validator2");
 
 		$this->type("{$base}Password", 'test');
 		$this->byId("{$base}checkLogin")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible("{$base}validator1");
 		$this->assertNotVisible("{$base}validator2");
 	}

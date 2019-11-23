@@ -11,34 +11,34 @@ class ActiveCheckBoxListTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", "Label 1");
 
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertCheckBoxes([1, 2, 3]);
 
 		$this->byId("{$base}button2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertCheckBoxes([]);
 
 
 		$this->byId("{$base}button3")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertCheckBoxes([0]);
 
 
 		$this->byId("{$base}button4")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertCheckBoxes([4]);
 
 
 		$this->byId("{$base}button5")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertCheckBoxes([1, 4]);
 
 		$this->byId("{$base}list1_c2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Selection: value 2, value 3, value 5");
 
 		$this->byId("{$base}list1_c2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Selection: value 2, value 5");
 	}
 

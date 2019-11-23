@@ -1,7 +1,5 @@
 <?php
 
-prado::using('System.Web.UI.ActiveControls.*');
-
 class ActiveDatePicker extends TPage
 {
 	public function onLoad($param)
@@ -31,7 +29,7 @@ class ActiveDatePicker extends TPage
 	{
 		$this->datepicker->setTimestamp(time());
 	}
-	
+
 	public function increase($sender, $param)
 	{
 		$this->datepicker->setTimestamp(strtotime('+1 day', $this->datepicker->getTimestamp()));
@@ -40,7 +38,7 @@ class ActiveDatePicker extends TPage
 	{
 		$this->datepicker->setTimestamp(strtotime('-1 day', $this->datepicker->getTimestamp()));
 	}
-	
+
 	public function toggleMode($sender, $param)
 	{
 		if ($this->datepicker->getInputMode() == TDatePickerInputMode::DropDownList) {

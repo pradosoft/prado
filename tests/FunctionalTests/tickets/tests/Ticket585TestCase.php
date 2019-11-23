@@ -12,13 +12,13 @@ class Ticket585TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("error", "Success");
 		$this->assertNotVisible("{$base}validator1");
 
 		$this->type("{$base}test", "15-03-2007");
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("error", "Error");
 		$this->assertVisible("{$base}validator1");
 	}

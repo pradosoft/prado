@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-/**
- * @package System.Data.TableGateway
- */
 class TableGatewayPgsqlTest extends BaseGateway
 {
 	public function setUp()
@@ -26,7 +23,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 		$this->markTestSkipped('Needs fixing');
 		/*
 				$this->assertTrue($result);
-		
+
 				$test = $this->getGateway()->find('username = ?', 'tester 1');
 				unset($test['id']);
 				$expect = $this->get_record1();
@@ -34,7 +31,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 				$expect['field5_text'] = null;
 				unset($expect['field7_timestamp']); unset($test['field7_timestamp']);
 				$this->assertEquals($expect, $test);
-		
+
 				$this->assertTrue($this->getGateway()->deleteAll('username = ?', 'tester 1'));
 		*/
 	}
@@ -49,7 +46,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 		$this->markTestSkipped('Needs fixing');
 		/*
 				$this->assertTrue($result);
-		
+
 				$test = $this->getGateway()->find('username = :name', array(':name'=>'tester 1'));
 				unset($test['id']);
 				$expect = $this->get_record1();
@@ -57,7 +54,7 @@ class TableGatewayPgsqlTest extends BaseGateway
 				$expect['field5_text'] = null;
 				unset($expect['field7_timestamp']); unset($test['field7_timestamp']);
 				$this->assertEquals($expect, $test);
-		
+
 				$this->assertTrue($this->getGateway()->deleteAll('username = :name', array(':name'=>'tester 1')));
 		*/
 	}

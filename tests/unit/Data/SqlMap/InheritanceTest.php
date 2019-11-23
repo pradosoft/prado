@@ -4,9 +4,6 @@ require_once(__DIR__ . '/BaseCase.php');
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
 
-/**
- * @package System.Data.SqlMap
- */
 class InheritanceTest extends BaseCase
 {
 	public function __construct()

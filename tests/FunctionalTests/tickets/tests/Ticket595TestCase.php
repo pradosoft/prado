@@ -17,21 +17,21 @@ class Ticket595TestCase extends PradoGenericSelenium2Test
 
 		$this->type($base . 'A', 'test@prado.local');
 		$this->byId($base . 'ctl2')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertAttribute($base . 'A@class', '');
 
 		$this->byId($base . 'ctl5')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertAttribute($base . 'B@class', ' errorclassB');
 
 		$this->type($base . 'B', 'Prado');
 		$this->byId($base . 'ctl5')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertAttribute($base . 'B@class', ' errorclassB');
 
 		$this->type($base . 'B', 'test@prado.local');
 		$this->byId($base . 'ctl5')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertAttribute($base . 'B@class', '');
 	}
 }

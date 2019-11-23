@@ -1,10 +1,7 @@
 <?php
 
-Prado::using('System.Data.SqlMap.TSqlMapManager');
+use Prado\Data\SqlMap\TSqlMapManager;
 
-/**
- * @package System.Data.SqlMap
- */
 class Ticket589Test extends PHPUnit\Framework\TestCase
 {
 	public function test()

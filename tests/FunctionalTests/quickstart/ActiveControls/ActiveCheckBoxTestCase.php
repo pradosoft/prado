@@ -14,11 +14,11 @@ class QuickstartActiveCheckBoxTestCase extends PradoDemosSelenium2Test
 		// an auto postback checkbox
 		$this->assertSourceNotContains("ctl0_body_ctl0 clicked using callback");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
 		$this->assertSourceContains("ctl0_body_ctl0 clicked using callback");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertSourceContains("ctl0_body_ctl0 clicked using callback");
 		$this->assertFalse($this->byXPath("//input[@name='ctl0\$body\$ctl0']")->selected());
 
@@ -30,7 +30,7 @@ class QuickstartActiveCheckBoxTestCase extends PradoDemosSelenium2Test
 		$this->assertVisible('ctl0_body_ctl3');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->byXPath("//input[@name='ctl0\$body\$ctl2']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible('ctl0_body_ctl1');
 		$this->assertSourceContains("ctl0_body_ctl2 clicked using callback");
 
@@ -42,7 +42,7 @@ class QuickstartActiveCheckBoxTestCase extends PradoDemosSelenium2Test
 		$this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->click();
 		$this->assertTrue($this->byXPath("//input[@name='ctl0\$body\$CheckBox']")->selected());
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible('ctl0_body_ctl4');
 		$this->assertSourceContains("ctl0_body_CheckBox clicked");
 

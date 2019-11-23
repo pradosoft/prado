@@ -1,11 +1,8 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.Common.Pgsql.TPgsqlMetaData');
+use Prado\Data\Common\Pgsql\TPgsqlMetaData;
+Prado::using('Prado\Data\*');
 
-/**
- * @package System.Data.DbCommon
- */
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
 	protected function setUp()

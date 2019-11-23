@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TFormTest extends PHPUnit\Framework\TestCase
 {
 	public function testOnInit()

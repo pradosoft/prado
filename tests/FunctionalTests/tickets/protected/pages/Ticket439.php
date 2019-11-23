@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket439 extends TPage
 {
 	public function button_clicked($sender, $param)

@@ -2,9 +2,6 @@
 
 use Prado\I18N\core\ChoiceFormat;
 
-/**
- * @package System.I18N.core
- */
 class ChoiceFormatTest extends PHPUnit\Framework\TestCase
 {
 	public function testChoices()

@@ -2,9 +2,6 @@
 
 use Prado\IO\TTextWriter;
 
-/**
- * @package System.IO
- */
 class TTextWriterTest extends PHPUnit\Framework\TestCase
 {
 	public function testFlush()

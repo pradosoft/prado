@@ -1,4 +1,4 @@
-<%@ StatePersisterClass="System.Web.UI.TSessionPageStatePersister" %>
+<%@ StatePersisterClass="Prado\Web\UI\TSessionPageStatePersister" %>
 <com:TContent ID="Content">
 
 <h1>Large Page State Test (using Session page state)</h1>

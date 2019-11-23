@@ -9,7 +9,7 @@ class ActiveLinkButtonTestCase extends PradoGenericSelenium2Test
 		$this->assertSourceContains("TActiveLinkButton Functional Test");
 		$this->assertText("{$base}label1", "Label 1");
 		$this->byId("{$base}button2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Button 1 was clicked using callback!");
 	}
 }

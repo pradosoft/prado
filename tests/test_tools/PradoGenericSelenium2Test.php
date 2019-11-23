@@ -272,6 +272,11 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		usleep($msec * 1000);
 	}
 
+	protected function pauseFairAmount()
+	{
+		usleep(100000);
+	}
+
 	public function assertSourceContains($text)
 	{
 		$found = strpos($this->source(), $text) !== false;

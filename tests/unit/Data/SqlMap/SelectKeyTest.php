@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class SelectKeyTest extends BaseCase
 {
 	public function __construct()

@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket484 extends TPage
 {
 	public function onLoad($param)

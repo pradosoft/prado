@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket504 extends TPage
 {
 	private $panels = ['panelA', 'panelB', 'panelC', 'panelD', ];

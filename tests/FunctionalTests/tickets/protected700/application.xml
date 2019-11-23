@@ -7,13 +7,13 @@
 <services>
 	<service id="page" class="TPageService" BasePageClass="Application.common.BasePage">
 		<modules>
-			<module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+			<module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
 				<user name="AdminUser" password="demo" />
 				<user name="NormalUser" password="demo" />
 				<role name="admin" users="AdminUser" />
 				<role name="user" users="NormalUser" />
 			</module>
-			<module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="UserLogin" />
+			<module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="UserLogin" />
 		</modules>
 
 		<authorization>

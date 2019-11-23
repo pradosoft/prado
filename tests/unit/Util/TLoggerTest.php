@@ -1,9 +1,6 @@
 <?php
 
 
-/**
- * @package System.Util
- */
 class TLoggerTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

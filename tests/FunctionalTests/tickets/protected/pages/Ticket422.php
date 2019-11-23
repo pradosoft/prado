@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket422 extends TPage
 {
 	private $_listItemsA;

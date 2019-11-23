@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Issue516 extends TPage
 {
 	private $_data;

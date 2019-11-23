@@ -1,7 +1,5 @@
 <?php
 
-prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket691 extends TPage
 {
 	public function list_oncallback($sender, $param)

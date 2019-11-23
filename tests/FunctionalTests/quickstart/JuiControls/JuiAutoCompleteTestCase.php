@@ -21,26 +21,26 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 
 		$this->byId("{$base}AutoComplete")->click();
 		$this->keys('J');
-		$this->pause(800);
+		$this->pause(500);
 		$this->assertSourceContains('John');
 
 		$this->byCssSelector("#{$base}AutoComplete_result ul li")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertValue("{$base}AutoComplete", "John");
 		$this->assertText("{$base}Selection1", "Selected ID: 1");
 
 
 		$this->byId("{$base}AutoComplete2")->click();
 		$this->keys('Joh');
-		$this->pause(800);
+		$this->pause(500);
 		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertValue("{$base}AutoComplete2", "John");
 		$this->assertText("{$base}Selection2", "Selected ID: 1");
 
 		//$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
 		$this->keys(',Ge');
-		$this->pause(800);
+		$this->pause(500);
 		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();
 		$this->pause(500);
 		$this->assertValue("{$base}AutoComplete2", "John,George");

@@ -1,7 +1,5 @@
 <?php
 
-prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket679 extends TPage
 {
 	// repeater bug
@@ -35,7 +33,7 @@ class Ticket679 extends TPage
 	public function uncheckRadioButton($sender, $param)
 	{
 		$this->myRadioButton->checked = false;
-				
+
 		// solution
 			   //$this->CallbackClient->check($this->myRadioButton, false);
 	}

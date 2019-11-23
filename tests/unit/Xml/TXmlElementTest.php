@@ -3,9 +3,6 @@
 use Prado\Collections\TMap;
 use Prado\Xml\TXmlElement;
 
-/**
- * @package System.Xml
- */
 class TXmlElementTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

@@ -3,9 +3,6 @@
 use Prado\Collections\TAttributeCollection;
 use Prado\Exceptions\TInvalidOperationException;
 
-/**
- * @package System.Collections
- */
 class TAttributeCollectionTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

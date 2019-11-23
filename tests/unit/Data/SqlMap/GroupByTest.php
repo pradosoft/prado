@@ -17,9 +17,6 @@ class AccountWithOrders extends Account
 	}
 }
 
-/**
- * @package System.Data.SqlMap
- */
 class GroupByTest extends BaseCase
 {
 	public function __construct()

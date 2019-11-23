@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-/**
- * @package System.Data.TableGateway
- */
 class TableGatewayDeleteByPkTest extends BaseGateway
 {
 	public function test_delete_by_1_pk()
@@ -14,7 +11,7 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 				$this->add_record1();
 				$id = $this->getGateway()->getLastInsertId();
 				$deleted = $this->getGateway()->deleteByPk($id);
-		
+
 				$this->assertEquals(1, $deleted);
 		*/
 	}
@@ -27,9 +24,9 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 				$id1 = $this->getGateway()->getLastInsertId();
 				$this->add_record2();
 				$id2 = $this->getGateway()->getLastInsertId();
-		
+
 				$deleted = $this->getGateway()->deleteByPk($id1, $id2);
-		
+
 				$this->assertEquals(2, $deleted);
 		*/
 	}
@@ -42,9 +39,9 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 				$id1 = $this->getGateway()->getLastInsertId();
 				$this->add_record2();
 				$id2 = $this->getGateway()->getLastInsertId();
-		
+
 				$deleted = $this->getGateway()->deleteByPk(array($id1, $id2));
-		
+
 				$this->assertEquals(2, $deleted);
 		*/
 	}
@@ -57,9 +54,9 @@ class TableGatewayDeleteByPkTest extends BaseGateway
 				$id1 = $this->getGateway()->getLastInsertId();
 				$this->add_record2();
 				$id2 = $this->getGateway()->getLastInsertId();
-		
+
 				$deleted = $this->getGateway()->deleteByPk(array(array($id1), array($id2)));
-		
+
 				$this->assertEquals(2, $deleted);
 		*/
 	}

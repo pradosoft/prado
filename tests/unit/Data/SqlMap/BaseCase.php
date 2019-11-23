@@ -1,13 +1,10 @@
 <?php
 
 require_once(__DIR__ . '/common.php');
-Prado::using('System.Data.SqlMap.TSqlMapManager');
 
 use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
+use Prado\Data\SqlMap\TSqlMapManager;
 
-/**
- * @package System.Data.SqlMap
- */
 class BaseCase extends PHPUnit\Framework\TestCase
 {
 	protected $sqlmap;

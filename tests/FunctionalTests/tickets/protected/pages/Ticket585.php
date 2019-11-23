@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket585 extends TPage
 {
 	public function ChkDate($sender, $param)

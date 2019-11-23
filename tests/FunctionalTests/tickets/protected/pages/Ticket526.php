@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket526 extends TPage
 {
 	public function callback($s, $p)

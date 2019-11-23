@@ -2,9 +2,6 @@
 
 use Prado\Web\THttpUtility;
 
-/**
- * @package System.Web
- */
 class THttpUtilityTest extends PHPUnit\Framework\TestCase
 {
 	public function testHtmlEncode()

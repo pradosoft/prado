@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket500 extends TPage
 {
 	public function set_url()

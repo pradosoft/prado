@@ -14,9 +14,6 @@ if (!defined('TEST_DB_FILE2')) {
 	define('TEST_DB_FILE2', __DIR__ . '/db/test2.db');
 }
 
-/**
- * @package System.Data.PDO
- */
 class TDbConnectionTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection1;

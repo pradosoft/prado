@@ -11,30 +11,30 @@ class Ticket671TestCase extends PradoGenericSelenium2Test
 		$this->assertNotVisible($base . 'ctl0');
 		// Click submit
 		$this->byId($base . 'ctl1')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText($base . 'ctl0', 'Please Select Test 3');
 		$this->assertVisible($base . 'ctl0');
 		$this->select($base . 'addl', 'Test 2');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . 'ctl0');
 		$this->assertText($base . "lblResult", "You have selected 'Test 2'. But this is not valid !");
 		$this->select($base . 'addl', 'Test 3');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible($base . 'ctl0');
 		$this->assertText($base . "lblResult", "You have selected 'Test 3'.");
 		$this->byId($base . 'ctl1')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText($base . "lblResult", "You have successfully validated the form");
 
 		$this->type($base . 'testTextBox', 'test');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->byId($base . 'ctl3')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . 'ctl2');
 		$this->type($base . 'testTextBox', "Prado");
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->byId($base . 'ctl3')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible($base . 'ctl2');
 		$this->assertText($base . 'lblResult2', 'Thanks !');
 	}

@@ -10,7 +10,7 @@ class Ticket578TestCase extends PradoGenericSelenium2Test
 
 		$this->assertText("{$base}label1", "Label 1");
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Button 1 was clicked :");
 
 		$text = "helloworld";
@@ -21,7 +21,7 @@ class Ticket578TestCase extends PradoGenericSelenium2Test
 		]);
 
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Button 1 was clicked : <p>{$text}</p>");
 	}
 }

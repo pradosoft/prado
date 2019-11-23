@@ -12,9 +12,6 @@ use Prado\Web\TUrlManager;
 use Prado\Web\TUrlMapping;
 use Prado\Xml\TXmlDocument;
 
-/**
- * @package System.Web
- */
 class THttpRequestTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;
@@ -539,7 +536,6 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 
 	public function testRequestWithUrlMapping()
 	{
-		Prado::Using('System.Web.TUrlMapping');
 		$confstr = '<config><url ServiceId="testService" ServiceParameter="testServiceParam" pattern="test/{param}/?" parameters.param="\w+"/></config>';
 		$config = new TXmlDocument('1.0', 'utf8');
 		$config->loadFromString($confstr);

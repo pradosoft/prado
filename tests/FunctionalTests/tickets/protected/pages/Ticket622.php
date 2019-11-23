@@ -1,6 +1,5 @@
 <?php
 
-Prado::Using('System.Web.UI.ActiveControls.*');
 class Ticket622 extends TPage
 {
 	public function changeA($sender, $param)

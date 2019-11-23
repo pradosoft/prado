@@ -1,11 +1,7 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(__DIR__ . '/records/Blogs.php');
 
-/**
- * @package System.Data.ActiveRecord
- */
 class ActiveRecordMySql5Test extends PHPUnit\Framework\TestCase
 {
 	public function setup()

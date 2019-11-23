@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket413 extends TPage
 {
 	private $_data = [
@@ -12,13 +10,13 @@ class Ticket413 extends TPage
 	public function onLoad($param)
 	{
 		parent::onLoad($param);
-		
+
 		if (!$this->IsPostBack) {
 			$this->locations_datagrid->setDataSource($this->_data);
 			$this->locations_datagrid->dataBind();
 		}
 	}
-   
+
 	public function bla($sender, $param)
 	{
 		$sender->Text = 'a';

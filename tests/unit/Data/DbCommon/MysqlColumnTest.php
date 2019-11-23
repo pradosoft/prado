@@ -1,11 +1,8 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.Common.Mysql.TMysqlMetaData');
+use Prado\Data\Common\Mysql\TMysqlMetaData;
+Prado::using('Prado\Data\*');
 
-/**
- * @package System.Data.DbCommon
- */
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {
 	protected function setUp()

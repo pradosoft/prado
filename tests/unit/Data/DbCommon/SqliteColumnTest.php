@@ -1,12 +1,9 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.Common.Sqlite.TSqliteMetaData');
-Prado::using('System.Data.DataGateway.TTableGateway');
+use Prado\Data\Common\Sqlite\TSqliteMetaData;
+use Prado\Data\DataGateway\TTableGateway;
+Prado::using('Prado\Data\*');
 
-/**
- * @package System.Data.DbCommon
- */
 class SqliteColumnTest extends PHPUnit\Framework\TestCase
 {
 	/**

@@ -4,9 +4,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Xml\TXmlElement;
 use Prado\Xml\TXmlElementList;
 
-/**
- * @package System.Xml
- */
 class TXmlElementListTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

@@ -6,9 +6,6 @@ use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\TApplication;
 
-/**
- * @package System.Data.SqlMap
- */
 class DynamicParameterTest extends PHPUnit\Framework\TestCase
 {
 	protected function getMysqlSqlMapManager()

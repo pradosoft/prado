@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class PropertyAccessTest extends BaseCase
 {
 	public function testGetPublicProperty()

@@ -11,15 +11,15 @@ class Ticket507TestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", "Label 1");
 
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$this->select("{$base}list1", "item 1");
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Selection: value 1");
 
 		$this->addSelection("{$base}list1", "item 3");
 
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Selection: value 1, value 3");
 	}
 }

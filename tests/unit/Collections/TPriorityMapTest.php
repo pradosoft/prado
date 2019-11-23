@@ -10,9 +10,6 @@ class TPriorityMapTest_MapItem
 	public $data = 'data';
 }
 
-/**
- * @package System.Collections
- */
 class TPriorityMapTest extends PHPUnit\Framework\TestCase
 {
 	protected $map;

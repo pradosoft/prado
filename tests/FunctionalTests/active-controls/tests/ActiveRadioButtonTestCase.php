@@ -18,32 +18,32 @@ class ActiveRadioButtonTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}radio3_label", 'Radio Button 3');
 
 		$this->byId("{$base}change_text1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}radio1_label", 'Hello Radio Button 1');
 		$this->assertText("{$base}radio2_label", 'Radio Button 2');
 		$this->assertText("{$base}radio3_label", 'Radio Button 3');
 
 		$this->byId("{$base}change_text2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}radio1_label", 'Hello Radio Button 1');
 		$this->assertText("{$base}radio2_label", 'Radio Button 2 World');
 		$this->assertText("{$base}radio3_label", 'Radio Button 3');
 
 		$this->byId("{$base}change_radio1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertTrue($this->byId("{$base}radio1")->selected());
 		$this->assertFalse($this->byId("{$base}radio2")->selected());
 		$this->assertFalse($this->byId("{$base}radio3")->selected());
 
 		$this->byId("{$base}change_radio2")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertFalse($this->byId("{$base}radio1")->selected());
 		$this->assertTrue($this->byId("{$base}radio2")->selected());
 		$this->assertFalse($this->byId("{$base}radio3")->selected());
 
 
 		$this->byId("{$base}radio3")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertFalse($this->byId("{$base}radio1")->selected());
 		$this->assertTrue($this->byId("{$base}radio2")->selected());
 		$this->assertTrue($this->byId("{$base}radio3")->selected());

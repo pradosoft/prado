@@ -3,9 +3,6 @@
 
 use Prado\I18N\core\CultureInfo;
 
-/**
- * @package System.I18N.core
- */
 class CultureInfoTest extends PHPUnit\Framework\TestCase
 {
 	protected $culture;

@@ -17,7 +17,7 @@ class TextBoxGroupValidationTestCase extends PradoGenericSelenium2Test
 
 		$this->assertNotVisible("{$base}validator1");
 
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertValue("{$base}City", 'City: Sydney Zip: 2000');
 	}
 }

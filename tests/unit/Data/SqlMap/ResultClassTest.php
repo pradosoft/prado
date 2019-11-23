@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class ResultClassTest extends BaseCase
 {
 	public function __construct()
@@ -132,9 +129,9 @@ class ResultClassTest extends BaseCase
 	/*	function testGuid()
 		{
 			Guid newGuid = new Guid("CD5ABF17-4BBC-4C86-92F1-257735414CF4");
-	
+
 			Guid guid = (Guid) $this->sqlmap->queryForObject("GetGuid", 1);
-	
+
 			$this->assertSame(newGuid, guid);
 		}
 	*/
@@ -145,11 +142,11 @@ class ResultClassTest extends BaseCase
 	/*	function testGuidWithoutResultClass()
 		{
 			Guid newGuid = new Guid("CD5ABF17-4BBC-4C86-92F1-257735414CF4");
-	
+
 			string guidString = Convert.ToString($this->sqlmap->queryForObject("GetGuidWithoutResultClass", 1));
-	
+
 			Guid guid = new Guid(guidString);
-	
+
 			$this->assertSame(newGuid, guid);
 		}
 	*/

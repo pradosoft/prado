@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TSessionPageStatePersisterTest extends PHPUnit\Framework\TestCase
 {
 	public function testSetAndGetPage()

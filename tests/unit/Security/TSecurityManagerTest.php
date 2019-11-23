@@ -5,9 +5,6 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
 use Prado\TApplication;
 
-/**
- * @package System.Security
- */
 class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app;

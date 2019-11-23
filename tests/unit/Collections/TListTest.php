@@ -10,9 +10,6 @@ class ListItem
 	public $data = 'data';
 }
 
-/**
- * @package System.Collections
- */
 class TListTest extends PHPUnit\Framework\TestCase
 {
 	protected $list;

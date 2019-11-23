@@ -12,17 +12,17 @@ class Ticket538TestCase extends PradoGenericSelenium2Test
 
 		$this->select("{$base}DataViewer", "empty :(");
 		$this->byId("{$base}selectBtn")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$this->assertText("{$base}ALLog", '0,');
 
 		$this->select("{$base}DataSelector", "select data set 2");
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->select("{$base}DataViewer", "G1: Steven=>10");
 		$this->addSelection("{$base}DataViewer", "G2: Kevin=>65");
 
 		$this->byId("{$base}selectBtn")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}ALLog", '4- "test1", 10- "test2",');
 	}
 }

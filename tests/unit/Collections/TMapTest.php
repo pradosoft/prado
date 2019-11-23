@@ -10,9 +10,6 @@ class TMapTest_MapItem
 	public $data = 'data';
 }
 
-/**
- * @package System.Collections
- */
 class TMapTest extends PHPUnit\Framework\TestCase
 {
 	protected $map;

@@ -1,11 +1,7 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(__DIR__ . '/records/DepartmentRecord.php');
 
-/**
- * @package System.Data.ActiveRecord
- */
 class ActiveRecordFinderTest extends PHPUnit\Framework\TestCase
 {
 	public function setup()

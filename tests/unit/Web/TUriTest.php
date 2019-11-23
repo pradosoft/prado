@@ -3,9 +3,6 @@
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\TUri;
 
-/**
- * @package System.Web
- */
 class TUriTest extends PHPUnit\Framework\TestCase
 {
 	const URISTR = 'http://login:p@ssw0rd:compl3x@www.pradoframework.net:80/demos/quickstart/index.php?page=test&param1=test2#anchor';

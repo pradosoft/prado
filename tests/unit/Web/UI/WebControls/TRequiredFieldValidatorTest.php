@@ -4,9 +4,6 @@
 use Prado\Exceptions\TConfigurationException;
 use Prado\Web\UI\WebControls\TRequiredFieldValidator;
 
-/**
- * @package System.Web.UI.WebControls
- */
 class TRequiredFieldValidatorTest extends PHPUnit\Framework\TestCase
 {
 	public function testGetEmptyInitialValue()

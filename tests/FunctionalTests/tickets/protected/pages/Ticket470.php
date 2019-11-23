@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Ticket470 extends TPage
 {
 	/**
@@ -15,7 +13,7 @@ class Ticket470 extends TPage
 		$this->counter->Text = $this->counter->Text + 1;
 		$this->activePanelTest->renderControl($param->getNewWriter());
 	}
-	
+
 	/**
 	 *function to call when the form is valid (and the linkbutton fired his callback event)
 	 * @param mixed $sender

@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(__DIR__ . '/records/DepartmentRecord.php');
 require_once(__DIR__ . '/records/UserRecord.php');
 
@@ -17,9 +16,6 @@ class SqlTest extends TActiveRecord
 	const TABLE = 'items';
 }
 
-/**
- * @package System.Data.ActiveRecord
- */
 class FindBySqlTest extends PHPUnit\Framework\TestCase
 {
 	public function setup()

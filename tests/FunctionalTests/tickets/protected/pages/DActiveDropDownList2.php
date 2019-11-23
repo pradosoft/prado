@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class DActiveDropDownList2 extends TActiveDropDownList
 {
 	public function setOpcoes($val)

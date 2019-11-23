@@ -11,7 +11,7 @@ class ActiveControlExpressionTagTestCase extends PradoGenericSelenium2Test
 
 		$this->type("{$base}textbox1", 'Hello world');
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$this->assertText("repeats", 'result - 1 result - two');
 		$this->assertText("contents", 'Text box content: Hello world');

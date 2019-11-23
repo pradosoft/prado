@@ -11,7 +11,7 @@ class ActiveHyperLinkTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}link1", "Link 1");
 
 		$this->byId("{$base}button1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}link1", "Prado framework");
 	}
 }

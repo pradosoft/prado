@@ -4,9 +4,6 @@ use Prado\Exceptions\TIOException;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
-/**
- * @package System.Xml
- */
 class TXmlDocumentTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket542 extends TPage
 {
 	public function slideUp($sender, $param)

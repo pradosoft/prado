@@ -1,9 +1,5 @@
 <?php
 
-
-/**
- * @package System.IO
- */
 class TTarFileExtractorTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

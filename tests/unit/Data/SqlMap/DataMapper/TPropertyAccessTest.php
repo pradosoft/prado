@@ -3,9 +3,6 @@
 
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
-/**
- * @package System.Data.DataMapper
- */
 class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 {
 	public function testHasPublicVar()

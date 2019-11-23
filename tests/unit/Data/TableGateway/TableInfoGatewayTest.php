@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseGateway.php');
 
-/**
- * @package System.Data.TableGateway
- */
 class TableInfoGatewayTest extends BaseGateway
 {
 	public function test_table_info()

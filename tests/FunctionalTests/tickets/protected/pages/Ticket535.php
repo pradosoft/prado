@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket535 extends TPage
 {
 	public function noGroup($sender, $param)

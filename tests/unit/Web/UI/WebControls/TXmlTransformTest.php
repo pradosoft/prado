@@ -6,9 +6,6 @@ use Prado\Prado;
 use Prado\Web\UI\THtmlWriter;
 use Prado\Web\UI\WebControls\TXmlTransform;
 
-/**
- * @package System.Web.UI.WebControls
- */
 class TXmlTransformTest extends PHPUnit\Framework\TestCase
 {
 	private $documentContent;

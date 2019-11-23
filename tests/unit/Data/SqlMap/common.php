@@ -1,6 +1,6 @@
 <?php
 
-Prado::using('System.Data.TDbConnection');
+use Prado\Data\TDbConnection;
 
 if (!defined('SQLMAP_TESTS')) {
 	define('SQLMAP_TESTS', realpath(__DIR__));

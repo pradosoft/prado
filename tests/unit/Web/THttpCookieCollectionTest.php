@@ -5,9 +5,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\THttpCookie;
 use Prado\Web\THttpCookieCollection;
 
-/**
- * @package System.Web
- */
 class THttpCookieCollectionTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

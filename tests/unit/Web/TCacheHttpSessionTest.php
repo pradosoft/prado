@@ -5,9 +5,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\TApplication;
 use Prado\Web\TCacheHttpSession;
 
-/**
- * @package System.Web
- */
 class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 {
 	protected $app;

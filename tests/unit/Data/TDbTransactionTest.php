@@ -7,9 +7,6 @@ if (!defined('TEST_DB_FILE')) {
 	define('TEST_DB_FILE', __DIR__ . '/db/test.db');
 }
 
-/**
- * @package System.Data.PDO
- */
 class TDbTransactionTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;

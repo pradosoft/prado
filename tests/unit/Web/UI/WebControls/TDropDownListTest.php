@@ -4,9 +4,6 @@
 use Prado\Collections\TListItemCollection;
 use Prado\Web\UI\WebControls\TDropDownList;
 
-/**
- * @package System.Web.UI.WebControls
- */
 class TDropDownListTest extends PHPUnit\Framework\TestCase
 {
 	public function testSetDataSource()

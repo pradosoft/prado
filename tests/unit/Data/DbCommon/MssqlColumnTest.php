@@ -1,12 +1,9 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.Common.Mssql.TMssqlMetaData');
-Prado::using('System.Data.DataGateway.TTableGateway');
+use Prado\Data\Common\Mssql\TMssqlMetaData;
+use Prado\Data\DataGateway\TTableGateway;
+Prado::using('Prado\Data\*');
 
-/**
- * @package System.Data.DbCommon
- */
 class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {
 	protected function setUp()

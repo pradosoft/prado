@@ -2,9 +2,6 @@
 
 use Prado\Web\THttpCookie;
 
-/**
- * @package System.Web
- */
 class THttpCookieTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

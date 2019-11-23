@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 {
 	public function testConstruct()

@@ -5,9 +5,6 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplication;
 use Prado\Web\THttpResponse;
 
-/**
- * @package System.Web
- */
 class THttpResponseTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;

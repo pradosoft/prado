@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class SqlMapCacheTest extends PHPUnit\Framework\TestCase
 {
 	public function testFIFOCache()

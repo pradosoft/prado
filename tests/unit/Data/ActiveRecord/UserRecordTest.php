@@ -1,11 +1,7 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 require_once(__DIR__ . '/records/UserRecord.php');
 
-/**
- * @package System.Data.ActiveRecord
- */
 class UserRecordTest extends PHPUnit\Framework\TestCase
 {
 	public function setup()

@@ -3,9 +3,6 @@
 
 use Prado\Data\DataGateway\TSqlCriteria;
 
-/**
- * @package System.Data.DataGateway
- */
 class TSqlCriteriaTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

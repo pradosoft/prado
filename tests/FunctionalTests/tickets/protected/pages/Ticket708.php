@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket708 extends TPage
 {
 	public function onLoad($param)
@@ -10,7 +9,7 @@ class Ticket708 extends TPage
 			$this->grid->dataBind();
 		}
 	}
-	
+
 	protected function getData()
 	{
 		return [
@@ -20,7 +19,7 @@ class Ticket708 extends TPage
 			['RadioValue' => 4, 'Text' => 'Radio 4'],
 		];
 	}
-	
+
 	public function ChangeRadio($sender, $param)
 	{
 		$this->Result->setText("You have selected Radio Button #" . $sender->getValue());

@@ -9,9 +9,9 @@ class Ticket698TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 698");
 
 		$this->byId($base . "switchContentTypeButton")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . "EditHtmlTextBox");
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->byId($base . "switchContentTypeButton")->click();
 		$this->pause(1000);
 		$this->assertNotVisible($base . "EditHtmlTextBox");

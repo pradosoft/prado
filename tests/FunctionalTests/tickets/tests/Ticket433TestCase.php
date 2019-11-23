@@ -10,7 +10,7 @@ class Ticket433TestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}VoteClick", "BEFORE click");
 
 		$this->byId("{$base}VoteClick")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText("{$base}VoteClick", "AFTER click CALLBACK DONE");
 	}
 }

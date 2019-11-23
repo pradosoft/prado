@@ -2,9 +2,6 @@
 
 use Prado\Util\TSimpleDateFormatter;
 
-/**
- * @package System.Util
- */
 class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

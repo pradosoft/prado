@@ -1,11 +1,7 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.DataGateway.TTableGateway');
+use Prado\Data\DataGateway\TTableGateway;
 
-/**
- * @package System.Data.TableGateway
- */
 class BaseGateway extends PHPUnit\Framework\TestCase
 {
 	protected $gateway1;

@@ -1,9 +1,6 @@
 <?php
 
 
-/**
- * @package System.Collections
- */
 class TPagedDataSourceTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

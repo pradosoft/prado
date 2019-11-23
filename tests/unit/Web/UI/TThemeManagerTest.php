@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TThemeManagerTest extends PHPUnit\Framework\TestCase
 {
 	public function testInit()

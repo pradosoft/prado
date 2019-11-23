@@ -30,9 +30,6 @@ class FooRecord extends TComponent
 	}
 }
 
-/**
- * @package System.Data.PDO
- */
 class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;

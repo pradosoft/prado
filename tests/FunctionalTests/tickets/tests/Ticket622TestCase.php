@@ -9,7 +9,7 @@ class Ticket622TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 622");
 
 		$this->byId($base . 'ctl0')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$this->assertEquals('', $this->byId($base . 'ALB')->attribute('style'));
 		$this->assertEquals('', $this->byCssSelector('span#acb span')->attribute('style'));

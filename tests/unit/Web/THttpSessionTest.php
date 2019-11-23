@@ -3,9 +3,6 @@
 use Prado\Web\THttpSession;
 use Prado\Web\THttpSessionCookieMode;
 
-/**
- * @package System.Web
- */
 class THttpSessionTest extends PHPUnit\Framework\TestCase
 {
 	public function testInit()

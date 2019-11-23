@@ -1,6 +1,5 @@
 <?php
 
-prado::using('System.Web.UI.ActiveControls.*');
 class Ticket669 extends TPage
 {
 	public function load1($sender, $param)

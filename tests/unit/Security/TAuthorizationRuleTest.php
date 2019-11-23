@@ -1,9 +1,6 @@
 <?php
 
 
-/**
- * @package System.Security
- */
 class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

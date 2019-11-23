@@ -9,12 +9,12 @@ class Ticket670TestCase extends PradoGenericSelenium2Test
 		$this->assertEquals($this->title(), "Verifying Ticket 670");
 
 		$this->type($base . "datePicker", '07-07-2003');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		//$this->assertText($base."datePicker",'07-07-2003');
 		$this->byId($base . "datePickerbutton")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->byId($base . "ok")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertText($base . "lbl", '07-07-2007');
 	}
 }

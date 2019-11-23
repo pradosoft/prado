@@ -18,8 +18,6 @@ class PriorityListItem
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList
  *
  * The TPriority List should start behaving differently when using the class outside of the standard TList Function calls
- *
- * @package System.Collections
  */
 class TPriorityListTest extends PHPUnit\Framework\TestCase
 {

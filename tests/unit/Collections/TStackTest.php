@@ -4,9 +4,6 @@ use Prado\Collections\TStack;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 
-/**
- * @package System.Collections
- */
 class TStackTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

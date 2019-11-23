@@ -1,7 +1,5 @@
 <?php
 
-Prado::using('System.Web.UI.ActiveControls.*');
-
 class Issue120 extends TPage
 {
 	public function buttonClickCallback($sender, $param)

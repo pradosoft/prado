@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application id="TicketTests" Mode="Debug">
 <modules>
-	<module id="friendly-url" class="System.Web.TUrlMapping" EnableCustomUrl="True">
+	<module id="friendly-url" class="Prado\Web\TUrlMapping" EnableCustomUrl="True">
 		<url ServiceID="testService" ServiceParameter="ticket653" pattern="/ticket653/?" />
 		<url ServiceParameter="Ticket922" pattern="/ticket922/{text}" parameters.text=".*" />
 	</module>
-	<module id="request" class="System.Web.THttpRequest" UrlManager="friendly-url"/>
+	<module id="request" class="Prado\Web\THttpRequest" UrlManager="friendly-url"/>
 </modules>
 <services>
 	<!-- Define a new PageService, changing default basePath, and a new MasterClass -->

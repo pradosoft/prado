@@ -1,7 +1,6 @@
 <?php
 
 // $Id: Home.php 1405 2006-09-10 01:03:56Z wei $
-Prado::using('System.Web.UI.ActiveControls.*');
 class Ticket538 extends TPage
 {
 	public function checkboxClicked($sender, $param)

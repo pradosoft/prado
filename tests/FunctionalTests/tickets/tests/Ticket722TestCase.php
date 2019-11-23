@@ -11,7 +11,7 @@ class Ticket722TestCase extends PradoGenericSelenium2Test
 		$label = $this->byID("{$base}InPlaceTextBox__label");
 		$this->assertEquals('Editable Text', $label->text());
 		$label->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 
 		$textbox = $this->byID("{$base}InPlaceTextBox");
 		$this->assertTrue($textbox->displayed());
@@ -25,16 +25,16 @@ class Ticket722TestCase extends PradoGenericSelenium2Test
 		}
 
 		$this->type($base . 'InPlaceTextBox', "Prado");
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertFalse($textbox->displayed());
 		$this->assertEquals('Prado', $label->text());
 
 		$this->byId("{$base}ctl0")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertEquals('Prado [Read Only]', $label->text());
 
 		$label->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertFalse($textbox->displayed());
 	}
 }

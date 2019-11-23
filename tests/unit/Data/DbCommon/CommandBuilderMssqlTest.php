@@ -1,11 +1,8 @@
 <?php
 
-Prado::using('System.Data.*');
-Prado::using('System.Data.Common.Mssql.TMssqlCommandBuilder');
+use Prado\Data\Common\Mssql\TMssqlCommandBuilder;
+Prado::using('Prado\Data\*');
 
-/**
- * @package System.Data.DbCommon
- */
 class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 {
 	protected static $sql = [

@@ -5,9 +5,6 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TNotSupportedException;
 use Prado\TApplication;
 
-/**
- * @package System.Caching
- */
 class TAPCCacheTest extends PHPUnit\Framework\TestCase
 {
 	protected $app;

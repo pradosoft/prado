@@ -9,7 +9,7 @@ class ActiveImageButtonTestCase extends PradoGenericSelenium2Test
 		$this->assertSourceContains("TActiveImageButton Functional Test");
 		$this->assertText("{$base}label1", "Label 1");
 		$this->byId("{$base}image1")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		//unable to determine mouse position
 		$this->assertRegExp('/Image clicked at x=\d+, y=\d+/', $this->source());
 	}

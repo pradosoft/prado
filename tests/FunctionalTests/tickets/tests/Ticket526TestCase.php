@@ -11,7 +11,7 @@ class Ticket526TestCase extends PradoGenericSelenium2Test
 		$this->assertElementNotPresent("{$base}dpbutton");
 
 		$this->byId("{$base}btn")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertElementPresent("{$base}dpbutton");
 	}
 }

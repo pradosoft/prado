@@ -13,23 +13,23 @@ class QuickstartActiveButtonTestCase extends PradoDemosSelenium2Test
 		// a click button
 		$this->assertElementNotPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
 		$this->byXPath("//input[@type='submit' and @value='click me']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertElementPresent("//input[@type='submit' and @value=\"I'm clicked\"]");
 
 		// a command button
 		$this->assertElementNotPresent("//input[@type='submit' and @value=\"Name: test, Param: value using callback\"]");
 		$this->byXPath("//input[@type='submit' and @value='click me']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertElementPresent("//input[@type='submit' and @value=\"Name: test, Param: value using callback\"]");
 
 		// a button causing validation
 		$this->assertNotVisible('ctl0_body_ctl2');
 		$this->byXPath("//input[@type='submit' and @value='submit']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible('ctl0_body_ctl2');
 		$this->type("ctl0\$body\$TextBox", "test");
 		$this->byXPath("//input[@type='submit' and @value='submit']")->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible('ctl0_body_ctl2');
 		$this->assertElementPresent("//input[@type='submit' and @value=\"I'm clicked using callback\"]", "");
 	}

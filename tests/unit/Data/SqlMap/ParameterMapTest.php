@@ -2,9 +2,6 @@
 
 require_once(__DIR__ . '/BaseCase.php');
 
-/**
- * @package System.Data.SqlMap
- */
 class ParameterMapTest extends BaseCase
 {
 	public function __construct()
@@ -175,9 +172,9 @@ class ParameterMapTest extends BaseCase
 		function testByteArrayTypeHandler()
 		{
 			$account = $this->newAccount6();
-	
+
 			$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
-	
+
 			$order = new Order();
 			$order->setId(99);
 			$order->setCardExpiry("09/11");
@@ -189,9 +186,9 @@ class ParameterMapTest extends BaseCase
 			$order->setPostalCode("69004");
 			$order->setProvince("Rhone");
 			$order->setStreet("rue Durand");
-	
+
 			$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
-	
+
 			$item = new LineItem();
 			$item->setId(99);
 			$item->setCode("test");
@@ -199,18 +196,18 @@ class ParameterMapTest extends BaseCase
 			$item->setQuantity(99);
 			$item->setOrder($order);
 			$item->setPicture(null);
-	
+
 			// Check insert
 			$this->sqlmap->insert("InsertLineItemWithPicture", $item);
-	
+
 			// select
 			$item = null;
-	
+
 			$param["LineItem_ID"] = 99;
 			$param["Order_ID"] = 99;
-	
+
 			$item = $this->sqlmap->queryForObject("GetSpecificLineItemWithPicture", $param);
-	
+
 			$this->assertNotNull($item->getId());
 	//		$this->assertNotNull($item->getPicture());
 	//		$this->assertSame( GetSize(item.Picture), this.GetSize( this.GetPicture() ));

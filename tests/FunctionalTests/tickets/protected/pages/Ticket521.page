@@ -1,8 +1,6 @@
 <com:TContent ID="Content">
 
-<com:System.Web.UI.ActiveControls.TActiveButton id="button1" OnClick="doOnClick" OnCallback="doSave" Text="Save" />
-<com:System.Web.UI.ActiveControls.TActiveLabel ID="label1" Text="Label 1" />
-
-
+<com:TActiveButton id="button1" OnClick="doOnClick" OnCallback="doSave" Text="Save" />
+<com:TActiveLabel ID="label1" Text="Label 1" />
 
 </com:TContent>

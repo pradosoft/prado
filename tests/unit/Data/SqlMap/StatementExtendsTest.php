@@ -1,10 +1,7 @@
 <?php
 
-Prado::using('System.Data.SqlMap.TSqlMapConfig');
+use Prado\Data\SqlMap\TSqlMapConfig;
 
-/**
- * @package System.Data.SqlMap
- */
 class StatementExtendsTest extends PHPUnit\Framework\TestCase
 {
 	protected $sqlmap;

@@ -2,14 +2,12 @@
 
 <configuration>
   <paths>
-  	<using namespace="System.Util.*"/>
-  	<using namespace="System.Web.UI.ActiveControls.*"/>
   	<alias id="Ticket703" path="."/>
   </paths>
   <modules>
 	<module id="Log" class="TLogRouter">
 		<route class="TFileLogRoute" MaxLogFiles="1" MaxFileSize="1" Levels="Debug" Categories="Tickets" LogPath="Ticket703.Logs" LogFile="LogFile.txt"/>
 	</module>
-  </modules>	
+  </modules>
 
 </configuration>

@@ -14,19 +14,19 @@ class QuickstartActiveCustomValidatorTestCase extends PradoDemosSelenium2Test
 
 		$this->assertNotVisible($base . 'validator1');
 		$this->byId($base . 'button1')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . 'validator1');
 
 		$this->type($base . 'textbox1', 'hello');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . 'validator1');
 
 		$this->type($base . 'textbox1', 'Prado');
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertVisible($base . 'validator1');
 
 		$this->byId($base . 'button1')->click();
-		$this->pause(800);
+		$this->pauseFairAmount();
 		$this->assertNotVisible($base . 'validator1');
 	}
 }

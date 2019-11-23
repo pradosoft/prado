@@ -7,9 +7,6 @@ use Prado\Prado;
 use Prado\TApplication;
 use Prado\Web\TAssetManager;
 
-/**
- * @package System.Web
- */
 class TAssetManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;

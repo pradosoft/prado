@@ -31,9 +31,6 @@ class MyPagedList extends TPagedList
 	}
 }
 
-/**
- * @package System.Collections
- */
 class TPagedListTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

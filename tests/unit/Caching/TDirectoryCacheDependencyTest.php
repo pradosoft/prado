@@ -3,9 +3,6 @@
 use Prado\Caching\TDirectoryCacheDependency;
 use Prado\Exceptions\TInvalidDataValueException;
 
-/**
- * @package System.Caching
- */
 class TDirectoryCacheDependencyTest extends PHPUnit\Framework\TestCase
 {
 	public function setUp()

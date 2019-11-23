@@ -1,6 +1,6 @@
 <?php
 
-Prado::using('System.Web.UI.IValidatable');
+use Prado\Web\UI\IValidatable;
 
 class Ticket284Component extends TTemplateControl implements IValidatable
 {
@@ -19,34 +19,34 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('datePicker');
 	}
-	
+
 	public function getHourPicker()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('hourPicker');
 	}
-	
+
 	public function getMinutePicker()
 	{
 		$this->ensureChildControls();
 		return $this->getRegisteredObject('minutePicker');
 	}
-	
+
 	public function getShowHours()
 	{
 		return $this->HourPicker->Visible;
 	}
-	
+
 	public function setShowHours($value)
 	{
 		$this->HourPicker->Visible = TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	public function getShowMinutes()
 	{
 		return $this->MinutePicker->Visible;
 	}
-	
+
 	public function setShowMinutes($value)
 	{
 		$this->MinutePicker->Visible = TPropertyValue::ensureBoolean($value);
@@ -56,7 +56,7 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 	{
 		return strtotime($this->Date);
 	}
-	
+
 	public function setTimeStamp($value)
 	{
 		$ts = TPropertyValue::ensureInteger($value);
@@ -64,7 +64,7 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 		$this->HourPicker->SelectedValue = date('H', $ts);
 		$this->MinutePicker->SelectedValue = date('i', $ts);
 	}
-	
+
 	public function getDate()
 	{
 		$dateStr = $this->DatePicker->Date;
@@ -76,13 +76,13 @@ class Ticket284Component extends TTemplateControl implements IValidatable
 		}
 		return $dateStr;
 	}
-	
+
 	public function setDate($value)
 	{
 		$dateStr = TPropertyValue::ensureString($value);
 		$this->TimeStamp = strtotime($dateStr);
 	}
-	
+
 	public function getValidationPropertyValue()
 	{
 		if ($this->DatePicker->Date === '') {

@@ -7,9 +7,6 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
-/**
- * @package System.Security
- */
 class TAuthManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;

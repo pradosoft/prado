@@ -2,9 +2,6 @@
 
 
 
-/**
- * @package System.Web.UI
- */
 class TTemplateControlTest extends PHPUnit\Framework\TestCase
 {
 	public function testSetAndGetTemplate()

@@ -1,6 +1,5 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
 abstract class MultipleFKSqliteRecord extends TActiveRecord
 {
@@ -116,9 +115,6 @@ class CategoryX extends MultipleFKSqliteRecord
 	}
 }
 
-/**
- * @package System.Data.ActiveRecord
- */
 class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 {
 	public function testBelongsTo()
@@ -178,14 +174,14 @@ class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->markTestSkipped('Needs fixing');
 		/*
 				$obj = CategoryX::finder()->withChild_Categories()->withParent_Category()->findByPk(2);
-		
+
 				$this->assertEquals($obj->cat_id, '2');
 				$this->assertEquals(count($obj->child_categories), 2);
 				$this->assertNotNull($obj->parent_category);
-		
+
 				$this->assertEquals($obj->child_categories[0]->cat_id, 3);
 				$this->assertEquals($obj->child_categories[1]->cat_id, 4);
-		
+
 				$this->assertEquals($obj->parent_category->cat_id, 1);
 		*/
 	}
@@ -195,13 +191,13 @@ class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 		$this->markTestSkipped('Needs fixing');
 		/*
 				$arr = Table2::finder()->findByPk(2);
-		
+
 				$this->assertNotNull($arr->state2); //lazy load
 				$this->assertEquals(count($arr->state2), 1);
 				$this->assertEquals($arr->state2[0]->id, "1");
 				$this->assertNotNull($arr->state2[0]->object2);
 				$this->assertEquals($arr->state2[0]->object2->id, "2");
-		
+
 				$this->assertNotIdentical($arr, $arr->state2[0]->object2);
 		*/
 	}

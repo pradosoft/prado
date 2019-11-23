@@ -1,6 +1,6 @@
 <?php
 
-Prado::using('System.Collections.*');
+use Prado\Collections\TList;
 
 class Order
 {

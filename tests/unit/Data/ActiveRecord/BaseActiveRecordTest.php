@@ -1,14 +1,10 @@
 <?php
 
-Prado::using('System.Data.ActiveRecord.TActiveRecord');
 
 class BaseRecordTest extends TActiveRecord
 {
 }
 
-/**
- * @package System.Data.ActiveRecord
- */
 class BaseActiveRecordTest extends PHPUnit\Framework\TestCase
 {
 	public function test_finder_returns_same_instance()
