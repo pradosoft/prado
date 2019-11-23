@@ -126,7 +126,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 			}
 
 			// return some javascript to display a completion status.
-			echo "<script language='Javascript'>
+			echo "<script>
           	 Options = new Object();
           	 Options.clientID = '{$this->getClientID()}';
           	 Options.targetID = '{$this->_target->getUniqueID()}';
@@ -294,7 +294,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 				$params->files[] = $file->toArray();
 			}
 
-			echo "<script language='Javascript'>
+			echo "<script>
           	 Options = new Object();
           	 Options.clientID = '{$_GET['TActiveFileUpload_InputId']}';
           	 Options.targetID = '{$_GET['TActiveFileUpload_TargetId']}';

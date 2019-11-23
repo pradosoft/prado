@@ -438,6 +438,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * @return TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function getCaptionAlign()
 	{
@@ -446,6 +447,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * @param TTableCaptionAlign $value datagrid caption alignment. Valid values include
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -1524,7 +1526,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		parent::renderBeginTag($writer);
 		if (($caption = $this->getCaption()) !== '') {
 			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
-				$writer->addAttribute('align', strtolower($align));
+				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);

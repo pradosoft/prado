@@ -71,7 +71,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	{
 		$string = <<<EOD
 
-<script type="text/javascript">
+<script>
 /*<![CDATA[*/
 if (typeof(console) == 'object')
 {

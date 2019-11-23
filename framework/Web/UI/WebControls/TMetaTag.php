@@ -116,6 +116,7 @@ class TMetaTag extends \Prado\TComponent
 
 	/**
 	 * @return string scheme attribute of the meta tag
+	 * @deprecated considered useless
 	 */
 	public function getScheme()
 	{
@@ -124,6 +125,7 @@ class TMetaTag extends \Prado\TComponent
 
 	/**
 	 * @param string $value scheme attribute of the meta tag
+	 * @deprecated considered useless
 	 */
 	public function setScheme($value)
 	{

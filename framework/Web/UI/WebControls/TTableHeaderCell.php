@@ -83,6 +83,7 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * @return string the axis attribute of the HTML th element
+	 * @deprecated use the Scope property instead
 	 */
 	public function getCategoryText()
 	{
@@ -91,6 +92,7 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * @param string $value the axis attribute of the HTML th element
+	 * @deprecated use the Scope property instead
 	 */
 	public function setCategoryText($value)
 	{

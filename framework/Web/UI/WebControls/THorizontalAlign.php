@@ -24,6 +24,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
+ * @deprecated use the CSS text-align property instead
  */
 class THorizontalAlign extends \Prado\TEnumerable
 {

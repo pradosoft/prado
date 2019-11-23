@@ -27,7 +27,7 @@ use Prado\Web\UI\TControl;
  * Example usage:
  * <code>
  * 	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
- *  <script type="text/javascript">
+ *  <script>
  * 		function do_callback1()
  *      {
  *           var request = <%= $this->callback1->ActiveControl->Javascript %>;

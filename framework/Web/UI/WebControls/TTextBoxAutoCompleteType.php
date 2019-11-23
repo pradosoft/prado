@@ -18,6 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
+ * @deprecated this unofficial extension has only been supported by Internet Explorer.
  */
 class TTextBoxAutoCompleteType extends \Prado\TEnumerable
 {

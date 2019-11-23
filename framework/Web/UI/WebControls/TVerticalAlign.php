@@ -23,6 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
+ * @deprecated use the CSS vertical-align property instead
  */
 class TVerticalAlign extends \Prado\TEnumerable
 {

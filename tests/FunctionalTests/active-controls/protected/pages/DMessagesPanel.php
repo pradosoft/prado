@@ -3,13 +3,13 @@
 class DMessagesPanel extends TTemplateControl
 {
 	private $_panelCssClass = '';
-	
+
 	public function onInit($param)
 	{
 		parent::onInit($param);
 		$this->MessagesPanelEffect->Text = "";
 	}
-	
+
 	public function setMessage($value)
 	{
 		$this->Message->Text = $value;
@@ -19,7 +19,7 @@ class DMessagesPanel extends TTemplateControl
 			$this->setVisible(false);
 		}
 	}
-	
+
 	public function setVisible($value)
 	{
 		$this->ensureChildControls();
@@ -32,11 +32,11 @@ class DMessagesPanel extends TTemplateControl
 			$this->MessagesPanel->Visible = false;
 		}
 	}
-	
+
 	public function setEffect($effect = null)
 	{
 		if ($effect !== null) {
-			$text = "<script type=\"text/javascript\" language=\"javascript\">\r\n";
+			$text = "<script language=\"javascript\">\r\n";
 			$text .= "// <![CDATA[\r\n";
 			//$text .= "new Effect.$effect(\"" . $this->Page->DMessagesPanel->MessagesPanel->ClientID . "\");\r\n";
 			$text .= "new Effect.$effect(\"" . $this->ClientID . "\");\r\n";
@@ -47,13 +47,13 @@ class DMessagesPanel extends TTemplateControl
 			$this->MessagesPanelEffect->Text = '';
 		}
 	}
-	
+
 	public function setPanelCssClass($value)
 	{
 		$this->ensureChildControls();
 		$this->MessagesPanel->CssClass = $value;
 	}
-	
+
 	public function setMessageCssClass($value)
 	{
 		$this->ensureChildControls();

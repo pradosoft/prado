@@ -23,6 +23,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
+ * @deprecated use CSS to style the borders of individual elements
  */
 class TTableGridLines extends \Prado\TEnumerable
 {

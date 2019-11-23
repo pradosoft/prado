@@ -98,6 +98,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Adds attributes to renderer.
 	 * @param THtmlWriter $writer the renderer
+	 * @deprecated the current implementation only adds a border attribute to the table
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -110,9 +111,9 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 				} else {
 					$border = (int) $border;
 				}
+				$writer->addAttribute('border', "$border");
 			}
 		}
-		$writer->addAttribute('border', "$border");
 	}
 
 	/**
@@ -151,6 +152,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function getCaptionAlign()
 	{
@@ -159,6 +161,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param TTableCaptionAlign $value table caption alignment.
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -167,6 +170,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return int the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function getCellSpacing()
 	{
@@ -179,6 +183,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param int $value the cellspacing for the table. Defaults to -1, meaning not set.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function setCellSpacing($value)
 	{
@@ -187,6 +192,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return int the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function getCellPadding()
 	{
@@ -199,6 +205,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param int $value the cellpadding for the table. Defaults to -1, meaning not set.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function setCellPadding($value)
 	{
@@ -227,6 +234,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
 	{
@@ -239,6 +247,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param TTableGridLines $value the grid line setting of the table
+	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)
 	{
@@ -275,7 +284,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 		parent::renderBeginTag($writer);
 		if (($caption = $this->getCaption()) !== '') {
 			if (($align = $this->getCaptionAlign()) !== TTableCaptionAlign::NotSet) {
-				$writer->addAttribute('align', strtolower($align));
+				$writer->addStyleAttribute('caption-side', strtolower($align));
 			}
 			$writer->renderBeginTag('caption');
 			$writer->write($caption);

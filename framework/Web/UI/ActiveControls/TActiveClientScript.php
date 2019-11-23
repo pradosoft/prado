@@ -52,7 +52,7 @@ class TActiveClientScript extends TClientScript
 					$cs->registerScriptFile($uniqueid, $scriptUrl);
 				}
 			} else {
-				$writer->write("<script type=\"text/javascript\" src=\"$scriptUrl\"></script>\n");
+				$writer->write("<script src=\"$scriptUrl\"></script>\n");
 			}
 		}
 	}
@@ -71,7 +71,7 @@ class TActiveClientScript extends TClientScript
 				$extWriter->write("\n/*]]>*/");
 				$this->getPage()->getCallbackClient()->appendScriptBlock($extWriter);
 			} else {
-				$writer->write("<script type=\"text/javascript\">\n/*<![CDATA[*/\n");
+				$writer->write("<script>\n/*<![CDATA[*/\n");
 				$this->renderChildren($writer);
 				$writer->write("\n/*]]>*/\n</script>\n");
 			}

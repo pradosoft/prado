@@ -27,6 +27,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0.4
+ * @deprecated obsolete since html5
  */
 class TInlineFrameAlign extends \Prado\TEnumerable
 {

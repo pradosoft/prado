@@ -51,6 +51,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * @return int the cellspacing for the table layout. Defaults to -1, meaning not set.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function getCellSpacing()
 	{
@@ -63,6 +64,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * @param int $value the cellspacing for the table layout.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function setCellSpacing($value)
 	{
@@ -71,6 +73,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * @return int the cellpadding for the table layout. Defaults to -1, meaning not set.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function getCellPadding()
 	{
@@ -83,6 +86,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * @param int $value the cellpadding for the table layout
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function setCellPadding($value)
 	{

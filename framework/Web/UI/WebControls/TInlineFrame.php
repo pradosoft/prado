@@ -44,6 +44,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @return TInlineFrameAlign alignment of the iframe. Defaults to TInlineFrameAlign::NotSet.
+	 * @deprecated obsolete since html5
 	 */
 	public function getAlign()
 	{
@@ -52,6 +53,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @param TInlineFrameAlign $value alignment of the iframe.
+	 * @deprecated obsolete since html5
 	 */
 	public function setAlign($value)
 	{
@@ -60,6 +62,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @return string the URL to long description
+	 * @deprecated obsolete since html5
 	 */
 	public function getDescriptionUrl()
 	{
@@ -68,6 +71,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @param string $value the URL to the long description of the image.
+	 * @deprecated obsolete since html5
 	 */
 	public function setDescriptionUrl($value)
 	{
@@ -76,6 +80,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @return bool whether there should be a visual separator between the frames. Defaults to true.
+	 * @deprecated obsolete since html5
 	 */
 	public function getShowBorder()
 	{
@@ -84,6 +89,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @param bool $value whether there should be a visual separator between the frames.
+	 * @deprecated obsolete since html5
 	 */
 	public function setShowBorder($value)
 	{
@@ -134,6 +140,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @return TInlineFrameScrollBars the visibility and position of scroll bars in an iframe. Defaults to TInlineFrameScrollBars::Auto.
+	 * @deprecated obsolete since html5
 	 */
 	public function getScrollBars()
 	{
@@ -142,6 +149,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @param TInlineFrameScrollBars $value the visibility and position of scroll bars in an iframe.
+	 * @deprecated obsolete since html5
 	 */
 	public function setScrollBars($value)
 	{
@@ -189,6 +197,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * @return int the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins. Defaults to -1, meaning not set.
+	 * @deprecated obsolete since html5
 	 */
 	public function getMarginWidth()
 	{
@@ -198,6 +207,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * @param int $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the left and right margins.
+	 * @deprecated obsolete since html5
 	 */
 	public function setMarginWidth($value)
 	{
@@ -210,6 +220,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * @return int the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins. Defaults to -1, meaning not set.
+	 * @deprecated obsolete since html5
 	 */
 	public function getMarginHeight()
 	{
@@ -219,6 +230,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * @param int $value the amount of space, in pixels, that should be left between
 	 * the frame's contents and the top and bottom margins.
+	 * @deprecated obsolete since html5
 	 */
 	public function setMarginHeight($value)
 	{

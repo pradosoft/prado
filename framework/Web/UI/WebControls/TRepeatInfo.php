@@ -72,6 +72,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function getCaptionAlign()
 	{
@@ -81,6 +82,7 @@ class TRepeatInfo extends \Prado\TComponent
 	/**
 	 * @param mixed $value
 	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)
 	{

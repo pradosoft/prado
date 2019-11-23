@@ -179,6 +179,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * @return int the cellspacing for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function getCellSpacing()
 	{
@@ -192,6 +193,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Sets the cellspacing for the table keeping the checkbox list.
 	 * @param int $value the cellspacing for the table keeping the checkbox list.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function setCellSpacing($value)
 	{
@@ -200,6 +202,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * @return int the cellpadding for the table keeping the checkbox list. Defaults to -1, meaning not set.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function getCellPadding()
 	{
@@ -213,6 +216,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Sets the cellpadding for the table keeping the checkbox list.
 	 * @param int $value the cellpadding for the table keeping the checkbox list.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function setCellPadding($value)
 	{

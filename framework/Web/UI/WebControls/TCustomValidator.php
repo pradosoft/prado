@@ -30,7 +30,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * validation javascript function to the page template.
  * The function should have the following signature:
  * <code>
- * <script type="text/javascript"><!--
+ * <script><!--
  * function ValidationFunctionName(sender, parameter)
  * {
  *    // if(parameter == ...)

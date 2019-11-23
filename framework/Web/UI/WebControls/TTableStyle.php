@@ -228,6 +228,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * @return int cellpadding of the table. Defaults to -1, meaning not set.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function getCellPadding()
 	{
@@ -237,6 +238,7 @@ class TTableStyle extends TStyle
 	/**
 	 * @param int $value cellpadding of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
+	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function setCellPadding($value)
 	{
@@ -247,6 +249,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * @return int cellspacing of the table. Defaults to -1, meaning not set.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function getCellSpacing()
 	{
@@ -256,6 +259,7 @@ class TTableStyle extends TStyle
 	/**
 	 * @param int $value cellspacing of the table. A value equal to -1 clears up the setting.
 	 * @throws TInvalidDataValueException if the value is less than -1.
+	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function setCellSpacing($value)
 	{
@@ -266,6 +270,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
 	{
@@ -275,6 +280,7 @@ class TTableStyle extends TStyle
 	/**
 	 * Sets the grid line style of the table.
 	 * @param TTableGridLines $value the grid line setting of the table
+	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)
 	{

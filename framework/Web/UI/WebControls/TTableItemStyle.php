@@ -125,11 +125,11 @@ class TTableItemStyle extends TStyle
 		}
 
 		if (($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
-			$writer->addAttribute('align', strtolower($horizontalAlign));
+			$writer->addStyleAttribute('text-align', strtolower($horizontalAlign));
 		}
 
 		if (($verticalAlign = $this->getVerticalAlign()) !== TVerticalAlign::NotSet) {
-			$writer->addAttribute('valign', strtolower($verticalAlign));
+			$writer->addStyleAttribute('vertical-align', strtolower($verticalAlign));
 		}
 
 		parent::addAttributesToRender($writer);
@@ -137,6 +137,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * @return THorizontalAlign the horizontal alignment of the contents within the table item, defaults to THorizontalAlign::NotSet.
+	 * @deprecated use the CSS text-align property instead
 	 */
 	public function getHorizontalAlign()
 	{
@@ -146,6 +147,7 @@ class TTableItemStyle extends TStyle
 	/**
 	 * Sets the horizontal alignment of the contents within the table item.
 	 * @param THorizontalAlign $value the horizontal alignment
+	 * @deprecated use the CSS text-align property instead
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -154,6 +156,7 @@ class TTableItemStyle extends TStyle
 
 	/**
 	 * @return TVerticalAlign the vertical alignment of the contents within the table item, defaults to TVerticalAlign::NotSet.
+	 * @deprecated use the CSS vertical-align property instead
 	 */
 	public function getVerticalAlign()
 	{
@@ -163,6 +166,7 @@ class TTableItemStyle extends TStyle
 	/**
 	 * Sets the vertical alignment of the contents within the table item.
 	 * @param TVerticalAlign $value the horizontal alignment
+	 * @deprecated use the CSS vertical-align property instead
 	 */
 	public function setVerticalAlign($value)
 	{

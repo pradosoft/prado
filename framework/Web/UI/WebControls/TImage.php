@@ -79,6 +79,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * @return string the alignment of the image with respective to other elements on the page, defaults to empty.
+	 * @deprecated use the float and/or vertical-align CSS properties instead
 	 */
 	public function getImageAlign()
 	{
@@ -91,6 +92,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
 	 * @param string $value the alignment of the image
+	 * @deprecated use the float and/or vertical-align CSS properties instead
 	 */
 	public function setImageAlign($value)
 	{
@@ -141,6 +143,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * @return string the URL to long description
+	 * @deprecated use a WAI-ARIA alternative such as aria-describedby or aria-details instead.
 	 */
 	public function getDescriptionUrl()
 	{
@@ -149,6 +152,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * @param string $value the URL to the long description of the image.
+	 * @deprecated use a WAI-ARIA alternative such as aria-describedby or aria-details instead.
 	 */
 	public function setDescriptionUrl($value)
 	{
