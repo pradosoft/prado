@@ -1,7 +1,6 @@
 <?php
 
 use Prado\Data\Common\Mysql\TMysqlMetaData;
-Prado::using('Prado\Data\*');
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {

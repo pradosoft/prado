@@ -2,7 +2,6 @@
 
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\DataGateway\TTableGateway;
-Prado::using('Prado\Data\*');
 
 class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {

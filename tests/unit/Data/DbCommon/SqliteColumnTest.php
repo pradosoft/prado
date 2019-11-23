@@ -2,7 +2,6 @@
 
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\DataGateway\TTableGateway;
-Prado::using('Prado\Data\*');
 
 class SqliteColumnTest extends PHPUnit\Framework\TestCase
 {

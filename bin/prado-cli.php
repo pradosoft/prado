@@ -23,6 +23,7 @@ if (file_exists($autoloader = realpath(__DIR__ . '/../vendor/autoload.php'))) {
 
 use Prado\TApplication;
 use Prado\Prado;
+use Prado\Data\ActiveRecord\TActiveRecordConfig;
 
 //stub application class
 class PradoShellApplication extends TApplication
@@ -597,7 +598,6 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {
-			Prado::using('Prado\Data\ActiveRecord\TActiveRecordConfig');
 			foreach ($app->getModules() as $module) {
 				if ($module instanceof TActiveRecordConfig) {
 					return $module;
@@ -852,7 +852,6 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {
-			Prado::using('Prado\Data\ActiveRecord\TActiveRecordConfig');
 			foreach ($app->getModules() as $module) {
 				if ($module instanceof TActiveRecordConfig) {
 					return $module;

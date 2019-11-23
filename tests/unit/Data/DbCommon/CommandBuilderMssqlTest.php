@@ -1,7 +1,6 @@
 <?php
 
 use Prado\Data\Common\Mssql\TMssqlCommandBuilder;
-Prado::using('Prado\Data\*');
 
 class CommandBuilderMssqlTest extends PHPUnit\Framework\TestCase
 {

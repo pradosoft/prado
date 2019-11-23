@@ -1,7 +1,6 @@
 <?php
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
-Prado::using('Prado\Data\*');
 
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
