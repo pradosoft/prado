@@ -7,6 +7,12 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.1.0
+---------------------
+- TMemCache has been updated to be compatible with memcached: https://www.php.net/manual/en/book.memcached.php:
+  The per-server "Timeout" and "RetryInterval" properties have been removed, use the class property "Options" instead.
+  The per-server "Persistent" property has been removed, use the class property "PersistentID" instead.
+
 Upgrading from v4.0.2
 ---------------------
 - Php 7.1 is now required.

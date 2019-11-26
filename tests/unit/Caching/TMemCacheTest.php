@@ -72,4 +72,36 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 		$this->testSetAndGet();
 		self::assertEquals(true, self::$cache->flush());
 	}
+
+	public function testSetOptions()
+	{
+		self::$cache->setOptions([
+			Memcached::OPT_HASH => Memcached::HASH_MURMUR,
+			Memcached::OPT_PREFIX_KEY => "widgets"
+		]);
+		$this->testSetAndGet();
+	}
+
+	public function testGetPersistentID()
+	{
+		$cache = new TMemCache();
+		$cache->setPersistentID('test');
+		self::assertEquals('test', $cache->getPersistentID());
+	}
+
+	public function testSetPersistentID()
+	{
+		$cache = new TMemCache();
+		$cache->setPersistentID('test');
+		$cache->setPrimaryCache(false);
+		$cache->init(null);
+		$cache->set('persistentkey', 'persistentvalue');
+		unset($cache);
+
+		$cache2 = new TMemCache();
+		$cache2->setPersistentID('test');
+		$cache2->setPrimaryCache(false);
+		$cache2->init(null);
+		self::assertEquals('persistentvalue', $cache2->get('persistentkey'));
+	}
 }

@@ -64,8 +64,8 @@ use Prado\Xml\TXmlElement;
  * If you want a more complex configuration, you may use the method as follows.
  * <code>
  * <module id="cache" class="Prado\Caching\TMemCache">
- *     <server Host="localhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
- *     <server Host="anotherhost" Port="11211" Weight="1" Timeout="300" RetryInterval="15" />
+ *     <server Host="localhost" Port="11211" Weight="1" />
+ *     <server Host="anotherhost" Port="11211" Weight="1" />
  * </module>
  * </code>
  *
@@ -79,8 +79,10 @@ use Prado\Xml\TXmlElement;
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.
  *
- * Automatic compression of values may be used (using zlib extension) by setting {@link getThreshold Threshold} and {@link getMinSavings MinSavings} properties.
- * NB : MemCache server(s) must be restarted to apply settings.
+ * By default the Memcached instances are destroyed at the end of the request.
+ * To create an instance that persists between requests, set a persistent ID using
+ * {@link setPersistentID PersistentID}.
+ * All instances created with the same persistent_id will share the same connection.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Caching
@@ -104,13 +106,14 @@ class TMemCache extends TCache
 	 * @var int the port number of the memcache server
 	 */
 	private $_port = 11211;
-
-	private $_timeout = 360;
-
 	/**
 	 * @var array list of servers available
 	 */
 	private $_servers = [];
+	/**
+	 * @var null|string persistent id for the instance of the memcache server
+	 */
+	private $_persistentid = null;
 
 	/**
 	 * Destructor.
@@ -138,26 +141,28 @@ class TMemCache extends TCache
 			throw new TConfigurationException('memcached_extension_required');
 		}
 
-		$this->_cache = new \Memcached;
 		$this->loadConfig($config);
-		if (count($this->_servers)) {
-			foreach ($this->_servers as $server) {
-				Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', '\Prado\Caching\TMemCache');
-				if ($this->_cache->addServer(
-					$server['Host'],
-					$server['Port'],
-					$server['Persistent'],
-					$server['Weight'],
-					$server['Timeout'],
-					$server['RetryInterval']
-				) === false) {
-					throw new TConfigurationException('memcache_connection_failed', $server['Host'], $server['Port']);
-				}
-			}
+		$this->_cache = new \Memcached($this->_persistentid);
+		if($this->_persistentid !== null && count($this->_cache->getServerList()) > 0)
+		{
+			Prado::trace('Skipping re-adding servers for persistent id ' . $this->_persistentid, '\Prado\Caching\TMemCache');
 		} else {
-			Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
-			if ($this->_cache->addServer($this->_host, $this->_port) === false) {
-				throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
+			if (count($this->_servers)) {
+				foreach ($this->_servers as $server) {
+					Prado::trace('Adding server ' . $server['Host'] . ' from serverlist', '\Prado\Caching\TMemCache');
+					if ($this->_cache->addServer(
+						$server['Host'],
+						$server['Port'],
+						$server['Weight']
+					) === false) {
+						throw new TConfigurationException('memcache_connection_failed', $server['Host'], $server['Port']);
+					}
+				}
+			} else {
+				Prado::trace('Adding server ' . $this->_host, '\Prado\Caching\TMemCache');
+				if ($this->_cache->addServer($this->_host, $this->_port) === false) {
+					throw new TConfigurationException('memcache_connection_failed', $this->_host, $this->_port);
+				}
 			}
 		}
 		$this->_initialized = true;
@@ -183,11 +188,9 @@ class TMemCache extends TCache
 				if (!is_numeric($port)) {
 					throw new TConfigurationException('memcache_serverport_invalid');
 				}
-				$server = ['Host' => $host, 'Port' => $port, 'Weight' => 1, 'Timeout' => 1800, 'RetryInterval' => 15, 'Persistent' => true];
+				$server = ['Host' => $host, 'Port' => $port, 'Weight' => 1];
 				$checks = [
-					'Weight' => 'memcache_serverweight_invalid',
-					'Timeout' => 'memcache_servertimeout_invalid',
-					'RetryInterval' => 'memcach_serverretryinterval_invalid'
+					'Weight' => 'memcache_serverweight_invalid'
 				];
 				foreach ($checks as $property => $exception) {
 					$value = $properties->remove($property);
@@ -197,7 +200,6 @@ class TMemCache extends TCache
 						throw new TConfigurationException($exception);
 					}
 				}
-				$server['Persistent'] = TPropertyValue::ensureBoolean($properties->remove('Persistent'));
 				$this->_servers[] = $server;
 			}
 		}
@@ -246,12 +248,32 @@ class TMemCache extends TCache
 	}
 
 	/**
-	 * @return bool if memcached is used instead of memcache
-	 * @deprecated since Prado 4.1, only memcached is available
+	 * @param array $value Set internal memcached options: https://www.php.net/manual/en/memcached.constants.php
+	 * @throws TInvalidOperationException if the module is not initialized yet
 	 */
-	public function getUseMemcached()
+	public function setOptions($value)
 	{
-		return true;
+		if (!$this->_initialized) {
+			throw new TInvalidOperationException('memcache_not_initialized');
+		} else {
+			$this->_cache->setOptions(TPropertyValue::ensureArray($value));
+		}
+	}
+
+	/**
+	 * @return string persistent id for the instance of the memcache server
+	 */
+	public function getPersistentID()
+	{
+		return $this->_persistentid;
+	}
+
+	/**
+	 * @param string $value persistent id for the instance of the memcache server
+	 */
+	public function setPersistentID($value)
+	{
+		$this->_persistentid = TPropertyValue::ensureString($value);
 	}
 
 	/**

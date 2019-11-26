@@ -105,6 +105,7 @@ memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
 memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
 memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
+memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
 
 apccache_extension_required				= TAPCCache requires APC PHP extension.
 apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
@@ -513,4 +514,4 @@ accordion_activeviewid_invalid			= TAccordion.ActiveViewID has an invalid ID '{0
 accordion_activeviewindex_invalid		= TAccordion.ActiveViewIndex has an invalid Index '{0}'.
 accordion_view_inexistent				= TAccordion cannot find the specified view.
 
-juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed. 
+juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.
