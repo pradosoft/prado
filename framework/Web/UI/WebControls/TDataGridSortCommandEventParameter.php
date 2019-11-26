@@ -52,7 +52,7 @@ class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TControl the control originally raises the <b>OnCommand</b> event.
+	 * @return \Prado\Web\UI\TControl the control originally raises the <b>OnCommand</b> event.
 	 */
 	public function getCommandSource()
 	{

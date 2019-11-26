@@ -310,7 +310,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TPagedDataSource creates a paged data source
+	 * @return \Prado\Web\UI\TPagedDataSource creates a paged data source
 	 */
 	protected function createPagedDataSource()
 	{

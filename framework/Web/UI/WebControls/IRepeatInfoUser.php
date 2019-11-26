@@ -39,7 +39,7 @@ interface IRepeatInfoUser
 	/**
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index zero-based index of the current rendering item.
-	 * @return TStyle CSS style used for rendering items (including header, footer and separators)
+	 * @return \Prado\Web\UI\WebControls\TStyle CSS style used for rendering items (including header, footer and separators)
 	 */
 	public function generateItemStyle($itemType, $index);
 	/**

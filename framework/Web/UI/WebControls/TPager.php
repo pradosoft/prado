@@ -117,7 +117,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return TPagerMode pager mode. Defaults to TPagerMode::NextPrev.
+	 * @return \Prado\Web\UI\TPagerMode pager mode. Defaults to TPagerMode::NextPrev.
 	 */
 	public function getMode()
 	{
@@ -133,7 +133,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return TPagerButtonType the type of command button for paging. Defaults to TPagerButtonType::LinkButton.
+	 * @return \Prado\Web\UI\TPagerButtonType the type of command button for paging. Defaults to TPagerButtonType::LinkButton.
 	 */
 	public function getButtonType()
 	{

@@ -241,7 +241,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TStyle the style for all the view div
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for all the view div
 	 */
 	public function getViewStyle()
 	{
@@ -270,7 +270,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TStyle the style for all the inactive header div
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for all the inactive header div
 	 */
 	public function getHeaderStyle()
 	{
@@ -299,7 +299,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TStyle the style for the active header div
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for the active header div
 	 */
 	public function getActiveHeaderStyle()
 	{

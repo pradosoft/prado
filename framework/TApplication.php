@@ -517,7 +517,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TApplicationMode application mode. Defaults to TApplicationMode::Debug.
+	 * @return \Prado\TApplicationMode application mode. Defaults to TApplicationMode::Debug.
 	 */
 	public function getMode()
 	{

@@ -51,7 +51,7 @@ class TDataListCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	}
 
 	/**
-	 * @return TControl the datalist item control responsible for the event.
+	 * @return \Prado\Web\UI\TControl the datalist item control responsible for the event.
 	 */
 	public function getItem()
 	{
@@ -59,7 +59,7 @@ class TDataListCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	}
 
 	/**
-	 * @return TControl the control originally raises the <b>OnCommand</b> event.
+	 * @return \Prado\Web\UI\TControl the control originally raises the <b>OnCommand</b> event.
 	 */
 	public function getCommandSource()
 	{

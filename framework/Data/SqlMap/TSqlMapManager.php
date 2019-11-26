@@ -77,7 +77,7 @@ class TSqlMapManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection default database connection
+	 * @return \Prado\Data\TDbConnection default database connection
 	 */
 	public function getDbConnection()
 	{

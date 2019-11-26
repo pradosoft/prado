@@ -53,7 +53,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $this->_builder->getTableInfo();
 	}
 	/**
-	 * @return TDbConnection
+	 * @return \Prado\Data\TDbConnection
 	 */
 	public function getDbConnection()
 	{

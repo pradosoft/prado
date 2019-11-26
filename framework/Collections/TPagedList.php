@@ -78,7 +78,7 @@ class TPagedList extends TList
 
 	/**
 	 * Constructor.
-	 * @param null|array|Iterator $data the initial data. Default is null, meaning no initialization.
+	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only. Always true for paged list.
 	 */
 	public function __construct($data = null, $readOnly = false)

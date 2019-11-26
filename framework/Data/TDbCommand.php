@@ -86,7 +86,7 @@ class TDbCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection the connection associated with this command
+	 * @return \Prado\Data\TDbConnection the connection associated with this command
 	 */
 	public function getConnection()
 	{

@@ -259,7 +259,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TPager List pager control.
+	 * @return \Prado\Web\UI\TPager List pager control.
 	 */
 	public function getPager()
 	{

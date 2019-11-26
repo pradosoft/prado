@@ -121,7 +121,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Parses the application configuration given in terms of a TXmlElement.
-	 * @param TXmlElement $dom the XML element
+	 * @param \Prado\Xml\TXmlElement $dom the XML element
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	public function loadFromXml($dom, $configPath)
@@ -190,7 +190,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the paths XML node.
-	 * @param TXmlElement $pathsNode the paths XML node
+	 * @param \Prado\Xml\TXmlElement $pathsNode the paths XML node
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadPathsXml($pathsNode, $configPath)
@@ -261,7 +261,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the modules XML node.
-	 * @param TXmlElement $modulesNode the modules XML node
+	 * @param \Prado\Xml\TXmlElement $modulesNode the modules XML node
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadModulesXml($modulesNode, $configPath)
@@ -309,7 +309,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the services XML node.
-	 * @param TXmlElement $servicesNode the services XML node
+	 * @param \Prado\Xml\TXmlElement $servicesNode the services XML node
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadServicesXml($servicesNode, $configPath)
@@ -356,7 +356,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the parameters XML node.
-	 * @param TXmlElement $parametersNode the parameters XML node
+	 * @param \Prado\Xml\TXmlElement $parametersNode the parameters XML node
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadParametersXml($parametersNode, $configPath)
@@ -407,7 +407,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Loads the external XML configurations.
-	 * @param TXmlElement $includeNode the application DOM element
+	 * @param \Prado\Xml\TXmlElement $includeNode the application DOM element
 	 * @param string $configPath the context path (for specifying relative paths)
 	 */
 	protected function loadExternalXml($includeNode, $configPath)

@@ -85,7 +85,7 @@ class TDbTransaction extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection the DB connection for this transaction
+	 * @return \Prado\Data\TDbConnection the DB connection for this transaction
 	 */
 	public function getConnection()
 	{

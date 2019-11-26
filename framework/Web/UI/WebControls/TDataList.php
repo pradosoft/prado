@@ -560,7 +560,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the header item
+	 * @return \Prado\Web\UI\TControl the header item
 	 */
 	public function getHeader()
 	{
@@ -601,7 +601,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the footer item
+	 * @return \Prado\Web\UI\TControl the footer item
 	 */
 	public function getFooter()
 	{
@@ -703,7 +703,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the selected item, null if no item is selected.
+	 * @return \Prado\Web\UI\TControl the selected item, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -768,7 +768,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the edit item
+	 * @return \Prado\Web\UI\TControl the edit item
 	 */
 	public function getEditItem()
 	{
@@ -1069,7 +1069,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method is required by {@link IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index index of the item being rendered
-	 * @return TStyle item style
+	 * @return \Prado\Web\UI\WebControls\TStyle item style
 	 */
 	public function generateItemStyle($itemType, $index)
 	{
@@ -1102,7 +1102,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * @param TListItemType $itemType item type
 	 * @param int $index item index
-	 * @return TControl data list item with the specified item type and index
+	 * @return \Prado\Web\UI\TControl data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
 	{
@@ -1131,7 +1131,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method invokes {@link createItem} to create a new datalist item.
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
@@ -1151,7 +1151,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
@@ -1205,7 +1205,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Creates a datalist item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
 	 * @param TListItemType $itemType item type
-	 * @return TControl created datalist item
+	 * @return \Prado\Web\UI\TControl created datalist item
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{

@@ -64,7 +64,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	}
 
 	/**
-	 * @return TComponent the owner component that this behavior is attached to.
+	 * @return \Prado\TComponent the owner component that this behavior is attached to.
 	 */
 	public function getOwner()
 	{

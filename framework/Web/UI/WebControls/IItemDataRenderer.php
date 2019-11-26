@@ -39,7 +39,7 @@ interface IItemDataRenderer extends \Prado\IDataRenderer
 	public function setItemIndex($value);
 
 	/**
-	 * @return TListItemType the item type.
+	 * @return \Prado\Web\UI\WebControls\TListItemType the item type.
 	 */
 	public function getItemType();
 

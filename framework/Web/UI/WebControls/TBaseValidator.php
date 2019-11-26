@@ -493,7 +493,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * @throws TConfigurationException if {@link getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
-	 * @return TControl control to be validated. Null if no control is found.
+	 * @return \Prado\Web\UI\TControl control to be validated. Null if no control is found.
 	 */
 	public function getValidationTarget()
 	{

@@ -57,7 +57,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	}
 
 	/**
-	 * @return TComponent container of this component. It serves as the evaluation context of expressions and statements.
+	 * @return \Prado\TComponent container of this component. It serves as the evaluation context of expressions and statements.
 	 */
 	public function getContainer()
 	{

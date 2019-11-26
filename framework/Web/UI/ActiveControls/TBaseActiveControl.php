@@ -88,7 +88,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TPage the page containing the attached control.
+	 * @return \Prado\Web\UI\TPage the page containing the attached control.
 	 */
 	protected function getPage()
 	{
@@ -96,7 +96,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TControl the attached control.
+	 * @return \Prado\Web\UI\TControl the attached control.
 	 */
 	protected function getControl()
 	{

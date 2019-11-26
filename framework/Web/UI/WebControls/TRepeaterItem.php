@@ -43,7 +43,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	private $_data;
 
 	/**
-	 * @return TListItemType item type
+	 * @return \Prado\Web\UI\WebControls\TListItemType item type
 	 */
 	public function getItemType()
 	{

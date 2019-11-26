@@ -403,7 +403,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return TControl the header item
+	 * @return \Prado\Web\UI\TControl the header item
 	 */
 	public function getHeader()
 	{
@@ -411,7 +411,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return TControl the footer item
+	 * @return \Prado\Web\UI\TControl the footer item
 	 */
 	public function getFooter()
 	{
@@ -462,7 +462,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
@@ -482,7 +482,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
@@ -505,7 +505,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
 	 * @param TListItemType $itemType item type
-	 * @return TControl created repeater item
+	 * @return \Prado\Web\UI\TControl created repeater item
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{

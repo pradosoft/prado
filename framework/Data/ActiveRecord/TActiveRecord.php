@@ -328,7 +328,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Gets the current Db connection, the connection object is obtained from
 	 * the TActiveRecordManager if connection is currently null.
-	 * @return TDbConnection current db connection for this object.
+	 * @return \Prado\Data\TDbConnection current db connection for this object.
 	 */
 	public function getDbConnection()
 	{

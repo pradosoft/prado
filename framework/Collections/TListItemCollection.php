@@ -32,7 +32,7 @@ class TListItemCollection extends TList
 	 * This method may be overriden to provide a customized list item object.
 	 * @param int $index index where the newly created item is to be inserted at.
 	 * If -1, the item will be appended to the end.
-	 * @return TListItem list item object
+	 * @return \Prado\Web\UI\WebControls\TListItem list item object
 	 */
 	public function createListItem($index = -1)
 	{
@@ -47,7 +47,7 @@ class TListItemCollection extends TList
 
 	/**
 	 * @param null|mixed $text
-	 * @return TListItem new item.
+	 * @return \Prado\Web\UI\WebControls\TListItem new item.
 	 */
 	protected function createNewListItem($text = null)
 	{
@@ -118,7 +118,7 @@ class TListItemCollection extends TList
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
 	 * @param bool $includeDisabled whether to look for disabled items also
-	 * @return TListItem the item found, null if not found.
+	 * @return \Prado\Web\UI\WebControls\TListItem the item found, null if not found.
 	 */
 	public function findItemByValue($value, $includeDisabled = true)
 	{
@@ -133,7 +133,7 @@ class TListItemCollection extends TList
 	 * Finds the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
 	 * @param bool $includeDisabled whether to look for disabled items also
-	 * @return TListItem the item found, null if not found.
+	 * @return \Prado\Web\UI\WebControls\TListItem the item found, null if not found.
 	 */
 	public function findItemByText($text, $includeDisabled = true)
 	{

@@ -406,7 +406,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TControl the control responsible for the current callback event,
+	 * @return \Prado\Web\UI\TControl the control responsible for the current callback event,
 	 * null if nonexistent
 	 */
 	public function getCallbackEventTarget()
@@ -832,7 +832,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TControl the control responsible for the current postback event, null if nonexistent
+	 * @return \Prado\Web\UI\TControl the control responsible for the current postback event, null if nonexistent
 	 */
 	public function getPostBackEventTarget()
 	{

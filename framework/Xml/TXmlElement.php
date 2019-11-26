@@ -44,7 +44,7 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	private $_value = '';
 	/**
-	 * @var TXmlElementList list of child elements of this element
+	 * @var \Prado\Xml\TXmlElementList list of child elements of this element
 	 */
 	private $_elements;
 	/**
@@ -62,7 +62,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TXmlElement parent element of this element
+	 * @return \Prado\Xml\TXmlElement parent element of this element
 	 */
 	public function getParent()
 	{
@@ -70,7 +70,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TXmlElement $parent parent element of this element
+	 * @param \Prado\Xml\TXmlElement $parent parent element of this element
 	 */
 	public function setParent($parent)
 	{
@@ -148,7 +148,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TXmlElementList list of child elements
+	 * @return \Prado\Xml\TXmlElementList list of child elements
 	 */
 	public function getElements()
 	{
@@ -171,7 +171,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @param mixed $tagName
-	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
+	 * @return \Prado\Xml\TXmlElement the first child element that has the specified tag-name, null if not found
 	 */
 	public function getElementByTagName($tagName)
 	{

@@ -73,7 +73,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	private $_timeout = 1800;
 
 	/**
-	 * @return TPage the page that this persister works for
+	 * @return \Prado\Web\UI\TPage the page that this persister works for
 	 */
 	public function getPage()
 	{

@@ -50,7 +50,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableItemStyle} to be used by the table row.
-	 * @return TStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TStyle control style to be used
 	 */
 	protected function createStyle()
 	{

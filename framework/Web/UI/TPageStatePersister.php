@@ -32,7 +32,7 @@ class TPageStatePersister extends \Prado\TComponent implements IPageStatePersist
 	private $_page;
 
 	/**
-	 * @return TPage the page that this persister works for
+	 * @return \Prado\Web\UI\TPage the page that this persister works for
 	 */
 	public function getPage()
 	{

@@ -42,7 +42,7 @@ class TControlCollection extends \Prado\Collections\TList
 	}
 
 	/**
-	 * @return TControl the control that owns this collection.
+	 * @return \Prado\Web\UI\TControl the control that owns this collection.
 	 */
 	protected function getOwner()
 	{

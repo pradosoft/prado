@@ -43,7 +43,7 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	private $_itemType;
 
 	/**
-	 * @return TListItemType item type
+	 * @return \Prado\Web\UI\WebControls\TListItemType item type
 	 */
 	public function getItemType()
 	{

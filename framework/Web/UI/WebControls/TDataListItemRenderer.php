@@ -31,7 +31,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Creates a style object to be used by the control.
 	 * This method may be overriden by controls to provide customized style.
-	 * @return TStyle
+	 * @return \Prado\Web\UI\WebControls\TStyle
 	 */
 	protected function createStyle()
 	{
@@ -47,7 +47,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	}
 
 	/**
-	 * @return TStyle the object representing the css style of the control
+	 * @return \Prado\Web\UI\WebControls\TStyle the object representing the css style of the control
 	 */
 	public function getStyle()
 	{

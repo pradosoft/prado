@@ -41,7 +41,7 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TControl repeater item related with the corresponding event
+	 * @return \Prado\Web\UI\TControl repeater item related with the corresponding event
 	 */
 	public function getItem()
 	{

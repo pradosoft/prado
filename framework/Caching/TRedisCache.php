@@ -122,7 +122,7 @@ class TRedisCache extends TCache
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface. It creates a Redis instance and connects to the redis server.
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if php-redis extension is not installed or redis cache sever connection fails
 	 */
 	public function init($config)

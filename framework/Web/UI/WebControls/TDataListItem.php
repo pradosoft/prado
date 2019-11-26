@@ -64,7 +64,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableItemStyle} to be used by a datalist item.
-	 * @return TStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TStyle control style to be used
 	 */
 	protected function createStyle()
 	{
@@ -72,7 +72,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	}
 
 	/**
-	 * @return TListItemType item type
+	 * @return \Prado\Web\UI\WebControls\TListItemType item type
 	 */
 	public function getItemType()
 	{

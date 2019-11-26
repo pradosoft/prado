@@ -48,7 +48,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -123,7 +123,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param int $pageSize The maximum number of objects to store in each page.
 	 * @param int $page The number of the page to initially load into the list.
-	 * @return TPagedList A PaginatedList of beans containing the rows.
+	 * @return \Prado\Web\UI\TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedList($statementName, $parameter = null, $pageSize = 10, $page = 0)
 	{
@@ -144,7 +144,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param null|mixed $parameter The object used to set the parameters in the SQL.
 	 * @param int $pageSize The maximum number of objects to store in each page.
 	 * @param int $page The number of the page to initially load into the list.
-	 * @return TPagedList A PaginatedList of beans containing the rows.
+	 * @return \Prado\Web\UI\TPagedList A PaginatedList of beans containing the rows.
 	 */
 	public function queryForPagedListWithRowDelegate($statementName, $delegate, $parameter = null, $pageSize = 10, $page = 0)
 	{

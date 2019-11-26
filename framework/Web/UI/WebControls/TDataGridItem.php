@@ -71,7 +71,7 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TListItemType item type.
+	 * @return \Prado\Web\UI\WebControls\TListItemType item type.
 	 */
 	public function getItemType()
 	{

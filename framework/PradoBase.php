@@ -230,7 +230,7 @@ class PradoBase
 	}
 
 	/**
-	 * @return TApplication the application singleton, null if the singleton has not be created yet.
+	 * @return \Prado\TApplication the application singleton, null if the singleton has not be created yet.
 	 */
 	public static function getApplication()
 	{
@@ -275,7 +275,7 @@ class PradoBase
 	 * @param string $requestedType component type
 	 * @param array $params
 	 * @throws TInvalidDataValueException if the component type is unknown
-	 * @return TComponent component instance of the specified type
+	 * @return \Prado\TComponent component instance of the specified type
 	 */
 	public static function createComponent($requestedType, ...$params)
 	{
@@ -600,7 +600,7 @@ class PradoBase
 	}
 
 	/**
-	 * @return TLogger message logger
+	 * @return \Prado\Util\TLogger message logger
 	 */
 	public static function getLogger()
 	{

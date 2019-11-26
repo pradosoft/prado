@@ -197,7 +197,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TStyle the style for the inner image
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for the inner image
 	 */
 	public function getImageStyle()
 	{

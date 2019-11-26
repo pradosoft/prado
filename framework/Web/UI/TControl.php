@@ -234,7 +234,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControlAdapter control adapter. Null if not exists.
+	 * @return \Prado\Web\UI\TControlAdapter control adapter. Null if not exists.
 	 */
 	public function getAdapter()
 	{
@@ -250,7 +250,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControl the parent of this control
+	 * @return \Prado\Web\UI\TControl the parent of this control
 	 */
 	public function getParent()
 	{
@@ -258,7 +258,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControl the naming container of this control
+	 * @return \Prado\Web\UI\TControl the naming container of this control
 	 */
 	public function getNamingContainer()
 	{
@@ -273,7 +273,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TPage the page that contains this control
+	 * @return \Prado\Web\UI\TPage the page that contains this control
 	 */
 	public function getPage()
 	{
@@ -536,7 +536,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControlCollection the child control collection
+	 * @return \Prado\Web\UI\TControlCollection the child control collection
 	 */
 	public function getControls()
 	{
@@ -548,7 +548,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TControlCollection control collection
+	 * @return \Prado\Web\UI\TControlCollection control collection
 	 * @see getControls
 	 */
 	protected function createControlCollection()

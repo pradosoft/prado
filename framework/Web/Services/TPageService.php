@@ -150,7 +150,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Initializes the service.
 	 * This method is required by IService interface and is invoked by application.
-	 * @param TXmlElement $config service configuration
+	 * @param \Prado\Xml\TXmlElement $config service configuration
 	 */
 	public function init($config)
 	{
@@ -222,8 +222,8 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Collects configuration for a page.
-	 * @param TXmlElement $config additional configuration specified in the application configuration
-	 * @return TPageConfiguration
+	 * @param \Prado\Xml\TXmlElement $config additional configuration specified in the application configuration
+	 * @return \Prado\Web\UI\TPageConfiguration
 	 */
 	protected function loadPageConfig($config)
 	{
@@ -347,7 +347,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @return TPage the requested page
+	 * @return \Prado\Web\UI\TPage the requested page
 	 */
 	public function getRequestedPage()
 	{
@@ -469,7 +469,7 @@ class TPageService extends \Prado\TService
 	 * @param string $pagePath requested page path
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
-	 * @return TPage the requested page instance
+	 * @return \Prado\Web\UI\TPage the requested page instance
 	 */
 	protected function createPage($pagePath)
 	{

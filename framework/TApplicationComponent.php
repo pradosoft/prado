@@ -34,7 +34,7 @@ namespace Prado;
 class TApplicationComponent extends \Prado\TComponent
 {
 	/**
-	 * @return TApplication current application instance
+	 * @return \Prado\TApplication current application instance
 	 */
 	public function getApplication()
 	{

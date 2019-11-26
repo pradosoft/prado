@@ -37,7 +37,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return TControl the control to which this adapter is attached
+	 * @return \Prado\Web\UI\TControl the control to which this adapter is attached
 	 */
 	public function getControl()
 	{
@@ -45,7 +45,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return TPage the page that contains the attached control
+	 * @return \Prado\Web\UI\TPage the page that contains the attached control
 	 */
 	public function getPage()
 	{

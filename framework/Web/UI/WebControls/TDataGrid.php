@@ -382,7 +382,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TStyle the style for thead element, if any
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for thead element, if any
 	 * @since 3.1.1
 	 */
 	public function getTableHeadStyle()
@@ -395,7 +395,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TStyle the style for tbody element, if any
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for tbody element, if any
 	 * @since 3.1.1
 	 */
 	public function getTableBodyStyle()
@@ -408,7 +408,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TStyle the style for tfoot element, if any
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for tfoot element, if any
 	 * @since 3.1.1
 	 */
 	public function getTableFootStyle()

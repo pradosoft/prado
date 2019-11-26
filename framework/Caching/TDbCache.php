@@ -140,7 +140,7 @@ class TDbCache extends TCache
 	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
 	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
 	 *
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
@@ -289,7 +289,7 @@ class TDbCache extends TCache
 	/**
 	 * Creates the DB connection.
 	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return TDbConnection the created DB connection
+	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()
 	{
@@ -320,7 +320,7 @@ class TDbCache extends TCache
 	}
 
 	/**
-	 * @return TDbConnection the DB connection instance
+	 * @return \Prado\Data\TDbConnection the DB connection instance
 	 */
 	public function getDbConnection()
 	{

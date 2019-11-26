@@ -412,7 +412,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TStyle the style for the buttons displayed in the side bar.
+	 * @return \Prado\Web\UI\WebControls\TStyle the style for the buttons displayed in the side bar.
 	 */
 	public function getSideBarButtonStyle()
 	{
@@ -424,7 +424,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TStyle the style common for all navigation buttons.
+	 * @return \Prado\Web\UI\WebControls\TStyle the style common for all navigation buttons.
 	 */
 	public function getNavigationButtonStyle()
 	{

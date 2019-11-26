@@ -31,7 +31,7 @@ class TXmlElementList extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TXmlElement $owner owner of this list
+	 * @param \Prado\Xml\TXmlElement $owner owner of this list
 	 */
 	public function __construct(TXmlElement $owner)
 	{
@@ -39,7 +39,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	}
 
 	/**
-	 * @return TXmlElement owner of this list
+	 * @return \Prado\Xml\TXmlElement owner of this list
 	 */
 	protected function getOwner()
 	{

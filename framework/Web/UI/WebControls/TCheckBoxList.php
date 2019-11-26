@@ -59,7 +59,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Creates a control used for repetition (used as a template).
-	 * @return TControl the control to be repeated
+	 * @return \Prado\Web\UI\TControl the control to be repeated
 	 */
 	protected function createRepeatedControl()
 	{
@@ -72,7 +72,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * the checkbox list itself (because the checkbox list does not have child controls.)
 	 * @param string $id control ID
 	 * @param mixed $real
-	 * @return TControl control being found
+	 * @return \Prado\Web\UI\TControl control being found
 	 */
 	public function findControl($id, $real = false)
 	{
@@ -93,7 +93,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by checkbox list.
-	 * @return TStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TStyle control style to be used
 	 */
 	protected function createStyle()
 	{

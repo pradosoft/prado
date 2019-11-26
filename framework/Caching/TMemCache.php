@@ -132,7 +132,7 @@ class TMemCache extends TCache
 	 * This method is required by the IModule interface. It makes sure that
 	 * UniquePrefix has been set, creates a Memcache instance and connects
 	 * to the memcache server.
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */
 	public function init($config)
@@ -171,7 +171,7 @@ class TMemCache extends TCache
 
 	/**
 	 * Loads configuration from an XML element
-	 * @param TXmlElement $xml configuration node
+	 * @param \Prado\Xml\TXmlElement $xml configuration node
 	 * @throws TConfigurationException if log route class or type is not specified
 	 */
 	private function loadConfig($xml)

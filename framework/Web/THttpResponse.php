@@ -162,7 +162,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
 	 * It starts output buffer if it is enabled.
-	 * @param TXmlElement $config module configuration
+	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

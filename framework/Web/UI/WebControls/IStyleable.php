@@ -26,7 +26,7 @@ interface IStyleable
 	 */
 	public function getHasStyle();
 	/**
-	 * @return TStyle the object representing the css style of the object
+	 * @return \Prado\Web\UI\WebControls\TStyle the object representing the css style of the object
 	 */
 	public function getStyle();
 	/**

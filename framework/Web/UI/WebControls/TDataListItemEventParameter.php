@@ -41,7 +41,7 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TControl datalist item related with the corresponding event
+	 * @return \Prado\Web\UI\TControl datalist item related with the corresponding event
 	 */
 	public function getItem()
 	{

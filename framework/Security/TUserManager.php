@@ -172,7 +172,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Loads user/role information from an XML node.
-	 * @param TXmlElement $xmlNode the XML node containing the user information
+	 * @param \Prado\Xml\TXmlElement $xmlNode the XML node containing the user information
 	 */
 	private function loadUserDataFromXml($xmlNode)
 	{

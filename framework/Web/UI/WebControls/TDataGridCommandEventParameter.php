@@ -62,7 +62,7 @@ class TDataGridCommandEventParameter extends \Prado\Web\UI\TCommandEventParamete
 	}
 
 	/**
-	 * @return TControl the control originally raises the <b>Command</b> event.
+	 * @return \Prado\Web\UI\TControl the control originally raises the <b>Command</b> event.
 	 */
 	public function getCommandSource()
 	{

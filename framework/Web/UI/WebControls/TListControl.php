@@ -261,7 +261,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	/**
 	 * Creates a collection object to hold list items.
 	 * This method may be overriden to create a customized collection.
-	 * @return TListItemCollection the collection object
+	 * @return \Prado\Web\UI\WebControls\TListItemCollection the collection object
 	 */
 	protected function createListItemCollection()
 	{
@@ -443,7 +443,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return TListItemCollection the item collection
+	 * @return \Prado\Web\UI\WebControls\TListItemCollection the item collection
 	 */
 	public function getItems()
 	{

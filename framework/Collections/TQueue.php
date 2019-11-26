@@ -50,7 +50,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 * Initializes the queue with an array or an iterable object.
-	 * @param null|array|Iterator $data the intial data. Default is null, meaning no initialization.
+	 * @param null|array|\Iterator $data the intial data. Default is null, meaning no initialization.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null)

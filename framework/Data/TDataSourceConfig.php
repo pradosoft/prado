@@ -55,7 +55,7 @@ class TDataSourceConfig extends \Prado\TModule
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
-	 * @param TXmlDocument $xml xml configuration.
+	 * @param \Prado\Xml\TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
@@ -99,7 +99,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 * Gets the TDbConnection from another module if {@link setConnectionID ConnectionID}
 	 * is supplied and valid. Otherwise, a connection of type given by
 	 * {@link setConnectionClass ConnectionClass} is created.
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -115,7 +115,7 @@ class TDataSourceConfig extends \Prado\TModule
 
 	/**
 	 * Alias for getDbConnection().
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDatabase()
 	{
@@ -151,7 +151,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 * Finds the database connection instance from the Application modules.
 	 * @param string $id Database connection module ID.
 	 * @throws TConfigurationException when module is not of TDbConnection or TDataSourceConfig.
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	protected function findConnectionByID($id)
 	{
