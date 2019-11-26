@@ -47,7 +47,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return Iterator iterator
+	 * @return \Iterator iterator
 	 */
 	public function getIterator()
 	{

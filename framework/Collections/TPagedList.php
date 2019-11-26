@@ -288,7 +288,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return Iterator iterator
+	 * @return \Iterator iterator
 	 */
 	public function getIterator()
 	{

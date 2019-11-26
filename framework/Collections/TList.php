@@ -91,7 +91,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Returns an iterator for traversing the items in the list.
 	 * This method is required by the interface \IteratorAggregate.
-	 * @return Iterator an iterator for traversing the items in the list.
+	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
 	public function getIterator()
 	{

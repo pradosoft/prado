@@ -148,7 +148,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns an iterator for traversing the items in the queue.
 	 * This method is required by the interface \IteratorAggregate.
-	 * @return Iterator an iterator for traversing the items in the queue.
+	 * @return \Iterator an iterator for traversing the items in the queue.
 	 */
 	public function getIterator()
 	{
