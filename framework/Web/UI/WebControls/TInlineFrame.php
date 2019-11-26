@@ -80,7 +80,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * @return bool whether there should be a visual separator between the frames. Defaults to true.
-	 * @deprecated obsolete since html5
+	 * @deprecated obsolete since html5, use CSS border:none
 	 */
 	public function getShowBorder()
 	{
