@@ -152,7 +152,6 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
-	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function getCaptionAlign()
 	{
@@ -161,7 +160,6 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param TTableCaptionAlign $value table caption alignment.
-	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)
 	{
