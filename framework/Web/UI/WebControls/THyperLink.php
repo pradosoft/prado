@@ -20,8 +20,8 @@ use Prado\Web\THttpUtility;
  * via the {@link setNavigateUrl NavigateUrl} property, and link text is via
  * the {@link setText Text} property. It is also possible to display an image
  * by setting the {@link setImageUrl ImageUrl} property. In this case,
- * the alignment of the image displayed is set by the
- * {@link setImageAlign ImageAlign} property and {@link getText Text} is
+ * the style of the image displayed can be set using the
+ * {@link setImageStyle ImageStyle} property and {@link getText Text} is
  * displayed as the alternate text of the image.
  *
  * The link target is specified via the {@link setTarget Target} property.
@@ -90,22 +90,15 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		$image = new TImage;
 		$image->setImageUrl($imageUrl);
-		if (($width = $this->getImageWidth()) !== '') {
-			$image->setWidth($width);
-		}
-		if (($height = $this->getImageHeight()) !== '') {
-			$image->setHeight($height);
-		}
 		if (($toolTip = $this->getToolTip()) !== '') {
 			$image->setToolTip($toolTip);
 		}
 		if (($text = $this->getText()) !== '') {
 			$image->setAlternateText($text);
 		}
-		if (($align = $this->getImageAlign()) !== '') {
-			$image->setImageAlign($align);
+		if (($style = $this->getViewState('ImageStyle', null)) !== null) {
+			$image->getStyle()->copyFrom($style);
 		}
-		$image->setBorderWidth('0');
 		return $image;
 	}
 
@@ -128,10 +121,11 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * @return string the alignment of the image with respective to other elements on the page, defaults to empty.
+	 * @deprecated use the ImageStyle property to get the float and/or vertical-align CSS properties instead
 	 */
 	public function getImageAlign()
 	{
-		return $this->getViewState('ImageAlign', '');
+		return $this->getImageStyle()->getImageAlign();
 	}
 
 	/**
@@ -140,27 +134,30 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
 	 * @param string $value the alignment of the image
+	 * @deprecated use the ImageStyle property to set the float and/or vertical-align CSS properties instead
 	 */
 	public function setImageAlign($value)
 	{
-		$this->setViewState('ImageAlign', $value, '');
+		$this->getImageStyle()->setImageAlign($value);
 	}
 
 	/**
 	 * @return string height of the image in the THyperLink
+	 * @deprecated use the ImageStyle.Height property to get the height instead
 	 */
 	public function getImageHeight()
 	{
-		return $this->getViewState('ImageHeight', '');
+		return $this->getImageStyle()->getHeight();
 	}
 
 	/**
 	 * Sets the height of the image in the THyperLink
 	 * @param string $value height of the image in the THyperLink
+	 * @deprecated use the ImageStyle property to set the height CSS property instead
 	 */
 	public function setImageHeight($value)
 	{
-		$this->setViewSTate('ImageHeight', $value, '');
+		$this->getImageStyle()->setHeight($value);
 	}
 
 	/**
@@ -182,19 +179,33 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * @return string width of the image in the THyperLink
+	 * @deprecated use the ImageStyle.Width property to get the width property instead
 	 */
 	public function getImageWidth()
 	{
-		return $this->getViewState('ImageWidth', '');
+		return $this->getImageStyle()->getWidth();
 	}
 
 	/**
 	 * Sets the width of the image in the THyperLink
 	 * @param string $value width of the image
+	 * @deprecated use the ImageStyle property to set the width CSS property instead
 	 */
 	public function setImageWidth($value)
 	{
-		$this->setViewState('ImageWidth', $value, '');
+		$this->getImageStyle()->setWidth($value);
+	}
+
+	/**
+	 * @return TStyle the style for the inner image
+	 */
+	public function getImageStyle()
+	{
+		if (($style = $this->getViewState('ImageStyle', null)) === null) {
+			$style = new TStyle;
+			$this->setViewState('ImageStyle', $style, null);
+		}
+		return $style;
 	}
 
 	/**

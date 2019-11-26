@@ -12,6 +12,8 @@ Upgrading from v4.1.0
 - TMemCache has been updated to be compatible with memcached: https://www.php.net/manual/en/book.memcached.php:
   The per-server "Timeout" and "RetryInterval" properties have been removed, use the class property "Options" instead.
   The per-server "Persistent" property has been removed, use the class property "PersistentID" instead.
+- The ImageAlign property of TImage and its subclasses is deprecated. Use the Style property to set the float and/or vertical-align CSS properties instead.
+- THyperLink now has a new ImageStyle property that can be used to set the CSS style of the inner image (if any); the old ImageWidth, ImageHeight and ImageAlign properties are deprecated.
 
 Upgrading from v4.0.2
 ---------------------

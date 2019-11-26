@@ -16,9 +16,8 @@ use Prado\Web\UI\WebControls\TImage;
  * TActiveImage class.
  *
  * TActiveImage allows the {@link setAlternateText AlternateText},
- * {@link setImageAlign ImageAlign}, {@link setImageUrl ImageUrl},
- * and {@link setDescriptionUrl DescriptionUrl} to be updated during
- * a callback request.
+ * {@link setImageUrl ImageUrl}, and {@link setDescriptionUrl DescriptionUrl}
+ * to be updated during a callback request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
@@ -67,6 +66,7 @@ class TActiveImage extends TImage implements IActiveControl
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
 	 * @param string $value the alignment of the image
+	 * @deprecated use the Style property to set the float and/or vertical-align CSS properties instead
 	 */
 	public function setImageAlign($value)
 	{
@@ -97,6 +97,7 @@ class TActiveImage extends TImage implements IActiveControl
 
 	/**
 	 * @param string $value the URL to the long description of the image.
+	 * @deprecated use a WAI-ARIA alternative such as aria-describedby or aria-details instead.
 	 */
 	public function setDescriptionUrl($value)
 	{

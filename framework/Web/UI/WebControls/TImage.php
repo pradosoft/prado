@@ -15,10 +15,9 @@ namespace Prado\Web\UI\WebControls;
  *
  * TImage displays an image on a page. The image is specified via the
  * {@link setImageUrl ImageUrl} property which takes a relative or absolute
- * URL to the image file. The alignment of the image displayed is set by
- * the {@link setImageAlign ImageAlign} property. To set alternative texts
- * or long description of the image, use {@link setAlternateText AlternateText}
- * or {@link setDescriptionUrl DescriptionUrl} property, respectively.
+ * URL to the image file. The style of the image displayed can be set using
+ * the {@link setStyle Style} property. To set an alternative text
+ * use the {@link setAlternateText AlternateText} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
@@ -79,7 +78,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * @return string the alignment of the image with respective to other elements on the page, defaults to empty.
-	 * @deprecated use the float and/or vertical-align CSS properties instead
+	 * @deprecated use the Style property to get the float and/or vertical-align CSS properties instead
 	 */
 	public function getImageAlign()
 	{
@@ -92,7 +91,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
 	 * @param string $value the alignment of the image
-	 * @deprecated use the float and/or vertical-align CSS properties instead
+	 * @deprecated use the Style property to set the float and/or vertical-align CSS properties instead
 	 */
 	public function setImageAlign($value)
 	{

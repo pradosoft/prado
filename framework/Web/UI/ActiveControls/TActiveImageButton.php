@@ -77,6 +77,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * middle, right, texttop, and top. If an empty string is passed in,
 	 * imagealign attribute will not be rendered.
 	 * @param string $value the alignment of the image
+	 * @deprecated use the Style property to set the float and/or vertical-align CSS properties instead
 	 */
 	public function setImageAlign($value)
 	{
@@ -107,6 +108,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 
 	/**
 	 * @param string $value the URL to the long description of the image.
+	 * @deprecated use a WAI-ARIA alternative such as aria-describedby or aria-details instead.
 	 */
 	public function setDescriptionUrl($value)
 	{
