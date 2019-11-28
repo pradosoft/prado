@@ -63,7 +63,7 @@ class TFileLogRoute extends TLogRoute
 
 	/**
 	 * @param string $value directory (in namespace format) storing log files.
-	 * @throws TConfigurationException if log path is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if log path is invalid
 	 */
 	public function setLogPath($value)
 	{
@@ -98,7 +98,7 @@ class TFileLogRoute extends TLogRoute
 
 	/**
 	 * @param int $value maximum log file size in kilo-bytes (KB).
-	 * @throws TInvalidDataValueException if the value is smaller than 1.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is smaller than 1.
 	 */
 	public function setMaxFileSize($value)
 	{

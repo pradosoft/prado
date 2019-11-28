@@ -40,7 +40,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -125,7 +125,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the accordion view.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
@@ -138,7 +138,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the header associated with the accordion view.
-	 * @param THtmlWriter $writer the writer for rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function renderHeader($writer)
 	{
@@ -160,7 +160,7 @@ class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Renders the content in the header.
 	 * By default, a hyperlink is displayed.
-	 * @param THtmlWriter $writer the HTML writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderHeaderContent($writer)
 	{

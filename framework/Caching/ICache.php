@@ -35,7 +35,7 @@ interface ICache
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
+	 * @param \Prado\Caching\ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	public function set($id, $value, $expire = 0, $dependency = null);
@@ -45,7 +45,7 @@ interface ICache
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
 	 * @param int $expire the number of seconds in which the cached value will expire. 0 means never expire.
-	 * @param ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
+	 * @param \Prado\Caching\ICacheDependency $dependency dependency of the cached item. If the dependency changes, the item is labelled invalid.
 	 * @return bool true if the value is successfully stored into cache, false otherwise
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null);

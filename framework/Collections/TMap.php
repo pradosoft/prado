@@ -70,7 +70,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Initializes the list with an array or an iterable object.
 	 * @param null|array|\Iterator $data the intial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only
-	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
@@ -148,7 +148,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Note, if the specified key already exists, the old value will be overwritten.
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @throws TInvalidOperationException if the map is read-only
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the map is read-only
 	 */
 	public function add($key, $value)
 	{
@@ -162,7 +162,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Removes an item from the map by its key.
 	 * @param mixed $key the key of the item to be removed
-	 * @throws TInvalidOperationException if the map is read-only
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the map is read-only
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)
@@ -211,7 +211,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
 	{
@@ -231,7 +231,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
 	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
 	{

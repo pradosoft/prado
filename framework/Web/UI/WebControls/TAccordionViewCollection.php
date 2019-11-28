@@ -29,7 +29,7 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 	 * This overrides the parent implementation by performing sanity check on the type of new item.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TAccordionView} object.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a {@link TAccordionView} object.
 	 */
 	public function insertAt($index, $item)
 	{

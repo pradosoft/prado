@@ -52,7 +52,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	private $_initialized = false;
 	/**
-	 * @var IUserManager user manager instance
+	 * @var \Prado\Security\IUserManager user manager instance
 	 */
 	private $_userManager;
 	/**
@@ -84,7 +84,7 @@ class TAuthManager extends \Prado\TModule
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if user manager does not exist or is not IUserManager
+	 * @throws \Prado\Exceptions\TConfigurationException if user manager does not exist or is not IUserManager
 	 */
 	public function init($config)
 	{
@@ -111,7 +111,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return IUserManager user manager instance
+	 * @return \Prado\Security\IUserManager user manager instance
 	 */
 	public function getUserManager()
 	{
@@ -120,7 +120,7 @@ class TAuthManager extends \Prado\TModule
 
 	/**
 	 * @param IUserManager|string $provider the user manager module ID or the user manager object
-	 * @throws TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module has been initialized or the user manager object is not IUserManager
 	 */
 	public function setUserManager($provider)
 	{
@@ -279,7 +279,7 @@ class TAuthManager extends \Prado\TModule
 	 * If the application already has a non-null user, it will return without further authentication.
 	 * Otherwise, user information will be restored from session data.
 	 * @param mixed $param parameter to be passed to OnAuthenticate event
-	 * @throws TConfigurationException if session module does not exist.
+	 * @throws \Prado\Exceptions\TConfigurationException if session module does not exist.
 	 */
 	public function onAuthenticate($param)
 	{
@@ -380,7 +380,7 @@ class TAuthManager extends \Prado\TModule
 
 	/**
 	 * Updates the user data stored in session.
-	 * @param IUser $user user object
+	 * @param \Prado\Security\IUser $user user object
 	 * @throws new TConfigurationException if session module is not loaded.
 	 */
 	public function updateSessionUser($user)
@@ -444,7 +444,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Logs out a user.
 	 * User session will be destroyed after this method is called.
-	 * @throws TConfigurationException if session module is not loaded.
+	 * @throws \Prado\Exceptions\TConfigurationException if session module is not loaded.
 	 */
 	public function logout()
 	{

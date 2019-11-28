@@ -30,7 +30,7 @@ use Prado\Collections\TListItemCollection;
 class TActiveListItemCollection extends TListItemCollection
 {
 	/**
-	 * @var IActiveControl control instance.
+	 * @var \Prado\Web\UI\ActiveControls\IActiveControl control instance.
 	 */
 	private $_control;
 	/**
@@ -49,7 +49,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @param IActiveControl $control a active list control.
+	 * @param \Prado\Web\UI\ActiveControls\IActiveControl $control a active list control.
 	 */
 	public function setControl(IActiveControl $control)
 	{
@@ -57,7 +57,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @return IActiveControl active control using the collection.
+	 * @return \Prado\Web\UI\ActiveControls\IActiveControl active control using the collection.
 	 */
 	public function getControl()
 	{
@@ -87,8 +87,8 @@ class TActiveListItemCollection extends TListItemCollection
 	 * The new option is added on the client-side during callback.
 	 * @param int $index the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
-	 * @param TListItem $value the item to be inserted.
-	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
+	 * @param \Prado\Web\UI\WebControls\TListItem $value the item to be inserted.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
 	public function insertAt($index, $value)
 	{

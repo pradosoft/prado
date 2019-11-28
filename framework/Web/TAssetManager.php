@@ -68,7 +68,7 @@ class TAssetManager extends \Prado\TModule
 	 */
 	private $_checkTimestamp = false;
 	/**
-	 * @var TApplication application instance
+	 * @var \Prado\TApplication application instance
 	 */
 	private $_application;
 	/**
@@ -113,7 +113,7 @@ class TAssetManager extends \Prado\TModule
 	 * Sets the root directory storing published asset files.
 	 * The directory must be in namespace format.
 	 * @param string $value the root directory storing published asset files
-	 * @throws TInvalidOperationException if the module is initialized already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized already
 	 */
 	public function setBasePath($value)
 	{
@@ -137,7 +137,7 @@ class TAssetManager extends \Prado\TModule
 
 	/**
 	 * @param string $value the base url that the published asset files can be accessed
-	 * @throws TInvalidOperationException if the module is initialized already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized already
 	 */
 	public function setBaseUrl($value)
 	{
@@ -158,7 +158,7 @@ class TAssetManager extends \Prado\TModule
 	 * @param string $path the path to be published
 	 * @param bool $checkTimestamp If true, file modification time will be checked even if the application
 	 * is in performance mode.
-	 * @throws TInvalidDataValueException if the file path to be published is
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the file path to be published is
 	 * invalid
 	 * @return string an absolute URL to the published directory
 	 */

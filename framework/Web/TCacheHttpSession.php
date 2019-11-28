@@ -86,7 +86,7 @@ class TCacheHttpSession extends THttpSession
 	}
 
 	/**
-	 * @return ICache the cache module being used for data storage
+	 * @return \Prado\Caching\ICache the cache module being used for data storage
 	 */
 	public function getCache()
 	{

@@ -86,7 +86,7 @@ class TRpcService extends \Prado\TService
 
 	/**
 	 * Creates the API provider instance for the current request
-	 * @param TRpcProtocol $protocolHandler instance
+	 * @param \Prado\Web\Services\TRpcProtocol $protocolHandler instance
 	 * @param string $providerId
 	 */
 	public function createApiProvider(TRpcProtocol $protocolHandler, $providerId)

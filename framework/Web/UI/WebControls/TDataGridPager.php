@@ -30,7 +30,7 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Constructor.
-	 * @param TDataGrid $dataGrid datagrid object
+	 * @param \Prado\Web\UI\WebControls\TDataGrid $dataGrid datagrid object
 	 */
 	public function __construct($dataGrid)
 	{
@@ -40,8 +40,8 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 	/**
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -55,7 +55,7 @@ class TDataGridPager extends TPanel implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGrid the datagrid owning this pager
+	 * @return \Prado\Web\UI\WebControls\TDataGrid the datagrid owning this pager
 	 */
 	public function getDataGrid()
 	{

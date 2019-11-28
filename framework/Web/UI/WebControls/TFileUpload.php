@@ -77,7 +77,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Sets name attribute to the unique ID of the control.
 	 * This method overrides the parent implementation with additional file update control specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -270,7 +270,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * The method raises <b>OnFileUpload</b> event to fire up the event handler.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onFileUpload($param)
 	{

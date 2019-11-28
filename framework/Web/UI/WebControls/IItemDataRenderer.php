@@ -44,7 +44,7 @@ interface IItemDataRenderer extends \Prado\IDataRenderer
 	public function getItemType();
 
 	/**
-	 * @param TListItemType $value the item type.
+	 * @param \Prado\Web\UI\WebControls\TListItemType $value the item type.
 	 */
 	public function setItemType($value);
 }

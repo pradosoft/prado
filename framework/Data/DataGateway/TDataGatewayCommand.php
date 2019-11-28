@@ -39,7 +39,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 {
 	private $_builder;
 	/**
-	 * @param TDbCommandBuilder $builder database specific database command builder.
+	 * @param \Prado\Data\Common\TDbCommandBuilder $builder database specific database command builder.
 	 */
 	public function __construct($builder)
 	{
@@ -68,7 +68,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Executes a delete command.
-	 * @param TSqlCriteria $criteria delete conditions and parameters.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria delete conditions and parameters.
 	 * @return int number of records affected.
 	 */
 	public function delete($criteria)
@@ -83,7 +83,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Updates the table with new data.
 	 * @param array $data date for update.
-	 * @param TSqlCriteria $criteria update conditions and parameters.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria update conditions and parameters.
 	 * @return int number of records affected.
 	 */
 	public function update($data, $criteria)
@@ -107,7 +107,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Find one record matching the critera.
-	 * @param TSqlCriteria $criteria find conditions and parameters.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria find conditions and parameters.
 	 * @return array matching record.
 	 */
 	public function find($criteria)
@@ -117,8 +117,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Find one or more matching records.
-	 * @param TSqlCriteria $criteria $criteria
-	 * @return TDbDataReader record reader.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
+	 * @return \Prado\Data\TDbDataReader record reader.
 	 */
 	public function findAll($criteria)
 	{
@@ -127,7 +127,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria $criteria
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
 	 * @return TDbCommand.
 	 */
 	protected function getFindCommand($criteria)
@@ -161,7 +161,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 	/**
 	 * @param array $keys multiple primary key values or composite value arrays
-	 * @return TDbDataReader record reader.
+	 * @return \Prado\Data\TDbDataReader record reader.
 	 */
 	public function findAllByPk($keys)
 	{
@@ -286,8 +286,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Find one matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria $criteria
-	 * @return TDbDataReader record reader.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
+	 * @return \Prado\Data\TDbDataReader record reader.
 	 */
 	public function findBySql($criteria)
 	{
@@ -297,8 +297,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Find zero or more matching records for arbituary SQL.
-	 * @param TSqlCriteria $criteria $criteria
-	 * @return TDbDataReader record reader.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
+	 * @return \Prado\Data\TDbDataReader record reader.
 	 */
 	public function findAllBySql($criteria)
 	{
@@ -308,8 +308,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 
 	/**
 	 * Build sql command from the criteria. Limit, Offset and Ordering are applied if applicable.
-	 * @param TSqlCriteria $criteria $criteria
-	 * @return TDbCommand command corresponding to the criteria.
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
+	 * @return \Prado\Data\TDbCommand command corresponding to the criteria.
 	 */
 	protected function getSqlCommand($criteria)
 	{
@@ -330,7 +330,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlCriteria $criteria $criteria
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria $criteria
 	 * @return int number of records.
 	 */
 	public function count($criteria)
@@ -381,7 +381,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param string $method __call method name
 	 * @param string $condition criteria conditions
 	 * @param array $args method arguments
-	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)
 	{
@@ -438,7 +438,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * The parameter object is TDataGatewayEventParameter of which the
 	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
-	 * @param TDataGatewayCommand $command originator $sender
+	 * @param \Prado\Data\DataGateway\TDataGatewayCommand $command originator $sender
 	 * @param mixed $criteria TDataGatewayEventParameter
 	 */
 	public function onCreateCommand($command, $criteria)
@@ -452,7 +452,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * {@link TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
 	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
-	 * @param TDataGatewayCommand $command originator sender
+	 * @param \Prado\Data\DataGateway\TDataGatewayCommand $command originator sender
 	 * @param mixed $result TDataGatewayResultEventParameter
 	 */
 	public function onExecuteCommand($command, $result)

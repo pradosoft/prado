@@ -45,7 +45,7 @@ class TDataTypeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
+	 * @return \Prado\Web\UI\WebControls\TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
 	 */
 	public function getDataType()
 	{
@@ -54,7 +54,7 @@ class TDataTypeValidator extends TBaseValidator
 
 	/**
 	 * Sets the data type that the values being compared are converted to before the comparison is made.
-	 * @param TValidationDataType $value the data type
+	 * @param \Prado\Web\UI\WebControls\TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{

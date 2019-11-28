@@ -28,7 +28,7 @@ use Prado\Web\Javascripts\TJavaScript;
 abstract class TClientSideOptions extends \Prado\TComponent
 {
 	/**
-	 * @var TMap list of client-side options.
+	 * @var \Prado\Collections\TMap list of client-side options.
 	 */
 	private $_options;
 
@@ -71,7 +71,7 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TMap gets the list of options as TMap
+	 * @return \Prado\Collections\TMap gets the list of options as TMap
 	 */
 	public function getOptions()
 	{

@@ -103,7 +103,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THotSpotMode the behavior of a HotSpot object when it is clicked. Defaults to THotSpotMode::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THotSpotMode the behavior of a HotSpot object when it is clicked. Defaults to THotSpotMode::NotSet.
 	 */
 	public function getHotSpotMode()
 	{
@@ -111,7 +111,7 @@ abstract class THotSpot extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THotSpotMode $value the behavior of a HotSpot object when it is clicked.
+	 * @param \Prado\Web\UI\WebControls\THotSpotMode $value the behavior of a HotSpot object when it is clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
@@ -232,7 +232,7 @@ abstract class THotSpot extends \Prado\TComponent
 	 * Returns the list of custom attributes.
 	 * Custom attributes are name-value pairs that may be rendered
 	 * as HTML tags' attributes.
-	 * @return TAttributeCollection the list of custom attributes
+	 * @return \Prado\Collections\TAttributeCollection the list of custom attributes
 	 */
 	public function getAttributes()
 	{
@@ -297,7 +297,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * Renders this hotspot.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

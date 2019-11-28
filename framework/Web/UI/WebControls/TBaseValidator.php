@@ -86,7 +86,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	private $_registered = false;
 	/**
-	 * @var TValidatorClientSide validator client-script options.
+	 * @var \Prado\Web\UI\WebControls\TValidatorClientSide validator client-script options.
 	 */
 	private $_clientSide;
 	/**
@@ -144,7 +144,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Adds attributes to renderer. Calls parent implementation and renders the
 	 * client control scripts.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -198,7 +198,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Gets the Control type for client-side validation. If new cases exists in
 	 * TBaseValidator::$_clientClass, be sure to update the corresponding
 	 * "Javascript/validation3.js" file as well.
-	 * @param TControl $control control to validate.
+	 * @param \Prado\Web\UI\TControl $control control to validate.
 	 * @return string control type for client-side validation.
 	 */
 	private function getClientControlClass($control)
@@ -226,7 +226,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TValidatorClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TValidatorClientSide javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -237,7 +237,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TValidatorClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TValidatorClientSide javascript validator event options.
 	 */
 	protected function createClientSide()
 	{
@@ -248,7 +248,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Renders the javascript code to the end script.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function renderClientControlScript($writer)
 	{
@@ -323,7 +323,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * This method overrides the parent implementation to forbid setting ForControl.
 	 * @param string $value the associated control ID
-	 * @throws TNotSupportedException whenever this method is called
+	 * @throws \Prado\Exceptions\TNotSupportedException whenever this method is called
 	 */
 	public function setForControl($value)
 	{
@@ -344,7 +344,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @return TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
+	 * @return \Prado\Web\UI\WebControls\TValidatorDisplayStyle the style of displaying the error message. Defaults to TValidatorDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -352,7 +352,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @param TValidatorDisplayStyle $value the style of displaying the error message
+	 * @param \Prado\Web\UI\WebControls\TValidatorDisplayStyle $value the style of displaying the error message
 	 */
 	public function setDisplay($value)
 	{
@@ -491,7 +491,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @throws TConfigurationException if {@link getControlToValidate
+	 * @throws \Prado\Exceptions\TConfigurationException if {@link getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
 	 * @return \Prado\Web\UI\TControl control to be validated. Null if no control is found.
 	 */
@@ -506,8 +506,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Retrieves the property value of the control being validated.
-	 * @param TControl $control control being validated
-	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
+	 * @param \Prado\Web\UI\TControl $control control being validated
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
 	 * @return string property value to be validated
 	 */
 	protected function getValidationValue($control)
@@ -606,7 +606,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Renders the validator control.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

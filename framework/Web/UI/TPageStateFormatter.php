@@ -30,7 +30,7 @@ namespace Prado\Web\UI;
 class TPageStateFormatter
 {
 	/**
-	 * @param TPage $page
+	 * @param \Prado\Web\UI\TPage $page
 	 * @param mixed $data state data
 	 * @return string serialized data
 	 */
@@ -60,7 +60,7 @@ class TPageStateFormatter
 	}
 
 	/**
-	 * @param TPage $page
+	 * @param \Prado\Web\UI\TPage $page
 	 * @param string $data serialized data
 	 * @return mixed unserialized state data, null if data is corrupted
 	 */

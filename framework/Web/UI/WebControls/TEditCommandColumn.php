@@ -51,7 +51,7 @@ use Prado\TPropertyValue;
 class TEditCommandColumn extends TDataGridColumn
 {
 	/**
-	 * @return TButtonColumnType the type of command button. Defaults to TButtonColumnType::LinkButton.
+	 * @return \Prado\Web\UI\WebControls\TButtonColumnType the type of command button. Defaults to TButtonColumnType::LinkButton.
 	 */
 	public function getButtonType()
 	{
@@ -59,7 +59,7 @@ class TEditCommandColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param TButtonColumnType $value the type of command button.
+	 * @param \Prado\Web\UI\WebControls\TButtonColumnType $value the type of command button.
 	 */
 	public function setButtonType($value)
 	{
@@ -199,7 +199,7 @@ class TEditCommandColumn extends TDataGridColumn
 	 * This method overrides the parent implementation.
 	 * It creates an update and a cancel button for cell in edit mode.
 	 * Otherwise it creates an edit button.
-	 * @param TTableCell $cell the cell to be initialized.
+	 * @param \Prado\Web\UI\WebControls\TTableCell $cell the cell to be initialized.
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */

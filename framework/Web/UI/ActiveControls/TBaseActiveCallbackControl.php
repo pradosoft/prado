@@ -44,7 +44,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * Callback client-side options can be set by setting the properties of
 	 * the ClientSide property. E.g. <com:TCallback ActiveControl.ClientSide.OnSuccess="..." />
 	 * See {@link TCallbackClientSide} for details on the properties of ClientSide.
-	 * @return TCallbackClientSide client-side callback options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client-side callback options.
 	 */
 	public function getClientSide()
 	{
@@ -57,7 +57,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 
 	/**
 	 * Sets the client side options. Can only be set when client side is null.
-	 * @param TCallbackClientSide $client client side options.
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackClientSide $client client side options.
 	 */
 	public function setClientSide($client)
 	{
@@ -72,7 +72,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	}
 
 	/**
-	 * @return TCallbackClientSide callback client-side options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide callback client-side options.
 	 */
 	protected function createClientSide()
 	{

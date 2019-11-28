@@ -95,8 +95,8 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * @param int|string $index name of a parameter property.
-	 * @throws TSqlMapException if index is not string nor integer.
-	 * @return TParameterProperty parameter property.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapException if index is not string nor integer.
+	 * @return \Prado\Data\SqlMap\Configuration\TParameterProperty parameter property.
 	 */
 	public function getProperty($index)
 	{
@@ -110,7 +110,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TParameterProperty $property new parameter property
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property new parameter property
 	 */
 	public function addProperty(TParameterProperty $property)
 	{
@@ -120,7 +120,7 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * @param int $index parameter property index
-	 * @param TParameterProperty $property new parameter property.
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property new parameter property.
 	 */
 	public function insertProperty($index, TParameterProperty $property)
 	{
@@ -138,8 +138,8 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * Get the value of a property from the the parameter object.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
-	 * @param TParameterProperty $property parameter proproperty.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry.
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property parameter proproperty.
 	 * @param mixed $parameterValue parameter object to get the value from.
 	 * @return unknown
 	 */
@@ -163,9 +163,9 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
-	 * @param TParameterProperty $property parameter property
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
-	 * @return TSqlMapTypeHandler type handler.
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property parameter property
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($property, $registry)
 	{
@@ -180,8 +180,8 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * @param mixed $object object to obtain the property from.
-	 * @param TParameterProperty $property parameter property.
-	 * @throws TSqlMapException if property access is invalid.
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property parameter property.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapException if property access is invalid.
 	 * @return mixed property value.
 	 */
 	protected function getObjectValue($object, $property)
@@ -201,7 +201,7 @@ class TParameterMap extends \Prado\TComponent
 	/**
 	 * When the actual value matches the {@link NullValue TParameterProperty::setNullValue()},
 	 * set the current value to null.
-	 * @param TParameterProperty $property parameter property.
+	 * @param \Prado\Data\SqlMap\Configuration\TParameterProperty $property parameter property.
 	 * @param mixed $value current property value
 	 * @return mixed null if NullValue matches currrent value.
 	 */

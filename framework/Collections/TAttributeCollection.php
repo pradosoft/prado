@@ -62,7 +62,7 @@ class TAttributeCollection extends TMap
 	 * This method overrides the parent implementation by returning
 	 * a key value if the key exists in the collection.
 	 * @param string $name the property name or the event name
-	 * @throws TInvalidOperationException if the property/event is not defined.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the property/event is not defined.
 	 * @return mixed the property value or the event handler list
 	 */
 	public function __get($name)
@@ -76,7 +76,7 @@ class TAttributeCollection extends TMap
 	 * to the collection.
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
-	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 * @throws \Prado\Exceptions\TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
 	{

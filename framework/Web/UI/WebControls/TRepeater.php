@@ -94,39 +94,39 @@ use Prado\Util\TDataFieldAccessor;
 class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContainer
 {
 	/**
-	 * @var ITemplate template for repeater items
+	 * @var \Prado\Web\UI\ITemplate template for repeater items
 	 */
 	private $_itemTemplate;
 	/**
-	 * @var ITemplate template for each alternating item
+	 * @var \Prado\Web\UI\ITemplate template for each alternating item
 	 */
 	private $_alternatingItemTemplate;
 	/**
-	 * @var ITemplate template for header
+	 * @var \Prado\Web\UI\ITemplate template for header
 	 */
 	private $_headerTemplate;
 	/**
-	 * @var ITemplate template for footer
+	 * @var \Prado\Web\UI\ITemplate template for footer
 	 */
 	private $_footerTemplate;
 	/**
-	 * @var ITemplate template used for repeater when no data is bound
+	 * @var \Prado\Web\UI\ITemplate template used for repeater when no data is bound
 	 */
 	private $_emptyTemplate;
 	/**
-	 * @var ITemplate template for separator
+	 * @var \Prado\Web\UI\ITemplate template for separator
 	 */
 	private $_separatorTemplate;
 	/**
-	 * @var TRepeaterItemCollection list of repeater items
+	 * @var \Prado\Web\UI\WebControls\TRepeaterItemCollection list of repeater items
 	 */
 	private $_items;
 	/**
-	 * @var TControl header item
+	 * @var \Prado\Web\UI\TControl header item
 	 */
 	private $_header;
 	/**
-	 * @var TControl footer item
+	 * @var \Prado\Web\UI\TControl footer item
 	 */
 	private $_footer;
 
@@ -277,7 +277,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the template for repeater items
+	 * @return \Prado\Web\UI\ITemplate the template for repeater items
 	 */
 	public function getItemTemplate()
 	{
@@ -285,8 +285,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the template for repeater items
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the template for repeater items
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -298,7 +298,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the alternative template string for the item
+	 * @return \Prado\Web\UI\ITemplate the alternative template string for the item
 	 */
 	public function getAlternatingItemTemplate()
 	{
@@ -306,8 +306,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the alternative item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the alternative item template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
@@ -319,7 +319,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the header template
+	 * @return \Prado\Web\UI\ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -327,8 +327,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the header template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the header template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -340,7 +340,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the footer template
+	 * @return \Prado\Web\UI\ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -348,8 +348,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the footer template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
@@ -361,7 +361,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the template applied when no data is bound to the repeater
+	 * @return \Prado\Web\UI\ITemplate the template applied when no data is bound to the repeater
 	 */
 	public function getEmptyTemplate()
 	{
@@ -369,8 +369,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when no data is bound to the repeater
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the repeater
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -382,7 +382,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return ITemplate the separator template
+	 * @return \Prado\Web\UI\ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
 	{
@@ -390,8 +390,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @param ITemplate $value the separator template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the separator template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{
@@ -419,7 +419,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return TRepeaterItemCollection list of repeater item controls
+	 * @return \Prado\Web\UI\WebControls\TRepeaterItemCollection list of repeater item controls
 	 */
 	public function getItems()
 	{
@@ -446,7 +446,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	}
 
 	/**
-	 * @return TList the keys used in the data listing control.
+	 * @return \Prado\Collections\TList the keys used in the data listing control.
 	 */
 	public function getDataKeys()
 	{
@@ -461,7 +461,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Creates a repeater item.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
+	 * @param \Prado\Web\UI\WebControls\TListItemType $itemType item type
 	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
@@ -480,7 +480,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Creates a repeater item and performs databinding.
 	 * This method invokes {@link createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
-	 * @param TListItemType $itemType item type
+	 * @param \Prado\Web\UI\WebControls\TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
 	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
@@ -504,7 +504,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	/**
 	 * Creates a repeater item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
-	 * @param TListItemType $itemType item type
+	 * @param \Prado\Web\UI\WebControls\TListItemType $itemType item type
 	 * @return \Prado\Web\UI\TControl created repeater item
 	 */
 	protected function createItem($itemIndex, $itemType)
@@ -571,7 +571,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Renders the repeater.
 	 * This method overrides the parent implementation by rendering the body
 	 * content as the whole presentation of the repeater. Outer tag is not rendered.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -689,8 +689,8 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * {@link onItemCommand OnItemCommand} event which is bubbled from
 	 * repeater items and their child controls.
 	 * This method should only be used by control developers.
-	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -711,7 +711,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TRepeaterItemEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TRepeaterItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
@@ -725,7 +725,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * can be determined from the event parameter.
 	 * If you override this method, be sure to call parent's implementation
 	 * so that event handlers have chance to respond to the event.
-	 * @param TRepeaterItemEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TRepeaterItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
@@ -744,7 +744,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * You may override this method to provide customized event handling.
 	 * Be sure to call parent's implementation so that
 	 * event handlers have chance to respond to the event.
-	 * @param TRepeaterCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TRepeaterCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{
@@ -759,7 +759,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
 	 * @param string $field field name
-	 * @throws TInvalidDataValueException if the data is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the data is invalid
 	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)

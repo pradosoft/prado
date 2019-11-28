@@ -155,7 +155,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @param mixed $enums class name of the enumerable type, or array of valid enumeration values. If this is not an array,
 	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
-	 * @throws TInvalidDataValueException if the original value is not in the string array.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the original value is not in the string array.
 	 * @return string the valid enumeration value
 	 */
 	public static function ensureEnum($value, $enums)

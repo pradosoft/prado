@@ -20,7 +20,7 @@ class TClassBehavior extends \Prado\TComponent implements IClassBehavior
 
 	/**
 	 * Attaches the behavior object to the component.
-	 * @param TComponent $component the component that this behavior is to be attached to.
+	 * @param \Prado\TComponent $component the component that this behavior is to be attached to.
 	 */
 	public function attach($component)
 	{
@@ -28,7 +28,7 @@ class TClassBehavior extends \Prado\TComponent implements IClassBehavior
 
 	/**
 	 * Detaches the behavior object from the component.
-	 * @param TComponent $component the component that this behavior is to be detached from.
+	 * @param \Prado\TComponent $component the component that this behavior is to be detached from.
 	 */
 	public function detach($component)
 	{

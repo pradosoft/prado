@@ -73,7 +73,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -176,7 +176,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderDataGrid()} method which will do the rendering of the datagrid.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -210,7 +210,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	 * Renders the datagrid by writing a {@link getSurroundingTag()} with the container id obtained
 	 * from {@link getSurroundingTagId()} which will be called by the replacement method of the client
 	 * script to update it's content.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	private function renderDataGrid($writer)
 	{

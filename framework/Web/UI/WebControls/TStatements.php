@@ -51,7 +51,7 @@ class TStatements extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the evaluation result of the statements.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

@@ -119,7 +119,7 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Loads and parses an XML document.
 	 * @param string $file the XML file path
-	 * @throws TIOException if the file fails to be opened.
+	 * @throws \Prado\Exceptions\TIOException if the file fails to be opened.
 	 * @return bool whether the XML file is parsed successfully
 	 */
 	public function loadFromFile($file)
@@ -189,7 +189,7 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Saves this XML document as an XML file.
 	 * @param string $file the name of the file to be stored with XML output
-	 * @throws TIOException if the file cannot be written
+	 * @throws \Prado\Exceptions\TIOException if the file cannot be written
 	 */
 	public function saveToFile($file)
 	{
@@ -235,7 +235,7 @@ class TXmlDocument extends TXmlElement
 	/**
 	 * Recursively converts DOM XML nodes into TXmlElement
 	 * @param DOMXmlNode $node the node to be converted
-	 * @return TXmlElement the converted TXmlElement
+	 * @return \Prado\Xml\TXmlElement the converted TXmlElement
 	 */
 	protected function buildElement($node)
 	{

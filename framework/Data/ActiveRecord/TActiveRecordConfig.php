@@ -181,7 +181,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see setInvalidFinderResult
 	 * @since 3.1.5
 	 */
@@ -193,7 +193,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
 	 *
-	 * @param TActiveRecordInvalidFinderResult $value * @see getInvalidFinderResult
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult $value * @see getInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	public function setInvalidFinderResult($value)

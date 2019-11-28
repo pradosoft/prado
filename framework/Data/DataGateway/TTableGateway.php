@@ -86,7 +86,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Creates a new generic table gateway for a given table or view name
 	 * and a database connection.
 	 * @param string|TDbTableInfo $table table or view name or table information.
-	 * @param TDbConnection $connection database connection.
+	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 */
 	public function __construct($table, $connection)
 	{
@@ -101,7 +101,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo $tableInfo table or view information.
+	 * @param \Prado\Data\Common\TDbTableInfo $tableInfo table or view information.
 	 */
 	protected function setTableInfo($tableInfo)
 	{
@@ -130,7 +130,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommandBuilder $builder database specific command builder.
+	 * @param \Prado\Data\Common\TDbCommandBuilder $builder database specific command builder.
 	 */
 	protected function initCommandBuilder($builder)
 	{
@@ -144,8 +144,8 @@ class TTableGateway extends \Prado\TComponent
 	 * The parameter object is TDataGatewayEventParameter of which the
 	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
-	 * @param TDataGatewayCommand $sender originator
-	 * @param TDataGatewayEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayCommand $sender originator
+	 * @param \Prado\Data\DataGateway\TDataGatewayEventParameter $param
 	 */
 	public function onCreateCommand($sender, $param)
 	{
@@ -158,8 +158,8 @@ class TTableGateway extends \Prado\TComponent
 	 * {@link TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
 	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
-	 * @param TDataGatewayCommand $sender originator
-	 * @param TDataGatewayResultEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayCommand $sender originator
+	 * @param \Prado\Data\DataGateway\TDataGatewayResultEventParameter $param
 	 */
 	public function onExecuteCommand($sender, $param)
 	{
@@ -167,7 +167,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDataGatewayCommand command builder and executor.
+	 * @return \Prado\Data\DataGateway\TDataGatewayCommand command builder and executor.
 	 */
 	protected function getCommand()
 	{
@@ -199,7 +199,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Execute arbituary sql command with binding parameters.
 	 * @param string $sql SQL query string.
 	 * @param array $parameters binding parameters, positional or named.
-	 * @return TDbDataReader query results.
+	 * @return \Prado\Data\TDbDataReader query results.
 	 */
 	public function findAllBySql($sql, $parameters = [])
 	{
@@ -236,7 +236,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Accepts same parameters as find(), but returns TDbDataReader instead.
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
 	 * @param mixed $parameters parameter values.
-	 * @return TDbDataReader matching records.
+	 * @return \Prado\Data\TDbDataReader matching records.
 	 */
 	public function findAll($criteria = null, $parameters = [])
 	{
@@ -282,7 +282,7 @@ class TTableGateway extends \Prado\TComponent
 	 * $table->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
 	 * </code>
 	 * @param mixed $keys primary keys
-	 * @return TDbDataReader data reader.
+	 * @return \Prado\Data\TDbDataReader data reader.
 	 */
 	public function findAllByPks($keys)
 	{
@@ -416,7 +416,7 @@ class TTableGateway extends \Prado\TComponent
 	 * @param string|TSqlCriteria $criteria sql criteria
 	 * @param mixed $parameters parameters passed by the user.
 	 * @param array $args additional parameters obtained from function_get_args().
-	 * @return TSqlCriteria criteria object.
+	 * @return \Prado\Data\DataGateway\TSqlCriteria criteria object.
 	 */
 	protected function getCriteria($criteria, $parameters, $args)
 	{

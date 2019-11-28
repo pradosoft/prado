@@ -122,7 +122,7 @@ abstract class MessageSource implements IMessageSource
 	 * @param string $source the location of the resource or the ConnectionID.
 	 * @param string $filename the filename of the custom message source.
 	 * @throws InvalidMessageSourceTypeException
-	 * @return MessageSource a new message source of the specified type.
+	 * @return \Prado\I18N\core\MessageSource a new message source of the specified type.
 	 */
 	public static function &factory($type, $source = '.', $filename = '')
 	{
@@ -223,7 +223,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Get the cache handler for this source.
-	 * @return MessageCache cache handler
+	 * @return \Prado\I18N\core\MessageCache cache handler
 	 */
 	public function getCache()
 	{
@@ -232,7 +232,7 @@ abstract class MessageSource implements IMessageSource
 
 	/**
 	 * Set the cache handler for caching the messages.
-	 * @param MessageCache $cache the cache handler.
+	 * @param \Prado\I18N\core\MessageCache $cache the cache handler.
 	 */
 	public function setCache(MessageCache $cache)
 	{

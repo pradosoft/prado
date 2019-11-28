@@ -81,7 +81,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @param TPage $page the page that this persister works for.
+	 * @param \Prado\Web\UI\TPage $page the page that this persister works for.
 	 */
 	public function setPage(TPage $page)
 	{
@@ -105,7 +105,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 	}
 
 	/**
-	 * @return ICache the cache module being used for data storage
+	 * @return \Prado\Caching\ICache the cache module being used for data storage
 	 */
 	public function getCache()
 	{
@@ -137,7 +137,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 
 	/**
 	 * @param int $value the number of seconds in which the cached state will expire. 0 means never expire.
-	 * @throws TInvalidDataValueException if the number is smaller than 0.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the number is smaller than 0.
 	 */
 	public function setCacheTimeout($value)
 	{
@@ -190,7 +190,7 @@ class TCachePageStatePersister extends \Prado\TComponent implements IPageStatePe
 
 	/**
 	 * Loads page state from cache.
-	 * @throws THttpException if page state is corrupted
+	 * @throws \Prado\Exceptions\THttpException if page state is corrupted
 	 * @return mixed the restored state
 	 */
 	public function load()

@@ -34,7 +34,7 @@ class TView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Raises <b>OnActivate</b> event.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onActivate($param)
 	{
@@ -43,7 +43,7 @@ class TView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Raises <b>OnDeactivate</b> event.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onDeactivate($param)
 	{
@@ -86,7 +86,7 @@ class TView extends \Prado\Web\UI\TControl
 
 	/**
 	 * @param bool $value
-	 * @throws TInvalidOperationException whenever this method is invoked.
+	 * @throws \Prado\Exceptions\TInvalidOperationException whenever this method is invoked.
 	 */
 	public function setVisible($value)
 	{

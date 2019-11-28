@@ -37,7 +37,7 @@ abstract class TRpcProtocol
 	 */
 	abstract public function callMethod($requestPayload);
 	/**
-	 * @param TRpcException $exception the exception with error details
+	 * @param \Prado\Web\Services\TRpcException $exception the exception with error details
 	 * Creates a proper response for an error condition
 	 * @return a response representing the error
 	 * @abstract

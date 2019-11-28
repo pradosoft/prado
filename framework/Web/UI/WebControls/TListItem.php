@@ -31,7 +31,7 @@ use Prado\TPropertyValue;
 class TListItem extends \Prado\TComponent
 {
 	/**
-	 * @var TMap list of custom attributes
+	 * @var \Prado\Collections\TMap list of custom attributes
 	 */
 	protected $_attributes;
 	/**
@@ -158,7 +158,7 @@ class TListItem extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAttributeCollection custom attributes
+	 * @return \Prado\Collections\TAttributeCollection custom attributes
 	 */
 	public function getAttributes()
 	{

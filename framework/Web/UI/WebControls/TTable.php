@@ -88,7 +88,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by the table.
-	 * @return TTableStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TTableStyle control style to be used
 	 */
 	protected function createStyle()
 	{
@@ -97,7 +97,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 * @deprecated the current implementation only adds a border attribute to the table
 	 */
 	protected function addAttributesToRender($writer)
@@ -118,7 +118,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TTableRowCollection control collection
+	 * @return \Prado\Web\UI\WebControls\TTableRowCollection control collection
 	 * @see getControls
 	 */
 	protected function createControlCollection()
@@ -127,7 +127,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableRowCollection list of {@link TTableRow} controls
+	 * @return \Prado\Web\UI\WebControls\TTableRowCollection list of {@link TTableRow} controls
 	 */
 	public function getRows()
 	{
@@ -151,7 +151,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TTableCaptionAlign table caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -159,7 +159,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value table caption alignment.
+	 * @param \Prado\Web\UI\WebControls\TTableCaptionAlign $value table caption alignment.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -211,7 +211,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -223,7 +223,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param THorizontalAlign $value the horizontal alignment of the table content.
+	 * @param \Prado\Web\UI\WebControls\THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -231,7 +231,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @return \Prado\Web\UI\WebControls\TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
@@ -244,7 +244,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param \Prado\Web\UI\WebControls\TTableGridLines $value the grid line setting of the table
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)
@@ -275,7 +275,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the table control which will render table caption if present.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -292,7 +292,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

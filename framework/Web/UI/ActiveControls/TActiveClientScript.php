@@ -59,7 +59,7 @@ class TActiveClientScript extends TClientScript
 
 	/**
 	 * Registers the body content as javascript.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function renderCustomScript($writer)
 	{

@@ -238,7 +238,7 @@ class TFont extends \Prado\TComponent
 	 * Merges the font with a new one.
 	 * If a font field is not set in the font, it will be overwritten with
 	 * the new one.
-	 * @param TFont $font the new font
+	 * @param \Prado\Web\UI\WebControls\TFont $font the new font
 	 */
 	public function mergeWith($font)
 	{
@@ -272,7 +272,7 @@ class TFont extends \Prado\TComponent
 	 * Copies the fields in a new font to this font.
 	 * If a font field is set in the new font, the corresponding field
 	 * in this font will be overwritten.
-	 * @param TFont $font the new font
+	 * @param \Prado\Web\UI\WebControls\TFont $font the new font
 	 */
 	public function copyFrom($font)
 	{
@@ -342,7 +342,7 @@ class TFont extends \Prado\TComponent
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

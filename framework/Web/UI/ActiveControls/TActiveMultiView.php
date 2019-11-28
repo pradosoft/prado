@@ -42,7 +42,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -62,7 +62,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	 * Renders the TActiveMultiView.
 	 * If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -91,7 +91,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 
 	/**
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
-	 * @throws TInvalidDataValueException if the view index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
@@ -102,8 +102,8 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	 * @param TView $value the view to be activated
-	 * @throws TInvalidOperationException if the view is not in the view collection
+	 * @param \Prado\Web\UI\WebControls\TView $value the view to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($value)
 	{

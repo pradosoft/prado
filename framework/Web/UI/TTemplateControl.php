@@ -35,15 +35,15 @@ class TTemplateControl extends TCompositeControl
 	const EXT_TEMPLATE = '.tpl';
 
 	/**
-	 * @var ITemplate the parsed template structure shared by the same control class
+	 * @var \Prado\Web\UI\ITemplate the parsed template structure shared by the same control class
 	 */
 	private static $_template = [];
 	/**
-	 * @var ITemplate the parsed template structure specific for this control instance
+	 * @var \Prado\Web\UI\ITemplate the parsed template structure specific for this control instance
 	 */
 	private $_localTemplate;
 	/**
-	 * @var TTemplateControl the master control if any
+	 * @var \Prado\Web\UI\TTemplateControl the master control if any
 	 */
 	private $_master;
 	/**
@@ -80,7 +80,7 @@ class TTemplateControl extends TCompositeControl
 	 * Sets the parsed template.
 	 * Note, the template will be applied to the whole control class.
 	 * This method should only be used by framework and control developers.
-	 * @param ITemplate $value the parsed template
+	 * @param \Prado\Web\UI\ITemplate $value the parsed template
 	 */
 	public function setTemplate($value)
 	{
@@ -115,7 +115,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Loads the template associated with this control class.
-	 * @return ITemplate the parsed template structure
+	 * @return \Prado\Web\UI\ITemplate the parsed template structure
 	 */
 	protected function loadTemplate()
 	{
@@ -146,7 +146,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Registers a content control.
 	 * @param string $id ID of the content
-	 * @param TContent $object
+	 * @param \Prado\Web\UI\WebControls\TContent $object
 	 */
 	public function registerContent($id, TContent $object)
 	{
@@ -161,7 +161,7 @@ class TTemplateControl extends TCompositeControl
 	 * Registers a content placeholder to this template control.
 	 * This method should only be used by framework and control developers.
 	 * @param string $id placeholder ID
-	 * @param TContentPlaceHolder $object placeholder control
+	 * @param \Prado\Web\UI\WebControls\TContentPlaceHolder $object placeholder control
 	 */
 	public function registerContentPlaceHolder($id, TContentPlaceHolder $object)
 	{
@@ -200,7 +200,7 @@ class TTemplateControl extends TCompositeControl
 	 * Injects all content controls (and their children) to the corresponding content placeholders.
 	 * This method should only be used by framework and control developers.
 	 * @param string $id ID of the content control
-	 * @param TContent $content the content to be injected
+	 * @param \Prado\Web\UI\WebControls\TContent $content the content to be injected
 	 */
 	public function injectContent($id, $content)
 	{
@@ -220,7 +220,7 @@ class TTemplateControl extends TCompositeControl
 	 * by ensuring child controls are created first,
 	 * and if master class is set, master will be applied.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer the naming container control
+	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -246,7 +246,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Function to update view controls with data in a given AR object.
 	 * View controls and AR object need to have the same name in IDs and Attrs respectively.
-	 * @param TActiveRecord $arObj
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
 	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
@@ -292,7 +292,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Function to try to update an AR object with data in view controls.
-	 * @param TActiveRecord $arObj
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
 	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */

@@ -56,7 +56,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * controls as children.
 	 * @param string|TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
-	 * @throws TConfigurationException if controls other than {@link TView} is being added
+	 * @throws \Prado\Exceptions\TConfigurationException if controls other than {@link TView} is being added
 	 */
 	public function addParsedObject($object)
 	{
@@ -69,7 +69,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TViewCollection control collection
+	 * @return \Prado\Web\UI\WebControls\TViewCollection control collection
 	 */
 	protected function createControlCollection()
 	{
@@ -90,7 +90,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
-	 * @throws TInvalidDataValueException if the view index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
@@ -113,8 +113,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @throws TInvalidDataValueException if the current active view index is invalid
-	 * @return TView the currently active view, null if no active view
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the current active view index is invalid
+	 * @return \Prado\Web\UI\WebControls\TView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
@@ -134,8 +134,8 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param TView $view the view to be activated
-	 * @throws TInvalidOperationException if the view is not in the view collection
+	 * @param \Prado\Web\UI\WebControls\TView $view the view to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($view)
 	{
@@ -149,7 +149,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Activates the specified view.
 	 * If there is any view currently active, it will be deactivated.
-	 * @param TView $view the view to be activated
+	 * @param \Prado\Web\UI\WebControls\TView $view the view to be activated
 	 * @param bool $triggerViewChangedEvent whether to trigger OnActiveViewChanged event.
 	 */
 	protected function activateView($view, $triggerViewChangedEvent = true)
@@ -175,7 +175,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return TViewCollection the view collection
+	 * @return \Prado\Web\UI\WebControls\TViewCollection the view collection
 	 */
 	public function getViews()
 	{
@@ -195,7 +195,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Initializes the active view if any.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -208,7 +208,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Raises <b>OnActiveViewChanged</b> event.
 	 * The event is raised when the currently active view is changed to a new one
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onActiveViewChanged($param)
 	{
@@ -218,7 +218,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	/**
 	 * Processes the events bubbled from child controls.
 	 * The method handles view-related command events.
-	 * @param TControl $sender sender of the event
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
 	 * @param mixed $param event parameter
 	 * @return bool whether this event is handled
 	 */
@@ -268,7 +268,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the currently active view.
-	 * @param THtmlWriter $writer the writer for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function render($writer)
 	{

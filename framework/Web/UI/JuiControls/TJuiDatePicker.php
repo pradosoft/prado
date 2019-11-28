@@ -134,7 +134,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the underlying {@link TTextBox} component.
+	 * @return \Prado\Web\UI\WebControls\TTextBoxMode the behavior mode of the underlying {@link TTextBox} component.
 	 * Fixed to TTextBoxMode::SingleLine for the TJuiDatePicker.
 	 */
 	public function getTextMode()
@@ -144,8 +144,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Setting the behavior mode of the underlying TTextBox component is NOT supported.
-	 * @param TTextBoxMode $value the text mode
-	 * @throws TNotSupportedException not supported, fixed to TTextBoxMode::SingleLine.
+	 * @param \Prado\Web\UI\WebControls\TTextBoxMode $value the text mode
+	 * @throws \Prado\Exceptions\TNotSupportedException not supported, fixed to TTextBoxMode::SingleLine.
 	 */
 	public function setTextMode($value)
 	{

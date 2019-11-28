@@ -37,7 +37,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * This method should only be used by framework and control developers.
 	 * Uses the controls template if available or the base class template otherwise.
 	 *
-	 * @throws TConfigurationException if a template control directive is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if a template control directive is invalid
 	 * @return void
 	 */
 	public function createChildControls()
@@ -76,7 +76,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * This method creates the template object for the given class
 	 *
 	 * @param string $parentClass The class to create the template from
-	 * @throws TConfigurationException if a template control directive is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if a template control directive is invalid
 	 * @return void
 	 */
 	public function doTemplateForClass($parentClass)

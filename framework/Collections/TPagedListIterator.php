@@ -31,7 +31,7 @@ class TPagedListIterator implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param TList $list the data to be iterated through
+	 * @param \Prado\Collections\TList $list the data to be iterated through
 	 * @param int $startIndex start index
 	 * @param int $count number of items to be iterated through
 	 */

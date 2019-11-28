@@ -83,7 +83,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Copies basic control attributes from another control.
 	 * Properties including AccessKey, ToolTip, TabIndex, Enabled
 	 * and Attributes are copied.
-	 * @param TWebControl $control source control
+	 * @param \Prado\Web\UI\WebControls\TWebControl $control source control
 	 */
 	public function copyBaseAttributes(TWebControl $control)
 	{
@@ -111,7 +111,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Only one-character string can be set, or an exception will be raised.
 	 * Pass in an empty string if you want to disable access key.
 	 * @param string $value the access key to be set
-	 * @throws TInvalidDataValueException if the access key is specified with more than one character
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the access key is specified with more than one character
 	 */
 	public function setAccessKey($value)
 	{
@@ -202,7 +202,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return TFont the font of the control
+	 * @return \Prado\Web\UI\WebControls\TFont the font of the control
 	 */
 	public function getFont()
 	{
@@ -242,7 +242,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @param TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
+	 * @param \Prado\Web\UI\WebControls\TDisplayStyle $value display style of the control, default is TDisplayStyle::Fixed
 	 */
 	public function setDisplay($value)
 	{
@@ -250,7 +250,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
+	 * @return \Prado\Web\UI\WebControls\TDisplayStyle display style of the control, default is TDisplayStyle::Fixed
 	 */
 	public function getDisplay()
 	{
@@ -321,7 +321,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Sets the css style string of the control.
 	 * The style string will be prefixed to the styles set via other control properties (e.g. Height, Width).
 	 * @param string $value the css style string
-	 * @throws TInvalidDataValueException if the parameter is not a string
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the parameter is not a string
 	 */
 	public function setStyle($value)
 	{
@@ -412,7 +412,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * If your subclass overrides the onPreRender method be sure to call
 	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
 	 * among other things.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param)
 	{
@@ -428,7 +428,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * By default, the method will render 'id', 'accesskey', 'disabled',
 	 * 'tabindex', 'title' and all custom attributes.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -464,7 +464,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * - {@link renderBeginTag}
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -475,7 +475,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -494,7 +494,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -503,7 +503,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

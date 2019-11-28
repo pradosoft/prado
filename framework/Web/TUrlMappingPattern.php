@@ -130,11 +130,11 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	private $_pattern;
 	/**
-	 * @var TAttributeCollection parameter regular expressions.
+	 * @var \Prado\Collections\TAttributeCollection parameter regular expressions.
 	 */
 	private $_parameters;
 	/**
-	 * @var TAttributeCollection of constant parameters.
+	 * @var \Prado\Collections\TAttributeCollection of constant parameters.
 	 */
 	protected $_constants;
 	/**
@@ -162,7 +162,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TUrlManager $manager the URL manager instance
+	 * @param \Prado\Web\TUrlManager $manager the URL manager instance
 	 */
 	public function __construct(TUrlManager $manager)
 	{
@@ -170,7 +170,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlManager the URL manager instance
+	 * @return \Prado\Web\TUrlManager the URL manager instance
 	 */
 	public function getManager()
 	{
@@ -180,7 +180,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Initializes the pattern.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module.
-	 * @throws TConfigurationException if service parameter is not specified
+	 * @throws \Prado\Exceptions\TConfigurationException if service parameter is not specified
 	 */
 	public function init($config)
 	{
@@ -308,7 +308,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAttributeCollection parameter key value pairs.
+	 * @return \Prado\Collections\TAttributeCollection parameter key value pairs.
 	 */
 	public function getParameters()
 	{
@@ -320,7 +320,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TAttributeCollection $value new parameter key value pairs.
+	 * @param \Prado\Collections\TAttributeCollection $value new parameter key value pairs.
 	 */
 	public function setParameters($value)
 	{
@@ -328,7 +328,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAttributeCollection constanst parameter key value pairs.
+	 * @return \Prado\Collections\TAttributeCollection constanst parameter key value pairs.
 	 * @since 3.2.2
 	 */
 	public function getConstants()
@@ -343,7 +343,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	/**
 	 * Uses URL pattern (or full regular expression if available) to
 	 * match the given url path.
-	 * @param THttpRequest $request the request module
+	 * @param \Prado\Web\THttpRequest $request the request module
 	 * @return array matched parameters, empty if no matches.
 	 */
 	public function getPatternMatches($request)
@@ -413,7 +413,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
+	 * @return \Prado\Web\THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
 	 */
 	public function getUrlFormat()
 	{
@@ -428,7 +428,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * {@link setUrlParamSeparator} and defaults to '/'.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat $value the format of URLs.
+	 * @param \Prado\Web\THttpRequestUrlFormat $value the format of URLs.
 	 * @since 3.1.4
 	 */
 	public function setUrlFormat($value)
@@ -446,7 +446,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
-	 * @throws TInvalidDataValueException if the separator is not a single character
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
 	{
@@ -458,7 +458,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@link TUrlMappingPatternSecureConnection::Automatic Automatic}
+	 * @return \Prado\Web\TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@link TUrlMappingPatternSecureConnection::Automatic Automatic}
 	 * @since 3.2
 	 */
 	public function getSecureConnection()
@@ -467,7 +467,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
+	 * @param \Prado\Web\TUrlMappingPatternSecureConnection $value the SecureConnection behavior.
 	 * @since 3.2
 	 */
 	public function setSecureConnection($value)

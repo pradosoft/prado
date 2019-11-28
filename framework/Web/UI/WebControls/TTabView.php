@@ -48,7 +48,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -133,7 +133,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the tab view.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
@@ -146,7 +146,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the tab associated with the tab view.
-	 * @param THtmlWriter $writer the writer for rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function renderTab($writer)
 	{
@@ -167,7 +167,7 @@ class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Renders the content in the tab.
 	 * By default, a hyperlink is displayed.
-	 * @param THtmlWriter $writer the HTML writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	protected function renderTabContent($writer)
 	{

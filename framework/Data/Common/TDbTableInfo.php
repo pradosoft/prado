@@ -53,8 +53,8 @@ class TDbTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $connection database connection.
-	 * @return TDbCommandBuilder new command builder
+	 * @param \Prado\Data\TDbConnection $connection database connection.
+	 * @return \Prado\Data\Common\TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{
@@ -105,7 +105,7 @@ class TDbTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TMap TDbTableColumn column meta data.
+	 * @return \Prado\Collections\TMap TDbTableColumn column meta data.
 	 */
 	public function getColumns()
 	{
@@ -114,7 +114,7 @@ class TDbTableInfo extends \Prado\TComponent
 
 	/**
 	 * @param string $name column id
-	 * @return TDbTableColumn column information.
+	 * @return \Prado\Data\Common\TDbTableColumn column information.
 	 */
 	public function getColumn($name)
 	{

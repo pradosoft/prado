@@ -74,11 +74,11 @@ class PradoBase
 	 */
 	public static $classMap = [];
 	/**
-	 * @var TApplication the application instance
+	 * @var \Prado\TApplication the application instance
 	 */
 	private static $_application = null;
 	/**
-	 * @var TLogger logger instance
+	 * @var \Prado\Util\TLogger logger instance
 	 */
 	private static $_logger = null;
 	/**
@@ -218,8 +218,8 @@ class PradoBase
 	 * Repeated invocation of this method or the application constructor
 	 * will cause the throw of an exception.
 	 * This method should only be used by framework developers.
-	 * @param TApplication $application the application instance
-	 * @throws TInvalidOperationException if this method is invoked twice or more.
+	 * @param \Prado\TApplication $application the application instance
+	 * @throws \Prado\Exceptions\TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public static function setApplication($application)
 	{
@@ -274,7 +274,7 @@ class PradoBase
 	 * will be supplied as component constructor parameters.
 	 * @param string $requestedType component type
 	 * @param array $params
-	 * @throws TInvalidDataValueException if the component type is unknown
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the component type is unknown
 	 * @return \Prado\TComponent component instance of the specified type
 	 */
 	public static function createComponent($requestedType, ...$params)
@@ -313,7 +313,7 @@ class PradoBase
 	 * If the namespace corresponds to a directory, the directory will be appended
 	 * to the include path. If the namespace corresponds to a file, it will be included (include_once).
 	 * @param string $namespace namespace to be used
-	 * @throws TInvalidDataValueException if the namespace is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the namespace is invalid
 	 */
 	public static function using($namespace)
 	{
@@ -417,8 +417,8 @@ class PradoBase
 	/**
 	 * @param string $alias alias to the path
 	 * @param string $path the path corresponding to the alias
-	 * @throws TInvalidOperationException $alias if the alias is already defined
-	 * @throws TInvalidDataValueException $path if the path is not a valid file path
+	 * @throws \Prado\Exceptions\TInvalidOperationException $alias if the alias is already defined
+	 * @throws \Prado\Exceptions\TInvalidDataValueException $path if the path is not a valid file path
 	 */
 	public static function setPathOfAlias($alias, $path)
 	{

@@ -44,7 +44,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes related to a hyperlink element to renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -63,7 +63,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Renders the body content of the hyperlink.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -84,7 +84,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Gets the TImage for rendering the ImageUrl property. This is not for
 	 * creating dynamic images.
 	 * @param string $imageUrl image url.
-	 * @return TImage image control for rendering.
+	 * @return \Prado\Web\UI\WebControls\TImage image control for rendering.
 	 */
 	protected function createImage($imageUrl)
 	{

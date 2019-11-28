@@ -52,7 +52,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 	 * Constructor
 	 *
 	 * Initializes the TXmlTransform object and ensure that the XSL extension is available
-	 * @throws TConfigurationException If XSL extension is not available
+	 * @throws \Prado\Exceptions\TConfigurationException If XSL extension is not available
 	 */
 	public function __construct()
 	{
@@ -140,7 +140,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 
 	/**
 	 * Returns the list of parameters to be applied to the transform.
-	 * @return TAttributeCollection the list of custom parameters
+	 * @return \Prado\Collections\TAttributeCollection the list of custom parameters
 	 */
 	public function getParameters()
 	{
@@ -185,7 +185,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 
 	/**
 	 * Performs XSL transformation and render the output.
-	 * @param THtmlWriter $writer The writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer The writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

@@ -50,7 +50,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * Constructor.
 	 * Initializes the stack with an array or an iterable object.
 	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initialization.
-	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null)
 	{
@@ -71,7 +71,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * Copies iterable data into the stack.
 	 * Note, existing data in the list will be cleared first.
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
 	{
@@ -107,7 +107,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the item at the top of the stack.
 	 * Unlike {@link pop()}, this method does not remove the item from the stack.
-	 * @throws TInvalidOperationException if the stack is empty
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the stack is empty
 	 * @return mixed item at the top of the stack
 	 */
 	public function peek()
@@ -121,7 +121,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Pops up the item at the top of the stack.
-	 * @throws TInvalidOperationException if the stack is empty
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the stack is empty
 	 * @return mixed the item at the top of the stack
 	 */
 	public function pop()

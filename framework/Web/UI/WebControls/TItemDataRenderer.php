@@ -51,7 +51,7 @@ abstract class TItemDataRenderer extends TDataRenderer implements IItemDataRende
 	}
 
 	/**
-	 * @param TListItemType $value item type.
+	 * @param \Prado\Web\UI\WebControls\TListItemType $value item type.
 	 */
 	public function setItemType($value)
 	{

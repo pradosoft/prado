@@ -25,7 +25,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TXmlElementList extends \Prado\Collections\TList
 {
 	/**
-	 * @var TXmlElement owner of this list
+	 * @var \Prado\Xml\TXmlElement owner of this list
 	 */
 	private $_o;
 
@@ -52,7 +52,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	 * operations for each newly added TXmlElement object.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a TXmlElement object.
 	 */
 	public function insertAt($index, $item)
 	{

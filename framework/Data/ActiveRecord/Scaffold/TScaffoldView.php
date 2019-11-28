@@ -50,7 +50,7 @@ class TScaffoldView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldListView scaffold list view.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\TScaffoldListView scaffold list view.
 	 */
 	public function getListView()
 	{
@@ -59,7 +59,7 @@ class TScaffoldView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldEditView scaffold edit view.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\TScaffoldEditView scaffold edit view.
 	 */
 	public function getEditView()
 	{
@@ -68,7 +68,7 @@ class TScaffoldView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldSearch scaffold search textbox and button.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\TScaffoldSearch scaffold search textbox and button.
 	 */
 	public function getSearchControl()
 	{
@@ -77,7 +77,7 @@ class TScaffoldView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TButton "Add new record" button.
+	 * @return \Prado\Web\UI\WebControls\TButton "Add new record" button.
 	 */
 	public function getAddButton()
 	{

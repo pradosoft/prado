@@ -22,7 +22,7 @@ namespace Prado\Web\UI\ActiveControls;
 interface IActiveControl
 {
 	/**
-	 * @return TBaseActiveControl Active control properties.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl Active control properties.
 	 */
 	public function getActiveControl();
 }

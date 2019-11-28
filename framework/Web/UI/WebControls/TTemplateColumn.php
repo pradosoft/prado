@@ -98,7 +98,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the edit item template
+	 * @return \Prado\Web\UI\ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
 	{
@@ -106,8 +106,8 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the edit item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the edit item template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
@@ -119,7 +119,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the item template
+	 * @return \Prado\Web\UI\ITemplate the item template
 	 */
 	public function getItemTemplate()
 	{
@@ -127,8 +127,8 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the item template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -140,7 +140,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the header template
+	 * @return \Prado\Web\UI\ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -148,8 +148,8 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the header template.
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the header template.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -161,7 +161,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the footer template
+	 * @return \Prado\Web\UI\ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -169,8 +169,8 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the footer template
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
@@ -186,7 +186,7 @@ class TTemplateColumn extends TDataGridColumn
 	 * This method overrides the parent implementation.
 	 * It initializes the cell based on different templates
 	 * (ItemTemplate, EditItemTemplate, HeaderTemplate, FooterTemplate).
-	 * @param TTableCell $cell the cell to be initialized.
+	 * @param \Prado\Web\UI\WebControls\TTableCell $cell the cell to be initialized.
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */

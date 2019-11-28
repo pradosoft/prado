@@ -73,12 +73,12 @@ class TWebControlDecorator extends \Prado\TComponent
 	private $_usestate = false;
 
 	/**
-	 * @var TWebControl the control to decorate
+	 * @var \Prado\Web\UI\WebControls\TWebControl the control to decorate
 	 */
 	private $_control;
 
 	/**
-	 * @var TControl to tell the decorator where to place the outer controls
+	 * @var \Prado\Web\UI\TControl to tell the decorator where to place the outer controls
 	 */
 	private $_outercontrol;
 
@@ -108,26 +108,26 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * @var TTemplate the template that goes before the open tag
+	 * @var \Prado\Web\UI\TTemplate the template that goes before the open tag
 	 */
 	private $_pretagtemplate;
 	/**
-	 * @var TTemplate the template that goes after the open tag
+	 * @var \Prado\Web\UI\TTemplate the template that goes after the open tag
 	 */
 	private $_precontentstemplate;
 	/**
-	 * @var TTemplate the template that goes before the close tag
+	 * @var \Prado\Web\UI\TTemplate the template that goes before the close tag
 	 */
 	private $_postcontentstemplate;
 	/**
-	 * @var TTemplate the template that goes after the close tag
+	 * @var \Prado\Web\UI\TTemplate the template that goes after the close tag
 	 */
 	private $_posttagtemplate;
 
 	/**
 	 * Constructor.
 	 * Initializes the control .
-	 * @param TWebControl $control The control that is to be decorated.
+	 * @param \Prado\Web\UI\WebControls\TWebControl $control The control that is to be decorated.
 	 * @param bool $onlyinternal whether decoration is just around the inner content
 	 */
 	public function __construct($control, $onlyinternal = false)
@@ -238,7 +238,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TTemplate $value sets the template before the open tag in the TWebControl
+	 * @param \Prado\Web\UI\TTemplate $value sets the template before the open tag in the TWebControl
 	 */
 	public function setPreTagTemplate($value)
 	{
@@ -257,7 +257,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TTemplate $value sets the template after the open tag in the TWebControl
+	 * @param \Prado\Web\UI\TTemplate $value sets the template after the open tag in the TWebControl
 	 */
 	public function setPreContentsTemplate($value)
 	{
@@ -276,7 +276,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TTemplate $value sets the template before the close tag in the TWebControl
+	 * @param \Prado\Web\UI\TTemplate $value sets the template before the close tag in the TWebControl
 	 */
 	public function setPostContentsTemplate($value)
 	{
@@ -295,7 +295,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TTemplate $value sets the template before the close tag in the TWebControl
+	 * @param \Prado\Web\UI\TTemplate $value sets the template before the close tag in the TWebControl
 	 */
 	public function setPostTagTemplate($value)
 	{
@@ -328,7 +328,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	/**
 	 *	This method places the templates around the open and close tag.  This takes a parameter which is
 	 * to specify the control to get the outer template decoration.  If no outer control is specified
-	 * @param TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
+	 * @param \Prado\TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
 	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
 	 * control
 	 * @param null|mixed $param

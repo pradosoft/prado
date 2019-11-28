@@ -35,8 +35,8 @@ class TJsonRpcClient extends TRpcClient
 	/**
 	 * @param string $method RPC method name
 	 * @param array $parameters RPC method parameters
-	 * @throws TRpcClientRequestException if the client fails to connect to the server
-	 * @throws TRpcClientResponseException if the response represents an RPC fault
+	 * @throws \Prado\Util\TRpcClientRequestException if the client fails to connect to the server
+	 * @throws \Prado\Util\TRpcClientResponseException if the response represents an RPC fault
 	 * @return mixed RPC request result
 	 */
 	public function __call($method, $parameters)

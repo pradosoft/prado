@@ -33,7 +33,7 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -50,7 +50,7 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @return TTableHeaderScope the scope of the cells that the header cell applies to. Defaults to TTableHeaderScope::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TTableHeaderScope the scope of the cells that the header cell applies to. Defaults to TTableHeaderScope::NotSet.
 	 */
 	public function getScope()
 	{
@@ -58,7 +58,7 @@ class TTableHeaderCell extends TTableCell
 	}
 
 	/**
-	 * @param TTableHeaderScope $value the scope of the cells that the header cell applies to.
+	 * @param \Prado\Web\UI\WebControls\TTableHeaderScope $value the scope of the cells that the header cell applies to.
 	 */
 	public function setScope($value)
 	{

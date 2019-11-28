@@ -67,7 +67,7 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $tableName table name.
-	 * @return TPgsqlTableInfo table information.
+	 * @return \Prado\Data\Common\Pgsql\TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($tableName)
 	{
@@ -117,7 +117,7 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 * @param array $col column information.
 	 * @param array $foreign foreign key details.
-	 * @return TSqliteTableColumn column details.
+	 * @return \Prado\Data\Common\Sqlite\TSqliteTableColumn column details.
 	 */
 	protected function processColumn($col, $foreign)
 	{

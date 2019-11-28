@@ -127,7 +127,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TResultProperty result property for the discriminator column.
+	 * @return \Prado\Data\SqlMap\Configuration\TResultProperty result property for the discriminator column.
 	 */
 	public function getMapping()
 	{
@@ -135,7 +135,7 @@ class TDiscriminator extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSubMap $subMap add new sub mapping.
+	 * @param \Prado\Data\SqlMap\Configuration\TSubMap $subMap add new sub mapping.
 	 */
 	public function addSubMap($subMap)
 	{
@@ -144,7 +144,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * @param string $value database value
-	 * @return TResultMap result mapping.
+	 * @return \Prado\Data\SqlMap\Configuration\TResultMap result mapping.
 	 */
 	public function getSubMap($value)
 	{
@@ -155,7 +155,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * Copies the discriminator properties to a new TResultProperty.
-	 * @param TResultMap $resultMap result map holding the discriminator.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result map holding the discriminator.
 	 */
 	public function initMapping($resultMap)
 	{
@@ -169,7 +169,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * Set the result maps for particular sub-mapping values.
-	 * @param TSqlMapManager $manager sql map manager instance.
+	 * @param \Prado\Data\SqlMap\TSqlMapManager $manager sql map manager instance.
 	 */
 	public function initialize($manager)
 	{

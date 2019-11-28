@@ -53,7 +53,7 @@ use Prado\Web\UI\WebControls\TListItemType;
 class TScaffoldEditView extends TScaffoldBase
 {
 	/**
-	 * @var IScaffoldEditRenderer custom scaffold edit renderer
+	 * @var \Prado\Data\ActiveRecord\Scaffold\IScaffoldEditRenderer custom scaffold edit renderer
 	 */
 	private $_editRenderer;
 
@@ -103,7 +103,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TActiveRecord current Active Record instance
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord current Active Record instance
 	 */
 	protected function getCurrentRecord()
 	{
@@ -132,9 +132,9 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Instantiate the external edit renderer.
-	 * @param TActiveRecord $record record to be edited
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record to be edited
 	 * @param string $classPath external edit renderer class name.
-	 * @throws TConfigurationException raised when renderer is not an
+	 * @throws \Prado\Exceptions\TConfigurationException raised when renderer is not an
 	 * instance of IScaffoldEditRenderer.
 	 */
 	protected function createEditRenderer($record, $classPath)
@@ -223,7 +223,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TRepeater default editor input controls repeater
+	 * @return \Prado\Web\UI\WebControls\TRepeater default editor input controls repeater
 	 */
 	protected function getInputRepeater()
 	{
@@ -232,7 +232,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TButton Button triggered to save the Active Record.
+	 * @return \Prado\Web\UI\WebControls\TButton Button triggered to save the Active Record.
 	 */
 	public function getSaveButton()
 	{
@@ -241,7 +241,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TButton Button to clear the editor inputs.
+	 * @return \Prado\Web\UI\WebControls\TButton Button to clear the editor inputs.
 	 */
 	public function getClearButton()
 	{
@@ -250,7 +250,7 @@ class TScaffoldEditView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TButton Button to cancel the edit action (e.g. hide the edit view).
+	 * @return \Prado\Web\UI\WebControls\TButton Button to cancel the edit action (e.g. hide the edit view).
 	 */
 	public function getCancelButton()
 	{
@@ -260,8 +260,8 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Create the default scaffold editor control factory.
-	 * @param TActiveRecord $record record instance.
-	 * @return TScaffoldInputBase scaffold editor control factory.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase scaffold editor control factory.
 	 */
 	protected function getScaffoldInputBuilder($record)
 	{

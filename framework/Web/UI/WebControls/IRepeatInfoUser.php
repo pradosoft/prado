@@ -44,8 +44,8 @@ interface IRepeatInfoUser
 	public function generateItemStyle($itemType, $index);
 	/**
 	 * Renders an item.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param TRepeatInfo $repeatInfo repeat information
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type
 	 * @param int $index zero-based index of the item being rendered
 	 */

@@ -30,7 +30,7 @@ use Prado\Prado;
 class TSqlMapGateway extends \Prado\TComponent
 {
 	/**
-	 * @var TSqlMapManager manager
+	 * @var \Prado\Data\SqlMap\TSqlMapManager manager
 	 */
 	private $_manager;
 
@@ -40,7 +40,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TSqlMapManager sqlmap manager.
+	 * @return \Prado\Data\SqlMap\TSqlMapManager sqlmap manager.
 	 */
 	public function getSqlMapManager()
 	{
@@ -86,7 +86,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * pass in null if want to return a list instead.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A List of result objects.
+	 * @return \Prado\Collections\TList A List of result objects.
 	 */
 	public function queryForList($statementName, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
@@ -107,7 +107,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * pass in null if want to return a list instead.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A List of result objects.
+	 * @return \Prado\Collections\TList A List of result objects.
 	 */
 	public function queryWithRowDelegate($statementName, $delegate, $parameter = null, $result = null, $skip = -1, $max = -1)
 	{
@@ -165,7 +165,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param null|string $valueProperty The property of the result object to be used as the value.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TMap Array object containing the rows keyed by keyProperty.
+	 * @return \Prado\Collections\TMap Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMap($statementName, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{
@@ -186,7 +186,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	 * @param null|string $valueProperty The property of the result object to be used as the value.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TMap Array object containing the rows keyed by keyProperty.
+	 * @return \Prado\Collections\TMap Array object containing the rows keyed by keyProperty.
 	 */
 	public function queryForMapWithRowDelegate($statementName, $delegate, $parameter = null, $keyProperty = null, $valueProperty = null, $skip = -1, $max = -1)
 	{
@@ -255,7 +255,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandler $typeHandler new type handler.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler $typeHandler new type handler.
 	 */
 	public function registerTypeHandler($typeHandler)
 	{

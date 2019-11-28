@@ -113,7 +113,7 @@ class TTimeTriggeredCallback extends TCallback
 
 	/**
 	 * Registers the javascript code for initializing the active control.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	public function render($writer)
 	{

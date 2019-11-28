@@ -49,7 +49,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	 * operations for each newly added THttpCookie object.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a THttpCookie object.
 	 */
 	public function insertAt($index, $item)
 	{
@@ -81,7 +81,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 
 	/**
 	 * @param int|string $index index of the cookie in the collection or the cookie's name
-	 * @return THttpCookie the cookie found
+	 * @return \Prado\Web\THttpCookie the cookie found
 	 */
 	public function itemAt($index)
 	{
@@ -95,7 +95,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	/**
 	 * Finds the cookie with the specified name.
 	 * @param string $name the name of the cookie to be looked for
-	 * @return THttpCookie the cookie, null if not found
+	 * @return \Prado\Web\THttpCookie the cookie, null if not found
 	 */
 	public function findCookieByName($name)
 	{

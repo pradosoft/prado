@@ -138,7 +138,7 @@ class TTranslate extends TI18NControl
 	 * Returns the list of custom parameters.
 	 * Custom parameters are name-value pairs that may subsititute translation
 	 * place holders during rendering.
-	 * @return TAttributeCollection the list of custom parameters
+	 * @return \Prado\Collections\TAttributeCollection the list of custom parameters
 	 */
 	public function getParameters()
 	{

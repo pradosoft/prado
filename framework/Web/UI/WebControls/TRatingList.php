@@ -347,7 +347,7 @@ class TRatingList extends TRadioButtonList
 	 * Add rating style class name to the class attribute
 	 * when {@link setReadOnly ReadOnly} property is true and when the
 	 * {@link setCssClass CssClass} property is empty.
-	 * @param THtmlWriter $writer renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer renderer
 	 */
 	public function render($writer)
 	{

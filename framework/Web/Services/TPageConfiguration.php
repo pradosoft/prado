@@ -41,7 +41,7 @@ class TPageConfiguration extends \Prado\TComponent
 	 */
 	private $_properties = [];
 	/**
-	 * @var TAuthorizationRuleCollection list of authorization rules
+	 * @var \Prado\Security\TAuthorizationRuleCollection list of authorization rules
 	 */
 	private $_rules = [];
 	/**
@@ -85,7 +85,7 @@ class TPageConfiguration extends \Prado\TComponent
 	 * Returns list of authorization rules.
 	 * The authorization rules are aggregated (bottom-up) from configuration files
 	 * along the path to the specified page.
-	 * @return TAuthorizationRuleCollection collection of authorization rules
+	 * @return \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
 	 */
 	public function getRules()
 	{

@@ -66,7 +66,7 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return TActiveRecord the active record instance that queried for its related records.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord the active record instance that queried for its related records.
 	 */
 	public function getSourceRecord()
 	{
@@ -157,7 +157,7 @@ class TActiveRecordRelationContext
 	}
 
 	/**
-	 * @return TActiveRecord corresponding relationship foreign object finder instance.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord corresponding relationship foreign object finder instance.
 	 */
 	public function getForeignRecordFinder()
 	{
@@ -169,8 +169,8 @@ class TActiveRecordRelationContext
 	 * An instance of TActiveRecordHasOne, TActiveRecordBelongsTo, TActiveRecordHasMany,
 	 * or TActiveRecordHasManyAssocation will be returned.
 	 * @param null|TActiveRecordCriteria $criteria search criteria
-	 * @throws TActiveRecordException if property is not defined or missing.
-	 * @return TActiveRecordRelation record relationship handler instnace.
+	 * @throws \Prado\Data\ActiveRecord\Exceptions\TActiveRecordException if property is not defined or missing.
+	 * @return \Prado\Data\ActiveRecord\Relations\TActiveRecordRelation record relationship handler instnace.
 	 */
 	public function getRelationHandler($criteria = null)
 	{

@@ -50,7 +50,7 @@ class TActivePanel extends TPanel implements IActiveControl
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -59,7 +59,7 @@ class TActivePanel extends TPanel implements IActiveControl
 
 	/**
 	 * Adds attribute id to the renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -72,7 +72,7 @@ class TActivePanel extends TPanel implements IActiveControl
 	 * When render() is called before the OnPreRender event, such as when render()
 	 * is called during a callback event handler, the rendering
 	 * is defered until OnPreRender event is raised.
-	 * @param THtmlWriter $writer html writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

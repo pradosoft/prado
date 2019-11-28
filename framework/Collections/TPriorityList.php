@@ -85,7 +85,7 @@ class TPriorityList extends TList
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities
-	 * @throws TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
@@ -224,7 +224,7 @@ class TPriorityList extends TList
 	 * Returns the item at the index of a flattened priority list.
 	 * {@link offsetGet} calls this method.
 	 * @param int $index the index of the item to get
-	 * @throws TInvalidDataValueException Issued when the index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException Issued when the index is invalid
 	 * @return mixed the element at the offset
 	 */
 	public function itemAt($index)
@@ -275,7 +275,7 @@ class TPriorityList extends TList
 	 * not be at the end of the list.
 	 * @param mixed $item item to add into the list at priority
 	 * @param null|numeric $priority priority blank or null for the default priority
-	 * @throws TInvalidOperationException if the map is read-only
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the map is read-only
 	 * @return int the index within the flattened array
 	 */
 	public function add($item, $priority = null)
@@ -292,8 +292,8 @@ class TPriorityList extends TList
 	 * and then inserts the item at that priority-index.
 	 * @param int $index the specified position in the flattened list.
 	 * @param mixed $item new item to add
-	 * @throws TInvalidDataValueException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException if the list is read-only
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 */
 	public function insertAt($index, $item)
 	{
@@ -315,8 +315,8 @@ class TPriorityList extends TList
 	 * @param int $index index within the priority to add the item, defaults to false which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it to the default priority
 	 * @param bool $preserveCache preserveCache specifies if this is a special quick function or not. This defaults to false.
-	 * @throws TInvalidDataValueException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException if the list is read-only
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 */
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{
@@ -388,7 +388,7 @@ class TPriorityList extends TList
 	 * @param mixed $item item the item to be removed.
 	 * @param null|bool|float $priority priority of item to remove. without this parameter it defaults to false.
 	 * A value of false means any priority. null will be filled in with the default priority.
-	 * @throws TInvalidDataValueException If the item does not exist
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the item does not exist
 	 * @return int index within the flattened list at which the item is being removed
 	 */
 	public function remove($item, $priority = false)
@@ -418,8 +418,8 @@ class TPriorityList extends TList
 	/**
 	 * Removes an item at the specified index in the flattened list.
 	 * @param int $index index of the item to be removed.
-	 * @throws TInvalidDataValueException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException if the list is read-only
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 * @return mixed the removed item.
 	 */
 	public function removeAt($index)
@@ -439,7 +439,7 @@ class TPriorityList extends TList
 	 * and call this method to insert your own functionality.
 	 * @param int $index index of item to remove within the priority.
 	 * @param null|numeric $priority priority of the item to remove, defaults to null, or left blank, it is then set to the default priority
-	 * @throws TInvalidDataValueException If the item does not exist
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the item does not exist
 	 * @return mixed the removed item.
 	 */
 	public function removeAtIndexInPriority($index, $priority = null)
@@ -569,7 +569,7 @@ class TPriorityList extends TList
 	 * found index item and places the new item before it.
 	 * @param mixed $indexitem the item to index
 	 * @param mixed $item the item to add before indexitem
-	 * @throws TInvalidDataValueException If the item does not exist
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
 	 */
 	public function insertBefore($indexitem, $item)
@@ -592,7 +592,7 @@ class TPriorityList extends TList
 	 * found index item and places the new item after it.
 	 * @param mixed $indexitem the item to index
 	 * @param mixed $item the item to add after indexitem
-	 * @throws TInvalidDataValueException If the item does not exist
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
 	 */
 	public function insertAfter($indexitem, $item)
@@ -672,7 +672,7 @@ class TPriorityList extends TList
 	 * Copies iterable data into the priority list.
 	 * Note, existing data in the map will be cleared first.
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
 	{
@@ -703,7 +703,7 @@ class TPriorityList extends TList
 	 * the incoming parameter items will be appended at the priorities they are present.  These items will be added
 	 * to the end of the existing items with equal priorities, if there are any.
 	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
 	{

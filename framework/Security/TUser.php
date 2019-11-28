@@ -38,13 +38,13 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	private $_stateChanged = false;
 	/**
-	 * @var IUserManager user manager
+	 * @var \Prado\Security\IUserManager user manager
 	 */
 	private $_manager;
 
 	/**
 	 * Constructor.
-	 * @param IUserManager $manager user manager
+	 * @param \Prado\Security\IUserManager $manager user manager
 	 */
 	public function __construct(IUserManager $manager)
 	{
@@ -54,7 +54,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @return IUserManager user manager
+	 * @return \Prado\Security\IUserManager user manager
 	 */
 	public function getManager()
 	{
@@ -148,7 +148,7 @@ class TUser extends \Prado\TComponent implements IUser
 
 	/**
 	 * @param string $data user data that is serialized and restored from session
-	 * @return IUser the user object
+	 * @return \Prado\Security\IUser the user object
 	 */
 	public function loadFromString($data)
 	{

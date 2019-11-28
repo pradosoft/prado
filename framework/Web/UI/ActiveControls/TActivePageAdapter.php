@@ -75,7 +75,7 @@ class TActivePageAdapter extends TControlAdapter
 	const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
 
 	/**
-	 * @var ICallbackEventHandler callback event handler.
+	 * @var \Prado\Web\UI\ActiveControls\ICallbackEventHandler callback event handler.
 	 */
 	private $_callbackEventTarget;
 	/**
@@ -83,7 +83,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	private $_callbackEventParameter;
 	/**
-	 * @var TCallbackClientScript callback client script handler
+	 * @var \Prado\Web\UI\ActiveControls\TCallbackClientScript callback client script handler
 	 */
 	private $_callbackClient;
 
@@ -92,7 +92,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Constructor, trap errors and exception to let the callback response
 	 * handle them.
-	 * @param TPage $control
+	 * @param \Prado\Web\UI\TPage $control
 	 */
 	public function __construct(TPage $control)
 	{
@@ -107,7 +107,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Process the callback request.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	public function processCallbackEvent($writer)
 	{
@@ -117,8 +117,8 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Register a control for defered render() call.
-	 * @param TControl $control control for defered rendering
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\TControl $control control for defered rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function registerControlToRender($control, $writer)
 	{
@@ -138,7 +138,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Render the callback response.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	public function renderCallbackResponse($writer)
 	{
@@ -163,7 +163,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Renders the callback response by adding additional callback data and
 	 * javascript actions in the header and page state if required.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	protected function renderResponse($writer)
 	{
@@ -251,8 +251,8 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Trys to find the callback event handler and raise its callback event.
-	 * @throws TInvalidCallbackException if call back target is not found.
-	 * @throws TInvalidCallbackException if the requested target does not
+	 * @throws \Prado\Web\UI\ActiveControls\TInvalidCallbackException if call back target is not found.
+	 * @throws \Prado\Web\UI\ActiveControls\TInvalidCallbackException if the requested target does not
 	 * implement ICallbackEventHandler.
 	 */
 	private function raiseCallbackEvent()
@@ -291,7 +291,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl $control control registered to raise callback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
@@ -322,7 +322,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Gets the callback client script handler. It handlers the javascript functions
 	 * to be executed during the callback response.
-	 * @return TCallbackClientScript callback client handler.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientScript callback client handler.
 	 */
 	public function getCallbackClientHandler()
 	{

@@ -70,7 +70,7 @@ class TOracleMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $table table name.
-	 * @return TOracleTableInfo table information.
+	 * @return \Prado\Data\Common\Oracle\TOracleTableInfo table information.
 	 */
 	protected function createTableInfo($table)
 	{
@@ -134,7 +134,7 @@ EOD;
 
 	/**
 	 * @param string $name table name, schema name or column name.
-	 * @throws TDbException when table name contains a double quote (").
+	 * @throws \Prado\Exceptions\TDbException when table name contains a double quote (").
 	 * @return string a valid identifier.
 	 */
 	protected function assertIdentifier($name)
@@ -169,7 +169,7 @@ EOD;
 	}
 
 	/**
-	 * @param TOracleTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Oracle\TOracleTableInfo $tableInfo table information.
 	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
@@ -336,7 +336,7 @@ EOD;
 
 	/**
 	 * @param string $columnId column name.
-	 * @param TOracleTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Oracle\TOracleTableInfo $tableInfo table information.
 	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

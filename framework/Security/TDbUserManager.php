@@ -115,7 +115,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return \Prado\Security\TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null)
 	{
@@ -162,7 +162,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Creates the DB connection.
 	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
@@ -181,8 +181,8 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
-	 * @param THttpCookie $cookie the cookie storing user authentication information
-	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
+	 * @return \Prado\Security\TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie)
@@ -192,7 +192,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie $cookie the cookie to receive the user auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie)

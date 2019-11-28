@@ -32,7 +32,7 @@ use \Prado\Collections\TMap;
 class TXmlElement extends \Prado\TComponent
 {
 	/**
-	 * @var TXmlElement parent of this element
+	 * @var \Prado\Xml\TXmlElement parent of this element
 	 */
 	private $_parent;
 	/**
@@ -48,7 +48,7 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	private $_elements;
 	/**
-	 * @var TMap attributes of this element
+	 * @var \Prado\Collections\TMap attributes of this element
 	 */
 	private $_attributes;
 
@@ -159,7 +159,7 @@ class TXmlElement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TMap list of attributes
+	 * @return \Prado\Collections\TMap list of attributes
 	 */
 	public function getAttributes()
 	{
@@ -187,7 +187,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @param mixed $tagName
-	 * @return TList list of all child elements that have the specified tag-name
+	 * @return \Prado\Collections\TList list of all child elements that have the specified tag-name
 	 */
 	public function getElementsByTagName($tagName)
 	{

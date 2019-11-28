@@ -43,7 +43,7 @@ class TForm extends TControl
 
 	/**
 	 * Adds form specific attributes to renderer.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -70,7 +70,7 @@ class TForm extends TControl
 
 	/**
 	 * Renders the form.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{

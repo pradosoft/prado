@@ -94,7 +94,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * @param string $value the key used to generate HMAC
-	 * @throws TInvalidDataValueException if the key is empty
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the key is empty
 	 */
 	public function setValidationKey($value)
 	{
@@ -122,7 +122,7 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * @param string $value the key used to encrypt/decrypt data.
-	 * @throws TInvalidDataValueException if the key is empty
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the key is empty
 	 */
 	public function setEncryptionKey($value)
 	{
@@ -144,7 +144,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * This method accepts all hash algorithms returned by hash_algos().
 	 * @param string $value hashing algorithm used to generate HMAC.
-	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the hash algorithm is not supported.
 	 */
 	public function setHashAlgorithm($value)
 	{
@@ -177,7 +177,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Encrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string $data data to be encrypted.
-	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
+	 * @throws \Prado\Exceptions\TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the encrypted data
 	 */
 	public function encrypt($data)
@@ -194,7 +194,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Decrypts data with {@link getEncryptionKey EncryptionKey}.
 	 * @param string $data data to be decrypted.
-	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
+	 * @throws \Prado\Exceptions\TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the decrypted data
 	 */
 	public function decrypt($data)

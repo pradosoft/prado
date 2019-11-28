@@ -49,7 +49,7 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TDbConnection $connection the database connection
+	 * @param \Prado\Data\TDbConnection $connection the database connection
 	 * @param string $text the SQL statement to be executed
 	 */
 	public function __construct(TDbConnection $connection, $text)
@@ -177,7 +177,7 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement.
 	 * This method is meant only for executing non-query SQL statement.
 	 * No result set will be returned.
-	 * @throws TDbException execution failed
+	 * @throws \Prado\Exceptions\TDbException execution failed
 	 * @return int number of rows affected by the execution.
 	 */
 	public function execute()
@@ -210,8 +210,8 @@ class TDbCommand extends \Prado\TComponent
 	/**
 	 * Executes the SQL statement and returns query result.
 	 * This method is for executing an SQL query that returns result set.
-	 * @throws TDbException execution failed
-	 * @return TDbDataReader the reader object for fetching the query result
+	 * @throws \Prado\Exceptions\TDbException execution failed
+	 * @return \Prado\Data\TDbDataReader the reader object for fetching the query result
 	 */
 	public function query()
 	{
@@ -233,7 +233,7 @@ class TDbCommand extends \Prado\TComponent
 	 * This is a convenient method of {@link query} when only the first row of data is needed.
 	 * @param bool $fetchAssociative whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
-	 * @throws TDbException execution failed
+	 * @throws \Prado\Exceptions\TDbException execution failed
 	 * @return array the first row of the query result, false if no result.
 	 */
 	public function queryRow($fetchAssociative = true)
@@ -257,7 +257,7 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement and returns the value of the first column in the first row of data.
 	 * This is a convenient method of {@link query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
-	 * @throws TDbException execution failed
+	 * @throws \Prado\Exceptions\TDbException execution failed
 	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
 	 */
 	public function queryScalar()
@@ -285,7 +285,7 @@ class TDbCommand extends \Prado\TComponent
 	 * Executes the SQL statement and returns the first column of the result.
 	 * This is a convenient method of {@link query} when only the first column of data is needed.
 	 * Note, the column returned will contain the first element in each row of result.
-	 * @throws TDbException execution failed
+	 * @throws \Prado\Exceptions\TDbException execution failed
 	 * @return array the first column of the query result. Empty array if no result.
 	 * @since 3.1.2
 	 */

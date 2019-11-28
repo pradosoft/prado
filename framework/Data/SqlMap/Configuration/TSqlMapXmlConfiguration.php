@@ -24,7 +24,7 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 {
 	/**
-	 * @var TSqlMapManager manager
+	 * @var \Prado\Data\SqlMap\TSqlMapManager manager
 	 */
 	private $_manager;
 	/**
@@ -37,7 +37,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	private $_properties = [];
 
 	/**
-	 * @param TSqlMapManager $manager manager instance.
+	 * @param \Prado\Data\SqlMap\TSqlMapManager $manager manager instance.
 	 */
 	public function __construct($manager)
 	{

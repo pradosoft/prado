@@ -24,7 +24,7 @@ use Prado\Web\UI\WebControls\TStyle;
 class TStyleDiff extends TViewStateDiff
 {
 	/**
-	 * @param TStyle $obj control style
+	 * @param \Prado\Web\UI\WebControls\TStyle $obj control style
 	 * @return array all the style properties combined.
 	 */
 	protected function getCombinedStyle($obj)

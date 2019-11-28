@@ -60,7 +60,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	 * Or if cache is enabled and manager already cached load from cache.
 	 * If cache is enabled, the data mapper instance is cached.
 	 *
-	 * @return TSqlMapManager SqlMap manager instance
+	 * @return \Prado\Data\SqlMap\TSqlMapManager SqlMap manager instance
 	 * @since 3.1.7
 	 */
 	public function getSqlMapManager()
@@ -99,7 +99,7 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Loads SqlMap manager from cache.
-	 * @return TSqlMapManager SqlMap manager intance if load was successful, null otherwise.
+	 * @return \Prado\Data\SqlMap\TSqlMapManager SqlMap manager intance if load was successful, null otherwise.
 	 */
 	protected function loadCachedSqlMapManager()
 	{
@@ -126,7 +126,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	/**
 	 * @param string $value external configuration file in namespace format. The file
 	 * extension must be '.xml'.
-	 * @throws TConfigurationException if the file is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{
@@ -160,7 +160,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return TSqlMapGateway SqlMap gateway instance.
+	 * @return \Prado\Data\SqlMap\TSqlMapGateway SqlMap gateway instance.
 	 */
 	protected function createSqlMapGateway()
 	{
@@ -169,7 +169,7 @@ class TSqlMapConfig extends TDataSourceConfig
 
 	/**
 	 * Initialize the sqlmap if necessary, returns the TSqlMapGateway instance.
-	 * @return TSqlMapGateway SqlMap gateway instance.
+	 * @return \Prado\Data\SqlMap\TSqlMapGateway SqlMap gateway instance.
 	 */
 	public function getClient()
 	{

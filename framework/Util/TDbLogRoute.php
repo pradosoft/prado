@@ -48,7 +48,7 @@ class TDbLogRoute extends TLogRoute
 	 */
 	private $_connID = '';
 	/**
-	 * @var TDbConnection the DB connection instance
+	 * @var \Prado\Data\TDbConnection the DB connection instance
 	 */
 	private $_db;
 	/**
@@ -76,7 +76,7 @@ class TDbLogRoute extends TLogRoute
 	 * This method is required by the IModule interface.
 	 * It initializes the database for logging purpose.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if the DB table does not exist.
+	 * @throws \Prado\Exceptions\TConfigurationException if the DB table does not exist.
 	 */
 	public function init($config)
 	{
@@ -139,7 +139,7 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * Creates the DB connection.
-	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()

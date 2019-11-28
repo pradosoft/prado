@@ -91,7 +91,7 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * Load document using simple xml.
 	 * @param string $filename
-	 * @param TSqlMapXmlConfiguration $config
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapXmlConfiguration $config
 	 * @return SimpleXmlElement xml document.
 	 */
 	protected function loadXmlDocument($filename, TSqlMapXmlConfiguration $config)

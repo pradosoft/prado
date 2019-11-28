@@ -45,7 +45,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $value database connection.
+	 * @param \Prado\Data\TDbConnection $value database connection.
 	 */
 	public function setDbConnection($value)
 	{
@@ -53,7 +53,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbTableInfo $value table information.
+	 * @param \Prado\Data\Common\TDbTableInfo $value table information.
 	 */
 	public function setTableInfo($value)
 	{
@@ -61,7 +61,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbTableInfo table information.
+	 * @return \Prado\Data\Common\TDbTableInfo table information.
 	 */
 	public function getTableInfo()
 	{
@@ -315,7 +315,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param int $limit
 	 * @param int $offset
 	 * @param string $select
-	 * @return TDbCommand query command.
+	 * @return \Prado\Data\TDbCommand query command.
 	 */
 	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
 	{
@@ -348,7 +348,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array $ordering
 	 * @param int $limit
 	 * @param int $offset
-	 * @return TDbCommand count command.
+	 * @return \Prado\Data\TDbCommand count command.
 	 */
 	public function createCountCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1)
 	{
@@ -361,7 +361,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * for the condition is given by $parameters.
 	 * @param string $where delete condition.
 	 * @param array $parameters delete parameters.
-	 * @return TDbCommand delete command.
+	 * @return \Prado\Data\TDbCommand delete command.
 	 */
 	public function createDeleteCommand($where, $parameters = [])
 	{
@@ -380,7 +380,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * (if a column allows to be null, it may be omitted) to be inserted with
 	 * the corresponding array value.
 	 * @param array $data name-value pairs of new data to be inserted.
-	 * @return TDbCommand insert command
+	 * @return \Prado\Data\TDbCommand insert command
 	 */
 	public function createInsertCommand($data)
 	{
@@ -397,7 +397,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 * @param array $data name-value pairs of data to be updated.
 	 * @param string $where update condition.
 	 * @param array $parameters update parameters.
-	 * @return TDbCommand update command.
+	 * @return \Prado\Data\TDbCommand update command.
 	 */
 	public function createUpdateCommand($data, $where, $parameters = [])
 	{
@@ -450,7 +450,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * @param string $sql SQL query string.
-	 * @return TDbCommand corresponding database command.
+	 * @return \Prado\Data\TDbCommand corresponding database command.
 	 */
 	public function createCommand($sql)
 	{
@@ -460,7 +460,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Bind the name-value pairs of $values where the array keys correspond to column names.
-	 * @param TDbCommand $command database command.
+	 * @param \Prado\Data\TDbCommand $command database command.
 	 * @param array $values name-value pairs.
 	 */
 	public function bindColumnValues($command, $values)
@@ -476,7 +476,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommand $command database command
+	 * @param \Prado\Data\TDbCommand $command database command
 	 * @param array $values values for binding.
 	 */
 	public function bindArrayValues($command, $values)

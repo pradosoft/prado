@@ -32,7 +32,7 @@ class TDataGatewayEventParameter extends \Prado\TEventParameter
 	/**
 	 * The database command to be executed. Do not rebind the parameters or change
 	 * the sql query string.
-	 * @return TDbCommand command to be executed.
+	 * @return \Prado\Data\TDbCommand command to be executed.
 	 */
 	public function getCommand()
 	{
@@ -40,7 +40,7 @@ class TDataGatewayEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TSqlCriteria criteria used to bind the sql query parameters.
+	 * @return \Prado\Data\DataGateway\TSqlCriteria criteria used to bind the sql query parameters.
 	 */
 	public function getCriteria()
 	{

@@ -29,7 +29,7 @@ class TDataListItemCollection extends \Prado\Collections\TList
 	 * This overrides the parent implementation by inserting only TControl descendants.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a TControl descendant.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a TControl descendant.
 	 */
 	public function insertAt($index, $item)
 	{

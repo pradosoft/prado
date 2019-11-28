@@ -114,7 +114,7 @@ class TSoapService extends \Prado\TService
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
 	 */
 	public function init($config)
 	{
@@ -135,7 +135,7 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Resolves the request parameter.
 	 * It identifies the server ID and whether the request is for WSDL.
-	 * @throws THttpException if the server ID cannot be found
+	 * @throws \Prado\Exceptions\THttpException if the server ID cannot be found
 	 * @see getServerID
 	 * @see getIsWsdlRequest
 	 */
@@ -157,7 +157,7 @@ class TSoapService extends \Prado\TService
 	/**
 	 * Loads configuration from an XML element
 	 * @param mixed $config configuration node
-	 * @throws TConfigurationException if soap server id is not specified or duplicated
+	 * @throws \Prado\Exceptions\TConfigurationException if soap server id is not specified or duplicated
 	 */
 	private function loadConfig($config)
 	{
@@ -196,7 +196,7 @@ class TSoapService extends \Prado\TService
 	/**
 	 * @param string $value external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
-	 * @throws TInvalidDataValueException if the file is invalid.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{
@@ -238,7 +238,7 @@ class TSoapService extends \Prado\TService
 	 * Creates the requested SOAP server.
 	 * The SOAP server is initialized with the property values specified
 	 * in the configuration.
-	 * @return TSoapServer the SOAP server instance
+	 * @return \Prado\Web\Services\TSoapServer the SOAP server instance
 	 */
 	protected function createServer()
 	{

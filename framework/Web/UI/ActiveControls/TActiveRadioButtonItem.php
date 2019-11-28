@@ -24,7 +24,7 @@ class TActiveRadioButtonItem extends TActiveRadioButton
 	/**
 	 * Override client implementation to avoid emitting the javascript
 	 *
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $onclick onclick js
 	 */

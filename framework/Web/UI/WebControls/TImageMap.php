@@ -53,7 +53,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional imagemap specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -69,7 +69,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Renders this imagemap.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{
@@ -131,7 +131,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 * Raises the postback event.
 	 * This method is required by {@link IPostBackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -158,7 +158,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	}
 
 	/**
-	 * @return THotSpotMode the behavior of hotspot regions in this imagemap when they are clicked. Defaults to THotSpotMode::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THotSpotMode the behavior of hotspot regions in this imagemap when they are clicked. Defaults to THotSpotMode::NotSet.
 	 */
 	public function getHotSpotMode()
 	{
@@ -169,7 +169,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 * Sets the behavior of hotspot regions in this imagemap when they are clicked.
 	 * If an individual hotspot has a mode other than 'NotSet', the mode set in this
 	 * imagemap will be ignored. By default, 'NotSet' is equivalent to 'Navigate'.
-	 * @param THotSpotMode $value the behavior of hotspot regions in this imagemap when they are clicked.
+	 * @param \Prado\Web\UI\WebControls\THotSpotMode $value the behavior of hotspot regions in this imagemap when they are clicked.
 	 */
 	public function setHotSpotMode($value)
 	{
@@ -177,7 +177,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	}
 
 	/**
-	 * @return THotSpotCollection collection of hotspots defined in this imagemap.
+	 * @return \Prado\Web\UI\WebControls\THotSpotCollection collection of hotspots defined in this imagemap.
 	 */
 	public function getHotSpots()
 	{
@@ -209,7 +209,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 * This method is invoked when a hotspot region is clicked within the imagemap.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param TImageMapEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\WebControls\TImageMapEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{

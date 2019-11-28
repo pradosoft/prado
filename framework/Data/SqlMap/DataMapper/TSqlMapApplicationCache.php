@@ -29,7 +29,7 @@ class TSqlMapApplicationCache implements ICache
 
 	/**
 	 * Create a new cache with limited cache size.
-	 * @param TSqlMapCacheModel $cacheModel
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapCacheModel $cacheModel
 	 */
 	public function __construct($cacheModel = null)
 	{
@@ -127,7 +127,7 @@ class TSqlMapApplicationCache implements ICache
 	}
 
 	/**
-	 * @return ICache Application cache instance.
+	 * @return \Prado\Caching\ICache Application cache instance.
 	 */
 	protected function getCache()
 	{
@@ -139,7 +139,7 @@ class TSqlMapApplicationCache implements ICache
 	 * @param mixed $value
 	 * @param mixed $expire
 	 * @param null|mixed $dependency
-	 * @throws TSqlMapException not implemented.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapException not implemented.
 	 */
 	public function add($id, $value, $expire = 0, $dependency = null)
 	{

@@ -78,8 +78,8 @@ class TRpcClient extends \Prado\TApplicationComponent
 	 * @param mixed $type
 	 * @param mixed $serverUrl
 	 * @param mixed $isNotification
-	 * @throws TApplicationException if an unsupported RPC client type was specified
-	 * @return TRpcClient instance
+	 * @throws \Prado\Exceptions\TApplicationException if an unsupported RPC client type was specified
+	 * @return \Prado\Util\TRpcClient instance
 	 */
 	public static function create($type, $serverUrl, $isNotification = false)
 	{

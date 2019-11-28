@@ -166,7 +166,7 @@ class TListControlValidator extends TBaseValidator
 	}
 
 	/**
-	 * @param TListControl $control control to validate
+	 * @param \Prado\Web\UI\WebControls\TListControl $control control to validate
 	 * @return array number of selected values and its values.
 	 */
 	protected function getSelection($control)

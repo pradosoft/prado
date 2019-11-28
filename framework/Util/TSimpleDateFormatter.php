@@ -212,7 +212,7 @@ class TSimpleDateFormatter
 	 * Parse the string according to the pattern.
 	 * @param int|string $value date string or integer to parse
 	 * @param bool $defaultToCurrentTime
-	 * @throws TInvalidDataValueException if date string is malformed.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if date string is malformed.
 	 * @return int date time stamp
 	 */
 	public function parse($value, $defaultToCurrentTime = true)

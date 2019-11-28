@@ -127,7 +127,7 @@ class TPageService extends \Prado\TService
 	 */
 	private $_pagePath;
 	/**
-	 * @var TPage the requested page
+	 * @var \Prado\Web\UI\TPage the requested page
 	 */
 	private $_page;
 	/**
@@ -139,11 +139,11 @@ class TPageService extends \Prado\TService
 	 */
 	private $_initialized = false;
 	/**
-	 * @var TThemeManager theme manager
+	 * @var \Prado\Web\UI\TThemeManager theme manager
 	 */
 	private $_themeManager;
 	/**
-	 * @var TTemplateManager template manager
+	 * @var \Prado\Web\UI\TTemplateManager template manager
 	 */
 	private $_templateManager;
 
@@ -168,7 +168,7 @@ class TPageService extends \Prado\TService
 	 * Page context includes path alias settings, namespace usages,
 	 * parameter initialization, module loadings, page initial properties
 	 * and authorization rules.
-	 * @param TPageConfiguration $pageConfig
+	 * @param \Prado\Web\Services\TPageConfiguration $pageConfig
 	 */
 	protected function initPageContext($pageConfig)
 	{
@@ -182,7 +182,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Applies a page configuration.
-	 * @param TPageConfiguration $config the configuration
+	 * @param \Prado\Web\Services\TPageConfiguration $config the configuration
 	 */
 	protected function applyConfiguration($config)
 	{
@@ -293,7 +293,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @return TTemplateManager template manager
+	 * @return \Prado\Web\UI\TTemplateManager template manager
 	 */
 	public function getTemplateManager()
 	{
@@ -305,7 +305,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param TTemplateManager $value template manager
+	 * @param \Prado\Web\UI\TTemplateManager $value template manager
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
@@ -313,7 +313,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @return TThemeManager theme manager
+	 * @return \Prado\Web\UI\TThemeManager theme manager
 	 */
 	public function getThemeManager()
 	{
@@ -325,7 +325,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * @param TThemeManager $value theme manager
+	 * @param \Prado\Web\UI\TThemeManager $value theme manager
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
@@ -364,7 +364,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param string $value default page path to be served if no explicit page is request
-	 * @throws TInvalidOperationException if the page service is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the page service is initialized
 	 */
 	public function setDefaultPage($value)
 	{
@@ -402,7 +402,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param string $value root directory (in namespace form) storing pages
-	 * @throws TInvalidOperationException if the service is initialized already or basepath is invalid
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the service is initialized already or basepath is invalid
 	 */
 	public function setBasePath($value)
 	{
@@ -467,8 +467,8 @@ class TPageService extends \Prado\TService
 	/**
 	 * Creates a page instance based on requested page path.
 	 * @param string $pagePath requested page path
-	 * @throws THttpException if requested page path is invalid
-	 * @throws TConfigurationException if the page class cannot be found
+	 * @throws \Prado\Exceptions\THttpException if requested page path is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if the page class cannot be found
 	 * @return \Prado\Web\UI\TPage the requested page instance
 	 */
 	protected function createPage($pagePath)
@@ -516,7 +516,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * Executes a page.
-	 * @param TPage $page the page instance to be run
+	 * @param \Prado\Web\UI\TPage $page the page instance to be run
 	 * @param array $properties list of initial page properties
 	 */
 	protected function runPage($page, $properties)

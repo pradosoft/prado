@@ -101,7 +101,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @return TTextAlign the alignment of the text caption, defaults to TTextAlign::Right.
+	 * @return \Prado\Web\UI\WebControls\TTextAlign the alignment of the text caption, defaults to TTextAlign::Right.
 	 */
 	public function getTextAlign()
 	{
@@ -109,7 +109,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	}
 
 	/**
-	 * @param TTextAlign $value the text alignment of the checkboxes
+	 * @param \Prado\Web\UI\WebControls\TTextAlign $value the text alignment of the checkboxes
 	 */
 	public function setTextAlign($value)
 	{
@@ -118,7 +118,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 
 	/**
-	 * @return TRepeatInfo repeat information (primarily used by control developers)
+	 * @return \Prado\Web\UI\WebControls\TRepeatInfo repeat information (primarily used by control developers)
 	 */
 	protected function getRepeatInfo()
 	{
@@ -291,8 +291,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Renders an item in the list.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param THtmlWriter $writer writer for rendering purpose
-	 * @param TRepeatInfo $repeatInfo repeat information
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose
+	 * @param \Prado\Web\UI\WebControls\TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index zero-based index of the item in the item list
 	 */
@@ -390,7 +390,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	/**
 	 * Renders the checkbox list control.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter $writer writer for rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
 	 */
 	public function render($writer)
 	{

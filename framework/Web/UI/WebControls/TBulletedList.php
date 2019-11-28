@@ -55,7 +55,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -94,7 +94,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional bulleted list specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -161,7 +161,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @return TBulletStyle style of bullets. Defaults to TBulletStyle::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TBulletStyle style of bullets. Defaults to TBulletStyle::NotSet.
 	 */
 	public function getBulletStyle()
 	{
@@ -169,7 +169,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param TBulletStyle $value style of bullets.
+	 * @param \Prado\Web\UI\WebControls\TBulletStyle $value style of bullets.
 	 */
 	public function setBulletStyle($value)
 	{
@@ -177,7 +177,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @return TBulletedListDisplayMode display mode of the list. Defaults to TBulletedListDisplayMode::Text.
+	 * @return \Prado\Web\UI\WebControls\TBulletedListDisplayMode display mode of the list. Defaults to TBulletedListDisplayMode::Text.
 	 */
 	public function getDisplayMode()
 	{
@@ -186,7 +186,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $value
-	 * @return TBulletedListDisplayMode display mode of the list.
+	 * @return \Prado\Web\UI\WebControls\TBulletedListDisplayMode display mode of the list.
 	 */
 	public function setDisplayMode($value)
 	{
@@ -216,7 +216,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * Raises 'OnClick' event.
 	 * This method is invoked when the {@link getDisplayMode DisplayMode} is 'LinkButton'
 	 * and end-users click on one of the buttons.
-	 * @param TBulletedListEventParameter $param event parameter.
+	 * @param \Prado\Web\UI\WebControls\TBulletedListEventParameter $param event parameter.
 	 */
 	public function onClick($param)
 	{
@@ -245,7 +245,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders the control.
-	 * @param THtmlWriter $writer the writer for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function render($writer)
 	{
@@ -256,7 +256,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders the body contents.
-	 * @param THtmlWriter $writer the writer for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
@@ -276,8 +276,8 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders each item
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param TListItem $item item to be rendered
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\TListItem $item item to be rendered
 	 * @param int $index index of the item being rendered
 	 */
 	protected function renderBulletText($writer, $item, $index)
@@ -367,7 +367,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $value
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setAutoPostBack($value)
 	{
@@ -376,7 +376,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $index
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndex($index)
 	{
@@ -385,7 +385,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $indices
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndices($indices)
 	{
@@ -394,7 +394,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $value
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedValue($value)
 	{
@@ -403,7 +403,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param mixed $values
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedValues($values)
 	{

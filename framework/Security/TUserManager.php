@@ -89,7 +89,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private $_guestName = 'Guest';
 	/**
-	 * @var TUserManagerPasswordMode password mode
+	 * @var \Prado\Security\TUserManagerPasswordMode password mode
 	 */
 	private $_passwordMode = TUserManagerPasswordMode::MD5;
 	/**
@@ -231,8 +231,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * @param string $value user/role data file path (in namespace form). The file format is XML
 	 * whose content is similar to that user/role block in application configuration.
-	 * @throws TInvalidOperationException if the module is already initialized
-	 * @throws TConfigurationException if the file is not in proper namespace format
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TConfigurationException if the file is not in proper namespace format
 	 */
 	public function setUserFile($value)
 	{
@@ -260,7 +260,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @return TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
+	 * @return \Prado\Security\TUserManagerPasswordMode how password is stored, clear text, or MD5 or SHA1 hashed. Default to TUserManagerPasswordMode::MD5.
 	 */
 	public function getPasswordMode()
 	{
@@ -268,7 +268,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @param TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
+	 * @param \Prado\Security\TUserManagerPasswordMode $value how password is stored, clear text, or MD5 or SHA1 hashed.
 	 */
 	public function setPasswordMode($value)
 	{
@@ -295,7 +295,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return \Prado\Security\TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null)
 	{
@@ -321,8 +321,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
-	 * @param THttpCookie $cookie the cookie storing user authentication information
-	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
+	 * @return \Prado\Security\TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie)
@@ -341,7 +341,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie $cookie the cookie to receive the user auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie)
@@ -357,7 +357,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * Sets a user as a guest.
 	 * User name is changed as guest name, and roles are emptied.
-	 * @param TUser $user the user to be changed to a guest.
+	 * @param \Prado\Security\TUser $user the user to be changed to a guest.
 	 */
 	public function switchToGuest($user)
 	{

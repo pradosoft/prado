@@ -73,7 +73,7 @@ class TPanelStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -125,7 +125,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return TContentDirection alignment of the content in the panel. Defaults to TContentDirection::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TContentDirection alignment of the content in the panel. Defaults to TContentDirection::NotSet.
 	 */
 	public function getDirection()
 	{
@@ -133,7 +133,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TContentDirection $value alignment of the content in the panel.
+	 * @param \Prado\Web\UI\WebControls\TContentDirection $value alignment of the content in the panel.
 	 */
 	public function setDirection($value)
 	{
@@ -158,7 +158,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THorizontalAlign the horizontal alignment of the contents within the panel, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -167,7 +167,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the panel.
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param \Prado\Web\UI\WebControls\THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -175,7 +175,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @return TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
+	 * @return \Prado\Web\UI\WebControls\TScrollBars the visibility and position of scroll bars in a panel control, defaults to TScrollBars::None.
 	 */
 	public function getScrollBars()
 	{
@@ -183,7 +183,7 @@ class TPanelStyle extends TStyle
 	}
 
 	/**
-	 * @param TScrollBars $value the visibility and position of scroll bars in a panel control.
+	 * @param \Prado\Web\UI\WebControls\TScrollBars $value the visibility and position of scroll bars in a panel control.
 	 */
 	public function setScrollBars($value)
 	{
@@ -209,7 +209,7 @@ class TPanelStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -237,7 +237,7 @@ class TPanelStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{

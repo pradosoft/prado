@@ -31,7 +31,7 @@ class TChainedCacheDependency extends TCacheDependency
 	private $_dependencies;
 
 	/**
-	 * @return TCacheDependencyList list of dependency objects
+	 * @return \Prado\Caching\TCacheDependencyList list of dependency objects
 	 */
 	public function getDependencies()
 	{

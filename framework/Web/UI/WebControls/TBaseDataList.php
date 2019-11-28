@@ -42,7 +42,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by the data list control.
-	 * @return TTableStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TTableStyle control style to be used
 	 */
 	protected function createStyle()
 	{
@@ -94,7 +94,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THorizontalAlign the horizontal alignment of the table content. Defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -106,7 +106,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @param THorizontalAlign $value the horizontal alignment of the table content.
+	 * @param \Prado\Web\UI\WebControls\THorizontalAlign $value the horizontal alignment of the table content.
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -114,7 +114,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table layout. Defaults to TTableGridLines::None.
+	 * @return \Prado\Web\UI\WebControls\TTableGridLines the grid line setting of the table layout. Defaults to TTableGridLines::None.
 	 */
 	public function getGridLines()
 	{
@@ -127,7 +127,7 @@ abstract class TBaseDataList extends TDataBoundControl
 
 	/**
 	 * Sets the grid line style of the table layout.
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param \Prado\Web\UI\WebControls\TTableGridLines $value the grid line setting of the table
 	 */
 	public function setGridLines($value)
 	{
@@ -152,7 +152,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	}
 
 	/**
-	 * @return TList the keys used in the data listing control.
+	 * @return \Prado\Collections\TList the keys used in the data listing control.
 	 */
 	public function getDataKeys()
 	{
@@ -171,7 +171,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
 	 * @param mixed $field field name
-	 * @throws TInvalidDataValueException if the data is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the data is invalid
 	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)

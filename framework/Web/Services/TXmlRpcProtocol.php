@@ -82,7 +82,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Turns the given exception into an XML RPC fault
-	 * @param TRpcException $exception
+	 * @param \Prado\Web\Services\TRpcException $exception
 	 * @return string XML RPC fault
 	 */
 	public function createErrorResponse(TRpcException $exception)
@@ -95,7 +95,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Sets the correct response headers
-	 * @param THttpResponse $response
+	 * @param \Prado\Web\THttpResponse $response
 	 */
 	public function createResponseHeaders($response)
 	{

@@ -23,7 +23,7 @@ interface ITheme
 {
 	/**
 	 * Applies this theme to the specified control.
-	 * @param TControl $control the control to be applied with this theme
+	 * @param \Prado\Web\UI\TControl $control the control to be applied with this theme
 	 */
 	public function applySkin($control);
 }

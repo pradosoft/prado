@@ -24,7 +24,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TAuthorizationRuleCollection extends \Prado\Collections\TList
 {
 	/**
-	 * @param IUser $user the user to be authorized
+	 * @param \Prado\Security\IUser $user the user to be authorized
 	 * @param string $verb verb, can be empty, 'post' or 'get'.
 	 * @param string $ip the request IP address
 	 * @return bool whether the user is allowed
@@ -50,7 +50,7 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TList
 	 * operations for each newly added TAuthorizationRule object.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a TAuthorizationRule object.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a TAuthorizationRule object.
 	 */
 	public function insertAt($index, $item)
 	{

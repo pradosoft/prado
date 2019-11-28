@@ -77,7 +77,7 @@ class TUrlMapping extends TUrlManager
 	 */
 	protected $_patterns = [];
 	/**
-	 * @var TUrlMappingPattern matched pattern.
+	 * @var \Prado\Web\TUrlMappingPattern matched pattern.
 	 */
 	private $_matched;
 	/**
@@ -101,7 +101,7 @@ class TUrlMapping extends TUrlManager
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param mixed $config configuration for this module, can be null
-	 * @throws TConfigurationException if module is configured in the global scope.
+	 * @throws \Prado\Exceptions\TConfigurationException if module is configured in the global scope.
 	 */
 	public function init($config)
 	{
@@ -126,7 +126,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * Initialize the module from configuration file.
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
 	 */
 	protected function loadConfigFile()
 	{
@@ -198,7 +198,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * @param string $value external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
-	 * @throws TInvalidDataValueException if the file is invalid.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{
@@ -231,7 +231,7 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * Load and configure each url mapping pattern.
 	 * @param mixed $config configuration node
-	 * @throws TConfigurationException if specific pattern class is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if specific pattern class is invalid
 	 */
 	protected function loadUrlMappings($config)
 	{
@@ -376,7 +376,7 @@ class TUrlMapping extends TUrlManager
 	}
 
 	/**
-	 * @return TUrlMappingPattern the matched pattern, null if not found.
+	 * @return \Prado\Web\TUrlMappingPattern the matched pattern, null if not found.
 	 */
 	public function getMatchingPattern()
 	{

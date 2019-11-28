@@ -320,7 +320,7 @@ class TComponent
 	protected $_behaviorsenabled = true;
 
 	/**
-	 * @var TPriorityMap list of object behaviors
+	 * @var \Prado\Collections\TPriorityMap list of object behaviors
 	 */
 	protected $_m;
 
@@ -525,7 +525,7 @@ class TComponent
 	 *
 	 * @param string $method method name that doesn't exist and is being called on the object
 	 * @param mixed $args method parameters
-	 * @throws TInvalidOperationException If the property is not defined or read-only or
+	 * @throws \Prado\Exceptions\TInvalidOperationException If the property is not defined or read-only or
 	 * 		method is undefined
 	 * @return mixed result of the method call, or false if 'fx' or 'dy' function but
 	 *		is not found in the class, otherwise it runs
@@ -611,7 +611,7 @@ class TComponent
 	 * When behaviors are enabled, this will return the behavior of a specific
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string $name the property name or the event name
-	 * @throws TInvalidOperationException if the property/event is not defined.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the property/event is not defined.
 	 * @return mixed the property value or the event handler list as {@link TPriorityList}
 	 */
 	public function __get($name)
@@ -665,7 +665,7 @@ class TComponent
 	 * When behaviors are enabled, this will also set a behaviors properties and events.
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
-	 * @throws TInvalidOperationException If the property is not defined or read-only.
+	 * @throws \Prado\Exceptions\TInvalidOperationException If the property is not defined or read-only.
 	 */
 	public function __set($name, $value)
 	{
@@ -747,7 +747,7 @@ class TComponent
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using unset() to set a component property to be null.
 	 * @param string $name the property name or the event name
-	 * @throws TInvalidOperationException if the property is read only.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the property is read only.
 	 * @since 3.2.3
 	 */
 	public function __unset($name)
@@ -935,8 +935,8 @@ class TComponent
 	 * Returns the list of attached event handlers for an 'on' or 'fx' event.   This function also
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
 	 * @param mixed $name
-	 * @throws TInvalidOperationException if the event is not defined
-	 * @return TPriorityList list of attached event handlers for an event
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the event is not defined
+	 * @return \Prado\Collections\TPriorityList list of attached event handlers for an event
 	 */
 	public function getEventHandlers($name)
 	{
@@ -1005,7 +1005,7 @@ class TComponent
 	 * @param callable $handler the event handler
 	 * @param null|numeric $priority the priority of the handler, defaults to null which translates into the
 	 * default priority of 10.0 within {@link TPriorityList}
-	 * @throws TInvalidOperationException if the event does not exist
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
 	{
@@ -1097,13 +1097,13 @@ class TComponent
 	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 * @param null|numeric $responsetype how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
 	 *		null responses. optional
 	 * @param null|function $postfunction any per handler filtering of the response result needed is passed through
 	 *		this if not null. default: null.  optional
-	 * @throws TInvalidOperationException if the event is undefined
-	 * @throws TInvalidDataValueException If an event handler is invalid
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the event is undefined
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If an event handler is invalid
 	 * @return mixed the results of the event
 	 */
 	public function raiseEvent($name, $sender, $param, $responsetype = null, $postfunction = null)
@@ -1218,7 +1218,7 @@ class TComponent
 	 * pass-through effect.
 	 *
 	 * @param string $expression PHP expression
-	 * @throws TInvalidOperationException if the expression is invalid
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the expression is invalid
 	 * @return mixed the expression result
 	 */
 	public function evaluateExpression($expression)
@@ -1248,7 +1248,7 @@ class TComponent
 	 * pass-through effect.
 	 *
 	 * @param string $statements PHP statements
-	 * @throws TInvalidOperationException if the statements are invalid
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the statements are invalid
 	 * @return string content echoed or printed by the PHP statements
 	 */
 	public function evaluateStatements($statements)
@@ -1283,7 +1283,7 @@ class TComponent
 	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through
 	 * dyCreatedOnTemplate.
 	 *
-	 * @param TComponent $parent potential parent of this control
+	 * @param \Prado\TComponent $parent potential parent of this control
 	 * @see addParsedObject
 	 */
 	public function createdOnTemplate($parent)
@@ -1320,7 +1320,7 @@ class TComponent
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior added to this instance.
 	 * @param mixed $sender the application
-	 * @param TClassBehaviorEventParameter $param
+	 * @param \Prado\Util\TClassBehaviorEventParameter $param
 	 * @since 3.2.3
 	 */
 	public function fxAttachClassBehavior($sender, $param)
@@ -1336,7 +1336,7 @@ class TComponent
 	 * the class is instanced.  Only when the class to which the behavior is being added is in this
 	 * object's class hierarchy, via {@link getClassHierarchy}, is the behavior removed from this instance.
 	 * @param mixed $sender the application
-	 * @param TClassBehaviorEventParameter $param
+	 * @param \Prado\Util\TClassBehaviorEventParameter $param
 	 * @since 3.2.3
 	 */
 	public function fxDetachClassBehavior($sender, $param)
@@ -1361,8 +1361,8 @@ class TComponent
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
 	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
-	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
-	 * @throws TInvalidOperationException if the class behavior is already defined
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
 	 */
 	public static function attachClassBehavior($name, $behavior, $class = null, $priority = null)
@@ -1433,7 +1433,7 @@ class TComponent
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behaviorname the behavior name
-	 * @return IBehavior the behavior object, or null if the behavior does not exist
+	 * @return \Prado\Util\IBehavior the behavior object, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
@@ -1555,7 +1555,7 @@ class TComponent
 	 * @param mixed $behavior the behavior configuration. This is passed as the first
 	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
 	 * @param null|numeric $priority
-	 * @return IBehavior the behavior object
+	 * @return \Prado\Util\IBehavior the behavior object
 	 * @since 3.2.3
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
@@ -1592,7 +1592,7 @@ class TComponent
 	 *
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
 	 * @param false|numeric $priority the behavior's priority. This defaults to false, aka any priority.
-	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
+	 * @return \Prado\Util\IBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */
 	public function detachBehavior($name, $priority = false)

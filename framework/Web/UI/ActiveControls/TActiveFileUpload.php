@@ -63,23 +63,23 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	const SCRIPT_PATH = 'activefileupload';
 
 	/**
-	 * @var THiddenField a flag to tell which component is doing the callback.
+	 * @var \Prado\Web\UI\WebControls\THiddenField a flag to tell which component is doing the callback.
 	 */
 	private $_flag;
 	/**
-	 * @var TImage that spins to show that the file is being uploaded.
+	 * @var \Prado\Web\UI\WebControls\TImage that spins to show that the file is being uploaded.
 	 */
 	private $_busy;
 	/**
-	 * @var TImage that shows a green check mark for completed upload.
+	 * @var \Prado\Web\UI\WebControls\TImage that shows a green check mark for completed upload.
 	 */
 	private $_success;
 	/**
-	 * @var TImage that shows a red X for incomplete upload.
+	 * @var \Prado\Web\UI\WebControls\TImage that shows a red X for incomplete upload.
 	 */
 	private $_error;
 	/**
-	 * @var TInlineFrame used to submit the data in an "asynchronous" fashion.
+	 * @var \Prado\Web\UI\WebControls\TInlineFrame used to submit the data in an "asynchronous" fashion.
 	 */
 	private $_target;
 
@@ -111,7 +111,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * This method is invoked when a file is uploaded.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onFileUpload($param)
 	{
@@ -189,7 +189,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * @param mixed $sender
-	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
 	 */
 	public function onInit($sender)
 	{
@@ -211,7 +211,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 *
 	 * This method is required by {@link ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -359,7 +359,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
 	 */
 	public function getActiveControl()
 	{
@@ -367,7 +367,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{
@@ -376,7 +376,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Adds ID attribute, and renders the javascript for active component.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -442,7 +442,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return TImage the image displayed when an upload
+	 * @return \Prado\Web\UI\WebControls\TImage the image displayed when an upload
 	 * 		completes successfully.
 	 */
 	public function getSuccessImage()
@@ -452,7 +452,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return TImage the image displayed when an upload
+	 * @return \Prado\Web\UI\WebControls\TImage the image displayed when an upload
 	 * 		does not complete successfully.
 	 */
 	public function getErrorImage()
@@ -462,7 +462,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return TImage the image displayed when an upload
+	 * @return \Prado\Web\UI\WebControls\TImage the image displayed when an upload
 	 * 		is in progress.
 	 */
 	public function getBusyImage()

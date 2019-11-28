@@ -30,7 +30,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 * check on the item being added.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
 	 */
 	public function insertAt($index, $item)
 	{
@@ -61,7 +61,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	/**
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $id the id of the meta tag to be looked for
-	 * @return TMetaTag the meta tag found, null if not found.
+	 * @return \Prado\Web\UI\WebControls\TMetaTag the meta tag found, null if not found.
 	 */
 	public function findMetaTagByID($id)
 	{

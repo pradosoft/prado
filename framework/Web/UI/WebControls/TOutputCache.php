@@ -140,7 +140,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This method overrides the parent implementation by setting up
 	 * the stack of the output cache in the page.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer the naming container control
+	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -371,7 +371,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 	/**
 	 * @param int $value number of seconds that the data can remain in cache. If 0, it means data is not cached.
-	 * @throws TInvalidDataValueException if the value is smaller than 0.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is smaller than 0.
 	 */
 	public function setDuration($value)
 	{
@@ -443,7 +443,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * An event handler may be written to check customized dependency conditions.
 	 * The checking result should be saved by setting {@link TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
 	 * property of the event parameter (which defaults to true).
-	 * @param TOutputCacheCheckDependencyEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TOutputCacheCheckDependencyEventParameter $param event parameter
 	 */
 	public function onCheckDependency($param)
 	{
@@ -456,7 +456,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * An event handler may be written to add variety of the key calculation.
 	 * The value set in {@link TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
 	 * this event parameter will be appended to the default key calculation scheme.
-	 * @param TOutputCacheCalculateKeyEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TOutputCacheCalculateKeyEventParameter $param event parameter
 	 */
 	public function onCalculateKey($param)
 	{
@@ -467,7 +467,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Renders the output cache control.
 	 * This method overrides the parent implementation by capturing the output
 	 * from its child controls and saving it into cache, if output cache is needed.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

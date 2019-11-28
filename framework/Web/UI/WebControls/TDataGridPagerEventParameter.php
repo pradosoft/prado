@@ -36,7 +36,7 @@ class TDataGridPagerEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Constructor.
-	 * @param TDataGridPager $pager datagrid pager related with the corresponding event
+	 * @param \Prado\Web\UI\WebControls\TDataGridPager $pager datagrid pager related with the corresponding event
 	 */
 	public function __construct(TDataGridPager $pager)
 	{
@@ -44,7 +44,7 @@ class TDataGridPagerEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TDataGridPager datagrid pager related with the corresponding event
+	 * @return \Prado\Web\UI\WebControls\TDataGridPager datagrid pager related with the corresponding event
 	 */
 	public function getPager()
 	{

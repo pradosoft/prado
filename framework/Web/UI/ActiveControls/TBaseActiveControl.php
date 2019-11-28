@@ -32,17 +32,17 @@ use Prado\Web\UI\TControl;
 class TBaseActiveControl extends \Prado\TComponent
 {
 	/**
-	 * @var TMap map of active control options.
+	 * @var \Prado\Collections\TMap map of active control options.
 	 */
 	private $_options;
 	/**
-	 * @var TControl attached control.
+	 * @var \Prado\Web\UI\TControl attached control.
 	 */
 	private $_control;
 
 	/**
 	 * Constructor. Attach a base active control to an active control instance.
-	 * @param TControl $control active control
+	 * @param \Prado\Web\UI\TControl $control active control
 	 */
 	public function __construct($control)
 	{
@@ -80,7 +80,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TMap active control options
+	 * @return \Prado\Collections\TMap active control options
 	 */
 	protected function getOptions()
 	{

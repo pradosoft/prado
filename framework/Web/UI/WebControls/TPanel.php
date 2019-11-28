@@ -54,7 +54,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Creates a style object to be used by the control.
 	 * This method overrides the parent impementation by creating a TPanelStyle object.
-	 * @return TPanelStyle the style used by TPanel.
+	 * @return \Prado\Web\UI\WebControls\TPanelStyle the style used by TPanel.
 	 */
 	protected function createStyle()
 	{
@@ -63,8 +63,8 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
-	 * @throws TInvalidDataValueException if default button is not right.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if default button is not right.
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -198,7 +198,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -213,7 +213,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

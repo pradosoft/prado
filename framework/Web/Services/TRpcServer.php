@@ -27,13 +27,13 @@ namespace Prado\Web\Services;
 class TRpcServer extends \Prado\TModule
 {
 	/**
-	 * @var TRpcProtocol instance
+	 * @var \Prado\Web\Services\TRpcProtocol instance
 	 */
 	protected $handler;
 
 	/**
 	 * Constructor
-	 * @param TRpcProtocol $protocolHandler instance
+	 * @param \Prado\Web\Services\TRpcProtocol $protocolHandler instance
 	 */
 	public function __construct(TRpcProtocol $protocolHandler)
 	{

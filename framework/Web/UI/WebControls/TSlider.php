@@ -59,12 +59,12 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_dataChanged = false;
 	/**
-	 * @var TSliderClientScript Clients side javascripts
+	 * @var \Prado\Web\UI\WebControls\TSliderClientScript Clients side javascripts
 	 */
 	private $_clientScript;
 
 	/**
-	 * @return TSliderDirection Direction of slider (Horizontal or Vertical). Defaults to Horizontal.
+	 * @return \Prado\Web\UI\WebControls\TSliderDirection Direction of slider (Horizontal or Vertical). Defaults to Horizontal.
 	 */
 	public function getDirection()
 	{
@@ -72,7 +72,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TSliderDirection $value Direction of slider (Horizontal or Vertical)
+	 * @param \Prado\Web\UI\WebControls\TSliderDirection $value Direction of slider (Horizontal or Vertical)
 	 */
 	public function setDirection($value)
 	{
@@ -279,7 +279,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
@@ -313,7 +313,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TSliderClientScript javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TSliderClientScript javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -324,7 +324,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TSliderClientScript javascript event options.
+	 * @return \Prado\Web\UI\WebControls\TSliderClientScript javascript event options.
 	 */
 	protected function createClientScript()
 	{
@@ -341,7 +341,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Add the specified css classes to the track
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

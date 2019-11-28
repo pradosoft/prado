@@ -58,7 +58,7 @@ class TLogRouter extends \Prado\TModule
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param mixed $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
 	 */
 	public function init($config)
 	{
@@ -83,7 +83,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Loads configuration from an XML element or PHP array
 	 * @param mixed $config configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
+	 * @throws \Prado\Exceptions\TConfigurationException if log route class or type is not specified
 	 */
 	private function loadConfig($config)
 	{
@@ -127,8 +127,8 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Adds a TLogRoute instance to the log router.
 	 *
-	 * @param TLogRoute $route $route
-	 * @throws TInvalidDataTypeException if the route object is invalid
+	 * @param \Prado\Util\TLogRoute $route $route
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the route object is invalid
 	 */
 	public function addRoute($route)
 	{
@@ -150,7 +150,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * @param string $value external configuration file in namespace format. The file
 	 * must be suffixed with '.xml'.
-	 * @throws TConfigurationException if the file is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if the file is invalid.
 	 */
 	public function setConfigFile($value)
 	{

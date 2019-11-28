@@ -48,7 +48,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -70,7 +70,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -121,7 +121,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @return TWizardNavigationButtonType button type. Default to TWizardNavigationButtonType::Button.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonType button type. Default to TWizardNavigationButtonType::Button.
 	 */
 	public function getButtonType()
 	{
@@ -129,7 +129,7 @@ class TWizardNavigationButtonStyle extends TStyle
 	}
 
 	/**
-	 * @param TWizardNavigationButtonType $value button type.
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationButtonType $value button type.
 	 */
 	public function setButtonType($value)
 	{

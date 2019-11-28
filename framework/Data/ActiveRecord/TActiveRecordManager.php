@@ -57,7 +57,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	private $_invalidFinderResult = TActiveRecordInvalidFinderResult::Null;
 
 	/**
-	 * @return ICache application cache.
+	 * @return \Prado\Caching\ICache application cache.
 	 */
 	public function getCache()
 	{
@@ -65,7 +65,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param ICache $value application cache
+	 * @param \Prado\Caching\ICache $value application cache
 	 */
 	public function setCache($value)
 	{
@@ -73,7 +73,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $conn default database connection
+	 * @param \Prado\Data\TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{
@@ -90,7 +90,7 @@ class TActiveRecordManager extends \Prado\TComponent
 
 	/**
 	 * @param null|mixed $self
-	 * @return TActiveRecordManager static instance of record manager.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordManager static instance of record manager.
 	 */
 	public static function getInstance($self = null)
 	{
@@ -104,7 +104,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordGateway record gateway.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordGateway record gateway.
 	 */
 	public function getRecordGateway()
 	{
@@ -115,7 +115,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordGateway default record gateway.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordGateway default record gateway.
 	 */
 	protected function createRecordGateway()
 	{
@@ -141,7 +141,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @since 3.1.5
 	 * @see setInvalidFinderResult
 	 */
@@ -152,7 +152,7 @@ class TActiveRecordManager extends \Prado\TComponent
 
 	/**
 	 * Define the way an active record finder react if an invalid magic-finder invoked
-	 * @param TActiveRecordInvalidFinderResult $value * @since 3.1.5
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult $value * @since 3.1.5
 	 * @see getInvalidFinderResult
 	 */
 	public function setInvalidFinderResult($value)

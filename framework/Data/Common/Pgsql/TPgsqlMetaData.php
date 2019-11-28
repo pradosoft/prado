@@ -98,7 +98,7 @@ class TPgsqlMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $table table name.
-	 * @return TPgsqlTableInfo table information.
+	 * @return \Prado\Data\Common\Pgsql\TPgsqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
 	{
@@ -172,7 +172,7 @@ EOD;
 
 	/**
 	 * @param string $name table name, schema name or column name.
-	 * @throws TDbException when table name contains a double quote (").
+	 * @throws \Prado\Exceptions\TDbException when table name contains a double quote (").
 	 * @return string a valid identifier.
 	 */
 	protected function assertIdentifier($name)
@@ -205,7 +205,7 @@ EOD;
 	}
 
 	/**
-	 * @param TPgsqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Pgsql\TPgsqlTableInfo $tableInfo table information.
 	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
@@ -256,7 +256,7 @@ EOD;
 	}
 
 	/**
-	 * @param TPgsqlTableInfo $tableInfo
+	 * @param \Prado\Data\Common\Pgsql\TPgsqlTableInfo $tableInfo
 	 * @param mixed $src
 	 * @return string serial name if found, null otherwise.
 	 */
@@ -412,7 +412,7 @@ EOD;
 
 	/**
 	 * @param string $columnId column name.
-	 * @param TPgsqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Pgsql\TPgsqlTableInfo $tableInfo table information.
 	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

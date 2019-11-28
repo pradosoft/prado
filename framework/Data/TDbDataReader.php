@@ -45,7 +45,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param TDbCommand $command the command generating the query result
+	 * @param \Prado\Data\TDbCommand $command the command generating the query result
 	 */
 	public function __construct(TDbCommand $command)
 	{
@@ -173,7 +173,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	/**
 	 * Resets the iterator to the initial state.
 	 * This method is required by the interface Iterator.
-	 * @throws TDbException if this method is invoked twice
+	 * @throws \Prado\Exceptions\TDbException if this method is invoked twice
 	 */
 	public function rewind()
 	{

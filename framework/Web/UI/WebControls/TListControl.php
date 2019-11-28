@@ -82,7 +82,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 abstract class TListControl extends TDataBoundControl implements \Prado\IDataRenderer
 {
 	/**
-	 * @var TListItemCollection item list
+	 * @var \Prado\Collections\TListItemCollection item list
 	 */
 	private $_items;
 	/**
@@ -124,7 +124,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -737,7 +737,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Raises OnSelectedIndexChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{
@@ -749,7 +749,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Raises OnTextChanged event when selection is changed.
 	 * This method is invoked when the list control has its selection changed
 	 * by end-users.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onTextChanged($param)
 	{
@@ -758,7 +758,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Renders the prompt text, if any.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 * @since 3.1.1
 	 */
 	protected function renderPrompt($writer)
@@ -777,7 +777,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	/**
 	 * Renders body content of the list control.
 	 * This method renders items contained in the list control as the body content.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function renderContents($writer)
 	{

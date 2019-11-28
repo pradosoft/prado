@@ -156,7 +156,7 @@ class TBoundColumn extends TDataGridColumn
 	 * Otherwise it displays a static text.
 	 * The caption of the button and the static text are retrieved
 	 * from the datasource.
-	 * @param TTableCell $cell the cell to be initialized.
+	 * @param \Prado\Web\UI\WebControls\TTableCell $cell the cell to be initialized.
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */

@@ -24,11 +24,11 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TTableStyle extends TStyle
 {
 	/**
-	 * @var TVerticalAlign the URL of the background image for the table
+	 * @var \Prado\Web\UI\WebControls\TVerticalAlign the URL of the background image for the table
 	 */
 	protected $_backImageUrl;
 	/**
-	 * @var THorizontalAlign horizontal alignment of the contents within the table
+	 * @var \Prado\Web\UI\WebControls\THorizontalAlign horizontal alignment of the contents within the table
 	 */
 	protected $_horizontalAlign;
 	/**
@@ -40,7 +40,7 @@ class TTableStyle extends TStyle
 	 */
 	protected $_cellSpacing;
 	/**
-	 * @var TTableGridLines grid line setting of the table
+	 * @var \Prado\Web\UI\WebControls\TTableGridLines grid line setting of the table
 	 */
 	protected $_gridLines;
 	/**
@@ -97,7 +97,7 @@ class TTableStyle extends TStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -128,7 +128,7 @@ class TTableStyle extends TStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{
@@ -159,7 +159,7 @@ class TTableStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{
@@ -210,7 +210,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return THorizontalAlign the horizontal alignment of the contents within the table, defaults to THorizontalAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\THorizontalAlign the horizontal alignment of the contents within the table, defaults to THorizontalAlign::NotSet.
 	 */
 	public function getHorizontalAlign()
 	{
@@ -219,7 +219,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the horizontal alignment of the contents within the table.
-	 * @param THorizontalAlign $value the horizontal alignment
+	 * @param \Prado\Web\UI\WebControls\THorizontalAlign $value the horizontal alignment
 	 */
 	public function setHorizontalAlign($value)
 	{
@@ -237,7 +237,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * @param int $value cellpadding of the table. A value equal to -1 clears up the setting.
-	 * @throws TInvalidDataValueException if the value is less than -1.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than -1.
 	 * @deprecated use border-collapse CSS property with its value set to collapse, and the padding property to the <td> element.
 	 */
 	public function setCellPadding($value)
@@ -258,7 +258,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * @param int $value cellspacing of the table. A value equal to -1 clears up the setting.
-	 * @throws TInvalidDataValueException if the value is less than -1.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than -1.
 	 * @deprecated use the border-spacing CSS property instead
 	 */
 	public function setCellSpacing($value)
@@ -269,7 +269,7 @@ class TTableStyle extends TStyle
 	}
 
 	/**
-	 * @return TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
+	 * @return \Prado\Web\UI\WebControls\TTableGridLines the grid line setting of the table. Defaults to TTableGridLines::None.
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function getGridLines()
@@ -279,7 +279,7 @@ class TTableStyle extends TStyle
 
 	/**
 	 * Sets the grid line style of the table.
-	 * @param TTableGridLines $value the grid line setting of the table
+	 * @param \Prado\Web\UI\WebControls\TTableGridLines $value the grid line setting of the table
 	 * @deprecated use CSS to style the borders of individual elements
 	 */
 	public function setGridLines($value)

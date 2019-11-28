@@ -56,11 +56,11 @@ class TPage extends TTemplateControl
 		'PRADO_CALLBACK_PARAMETER' => true
 	];
 	/**
-	 * @var TForm form instance
+	 * @var \Prado\Web\UI\TForm form instance
 	 */
 	private $_form;
 	/**
-	 * @var THead head instance
+	 * @var \Prado\Web\UI\WebControls\THead head instance
 	 */
 	private $_head;
 	/**
@@ -72,7 +72,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_validated = false;
 	/**
-	 * @var TTheme page theme
+	 * @var \Prado\Web\UI\TTheme page theme
 	 */
 	private $_theme;
 	/**
@@ -80,19 +80,19 @@ class TPage extends TTemplateControl
 	 */
 	private $_title;
 	/**
-	 * @var TTheme page stylesheet theme
+	 * @var \Prado\Web\UI\TTheme page stylesheet theme
 	 */
 	private $_styleSheet;
 	/**
-	 * @var TClientScriptManager client script manager
+	 * @var \Prado\Web\UI\TClientScriptManager client script manager
 	 */
 	private $_clientScript;
 	/**
-	 * @var TMap data post back by user
+	 * @var \Prado\Collections\TMap data post back by user
 	 */
 	protected $_postData;
 	/**
-	 * @var TMap postback data that is not handled during first invocation of LoadPostData.
+	 * @var \Prado\Collections\TMap postback data that is not handled during first invocation of LoadPostData.
 	 */
 	protected $_restPostData;
 	/**
@@ -108,7 +108,7 @@ class TPage extends TTemplateControl
 	 */
 	protected $_controlsRegisteredForPostData = [];
 	/**
-	 * @var TControl control that needs to raise postback event
+	 * @var \Prado\Web\UI\TControl control that needs to raise postback event
 	 */
 	private $_postBackEventTarget;
 	/**
@@ -158,7 +158,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_statePersister;
 	/**
-	 * @var TStack stack used to store currently active caching controls
+	 * @var \Prado\Collections\TStack stack used to store currently active caching controls
 	 */
 	private $_cachingStack;
 	/**
@@ -174,7 +174,7 @@ class TPage extends TTemplateControl
 	 */
 	private $_enableJavaScript = true;
 	/**
-	 * @var THtmlWriter current html render writer
+	 * @var \Prado\Web\UI\THtmlWriter current html render writer
 	 */
 	private $_writer;
 
@@ -385,7 +385,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Gets the callback client script handler that allows javascript functions
 	 * to be executed during the callback response.
-	 * @return TCallbackClientScript interface to client-side javascript code.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientScript interface to client-side javascript code.
 	 */
 	public function getCallbackClient()
 	{
@@ -398,7 +398,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Set a new callback client handler.
-	 * @param TCallbackClientScript $client new callback client script handler.
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackClientScript $client new callback client script handler.
 	 */
 	public function setCallbackClient($client)
 	{
@@ -416,7 +416,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl $control control registered to raise callback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
@@ -441,7 +441,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TForm the form on the page
+	 * @return \Prado\Web\UI\TForm the form on the page
 	 */
 	public function getForm()
 	{
@@ -451,8 +451,8 @@ class TPage extends TTemplateControl
 	/**
 	 * Registers a TForm instance to the page.
 	 * Note, a page can contain at most one TForm instance.
-	 * @param TForm $form the form on the page
-	 * @throws TInvalidOperationException if this method is invoked twice or more.
+	 * @param \Prado\Web\UI\TForm $form the form on the page
+	 * @throws \Prado\Exceptions\TInvalidOperationException if this method is invoked twice or more.
 	 */
 	public function setForm(TForm $form)
 	{
@@ -467,7 +467,7 @@ class TPage extends TTemplateControl
 	 * Returns a list of registered validators.
 	 * If validation group is specified, only the validators in that group will be returned.
 	 * @param null|string $validationGroup validation group
-	 * @return TList registered validators in the requested group. If the group is null, all validators will be returned.
+	 * @return \Prado\Collections\TList registered validators in the requested group. If the group is null, all validators will be returned.
 	 */
 	public function getValidators($validationGroup = null)
 	{
@@ -515,7 +515,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Returns whether user input is valid or not.
 	 * This method must be invoked after {@link validate} is called.
-	 * @throws TInvalidOperationException if {@link validate} is not invoked yet.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if {@link validate} is not invoked yet.
 	 * @return bool whether the user input is valid or not.
 	 */
 	public function getIsValid()
@@ -535,7 +535,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TTheme the theme used for the page. Defaults to null.
+	 * @return \Prado\Web\UI\TTheme the theme used for the page. Defaults to null.
 	 */
 	public function getTheme()
 	{
@@ -556,7 +556,7 @@ class TPage extends TTemplateControl
 
 
 	/**
-	 * @return TTheme the stylesheet theme used for the page. Defaults to null.
+	 * @return \Prado\Web\UI\TTheme the stylesheet theme used for the page. Defaults to null.
 	 */
 	public function getStyleSheetTheme()
 	{
@@ -578,7 +578,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl $control a control to be applied skin with
+	 * @param \Prado\Web\UI\TControl $control a control to be applied skin with
 	 */
 	public function applyControlSkin($control)
 	{
@@ -590,7 +590,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a stylesheet skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl $control a control to be applied stylesheet skin with
+	 * @param \Prado\Web\UI\TControl $control a control to be applied stylesheet skin with
 	 */
 	public function applyControlStyleSheet($control)
 	{
@@ -600,7 +600,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TClientScriptManager client script manager
+	 * @return \Prado\Web\UI\TClientScriptManager client script manager
 	 */
 	public function getClientScript()
 	{
@@ -819,7 +819,7 @@ class TPage extends TTemplateControl
 	 * This method needs to be invoked if the control to load post data
 	 * may not have a post variable in some cases. For example, a checkbox,
 	 * if not checked, will not have a post value.
-	 * @param TControl $control control registered for loading post data
+	 * @param \Prado\Web\UI\TControl $control control registered for loading post data
 	 */
 	public function registerRequiresPostData($control)
 	{
@@ -847,7 +847,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise postback event in the current request.
-	 * @param TControl $control control registered to raise postback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise postback event.
 	 */
 	public function setPostBackEventTarget(TControl $control)
 	{
@@ -877,7 +877,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Processes post data.
-	 * @param TMap $postData post data to be processed
+	 * @param \Prado\Collections\TMap $postData post data to be processed
 	 * @param bool $beforeLoad whether this method is invoked before {@link onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
@@ -960,8 +960,8 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Ensures the control is rendered within a form.
-	 * @param TControl $control the control to be rendered
-	 * @throws TConfigurationException if the control is outside of the form
+	 * @param \Prado\Web\UI\TControl $control the control to be rendered
+	 * @throws \Prado\Exceptions\TConfigurationException if the control is outside of the form
 	 */
 	public function ensureRenderInForm($control)
 	{
@@ -1029,7 +1029,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return THead page head, null if not available
+	 * @return \Prado\Web\UI\WebControls\THead page head, null if not available
 	 */
 	public function getHead()
 	{
@@ -1037,8 +1037,8 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @param THead $value page head
-	 * @throws TInvalidOperationException if a head already exists
+	 * @param \Prado\Web\UI\WebControls\THead $value page head
+	 * @throws \Prado\Exceptions\TInvalidOperationException if a head already exists
 	 */
 	public function setHead(THead $value)
 	{
@@ -1124,7 +1124,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return IPageStatePersister page state persister
+	 * @return \Prado\Web\UI\IPageStatePersister page state persister
 	 */
 	public function getStatePersister()
 	{
@@ -1241,7 +1241,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TStack stack of {@link TOutputCache} objects
+	 * @return \Prado\Collections\TStack stack of {@link TOutputCache} objects
 	 */
 	public function getCachingStack()
 	{

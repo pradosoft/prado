@@ -175,7 +175,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAttributeCollection list of named parameters and values.
+	 * @return \Prado\Collections\TAttributeCollection list of named parameters and values.
 	 */
 	public function getParameters()
 	{
@@ -204,7 +204,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAttributeCollection ordering clause.
+	 * @return \Prado\Collections\TAttributeCollection ordering clause.
 	 */
 	public function getOrdersBy()
 	{

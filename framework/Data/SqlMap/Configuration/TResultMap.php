@@ -89,7 +89,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TMap result columns.
+	 * @return \Prado\Collections\TMap result columns.
 	 */
 	public function getColumns()
 	{
@@ -129,7 +129,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDiscriminator result class discriminator.
+	 * @return \Prado\Data\SqlMap\Configuration\TDiscriminator result class discriminator.
 	 */
 	public function getDiscriminator()
 	{
@@ -137,7 +137,7 @@ class TResultMap extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDiscriminator $value result class discriminator.
+	 * @param \Prado\Data\SqlMap\Configuration\TDiscriminator $value result class discriminator.
 	 */
 	public function setDiscriminator(TDiscriminator $value)
 	{
@@ -146,7 +146,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Add a TResultProperty to result mapping.
-	 * @param TResultProperty $property result property.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultProperty $property result property.
 	 */
 	public function addResultProperty(TResultProperty $property)
 	{
@@ -155,7 +155,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of the class of this result map.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry.
 	 * @throws TSqlMapException
 	 * @return mixed new result object.
 	 */
@@ -180,9 +180,9 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Result sub-mappings using the discriminiator column.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param array $row row data.
-	 * @return TResultMap result sub-map.
+	 * @return \Prado\Data\SqlMap\Configuration\TResultMap result sub-map.
 	 */
 	public function resolveSubMap($registry, $row)
 	{

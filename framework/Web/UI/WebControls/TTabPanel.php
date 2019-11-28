@@ -100,7 +100,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
-	 * @throws TInvalidDataValueException if the view index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
@@ -130,8 +130,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Returns the currently active view.
 	 * This method will examin the ActiveViewID, ActiveViewIndex and Views collection to
 	 * determine which view is currently active. It will update ActiveViewID and ActiveViewIndex accordingly.
-	 * @throws TInvalidDataValueException if the active view ID or index set previously is invalid
-	 * @return TTabView the currently active view, null if no active view
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the active view ID or index set previously is invalid
+	 * @return \Prado\Web\UI\WebControls\TTabView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
@@ -164,8 +164,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @param TTabView $view the view to be activated
-	 * @throws TInvalidOperationException if the view is not in the view collection
+	 * @param \Prado\Web\UI\WebControls\TTabView $view the view to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($view)
 	{
@@ -308,7 +308,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Activates the specified view.
 	 * If there is any other view currently active, it will be deactivated.
-	 * @param TTabView $view the view to be activated. If null, all views will be deactivated.
+	 * @param \Prado\Web\UI\WebControls\TTabView $view the view to be activated. If null, all views will be deactivated.
 	 */
 	protected function activateView($view)
 	{
@@ -370,7 +370,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -471,7 +471,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TTabViewCollection control collection
+	 * @return \Prado\Web\UI\WebControls\TTabViewCollection control collection
 	 */
 	protected function createControlCollection()
 	{
@@ -479,7 +479,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return TTabViewCollection list of {@link TTabView} controls
+	 * @return \Prado\Web\UI\WebControls\TTabViewCollection list of {@link TTabView} controls
 	 */
 	public function getViews()
 	{
@@ -494,7 +494,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders body contents of the tab control.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

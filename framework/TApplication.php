@@ -173,7 +173,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_services;
 	/**
-	 * @var IService current service instance
+	 * @var \Prado\IService current service instance
 	 */
 	private $_service;
 	/**
@@ -221,51 +221,51 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_cacheFile;
 	/**
-	 * @var TErrorHandler error handler module
+	 * @var \Prado\Exceptions\TErrorHandler error handler module
 	 */
 	private $_errorHandler;
 	/**
-	 * @var THttpRequest request module
+	 * @var \Prado\Web\THttpRequest request module
 	 */
 	private $_request;
 	/**
-	 * @var THttpResponse response module
+	 * @var \Prado\Web\THttpResponse response module
 	 */
 	private $_response;
 	/**
-	 * @var THttpSession session module, could be null
+	 * @var \Prado\Web\THttpSession session module, could be null
 	 */
 	private $_session;
 	/**
-	 * @var ICache cache module, could be null
+	 * @var \Prado\Caching\ICache cache module, could be null
 	 */
 	private $_cache;
 	/**
-	 * @var IStatePersister application state persister
+	 * @var \Prado\IStatePersister application state persister
 	 */
 	private $_statePersister;
 	/**
-	 * @var IUser user instance, could be null
+	 * @var \Prado\Security\IUser user instance, could be null
 	 */
 	private $_user;
 	/**
-	 * @var TGlobalization module, could be null
+	 * @var \Prado\I18N\TGlobalization module, could be null
 	 */
 	private $_globalization;
 	/**
-	 * @var TSecurityManager security manager module
+	 * @var \Prado\Security\TSecurityManager security manager module
 	 */
 	private $_security;
 	/**
-	 * @var TAssetManager asset manager module
+	 * @var \Prado\Web\TAssetManager asset manager module
 	 */
 	private $_assetManager;
 	/**
-	 * @var TAuthorizationRuleCollection collection of authorization rules
+	 * @var \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
 	 */
 	private $_authRules;
 	/**
-	 * @var TApplicationMode application mode
+	 * @var \Prado\TApplicationMode application mode
 	 */
 	private $_mode = TApplicationMode::Debug;
 
@@ -291,7 +291,7 @@ class TApplication extends \Prado\TComponent
 	 *        configuration file.
 	 * @param bool $cacheConfig whether to cache application configuration. Defaults to true.
 	 * @param int $configType configuration type. Defaults to CONFIG_TYPE_XML.
-	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
+	 * @throws \Prado\Exceptions\TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
 	{
@@ -525,7 +525,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TApplicationMode $value application mode
+	 * @param \Prado\TApplicationMode $value application mode
 	 */
 	public function setMode($value)
 	{
@@ -637,7 +637,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IService the currently requested service
+	 * @return \Prado\IService the currently requested service
 	 */
 	public function getService()
 	{
@@ -645,7 +645,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IService $value the currently requested service
+	 * @param \Prado\IService $value the currently requested service
 	 */
 	public function setService($value)
 	{
@@ -669,7 +669,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param mixed $id
-	 * @return IModule the module with the specified ID, null if not found
+	 * @return \Prado\IModule the module with the specified ID, null if not found
 	 */
 	public function getModule($id)
 	{
@@ -708,7 +708,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpRequest the request module
+	 * @return \Prado\Web\THttpRequest the request module
 	 */
 	public function getRequest()
 	{
@@ -720,7 +720,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpRequest $request the request module
+	 * @param \Prado\Web\THttpRequest $request the request module
 	 */
 	public function setRequest(THttpRequest $request)
 	{
@@ -728,7 +728,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpResponse the response module
+	 * @return \Prado\Web\THttpResponse the response module
 	 */
 	public function getResponse()
 	{
@@ -740,7 +740,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpRequest $response the request module
+	 * @param \Prado\Web\THttpRequest $response the request module
 	 */
 	public function setResponse(THttpResponse $response)
 	{
@@ -748,7 +748,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpSession the session module, null if session module is not installed
+	 * @return \Prado\Web\THttpSession the session module, null if session module is not installed
 	 */
 	public function getSession()
 	{
@@ -760,7 +760,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpSession $session the session module
+	 * @param \Prado\Web\THttpSession $session the session module
 	 */
 	public function setSession(THttpSession $session)
 	{
@@ -768,7 +768,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TErrorHandler the error handler module
+	 * @return \Prado\Exceptions\TErrorHandler the error handler module
 	 */
 	public function getErrorHandler()
 	{
@@ -780,7 +780,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TErrorHandler $handler the error handler module
+	 * @param \Prado\Exceptions\TErrorHandler $handler the error handler module
 	 */
 	public function setErrorHandler(TErrorHandler $handler)
 	{
@@ -788,7 +788,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TSecurityManager the security manager module
+	 * @return \Prado\Security\TSecurityManager the security manager module
 	 */
 	public function getSecurityManager()
 	{
@@ -800,7 +800,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSecurityManager $sm the security manager module
+	 * @param \Prado\Security\TSecurityManager $sm the security manager module
 	 */
 	public function setSecurityManager(TSecurityManager $sm)
 	{
@@ -808,7 +808,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAssetManager asset manager
+	 * @return \Prado\Web\TAssetManager asset manager
 	 */
 	public function getAssetManager()
 	{
@@ -820,7 +820,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TAssetManager $value asset manager
+	 * @param \Prado\Web\TAssetManager $value asset manager
 	 */
 	public function setAssetManager(TAssetManager $value)
 	{
@@ -828,7 +828,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IStatePersister application state persister
+	 * @return \Prado\IStatePersister application state persister
 	 */
 	public function getApplicationStatePersister()
 	{
@@ -840,7 +840,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IStatePersister $persister application state persister
+	 * @param \Prado\IStatePersister $persister application state persister
 	 */
 	public function setApplicationStatePersister(IStatePersister $persister)
 	{
@@ -848,7 +848,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return ICache the cache module, null if cache module is not installed
+	 * @return \Prado\Caching\ICache the cache module, null if cache module is not installed
 	 */
 	public function getCache()
 	{
@@ -864,7 +864,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IUser the application user
+	 * @return \Prado\Security\IUser the application user
 	 */
 	public function getUser()
 	{
@@ -881,7 +881,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param bool $createIfNotExists whether to create globalization if it does not exist
-	 * @return TGlobalization globalization module
+	 * @return \Prado\I18N\TGlobalization globalization module
 	 */
 	public function getGlobalization($createIfNotExists = true)
 	{
@@ -901,7 +901,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAuthorizationRuleCollection list of authorization rules for the current request
+	 * @return \Prado\Security\TAuthorizationRuleCollection list of authorization rules for the current request
 	 */
 	public function getAuthorizationRules()
 	{
@@ -941,7 +941,7 @@ class TApplication extends \Prado\TComponent
 	}
 	/**
 	 * Applies an application configuration.
-	 * @param TApplicationConfiguration $config the configuration
+	 * @param \Prado\TApplicationConfiguration $config the configuration
 	 * @param bool $withinService whether the configuration is specified within a service.
 	 */
 	public function applyConfiguration($config, $withinService = false)
@@ -1024,7 +1024,7 @@ class TApplication extends \Prado\TComponent
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
 	 * Afterwards, the requested service is created and initialized.
-	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
+	 * @throws \Prado\Exceptions\TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
 	protected function initApplication()
 	{

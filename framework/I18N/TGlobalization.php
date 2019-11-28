@@ -175,7 +175,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @return TMap translation source configuration.
+	 * @return \Prado\Collections\TMap translation source configuration.
 	 */
 	public function getTranslationConfiguration()
 	{

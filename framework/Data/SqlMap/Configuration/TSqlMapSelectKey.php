@@ -59,7 +59,7 @@ class TSqlMapSelectKey extends TSqlMapStatement
 
 	/**
 	 * @param mixed $value
-	 * @throws TSqlMapConfigurationException extends is unsupported.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException extends is unsupported.
 	 */
 	public function setExtends($value)
 	{

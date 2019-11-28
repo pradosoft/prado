@@ -162,7 +162,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Open or close the DB connection.
 	 * @param bool $value whether to open or close DB connection
-	 * @throws TDbException if connection fails
+	 * @throws \Prado\Exceptions\TDbException if connection fails
 	 */
 	public function setActive($value)
 	{
@@ -178,7 +178,7 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Opens DB connection if it is currently not
-	 * @throws TDbException if connection fails
+	 * @throws \Prado\Exceptions\TDbException if connection fails
 	 */
 	protected function open()
 	{
@@ -313,8 +313,8 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Creates a command for execution.
 	 * @param string $sql SQL statement associated with the new command.
-	 * @throws TDbException if the connection is not active
-	 * @return TDbCommand the DB command
+	 * @throws \Prado\Exceptions\TDbException if the connection is not active
+	 * @return \Prado\Data\TDbCommand the DB command
 	 */
 	public function createCommand($sql)
 	{
@@ -326,7 +326,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbTransaction the currently active transaction. Null if no active transaction.
+	 * @return \Prado\Data\TDbTransaction the currently active transaction. Null if no active transaction.
 	 */
 	public function getCurrentTransaction()
 	{
@@ -340,8 +340,8 @@ class TDbConnection extends \Prado\TComponent
 
 	/**
 	 * Starts a transaction.
-	 * @throws TDbException if the connection is not active
-	 * @return TDbTransaction the transaction initiated
+	 * @throws \Prado\Exceptions\TDbException if the connection is not active
+	 * @return \Prado\Data\TDbTransaction the transaction initiated
 	 */
 	public function beginTransaction()
 	{
@@ -444,7 +444,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbColumnCaseMode the case of the column names
+	 * @return \Prado\Data\TDbColumnCaseMode the case of the column names
 	 */
 	public function getColumnCase()
 	{
@@ -459,7 +459,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbColumnCaseMode $value the case of the column names
+	 * @param \Prado\Data\TDbColumnCaseMode $value the case of the column names
 	 */
 	public function setColumnCase($value)
 	{
@@ -478,7 +478,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbNullConversionMode how the null and empty strings are converted
+	 * @return \Prado\Data\TDbNullConversionMode how the null and empty strings are converted
 	 */
 	public function getNullConversion()
 	{
@@ -493,7 +493,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbNullConversionMode $value how the null and empty strings are converted
+	 * @param \Prado\Data\TDbNullConversionMode $value how the null and empty strings are converted
 	 */
 	public function setNullConversion($value)
 	{

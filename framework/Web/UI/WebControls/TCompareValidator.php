@@ -56,7 +56,7 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
+	 * @return \Prado\Web\UI\WebControls\TValidationDataType the data type that the values being compared are converted to before the comparison is made. Defaults to TValidationDataType::String.
 	 */
 	public function getDataType()
 	{
@@ -66,7 +66,7 @@ class TCompareValidator extends TBaseValidator
 	/**
 	 * Sets the data type that the values being
 	 * compared are converted to before the comparison is made.
-	 * @param TValidationDataType $value the data type
+	 * @param \Prado\Web\UI\WebControls\TValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{
@@ -108,7 +108,7 @@ class TCompareValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TValidationCompareOperator the comparison operation to perform. Defaults to TValidationCompareOperator::Equal.
+	 * @return \Prado\Web\UI\WebControls\TValidationCompareOperator the comparison operation to perform. Defaults to TValidationCompareOperator::Equal.
 	 */
 	public function getOperator()
 	{
@@ -117,7 +117,7 @@ class TCompareValidator extends TBaseValidator
 
 	/**
 	 * Sets the comparison operation to perform
-	 * @param TValidationCompareOperator $value the comparison operation
+	 * @param \Prado\Web\UI\WebControls\TValidationCompareOperator $value the comparison operation
 	 */
 	public function setOperator($value)
 	{

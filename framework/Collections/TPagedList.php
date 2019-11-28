@@ -132,7 +132,7 @@ class TPagedList extends TList
 
 	/**
 	 * @param int $value current page index
-	 * @throws TInvalidDataValueException if the page index is out of range
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the page index is out of range
 	 */
 	public function setCurrentPageIndex($value)
 	{
@@ -144,7 +144,7 @@ class TPagedList extends TList
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This event is raised each time when the list changes to a different page.
-	 * @param TPagedListPageChangedEventParameter $param event parameter
+	 * @param \Prado\Collections\TPagedListPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
@@ -156,7 +156,7 @@ class TPagedList extends TList
 	 * This event is raised each time when the list changes to a different page
 	 * and needs the new page of data. This event can only be raised when
 	 * {@link setCustomPaging CustomPaging} is true.
-	 * @param TPagedListFetchDataEventParameter $param event parameter
+	 * @param \Prado\Collections\TPagedListFetchDataEventParameter $param event parameter
 	 */
 	public function onFetchData($param)
 	{
@@ -304,7 +304,7 @@ class TPagedList extends TList
 	 * Returns the item at the specified offset.
 	 * This method is exactly the same as {@link offsetGet}.
 	 * @param int $index the index of the item
-	 * @throws TInvalidDataValueException if the index is out of the range
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the index is out of the range
 	 * @return mixed the item at the index
 	 */
 	public function itemAt($index)
@@ -346,7 +346,7 @@ class TPagedList extends TList
 	 * Returns the item at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param int $offset the offset to retrieve item.
-	 * @throws TInvalidDataValueException if the offset is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
 	public function offsetGet($offset)

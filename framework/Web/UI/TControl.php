@@ -134,19 +134,19 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private $_uid;
 	/**
-	 * @var TControl parent of the control
+	 * @var \Prado\Web\UI\TControl parent of the control
 	 */
 	private $_parent;
 	/**
-	 * @var TPage page that the control resides in
+	 * @var \Prado\Web\UI\TPage page that the control resides in
 	 */
 	private $_page;
 	/**
-	 * @var TControl naming container of the control
+	 * @var \Prado\Web\UI\TControl naming container of the control
 	 */
 	private $_namingContainer;
 	/**
-	 * @var TTemplateControl control whose template contains the control
+	 * @var \Prado\Web\UI\TTemplateControl control whose template contains the control
 	 */
 	private $_tplControl;
 	/**
@@ -186,7 +186,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * the control ID will take the precedence.
 	 *
 	 * @param string $name the property name or control ID
-	 * @throws TInvalidOperationException if the property is not defined.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the property is not defined.
 	 * @return mixed the property value or the target control
 	 * @see registerObject
 	 */
@@ -242,7 +242,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param TControlAdapter $adapter control adapter
+	 * @param \Prado\Web\UI\TControlAdapter $adapter control adapter
 	 */
 	public function setAdapter(TControlAdapter $adapter)
 	{
@@ -290,7 +290,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Sets the page for a control.
 	 * Only framework developers should use this method.
-	 * @param TPage $page the page that contains this control
+	 * @param \Prado\Web\UI\TPage $page the page that contains this control
 	 */
 	public function setPage($page)
 	{
@@ -300,7 +300,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Sets the control whose template contains this control.
 	 * Only framework developers should use this method.
-	 * @param TTemplateControl $control the control whose template contains this control
+	 * @param \Prado\Web\UI\TTemplateControl $control the control whose template contains this control
 	 */
 	public function setTemplateControl($control)
 	{
@@ -308,7 +308,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TTemplateControl the control whose template contains this control
+	 * @return \Prado\Web\UI\TTemplateControl the control whose template contains this control
 	 */
 	public function getTemplateControl()
 	{
@@ -319,7 +319,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TTemplateControl the control whose template is loaded from
+	 * @return \Prado\Web\UI\TTemplateControl the control whose template is loaded from
 	 * some external storage, such as file, db, and whose template ultimately
 	 * contains this control.
 	 */
@@ -376,7 +376,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @param string $id the new control ID. The value must consist of word characters [a-zA-Z0-9_] only
-	 * @throws TInvalidDataValueException if ID is in a bad format
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if ID is in a bad format
 	 */
 	public function setID($id)
 	{
@@ -458,7 +458,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @param string $value the skin ID of this control
-	 * @throws TInvalidOperationException if the SkinID is set in a stage later than PreInit, or if the skin is applied already.
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the SkinID is set in a stage later than PreInit, or if the skin is applied already.
 	 */
 	public function setSkinID($value)
 	{
@@ -492,7 +492,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * @param bool $value whether to enable theming
-	 * @throws TInvalidOperationException if this method is invoked after OnPreInit
+	 * @throws \Prado\Exceptions\TInvalidOperationException if this method is invoked after OnPreInit
 	 */
 	public function setEnableTheming($value)
 	{
@@ -633,7 +633,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Returns the list of custom attributes.
 	 * Custom attributes are name-value pairs that may be rendered
 	 * as HTML tags' attributes.
-	 * @return TAttributeCollection the list of custom attributes
+	 * @return \Prado\Collections\TAttributeCollection the list of custom attributes
 	 */
 	public function getAttributes()
 	{
@@ -994,7 +994,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
-	 * @throws TInvalidDataValueException if a control's ID is found not unique within its naming container.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if a control's ID is found not unique within its naming container.
 	 * @return null|TControl the control found, null if not found
 	 */
 	public function findControl($id)
@@ -1200,7 +1200,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param TControl $ancestor the potential ancestor control
+	 * @param \Prado\Web\UI\TControl $ancestor the potential ancestor control
 	 * @return bool if the control is a descendent (parent, parent of parent, etc.)
 	 * of the specified control
 	 */
@@ -1217,7 +1217,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Adds a control into the child collection of the control.
 	 * Control lifecycles will be caught up during the addition.
 	 * Only framework developers should use this method.
-	 * @param TControl $control the new child control
+	 * @param \Prado\Web\UI\TControl $control the new child control
 	 */
 	public function addedControl($control)
 	{
@@ -1260,7 +1260,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Removes a control from the child collection of the control.
 	 * Only framework developers should use this method.
-	 * @param TControl $control the child control removed
+	 * @param \Prado\Web\UI\TControl $control the child control removed
 	 */
 	public function removedControl($control)
 	{
@@ -1284,7 +1284,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Performs the Init step for the control and all its child controls.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer the naming container control
+	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -1400,7 +1400,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnInit' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -1412,7 +1412,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnLoad' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoad($param)
 	{
@@ -1422,7 +1422,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Raises 'OnDataBinding' event.
 	 * This method is invoked when {@link dataBind} is invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onDataBinding($param)
 	{
@@ -1436,7 +1436,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnUnload' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUnload($param)
 	{
@@ -1448,7 +1448,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnPreRender' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param)
 	{
@@ -1458,8 +1458,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Invokes the parent's bubbleEvent method.
 	 * A control who wants to bubble an event must call this method in its onEvent method.
-	 * @param TControl $sender sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @see bubbleEvent
 	 */
 	protected function raiseBubbleEvent($sender, $param)
@@ -1476,8 +1476,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method responds to a bubbled event.
 	 * This method should be overriden to provide customized response to a bubbled event.
 	 * Check the type of event parameter to determine what event is bubbled currently.
-	 * @param TControl $sender sender of the event
-	 * @param TEventParameter $param event parameters
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
+	 * @param \Prado\TEventParameter $param event parameters
 	 * @return bool true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
 	 */
@@ -1499,8 +1499,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
 	 * invoked.
 	 * @param string $name name of the broadcast event
-	 * @param TControl $sender sender of this event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender sender of this event
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function broadcastEvent($name, $sender, $param)
 	{
@@ -1512,8 +1512,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Recursively broadcasts an event.
 	 * This method should only be used by framework developers.
 	 * @param string $name name of the broadcast event
-	 * @param TControl $sender sender of the event
-	 * @param TBroadcastEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
+	 * @param \Prado\Web\UI\TBroadcastEventParameter $param event parameter
 	 */
 	private function broadcastEventInternal($name, $sender, $param)
 	{
@@ -1569,7 +1569,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Renders the control.
 	 * Only when the control is visible will the control be rendered.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderControl($writer)
 	{
@@ -1587,7 +1587,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method is invoked by {@link renderControl} when the control is visible.
 	 * You can override this method to provide customized rendering of the control.
 	 * By default, the control simply renders all its child contents.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -1598,7 +1598,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Renders the children of the control.
 	 * This method iterates through all child controls and static text strings
 	 * and renders them in order.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderChildren($writer)
 	{
@@ -1716,8 +1716,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Applies a stylesheet skin to a control.
-	 * @param TPage $page the page containing the control
-	 * @throws TInvalidOperationException if the stylesheet skin is applied already
+	 * @param \Prado\Web\UI\TPage $page the page containing the control
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the stylesheet skin is applied already
 	 */
 	public function applyStyleSheetSkin($page)
 	{
@@ -1770,9 +1770,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Updates the list of the controls whose IDs are managed by the specified naming container.
-	 * @param TControl $container the naming container
-	 * @param TControlCollection $controls list of controls
-	 * @throws TInvalidDataValueException if a control's ID is not unique within its naming container.
+	 * @param \Prado\Web\UI\TControl $container the naming container
+	 * @param \Prado\Web\UI\TControlCollection $controls list of controls
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if a control's ID is not unique within its naming container.
 	 */
 	private function fillNameTable($container, $controls)
 	{

@@ -76,7 +76,7 @@ abstract class TDbUser extends TUser
 	 * You may use {@link getDbConnection DbConnection} to deal with database.
 	 *
 	 * @param string $username username (case-sensitive)
-	 * @return TDbUser the newly created and initialized user instance
+	 * @return \Prado\Security\TDbUser the newly created and initialized user instance
 	 */
 	abstract public function createUser($username);
 
@@ -91,8 +91,8 @@ abstract class TDbUser extends TUser
 	 * Typically, you obtain the username and a unique token from the cookie's value.
 	 * You then verify the token is valid and use the username to create a user instance.
 	 *
-	 * @param THttpCookie $cookie the cookie storing user authentication information
-	 * @return TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
+	 * @return \Prado\Security\TDbUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @see saveUserToCookie
 	 * @since 3.1.1
 	 */
@@ -112,7 +112,7 @@ abstract class TDbUser extends TUser
 	 * and save it together with the username in the cookie's value.
 	 * You should avoid revealing the password in the generated token.
 	 *
-	 * @param THttpCookie $cookie the cookie to store the user auth information
+	 * @param \Prado\Web\THttpCookie $cookie the cookie to store the user auth information
 	 * @see createUserFromCookie
 	 * @since 3.1.1
 	 */

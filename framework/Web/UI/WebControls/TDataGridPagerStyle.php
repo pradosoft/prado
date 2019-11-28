@@ -74,7 +74,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return TDataGridPagerMode pager mode. Defaults to TDataGridPagerMode::NextPrev.
+	 * @return \Prado\Web\UI\WebControls\TDataGridPagerMode pager mode. Defaults to TDataGridPagerMode::NextPrev.
 	 */
 	public function getMode()
 	{
@@ -82,7 +82,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerMode $value pager mode.
+	 * @param \Prado\Web\UI\WebControls\TDataGridPagerMode $value pager mode.
 	 */
 	public function setMode($value)
 	{
@@ -90,7 +90,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return TDataGridPagerButtonType the type of command button. Defaults to TDataGridPagerButtonType::LinkButton.
+	 * @return \Prado\Web\UI\WebControls\TDataGridPagerButtonType the type of command button. Defaults to TDataGridPagerButtonType::LinkButton.
 	 */
 	public function getButtonType()
 	{
@@ -98,7 +98,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerButtonType $value the type of command button
+	 * @param \Prado\Web\UI\WebControls\TDataGridPagerButtonType $value the type of command button
 	 */
 	public function setButtonType($value)
 	{
@@ -179,7 +179,7 @@ class TDataGridPagerStyle extends TPanelStyle
 
 	/**
 	 * @param int $value maximum number of pager buttons to be displayed
-	 * @throws TInvalidDataValueException if the value is less than 1.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)
 	{
@@ -190,7 +190,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @return TDataGridPagerPosition where the pager is to be displayed. Defaults to TDataGridPagerPosition::Bottom.
+	 * @return \Prado\Web\UI\WebControls\TDataGridPagerPosition where the pager is to be displayed. Defaults to TDataGridPagerPosition::Bottom.
 	 */
 	public function getPosition()
 	{
@@ -198,7 +198,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	}
 
 	/**
-	 * @param TDataGridPagerPosition $value where the pager is to be displayed.
+	 * @param \Prado\Web\UI\WebControls\TDataGridPagerPosition $value where the pager is to be displayed.
 	 */
 	public function setPosition($value)
 	{
@@ -240,7 +240,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * Copies the fields in a new style to this style.
 	 * If a style field is set in the new style, the corresponding field
 	 * in this style will be overwritten.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function copyFrom($style)
 	{
@@ -274,7 +274,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 * Merges the style with a new one.
 	 * If a style field is not set in this style, it will be overwritten by
 	 * the new one.
-	 * @param TStyle $style the new style
+	 * @param \Prado\Web\UI\WebControls\TStyle $style the new style
 	 */
 	public function mergeWith($style)
 	{

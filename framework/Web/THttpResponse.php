@@ -88,7 +88,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_initialized = false;
 	/**
-	 * @var THttpCookieCollection list of cookies to return
+	 * @var \Prado\Web\THttpCookieCollection list of cookies to return
 	 */
 	private $_cookies;
 	/**
@@ -112,7 +112,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	private $_charset = '';
 	/**
-	 * @var THttpResponseAdapter adapter.
+	 * @var \Prado\Web\THttpResponseAdapter adapter.
 	 */
 	private $_adapter;
 	/**
@@ -135,7 +135,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param THttpResponseAdapter $adapter response adapter
+	 * @param \Prado\Web\THttpResponseAdapter $adapter response adapter
 	 */
 	public function setAdapter(THttpResponseAdapter $adapter)
 	{
@@ -143,7 +143,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return THttpResponseAdapter response adapter, null if not exist.
+	 * @return \Prado\Web\THttpResponseAdapter response adapter, null if not exist.
 	 */
 	public function getAdapter()
 	{
@@ -252,7 +252,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * @param bool $value whether to enable output buffer
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setBufferOutput($value)
 	{
@@ -309,7 +309,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @return THttpCookieCollection list of output cookies
+	 * @return \Prado\Web\THttpCookieCollection list of output cookies
 	 */
 	public function getCookies()
 	{
@@ -343,7 +343,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @param null|bool $forceDownload force download of file, even if browser able to display inline. Defaults to 'true'.
 	 * @param null|string $clientFileName force a specific file name on client side. Defaults to 'null' means auto-detect.
 	 * @param null|int $fileSize size of file or content in bytes if already known. Defaults to 'null' means auto-detect.
-	 * @throws TInvalidDataValueException if the file cannot be found
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the file cannot be found
 	 */
 	public function writeFile($fileName, $content = null, $mimeType = null, $headers = null, $forceDownload = true, $clientFileName = null, $fileSize = null)
 	{
@@ -659,7 +659,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Sends a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie $cookie cook to be sent
+	 * @param \Prado\Web\THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
 	{
@@ -691,7 +691,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Deletes a cookie.
 	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
-	 * @param THttpCookie $cookie cook to be deleted
+	 * @param \Prado\Web\THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
 	{
@@ -743,7 +743,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Create a new html writer instance.
 	 * This method is used internally. Please use {@link createHtmlWriter} instead.
 	 * @param string $type type of HTML writer to be created.
-	 * @param ITextWriter $writer text writer holding the contents.
+	 * @param \Prado\IO\ITextWriter $writer text writer holding the contents.
 	 */
 	public function createNewHtmlWriter($type, $writer)
 	{

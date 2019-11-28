@@ -63,7 +63,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @param TColorPickerMode $value color picker UI mode
+	 * @param \Prado\Web\UI\WebControls\TColorPickerMode $value color picker UI mode
 	 */
 	public function setMode($value)
 	{
@@ -71,7 +71,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @return TColorPickerMode current color picker UI mode. Defaults to TColorPickerMode::Basic.
+	 * @return \Prado\Web\UI\WebControls\TColorPickerMode current color picker UI mode. Defaults to TColorPickerMode::Basic.
 	 */
 	public function getMode()
 	{
@@ -127,7 +127,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @return TColorPickerClientSide javascript event options.
+	 * @return \Prado\Web\UI\WebControls\TColorPickerClientSide javascript event options.
 	 */
 	public function getClientSide()
 	{
@@ -138,7 +138,7 @@ class TColorPicker extends TTextBox
 	}
 
 	/**
-	 * @return TColorPickerClientSide javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TColorPickerClientSide javascript validator event options.
 	 */
 	protected function createClientSide()
 	{
@@ -211,7 +211,7 @@ class TColorPicker extends TTextBox
 	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
 	 * additional color picker button.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function renderEndTag($writer)
 	{

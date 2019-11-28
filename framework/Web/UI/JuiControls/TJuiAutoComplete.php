@@ -89,11 +89,11 @@ use Prado\Web\UI\WebControls\TPanel;
 class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
 	/**
-	 * @var ITemplate template for repeater items
+	 * @var \Prado\Web\UI\ITemplate template for repeater items
 	 */
 	private $_repeater;
 	/**
-	 * @var TPanel result panel holding the suggestion items.
+	 * @var \Prado\Web\UI\WebControls\TPanel result panel holding the suggestion items.
 	 */
 	private $_resultPanel;
 
@@ -230,7 +230,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * raise if the request is to find sugggestions, the {@link onTextChanged OnTextChanged}
 	 * and {@link onCallback OnCallback} events are <b>NOT</b> raised.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -253,7 +253,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggest' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggest($param)
 	{
@@ -265,7 +265,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 * The method raises 'OnSuggestionSelected' event. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onSuggestionSelected($param)
 	{
@@ -293,7 +293,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @return TPanel suggestion results panel.
+	 * @return \Prado\Web\UI\WebControls\TPanel suggestion results panel.
 	 */
 	public function getResultPanel()
 	{
@@ -304,7 +304,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @return TPanel new instance of result panel. Default uses TPanel.
+	 * @return \Prado\Web\UI\WebControls\TPanel new instance of result panel. Default uses TPanel.
 	 */
 	protected function createResultPanel()
 	{
@@ -315,7 +315,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @return TRepeater suggestion list repeater
+	 * @return \Prado\Web\UI\WebControls\TRepeater suggestion list repeater
 	 */
 	public function getSuggestions()
 	{
@@ -326,7 +326,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * @return TRepeater new instance of TRepater to render the list of suggestions.
+	 * @return \Prado\Web\UI\WebControls\TRepeater new instance of TRepater to render the list of suggestions.
 	 */
 	protected function createRepeater()
 	{
@@ -348,7 +348,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the result panel.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	protected function renderResultPanel($writer)
 	{
@@ -357,7 +357,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions during a callback respones.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	public function renderCallback($writer)
 	{
@@ -366,7 +366,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions repeater.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	public function renderSuggestions($writer)
 	{

@@ -96,7 +96,7 @@ class TDbCache extends TCache
 	 */
 	private $_connID = '';
 	/**
-	 * @var TDbConnection the DB connection instance
+	 * @var \Prado\Data\TDbConnection the DB connection instance
 	 */
 	private $_db;
 	/**
@@ -179,7 +179,7 @@ class TDbCache extends TCache
 	 * and create table if does not exist.
 	 *
 	 * @param bool $force Force override global state check
-	 * @throws TConfigurationException if any error happens during creating database or cache table.
+	 * @throws \Prado\Exceptions\TConfigurationException if any error happens during creating database or cache table.
 	 * @return void
 	 * @since 3.1.5
 	 */
@@ -288,7 +288,7 @@ class TDbCache extends TCache
 
 	/**
 	 * Creates the DB connection.
-	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()

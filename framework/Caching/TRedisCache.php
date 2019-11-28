@@ -123,7 +123,7 @@ class TRedisCache extends TCache
 	 * Initializes this module.
 	 * This method is required by the IModule interface. It creates a Redis instance and connects to the redis server.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if php-redis extension is not installed or redis cache sever connection fails
+	 * @throws \Prado\Exceptions\TConfigurationException if php-redis extension is not installed or redis cache sever connection fails
 	 */
 	public function init($config)
 	{
@@ -157,7 +157,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param string $value the host name of the redis cache server
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setHost($value)
 	{
@@ -178,7 +178,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param int $value the port number of the redis cache server
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setPort($value)
 	{
@@ -199,7 +199,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param string $value the unix socket of the redis cache server
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setSocket($value)
 	{
@@ -220,7 +220,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * @param int $value the database index to use.
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setIndex($value)
 	{

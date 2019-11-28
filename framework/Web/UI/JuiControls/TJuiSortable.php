@@ -135,7 +135,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter $param the parameter associated with the callback event
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -260,7 +260,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * @var ITemplate template for repeater items
+	 * @var \Prado\Web\UI\ITemplate template for repeater items
 	 */
 	private $_repeater;
 
@@ -285,7 +285,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * @return TRepeater suggestion list repeater
+	 * @return \Prado\Web\UI\WebControls\TRepeater suggestion list repeater
 	 */
 	public function getSortables()
 	{
@@ -296,7 +296,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * @return TRepeater new instance of TRepater to render the list of Sortables.
+	 * @return \Prado\Web\UI\WebControls\TRepeater new instance of TRepater to render the list of Sortables.
 	 */
 	protected function createRepeater()
 	{

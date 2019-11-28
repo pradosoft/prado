@@ -26,7 +26,7 @@ class TActiveDataGridPager extends TDataGridPager
 	protected $_callbackoptions;
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{

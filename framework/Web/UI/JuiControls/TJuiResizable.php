@@ -130,7 +130,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter $param the parameter associated with the callback event
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{

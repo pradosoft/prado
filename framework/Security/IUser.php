@@ -57,7 +57,7 @@ interface IUser
 	public function saveToString();
 	/**
 	 * @param string $string user data that is serialized and restored from session
-	 * @return IUser the user object
+	 * @return \Prado\Security\IUser the user object
 	 */
 	public function loadFromString($string);
 }

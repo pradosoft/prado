@@ -41,11 +41,11 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	private $_activeControlType;
 	/**
-	 * @var TBaseActiveControl base active control instance.
+	 * @var \Prado\Web\UI\ActiveControls\TBaseActiveControl base active control instance.
 	 */
 	private $_baseActiveControl;
 	/**
-	 * @var TCallbackPageStateTracker view state tracker.
+	 * @var \Prado\Web\UI\ActiveControls\TCallbackPageStateTracker view state tracker.
 	 */
 	private $_stateTracker;
 	/**
@@ -55,7 +55,7 @@ class TActiveControlAdapter extends TControlAdapter
 
 	/**
 	 * Constructor.
-	 * @param IActiveControl $control active control to adapt.
+	 * @param \Prado\Web\UI\ActiveControls\IActiveControl $control active control to adapt.
 	 * @param null|string $baseCallbackClass Base active control class name.
 	 */
 	public function __construct(IActiveControl $control, $baseCallbackClass = null)
@@ -104,7 +104,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param TBaseActiveControl $control change base active control
+	 * @param \Prado\Web\UI\ActiveControls\TBaseActiveControl $control change base active control
 	 */
 	public function setBaseActiveControl($control)
 	{
@@ -112,7 +112,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return TBaseActiveControl Common active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl Common active control options.
 	 */
 	public function getBaseActiveControl()
 	{
@@ -166,7 +166,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return TCallbackPageStateTracker state tracker.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackPageStateTracker state tracker.
 	 */
 	public function getStateTracker()
 	{

@@ -102,7 +102,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional textbox specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -319,7 +319,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onTextChanged($param)
 	{
@@ -343,7 +343,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -355,7 +355,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Renders an additional line-break after the opening tag when it
 	 * is in MultiLine text mode.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose^M
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose^M
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -366,7 +366,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return TTextBoxAutoCompleteType the AutoComplete type of the textbox
+	 * @return \Prado\Web\UI\WebControls\TTextBoxAutoCompleteType the AutoComplete type of the textbox
 	 */
 	public function getAutoCompleteType()
 	{
@@ -374,8 +374,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @param TTextBoxAutoCompleteType $value the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
-	 * @throws TInvalidDataValueException if the input parameter is not a valid AutoComplete type
+	 * @param \Prado\Web\UI\WebControls\TTextBoxAutoCompleteType $value the AutoComplete type of the textbox, default value is TTextBoxAutoCompleteType::None.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the input parameter is not a valid AutoComplete type
 	 */
 	public function setAutoCompleteType($value)
 	{
@@ -586,7 +586,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
+	 * @return \Prado\Web\UI\WebControls\TTextBoxMode the behavior mode of the TTextBox component. Defaults to TTextBoxMode::SingleLine.
 	 */
 	public function getTextMode()
 	{
@@ -595,8 +595,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the behavior mode of the TTextBox component.
-	 * @param TTextBoxMode $value the text mode
-	 * @throws TInvalidDataValueException if the input value is not a valid text mode.
+	 * @param \Prado\Web\UI\WebControls\TTextBoxMode $value the text mode
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the input value is not a valid text mode.
 	 */
 	public function setTextMode($value)
 	{

@@ -133,7 +133,7 @@ class TMemCache extends TCache
 	 * UniquePrefix has been set, creates a Memcache instance and connects
 	 * to the memcache server.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if memcache extension is not installed or memcache sever connection fails
+	 * @throws \Prado\Exceptions\TConfigurationException if memcache extension is not installed or memcache sever connection fails
 	 */
 	public function init($config)
 	{
@@ -172,7 +172,7 @@ class TMemCache extends TCache
 	/**
 	 * Loads configuration from an XML element
 	 * @param \Prado\Xml\TXmlElement $xml configuration node
-	 * @throws TConfigurationException if log route class or type is not specified
+	 * @throws \Prado\Exceptions\TConfigurationException if log route class or type is not specified
 	 */
 	private function loadConfig($xml)
 	{
@@ -215,7 +215,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @param string $value host name of the memcache server
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setHost($value)
 	{
@@ -236,7 +236,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @param int $value port number of the memcache server
-	 * @throws TInvalidOperationException if the module is already initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 */
 	public function setPort($value)
 	{
@@ -249,7 +249,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @param array $value Set internal memcached options: https://www.php.net/manual/en/memcached.constants.php
-	 * @throws TInvalidOperationException if the module is not initialized yet
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is not initialized yet
 	 */
 	public function setOptions($value)
 	{
@@ -278,7 +278,7 @@ class TMemCache extends TCache
 
 	/**
 	 * @param string $value if memcached instead memcache
-	 * @throws TInvalidOperationException if the module is already initialized or usage of the old, unsupported memcache extension has been requested
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized or usage of the old, unsupported memcache extension has been requested
 	 * @deprecated since Prado 4.1, only memcached is available
 	 */
 	public function setUseMemcached($value)

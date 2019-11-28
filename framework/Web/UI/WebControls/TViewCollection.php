@@ -28,7 +28,7 @@ class TViewCollection extends \Prado\Web\UI\TControlCollection
 	 * controls be added into the collection.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is neither a string nor a TControl.
 	 */
 	public function insertAt($index, $item)
 	{

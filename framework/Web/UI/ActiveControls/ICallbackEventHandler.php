@@ -26,7 +26,7 @@ interface ICallbackEventHandler
 	 * Raises callback event. The implementation of this function should raise
 	 * appropriate event(s) (e.g. OnClick, OnCommand) indicating the component
 	 * is responsible for the callback event.
-	 * @param TCallbackEventParameter $eventArgument the parameter associated with the callback event
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $eventArgument the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($eventArgument);
 }

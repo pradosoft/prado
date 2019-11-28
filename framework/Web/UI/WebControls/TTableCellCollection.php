@@ -29,7 +29,7 @@ class TTableCellCollection extends \Prado\Web\UI\TControlCollection
 	 * operations for each newly added table cell.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a TTableCell object.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a TTableCell object.
 	 */
 	public function insertAt($index, $item)
 	{

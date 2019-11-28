@@ -75,13 +75,13 @@ interface IButtonControl
 
 	/**
 	 * Raises <b>OnClick</b> event.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param);
 
 	/**
 	 * Raises <b>OnCommand</b> event.
-	 * @param TCommandEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\TCommandEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCommand($param);
 

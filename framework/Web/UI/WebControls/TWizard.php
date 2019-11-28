@@ -98,7 +98,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	const ID_SIDEBAR_LIST = 'SideBarList';
 
 	/**
-	 * @var TMultiView multiview that contains the wizard steps
+	 * @var \Prado\Web\UI\WebControls\TMultiView multiview that contains the wizard steps
 	 */
 	private $_multiView;
 	/**
@@ -126,31 +126,31 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_wizardSteps;
 	/**
-	 * @var TPanel container of the wizard header
+	 * @var \Prado\Web\UI\WebControls\TPanel container of the wizard header
 	 */
 	private $_header;
 	/**
-	 * @var TPanel container of the wizard step content
+	 * @var \Prado\Web\UI\WebControls\TPanel container of the wizard step content
 	 */
 	private $_stepContent;
 	/**
-	 * @var TPanel container of the wizard side bar
+	 * @var \Prado\Web\UI\WebControls\TPanel container of the wizard side bar
 	 */
 	private $_sideBar;
 	/**
-	 * @var TPanel navigation panel
+	 * @var \Prado\Web\UI\WebControls\TPanel navigation panel
 	 */
 	private $_navigation;
 	/**
-	 * @var TWizardNavigationContainer container of the start navigation
+	 * @var \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the start navigation
 	 */
 	private $_startNavigation;
 	/**
-	 * @var TWizardNavigationContainer container of the step navigation
+	 * @var \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the step navigation
 	 */
 	private $_stepNavigation;
 	/**
-	 * @var TWizardNavigationContainer container of the finish navigation
+	 * @var \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the finish navigation
 	 */
 	private $_finishNavigation;
 	/**
@@ -158,7 +158,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_activeStepIndexSet = false;
 	/**
-	 * @var TDataList side bar data list.
+	 * @var \Prado\Web\UI\WebControls\TDataList side bar data list.
 	 */
 	private $_sideBarDataList;
 	/**
@@ -188,7 +188,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardStep the currently active wizard step
+	 * @return \Prado\Web\UI\WebControls\TWizardStep the currently active wizard step
 	 */
 	public function getActiveStep()
 	{
@@ -196,8 +196,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TWizardStep $step step to be activated
-	 * @throws TInvalidOperationException if the step is not in the wizard step collection
+	 * @param \Prado\Web\UI\WebControls\TWizardStep $step step to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the step is not in the wizard step collection
 	 */
 	public function setActiveStep($step)
 	{
@@ -233,7 +233,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardStepCollection collection of wizard steps
+	 * @return \Prado\Web\UI\WebControls\TWizardStepCollection collection of wizard steps
 	 */
 	public function getWizardSteps()
 	{
@@ -276,7 +276,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for the start step. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for the start step. Defaults to null.
 	 */
 	public function getStartNavigationTemplate()
 	{
@@ -284,7 +284,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for the start step.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for the start step.
 	 */
 	public function setStartNavigationTemplate($value)
 	{
@@ -293,7 +293,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for internal steps. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for internal steps. Defaults to null.
 	 */
 	public function getStepNavigationTemplate()
 	{
@@ -301,7 +301,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for internal steps.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for internal steps.
 	 */
 	public function setStepNavigationTemplate($value)
 	{
@@ -310,7 +310,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for the finish step. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for the finish step. Defaults to null.
 	 */
 	public function getFinishNavigationTemplate()
 	{
@@ -318,7 +318,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for the finish step.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for the finish step.
 	 */
 	public function setFinishNavigationTemplate($value)
 	{
@@ -327,7 +327,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate template for wizard header. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate template for wizard header. Defaults to null.
 	 */
 	public function getHeaderTemplate()
 	{
@@ -335,7 +335,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value template for wizard header.
+	 * @param \Prado\Web\UI\ITemplate $value template for wizard header.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -344,7 +344,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate template for the side bar. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate template for the side bar. Defaults to null.
 	 */
 	public function getSideBarTemplate()
 	{
@@ -352,7 +352,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value template for the side bar.
+	 * @param \Prado\Web\UI\ITemplate $value template for the side bar.
 	 */
 	public function setSideBarTemplate($value)
 	{
@@ -436,7 +436,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the next button in the start wizard step.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the next button in the start wizard step.
 	 */
 	public function getStartNextButtonStyle()
 	{
@@ -449,7 +449,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the next button in each internal wizard step.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the next button in each internal wizard step.
 	 */
 	public function getStepNextButtonStyle()
 	{
@@ -462,7 +462,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
 	 */
 	public function getStepPreviousButtonStyle()
 	{
@@ -475,7 +475,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the complete button in the finish wizard step.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the complete button in the finish wizard step.
 	 */
 	public function getFinishCompleteButtonStyle()
 	{
@@ -488,7 +488,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the previous button in the start wizard step.
 	 */
 	public function getFinishPreviousButtonStyle()
 	{
@@ -501,7 +501,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationButtonStyle the style for the cancel button
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle the style for the cancel button
 	 */
 	public function getCancelButtonStyle()
 	{
@@ -514,7 +514,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanelStyle the style for the side bar.
+	 * @return \Prado\Web\UI\WebControls\TPanelStyle the style for the side bar.
 	 */
 	public function getSideBarStyle()
 	{
@@ -526,7 +526,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanelStyle the style for the header.
+	 * @return \Prado\Web\UI\WebControls\TPanelStyle the style for the header.
 	 */
 	public function getHeaderStyle()
 	{
@@ -538,7 +538,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanelStyle the style for each internal wizard step.
+	 * @return \Prado\Web\UI\WebControls\TPanelStyle the style for each internal wizard step.
 	 */
 	public function getStepStyle()
 	{
@@ -550,7 +550,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanelStyle the style for the navigation panel.
+	 * @return \Prado\Web\UI\WebControls\TPanelStyle the style for the navigation panel.
 	 */
 	public function getNavigationStyle()
 	{
@@ -580,7 +580,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanel container of the wizard header
+	 * @return \Prado\Web\UI\WebControls\TPanel container of the wizard header
 	 */
 	public function getHeader()
 	{
@@ -588,7 +588,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanel container of the wizard step content
+	 * @return \Prado\Web\UI\WebControls\TPanel container of the wizard step content
 	 */
 	public function getStepContent()
 	{
@@ -596,7 +596,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TPanel container of the wizard side bar
+	 * @return \Prado\Web\UI\WebControls\TPanel container of the wizard side bar
 	 */
 	public function getSideBar()
 	{
@@ -604,7 +604,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationContainer container of the start navigation
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the start navigation
 	 */
 	public function getStartNavigation()
 	{
@@ -612,7 +612,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationContainer container of the step navigation
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the step navigation
 	 */
 	public function getStepNavigation()
 	{
@@ -620,7 +620,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TWizardNavigationContainer container of the finish navigation
+	 * @return \Prado\Web\UI\WebControls\TWizardNavigationContainer container of the finish navigation
 	 */
 	public function getFinishNavigation()
 	{
@@ -631,7 +631,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnActiveStepChanged</b> event.
 	 * This event is raised when the current visible step is changed in the
 	 * wizard.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onActiveStepChanged($param)
 	{
@@ -642,7 +642,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnCancelButtonClick</b> event.
 	 * This event is raised when a cancel navigation button is clicked in the
 	 * current active step.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onCancelButtonClick($param)
 	{
@@ -656,7 +656,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnCompleteButtonClick</b> event.
 	 * This event is raised when a finish navigation button is clicked in the
 	 * current active step.
-	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationEventParameter $param event parameter
 	 */
 	public function onCompleteButtonClick($param)
 	{
@@ -670,7 +670,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnNextButtonClick</b> event.
 	 * This event is raised when a next navigation button is clicked in the
 	 * current active step.
-	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationEventParameter $param event parameter
 	 */
 	public function onNextButtonClick($param)
 	{
@@ -681,7 +681,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnPreviousButtonClick</b> event.
 	 * This event is raised when a previous navigation button is clicked in the
 	 * current active step.
-	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationEventParameter $param event parameter
 	 */
 	public function onPreviousButtonClick($param)
 	{
@@ -691,7 +691,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Raises <b>OnSideBarButtonClick</b> event.
 	 * This event is raised when a link button in the side bar is clicked.
-	 * @param TWizardNavigationEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationEventParameter $param event parameter
 	 */
 	public function onSideBarButtonClick($param)
 	{
@@ -701,7 +701,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Returns the multiview that holds the wizard steps.
 	 * This method should only be used by control developers.
-	 * @return TMultiView the multiview holding wizard steps
+	 * @return \Prado\Web\UI\WebControls\TMultiView the multiview holding wizard steps
 	 */
 	public function getMultiView()
 	{
@@ -718,7 +718,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Adds a wizard step to the multiview.
 	 * This method should only be used by control developers.
 	 * It is invoked when a step is added into the step collection of the wizard.
-	 * @param TWizardStep $step wizard step to be added into multiview.
+	 * @param \Prado\Web\UI\WebControls\TWizardStep $step wizard step to be added into multiview.
 	 */
 	public function addedWizardStep($step)
 	{
@@ -733,7 +733,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Removes a wizard step from the multiview.
 	 * This method should only be used by control developers.
 	 * It is invoked when a step is removed from the step collection of the wizard.
-	 * @param TWizardStep $step wizard step to be removed from multiview.
+	 * @param \Prado\Web\UI\WebControls\TWizardStep $step wizard step to be removed from multiview.
 	 */
 	public function removedWizardStep($step)
 	{
@@ -744,7 +744,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Creates the child controls of the wizard.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -781,7 +781,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Renders the wizard.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{
@@ -985,7 +985,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TStack history containing step indexes that were navigated before
+	 * @return \Prado\Collections\TStack history containing step indexes that were navigated before
 	 */
 	protected function getHistory()
 	{
@@ -998,7 +998,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Determines the type of the specified wizard step.
-	 * @param TWizardStep $wizardStep * @return TWizardStepType type of the step
+	 * @param \Prado\Web\UI\WebControls\TWizardStep $wizardStep * @return \Prado\Web\UI\WebControls\TWizardStepType type of the step
 	 */
 	protected function getStepType($wizardStep)
 	{
@@ -1097,7 +1097,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method is used internally by wizard. It mainly
 	 * sets the active step index according to the button clicked in the sidebar.
 	 * @param mixed $sender sender of the event
-	 * @param TDataListCommandEventParameter $param
+	 * @param \Prado\Web\UI\WebControls\TDataListCommandEventParameter $param
 	 */
 	public function dataListItemCommand($sender, $param)
 	{
@@ -1133,7 +1133,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method is used internally by wizard. It mainly configures
 	 * the buttons in the sidebar datalist.
 	 * @param mixed $sender sender of the event
-	 * @param TDataListItemEventParameter $param
+	 * @param \Prado\Web\UI\WebControls\TDataListItemEventParameter $param
 	 */
 	public function dataListItemDataBound($sender, $param)
 	{
@@ -1312,8 +1312,8 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method mainly translate certain command events into
 	 * wizard-specific events.
 	 * @param mixed $sender sender of the original command event
-	 * @param TEventParameter $param event parameter
-	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
+	 * @param \Prado\TEventParameter $param event parameter
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if a navigation command is associated with an invalid parameter
 	 */
 	public function bubbleEvent($sender, $param)
 	{

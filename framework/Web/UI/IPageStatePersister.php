@@ -27,7 +27,7 @@ interface IPageStatePersister
 	 */
 	public function getPage();
 	/**
-	 * @param TPage $page the page that this persister works for
+	 * @param \Prado\Web\UI\TPage $page the page that this persister works for
 	 */
 	public function setPage(TPage $page);
 	/**

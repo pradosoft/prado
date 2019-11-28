@@ -43,7 +43,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return TInlineFrameAlign alignment of the iframe. Defaults to TInlineFrameAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TInlineFrameAlign alignment of the iframe. Defaults to TInlineFrameAlign::NotSet.
 	 * @deprecated obsolete since html5
 	 */
 	public function getAlign()
@@ -52,7 +52,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param TInlineFrameAlign $value alignment of the iframe.
+	 * @param \Prado\Web\UI\WebControls\TInlineFrameAlign $value alignment of the iframe.
 	 * @deprecated obsolete since html5
 	 */
 	public function setAlign($value)
@@ -139,7 +139,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @return TInlineFrameScrollBars the visibility and position of scroll bars in an iframe. Defaults to TInlineFrameScrollBars::Auto.
+	 * @return \Prado\Web\UI\WebControls\TInlineFrameScrollBars the visibility and position of scroll bars in an iframe. Defaults to TInlineFrameScrollBars::Auto.
 	 * @deprecated obsolete since html5
 	 */
 	public function getScrollBars()
@@ -148,7 +148,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	}
 
 	/**
-	 * @param TInlineFrameScrollBars $value the visibility and position of scroll bars in an iframe.
+	 * @param \Prado\Web\UI\WebControls\TInlineFrameScrollBars $value the visibility and position of scroll bars in an iframe.
 	 * @deprecated obsolete since html5
 	 */
 	public function setScrollBars($value)
@@ -243,7 +243,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{

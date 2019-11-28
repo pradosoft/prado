@@ -48,7 +48,7 @@ class TPropertyAccess
 	 * Gets the property value.
 	 * @param mixed $object object or path.
 	 * @param string $path property path.
-	 * @throws TInvalidDataValueException if property path is invalid.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if property path is invalid.
 	 * @return mixed property value.
 	 */
 	public static function get($object, $path)
@@ -123,7 +123,7 @@ class TPropertyAccess
 	 * @param mixed &$originalObject object or array
 	 * @param string $path property path.
 	 * @param mixed $value new property value.
-	 * @throws TInvalidDataValueException if property path is invalid.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if property path is invalid.
 	 */
 	public static function set(&$originalObject, $path, $value)
 	{

@@ -87,7 +87,7 @@ class TDatePicker extends TTextBox
 	const SCRIPT_PATH = 'datepicker';
 
 	/**
-	 * @var TDatePickerClientScript validator client-script options.
+	 * @var \Prado\Web\UI\WebControls\TDatePickerClientScript validator client-script options.
 	 */
 	private $_clientScript;
 	/**
@@ -155,7 +155,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerInputMode $value input method of date values
+	 * @param \Prado\Web\UI\WebControls\TDatePickerInputMode $value input method of date values
 	 */
 	public function setInputMode($value)
 	{
@@ -163,7 +163,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
+	 * @return \Prado\Web\UI\WebControls\TDatePickerInputMode input method of date values. Defaults to TDatePickerInputMode::TextBox.
 	 */
 	public function getInputMode()
 	{
@@ -171,7 +171,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerMode $value calendar UI mode
+	 * @param \Prado\Web\UI\WebControls\TDatePickerMode $value calendar UI mode
 	 */
 	public function setMode($value)
 	{
@@ -179,7 +179,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerMode current calendar UI mode.
+	 * @return \Prado\Web\UI\WebControls\TDatePickerMode current calendar UI mode.
 	 */
 	public function getMode()
 	{
@@ -283,7 +283,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @param TDatePickerPositionMode $value calendar UI position
+	 * @param \Prado\Web\UI\WebControls\TDatePickerPositionMode $value calendar UI position
 	 */
 	public function setPositionMode($value)
 	{
@@ -291,7 +291,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerPositionMode current calendar UI position.
+	 * @return \Prado\Web\UI\WebControls\TDatePickerPositionMode current calendar UI position.
 	 */
 	public function getPositionMode()
 	{
@@ -375,7 +375,7 @@ class TDatePicker extends TTextBox
 	 *
 	 * You can attach custom javascript code to each of these events
 	 *
-	 * @return TDatePickerClientScript javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TDatePickerClientScript javascript validator event options.
 	 */
 	public function getClientSide()
 	{
@@ -386,7 +386,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return TDatePickerClientScript javascript validator event options.
+	 * @return \Prado\Web\UI\WebControls\TDatePickerClientScript javascript validator event options.
 	 */
 	protected function createClientScript()
 	{
@@ -422,7 +422,7 @@ class TDatePicker extends TTextBox
 	 * Renders body content.
 	 * This method overrides parent implementation by adding
 	 * additional date picker button if Mode is Button or ImageButton.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -645,7 +645,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the calendar drop down list depending on the DateFormat pattern.
-	 * @param THtmlWriter $writer the Html writer to render the drop down lists.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the Html writer to render the drop down lists.
 	 * @param array $date the current selected date
 	 */
 	protected function renderCalendarSelections($writer, $date)
@@ -677,7 +677,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders a drop down lists.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param array $options list of selection options
 	 * @param null|mixed $selected selected key.
 	 */
@@ -696,7 +696,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the day drop down list options.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected day.
 	 */
 	protected function renderCalendarDayOptions($writer, $selected = null)
@@ -729,7 +729,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the month drop down list options.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected month.
 	 */
 	protected function renderCalendarMonthOptions($writer, $selected = null)
@@ -781,7 +781,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Renders the year drop down list options.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 * @param null|mixed $selected selected year.
 	 */
 	protected function renderCalendarYearOptions($writer, $selected = null)
@@ -813,7 +813,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional button such that when clicked it shows the date picker.
 	 * @param mixed $writer
-	 * @return THtmlWriter writer
+	 * @return \Prado\Web\UI\THtmlWriter writer
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
@@ -831,7 +831,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional image button such that when clicked it shows the date picker.
 	 * @param mixed $writer
-	 * @return THtmlWriter writer
+	 * @return \Prado\Web\UI\THtmlWriter writer
 	 */
 	protected function renderImageButtonDatePicker($writer)
 	{
@@ -876,7 +876,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Add the client id to the input textbox, and register the client scripts.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

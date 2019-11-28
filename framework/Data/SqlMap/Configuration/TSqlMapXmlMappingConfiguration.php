@@ -52,7 +52,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	const INLINE_PLACEHOLDER = '`!!!`';
 
 	/**
-	 * @param TSqlMapXmlConfiguration $xmlConfig parent xml configuration.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapXmlConfiguration $xmlConfig parent xml configuration.
 	 */
 	public function __construct(TSqlMapXmlConfiguration $xmlConfig)
 	{
@@ -165,7 +165,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * Create a new result map and its associated result properties,
 	 * disciminiator and sub maps.
 	 * @param SimpleXmlElement $node result map node
-	 * @return TResultMap SqlMap result mapping.
+	 * @return \Prado\Data\SqlMap\Configuration\TResultMap SqlMap result mapping.
 	 */
 	protected function createResultMap($node)
 	{
@@ -245,7 +245,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Create a new parameter map from xml node.
 	 * @param SimpleXmlElement $node parameter map node.
-	 * @return TParameterMap new parameter mapping.
+	 * @return \Prado\Data\SqlMap\Configuration\TParameterMap new parameter mapping.
 	 */
 	protected function createParameterMap($node)
 	{
@@ -275,7 +275,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load extended SQL statements if application. Replaces global properties
 	 * in the sql text. Extracts inline parameter maps.
-	 * @param TSqlMapStatement $statement mapped statement.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapStatement $statement mapped statement.
 	 * @param SimpleXmlElement $node statement node.
 	 */
 	protected function processSqlStatement($statement, $node)
@@ -301,7 +301,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Extract inline parameter maps.
-	 * @param TSqlMapStatement $statement statement object.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapStatement $statement statement object.
 	 * @param string $sqlStatement sql text
 	 * @param SimpleXmlElement $node statement node.
 	 */
@@ -333,7 +333,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Prepare the sql text (may extend to dynamic sql).
-	 * @param TSqlMapStatement $statement mapped statement.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapStatement $statement mapped statement.
 	 * @param string $sqlStatement sql text.
 	 * @param SimpleXmlElement $node statement node.
 	 * @todo Extend to dynamic sql.
@@ -386,7 +386,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Create new insert statement from xml node.
 	 * @param SimpleXmlElement $node insert node.
-	 * @return TSqlMapInsert insert statement.
+	 * @return \Prado\Data\SqlMap\Configuration\TSqlMapInsert insert statement.
 	 */
 	protected function createInsertStatement($node)
 	{
@@ -496,7 +496,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the flush interval
-	 * @param TSqlMapCacheModel $cacheModel cache model
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapCacheModel $cacheModel cache model
 	 * @param SimpleXmlElement $node cache node
 	 */
 	protected function loadFlushInterval($cacheModel, $node)
@@ -530,7 +530,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the flush on cache properties.
-	 * @param TSqlMapCacheModel $cacheModel cache model
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapCacheModel $cacheModel cache model
 	 * @param SimpleXmlElement $parent parent node.
 	 * @param SimpleXmlElement $node flush node.
 	 */

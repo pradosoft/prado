@@ -80,8 +80,8 @@ class TCaptchaValidator extends TBaseValidator
 	}
 
 	/**
-	 * @throws TConfigurationException if the CAPTCHA cannot be found according to {@link setCaptchaControl CaptchaControl}
-	 * @return TCaptcha the CAPTCHA control to be validated against
+	 * @throws \Prado\Exceptions\TConfigurationException if the CAPTCHA cannot be found according to {@link setCaptchaControl CaptchaControl}
+	 * @return \Prado\Web\UI\WebControls\TCaptcha the CAPTCHA control to be validated against
 	 */
 	protected function findCaptchaControl()
 	{

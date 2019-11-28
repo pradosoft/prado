@@ -183,7 +183,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -207,7 +207,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{
@@ -250,7 +250,7 @@ class TInPlaceTextBox extends TActiveTextBox
 	/**
 	 * Raised when editing the content is requsted to be loaded from the
 	 * server side.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoadingText($param)
 	{

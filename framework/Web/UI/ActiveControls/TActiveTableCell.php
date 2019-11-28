@@ -53,7 +53,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 {
 
 	/**
-	 * @var TTable parent row control containing the cell
+	 * @var \Prado\Web\UI\WebControls\TTable parent row control containing the cell
 	 */
 	private $_row;
 
@@ -67,7 +67,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
 	 */
 	public function getActiveControl()
 	{
@@ -75,7 +75,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{
@@ -96,7 +96,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * {@link TActiveTableCellEventParameter} containing the zero-based index of the
 	 * TActiveTableCell.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -110,7 +110,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * 'OnCellSelected' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TActiveTableCellEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TActiveTableCellEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCellSelected($param)
 	{
@@ -121,7 +121,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
 	 * {@link onCellSelected OnCellSelected} event is set.
-	 * @param THtmlWriter $writer the writer responsible for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -137,7 +137,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * called before the OnPreRender event, such as when render() is called during
 	 * a callback event handler, the rendering is defered until OnPreRender event
 	 * is raised.
-	 * @param THtmlWriter $writer html writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{
@@ -189,7 +189,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	/**
 	 * Returns the parent {@link TTableRow} control by looping through all parents until a {@link TTableRow}
 	 * is found. Raises a {@link TConfigurationException} if no row control is found.
-	 * @return TTableRow the parent row control
+	 * @return \Prado\Web\UI\WebControls\TTableRow the parent row control
 	 */
 	public function getRow()
 	{

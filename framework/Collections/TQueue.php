@@ -51,7 +51,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * Constructor.
 	 * Initializes the queue with an array or an iterable object.
 	 * @param null|array|\Iterator $data the intial data. Default is null, meaning no initialization.
-	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null)
 	{
@@ -72,7 +72,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * Copies iterable data into the queue.
 	 * Note, existing data in the list will be cleared first.
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
-	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
 	public function copyFrom($data)
 	{
@@ -108,7 +108,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	/**
 	 * Returns the first item at the front of the queue.
 	 * Unlike {@link dequeue()}, this method does not remove the item from the queue.
-	 * @throws TInvalidOperationException if the queue is empty
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the queue is empty
 	 * @return mixed item at the top of the queue
 	 */
 	public function peek()
@@ -122,7 +122,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Removes and returns the object at the beginning of the queue.
-	 * @throws TInvalidOperationException if the queue is empty
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the queue is empty
 	 * @return mixed the item at the beginning of the queue
 	 */
 	public function dequeue()

@@ -23,7 +23,7 @@ interface IMappedStatement
 	public function getID();
 
 	/**
-	 * @return TSqlMapStatement The SQL statment used by this TMappedStatement.
+	 * @return \Prado\Data\SqlMap\Configuration\TSqlMapStatement The SQL statment used by this TMappedStatement.
 	 */
 	public function getStatement();
 
@@ -42,7 +42,7 @@ interface IMappedStatement
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
 	 * @param string $valueProperty The property of the result object to be used as the value (or null)
-	 * @return TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
+	 * @return \Prado\Collections\TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
 	 */
 	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null);
 
@@ -64,7 +64,7 @@ interface IMappedStatement
 	 * @param null|TList $result A list to populate the result with.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A TList of result objects.
+	 * @return \Prado\Collections\TList A TList of result objects.
 	 */
 	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1);
 

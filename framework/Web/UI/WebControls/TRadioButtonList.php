@@ -37,7 +37,7 @@ class TRadioButtonList extends TCheckBoxList
 
 	/**
 	 * Creates a control used for repetition (used as a template).
-	 * @return TRadioButtonItem the control to be repeated
+	 * @return \Prado\Web\UI\WebControls\TRadioButtonItem the control to be repeated
 	 */
 	protected function createRepeatedControl()
 	{
@@ -71,7 +71,7 @@ class TRadioButtonList extends TCheckBoxList
 
 	/**
 	 * @param mixed $indices
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndices($indices)
 	{

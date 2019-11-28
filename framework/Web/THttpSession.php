@@ -88,7 +88,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_autoStart = false;
 	/**
-	 * @var THttpCookie cookie to be used to store session ID and other data
+	 * @var \Prado\Web\THttpCookie cookie to be used to store session ID and other data
 	 */
 	private $_cookie;
 	/**
@@ -205,7 +205,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param string $value the session ID for the current session
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setSessionID($value)
 	{
@@ -226,7 +226,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param string $value the session name for the current session, must be an alphanumeric string, defaults to PHPSESSID
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setSessionName($value)
 	{
@@ -249,7 +249,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param string $value the current session save path
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setSavePath($value)
 	{
@@ -284,7 +284,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpCookie cookie that will be used to store session ID
+	 * @return \Prado\Web\THttpCookie cookie that will be used to store session ID
 	 */
 	public function getCookie()
 	{
@@ -295,7 +295,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
+	 * @return \Prado\Web\THttpSessionCookieMode how to use cookie to store session ID. Defaults to THttpSessionCookieMode::Allow.
 	 */
 	public function getCookieMode()
 	{
@@ -309,8 +309,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param THttpSessionCookieMode $value how to use cookie to store session ID
-	 * @throws TInvalidOperationException if session is started already
+	 * @param \Prado\Web\THttpSessionCookieMode $value how to use cookie to store session ID
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setCookieMode($value)
 	{
@@ -342,7 +342,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param bool $value whether the session should be automatically started when the session module is initialized, defaults to false.
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setAutoStart($value)
 	{
@@ -363,8 +363,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param int $value the probability (percentage) that the gc (garbage collection) process is started on every session initialization.
-	 * @throws TInvalidOperationException if session is started already
-	 * @throws TInvalidDataValueException if the value is beyond [0,100].
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is beyond [0,100].
 	 */
 	public function setGCProbability($value)
 	{
@@ -419,7 +419,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param int $value the number of seconds after which data will be seen as 'garbage' and cleaned up
-	 * @throws TInvalidOperationException if session is started already
+	 * @throws \Prado\Exceptions\TInvalidOperationException if session is started already
 	 */
 	public function setTimeout($value)
 	{
@@ -502,7 +502,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Returns an iterator for traversing the session variables.
 	 * This method is required by the interface \IteratorAggregate.
-	 * @return TSessionIterator an iterator for traversing the session variables.
+	 * @return \Prado\Web\TSessionIterator an iterator for traversing the session variables.
 	 */
 	public function getIterator()
 	{

@@ -125,7 +125,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param TPagerMode $value pager mode.
+	 * @param \Prado\Web\UI\WebControls\TPagerMode $value pager mode.
 	 */
 	public function setMode($value)
 	{
@@ -141,7 +141,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param TPagerButtonType $value the type of command button for paging.
+	 * @param \Prado\Web\UI\WebControls\TPagerButtonType $value the type of command button for paging.
 	 */
 	public function setButtonType($value)
 	{
@@ -318,7 +318,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * @param int $value maximum number of pager buttons to be displayed
-	 * @throws TInvalidDataValueException if the value is less than 1.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 1.
 	 */
 	public function setPageButtonCount($value)
 	{
@@ -338,7 +338,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * @param int $value the zero-based index of the current page
-	 * @throws TInvalidDataValueException if the value is less than 0
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setCurrentPageIndex($value)
 	{
@@ -358,7 +358,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * @param int $value number of pages of data items available
-	 * @throws TInvalidDataValueException if the value is less than 0
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 0
 	 */
 	protected function setPageCount($value)
 	{
@@ -414,7 +414,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Renders the control.
 	 * The method overrides the parent implementation by rendering
 	 * the pager only when there are two or more pages.
-	 * @param THtmlWriter $writer the writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
 	 */
 	public function render($writer)
 	{
@@ -633,8 +633,8 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	/**
 	 * Event handler to the OnSelectedIndexChanged event of the dropdown list.
 	 * This handler will raise {@link onPageIndexChanged OnPageIndexChanged} event.
-	 * @param TDropDownList $sender the dropdown list control raising the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDropDownList $sender the dropdown list control raising the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function listIndexChanged($sender, $param)
 	{
@@ -644,7 +644,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * This event is raised when page index is changed due to a page button click.
-	 * @param TPagerPageChangedEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TPagerPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
@@ -655,8 +655,8 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Processes a bubbled event.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)

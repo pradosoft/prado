@@ -40,7 +40,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @return TBaseActiveControl basic active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl basic active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -48,7 +48,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{
@@ -129,7 +129,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * {@link TPage::validate} method first. It will raise
 	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -142,7 +142,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{

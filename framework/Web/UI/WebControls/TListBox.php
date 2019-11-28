@@ -40,7 +40,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional list box specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -191,7 +191,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @return TListSelectionMode the selection mode (Single, Multiple). Defaults to TListSelectionMode::Single.
+	 * @return \Prado\Web\UI\WebControls\TListSelectionMode the selection mode (Single, Multiple). Defaults to TListSelectionMode::Single.
 	 */
 	public function getSelectionMode()
 	{
@@ -199,7 +199,7 @@ class TListBox extends TListControl implements \Prado\Web\UI\IPostBackDataHandle
 	}
 
 	/**
-	 * @param TListSelectionMode $value the selection mode
+	 * @param \Prado\Web\UI\WebControls\TListSelectionMode $value the selection mode
 	 */
 	public function setSelectionMode($value)
 	{

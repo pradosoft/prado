@@ -37,7 +37,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TDataGrid $owner the control that owns this collection.
+	 * @param \Prado\Web\UI\WebControls\TDataGrid $owner the control that owns this collection.
 	 */
 	public function __construct(TDataGrid $owner)
 	{
@@ -45,7 +45,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	}
 
 	/**
-	 * @return TDataGrid the control that owns this collection.
+	 * @return \Prado\Web\UI\WebControls\TDataGrid the control that owns this collection.
 	 */
 	protected function getOwner()
 	{
@@ -57,7 +57,7 @@ class TDataGridColumnCollection extends \Prado\Collections\TList
 	 * This overrides the parent implementation by inserting only TDataGridColumn.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a TDataGridColumn.
 	 */
 	public function insertAt($index, $item)
 	{

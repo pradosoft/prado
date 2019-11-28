@@ -47,7 +47,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -116,7 +116,7 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 
 	/**
 	 * @param mixed $indices
-	 * @throws TNotSupportedException if this method is invoked
+	 * @throws \Prado\Exceptions\TNotSupportedException if this method is invoked
 	 */
 	public function setSelectedIndices($indices)
 	{

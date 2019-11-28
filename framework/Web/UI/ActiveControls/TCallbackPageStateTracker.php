@@ -25,15 +25,15 @@ use stdClass;
 class TCallbackPageStateTracker
 {
 	/**
-	 * @var TMap new view state data
+	 * @var \Prado\Collections\TMap new view state data
 	 */
 	private $_states;
 	/**
-	 * @var TMap old view state data
+	 * @var \Prado\Collections\TMap old view state data
 	 */
 	private $_existingState;
 	/**
-	 * @var TControl the control tracked
+	 * @var \Prado\Web\UI\TControl the control tracked
 	 */
 	protected $_control;
 	/**
@@ -43,7 +43,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Constructor. Add a set of default states to track.
-	 * @param TControl $control control to track.
+	 * @param \Prado\Web\UI\TControl $control control to track.
 	 */
 	public function __construct($control)
 	{
@@ -75,7 +75,7 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * @return TMap list of viewstates to track.
+	 * @return \Prado\Collections\TMap list of viewstates to track.
 	 */
 	protected function getStatesToTrack()
 	{
@@ -124,7 +124,7 @@ class TCallbackPageStateTracker
 	}
 
 	/**
-	 * @return TCallbackClientScript callback client scripting
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientScript callback client scripting
 	 */
 	protected function client()
 	{

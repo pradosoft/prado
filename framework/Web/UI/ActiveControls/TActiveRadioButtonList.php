@@ -49,7 +49,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
 	 */
 	public function getActiveControl()
 	{
@@ -57,7 +57,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{
@@ -88,7 +88,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	 * Raises the callback event. This method is required by {@link
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -100,7 +100,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCallback($param)
 	{

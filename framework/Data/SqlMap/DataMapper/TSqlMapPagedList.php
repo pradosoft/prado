@@ -39,7 +39,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Create a new SqlMap paged list.
-	 * @param IMappedStatement $statement SqlMap statement.
+	 * @param \Prado\Data\SqlMap\Statements\IMappedStatement $statement SqlMap statement.
 	 * @param mixed $parameter query parameters
 	 * @param int $pageSize page size
 	 * @param null|mixed $delegate delegate for each data row retrieved.
@@ -55,7 +55,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Initialize the paged list.
-	 * @param IMappedStatement $statement SqlMap statement.
+	 * @param \Prado\Data\SqlMap\Statements\IMappedStatement $statement SqlMap statement.
 	 * @param mixed $parameter query parameters
 	 * @param int $pageSize page size.
 	 * @param int $page number of page.
@@ -71,7 +71,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * @param mixed $value
-	 * @throws TSqlMapException custom paging must be enabled.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapException custom paging must be enabled.
 	 */
 	public function setCustomPaging($value)
 	{
@@ -81,7 +81,7 @@ class TSqlMapPagedList extends TPagedList
 	/**
 	 * Fetch data by executing the SqlMap statement.
 	 * @param TPageList $sender current object.
-	 * @param TPagedListFetchDataEventParameter $param fetch parameters
+	 * @param \Prado\Collections\TPagedListFetchDataEventParameter $param fetch parameters
 	 */
 	protected function fetchDataFromStatement($sender, $param)
 	{
@@ -118,7 +118,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Populate the list with the fetched data.
-	 * @param TPagedListFetchDataEventParameter $param fetch parameters
+	 * @param \Prado\Collections\TPagedListFetchDataEventParameter $param fetch parameters
 	 * @param array $data fetched data.
 	 */
 	protected function populateData($param, $data)
@@ -160,7 +160,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Calculate the data fetch offsets and limits.
-	 * @param TPagedListFetchDataEventParameter $param fetch parameters
+	 * @param \Prado\Collections\TPagedListFetchDataEventParameter $param fetch parameters
 	 * @return array 1st element is the offset, 2nd element is the limit.
 	 */
 	protected function getOffsetAndLimit($param)

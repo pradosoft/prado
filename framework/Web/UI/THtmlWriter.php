@@ -71,13 +71,13 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	 */
 	private $_styles = [];
 	/**
-	 * @var ITextWriter writer
+	 * @var \Prado\IO\ITextWriter writer
 	 */
 	protected $_writer;
 
 	/**
 	 * Constructor.
-	 * @param ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
+	 * @param \Prado\IO\ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
 	 */
 	public function __construct($writer)
 	{

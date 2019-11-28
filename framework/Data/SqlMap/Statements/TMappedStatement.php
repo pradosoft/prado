@@ -34,12 +34,12 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 {
 	/**
-	 * @var TSqlMapStatement current SQL statement.
+	 * @var \Prado\Data\SqlMap\Configuration\TSqlMapStatement current SQL statement.
 	 */
 	private $_statement;
 
 	/**
-	 * @var TPreparedCommand SQL command prepareer
+	 * @var \Prado\Data\SqlMap\Statements\TPreparedCommand SQL command prepareer
 	 */
 	private $_command;
 
@@ -88,7 +88,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TSqlMapStatement The SQL statment used by this MappedStatement
+	 * @return \Prado\Data\SqlMap\Configuration\TSqlMapStatement The SQL statment used by this MappedStatement
 	 */
 	public function getStatement()
 	{
@@ -96,7 +96,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TSqlMapManager The SqlMap used by this MappedStatement
+	 * @return \Prado\Data\SqlMap\TSqlMapManager The SqlMap used by this MappedStatement
 	 */
 	public function getManager()
 	{
@@ -104,7 +104,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * @return TPreparedCommand command to prepare SQL statements.
+	 * @return \Prado\Data\SqlMap\Statements\TPreparedCommand command to prepare SQL statements.
 	 */
 	public function getCommand()
 	{
@@ -121,8 +121,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Creates a new mapped statement.
-	 * @param TSqlMapManager $sqlMap an sqlmap.
-	 * @param TSqlMapStatement $statement An SQL statement.
+	 * @param \Prado\Data\SqlMap\TSqlMapManager $sqlMap an sqlmap.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapStatement $statement An SQL statement.
 	 */
 	public function __construct(TSqlMapManager $sqlMap, TSqlMapStatement $statement)
 	{
@@ -144,7 +144,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param mixed $command
 	 * @param mixed $max
 	 * @param mixed $skip
-	 * @throws TSqlMapExecutionException if execution error or false record set.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException if execution error or false record set.
 	 * @throws TSqlMapQueryExecutionException if any execution error
 	 * @return mixed record set if applicable.
 	 */
@@ -172,7 +172,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param $command
 	 * @param int $max The maximum number of rows to return.
 	 * @param int $skip The number of rows to skip over.
-	 * @throws TSqlMapExecutionException if execution error or false record set.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException if execution error or false record set.
 	 * @throws TSqlMapQueryExecutionException if any execution error
 	 * @return mixed record set if applicable.
 	 */
@@ -470,7 +470,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Execute the select key statement, used to obtain last insert ID.
 	 * @param IDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter
-	 * @param TSqlMapSelectKey $selectKey select key statement
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapSelectKey $selectKey select key statement
 	 * @return string last insert ID.
 	 */
 	protected function executeSelectKey($connection, $parameter, $selectKey)
@@ -673,7 +673,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * ResultMap with GroupBy property. Save object collection graph in a tree
 	 * and collect the result later.
-	 * @param TResultMap $resultMap result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @param mixed $parent
 	 * @param object &$resultObject the result object
@@ -720,7 +720,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the result 'group by' groupping key for each row.
-	 * @param TResultMap $resultMap result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @return string groupping key.
 	 */
@@ -737,7 +737,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Fill the result map using default settings. If <tt>$resultMap</tt> is null
 	 * the result object returned will be guessed from <tt>$resultObject</tt>.
-	 * @param TResultMap $resultMap result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject the result object
 	 * @return mixed the result object filled with data.
@@ -764,7 +764,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Retrieve the result map as an array.
-	 * @param TResultMap $resultMap result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject the result object
 	 * @return array array list of result objects.
@@ -798,8 +798,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Set a property of the result object with appropriate value.
-	 * @param TResultMap $resultMap result mapping details.
-	 * @param TResultProperty $property the result property to fill.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultProperty $property the result property to fill.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object &$resultObject the result object
 	 */
@@ -845,8 +845,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Add nested result property to post select queue.
 	 * @param string $select post select statement ID
-	 * @param TResultMap $resultMap current result mapping details.
-	 * @param TResultProperty $property current result property.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap current result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultProperty $property current result property.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object $resultObject the result object
 	 */
@@ -886,8 +886,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Finds in the post select property the SQL statement primary selection keys.
-	 * @param TResultMap $resultMap result mapping details
-	 * @param TResultProperty $property result property
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap result mapping details
+	 * @param \Prado\Data\SqlMap\Configuration\TResultProperty $property result property
 	 * @param array $row current row data.
 	 * @return array list of primary key values.
 	 */
@@ -909,7 +909,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Fills the property with result mapping results.
-	 * @param TResultMap $resultMap nested result mapping details.
+	 * @param \Prado\Data\SqlMap\Configuration\TResultMap $resultMap nested result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @param object &$resultObject the result object
 	 * @return bool true if the data was found, false otherwise.

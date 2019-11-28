@@ -48,7 +48,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -102,7 +102,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * Renders the repeater.
 	 * If the repeater did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderRepeater()} method which will do the rendering of the repeater.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -136,7 +136,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 * Renders the repeater by writing a {@link getSurroundingTag()} with the container id obtained
 	 * from {@link getSurroundingTagID()} which will be called by the replacement method of the client
 	 * script to update it's content.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	private function renderRepeater($writer)
 	{

@@ -36,7 +36,7 @@ use Prado\Web\THttpResponse;
 class TCallbackEventParameter extends \Prado\TEventParameter
 {
 	/**
-	 * @var THttpResponse output content.
+	 * @var \Prado\Web\THttpResponse output content.
 	 */
 	private $_response;
 	/**
@@ -56,7 +56,7 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TCallbackResponseWriter holds the response content.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackResponseWriter holds the response content.
 	 */
 	public function getNewWriter()
 	{

@@ -30,19 +30,19 @@ interface IUserManager
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return \Prado\Security\TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null);
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
-	 * @param THttpCookie $cookie the cookie storing user authentication information
-	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
+	 * @return \Prado\Security\TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie);
 	/**
 	 * Saves user auth data into a cookie.
-	 * @param THttpCookie $cookie the cookie to receive the user auth data.
+	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie);

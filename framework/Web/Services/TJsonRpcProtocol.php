@@ -90,7 +90,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Turns the given exception into an JSON RPC fault
-	 * @param TRpcException $exception
+	 * @param \Prado\Web\Services\TRpcException $exception
 	 * @return string JSON RPC fault
 	 */
 	public function createErrorResponse(TRpcException $exception)
@@ -119,7 +119,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Sets the correct response headers
-	 * @param THttpResponse $response
+	 * @param \Prado\Web\THttpResponse $response
 	 */
 	public function createResponseHeaders($response)
 	{

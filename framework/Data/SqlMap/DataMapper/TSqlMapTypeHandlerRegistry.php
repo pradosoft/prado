@@ -26,7 +26,7 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * @param string $dbType database field type
-	 * @return TSqlMapTypeHandler type handler for give database field type.
+	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler for give database field type.
 	 */
 	public function getDbTypeHandler($dbType = 'NULL')
 	{
@@ -39,7 +39,7 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * @param string $class type handler class name
-	 * @return TSqlMapTypeHandler type handler
+	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler
 	 */
 	public function getTypeHandler($class)
 	{
@@ -49,7 +49,7 @@ class TSqlMapTypeHandlerRegistry
 	}
 
 	/**
-	 * @param TSqlMapTypeHandler $handler registers a new type handler
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler $handler registers a new type handler
 	 */
 	public function registerTypeHandler(TSqlMapTypeHandler $handler)
 	{
@@ -60,7 +60,7 @@ class TSqlMapTypeHandlerRegistry
 	 * Creates a new instance of a particular class (for PHP primative types,
 	 * their corresponding default value for given type is used).
 	 * @param string $type PHP type name
-	 * @throws TSqlMapException if class name is not found.
+	 * @throws \Prado\Data\SqlMap\DataMapper\TSqlMapException if class name is not found.
 	 * @return mixed default type value, if no type is specified null is returned.
 	 */
 	public function createInstanceOf($type = '')

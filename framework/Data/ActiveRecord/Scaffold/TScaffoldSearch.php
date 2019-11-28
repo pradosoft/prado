@@ -36,12 +36,12 @@ use Prado\Prado;
 class TScaffoldSearch extends TScaffoldBase
 {
 	/**
-	 * @var TScaffoldListView the scaffold list view.
+	 * @var \Prado\Data\ActiveRecord\Scaffold\TScaffoldListView the scaffold list view.
 	 */
 	private $_list;
 
 	/**
-	 * @return TScaffoldListView the scaffold list view this search box belongs to.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\TScaffoldListView the scaffold list view this search box belongs to.
 	 */
 	protected function getListView()
 	{
@@ -130,7 +130,7 @@ class TScaffoldSearch extends TScaffoldBase
 	}
 
 	/**
-	 * @return TButton button with default label "Search".
+	 * @return \Prado\Web\UI\WebControls\TButton button with default label "Search".
 	 */
 	public function getSearchButton()
 	{
@@ -139,7 +139,7 @@ class TScaffoldSearch extends TScaffoldBase
 	}
 
 	/**
-	 * @return TTextBox search text box.
+	 * @return \Prado\Web\UI\WebControls\TTextBox search text box.
 	 */
 	public function getSearchText()
 	{

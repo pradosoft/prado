@@ -89,7 +89,7 @@ class TPriorityMap extends TMap
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities
-	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
@@ -322,7 +322,7 @@ class TPriorityMap extends TMap
 	 * @param mixed $key
 	 * @param mixed $value
 	 * @param null|numeric $priority default: null, filled in with default priority
-	 * @throws TInvalidOperationException if the map is read-only
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the map is read-only
 	 * @return numeric priority at which the pair was added
 	 */
 	public function add($key, $value, $priority = null)
@@ -365,7 +365,7 @@ class TPriorityMap extends TMap
 	 * @param mixed $key the key of the item to be removed
 	 * @param null|false|numeric $priority priority.  False is any priority, null is the
 	 * default priority, and numeric is a specific priority
-	 * @throws TInvalidOperationException if the map is read-only
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the map is read-only
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key, $priority = false)
@@ -489,7 +489,7 @@ class TPriorityMap extends TMap
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
 	 * @param array|TPriorityMap|Traversable $data the data to be copied from, must be an array, object implementing
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
 	{
@@ -519,7 +519,7 @@ class TPriorityMap extends TMap
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
 	 * @param array|TPriorityMap|Traversable $data the data to be merged with, must be an array,
 	 * object implementing Traversable, or a TPriorityMap
-	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function mergeWith($data)
 	{

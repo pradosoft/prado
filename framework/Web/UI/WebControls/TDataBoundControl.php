@@ -218,7 +218,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param int $value the zero-based index of the current page
-	 * @throws TInvalidDataValueException if the value is less than 0
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 0
 	 */
 	public function setCurrentPageIndex($value)
 	{
@@ -238,7 +238,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param int $value the number of data items on each page.
-	 * @throws TInvalidDataValueException if the value is less than 1
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 1
 	 */
 	public function setPageSize($value)
 	{
@@ -267,7 +267,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param int $value virtual number of data items in the data source.
-	 * @throws TInvalidDataValueException if the value is less than 0
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the value is less than 0
 	 * @see setAllowCustomPaging
 	 */
 	public function setVirtualItemCount($value)
@@ -428,7 +428,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * If viewstate is disabled and the current request is a postback,
 	 * {@link setRequiresDataBinding RequiresDataBinding} will be set true.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -441,7 +441,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets {@link getInitialized} as true.
 	 * This method is invoked when page raises <b>PreLoad</b> event.
 	 * @param mixed $sender event sender
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function pagePreLoad($sender, $param)
 	{
@@ -455,7 +455,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Ensures any pending databind is performed.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -468,7 +468,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * Validates if the parameter is a valid data source.
 	 * If it is a string or an array, it will be converted as a TList object.
 	 * @param array|string|Traversable $value data source to be validated
-	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the data is neither null nor Traversable
 	 * @return Traversable the data that is traversable
 	 */
 	protected function validateDataSource($value)

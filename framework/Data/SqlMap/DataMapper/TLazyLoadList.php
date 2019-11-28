@@ -30,7 +30,7 @@ class TLazyLoadList
 	/**
 	 * Create a new proxy list that will execute the mapped statement when any
 	 * of the list's method are accessed for the first time.
-	 * @param TMappedStatement $mappedStatement statement to be executed to load the data.
+	 * @param \Prado\Data\SqlMap\Statements\TMappedStatement $mappedStatement statement to be executed to load the data.
 	 * @param mixed $param parameter value for the statement.
 	 * @param object $target result object that contains the lazy collection.
 	 * @param string $propertyName property of the result object to set the loaded collection.
@@ -46,11 +46,11 @@ class TLazyLoadList
 
 	/**
 	 * Create a new instance of a lazy collection.
-	 * @param TMappedStatement $mappedStatement statement to be executed to load the data.
+	 * @param \Prado\Data\SqlMap\Statements\TMappedStatement $mappedStatement statement to be executed to load the data.
 	 * @param mixed $param parameter value for the statement.
 	 * @param object $target result object that contains the lazy collection.
 	 * @param string $propertyName property of the result object to set the loaded collection.
-	 * @return TObjectProxy proxied collection object.
+	 * @return \Prado\Data\SqlMap\DataMapper\TObjectProxy proxied collection object.
 	 */
 	public static function newInstance($mappedStatement, $param, $target, $propertyName)
 	{

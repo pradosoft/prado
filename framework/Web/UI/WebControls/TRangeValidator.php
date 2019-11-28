@@ -111,7 +111,7 @@ class TRangeValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return TRangeValidationDataType the data type that the values being compared are
+	 * @return \Prado\Web\UI\WebControls\TRangeValidationDataType the data type that the values being compared are
 	 * converted to before the comparison is made. Defaults to TRangeValidationDataType::String.
 	 */
 	public function getDataType()
@@ -121,7 +121,7 @@ class TRangeValidator extends TBaseValidator
 
 	/**
 	 * Sets the data type that the values being compared are converted to before the comparison is made.
-	 * @param TRangeValidationDataType $value the data type
+	 * @param \Prado\Web\UI\WebControls\TRangeValidationDataType $value the data type
 	 */
 	public function setDataType($value)
 	{

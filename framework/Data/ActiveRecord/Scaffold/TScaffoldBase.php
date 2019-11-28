@@ -36,12 +36,12 @@ use Prado\Web\UI\TTemplateControl;
 abstract class TScaffoldBase extends TTemplateControl
 {
 	/**
-	 * @var TActiveRecord record instance (may be new or retrieved from db)
+	 * @var \Prado\Data\ActiveRecord\TActiveRecord record instance (may be new or retrieved from db)
 	 */
 	private $_record;
 
 	/**
-	 * @return TDbMetaData table/view information
+	 * @return \Prado\Data\Common\TDbMetaData table/view information
 	 */
 	protected function getTableInfo()
 	{
@@ -51,7 +51,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $record record instance
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance
 	 * @return array record property values
 	 */
 	protected function getRecordPropertyValues($record)
@@ -64,7 +64,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $record record instance
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance
 	 * @return array record primary key values.
 	 */
 	protected function getRecordPkValues($record)
@@ -98,7 +98,7 @@ abstract class TScaffoldBase extends TTemplateControl
 
 	/**
 	 * Copy the view details from another scaffold view instance.
-	 * @param TScaffoldBase $obj scaffold view.
+	 * @param \Prado\Data\ActiveRecord\Scaffold\TScaffoldBase $obj scaffold view.
 	 */
 	protected function copyFrom(TScaffoldBase $obj)
 	{
@@ -119,7 +119,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	 * Gets the current Active Record instance. Creates new instance if the
 	 * primary key value is null otherwise the record is fetched from the db.
 	 * @param null|array $pk primary key value
-	 * @return TActiveRecord record instance
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord record instance
 	 */
 	protected function getRecordObject($pk = null)
 	{
@@ -150,7 +150,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $value Active Record instance.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $value Active Record instance.
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{
@@ -158,7 +158,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @return TActiveRecord Active Record finder instance
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord Active Record finder instance
 	 */
 	protected function getRecordFinder()
 	{

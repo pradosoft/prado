@@ -90,7 +90,7 @@ class TParameterModule extends \Prado\TModule
 	/**
 	 * Loads parameters into application.
 	 * @param mixed $config XML of PHP representation of the parameters
-	 * @throws TConfigurationException if the parameter file format is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadParameters($config)
 	{
@@ -147,8 +147,8 @@ class TParameterModule extends \Prado\TModule
 	/**
 	 * @param string $value the parameter file path. It must be in namespace format
 	 * and the file extension is '.xml'.
-	 * @throws TInvalidOperationException if the module is initialized
-	 * @throws TConfigurationException if the file is invalid
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TConfigurationException if the file is invalid
 	 */
 	public function setParameterFile($value)
 	{

@@ -31,7 +31,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 
 	/**
 	 * Constructor.
-	 * @param TWizard $wizard wizard that owns this collection
+	 * @param \Prado\Web\UI\WebControls\TWizard $wizard wizard that owns this collection
 	 */
 	public function __construct(TWizard $wizard)
 	{
@@ -44,7 +44,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	 * the item being added is a {@link TWizardStep}.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item being added is not TWizardStep.
 	 */
 	public function insertAt($index, $item)
 	{

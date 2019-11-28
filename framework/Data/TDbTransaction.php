@@ -47,7 +47,7 @@ class TDbTransaction extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TDbConnection $connection the connection associated with this transaction
+	 * @param \Prado\Data\TDbConnection $connection the connection associated with this transaction
 	 * @see TDbConnection::beginTransaction
 	 */
 	public function __construct(TDbConnection $connection)
@@ -58,7 +58,7 @@ class TDbTransaction extends \Prado\TComponent
 
 	/**
 	 * Commits a transaction.
-	 * @throws TDbException if the transaction or the DB connection is not active.
+	 * @throws \Prado\Exceptions\TDbException if the transaction or the DB connection is not active.
 	 */
 	public function commit()
 	{
@@ -72,7 +72,7 @@ class TDbTransaction extends \Prado\TComponent
 
 	/**
 	 * Rolls back a transaction.
-	 * @throws TDbException if the transaction or the DB connection is not active.
+	 * @throws \Prado\Exceptions\TDbException if the transaction or the DB connection is not active.
 	 */
 	public function rollback()
 	{

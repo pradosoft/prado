@@ -187,7 +187,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	private static $_relations = [];
 
 	/**
-	 * @var TDbConnection database connection object.
+	 * @var \Prado\Data\TDbConnection database connection object.
 	 */
 	protected $_connection; // use protected so that serialization is fine
 
@@ -301,7 +301,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Copies data from an array or another object.
 	 * @param mixed $data
-	 * @throws TActiveRecordException if data is not array or not object.
+	 * @throws \Prado\Data\ActiveRecord\Exceptions\TActiveRecordException if data is not array or not object.
 	 */
 	public function copyFrom($data)
 	{
@@ -339,7 +339,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $connection db connection object for this record.
+	 * @param \Prado\Data\TDbConnection $connection db connection object for this record.
 	 */
 	public function setDbConnection($connection)
 	{
@@ -347,7 +347,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbTableInfo the meta information of the table associated with this AR class.
+	 * @return \Prado\Data\Common\TDbTableInfo the meta information of the table associated with this AR class.
 	 */
 	public function getRecordTableInfo()
 	{
@@ -358,7 +358,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Compare two records using their primary key values (all column values if
 	 * table does not defined primary keys). The default uses simple == for
 	 * comparison of their values. Set $strict=true for identity comparison (===).
-	 * @param TActiveRecord $record another record to compare with.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record another record to compare with.
 	 * @param bool $strict true to perform strict identity comparison
 	 * @return bool true if $record equals, false otherwise.
 	 */
@@ -391,7 +391,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Create a new instance of the ActiveRecord class if you wish to bound the
 	 * event handlers to object instance.
 	 * @param string $className active record class name.
-	 * @return TActiveRecord active record finder instance.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord active record finder instance.
 	 */
 	public static function finder($className = __CLASS__)
 	{
@@ -406,7 +406,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Gets the record manager for this object, the default is to call
 	 * TActiveRecordManager::getInstance().
-	 * @return TActiveRecordManager default active record manager.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordManager default active record manager.
 	 */
 	public static function getRecordManager()
 	{
@@ -414,7 +414,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordGateway record table gateway.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordGateway record table gateway.
 	 */
 	public function getRecordGateway()
 	{
@@ -528,7 +528,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Populates a new record with the query result.
 	 * This is a wrapper of {@link createRecord}.
 	 * @param array $data name value pair of record data
-	 * @return TActiveRecord object record, null if data is empty.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord object record, null if data is empty.
 	 */
 	protected function populateObject($data)
 	{
@@ -536,7 +536,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbDataReader $reader data reader
+	 * @param \Prado\Data\TDbDataReader $reader data reader
 	 * @return array the AR objects populated by the query result
 	 * @since 3.1.2
 	 */
@@ -555,7 +555,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * (You should use the "new" operator to create the AR instance in that case.)
 	 * @param string $type the AR class name
 	 * @param array $data initial data to be populated into the AR object.
-	 * @return TActiveRecord the initialized AR object. Null if the initial data is empty.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord the initialized AR object. Null if the initial data is empty.
 	 * @since 3.1.2
 	 */
 	public static function createRecord($type, $data)
@@ -583,7 +583,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 *
 	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
 	 * @param mixed $parameters parameter values.
-	 * @return TActiveRecord matching record object. Null if no result is found.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecord matching record object. Null if no result is found.
 	 */
 	public function find($criteria, $parameters = [])
 	{
@@ -701,7 +701,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 *
 	 * This method is to be used by the relationship handler.
 	 *
-	 * @param TActiveRecordCriteria $criteria additional criteria
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordCriteria $criteria additional criteria
 	 * @param array $fields field names to match with "(fields) IN (values)" sql clause.
 	 * @param array $values matching field values.
 	 * @return array matching active records. Empty array is returned if no result is found.
@@ -749,7 +749,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * in $RELATIONS), returns null if invalid relationship. Keeps a null
 	 * reference to all invalid relations called.
 	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
-	 * @return TActiveRecordRelationContext object containing information on
+	 * @return \Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext object containing information on
 	 * the active record relationships for given property, null if invalid relationship
 	 * @since 3.1.2
 	 */
@@ -871,7 +871,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see TActiveRecordManager::getInvalidFinderResult
 	 * @since 3.1.5
 	 */
@@ -907,7 +907,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * @param string|TSqlCriteria $criteria sql criteria
 	 * @param mixed $parameters parameters passed by the user.
 	 * @param array $args additional parameters obtained from function_get_args().
-	 * @return TSqlCriteria criteria object.
+	 * @return \Prado\Data\DataGateway\TSqlCriteria criteria object.
 	 */
 	protected function getRecordCriteria($criteria, $parameters, $args = [])
 	{
@@ -931,7 +931,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayEventParameter $param
 	 */
 	public function onCreateCommand($param)
 	{
@@ -948,7 +948,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayResultEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayResultEventParameter $param
 	 */
 	public function onExecuteCommand($param)
 	{
@@ -958,7 +958,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to insert its data into the database.
 	 * To prevent the insert operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInsert($param)
 	{
@@ -968,7 +968,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to delete its data from the database.
 	 * To prevent the delete operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onDelete($param)
 	{
@@ -978,7 +978,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised before the record attempt to update its data in the database.
 	 * To prevent the update operation, set the TActiveRecordChangeEventParameter::IsValid parameter to false.
-	 * @param TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Data\ActiveRecord\TActiveRecordChangeEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUpdate($param)
 	{

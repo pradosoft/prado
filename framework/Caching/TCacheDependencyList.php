@@ -34,7 +34,7 @@ class TCacheDependencyList extends TList
 	 * for each newly added item.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a dependency instance
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item to be inserted is not a dependency instance
 	 */
 	public function insertAt($index, $item)
 	{

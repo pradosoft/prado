@@ -137,7 +137,7 @@ class TDataSourceConfig extends \Prado\TModule
 	 * calling {@link getDbConnection} if you wish to create the connection using the
 	 * given class name.
 	 * @param string $value Database connection class name.
-	 * @throws TConfigurationException when database connection is already established.
+	 * @throws \Prado\Exceptions\TConfigurationException when database connection is already established.
 	 */
 	public function setConnectionClass($value)
 	{
@@ -150,7 +150,7 @@ class TDataSourceConfig extends \Prado\TModule
 	/**
 	 * Finds the database connection instance from the Application modules.
 	 * @param string $id Database connection module ID.
-	 * @throws TConfigurationException when module is not of TDbConnection or TDataSourceConfig.
+	 * @throws \Prado\Exceptions\TConfigurationException when module is not of TDbConnection or TDataSourceConfig.
 	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	protected function findConnectionByID($id)

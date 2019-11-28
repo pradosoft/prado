@@ -162,37 +162,37 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	const CMD_PAGE_LAST = 'Last';
 
 	/**
-	 * @var TDataGridColumnCollection manually created column collection
+	 * @var \Prado\Web\UI\WebControls\TDataGridColumnCollection manually created column collection
 	 */
 	private $_columns;
 	/**
-	 * @var TDataGridColumnCollection automatically created column collection
+	 * @var \Prado\Web\UI\WebControls\TDataGridColumnCollection automatically created column collection
 	 */
 	private $_autoColumns;
 	/**
-	 * @var TList all columns including both manually and automatically created columns
+	 * @var \Prado\Collections\TList all columns including both manually and automatically created columns
 	 */
 	private $_allColumns;
 	/**
-	 * @var TDataGridItemCollection datagrid item collection
+	 * @var \Prado\Web\UI\WebControls\TDataGridItemCollection datagrid item collection
 	 */
 	private $_items;
 	/**
-	 * @var TDataGridItem header item
+	 * @var \Prado\Web\UI\WebControls\TDataGridItem header item
 	 */
 	private $_header;
 	/**
-	 * @var TDataGridItem footer item
+	 * @var \Prado\Web\UI\WebControls\TDataGridItem footer item
 	 */
 	private $_footer;
 	/**
-	 * @var TPagedDataSource paged data source object
+	 * @var \Prado\Collections\TPagedDataSource paged data source object
 	 */
 	private $_pagedDataSource;
 	private $_topPager;
 	private $_bottomPager;
 	/**
-	 * @var ITemplate template used when empty data is bounded
+	 * @var \Prado\Web\UI\ITemplate template used when empty data is bounded
 	 */
 	private $_emptyTemplate;
 	/**
@@ -231,7 +231,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridColumnCollection manually specified datagrid columns
+	 * @return \Prado\Web\UI\WebControls\TDataGridColumnCollection manually specified datagrid columns
 	 */
 	public function getColumns()
 	{
@@ -242,7 +242,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridColumnCollection automatically generated datagrid columns
+	 * @return \Prado\Web\UI\WebControls\TDataGridColumnCollection automatically generated datagrid columns
 	 */
 	public function getAutoColumns()
 	{
@@ -253,7 +253,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItemCollection datagrid item collection
+	 * @return \Prado\Web\UI\WebControls\TDataGridItemCollection datagrid item collection
 	 */
 	public function getItems()
 	{
@@ -274,7 +274,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Creates a style object for the control.
 	 * This method creates a {@link TTableStyle} to be used by datagrid.
-	 * @return TTableStyle control style to be used
+	 * @return \Prado\Web\UI\WebControls\TTableStyle control style to be used
 	 */
 	protected function createStyle()
 	{
@@ -298,7 +298,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for every item
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for every item
 	 */
 	public function getItemStyle()
 	{
@@ -310,7 +310,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for each alternating item
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for each alternating item
 	 */
 	public function getAlternatingItemStyle()
 	{
@@ -322,7 +322,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for selected item
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for selected item
 	 */
 	public function getSelectedItemStyle()
 	{
@@ -334,7 +334,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for edit item
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for edit item
 	 */
 	public function getEditItemStyle()
 	{
@@ -346,7 +346,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for header
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for header
 	 */
 	public function getHeaderStyle()
 	{
@@ -358,7 +358,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableItemStyle the style for footer
+	 * @return \Prado\Web\UI\WebControls\TTableItemStyle the style for footer
 	 */
 	public function getFooterStyle()
 	{
@@ -370,7 +370,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridPagerStyle the style for pager
+	 * @return \Prado\Web\UI\WebControls\TDataGridPagerStyle the style for pager
 	 */
 	public function getPagerStyle()
 	{
@@ -437,7 +437,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TTableCaptionAlign datagrid caption alignment. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -445,7 +445,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param TTableCaptionAlign $value datagrid caption alignment. Valid values include
+	 * @param \Prado\Web\UI\WebControls\TTableCaptionAlign $value datagrid caption alignment. Valid values include
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -453,7 +453,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the header item
+	 * @return \Prado\Web\UI\WebControls\TDataGridItem the header item
 	 */
 	public function getHeader()
 	{
@@ -461,7 +461,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the footer item
+	 * @return \Prado\Web\UI\WebControls\TDataGridItem the footer item
 	 */
 	public function getFooter()
 	{
@@ -469,7 +469,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridPager the pager displayed at the top of datagrid. It could be null if paging is disabled.
+	 * @return \Prado\Web\UI\WebControls\TDataGridPager the pager displayed at the top of datagrid. It could be null if paging is disabled.
 	 */
 	public function getTopPager()
 	{
@@ -477,7 +477,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridPager the pager displayed at the bottom of datagrid. It could be null if paging is disabled.
+	 * @return \Prado\Web\UI\WebControls\TDataGridPager the pager displayed at the bottom of datagrid. It could be null if paging is disabled.
 	 */
 	public function getBottomPager()
 	{
@@ -485,7 +485,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the selected item, null if no item is selected.
+	 * @return \Prado\Web\UI\WebControls\TDataGridItem the selected item, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -539,7 +539,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return TDataGridItem the edit item
+	 * @return \Prado\Web\UI\WebControls\TDataGridItem the edit item
 	 */
 	public function getEditItem()
 	{
@@ -650,7 +650,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return ITemplate the template applied when no data is bound to the datagrid
+	 * @return \Prado\Web\UI\ITemplate the template applied when no data is bound to the datagrid
 	 */
 	public function getEmptyTemplate()
 	{
@@ -658,8 +658,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when no data is bound to the datagrid
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datagrid
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -679,8 +679,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -731,7 +731,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnCancelCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>cancel</b> command name.
-	 * @param TDataGridCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onCancelCommand($param)
 	{
@@ -742,7 +742,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnDeleteCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>delete</b> command name.
-	 * @param TDataGridCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onDeleteCommand($param)
 	{
@@ -753,7 +753,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnEditCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>edit</b> command name.
-	 * @param TDataGridCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onEditCommand($param)
 	{
@@ -763,7 +763,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Raises <b>OnItemCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event.
-	 * @param TDataGridCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onItemCommand($param)
 	{
@@ -774,7 +774,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnSortCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>sort</b> command name.
-	 * @param TDataGridSortCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridSortCommandEventParameter $param event parameter
 	 */
 	public function onSortCommand($param)
 	{
@@ -785,7 +785,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnUpdateCommand</b> event.
 	 * This method is invoked when a button control raises <b>OnCommand</b> event
 	 * with <b>update</b> command name.
-	 * @param TDataGridCommandEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridCommandEventParameter $param event parameter
 	 */
 	public function onUpdateCommand($param)
 	{
@@ -796,7 +796,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnItemCreated</b> event.
 	 * This method is invoked right after a datagrid item is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridItemEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemCreated($param)
 	{
@@ -807,7 +807,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnPagerCreated</b> event.
 	 * This method is invoked right after a datagrid pager is created and before
 	 * added to page hierarchy.
-	 * @param TDataGridPagerEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridPagerEventParameter $param event parameter
 	 */
 	public function onPagerCreated($param)
 	{
@@ -818,7 +818,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Raises <b>OnItemDataBound</b> event.
 	 * This method is invoked for each datagrid item after it performs
 	 * databinding.
-	 * @param TDataGridItemEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridItemEventParameter $param event parameter
 	 */
 	public function onItemDataBound($param)
 	{
@@ -828,7 +828,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Raises <b>OnPageIndexChanged</b> event.
 	 * This method is invoked when current page is changed.
-	 * @param TDataGridPageChangedEventParameter $param event parameter
+	 * @param \Prado\Web\UI\WebControls\TDataGridPageChangedEventParameter $param event parameter
 	 */
 	public function onPageIndexChanged($param)
 	{
@@ -1110,8 +1110,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Creates a datagrid item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
 	 * @param mixed $dataSourceIndex
-	 * @param TListItemType $itemType item type
-	 * @return TDataGridItem created data list item
+	 * @param \Prado\Web\UI\WebControls\TListItemType $itemType item type
+	 * @return \Prado\Web\UI\WebControls\TDataGridItem created data list item
 	 */
 	protected function createItem($itemIndex, $dataSourceIndex, $itemType)
 	{
@@ -1138,8 +1138,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Initializes a datagrid item and cells inside it
-	 * @param TDataGrid $item datagrid item to be initialized
-	 * @param TDataGridColumnCollection $columns datagrid columns to be used to initialize the cells in the item
+	 * @param \Prado\Web\UI\WebControls\TDataGrid $item datagrid item to be initialized
+	 * @param \Prado\Web\UI\WebControls\TDataGridColumnCollection $columns datagrid columns to be used to initialize the cells in the item
 	 */
 	protected function initializeItem($item, $columns)
 	{
@@ -1172,7 +1172,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds the pager content based on pager style.
-	 * @param TDataGridPager $pager the container for the pager
+	 * @param \Prado\Web\UI\WebControls\TDataGridPager $pager the container for the pager
 	 */
 	protected function buildPager($pager)
 	{
@@ -1224,7 +1224,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a next-prev pager
-	 * @param TDataGridPager $pager the container for the pager
+	 * @param \Prado\Web\UI\WebControls\TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNextPrevPager($pager)
 	{
@@ -1273,7 +1273,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Builds a numeric pager
-	 * @param TDataGridPager $pager the container for the pager
+	 * @param \Prado\Web\UI\WebControls\TDataGridPager $pager the container for the pager
 	 */
 	protected function buildNumericPager($pager)
 	{
@@ -1517,7 +1517,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the openning tag for the datagrid control which will render table caption if present.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -1534,7 +1534,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the datagrid.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -1567,7 +1567,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the tabular data.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function renderTable($writer)
 	{

@@ -59,7 +59,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TTableCellCollection control collection
+	 * @return \Prado\Web\UI\WebControls\TTableCellCollection control collection
 	 * @see getControls
 	 */
 	protected function createControlCollection()
@@ -68,7 +68,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableCellCollection list of {@link TTableCell} controls
+	 * @return \Prado\Web\UI\WebControls\TTableCellCollection list of {@link TTableCell} controls
 	 */
 	public function getCells()
 	{
@@ -120,7 +120,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableRowSection location of a row in a table. Defaults to TTableRowSection::Body.
+	 * @return \Prado\Web\UI\WebControls\TTableRowSection location of a row in a table. Defaults to TTableRowSection::Body.
 	 */
 	public function getTableSection()
 	{
@@ -128,7 +128,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TTableRowSection $value location of a row in a table.
+	 * @param \Prado\Web\UI\WebControls\TTableRowSection $value location of a row in a table.
 	 */
 	public function setTableSection($value)
 	{
@@ -137,7 +137,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table row
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

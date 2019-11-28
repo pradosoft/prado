@@ -106,7 +106,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
-	 * @throws TInvalidDataValueException if the view index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
@@ -137,8 +137,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 * Returns the currently active view.
 	 * This method will examin the ActiveViewID, ActiveViewIndex and Views collection to
 	 * determine which view is currently active. It will update ActiveViewID and ActiveViewIndex accordingly.
-	 * @throws TInvalidDataValueException if the active view ID or index set previously is invalid
-	 * @return TAccordionView the currently active view, null if no active view
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the active view ID or index set previously is invalid
+	 * @return \Prado\Web\UI\WebControls\TAccordionView the currently active view, null if no active view
 	 */
 	public function getActiveView()
 	{
@@ -171,8 +171,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @param TAccordionView $view the view to be activated
-	 * @throws TInvalidOperationException if the view is not in the view collection
+	 * @param \Prado\Web\UI\WebControls\TAccordionView $view the view to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($view)
 	{
@@ -330,7 +330,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Activates the specified view.
 	 * If there is any other view currently active, it will be deactivated.
-	 * @param TAccordionView $view the view to be activated. If null, all views will be deactivated.
+	 * @param \Prado\Web\UI\WebControls\TAccordionView $view the view to be activated. If null, all views will be deactivated.
 	 */
 	protected function activateView($view)
 	{
@@ -392,7 +392,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -493,7 +493,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Creates a control collection object that is to be used to hold child controls
-	 * @return TAccordionViewCollection control collection
+	 * @return \Prado\Web\UI\WebControls\TAccordionViewCollection control collection
 	 */
 	protected function createControlCollection()
 	{
@@ -501,7 +501,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TAccordionViewCollection list of {@link TAccordionView} controls
+	 * @return \Prado\Web\UI\WebControls\TAccordionViewCollection list of {@link TAccordionView} controls
 	 */
 	public function getViews()
 	{
@@ -516,7 +516,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Renders body contents of the accordion control.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

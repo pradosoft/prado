@@ -42,7 +42,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 	}
 
 	/**
-	 * @return TBaseActiveControl basic active control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveControl basic active control options.
 	 */
 	public function getActiveControl()
 	{

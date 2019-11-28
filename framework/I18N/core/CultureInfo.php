@@ -166,7 +166,7 @@ class CultureInfo
 	/**
 	 * Gets the CultureInfo that for this culture string
 	 * @param mixed $culture
-	 * @return CultureInfo invariant culture info is "en".
+	 * @return \Prado\I18N\core\CultureInfo invariant culture info is "en".
 	 */
 	public static function getInstance($culture)
 	{
@@ -343,7 +343,7 @@ class CultureInfo
 	 * Any changes to the invariant culture affects all other
 	 * instances of the invariant culture.
 	 * The invariant culture is assumed to be "en";
-	 * @return CultureInfo invariant culture info is "en".
+	 * @return \Prado\I18N\core\CultureInfo invariant culture info is "en".
 	 */
 	public static function getInvariantCulture()
 	{

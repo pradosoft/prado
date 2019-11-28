@@ -78,7 +78,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	const CGIFIX__PATH_INFO = 1;
 	const CGIFIX__SCRIPT_NAME = 2;
 	/**
-	 * @var TUrlManager the URL manager module
+	 * @var \Prado\Web\TUrlManager the URL manager module
 	 */
 	private $_urlManager;
 	/**
@@ -98,7 +98,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_serviceParam;
 	/**
-	 * @var THttpCookieCollection cookies sent from user
+	 * @var \Prado\Web\THttpCookieCollection cookies sent from user
 	 */
 	private $_cookies;
 	/**
@@ -221,7 +221,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return TUri the request URL
+	 * @return \Prado\Web\TUri the request URL
 	 */
 	public function getUrl()
 	{
@@ -291,7 +291,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Loads UrlManager instance from cache.
-	 * @return TUrlManager intance if load was successful, null otherwise.
+	 * @return \Prado\Web\TUrlManager intance if load was successful, null otherwise.
 	 */
 	protected function loadCachedUrlManager()
 	{
@@ -329,7 +329,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return TUrlManager the URL manager module
+	 * @return \Prado\Web\TUrlManager the URL manager module
 	 */
 	public function getUrlManagerModule()
 	{
@@ -354,7 +354,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
+	 * @return \Prado\Web\THttpRequestUrlFormat the format of URLs. Defaults to THttpRequestUrlFormat::Get.
 	 */
 	public function getUrlFormat()
 	{
@@ -367,7 +367,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * while a Path URL format is like index.php/name1,value1/name2,value.
 	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
 	 * are parsed.
-	 * @param THttpRequestUrlFormat $value the format of URLs.
+	 * @param \Prado\Web\THttpRequestUrlFormat $value the format of URLs.
 	 */
 	public function setUrlFormat($value)
 	{
@@ -384,7 +384,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param string $value separator used to separate GET variable name and value when URL format is Path.
-	 * @throws TInvalidDataValueException if the separator is not a single character
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the separator is not a single character
 	 */
 	public function setUrlParamSeparator($value)
 	{
@@ -668,7 +668,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @return THttpCookieCollection list of cookies to be sent
+	 * @return \Prado\Web\THttpCookieCollection list of cookies to be sent
 	 */
 	public function getCookies()
 	{
@@ -889,7 +889,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Removes an item from the request by its key.
 	 * @param mixed $key the key of the item to be removed
-	 * @throws TInvalidOperationException if the item cannot be removed
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the item cannot be removed
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)

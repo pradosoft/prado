@@ -38,7 +38,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	private $_caption = '';
 	/**
-	 * @var TTableCaptionAlign alignment of the caption of the table used to organize the repeated items
+	 * @var \Prado\Web\UI\WebControls\TTableCaptionAlign alignment of the caption of the table used to organize the repeated items
 	 */
 	private $_captionAlign = TTableCaptionAlign::NotSet;
 	/**
@@ -46,11 +46,11 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	private $_repeatColumns = 0;
 	/**
-	 * @var TRepeatDirection direction of the repetition
+	 * @var \Prado\Web\UI\WebControls\TRepeatDirection direction of the repetition
 	 */
 	private $_repeatDirection = TRepeatDirection::Vertical;
 	/**
-	 * @var TRepeatLayout layout of the repeated items
+	 * @var \Prado\Web\UI\WebControls\TRepeatLayout layout of the repeated items
 	 */
 	private $_repeatLayout = TRepeatLayout::Table;
 
@@ -71,7 +71,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
+	 * @return \Prado\Web\UI\WebControls\TTableCaptionAlign alignment of the caption of the table layout. Defaults to TTableCaptionAlign::NotSet.
 	 */
 	public function getCaptionAlign()
 	{
@@ -80,7 +80,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * @param mixed $value
-	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @return \Prado\Web\UI\WebControls\TTableCaptionAlign alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{
@@ -107,7 +107,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TRepeatDirection the direction of traversing the repeated items, defaults to TRepeatDirection::Vertical
+	 * @return \Prado\Web\UI\WebControls\TRepeatDirection the direction of traversing the repeated items, defaults to TRepeatDirection::Vertical
 	 */
 	public function getRepeatDirection()
 	{
@@ -115,7 +115,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatDirection $value the direction of traversing the repeated items
+	 * @param \Prado\Web\UI\WebControls\TRepeatDirection $value the direction of traversing the repeated items
 	 */
 	public function setRepeatDirection($value)
 	{
@@ -123,7 +123,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TRepeatLayout how the repeated items should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
+	 * @return \Prado\Web\UI\WebControls\TRepeatLayout how the repeated items should be displayed, using table or using line breaks. Defaults to TRepeatLayout::Table.
 	 */
 	public function getRepeatLayout()
 	{
@@ -131,7 +131,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TRepeatLayout $value how the repeated items should be displayed, using table or using line breaks.
+	 * @param \Prado\Web\UI\WebControls\TRepeatLayout $value how the repeated items should be displayed, using table or using line breaks.
 	 */
 	public function setRepeatLayout($value)
 	{
@@ -140,8 +140,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders the repeated items.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{
@@ -176,8 +176,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in raw format.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderRawContents($writer, $user)
 	{
@@ -201,8 +201,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in horizontal repeat direction.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderHorizontalContents($writer, $user)
 	{
@@ -283,8 +283,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in veritcal repeat direction.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderVerticalContents($writer, $user)
 	{
@@ -414,8 +414,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders header.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 * @param bool $tableLayout whether to render using table layout
 	 * @param int $columns number of columns to be rendered
 	 * @param bool $needBreak if a line break is needed at the end
@@ -448,8 +448,8 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders footer.
-	 * @param THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\WebControls\IRepeatInfoUser $user repeat information user
 	 * @param bool $tableLayout whether to render using table layout
 	 * @param int $columns number of columns to be rendered
 	 */

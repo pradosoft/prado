@@ -63,7 +63,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TButtonTag the tag name of the button. Defaults to TButtonType::Input.
+	 * @return \Prado\Web\UI\WebControls\TButtonTag the tag name of the button. Defaults to TButtonType::Input.
 	 */
 	public function getButtonTag()
 	{
@@ -71,7 +71,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TButtonTag $value the tag name of the button.
+	 * @param \Prado\Web\UI\WebControls\TButtonTag $value the tag name of the button.
 	 */
 	public function setButtonTag($value)
 	{
@@ -97,7 +97,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional button specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -201,7 +201,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Renders the body content enclosed between the control tag.
 	 * This overrides the parent implementation with nothing to be rendered for input tags,
 	 * button tags are rendered normally.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -215,7 +215,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * The method raises 'OnClick' event to fire up the event handlers.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handler can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param)
 	{
@@ -242,7 +242,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -360,7 +360,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return TButtonType the type of the button. Defaults to TButtonType::Submit.
+	 * @return \Prado\Web\UI\WebControls\TButtonType the type of the button. Defaults to TButtonType::Submit.
 	 */
 	public function getButtonType()
 	{
@@ -368,7 +368,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param TButtonType $value the type of the button.
+	 * @param \Prado\Web\UI\WebControls\TButtonType $value the type of the button.
 	 */
 	public function setButtonType($value)
 	{

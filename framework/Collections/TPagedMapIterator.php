@@ -32,7 +32,7 @@ class TPagedMapIterator implements \Iterator
 
 	/**
 	 * Constructor.
-	 * @param TMap $map the data to be iterated through
+	 * @param \Prado\Collections\TMap $map the data to be iterated through
 	 * @param int $startIndex start index
 	 * @param int $count number of items to be iterated through
 	 */

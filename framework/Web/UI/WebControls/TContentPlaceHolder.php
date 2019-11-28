@@ -36,7 +36,7 @@ class TContentPlaceHolder extends \Prado\Web\UI\TControl
 	 * This overrides the parent implementation by registering the content placeholder
 	 * control to the template owner control. The placeholder control will NOT
 	 * be added to the potential parent control!
-	 * @param TControl $parent potential parent of this control
+	 * @param \Prado\Web\UI\TControl $parent potential parent of this control
 	 */
 	public function createdOnTemplate($parent)
 	{

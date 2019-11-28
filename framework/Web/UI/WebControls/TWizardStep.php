@@ -30,7 +30,7 @@ class TWizardStep extends TView
 	private $_wizard;
 
 	/**
-	 * @return TWizard the wizard owning this step
+	 * @return \Prado\Web\UI\WebControls\TWizard the wizard owning this step
 	 */
 	public function getWizard()
 	{
@@ -40,7 +40,7 @@ class TWizardStep extends TView
 	/**
 	 * Sets the wizard owning this step.
 	 * This method is used internally by {@link TWizard}.
-	 * @param TWizard $wizard the wizard owning this step
+	 * @param \Prado\Web\UI\WebControls\TWizard $wizard the wizard owning this step
 	 */
 	public function setWizard($wizard)
 	{
@@ -83,7 +83,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @return TWizardStepType the wizard step type. Defaults to TWizardStepType::Auto.
+	 * @return \Prado\Web\UI\WebControls\TWizardStepType the wizard step type. Defaults to TWizardStepType::Auto.
 	 */
 	public function getStepType()
 	{
@@ -91,7 +91,7 @@ class TWizardStep extends TView
 	}
 
 	/**
-	 * @param TWizardStepType $type the wizard step type.
+	 * @param \Prado\Web\UI\WebControls\TWizardStepType $type the wizard step type.
 	 */
 	public function setStepType($type)
 	{

@@ -91,7 +91,7 @@ class MessageFormat
 	 * Constructor.
 	 * Create a new instance of MessageFormat using the messages
 	 * from the supplied message source.
-	 * @param IMessageSource $source the source of translation messages.
+	 * @param \Prado\I18N\core\IMessageSource $source the source of translation messages.
 	 * @param string $charset charset for the message output.
 	 */
 	public function __construct(IMessageSource $source, $charset = 'UTF-8')

@@ -39,7 +39,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param TDbConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $conn database connection.
 	 */
 	public function __construct($conn)
 	{
@@ -56,8 +56,8 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * Obtain database specific TDbMetaData class using the driver name of the database connection.
-	 * @param TDbConnection $conn database connection.
-	 * @return TDbMetaData database specific TDbMetaData.
+	 * @param \Prado\Data\TDbConnection $conn database connection.
+	 * @return \Prado\Data\Common\TDbMetaData database specific TDbMetaData.
 	 */
 	public static function getInstance($conn)
 	{
@@ -88,7 +88,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * Obtains table meta data information for the current connection and given table name.
 	 * @param null|string $tableName table or view name
-	 * @return TDbTableInfo table information.
+	 * @return \Prado\Data\Common\TDbTableInfo table information.
 	 */
 	public function getTableInfo($tableName = null)
 	{
@@ -104,7 +104,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * Creates a command builder for a given table name.
 	 * @param null|string $tableName table name.
-	 * @return TDbCommandBuilder command builder instance for the given table.
+	 * @return \Prado\Data\Common\TDbCommandBuilder command builder instance for the given table.
 	 */
 	public function createCommandBuilder($tableName = null)
 	{
@@ -114,7 +114,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	/**
 	 * This method should be implemented by decendent classes.
 	 * @param mixed $tableName
-	 * @return TDbTableInfo driver dependent create builder.
+	 * @return \Prado\Data\Common\TDbTableInfo driver dependent create builder.
 	 */
 	abstract protected function createTableInfo($tableName);
 

@@ -201,7 +201,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @param IUser $user the user object
+	 * @param \Prado\Security\IUser $user the user object
 	 * @param string $verb the request verb (GET, PUT)
 	 * @param string $ip the request IP address
 	 * @return int 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user

@@ -27,7 +27,7 @@ class TWsatBaseGenerator
 {
 
 	/**
-	 * @return TDbMetaData for retrieving metadata information, such as
+	 * @return \Prado\Data\Common\TDbMetaData for retrieving metadata information, such as
 	 * table and columns information, from a database connection.
 	 */
 	protected $_dbMetaData;

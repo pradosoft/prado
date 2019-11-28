@@ -67,7 +67,7 @@ class TMssqlMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $table table name.
-	 * @return TMssqlTableInfo table information.
+	 * @return \Prado\Data\Common\Mssql\TMssqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
 	{
@@ -131,7 +131,7 @@ EOD;
 	}
 
 	/**
-	 * @param TMssqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Mssql\TMssqlTableInfo $tableInfo table information.
 	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
@@ -262,7 +262,7 @@ EOD;
 
 	/**
 	 * @param string $columnId column name.
-	 * @param TMssqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Mssql\TMssqlTableInfo $tableInfo table information.
 	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

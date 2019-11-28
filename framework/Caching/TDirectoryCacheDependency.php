@@ -58,7 +58,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 
 	/**
 	 * @param string $directory the directory to be checked
-	 * @throws TInvalidDataValueException if the directory does not exist
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the directory does not exist
 	 */
 	public function setDirectory($directory)
 	{

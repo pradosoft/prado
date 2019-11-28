@@ -54,7 +54,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 {
 
 	/**
-	 * @var TTable parent table control containing the row
+	 * @var \Prado\Web\UI\WebControls\TTable parent table control containing the row
 	 */
 	private $_table;
 
@@ -68,7 +68,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
 	 */
 	public function getActiveControl()
 	{
@@ -76,7 +76,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	}
 
 	/**
-	 * @return TCallbackClientSide client side request options.
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
 	 */
 	public function getClientSide()
 	{
@@ -97,7 +97,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * {@link TActiveTableRowEventParameter} containing the zero-based index of the
 	 * TActiveTableRow.
 	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the event parameter
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -109,8 +109,8 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * This method overrides parent's implementation and raises the control's
 	 * callback event. This will fire the {@link onRowSelected OnRowSelected}
 	 * event if an appropriate event handler is implemented.
-	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -128,7 +128,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * 'OnRowSelected' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TActiveTableRowEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TActiveTableRowEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onRowSelected($param)
 	{
@@ -139,7 +139,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
 	 * {@link onRowSelected OnRowSelected} event is set.
-	 * @param THtmlWriter $writer the writer responsible for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -155,7 +155,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * called before the OnPreRender event, such as when render() is called during
 	 * a callback event handler, the rendering is defered until OnPreRender event
 	 * is raised.
-	 * @param THtmlWriter $writer html writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{
@@ -207,7 +207,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	/**
 	 * Returns the parent {@link TTable} control by looping through all parents until a {@link TTable}
 	 * is found. Raises a {@link TConfigurationException} if no table control is found.
-	 * @return TTable the parent table control
+	 * @return \Prado\Web\UI\WebControls\TTable the parent table control
 	 */
 	public function getTable()
 	{

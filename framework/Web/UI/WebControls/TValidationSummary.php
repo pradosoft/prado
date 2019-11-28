@@ -39,7 +39,7 @@ use Prado\Web\Javascripts\TJavaScript;
 class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
-	 * @var TClientSideValidationSummaryOptions validation client side options.
+	 * @var \Prado\Web\UI\WebControls\TClientSideValidationSummaryOptions validation client side options.
 	 */
 	private $_clientSide;
 
@@ -54,7 +54,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
+	 * @return \Prado\Web\UI\WebControls\TValidationSummaryDisplayStyle the style of displaying the error messages. Defaults to TValidationSummaryDisplayStyle::Fixed.
 	 */
 	public function getDisplay()
 	{
@@ -62,7 +62,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayStyle $value the style of displaying the error messages
+	 * @param \Prado\Web\UI\WebControls\TValidationSummaryDisplayStyle $value the style of displaying the error messages
 	 */
 	public function setDisplay($value)
 	{
@@ -87,7 +87,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TValidationSummaryDisplayMode the mode of displaying error messages. Defaults to TValidationSummaryDisplayMode::BulletList.
+	 * @return \Prado\Web\UI\WebControls\TValidationSummaryDisplayMode the mode of displaying error messages. Defaults to TValidationSummaryDisplayMode::BulletList.
 	 */
 	public function getDisplayMode()
 	{
@@ -95,7 +95,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @param TValidationSummaryDisplayMode $value the mode of displaying error messages
+	 * @param \Prado\Web\UI\WebControls\TValidationSummaryDisplayMode $value the mode of displaying error messages
 	 */
 	public function setDisplayMode($value)
 	{
@@ -289,7 +289,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TClientSideValidationSummaryOptions client-side validation summary
+	 * @return \Prado\Web\UI\WebControls\TClientSideValidationSummaryOptions client-side validation summary
 	 * event options.
 	 */
 	public function getClientSide()
@@ -301,7 +301,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TClientSideValidationSummaryOptions javascript validation summary
+	 * @return \Prado\Web\UI\WebControls\TClientSideValidationSummaryOptions javascript validation summary
 	 * event options.
 	 */
 	protected function createClientScript()
@@ -425,7 +425,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary header text only.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function renderHeaderOnly($writer)
 	{

@@ -162,7 +162,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * Retrieves log messages from logger to log route specific destination.
-	 * @param TLogger $logger logger instance
+	 * @param \Prado\Util\TLogger $logger logger instance
 	 */
 	public function collectLogs(TLogger $logger)
 	{

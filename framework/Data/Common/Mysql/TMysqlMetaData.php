@@ -82,7 +82,7 @@ class TMysqlMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $table table name.
-	 * @return TMysqlTableInfo table information.
+	 * @return \Prado\Data\Common\Mysql\TMysqlTableInfo table information.
 	 */
 	protected function createTableInfo($table)
 	{
@@ -125,7 +125,7 @@ class TMysqlMetaData extends TDbMetaData
 	}
 
 	/**
-	 * @param TMysqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Mysql\TMysqlTableInfo $tableInfo table information.
 	 * @param array $col column information.
 	 */
 	protected function processColumn($tableInfo, $col)
@@ -205,7 +205,7 @@ class TMysqlMetaData extends TDbMetaData
 
 	/**
 	 * @param string $table table name, may be quoted with back-ticks and may contain database name.
-	 * @throws TDbException when table name contains invalid identifier bytes.
+	 * @throws \Prado\Exceptions\TDbException when table name contains invalid identifier bytes.
 	 * @return array tuple ($schema,$table), $schema may be null.
 	 */
 	protected function getSchemaTableName($table)
@@ -255,7 +255,7 @@ class TMysqlMetaData extends TDbMetaData
 	 * For MySQL version 5.0.1 or earlier, this always return false.
 	 * @param string $schemaName database name, null to use default connection database.
 	 * @param string $tableName table or view name.
-	 * @throws TDbException if table or view does not exist.
+	 * @throws \Prado\Exceptions\TDbException if table or view does not exist.
 	 * @return bool true if is view, false otherwise.
 	 */
 	protected function getIsView($schemaName, $tableName)
@@ -344,7 +344,7 @@ EOD;
 	/**
 	 * @param string $schemaName database name
 	 * @param string $tableName table name
-	 * @throws TDbException if PHP version is less than 5.1.3
+	 * @throws \Prado\Exceptions\TDbException if PHP version is less than 5.1.3
 	 * @return string SQL command to create the table.
 	 */
 	protected function getShowCreateTable($schemaName, $tableName)
@@ -392,7 +392,7 @@ EOD;
 
 	/**
 	 * @param string $columnId column name.
-	 * @param TMysqlTableInfo $tableInfo table information.
+	 * @param \Prado\Data\Common\Mysql\TMysqlTableInfo $tableInfo table information.
 	 * @return bool true if column is a foreign key.
 	 */
 	protected function isForeignKeyColumn($columnId, $tableInfo)

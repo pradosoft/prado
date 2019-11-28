@@ -33,7 +33,7 @@ class TTableHeaderRow extends TTableRow
 
 	/**
 	 * @param string $value location of a row in a table.
-	 * @throws TInvalidOperationException if this method is invoked
+	 * @throws \Prado\Exceptions\TInvalidOperationException if this method is invoked
 	 */
 	public function setTableSection($value)
 	{

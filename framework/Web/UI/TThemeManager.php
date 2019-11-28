@@ -89,7 +89,7 @@ class TThemeManager extends \Prado\TModule
 
 	/**
 	 * @param string $name name of the theme to be retrieved
-	 * @return TTheme the theme retrieved
+	 * @return \Prado\Web\UI\TTheme the theme retrieved
 	 */
 	public function getTheme($name)
 	{
@@ -132,7 +132,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @throws TConfigurationException if base path is not set and "themes" directory does not exist.
+	 * @throws \Prado\Exceptions\TConfigurationException if base path is not set and "themes" directory does not exist.
 	 * @return string the base path for all themes. It is returned as an absolute path.
 	 */
 	public function getBasePath()
@@ -149,7 +149,7 @@ class TThemeManager extends \Prado\TModule
 
 	/**
 	 * @param string $value the base path for all themes. It must be in the format of a namespace.
-	 * @throws TInvalidDataValueException if the base path is not a proper namespace.
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the base path is not a proper namespace.
 	 */
 	public function setBasePath($value)
 	{
@@ -164,7 +164,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @throws TConfigurationException If base URL is not set and a correct one cannot be determined by Prado.
+	 * @throws \Prado\Exceptions\TConfigurationException If base URL is not set and a correct one cannot be determined by Prado.
 	 * @return string the base URL for all themes.
 	 */
 	public function getBaseUrl()

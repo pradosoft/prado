@@ -26,7 +26,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 
 	/**
 	 * Constructor.
-	 * @param TWizard $wizard the wizard owning this template
+	 * @param \Prado\Web\UI\WebControls\TWizard $wizard the wizard owning this template
 	 */
 	public function __construct($wizard)
 	{
@@ -34,7 +34,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	}
 
 	/**
-	 * @return TWizard the wizard owning this template
+	 * @return \Prado\Web\UI\WebControls\TWizard the wizard owning this template
 	 */
 	public function getWizard()
 	{
@@ -44,7 +44,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	/**
 	 * Instantiates the template.
 	 * Derived classes should override this method.
-	 * @param TControl $parent parent to hold the content within the template
+	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{
@@ -54,10 +54,10 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	 * Creates a navigation button.
 	 * It creates a {@link TButton}, {@link TLinkButton}, or {@link TImageButton},
 	 * depending on the given parameters.
-	 * @param TWizardNavigationButtonStyle $buttonStyle button style
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationButtonStyle $buttonStyle button style
 	 * @param bool $causesValidation whether the button should cause validation
 	 * @param string $commandName command name for the button's OnCommand event
-	 * @throws TInvalidDataValueException if the button type is not recognized
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the button type is not recognized
 	 */
 	protected function createNavigationButton($buttonStyle, $causesValidation, $commandName)
 	{

@@ -152,7 +152,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TSqlMapCacheModel cache implementation instance for this statement.
+	 * @return \Prado\Data\SqlMap\Configuration\TSqlMapCacheModel cache implementation instance for this statement.
 	 */
 	public function getCache()
 	{
@@ -160,7 +160,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapCacheModel $value cache implementation instance for this statement.
+	 * @param \Prado\Data\SqlMap\Configuration\TSqlMapCacheModel $value cache implementation instance for this statement.
 	 */
 	public function setCache($value)
 	{
@@ -168,7 +168,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TStaticSql sql text container.
+	 * @return \Prado\Data\SqlMap\Statements\TStaticSql sql text container.
 	 */
 	public function getSqlText()
 	{
@@ -176,7 +176,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TStaticSql $value sql text container.
+	 * @param \Prado\Data\SqlMap\Statements\TStaticSql $value sql text container.
 	 */
 	public function setSqlText($value)
 	{
@@ -217,7 +217,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TResultMap the result map corresponding to the
+	 * @return \Prado\Data\SqlMap\Configuration\TResultMap the result map corresponding to the
 	 * {@link ResultMap getResultMap()} property.
 	 */
 	public function resultMap()
@@ -226,7 +226,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TParameterMap the parameter map corresponding to the
+	 * @return \Prado\Data\SqlMap\Configuration\TParameterMap the parameter map corresponding to the
 	 * {@link ParameterMap getParameterMap()} property.
 	 */
 	public function parameterMap()
@@ -243,7 +243,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapManager $manager initialize the statement, sets the result and parameter maps.
+	 * @param \Prado\Data\SqlMap\TSqlMapManager $manager initialize the statement, sets the result and parameter maps.
 	 */
 	public function initialize($manager)
 	{
@@ -256,7 +256,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return \ArrayAccess new instance of list class.
 	 */
 	public function createInstanceOfListClass($registry)
@@ -269,7 +269,7 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of a given type.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param string $type result class name.
 	 * @param array $row result data.
 	 * @return mixed result object.
@@ -286,7 +286,7 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of result class.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param array $row result data.
 	 * @return mixed result object.
 	 */

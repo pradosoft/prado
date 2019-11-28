@@ -45,7 +45,7 @@ namespace Prado\Web\Services;
 abstract class TRpcApiProvider extends \Prado\TModule
 {
 	/**
-	 * @var TRpcServer instance
+	 * @var \Prado\Web\Services\TRpcServer instance
 	 */
 	protected $rpcServer;
 
@@ -57,7 +57,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 
 	/**
 	 * Constructor: informs the rpc server of the registered methods
-	 * @param TRpcServer $rpcServer
+	 * @param \Prado\Web\Services\TRpcServer $rpcServer
 	 */
 	public function __construct(TRpcServer $rpcServer)
 	{
@@ -78,7 +78,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 	}
 
 	/**
-	 * @return TRpcServer rpc server instance
+	 * @return \Prado\Web\Services\TRpcServer rpc server instance
 	 */
 	public function getRpcServer()
 	{

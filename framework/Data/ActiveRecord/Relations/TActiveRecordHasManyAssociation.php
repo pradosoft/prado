@@ -115,7 +115,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo association table information.
+	 * @return \Prado\Data\Common\TDbTableInfo association table information.
 	 */
 	protected function getAssociationTable()
 	{
@@ -134,7 +134,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo source table information.
+	 * @return \Prado\Data\Common\TDbTableInfo source table information.
 	 */
 	protected function getSourceTable()
 	{
@@ -146,7 +146,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo foreign table information.
+	 * @return \Prado\Data\Common\TDbTableInfo foreign table information.
 	 */
 	protected function getForeignTable()
 	{
@@ -222,7 +222,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @param TSqlCriteria $criteria
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria
 	 * @param array $foreignKeys field names
 	 * @param array $indexValues field values
 	 * @param array $sourceKeys source table column names.

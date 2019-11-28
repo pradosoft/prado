@@ -147,7 +147,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	/**
 	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
 	 * interface.
-	 * @param TCallbackEventParameter $param the parameter associated with the callback event
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param the parameter associated with the callback event
 	 */
 	public function raiseCallbackEvent($param)
 	{
@@ -213,7 +213,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * 'OnCallback' event to fire up the event handlers. If you override this
 	 * method, be sure to call the parent implementation so that the event
 	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\Web\UI\ActiveControls\TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
 
 	public function onCallback($param)

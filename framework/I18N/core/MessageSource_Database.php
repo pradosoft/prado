@@ -61,7 +61,7 @@ class MessageSource_Database extends MessageSource
 	/**
 	 * Creates the DB connection.
 	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)

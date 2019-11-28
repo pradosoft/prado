@@ -103,7 +103,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TActiveRecordCriteria sort/search/paging criteria
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria sort/search/paging criteria
 	 */
 	protected function getRecordCriteria()
 	{
@@ -250,7 +250,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TRepeater Repeater control for Active Record instances.
+	 * @return \Prado\Web\UI\WebControls\TRepeater Repeater control for Active Record instances.
 	 */
 	public function getList()
 	{
@@ -268,7 +268,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TDropDownList Control that displays and controls the record ordering.
+	 * @return \Prado\Web\UI\WebControls\TDropDownList Control that displays and controls the record ordering.
 	 */
 	public function getSort()
 	{
@@ -277,7 +277,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TRepeater Repeater control for record property names.
+	 * @return \Prado\Web\UI\WebControls\TRepeater Repeater control for record property names.
 	 */
 	public function getHeader()
 	{
@@ -302,7 +302,7 @@ class TScaffoldListView extends TScaffoldBase
 	}
 
 	/**
-	 * @return TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
+	 * @return \Prado\Data\ActiveRecord\Scaffold\TScaffoldEditView control for editing selected Active Record, null if EditViewID is not set.
 	 */
 	protected function getEditViewControl()
 	{

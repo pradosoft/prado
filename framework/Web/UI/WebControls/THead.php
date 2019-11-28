@@ -45,7 +45,7 @@ use Prado\Web\THttpUtility;
 class THead extends \Prado\Web\UI\TControl
 {
 	/**
-	 * @var TList list of meta name tags to be loaded by {@link THead}
+	 * @var \Prado\Collections\TList list of meta name tags to be loaded by {@link THead}
 	 */
 	private $_metaTags;
 
@@ -55,7 +55,7 @@ class THead extends \Prado\Web\UI\TControl
 	 * The method raises 'Init' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -131,7 +131,7 @@ class THead extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return TMetaTagCollection meta tag collection
+	 * @return \Prado\Web\UI\WebControls\TMetaTagCollection meta tag collection
 	 */
 	public function getMetaTags()
 	{
@@ -144,7 +144,7 @@ class THead extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the head control.
-	 * @param THtmlWriter $writer the writer for rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering purpose.
 	 */
 	public function render($writer)
 	{
