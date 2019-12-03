@@ -191,21 +191,6 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->_pathInfo = '';
 		}
 
-		if (get_magic_quotes_gpc()) {
-			if (isset($_GET)) {
-				$_GET = $this->stripSlashes($_GET);
-			}
-			if (isset($_POST)) {
-				$_POST = $this->stripSlashes($_POST);
-			}
-			if (isset($_REQUEST)) {
-				$_REQUEST = $this->stripSlashes($_REQUEST);
-			}
-			if (isset($_COOKIE)) {
-				$_COOKIE = $this->stripSlashes($_COOKIE);
-			}
-		}
-
 		$this->getApplication()->setRequest($this);
 	}
 
@@ -214,6 +199,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is applied when magic quotes is enabled.
 	 * @param mixed &$data input data to be processed
 	 * @return mixed processed data
+	 * @deprecated useless since get_magic_quotes_gpc() is unavailable from php 5.4
 	 */
 	public function stripSlashes(&$data)
 	{
