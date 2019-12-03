@@ -96,11 +96,13 @@ class TStyleDiff extends TViewStateDiff
 		} else {
 			$css = $this->getCssClassDiff();
 			$style = $this->getStyleDiff();
-			if (($css !== null) || ($style !== null)) {
-				return ['CssClass' => $css, 'Style' => $style];
-			} else {
-				$this->_null;
-			}
+			if ($css === null && $style === null)
+				return $this->_null;
+
+			return [
+				'CssClass' => $css === null ? $this->_null : $css,
+				'Style' => $style === null ? $this->_null : $style
+			];
 		}
 	}
 }
