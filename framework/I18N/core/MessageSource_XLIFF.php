@@ -132,7 +132,7 @@ class MessageSource_XLIFF extends MessageSource
 		$variant = null;
 
 		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
-			if (isset($variants[$i]{0})) {
+			if (isset($variants[$i][0])) {
 				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $catalogue . $this->dataSeparator . $variant . $this->dataExt;
 			}
@@ -164,7 +164,7 @@ class MessageSource_XLIFF extends MessageSource
 		$variant = null;
 
 		for ($i = 0, $k = count($variants); $i < $k; ++$i) {
-			if (isset($variants[$i]{0})) {
+			if (isset($variants[$i][0])) {
 				$variant .= ($variant) ? '_' . $variants[$i] : $variants[$i];
 				$catalogues[] = $variant . '/' . $catalogue . $this->dataExt;
 			}
