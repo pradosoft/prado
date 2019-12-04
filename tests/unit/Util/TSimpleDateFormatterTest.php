@@ -45,7 +45,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	public function testYearPattern()
 	{
 		$formatter = new TSimpleDateFormatter("yyyy");
-		self::assertEquals("2008-01-01", date('Y-m-d', $formatter->parse("2008")));
+		self::assertEquals(date("2008-m-d"), date('Y-m-d', $formatter->parse("2008")));
 	}
 
 	public function testMissingYearPattern()

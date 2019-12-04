@@ -227,10 +227,8 @@ class TSimpleDateFormatter
 			return time();
 		}
 
-		$date = time();
-
 		if ($this->length(trim($value)) < 1) {
-			return $defaultToCurrentTime ? $date : null;
+			return $defaultToCurrentTime ? time() : null;
 		}
 
 		$pattern = $this->pattern;
@@ -243,8 +241,8 @@ class TSimpleDateFormatter
 		$x = null;
 		$y = null;
 
-
 		if ($defaultToCurrentTime) {
+			$date = getdate();
 			$year = "{$date['year']}";
 			$month = $date['mon'];
 			$day = $date['mday'];
