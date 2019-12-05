@@ -99,6 +99,9 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		if (($style = $this->getViewState('ImageStyle', null)) !== null) {
 			$image->getStyle()->copyFrom($style);
 		}
+		if (($align = $this->getImageAlign()) !== '') {
+			$image->setImageAlign($align);
+		}
 		return $image;
 	}
 
@@ -125,7 +128,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function getImageAlign()
 	{
-		return $this->getImageStyle()->getImageAlign();
+		return $this->getViewState('ImageAlign', '');
 	}
 
 	/**
@@ -138,7 +141,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	public function setImageAlign($value)
 	{
-		$this->getImageStyle()->setImageAlign($value);
+		$this->setViewState('ImageAlign', $value, '');
 	}
 
 	/**
