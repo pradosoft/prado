@@ -32,13 +32,13 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * Usage example, to format a date
  * <code>
- * $formatter = new TSimpleDateFormatter("dd/MM/yyy");
+ * $formatter = new TSimpleDateFormatter("dd/MM/yyyy");
  * echo $formatter->format(time());
  * </code>
  *
  * To parse the date string into a date timestamp.
  * <code>
- * $formatter = new TSimpleDateFormatter("d-M-yyy");
+ * $formatter = new TSimpleDateFormatter("d-M-yyyy");
  * echo $formatter->parse("24-6-2005");
  * </code>
  *
@@ -215,12 +215,13 @@ class TSimpleDateFormatter
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 * @return int date time stamp
 	 */
-	public function parse($value, $defaultToCurrentTime = true)
+	public function parse($value, $defaultToCurrentTime = false)
 	{
 		if (is_int($value) || is_float($value)) {
 			return $value;
-		} elseif (!is_string($value)) {
-			throw new TInvalidDataValueException('date_to_parse_must_be_string', $value);
+		}
+		if (!is_string($value)) {
+			throw new TInvalidDataValueException('date_to_parse_must_be_string', \Prado::varDump($value));
 		}
 
 		if (empty($this->pattern)) {
@@ -236,21 +237,13 @@ class TSimpleDateFormatter
 		$i_val = 0;
 		$i_format = 0;
 		$pattern_length = $this->length($pattern);
-		$c = '';
 		$token = '';
 		$x = null;
 		$y = null;
 
-		if ($defaultToCurrentTime) {
-			$date = getdate();
-			$year = "{$date['year']}";
-			$month = $date['mon'];
-			$day = $date['mday'];
-		} else {
-			$year = null;
-			$month = null;
-			$day = null;
-		}
+		$year = null;
+		$month = null;
+		$day = null;
 
 		while ($i_format < $pattern_length) {
 			$c = $this->charAt($pattern, $i_format);
@@ -260,90 +253,104 @@ class TSimpleDateFormatter
 				$token .= $this->charAt($pattern, $i_format++);
 			}
 
-			if ($token == 'yyyy' || $token == 'yy' || $token == 'y') {
-				if ($token == 'yyyy') {
-					$x = 4;
-					$y = 4;
-				}
-				if ($token == 'yy') {
-					$x = 2;
-					$y = 2;
-				}
-				if ($token == 'y') {
-					$x = 2;
-					$y = 4;
-				}
-				$year = $this->getInteger($value, $i_val, $x, $y);
-				if ($year === null) {
-					return null;
-				}
-				//throw new TInvalidDataValueException('Invalid year', $value);
-				$i_val += strlen($year);
-				if (strlen($year) == 2) {
-					$iYear = (int) $year;
-					if ($iYear > 70) {
-						$year = $iYear + 1900;
-					} else {
-						$year = $iYear + 2000;
+			switch($token)
+			{
+				case 'yyyy':
+				case 'yy':
+				case 'y':
+				{
+					if ($token == 'yyyy') {
+						$x = 4;
+						$y = 4;
 					}
+					if ($token == 'yy') {
+						$x = 2;
+						$y = 2;
+					}
+					if ($token == 'y') {
+						$x = 2;
+						$y = 4;
+					}
+					$year = $this->getInteger($value, $i_val, $x, $y);
+					if ($year === null) {
+						return null;
+					}
+					$i_val += strlen($year);
+					if (strlen($year) == 2) {
+						$iYear = (int) $year;
+						if ($iYear > 70) {
+							$year = $iYear + 1900;
+						} else {
+							$year = $iYear + 2000;
+						}
+					}
+					$year = (int) $year;
+					break;
 				}
-				$year = (int) $year;
-			} elseif ($token == 'MM' || $token == 'M') {
-				$month = $this->getInteger(
-					$value,
-					$i_val,
-					$this->length($token),
-					2
-				);
-				$iMonth = (int) $month;
-				if ($month === null || $iMonth < 1 || $iMonth > 12) {
-					return null;
+				case 'MM':
+				case 'M':
+				{
+					$month = $this->getInteger(
+						$value,
+						$i_val,
+						$this->length($token),
+						2
+					);
+					$iMonth = (int) $month;
+					if ($month === null || $iMonth < 1 || $iMonth > 12) {
+						return null;
+					}
+					$i_val += strlen($month);
+					$month = $iMonth;
+					break;
 				}
-				//throw new TInvalidDataValueException('Invalid month', $value);
-				$i_val += strlen($month);
-				$month = $iMonth;
-			} elseif ($token == 'dd' || $token == 'd') {
-				$day = $this->getInteger(
-					$value,
-					$i_val,
-					$this->length($token),
-					2
-				);
-				$iDay = (int) $day;
-				if ($day === null || $iDay < 1 || $iDay > 31) {
-					return null;
+				case 'dd':
+				case 'd':
+				{
+					$day = $this->getInteger(
+						$value,
+						$i_val,
+						$this->length($token),
+						2
+					);
+					$iDay = (int) $day;
+					if ($day === null || $iDay < 1 || $iDay > 31) {
+						return null;
+					}
+					$i_val += strlen($day);
+					$day = $iDay;
+					break;
 				}
-				//throw new TInvalidDataValueException('Invalid day', $value);
-				$i_val += strlen($day);
-				$day = $iDay;
-			} else {
-				if ($this->substring($value, $i_val, $this->length($token)) != $token) {
-					return null;
-				}
-				//throw new TInvalidDataValueException("Subpattern '{$this->pattern}' mismatch", $value);
-				else {
+				default:
+				{
+					if ($this->substring($value, $i_val, $this->length($token)) != $token) {
+						return null;
+					}
 					$i_val += $this->length($token);
+					break;
 				}
 			}
 		}
+
 		if ($i_val != $this->length($value)) {
 			return null;
 		}
-		//throw new TInvalidDataValueException("Pattern '{$this->pattern}' mismatch", $value);
-		if (!$defaultToCurrentTime && ($month === null || $day === null || $year === null)) {
-			return null;
-		} else {
-			if (empty($year)) {
-				$year = date('Y');
-			}
-			$day = (int) $day <= 0 ? 1 : (int) $day;
-			$month = (int) $month <= 0 ? 1 : (int) $month;
 
-			$s = new \DateTime;
-			$s->setDate($year, $month, $day);
-			$s->setTime(0, 0, 0);
-			return $s->getTimeStamp();
+		if ($year === null) {
+			// always default to current year if empty
+			$year = date('Y');
 		}
+		if ($month === null) {
+			$month = $defaultToCurrentTime ? date('m') : 1;
+		}
+		if ($day === null) {
+			$day = $defaultToCurrentTime ? date('d') : 1;
+		}
+
+		$s = new \DateTime;
+		$s->setDate($year, $month, $day);
+		$s->setTime(0, 0, 0);
+		return $s->getTimeStamp();
 	}
 
 	/**
