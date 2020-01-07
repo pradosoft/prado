@@ -72,7 +72,7 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordConfig extends TDataSourceConfig
 {
-	const DEFAULT_MANAGER_CLASS = '\Prado\Data\ActiveRecordTActiveRecordManager';
+	const DEFAULT_MANAGER_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordManager';
 	const DEFAULT_GATEWAY_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordGateway';
 
 	/**
