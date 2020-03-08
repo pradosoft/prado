@@ -113,7 +113,7 @@ class TPgsqlMetaData extends TDbMetaData
 			a.attname,
 			pg_catalog.format_type(a.atttypid, a.atttypmod) as type,
 			a.atttypmod,
-			a.attnotnull, a.atthasdef, adef.adsrc,
+			a.attnotnull, a.atthasdef, pg_get_expr(adef.adbin, adef.adrelid) AS adsrc,
 			(
 				SELECT 1 FROM pg_catalog.pg_depend pd, pg_catalog.pg_class pc
 				WHERE pd.objid=pc.oid
@@ -295,11 +295,7 @@ EOD;
 	SELECT conname, consrc, contype, indkey, indisclustered FROM (
 			SELECT
 					conname,
-					CASE WHEN contype='f' THEN
-							pg_catalog.pg_get_constraintdef(oid)
-					ELSE
-							'CHECK (' || consrc || ')'
-					END AS consrc,
+					pg_catalog.pg_get_constraintdef(oid) AS consrc,
 					contype,
 					conrelid AS relid,
 					NULL AS indkey,
