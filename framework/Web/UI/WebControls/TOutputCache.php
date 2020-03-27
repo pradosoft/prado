@@ -219,8 +219,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 */
 	protected function loadStateRecursive(&$state, $needViewState = true)
 	{
-		$st = unserialize($state);
-		parent::loadStateRecursive($st, $needViewState);
+		parent::loadStateRecursive($state, $needViewState);
 	}
 
 	/**
@@ -236,9 +235,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 		if ($this->_dataCached) {
 			return $this->_state;
 		} else {
-			$st = parent::saveStateRecursive($needViewState);
-			// serialization is needed to avoid undefined classes when loading state
-			$this->_state = serialize($st);
+			$this->_state = parent::saveStateRecursive($needViewState);
 			return $this->_state;
 		}
 	}
