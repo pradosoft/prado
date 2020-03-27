@@ -1,3 +1,12 @@
+## Version 4.1.1 - Mar 27, 2020
+
+BUG: TActiveFileUpload: avoid warning in browser console by removing usage of an empty page as initial content (ctrlaltca)
+BUG: TExpression: fix naming conflict of class variable (ctrlaltca)
+BUG TActiveRecordConfig: fixed bug in default manager class (LCSKJ)
+ENH: Added compatibility with Php 7.4 (ctrlaltca)
+ENH: issue #708 Add support for PostgreSQL 12 (ganiuszka)
+CHG: Deprecated / ported method using attributes obsoleted in html5 (ctrlalta)
+
 ## Version 4.1.0 - Nov 18, 2019
 
 BUG: Issue #694 - Undefined variable: conn notice in Active Record Scaffold (ganiuszka)
