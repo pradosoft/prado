@@ -24,6 +24,7 @@ if (file_exists($autoloader = realpath(__DIR__ . '/../vendor/autoload.php'))) {
 use Prado\TApplication;
 use Prado\Prado;
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
+use Prado\Data\ActiveRecord\TActiveRecordManager;
 
 //stub application class
 class PradoShellApplication extends TApplication
@@ -192,12 +193,12 @@ abstract class PradoCommandLineAction
 		foreach ($this->parameters as $v) {
 			$params[] = '<' . $v . '>';
 		}
-		$parameters = implode($params, ' ');
+		$parameters = implode(' ', $params);
 		$options = [];
 		foreach ($this->optional as $v) {
 			$options[] = '[' . $v . ']';
 		}
-		$optional = (strlen($parameters) ? ' ' : '') . implode($options, ' ');
+		$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
 		$description = '';
 		foreach (explode("\n", wordwrap($this->description, 65)) as $line) {
 			$description .= '    ' . $line . "\n";
@@ -544,11 +545,12 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	{
 		$app_dir = count($args) > 3 ? $this->getAppDir($args[3]) : $this->getAppDir();
 		$this->_soap = count($args) > 4;
+		$this->_overwrite = count($args) > 5;
 		if ($app_dir !== false) {
 			$config = $this->getActiveRecordConfig($app_dir);
 			$output = $this->getOutputFile($app_dir, $args[2]);
-			if (is_file($output)) {
-				echo "** File $output already exists, skiping. \n";
+			if (is_file($output) && !$this->_overwrite) {
+				echo "** File $output already exists, skipping. \n";
 			} elseif ($config !== false && $output !== false) {
 				$this->generateActiveRecord($config, $args[1], $output);
 			}
@@ -801,7 +803,10 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 			}
 			$args = [$input[0], $input[1], $input[2], $app_dir];
 			if (count($input) > 3) {
-				$args = [$input[0], $input[1], $input[2], $app_dir, 'soap'];
+				$args[] = 'soap';
+			}
+			if (count($input) > 4) {
+				$args[] = 'overwrite';
 			}
 			$cmd = new PradoCommandLineActiveRecordGen;
 			$cmd->performAction($args);
