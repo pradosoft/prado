@@ -82,6 +82,10 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * @var TInlineFrame used to submit the data in an "asynchronous" fashion.
 	 */
 	private $_target;
+	/**
+	 * @var class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 */
+	protected static $fileUploadItemClass = '\Prado\Web\UI\ActiveControls\TActiveFileUploadItem';
 
 
 	/**
@@ -418,27 +422,6 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		$options['errorID'] = $this->_error->getClientID();
 		$options['autoPostBack'] = $this->getAutoPostBack();
 		return $options;
-	}
-
-	/**
-	 * Saves the uploaded file.
-	 * @param string $fileName the file name used to save the uploaded file
-	 * @param bool $deleteTempFile whether to delete the temporary file after saving.
-	 * @param int $index the index of the uploaded file, defaults to 0.
-	 * If true, you will not be able to save the uploaded file again.
-	 * @return bool true if the file saving is successful
-	 */
-	public function saveAs($fileName, $deleteTempFile = true, $index = 0)
-	{
-		if (($this->getErrorCode($index) === UPLOAD_ERR_OK) && (file_exists($this->getLocalName($index)))) {
-			if ($deleteTempFile) {
-				return rename($this->getLocalName($index), $fileName);
-			} else {
-				return copy($this->getLocalName($index), $fileName);
-			}
-		} else {
-			return false;
-		}
 	}
 
 	/**

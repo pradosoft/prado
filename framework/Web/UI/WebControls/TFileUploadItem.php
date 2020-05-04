@@ -27,23 +27,23 @@ class TFileUploadItem extends \Prado\TComponent
 	/**
 	 * @var int the size of the uploaded file (in bytes)
 	 */
-	private $_fileSize = 0;
+	protected $_fileSize = 0;
 	/**
 	 * @var string The original name of the file on the client machine
 	 */
-	private $_fileName = '';
+	protected $_fileName = '';
 	/**
 	 * @var string the name of the temporary file storing the uploaded file
 	 */
-	private $_localName = '';
+	protected $_localName = '';
 	/**
 	 * @var string the uploaded file mime type
 	 */
-	private $_fileType = '';
+	protected $_fileType = '';
 	/**
 	 * @var int error code of the current file upload
 	 */
-	private $_errorCode = UPLOAD_ERR_NO_FILE;
+	protected $_errorCode = UPLOAD_ERR_NO_FILE;
 
 	public function __construct($fileName, $fileSize, $fileType, $errorCode, $localName)
 	{
@@ -152,11 +152,11 @@ class TFileUploadItem extends \Prado\TComponent
 	public function toArray()
 	{
 		return [
-	  'fileName' => $this->_fileName,
-	  'fileSize' => $this->_fileSize,
-	  'fileType' => $this->_fileType,
-	  'errorCode' => $this->_errorCode,
-	  'localName' => $this->_localName
-	];
+			'fileName' => $this->_fileName,
+			'fileSize' => $this->_fileSize,
+			'fileType' => $this->_fileType,
+			'errorCode' => $this->_errorCode,
+			'localName' => $this->_localName
+		];
 	}
 }

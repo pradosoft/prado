@@ -65,6 +65,10 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 * @var array the list of uploaded files represented by {@link TFileUploadItem}
 	 */
 	private $_files = [];
+	/**
+	 * @var class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 */
+	protected static $fileUploadItemClass = '\Prado\Web\UI\WebControls\TFileUploadItem';
 
 	/**
 	 * @return string tag name of the file upload control
@@ -244,10 +248,10 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 		if (isset($_FILES[$key])) {
 			if ($this->getMultiple() || is_array($_FILES[$key]['name'])) {
 				foreach ($_FILES[$key]['name'] as $index => $name) {
-					$this->_files[$index] = new TFileUploadItem($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
+					$this->_files[$index] = new static::$fileUploadItemClass($name, $_FILES[$key]['size'][$index], $_FILES[$key]['type'][$index], $_FILES[$key]['error'][$index], $_FILES[$key]['tmp_name'][$index]);
 				}
 			} else {
-				$this->_files[0] = new TFileUploadItem($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
+				$this->_files[0] = new static::$fileUploadItemClass($_FILES[$key]['name'], $_FILES[$key]['size'], $_FILES[$key]['type'], $_FILES[$key]['error'], $_FILES[$key]['tmp_name']);
 			}
 			return $this->_dataChanged = true;
 		} else {
