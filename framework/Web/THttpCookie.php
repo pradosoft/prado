@@ -52,6 +52,11 @@ class THttpCookie extends \Prado\TComponent
 	 * @var bool if true the cookie value will be unavailable to JavaScript
 	 */
 	private $_httpOnly = false;
+	/**
+	 * @var THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
+	 * @since 4.1.2
+	 */
+	private $_sameSite = THttpCookieSameSite::None;
 
 	/**
 	 * Constructor.
@@ -174,5 +179,39 @@ class THttpCookie extends \Prado\TComponent
 	public function setSecure($value)
 	{
 		$this->_secure = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return THttpCookieSameSite SameSite policy for this cookie. Defaults to THttpCookieSameSite::None.
+	 */
+	public function getSameSite()
+	{
+		return $this->_sameSite;
+	}
+
+	/**
+	 * @param THttpCookieSameSite $value SameSite policy for this cookie
+	 */
+	public function setSameSite($value)
+	{
+		$this->_sameSite = TPropertyValue::ensureEnum($value, '\Prado\Web\THttpCookieSameSite');
+	}
+
+	/**
+	 * @param mixed $expiresKey
+	 * @return array cookie options as used in php's setcookie() and session_set_cookie_params().
+	 * The 'expires' key can be customized since setcookie() uses 'expires' and
+	 * session_set_cookie_params() uses 'lifetime'.
+	 */
+	public function getPhpOptions($expiresKey = 'expires')
+	{
+		return [
+			$expiresKey => $this->_expire,
+			'path' => $this->_path,
+			'domain' => $this->_domain,
+			'secure' => $this->_secure,
+			'httponly' => $this->_httpOnly,
+			'samesite' => $this->_sameSite,
+		];
 	}
 }
