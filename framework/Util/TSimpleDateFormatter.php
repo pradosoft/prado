@@ -215,7 +215,7 @@ class TSimpleDateFormatter
 	 * @throws TInvalidDataValueException if date string is malformed.
 	 * @return int date time stamp
 	 */
-	public function parse($value, $defaultToCurrentTime = false)
+	public function parse($value, $defaultToCurrentTime = true)
 	{
 		if (is_int($value) || is_float($value)) {
 			return $value;
