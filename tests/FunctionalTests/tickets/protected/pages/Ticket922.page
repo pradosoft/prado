@@ -4,7 +4,7 @@
 
 Enter a string with spaces that will be used as URL parameter
 <com:TTextBox ID="Text" />
-<com:TButton Text="Perform redirect" OnClick="processString" />
+<com:TButton Text="Perform redirect" OnClick="processString" ID="Button"/>
 
 <br />
 Decoded String:
