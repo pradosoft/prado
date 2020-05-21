@@ -1,3 +1,10 @@
+## Version 4.1.2 - to be released
+
+BUG: Issue #706 - TOutputcache: don't serialize controls state (jcass77, ctrlaltca)
+BUG: Issue #715 - Problem saving files on TActiveFileUpload when Multiple=true (ctrlaltca)
+BUG: Fix bug in TStyleDiff that didn't render CssClass and Style correctly on callback (ctrlaltca)
+ENH: Add support for SameSite property on cookies (ctrlaltca)
+
 ## Version 4.1.1 - Mar 27, 2020
 
 BUG: TActiveFileUpload: avoid warning in browser console by removing usage of an empty page as initial content (ctrlaltca)
