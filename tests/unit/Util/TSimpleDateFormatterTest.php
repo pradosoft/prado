@@ -61,24 +61,45 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function testParseYearPattern()
 	{
+		// default to current date = false
 		$this->obj->setPattern('yyyy');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008")));
+		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008", false)));
 
 		$this->obj->setPattern('yy');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08")));
+		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08", false)));
 
 		$this->obj->setPattern('y');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08")));
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008")));
+		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08", false)));
+		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008", false)));
 
 		// test 2 digit year conversion
 		$this->obj->setPattern('yy');
-		$this->assertSame(date('2070-01-01'), date('Y-m-d', $this->obj->parse("70")));
-		$this->assertSame(date('1971-01-01'), date('Y-m-d', $this->obj->parse("71")));
+		$this->assertSame(date('2070-01-01'), date('Y-m-d', $this->obj->parse("70", false)));
+		$this->assertSame(date('1971-01-01'), date('Y-m-d', $this->obj->parse("71", false)));
 
 		// test wrong year
 		$this->obj->setPattern('yyyy');
-		$this->assertNull($this->obj->parse('aaaa'));
+		$this->assertNull($this->obj->parse('aaaa', false));
+
+		// default to current date = true
+		$this->obj->setPattern('yyyy');
+		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("2008", true)));
+
+		$this->obj->setPattern('yy');
+		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("08", true)));
+
+		$this->obj->setPattern('y');
+		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("08", true)));
+		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("2008", true)));
+
+		// test 2 digit year conversion
+		$this->obj->setPattern('yy');
+		$this->assertSame(date('2070-m-d'), date('Y-m-d', $this->obj->parse("70", true)));
+		$this->assertSame(date('1971-m-d'), date('Y-m-d', $this->obj->parse("71", true)));
+
+		// test wrong year
+		$this->obj->setPattern('yyyy');
+		$this->assertNull($this->obj->parse('aaaa', true));
 
 		// test missing year
 		$this->obj->setPattern("MM/dd");
@@ -88,17 +109,30 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function testParseMonthPattern()
 	{
+		// default to current date = false
 		$this->obj->setPattern('MM');
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse('09')));
+		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse('09', false)));
 
 		$this->obj->setPattern('M');
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("9")));
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("09")));
+		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("9", false)));
+		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("09", false)));
 
 		// test wrong month
 		$this->obj->setPattern('MM');
-		$this->assertNull($this->obj->parse('13'));
-		$this->assertNull($this->obj->parse('0'));
+		$this->assertNull($this->obj->parse('13', false));
+		$this->assertNull($this->obj->parse('0', false));
+
+		// default to current date = true
+		$this->obj->setPattern('MM');
+		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse('09', true)));
+
+		$this->obj->setPattern('M');
+		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse("9", true)));
+		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse("09", true)));
+
+		// test wrong month
+		$this->assertNull($this->obj->parse('13', true));
+		$this->assertNull($this->obj->parse('0', true));
 
 		// test missing month
 		$this->obj->setPattern("yy/dd");
@@ -108,17 +142,31 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function testParseDayPattern()
 	{
+		// default to current date = false
 		$this->obj->setPattern('dd');
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse('09')));
+		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse('09', false)));
 
 		$this->obj->setPattern('d');
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("9")));
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("09")));
+		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("9", false)));
+		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("09", false)));
 
-		// test wrong month
+		// test wrong day
 		$this->obj->setPattern('dd');
-		$this->assertNull($this->obj->parse('32'));
-		$this->assertNull($this->obj->parse('0'));
+		$this->assertNull($this->obj->parse('32', false));
+		$this->assertNull($this->obj->parse('0', false));
+
+		// default to current date = true
+		$this->obj->setPattern('dd');
+		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse('09', true)));
+
+		$this->obj->setPattern('d');
+		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse("9", true)));
+		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse("09", true)));
+
+		// test wrong day
+		$this->obj->setPattern('dd');
+		$this->assertNull($this->obj->parse('32', true));
+		$this->assertNull($this->obj->parse('0', true));
 
 		// test missing month
 		$this->obj->setPattern("yy/MM");
