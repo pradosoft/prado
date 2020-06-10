@@ -347,6 +347,7 @@
                     "email": "jakub.onderka@gmail.com"
                 }
             ],
+            "abandoned": "php-parallel-lint/php-console-color",
             "time": "2018-09-29T17:23:10+00:00"
         },
         {
@@ -393,6 +394,7 @@
                 }
             ],
             "description": "Highlight PHP code in terminal",
+            "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
@@ -501,17 +503,20 @@
         },
         {
             "name": "pradosoft/prado-tinymce3",
-            "version": "3.5.12",
+            "version": "3.5.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pradosoft/prado-tinymce3.git",
-                "reference": "3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27"
+                "reference": "1b069e2252be9eb546256e9271d87886530942f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pradosoft/prado-tinymce3/zipball/3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27",
-                "reference": "3b09ccdf0fb0dca11b22e3af9d0496d5a0766e27",
+                "url": "https://api.github.com/repos/pradosoft/prado-tinymce3/zipball/1b069e2252be9eb546256e9271d87886530942f4",
+                "reference": "1b069e2252be9eb546256e9271d87886530942f4",
                 "shasum": ""
+            },
+            "provide": {
+                "pradosoft/prado-tinymce3": "3.5.12.2"
             },
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
@@ -527,7 +532,7 @@
             ],
             "description": "Packaged tinyMCE 3 in Prado",
             "homepage": "https://github.com/pradosoft/prado-tinymce3",
-            "time": "2016-11-29T08:52:28+00:00"
+            "time": "2020-06-10T13:40:44+00:00"
         },
         {
             "name": "pradosoft/prado-wsdlgenerator",
@@ -1309,7 +1314,7 @@
                 "semantic",
                 "version"
             ],
-            "abandoned": true,
+            "abandoned": "kherge/semver",
             "time": "2014-05-27T05:29:25+00:00"
         },
         {
@@ -2051,6 +2056,7 @@
                 "nette",
                 "reflection"
             ],
+            "abandoned": true,
             "time": "2017-07-11T19:28:57+00:00"
         },
         {
