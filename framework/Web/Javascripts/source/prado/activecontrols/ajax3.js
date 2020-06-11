@@ -71,6 +71,7 @@ Prado.CallbackRequestManager =
 		log.info(e.type + " with message \""+e.message+"\" in "+e.file+"("+e.line+")");
 		log.info("Stack trace:");
 		var trace = e.trace;
+		var args;
 		for(var i = 0; i<trace.length; i++)
 		{
 			var msg = "#"+i+" "+trace[i].file+"("+trace[i].line+")";
@@ -87,7 +88,12 @@ Prado.CallbackRequestManager =
 					log.info(msg);
 			}
 
-			log.info(trace[i]["class"]+"->"+trace[i]["function"]+"("+trace[i]["args"].join(", ")+")");
+			if(trace[i]["args"] === undefined) {
+				args = "";
+			} else {
+				args = trace[i]["args"].join(", ");
+			}
+			log.info(trace[i]["class"]+"->"+trace[i]["function"]+"("+args+")");
 
 			if(typeof log.groupEnd === "function")
 				log.groupEnd();
