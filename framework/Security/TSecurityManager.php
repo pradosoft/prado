@@ -169,7 +169,7 @@ class TSecurityManager extends \Prado\TModule
 	public function setCryptAlgorithm($value)
 	{
 		$this->_cryptAlgorithm = TPropertyValue::ensureString($value);
-		if (!in_array($this->_hashAlgorithm, openssl_get_cipher_methods())) {
+		if (!in_array($this->_cryptAlgorithm, openssl_get_cipher_methods())) {
 			throw new TInvalidDataValueException('securitymanager_crypt_algorithm_invalid');
 		}
 	}
