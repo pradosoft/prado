@@ -29,10 +29,6 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	public function processLogs($logs)
 	{
 		$page = $this->getService()->getRequestedPage();
-		if (!$page->getIsCallback()) {
-			return parent::processLogs($logs);
-		}
-
 		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
 			return;
 		}
@@ -61,15 +57,19 @@ class TFirebugLogRoute extends TBrowserLogRoute
 
 		// the response has already been flushed
 		$response = $this->getApplication()->getResponse();
-		$content = $response->createHtmlWriter();
-		$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_DEBUG_HEADER);
-		$content->write($blocks);
-		$response->write($content);
+		if ($page->getIsCallback()) {
+			$content = $response->createHtmlWriter();
+			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_DEBUG_HEADER);
+			$content->write($blocks);
+			$response->write($content);
+		}
 	}
 
 	protected function renderHeader()
 	{
-		$string = <<<EOD
+		$page = $this->getService()->getRequestedPage();
+		if ($page->getIsCallback()) {
+			$string = <<<EOD
 
 <script>
 /*<![CDATA[*/
@@ -82,6 +82,7 @@ if (typeof(console) == 'object')
 	console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
 
 EOD;
+		}
 
 		return $string;
 	}
