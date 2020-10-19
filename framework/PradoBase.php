@@ -356,9 +356,11 @@ class PradoBase
 				if (class_exists($className, false) || interface_exists($className, false))
 					return;
 
-				include_once($path);
-				if (!class_exists($className, false) && !interface_exists($className, false)) {
-					class_alias($namespace, $className);
+				if(file_exists($path)) {
+					include_once($path);
+					if (!class_exists($className, false) && !interface_exists($className, false)) {
+						class_alias($namespace, $className);
+					}
 				}
 			}
 		}
