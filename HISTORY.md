@@ -1,10 +1,11 @@
-## Version 4.1.2 - to be released
+## Version 4.2.0 - in development
 
 BUG: Issue #706 - TOutputcache: don't serialize controls state (jcass77, ctrlaltca)
 BUG: Issue #715 - Problem saving files on TActiveFileUpload when Multiple=true (ctrlaltca)
 BUG: Issue #722 - Problem with TactiveButton Text property (ctrlaltca)
 BUG: Fix bug in TStyleDiff that didn't render CssClass and Style correctly on callback (ctrlaltca)
 ENH: Add support for SameSite property on cookies (ctrlaltca)
+CHG: Split Wsat into its own repo pradosoft/prado-wsat (ctrlaltca)
 
 ## Version 4.1.1 - Mar 27, 2020
 
