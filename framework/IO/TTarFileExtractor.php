@@ -42,7 +42,7 @@ class TTarFileExtractor
 	private $_tarname = '';
 
 	/**
-	 * @var file descriptor
+	 * @var resource|null file descriptor
 	 */
 	private $_file = 0;
 
@@ -400,7 +400,8 @@ class TTarFileExtractor
 				// ----- By default no unzip if the file is not found
 				$v_extract_file = false;
 
-				for ($i = 0; $i < count($p_file_list); $i++) {
+				$p_file_list_count = count($p_file_list);
+				for ($i = 0; $i < $p_file_list_count; $i++) {
 					// ----- Look if it is a directory
 					if (substr($p_file_list[$i], -1) == '/') {
 						// ----- Look if the directory is in the filename path
