@@ -32,7 +32,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	/**
 	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
 	 * options tracking in ViewState.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{

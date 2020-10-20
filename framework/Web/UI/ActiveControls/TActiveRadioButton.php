@@ -173,7 +173,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 
 	/**
 	 * Renders a label beside the radio button.
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID radio button id
 	 * @param string $text label text
 	 */

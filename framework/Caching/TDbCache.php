@@ -140,7 +140,7 @@ class TDbCache extends TCache
 	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
 	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
 	 *
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{

@@ -680,7 +680,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -1517,7 +1517,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the openning tag for the datagrid control which will render table caption if present.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -1534,7 +1534,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the datagrid.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -1567,7 +1567,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Renders the tabular data.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function renderTable($writer)
 	{

@@ -72,7 +72,7 @@ abstract class TTextProcessor extends \Prado\Web\UI\WebControls\TWebControl
 	 * Renders body content.
 	 * This method overrides the parent implementation by replacing
 	 * the body content with the processed text content.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function renderContents($writer)
 	{

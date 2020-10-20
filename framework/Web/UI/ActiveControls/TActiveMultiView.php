@@ -62,7 +62,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	 * Renders the TActiveMultiView.
 	 * If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{

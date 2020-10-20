@@ -246,7 +246,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Function to update view controls with data in a given AR object.
 	 * View controls and AR object need to have the same name in IDs and Attrs respectively.
-	 * @param TActiveRecord $arObj
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
 	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
@@ -292,7 +292,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Function to try to update an AR object with data in view controls.
-	 * @param TActiveRecord $arObj
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
 	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */

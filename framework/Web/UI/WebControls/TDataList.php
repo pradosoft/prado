@@ -918,7 +918,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -1085,7 +1085,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Renders an item in the list.
 	 * This method is required by {@link IRepeatInfoUser} interface.
-	 * @param THtmlWriter $writer writer for rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index zero-based index of the item in the item list
@@ -1471,7 +1471,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Renders the data list control.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter $writer writer for rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose.
 	 */
 	public function render($writer)
 	{

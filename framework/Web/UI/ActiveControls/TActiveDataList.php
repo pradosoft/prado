@@ -76,7 +76,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	 * Renders the repeater.
 	 * If the repeater did not pass the prerender phase yet, it will register itself for rendering later.
 	 * Else it will call the {@link renderRepeater()} method which will do the rendering of the repeater.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -109,7 +109,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	/**
 	 * Renders the repeater by writing a span tag with the container id obtained from {@link getContainerID()}
 	 * which will be called by the replacement method of the client script to update it's content.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	private function renderDataList($writer)
 	{

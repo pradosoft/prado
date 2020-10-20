@@ -115,7 +115,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 * This method is invoked when a file is uploaded.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onFileUpload($param)
 	{
@@ -380,7 +380,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Adds ID attribute, and renders the javascript for active component.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

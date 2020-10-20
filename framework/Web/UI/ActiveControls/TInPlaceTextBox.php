@@ -183,7 +183,7 @@ class TInPlaceTextBox extends TActiveTextBox
 
 	/**
 	 * Renders the body content of the label.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{

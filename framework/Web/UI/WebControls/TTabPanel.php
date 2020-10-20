@@ -370,7 +370,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -494,7 +494,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders body contents of the tab control.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

@@ -89,7 +89,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Raises <b>OnCheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onCheckedChanged($param)
 	{
@@ -310,7 +310,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	 * Renders the checkbox control.
 	 * This method overrides the parent implementation by rendering a checkbox input element
 	 * and a span element if needed.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -434,7 +434,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders a label beside the checkbox.
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $text label text
 	 */
@@ -451,7 +451,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Renders a checkbox input element.
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $onclick onclick js
 	 */

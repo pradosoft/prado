@@ -60,7 +60,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
-	 * @param null|array|Iterator $data the initial data. Default is null, meaning no initialization.
+	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */

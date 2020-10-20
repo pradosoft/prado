@@ -185,7 +185,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 
 	/**
 	 * Performs XSL transformation and render the output.
-	 * @param THtmlWriter $writer The writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer The writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

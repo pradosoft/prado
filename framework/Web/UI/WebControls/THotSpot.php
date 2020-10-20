@@ -297,7 +297,7 @@ abstract class THotSpot extends \Prado\TComponent
 
 	/**
 	 * Renders this hotspot.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

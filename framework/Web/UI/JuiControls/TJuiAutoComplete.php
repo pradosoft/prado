@@ -348,7 +348,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the result panel.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	protected function renderResultPanel($writer)
 	{
@@ -357,7 +357,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions during a callback respones.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	public function renderCallback($writer)
 	{
@@ -366,7 +366,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Renders the suggestions repeater.
-	 * @param THtmlWriter $writer the renderer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer.
 	 */
 	public function renderSuggestions($writer)
 	{

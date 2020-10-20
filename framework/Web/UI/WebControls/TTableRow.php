@@ -137,7 +137,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table row
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

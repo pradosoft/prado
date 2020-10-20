@@ -428,7 +428,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * If viewstate is disabled and the current request is a postback,
 	 * {@link setRequiresDataBinding RequiresDataBinding} will be set true.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -441,7 +441,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 * Sets {@link getInitialized} as true.
 	 * This method is invoked when page raises <b>PreLoad</b> event.
 	 * @param mixed $sender event sender
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function pagePreLoad($sender, $param)
 	{
@@ -455,7 +455,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Ensures any pending databind is performed.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onPreRender($param)
 	{

@@ -631,7 +631,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnActiveStepChanged</b> event.
 	 * This event is raised when the current visible step is changed in the
 	 * wizard.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onActiveStepChanged($param)
 	{
@@ -642,7 +642,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * Raises <b>OnCancelButtonClick</b> event.
 	 * This event is raised when a cancel navigation button is clicked in the
 	 * current active step.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onCancelButtonClick($param)
 	{
@@ -744,7 +744,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Creates the child controls of the wizard.
 	 * This method overrides the parent implementation.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onInit($param)
 	{
@@ -781,7 +781,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Renders the wizard.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{
@@ -1312,7 +1312,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * This method mainly translate certain command events into
 	 * wizard-specific events.
 	 * @param mixed $sender sender of the original command event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @throws TInvalidDataValueException if a navigation command is associated with an invalid parameter
 	 */
 	public function bubbleEvent($sender, $param)

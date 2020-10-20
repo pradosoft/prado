@@ -144,7 +144,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Adds attributes to renderer. Calls parent implementation and renders the
 	 * client control scripts.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -248,7 +248,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Renders the javascript code to the end script.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function renderClientControlScript($writer)
 	{
@@ -606,7 +606,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Renders the validator control.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

@@ -72,7 +72,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)
@@ -101,7 +101,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Adds attribute name-value pairs to renderer.
 	 * By default, this method renders the style string.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -118,7 +118,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
 	 * If the {@link getTagName TagName} is empty, only {@link renderContents} is invoked.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -134,7 +134,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Renders the openning tag for the control (including attributes)
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -146,7 +146,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -156,7 +156,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	/**
 	 * Renders the closing tag for the control
 	 * This method is invoked when {@link getTagName TagName} is not empty.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

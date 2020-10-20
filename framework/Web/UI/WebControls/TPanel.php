@@ -63,7 +63,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 * @throws TInvalidDataValueException if default button is not right.
 	 */
 	protected function addAttributesToRender($writer)
@@ -198,7 +198,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -213,7 +213,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

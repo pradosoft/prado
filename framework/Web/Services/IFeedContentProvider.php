@@ -27,7 +27,7 @@ interface IFeedContentProvider
 	 * Initializes the feed content provider.
 	 * This method is invoked (before {@link getFeedContent})
 	 * when the feed provider is requested by a user.
-	 * @param TXmlElement $config configurations specified within the &lt;feed&gt; element
+	 * @param \Prado\Xml\TXmlElement $config configurations specified within the &lt;feed&gt; element
 	 * corresponding to this feed provider when configuring {@link TFeedService}.
 	 */
 	public function init($config);

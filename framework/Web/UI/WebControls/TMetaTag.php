@@ -150,7 +150,7 @@ class TMetaTag extends \Prado\TComponent
 
 	/**
 	 * Renders the meta tag.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{

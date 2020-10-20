@@ -138,7 +138,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 *
 	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
 	 *
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $onclick onclick js
 	 */
@@ -174,7 +174,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 
 	/**
 	 * Renders a label beside the checkbox.
-	 * @param THtmlWriter $writer the writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id
 	 * @param string $text label text
 	 */

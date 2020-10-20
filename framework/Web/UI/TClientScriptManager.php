@@ -742,7 +742,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheetFiles($writer)
 	{
@@ -758,7 +758,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderStyleSheets($writer)
 	{
@@ -768,7 +768,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderHeadScriptFiles($writer)
 	{
@@ -776,7 +776,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderHeadScripts($writer)
 	{
@@ -814,7 +814,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderAllPendingScriptFiles($writer)
 	{
@@ -825,7 +825,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderBeginScripts($writer)
 	{
@@ -833,7 +833,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderEndScripts($writer)
 	{
@@ -841,7 +841,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderBeginScriptsCallback($writer)
 	{
@@ -849,7 +849,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function renderEndScriptsCallback($writer)
 	{
@@ -868,7 +868,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Flushes all pending script registrations
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param null|TControl $control the control forcing the flush (used only in error messages)
 	 */
 	public function flushScriptFiles($writer, $control = null)
@@ -884,7 +884,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * state of the fields after a page reload, the autocomplete="off" attribute is used.
 	 * Unfortunately this attribute is invalid for hidden fields, so text fields are
 	 * rendered instead (#642).
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
 

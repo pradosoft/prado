@@ -26,7 +26,7 @@ interface IScaffoldEditRenderer extends \Prado\IDataRenderer
 {
 	/**
 	 * This method should update the record with the user input data.
-	 * @param TActiveRecord $record record to be saved.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record to be saved.
 	 */
 	public function updateRecord($record);
 }

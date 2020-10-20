@@ -1400,7 +1400,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnInit' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onInit($param)
 	{
@@ -1412,7 +1412,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnLoad' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onLoad($param)
 	{
@@ -1422,7 +1422,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Raises 'OnDataBinding' event.
 	 * This method is invoked when {@link dataBind} is invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onDataBinding($param)
 	{
@@ -1436,7 +1436,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnUnload' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onUnload($param)
 	{
@@ -1448,7 +1448,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * The method raises 'OnPreRender' event.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param)
 	{
@@ -1459,7 +1459,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Invokes the parent's bubbleEvent method.
 	 * A control who wants to bubble an event must call this method in its onEvent method.
 	 * @param TControl $sender sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @see bubbleEvent
 	 */
 	protected function raiseBubbleEvent($sender, $param)
@@ -1477,7 +1477,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method should be overriden to provide customized response to a bubbled event.
 	 * Check the type of event parameter to determine what event is bubbled currently.
 	 * @param TControl $sender sender of the event
-	 * @param TEventParameter $param event parameters
+	 * @param \Prado\TEventParameter $param event parameters
 	 * @return bool true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
 	 */
@@ -1500,7 +1500,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * invoked.
 	 * @param string $name name of the broadcast event
 	 * @param TControl $sender sender of this event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function broadcastEvent($name, $sender, $param)
 	{
@@ -1569,7 +1569,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Renders the control.
 	 * Only when the control is visible will the control be rendered.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderControl($writer)
 	{
@@ -1587,7 +1587,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method is invoked by {@link renderControl} when the control is visible.
 	 * You can override this method to provide customized rendering of the control.
 	 * By default, the control simply renders all its child contents.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -1598,7 +1598,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Renders the children of the control.
 	 * This method iterates through all child controls and static text strings
 	 * and renders them in order.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderChildren($writer)
 	{

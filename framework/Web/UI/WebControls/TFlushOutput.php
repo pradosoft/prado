@@ -70,7 +70,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 
 	/**
 	 * Flushes the output of all completely rendered controls to the client.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
 	{

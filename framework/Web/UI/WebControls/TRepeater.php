@@ -571,7 +571,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Renders the repeater.
 	 * This method overrides the parent implementation by rendering the body
 	 * content as the whole presentation of the repeater. Outer tag is not rendered.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function render($writer)
 	{
@@ -690,7 +690,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * repeater items and their child controls.
 	 * This method should only be used by control developers.
 	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)

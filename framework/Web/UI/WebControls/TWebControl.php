@@ -412,7 +412,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * If your subclass overrides the onPreRender method be sure to call
 	 * this method through parent::onPreRender($param); so your sub-class can be decorated,
 	 * among other things.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onPreRender($param)
 	{
@@ -428,7 +428,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * By default, the method will render 'id', 'accesskey', 'disabled',
 	 * 'tabindex', 'title' and all custom attributes.
 	 * The method can be overriden to provide customized attribute rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -464,7 +464,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * - {@link renderBeginTag}
 	 * - {@link renderContents}
 	 * - {@link renderEndTag}
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -475,7 +475,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -494,7 +494,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -503,7 +503,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

@@ -140,7 +140,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders the repeated items.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
@@ -176,7 +176,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in raw format.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderRawContents($writer, $user)
@@ -201,7 +201,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in horizontal repeat direction.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderHorizontalContents($writer, $user)
@@ -283,7 +283,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders contents in veritcal repeat direction.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 */
 	protected function renderVerticalContents($writer, $user)
@@ -414,7 +414,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders header.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 * @param bool $tableLayout whether to render using table layout
 	 * @param int $columns number of columns to be rendered
@@ -448,7 +448,7 @@ class TRepeatInfo extends \Prado\TComponent
 
 	/**
 	 * Renders footer.
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param IRepeatInfoUser $user repeat information user
 	 * @param bool $tableLayout whether to render using table layout
 	 * @param int $columns number of columns to be rendered

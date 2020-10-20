@@ -75,7 +75,7 @@ class TDbLogRoute extends TLogRoute
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * It initializes the database for logging purpose.
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if the DB table does not exist.
 	 */
 	public function init($config)

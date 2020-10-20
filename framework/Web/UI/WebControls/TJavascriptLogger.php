@@ -63,7 +63,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Registers the required logger javascript.
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function onPreRender($param)
 	{
@@ -78,7 +78,7 @@ class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Register the required javascript libraries and
 	 * display some general usage information.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{

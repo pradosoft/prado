@@ -34,7 +34,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	/**
 	 * Initializes the service and attaches {@link run} to the RunService event of application.
 	 * This method is required by IService and is invoked by application.
-	 * @param TXmlElement $config module configuration
+	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

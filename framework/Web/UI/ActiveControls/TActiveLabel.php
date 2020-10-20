@@ -88,7 +88,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 	/**
 	 * Adds attribute id to the renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{

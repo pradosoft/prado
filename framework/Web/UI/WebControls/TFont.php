@@ -342,7 +342,7 @@ class TFont extends \Prado\TComponent
 
 	/**
 	 * Adds attributes related to CSS styles to renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

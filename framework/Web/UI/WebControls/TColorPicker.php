@@ -211,7 +211,7 @@ class TColorPicker extends TTextBox
 	 * Renders additional body content.
 	 * This method overrides parent implementation by adding
 	 * additional color picker button.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function renderEndTag($writer)
 	{

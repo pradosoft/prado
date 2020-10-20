@@ -121,7 +121,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
 	 * {@link onCellSelected OnCellSelected} event is set.
-	 * @param THtmlWriter $writer the writer responsible for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -137,7 +137,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 * called before the OnPreRender event, such as when render() is called during
 	 * a callback event handler, the rendering is defered until OnPreRender event
 	 * is raised.
-	 * @param THtmlWriter $writer html writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

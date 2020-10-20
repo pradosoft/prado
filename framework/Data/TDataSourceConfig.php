@@ -55,7 +55,7 @@ class TDataSourceConfig extends \Prado\TModule
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
-	 * @param TXmlDocument $xml xml configuration.
+	 * @param \Prado\Xml\TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{

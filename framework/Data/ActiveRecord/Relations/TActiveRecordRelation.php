@@ -107,8 +107,8 @@ abstract class TActiveRecordRelation
 	 * Returns foreign keys in $from with source column names as key
 	 * and foreign column names in the corresponding $matchesRecord as value.
 	 * The method returns the first matching foreign key between these 2 records.
-	 * @param TActiveRecord $from
-	 * @param TActiveRecord $matchesRecord
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $from
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $matchesRecord
 	 * @param bool $loose
 	 * @return array foreign keys with source column names as key and foreign column names as value.
 	 */
@@ -251,7 +251,7 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Sets the foreign objects to the given property on the source object.
-	 * @param TActiveRecord $source source object.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $source source object.
 	 * @param array $properties source properties
 	 * @param array &$collections foreign objects.
 	 */

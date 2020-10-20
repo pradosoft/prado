@@ -191,7 +191,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	/**
 	 * Overrides parent implementation to just render the inner contents and avoid replacing the element itself when
 	 * updating clientside, because replacing/removing will cause jqueryui to fire destroy on the original dialog extension.
-	 * @param THtmlWriter $writer html writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer html writer
 	 */
 	public function render($writer)
 	{

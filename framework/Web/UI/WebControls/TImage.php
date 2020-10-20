@@ -35,7 +35,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Adds attributes related to an HTML image element to renderer.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -53,7 +53,7 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 	/**
 	 * Renders the body content of the image.
 	 * Nothing to be rendered within image tags.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{

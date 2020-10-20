@@ -279,7 +279,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{
@@ -341,7 +341,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Add the specified css classes to the track
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	protected function addAttributesToRender($writer)
 	{

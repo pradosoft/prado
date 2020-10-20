@@ -477,7 +477,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
-	 * @param THtmlWriter $writer writer for the content.
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the content.
 	 */
 	public function evaluateScript($writer)
 	{
@@ -496,7 +496,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Appends a block of inline javascript enclosed in a boundary.
 	 * Similar to to evaluateScript(), but functions declared in the
 	 * inline block will be available to page elements.
-	 * @param THtmlWriter $content writer for the content.
+	 * @param \Prado\Web\UI\THtmlWriter $content writer for the content.
 	 */
 	public function appendScriptBlock($content)
 	{
@@ -526,7 +526,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param THtmlWriter $html the writer responsible for rendering html content.
+	 * @param \Prado\Web\UI\THtmlWriter $html the writer responsible for rendering html content.
 	 * @return string content boundary.
 	 */
 	private function getResponseContentBoundary($html)

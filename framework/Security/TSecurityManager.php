@@ -61,7 +61,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Initializes the module.
 	 * The security module is registered with the application.
-	 * @param TXmlElement $config initial module configuration
+	 * @param \Prado\Xml\TXmlElement $config initial module configuration
 	 */
 	public function init($config)
 	{

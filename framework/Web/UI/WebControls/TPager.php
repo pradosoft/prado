@@ -414,7 +414,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Renders the control.
 	 * The method overrides the parent implementation by rendering
 	 * the pager only when there are two or more pages.
-	 * @param THtmlWriter $writer the writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer
 	 */
 	public function render($writer)
 	{
@@ -634,7 +634,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Event handler to the OnSelectedIndexChanged event of the dropdown list.
 	 * This handler will raise {@link onPageIndexChanged OnPageIndexChanged} event.
 	 * @param TDropDownList $sender the dropdown list control raising the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function listIndexChanged($sender, $param)
 	{
@@ -656,7 +656,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
 	 * @param TControl $sender the sender of the event
-	 * @param TEventParameter $param event parameter
+	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
 	public function bubbleEvent($sender, $param)

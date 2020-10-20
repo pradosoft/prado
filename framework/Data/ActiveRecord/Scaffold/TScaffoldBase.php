@@ -51,7 +51,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $record record instance
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance
 	 * @return array record property values
 	 */
 	protected function getRecordPropertyValues($record)
@@ -64,7 +64,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $record record instance
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance
 	 * @return array record primary key values.
 	 */
 	protected function getRecordPkValues($record)
@@ -150,7 +150,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	}
 
 	/**
-	 * @param TActiveRecord $value Active Record instance.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $value Active Record instance.
 	 */
 	protected function setRecordObject(TActiveRecord $value)
 	{

@@ -102,7 +102,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This method overrides the parent implementation with additional textbox specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -319,7 +319,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onTextChanged($param)
 	{
@@ -343,7 +343,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Renders the body content of the textbox when it is in MultiLine text mode.
-	 * @param THtmlWriter $writer the writer for rendering
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for rendering
 	 */
 	public function renderContents($writer)
 	{
@@ -355,7 +355,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Renders an additional line-break after the opening tag when it
 	 * is in MultiLine text mode.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose^M
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose^M
 	 */
 	public function renderBeginTag($writer)
 	{

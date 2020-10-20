@@ -85,7 +85,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
-	 * @param null|array|Iterator|map|TPriorityMap $data the intial data. Default is null, meaning no initialization.
+	 * @param null|array|\Iterator|map|TPriorityMap $data the intial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities

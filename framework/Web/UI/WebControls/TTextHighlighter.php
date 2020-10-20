@@ -150,7 +150,7 @@ class TTextHighlighter extends TWebControl
 	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
-	 * @param THtmlWriter $writer writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer
 	 */
 	public function onPreRender($writer)
 	{
@@ -188,7 +188,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -205,7 +205,7 @@ class TTextHighlighter extends TWebControl
 	 * Renders the body content enclosed between the control tag.
 	 * By default, child controls and text strings will be rendered.
 	 * You can override this method to provide customized content rendering.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderContents($writer)
 	{
@@ -219,7 +219,7 @@ class TTextHighlighter extends TWebControl
 
 	/**
 	 * Renders the closing tag for the control
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)
 	{

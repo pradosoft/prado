@@ -156,7 +156,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
-	 * @param TXmlElement $config module configuration
+	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{

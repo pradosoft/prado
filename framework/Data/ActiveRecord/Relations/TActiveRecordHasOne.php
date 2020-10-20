@@ -113,7 +113,7 @@ class TActiveRecordHasOne extends TActiveRecordRelation
 
 	/**
 	 * Sets the foreign objects to the given property on the source object.
-	 * @param TActiveRecord $source source object.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $source source object.
 	 * @param array $properties foreign objects.
 	 * @param array &$collections
 	 */

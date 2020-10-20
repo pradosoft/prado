@@ -107,7 +107,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Process the callback request.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	public function processCallbackEvent($writer)
 	{
@@ -118,7 +118,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Register a control for defered render() call.
 	 * @param TControl $control control for defered rendering
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function registerControlToRender($control, $writer)
 	{
@@ -138,7 +138,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Render the callback response.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	public function renderCallbackResponse($writer)
 	{
@@ -163,7 +163,7 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Renders the callback response by adding additional callback data and
 	 * javascript actions in the header and page state if required.
-	 * @param THtmlWriter $writer html content writer.
+	 * @param \Prado\Web\UI\THtmlWriter $writer html content writer.
 	 */
 	protected function renderResponse($writer)
 	{

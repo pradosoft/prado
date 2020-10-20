@@ -30,7 +30,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 
 	/**
 	 * Initializes module.
-	 * @param TXmlElement $config module configuration (may be null)
+	 * @param \Prado\Xml\TXmlElement $config module configuration (may be null)
 	 */
 	public function init($config)
 	{

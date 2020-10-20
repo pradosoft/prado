@@ -33,7 +33,7 @@ class TTableHeaderCell extends TTableCell
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function addAttributesToRender($writer)
 	{

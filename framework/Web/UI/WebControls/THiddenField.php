@@ -51,7 +51,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * Renders the control.
 	 * This method overrides the parent implementation by rendering
 	 * the hidden field input element.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{
@@ -148,7 +148,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	 * The method raises 'OnValueChanged' event to fire up the event delegates.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the attached event handlers can be invoked.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onValueChanged($param)
 	{

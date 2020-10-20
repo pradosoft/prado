@@ -55,7 +55,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{
@@ -94,7 +94,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	/**
 	 * Adds attribute name-value pairs to renderer.
 	 * This overrides the parent implementation with additional bulleted list specific attributes.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	protected function addAttributesToRender($writer)
 	{
@@ -245,7 +245,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders the control.
-	 * @param THtmlWriter $writer the writer for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function render($writer)
 	{
@@ -256,7 +256,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders the body contents.
-	 * @param THtmlWriter $writer the writer for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{
@@ -276,7 +276,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Renders each item
-	 * @param THtmlWriter $writer writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param TListItem $item item to be rendered
 	 * @param int $index index of the item being rendered
 	 */

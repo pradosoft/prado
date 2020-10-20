@@ -121,7 +121,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	 * Renders the body content as javascript block.
 	 * Overrides parent implementation, parent renderChildren method is called during
 	 * {@link registerCustomScript}.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function render($writer)
 	{
@@ -134,7 +134,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 
 	/**
 	 * Renders the custom script file.
-	 * @param THtmLWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function renderCustomScriptFile($writer)
 	{
@@ -145,7 +145,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 
 	/**
 	 * Registers the body content as javascript.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	protected function renderCustomScript($writer)
 	{

@@ -1097,7 +1097,7 @@ class TComponent
 	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
-	 * @param TEventParameter $param the event parameter
+	 * @param \Prado\TEventParameter $param the event parameter
 	 * @param null|numeric $responsetype how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
 	 *		null responses. optional
 	 * @param null|function $postfunction any per handler filtering of the response result needed is passed through

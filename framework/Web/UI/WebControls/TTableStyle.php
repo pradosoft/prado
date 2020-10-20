@@ -159,7 +159,7 @@ class TTableStyle extends TStyle
 	/**
 	 * Adds attributes related to CSS styles to renderer.
 	 * This method overrides the parent implementation.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function addAttributesToRender($writer)
 	{

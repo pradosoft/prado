@@ -464,7 +464,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * Renders the output cache control.
 	 * This method overrides the parent implementation by capturing the output
 	 * from its child controls and saving it into cache, if output cache is needed.
-	 * @param THtmlWriter $writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	public function render($writer)
 	{

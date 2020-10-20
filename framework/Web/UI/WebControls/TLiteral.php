@@ -96,7 +96,7 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 
 	/**
 	 * Renders the literal control.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
 	{

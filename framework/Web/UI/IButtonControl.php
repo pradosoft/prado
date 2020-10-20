@@ -75,7 +75,7 @@ interface IButtonControl
 
 	/**
 	 * Raises <b>OnClick</b> event.
-	 * @param TEventParameter $param event parameter to be passed to the event handlers
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onClick($param);
 

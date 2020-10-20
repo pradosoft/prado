@@ -132,7 +132,7 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Instantiate the external edit renderer.
-	 * @param TActiveRecord $record record to be edited
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record to be edited
 	 * @param string $classPath external edit renderer class name.
 	 * @throws TConfigurationException raised when renderer is not an
 	 * instance of IScaffoldEditRenderer.
@@ -260,7 +260,7 @@ class TScaffoldEditView extends TScaffoldBase
 
 	/**
 	 * Create the default scaffold editor control factory.
-	 * @param TActiveRecord $record record instance.
+	 * @param \Prado\Data\ActiveRecord\TActiveRecord $record record instance.
 	 * @return TScaffoldInputBase scaffold editor control factory.
 	 */
 	protected function getScaffoldInputBuilder($record)

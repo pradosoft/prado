@@ -47,7 +47,7 @@ class TXCache extends TCache
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * @param TXmlElement $config configuration for this module, can be null
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 * @throws TConfigurationException if xcache extension is not installed or not started, check your php.ini
 	 */
 	public function init($config)

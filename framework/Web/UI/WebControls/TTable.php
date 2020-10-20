@@ -97,7 +97,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds attributes to renderer.
-	 * @param THtmlWriter $writer the renderer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 * @deprecated the current implementation only adds a border attribute to the table
 	 */
 	protected function addAttributesToRender($writer)
@@ -275,7 +275,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders the openning tag for the table control which will render table caption if present.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
 	{
@@ -292,7 +292,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Renders body contents of the table.
-	 * @param THtmlWriter $writer the writer used for the rendering purpose.
+	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose.
 	 */
 	public function renderContents($writer)
 	{

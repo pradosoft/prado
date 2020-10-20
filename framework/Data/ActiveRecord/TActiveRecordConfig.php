@@ -104,7 +104,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 
 	/**
 	 * Initialize the active record manager.
-	 * @param TXmlDocument $xml xml configuration.
+	 * @param \Prado\Xml\TXmlDocument $xml xml configuration.
 	 */
 	public function init($xml)
 	{
