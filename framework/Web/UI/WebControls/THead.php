@@ -67,7 +67,7 @@ class THead extends \Prado\Web\UI\TControl
 	 * Processes an object that is created during parsing template.
 	 * This method adds TMetaTag components into the {@link getMetaTags MetaTags}
 	 * collection of the head control.
-	 * @param string|TComponent $object text string or component parsed and instantiated in template
+	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)

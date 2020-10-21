@@ -66,7 +66,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	private $_files = [];
 	/**
-	 * @var class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@link TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = '\Prado\Web\UI\WebControls\TFileUploadItem';
 

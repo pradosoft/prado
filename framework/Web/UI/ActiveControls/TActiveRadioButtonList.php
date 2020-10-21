@@ -75,7 +75,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 
 	/**
 	 * Creates a control used for repetition (used as a template).
-	 * @return TControl the control to be repeated
+	 * @return \Prado\Web\UI\TControl the control to be repeated
 	 */
 	protected function createRepeatedControl()
 	{

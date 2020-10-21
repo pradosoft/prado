@@ -60,7 +60,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	}
 
 	/**
-	 * @return whether this web control must have an id
+	 * @return bool whether this web control must have an id
 	 */
 	public function getEnsureId()
 	{

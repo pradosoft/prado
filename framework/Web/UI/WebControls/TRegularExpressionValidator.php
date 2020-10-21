@@ -83,7 +83,7 @@ class TRegularExpressionValidator extends TBaseValidator
 		}
 		if (($expression = addcslashes($this->getRegularExpression(), "/")) !== '') {
 			$mods = $this->getPatternModifiers();
-			return preg_match("/^$expression\$/{$mods}", $value);
+			return (bool) preg_match("/^$expression\$/{$mods}", $value);
 		} else {
 			return true;
 		}

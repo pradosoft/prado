@@ -275,7 +275,7 @@ class PradoBase
 	 * @param string $requestedType component type
 	 * @param array $params
 	 * @throws TInvalidDataValueException if the component type is unknown
-	 * @return TComponent component instance of the specified type
+	 * @return \Prado\TComponent component instance of the specified type
 	 */
 	public static function createComponent($requestedType, ...$params)
 	{

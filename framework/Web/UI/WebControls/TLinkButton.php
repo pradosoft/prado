@@ -267,7 +267,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Sets the value indicating whether postback event trigger by this button will cause input validation.
-	 * @param string $value the text caption to be set
+	 * @param bool $value whether postback event trigger by this button will cause input validation
 	 */
 	public function setCausesValidation($value)
 	{

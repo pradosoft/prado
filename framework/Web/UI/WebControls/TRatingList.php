@@ -144,7 +144,8 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param int $param change the rating selection index
+	 * Raised then the rating selection index changed
+	 * @param mixed $param event parameter
 	 */
 	public function onSelectedIndexChanged($param)
 	{

@@ -117,7 +117,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 	/**
 	 * Renders the control.
 	 * This method overrides the parent implementation and renders nothing.
-	 * @param ITextWriter $writer writer
+	 * @param \Prado\IO\ITextWriter $writer writer
 	 */
 	public function render($writer)
 	{

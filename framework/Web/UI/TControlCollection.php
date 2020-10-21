@@ -26,13 +26,13 @@ class TControlCollection extends \Prado\Collections\TList
 {
 	/**
 	 * the control that owns this collection.
-	 * @var TControl
+	 * @var \Prado\Web\UI\TControl
 	 */
 	private $_o;
 
 	/**
 	 * Constructor.
-	 * @param TControl $owner the control that owns this collection.
+	 * @param \Prado\Web\UI\TControl $owner the control that owns this collection.
 	 * @param bool $readOnly whether the list is read-only
 	 */
 	public function __construct(TControl $owner, $readOnly = false)
@@ -42,7 +42,7 @@ class TControlCollection extends \Prado\Collections\TList
 	}
 
 	/**
-	 * @return TControl the control that owns this collection.
+	 * @return \Prado\Web\UI\TControl the control that owns this collection.
 	 */
 	protected function getOwner()
 	{

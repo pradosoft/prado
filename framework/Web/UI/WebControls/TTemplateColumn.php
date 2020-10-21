@@ -98,7 +98,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the edit item template
+	 * @return \Prado\Web\UI\ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
 	{
@@ -106,7 +106,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the edit item template
+	 * @param \Prado\Web\UI\ITemplate $value the edit item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
@@ -119,7 +119,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the item template
+	 * @return \Prado\Web\UI\ITemplate the item template
 	 */
 	public function getItemTemplate()
 	{
@@ -127,7 +127,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the item template
+	 * @param \Prado\Web\UI\ITemplate $value the item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
@@ -140,7 +140,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the header template
+	 * @return \Prado\Web\UI\ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -148,7 +148,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the header template.
+	 * @param \Prado\Web\UI\ITemplate $value the header template.
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
@@ -161,7 +161,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return ITemplate the footer template
+	 * @return \Prado\Web\UI\ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -169,7 +169,7 @@ class TTemplateColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param ITemplate $value the footer template
+	 * @param \Prado\Web\UI\ITemplate $value the footer template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)

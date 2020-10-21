@@ -134,7 +134,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private $_uid;
 	/**
-	 * @var TControl parent of the control
+	 * @var \Prado\Web\UI\TControl parent of the control
 	 */
 	private $_parent;
 	/**
@@ -142,7 +142,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	private $_page;
 	/**
-	 * @var TControl naming container of the control
+	 * @var \Prado\Web\UI\TControl naming container of the control
 	 */
 	private $_namingContainer;
 	/**
@@ -250,7 +250,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControl the parent of this control
+	 * @return \Prado\Web\UI\TControl the parent of this control
 	 */
 	public function getParent()
 	{
@@ -258,7 +258,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @return TControl the naming container of this control
+	 * @return \Prado\Web\UI\TControl the naming container of this control
 	 */
 	public function getNamingContainer()
 	{
@@ -1179,7 +1179,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Adds the object instantiated on a template to the child control collection.
 	 * This method overrides the parent implementation.
 	 * Only framework developers and control developers should use this method.
-	 * @param string|TComponent $object text string or component parsed and instantiated in template
+	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
@@ -1200,7 +1200,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
-	 * @param TControl $ancestor the potential ancestor control
+	 * @param \Prado\Web\UI\TControl $ancestor the potential ancestor control
 	 * @return bool if the control is a descendent (parent, parent of parent, etc.)
 	 * of the specified control
 	 */
@@ -1217,7 +1217,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Adds a control into the child collection of the control.
 	 * Control lifecycles will be caught up during the addition.
 	 * Only framework developers should use this method.
-	 * @param TControl $control the new child control
+	 * @param \Prado\Web\UI\TControl $control the new child control
 	 */
 	public function addedControl($control)
 	{
@@ -1260,7 +1260,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Removes a control from the child collection of the control.
 	 * Only framework developers should use this method.
-	 * @param TControl $control the child control removed
+	 * @param \Prado\Web\UI\TControl $control the child control removed
 	 */
 	public function removedControl($control)
 	{
@@ -1284,7 +1284,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Performs the Init step for the control and all its child controls.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer the naming container control
+	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{
@@ -1458,7 +1458,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Invokes the parent's bubbleEvent method.
 	 * A control who wants to bubble an event must call this method in its onEvent method.
-	 * @param TControl $sender sender of the event
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @see bubbleEvent
 	 */
@@ -1476,7 +1476,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method responds to a bubbled event.
 	 * This method should be overriden to provide customized response to a bubbled event.
 	 * Check the type of event parameter to determine what event is bubbled currently.
-	 * @param TControl $sender sender of the event
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
 	 * @param \Prado\TEventParameter $param event parameters
 	 * @return bool true if the event bubbling is handled and no more bubbling.
 	 * @see raiseBubbleEvent
@@ -1499,7 +1499,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
 	 * invoked.
 	 * @param string $name name of the broadcast event
-	 * @param TControl $sender sender of this event
+	 * @param \Prado\Web\UI\TControl $sender sender of this event
 	 * @param \Prado\TEventParameter $param event parameter
 	 */
 	public function broadcastEvent($name, $sender, $param)
@@ -1512,7 +1512,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Recursively broadcasts an event.
 	 * This method should only be used by framework developers.
 	 * @param string $name name of the broadcast event
-	 * @param TControl $sender sender of the event
+	 * @param \Prado\Web\UI\TControl $sender sender of the event
 	 * @param TBroadcastEventParameter $param event parameter
 	 */
 	private function broadcastEventInternal($name, $sender, $param)
@@ -1770,7 +1770,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Updates the list of the controls whose IDs are managed by the specified naming container.
-	 * @param TControl $container the naming container
+	 * @param \Prado\Web\UI\TControl $container the naming container
 	 * @param TControlCollection $controls list of controls
 	 * @throws TInvalidDataValueException if a control's ID is not unique within its naming container.
 	 */

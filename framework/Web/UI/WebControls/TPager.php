@@ -108,7 +108,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param Sets $value the css class of the buttons that will be rendered by this pager.
+	 * @param string Sets $value the css class of the buttons that will be rendered by this pager.
 	 * @since 3.2.1
 	 */
 	public function setButtonCssClass($value)
@@ -388,7 +388,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Performs databinding to populate data items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable $param the bound data
+	 * @param \Traversable $param the bound data
 	 */
 	public function onPreRender($param)
 	{
@@ -655,7 +655,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Processes a bubbled event.
 	 * This method overrides parent's implementation by wrapping event parameter
 	 * for <b>OnCommand</b> event with item information.
-	 * @param TControl $sender the sender of the event
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */

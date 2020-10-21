@@ -88,7 +88,7 @@ class TReCaptchaValidator extends TBaseValidator
 	{
 		parent::onPreRender($param);
 
-		$cs = $this->Page->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 		$cs->registerPradoScript('validator');
 
 		// communicate validation status to the client side
@@ -100,7 +100,7 @@ class TReCaptchaValidator extends TBaseValidator
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			// check if we need to request a new captcha too
-			if ($this->Page->IsCallback) {
+			if ($this->getPage()->getIsCallback()) {
 				if ($control->getVisible(true)) {
 					if (null !== $this->_isvalid) {
 						// if the response has been tested and we reach the pre-render phase
@@ -122,7 +122,7 @@ class TReCaptchaValidator extends TBaseValidator
 				'',
 				// update the validator to the result if we're in a callback
 				// (if we're in initial rendering or a postback then the result will be rendered directly to the page html anyway)
-				$this->Page->IsCallback ? $fn . '(' . $value . ');' : '',
+				$this->getPage()->getIsCallback() ? $fn . '(' . $value . ');' : '',
 				'',
 				// install event handler that clears the validation error when user changes the captcha response field
 				'jQuery("#' . $control->getClientID() . '").on("keyup", ' . TJavaScript::quoteString('#' . $control->getResponseFieldName()) . ', function() { ',

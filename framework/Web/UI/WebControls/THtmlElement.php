@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
 class THtmlElement extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
-	 * @var the tag of this element
+	 * @var string the tag of this element
 	 */
 	private $_tagName;
 

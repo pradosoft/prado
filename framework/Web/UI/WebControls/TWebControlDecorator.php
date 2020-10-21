@@ -78,7 +78,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	private $_control;
 
 	/**
-	 * @var TControl to tell the decorator where to place the outer controls
+	 * @var \Prado\Web\UI\TControl to tell the decorator where to place the outer controls
 	 */
 	private $_outercontrol;
 
@@ -328,7 +328,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	/**
 	 *	This method places the templates around the open and close tag.  This takes a parameter which is
 	 * to specify the control to get the outer template decoration.  If no outer control is specified
-	 * @param TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
+	 * @param \Prado\TComponent $sender this indicates the component or control to get the outer tag elements, just in case it's
 	 * different than attached TWebControl.  If none is provided, the outer templates default to the attached
 	 * control
 	 * @param null|mixed $param
@@ -382,7 +382,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the pre tag text into the {@link TTextWriter}
-	 * @param {@link $writer TTextWriter} the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter the writer to which the text is written
 	 */
 	public function renderPreTagText($writer)
 	{
@@ -391,7 +391,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the pre contents text into the {@link TTextWriter}
-	 * @param {@link $writer TTextWriter} the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter the writer to which the text is written
 	 */
 	public function renderPreContentsText($writer)
 	{
@@ -400,7 +400,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the post contents text into the {@link TTextWriter}
-	 * @param {@link $writer TTextWriter} the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter the writer to which the text is written
 	 */
 	public function renderPostContentsText($writer)
 	{
@@ -409,7 +409,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the post tag text into the {@link TTextWriter}
-	 * @param {@link $writer TTextWriter} the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter the writer to which the text is written
 	 */
 	public function renderPostTagText($writer)
 	{

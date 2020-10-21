@@ -174,11 +174,11 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	private $_footerTemplate;
 	private $_separatorTemplate;
 	/**
-	 * @var TControl header item
+	 * @var \Prado\Web\UI\TControl header item
 	 */
 	private $_header;
 	/**
-	 * @var TControl footer item
+	 * @var \Prado\Web\UI\TControl footer item
 	 */
 	private $_footer;
 
@@ -395,7 +395,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the template for item
+	 * @return \Prado\Web\UI\ITemplate the template for item
 	 */
 	public function getItemTemplate()
 	{
@@ -403,7 +403,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the template for item
+	 * @param \Prado\Web\UI\ITemplate $value the template for item
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
@@ -428,7 +428,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the template for each alternating item
+	 * @return \Prado\Web\UI\ITemplate the template for each alternating item
 	 */
 	public function getAlternatingItemTemplate()
 	{
@@ -436,7 +436,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the template for each alternating item
+	 * @param \Prado\Web\UI\ITemplate $value the template for each alternating item
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
@@ -461,7 +461,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the selected item template
+	 * @return \Prado\Web\UI\ITemplate the selected item template
 	 */
 	public function getSelectedItemTemplate()
 	{
@@ -469,7 +469,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the selected item template
+	 * @param \Prado\Web\UI\ITemplate $value the selected item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSelectedItemTemplate($value)
@@ -494,7 +494,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the edit item template
+	 * @return \Prado\Web\UI\ITemplate the edit item template
 	 */
 	public function getEditItemTemplate()
 	{
@@ -502,7 +502,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the edit item template
+	 * @param \Prado\Web\UI\ITemplate $value the edit item template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
@@ -527,7 +527,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the header template
+	 * @return \Prado\Web\UI\ITemplate the header template
 	 */
 	public function getHeaderTemplate()
 	{
@@ -535,7 +535,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the header template
+	 * @param \Prado\Web\UI\ITemplate $value the header template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
@@ -560,7 +560,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the header item
+	 * @return \Prado\Web\UI\TControl the header item
 	 */
 	public function getHeader()
 	{
@@ -568,7 +568,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the footer template
+	 * @return \Prado\Web\UI\ITemplate the footer template
 	 */
 	public function getFooterTemplate()
 	{
@@ -576,7 +576,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the footer template
+	 * @param \Prado\Web\UI\ITemplate $value the footer template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
@@ -601,7 +601,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the footer item
+	 * @return \Prado\Web\UI\TControl the footer item
 	 */
 	public function getFooter()
 	{
@@ -609,7 +609,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the template applied when no data is bound to the datalist
+	 * @return \Prado\Web\UI\ITemplate the template applied when no data is bound to the datalist
 	 */
 	public function getEmptyTemplate()
 	{
@@ -617,7 +617,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when no data is bound to the datalist
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datalist
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
@@ -630,7 +630,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return ITemplate the separator template
+	 * @return \Prado\Web\UI\ITemplate the separator template
 	 */
 	public function getSeparatorTemplate()
 	{
@@ -638,7 +638,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param ITemplate $value the separator template
+	 * @param \Prado\Web\UI\ITemplate $value the separator template
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
@@ -703,7 +703,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the selected item, null if no item is selected.
+	 * @return \Prado\Web\UI\TControl the selected item, null if no item is selected.
 	 */
 	public function getSelectedItem()
 	{
@@ -768,7 +768,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @return TControl the edit item
+	 * @return \Prado\Web\UI\TControl the edit item
 	 */
 	public function getEditItem()
 	{
@@ -917,7 +917,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl $sender the sender of the event
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
@@ -1102,7 +1102,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * @param TListItemType $itemType item type
 	 * @param int $index item index
-	 * @return TControl data list item with the specified item type and index
+	 * @return \Prado\Web\UI\TControl data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
 	{
@@ -1131,7 +1131,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method invokes {@link createItem} to create a new datalist item.
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemInternal($itemIndex, $itemType)
 	{
@@ -1151,7 +1151,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
-	 * @return TControl the created item, null if item is not created
+	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
 	 */
 	private function createItemWithDataInternal($itemIndex, $itemType, $dataItem)
 	{
@@ -1205,7 +1205,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Creates a datalist item instance based on the item type and index.
 	 * @param int $itemIndex zero-based item index
 	 * @param TListItemType $itemType item type
-	 * @return TControl created datalist item
+	 * @return \Prado\Web\UI\TControl created datalist item
 	 */
 	protected function createItem($itemIndex, $itemType)
 	{
@@ -1424,7 +1424,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * Performs databinding to populate data list items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable $data the data
+	 * @param \Traversable $data the data
 	 */
 	protected function performDataBinding($data)
 	{

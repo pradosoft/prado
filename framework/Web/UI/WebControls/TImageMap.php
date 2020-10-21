@@ -41,7 +41,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 * Processes an object that is created during parsing template.
 	 * This method adds {@link THotSpot} objects into the hotspot collection
 	 * of the imagemap.
-	 * @param string|TComponent $object text string or component parsed and instantiated in template
+	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
 	 */
 	public function addParsedObject($object)
 	{

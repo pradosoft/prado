@@ -26,7 +26,7 @@ interface ITemplate
 	 * Instantiates the template.
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
-	 * @param TControl $parent the parent control
+	 * @param \Prado\Web\UI\TControl $parent the parent control
 	 */
 	public function instantiateIn($parent);
 }

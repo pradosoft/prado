@@ -100,7 +100,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @return style of syntax highlightning
+	 * @return string style of syntax highlightning
 	 */
 	public function getSyntaxStyle()
 	{
@@ -108,7 +108,7 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * @param style $value of syntax highlightning
+	 * @param string style $value of syntax highlightning
 	 */
 	public function setSyntaxStyle($value)
 	{
@@ -150,11 +150,11 @@ class TTextHighlighter extends TWebControl
 	/**
 	 * Registers css style for the highlighted result.
 	 * This method overrides parent implementation.
-	 * @param \Prado\Web\UI\THtmlWriter $writer writer
+	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
-	public function onPreRender($writer)
+	public function onPreRender($param)
 	{
-		parent::onPreRender($writer);
+		parent::onPreRender($param);
 		$this->registerStyleSheet();
 	}
 

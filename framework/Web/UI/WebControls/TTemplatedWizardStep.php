@@ -63,7 +63,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @return ITemplate the template for the content of the wizard step.
+	 * @return \Prado\Web\UI\ITemplate the template for the content of the wizard step.
 	 */
 	public function getContentTemplate()
 	{
@@ -71,7 +71,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate $value the template for the content of the wizard step.
+	 * @param \Prado\Web\UI\ITemplate $value the template for the content of the wizard step.
 	 */
 	public function setContentTemplate($value)
 	{
@@ -79,7 +79,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @return ITemplate the template for displaying the navigation UI of a wizard step. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate the template for displaying the navigation UI of a wizard step. Defaults to null.
 	 */
 	public function getNavigationTemplate()
 	{
@@ -87,7 +87,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 	}
 
 	/**
-	 * @param ITemplate $value the template for displaying the navigation UI of a wizard step.
+	 * @param \Prado\Web\UI\ITemplate $value the template for displaying the navigation UI of a wizard step.
 	 */
 	public function setNavigationTemplate($value)
 	{

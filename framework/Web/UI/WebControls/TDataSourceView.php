@@ -32,13 +32,15 @@ abstract class TDataSourceView extends \Prado\TComponent
 
 	/**
 	 * Performs DB selection based on specified parameters.
-	 * @param ??? $parameters * @return Traversable
+	 * @param mixed $parameters
+	 * @return Traversable
 	 */
 	abstract public function select($parameters);
 
 	/**
 	 * Inserts a DB record.
-	 * @param array|TMap $values * @return integer affected rows
+	 * @param array|\Prado\Collections\TMap $values
+	 * @return integer affected rows
 	 */
 	public function insertAt($values)
 	{

@@ -38,7 +38,7 @@ class TContent extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingCo
 	 * This method is invoked after the control is instantiated on a template.
 	 * This overrides the parent implementation by registering the content control
 	 * to the template owner control.
-	 * @param TControl $parent potential parent of this control
+	 * @param \Prado\Web\UI\TControl $parent potential parent of this control
 	 */
 	public function createdOnTemplate($parent)
 	{

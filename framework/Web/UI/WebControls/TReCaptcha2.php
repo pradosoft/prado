@@ -103,11 +103,11 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	public function getValidationPropertyValue()
 	{
-		return $this->Request[$this->getResponseFieldName()];
+		return $this->getRequest()->itemAt($this->getResponseFieldName());
 	}
 	public function getResponseFieldName()
 	{
-		$captchas = $this->Page->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
+		$captchas = $this->getPage()->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
 		foreach ($captchas as $captcha) {
@@ -120,7 +120,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns your site key.
-	 * @return string.
+	 * @return string site key
 	 */
 	public function getSiteKey()
 	{
@@ -135,7 +135,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns your secret key.
-	 * @return string.
+	 * @return string secret key
 	 */
 	public function getSecretKey()
 	{
@@ -150,7 +150,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns your language.
-	 * @return string.
+	 * @return string language
 	 */
 	public function getLanguage()
 	{
@@ -165,7 +165,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns the color theme of the widget.
-	 * @return string.
+	 * @return string theme name
 	 */
 	public function getTheme()
 	{
@@ -182,7 +182,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns the type of CAPTCHA to serve.
-	 * @return string.
+	 * @return string captcha type
 	 */
 	public function getType()
 	{
@@ -199,7 +199,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	}
 	/**
 	 * Returns the size of the widget.
-	 * @return string.
+	 * @return string widget size
 	 */
 	public function getSize()
 	{
@@ -217,7 +217,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	/**
 	 * Returns the tabindex of the widget and challenge.
 	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
-	 * @return string.
+	 * @return string tab index
 	 */
 	public function getTabIndex()
 	{
@@ -239,7 +239,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	 */
 	public function reset()
 	{
-		$this->Page->CallbackClient->callClientFunction('grecaptcha.reset', [[$this->WidgetId]]);
+		$this->getPage()->CallbackClient->callClientFunction('grecaptcha.reset', [[$this->WidgetId]]);
 	}
 	/**
 	 * Gets the response for the reCAPTCHA widget.
@@ -264,7 +264,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$options['ID'] = $this->getClientID();
 		$options['EventTarget'] = $this->getUniqueID();
-		$options['FormID'] = $this->Page->getForm()->getClientID();
+		$options['FormID'] = $this->getPage()->getForm()->getClientID();
 		$options['onCallback'] = $this->hasEventHandler('OnCallback');
 		$options['onCallbackExpired'] = $this->hasEventHandler('OnCallbackExpired');
 		$options['options']['sitekey'] = $this->getSiteKey();
@@ -288,7 +288,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$id = $this->getClientID();
 		$options = TJavaScript::encode($this->getClientOptions());
 		$className = $this->getClientClassName();
-		$cs = $this->Page->ClientScript;
+		$cs = $this->getPage()->ClientScript;
 		$code = "new $className($options);";
 
 		$cs->registerPradoScript('ajax');
@@ -319,8 +319,8 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		}
 
 		// need to register captcha fields so they will be sent postback
-		$this->Page->registerRequiresPostData($this->getResponseFieldName());
-		$this->Page->ClientScript->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
+		$this->getPage()->registerRequiresPostData($this->getResponseFieldName());
+		$this->getPage()->getClientScript()->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
 	}
 	protected function addAttributesToRender($writer)
 	{
@@ -337,7 +337,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 			if ($callback) {
 				$this->WidgetId = $params->widgetId;
 				$this->Response = $params->response;
-				$this->Page->CallbackClient->jQuery($params->responseField, 'text', [$params->response]);
+				$this->getPage()->CallbackClient->jQuery($params->responseField, 'text', [$params->response]);
 
 				if ($params->onCallback) {
 					$this->onCallback($param);

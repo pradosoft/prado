@@ -49,7 +49,7 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 	public function __construct()
 	{
 		parent::__construct();
-		$this->EnableViewState = false;
+		$this->setEnableViewState(false);
 	}
 
 	/**
@@ -77,8 +77,8 @@ class TFlushOutput extends \Prado\Web\UI\TControl
 		//$writer->write('<!-- flush -->');
 		// ajax responses can't be parsed by the client side before loaded and returned completely,
 		// so don't bother with flushing output somewhere mid-page if refreshing in a callback
-		if (!$this->Page->IsCallback) {
-			$this->Page->flushWriter();
+		if (!$this->getPage()->getIsCallback()) {
+			$this->getPage()->flushWriter();
 //			$this->Application->flushOutput($this->ContinueBuffering);
 		}
 	}

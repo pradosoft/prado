@@ -24,7 +24,7 @@ class CustomValidatorByPass extends TPage
 	{
 
 		/* This isnt even getting called */
-		if ($this->Page->IsValid) {
+		if ($this->getPage()->IsValid) {
 			// Re-Render the active panel
 		}
 	}

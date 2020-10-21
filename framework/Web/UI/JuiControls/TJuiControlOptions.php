@@ -39,13 +39,13 @@ class TJuiControlOptions
 	 */
 	protected $_options;
 	/**
-	 * @var TControl parent control.
+	 * @var \Prado\Web\UI\TControl parent control.
 	 */
 	private $_control;
 
 	/**
 	 * Constructor. Set the parent control owning these options.
-	 * @param TControl $control parent control
+	 * @param \Prado\Web\UI\TControl $control parent control
 	 */
 	public function __construct($control)
 	{
@@ -54,7 +54,7 @@ class TJuiControlOptions
 
 	/**
 	 * Sets the parent control.
-	 * @param TControl $control $control
+	 * @param \Prado\Web\UI\TControl $control $control
 	 * @throws THttpException
 	 */
 	public function setControl($control)

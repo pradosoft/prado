@@ -234,7 +234,7 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Recursively converts DOM XML nodes into TXmlElement
-	 * @param DOMXmlNode $node the node to be converted
+	 * @param \DOMElement $node the node to be converted
 	 * @return TXmlElement the converted TXmlElement
 	 */
 	protected function buildElement($node)

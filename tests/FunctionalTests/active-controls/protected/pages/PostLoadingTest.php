@@ -37,6 +37,6 @@ class PostLoadingTest extends TPage
 	{
 		$this->panel1->getControls()->add('Result is ' . $this->MyTextBox->getText());
 		$this->panel1->render($param->NewWriter);
-		$this->Page->CallbackClient->Highlight('heading');
+		$this->getPage()->CallbackClient->Highlight('heading');
 	}
 }

@@ -23,13 +23,13 @@ namespace Prado\Web\UI;
 class TControlAdapter extends \Prado\TApplicationComponent
 {
 	/**
-	 * @var TControl the control to which the adapter is attached
+	 * @var \Prado\Web\UI\TControl the control to which the adapter is attached
 	 */
 	protected $_control;
 
 	/**
 	 * Constructor.
-	 * @param TControl $control the control to which the adapter is attached
+	 * @param \Prado\Web\UI\TControl $control the control to which the adapter is attached
 	 */
 	public function __construct($control)
 	{
@@ -37,7 +37,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @return TControl the control to which this adapter is attached
+	 * @return \Prado\Web\UI\TControl the control to which this adapter is attached
 	 */
 	public function getControl()
 	{

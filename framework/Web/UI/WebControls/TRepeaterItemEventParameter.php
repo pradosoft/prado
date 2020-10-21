@@ -27,13 +27,13 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * The repeater item control responsible for the event.
-	 * @var TControl
+	 * @var \Prado\Web\UI\TControl
 	 */
 	private $_item;
 
 	/**
 	 * Constructor.
-	 * @param TControl $item repeater item related with the corresponding event
+	 * @param \Prado\Web\UI\TControl $item repeater item related with the corresponding event
 	 */
 	public function __construct($item)
 	{
@@ -41,7 +41,7 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TControl repeater item related with the corresponding event
+	 * @return \Prado\Web\UI\TControl repeater item related with the corresponding event
 	 */
 	public function getItem()
 	{

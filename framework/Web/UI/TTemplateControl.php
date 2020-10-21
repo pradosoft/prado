@@ -80,7 +80,7 @@ class TTemplateControl extends TCompositeControl
 	 * Sets the parsed template.
 	 * Note, the template will be applied to the whole control class.
 	 * This method should only be used by framework and control developers.
-	 * @param ITemplate $value the parsed template
+	 * @param \Prado\Web\UI\ITemplate $value the parsed template
 	 */
 	public function setTemplate($value)
 	{
@@ -115,7 +115,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Loads the template associated with this control class.
-	 * @return ITemplate the parsed template structure
+	 * @return \Prado\Web\UI\ITemplate the parsed template structure
 	 */
 	protected function loadTemplate()
 	{
@@ -220,7 +220,7 @@ class TTemplateControl extends TCompositeControl
 	 * by ensuring child controls are created first,
 	 * and if master class is set, master will be applied.
 	 * Only framework developers should use this method.
-	 * @param TControl $namingContainer the naming container control
+	 * @param \Prado\Web\UI\TControl $namingContainer the naming container control
 	 */
 	protected function initRecursive($namingContainer = null)
 	{

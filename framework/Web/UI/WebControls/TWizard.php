@@ -276,7 +276,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for the start step. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for the start step. Defaults to null.
 	 */
 	public function getStartNavigationTemplate()
 	{
@@ -284,7 +284,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for the start step.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for the start step.
 	 */
 	public function setStartNavigationTemplate($value)
 	{
@@ -293,7 +293,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for internal steps. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for internal steps. Defaults to null.
 	 */
 	public function getStepNavigationTemplate()
 	{
@@ -301,7 +301,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for internal steps.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for internal steps.
 	 */
 	public function setStepNavigationTemplate($value)
 	{
@@ -310,7 +310,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate navigation template for the finish step. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate navigation template for the finish step. Defaults to null.
 	 */
 	public function getFinishNavigationTemplate()
 	{
@@ -318,7 +318,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value navigation template for the finish step.
+	 * @param \Prado\Web\UI\ITemplate $value navigation template for the finish step.
 	 */
 	public function setFinishNavigationTemplate($value)
 	{
@@ -327,7 +327,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate template for wizard header. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate template for wizard header. Defaults to null.
 	 */
 	public function getHeaderTemplate()
 	{
@@ -335,7 +335,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value template for wizard header.
+	 * @param \Prado\Web\UI\ITemplate $value template for wizard header.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -344,7 +344,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return ITemplate template for the side bar. Defaults to null.
+	 * @return \Prado\Web\UI\ITemplate template for the side bar. Defaults to null.
 	 */
 	public function getSideBarTemplate()
 	{
@@ -352,7 +352,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param ITemplate $value template for the side bar.
+	 * @param \Prado\Web\UI\ITemplate $value template for the side bar.
 	 */
 	public function setSideBarTemplate($value)
 	{

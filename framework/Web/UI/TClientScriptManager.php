@@ -504,7 +504,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 *   public function onPreRenderComplete($param) {
 	 *     parent::onPreRenderComplete($param);
 	 *     $url = 'path/to/your/stylesheet.css';
-	 *     $this->Page->ClientScript->registerStyleSheetFile($url, $url);
+	 *     $this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	 *   }
 	 * }
 	 * </code>

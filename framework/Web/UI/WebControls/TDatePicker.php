@@ -395,8 +395,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Returns the value to be validated.
-	 * This methid is required by \Prado\Web\UI\IValidatable interface.
-	 * @return int the interger timestamp if valid, otherwise the original text.
+	 * This method is required by \Prado\Web\UI\IValidatable interface.
+	 * @return string|int the integer timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{
@@ -482,7 +482,7 @@ class TDatePicker extends TTextBox
 	 * Loads date from drop down list data.
 	 * @param string $key the key that can be used to retrieve data from the input data collection
 	 * @param array $values the input data collection
-	 * @return array the date selected
+	 * @return string the date selected
 	 */
 	protected function getDateFromPostData($key, $values)
 	{
@@ -594,7 +594,7 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
-	 * @return DateTimeFormatInfo date time format information for the current culture.
+	 * @return \Prado\I18N\core\CultureInfo date time format information for the current culture.
 	 */
 	protected function getLocalizedCalendarInfo()
 	{
@@ -646,7 +646,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Renders the calendar drop down list depending on the DateFormat pattern.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the Html writer to render the drop down lists.
-	 * @param array $date the current selected date
+	 * @param \DateTime $date the current selected date
 	 */
 	protected function renderCalendarSelections($writer, $date)
 	{
@@ -813,7 +813,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional button such that when clicked it shows the date picker.
 	 * @param mixed $writer
-	 * @return THtmlWriter writer
+	 * @return \Prado\Web\UI\THtmlWriter writer
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
@@ -831,7 +831,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Adds an additional image button such that when clicked it shows the date picker.
 	 * @param mixed $writer
-	 * @return THtmlWriter writer
+	 * @return \Prado\Web\UI\THtmlWriter writer
 	 */
 	protected function renderImageButtonDatePicker($writer)
 	{

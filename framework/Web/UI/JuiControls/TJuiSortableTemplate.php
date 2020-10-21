@@ -33,7 +33,7 @@ class TJuiSortableTemplate extends \Prado\TComponent implements ITemplate
 	/**
 	 * Instantiates the template.
 	 * It creates a {@link TDataList} control.
-	 * @param TControl $parent parent to hold the content within the template
+	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

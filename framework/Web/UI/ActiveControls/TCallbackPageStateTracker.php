@@ -33,7 +33,7 @@ class TCallbackPageStateTracker
 	 */
 	private $_existingState;
 	/**
-	 * @var TControl the control tracked
+	 * @var \Prado\Web\UI\TControl the control tracked
 	 */
 	protected $_control;
 	/**
@@ -43,7 +43,7 @@ class TCallbackPageStateTracker
 
 	/**
 	 * Constructor. Add a set of default states to track.
-	 * @param TControl $control control to track.
+	 * @param \Prado\Web\UI\TControl $control control to track.
 	 */
 	public function __construct($control)
 	{

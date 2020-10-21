@@ -1283,7 +1283,7 @@ class TComponent
 	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through
 	 * dyCreatedOnTemplate.
 	 *
-	 * @param TComponent $parent potential parent of this control
+	 * @param \Prado\TComponent $parent potential parent of this control
 	 * @see addParsedObject
 	 */
 	public function createdOnTemplate($parent)
@@ -1306,7 +1306,7 @@ class TComponent
 	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
 	 * dyAddParsedObject.
 	 *
-	 * @param string|TComponent $object text string or component parsed and instantiated in template
+	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)

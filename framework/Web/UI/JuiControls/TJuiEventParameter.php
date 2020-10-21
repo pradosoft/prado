@@ -48,7 +48,7 @@ class TJuiEventParameter extends TCallbackEventParameter
 	 *
 	 * Compatibility method to get a control from its clientside id
 	 * @param mixed $id
-	 * @return TControl control, or null if not found
+	 * @return \Prado\Web\UI\TControl control, or null if not found
 	 */
 	public function getControl($id)
 	{

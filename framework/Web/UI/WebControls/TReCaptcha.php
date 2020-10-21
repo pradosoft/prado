@@ -90,7 +90,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	public function getValidationPropertyValue()
 	{
-		return $this->Request[$this->getChallengeFieldName()];
+		return $this->getRequest()->itemAt($this->getChallengeFieldName());
 	}
 
 	public function getPublicKey()
@@ -229,20 +229,20 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	{
 		// if we're in a callback, then schedule re-rendering of the control
 		// if not, don't do anything, because a new challenge will be rendered anyway
-		if ($this->Page->IsCallback) {
-			$this->Page->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
+		if ($this->getPage()->getIsCallback()) {
+			$this->getPage()->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
 		}
 	}
 
 	public function renderContents($writer)
 	{
 		$readyscript = 'jQuery(document).trigger(' . TJavaScript::quoteString('captchaready:' . $this->getClientID()) . ')';
-		$cs = $this->Page->ClientScript;
+		$cs = $this->getPage()->ClientScript;
 		$id = $this->getClientID();
 		$divid = $id . '_1_recaptchadiv';
 		$writer->write('<div id="' . htmlspecialchars($divid) . '">');
 
-		if (!$this->Page->IsCallback) {
+		if (!$this->getPage()->getIsCallback()) {
 			$writer->write(TJavaScript::renderScriptBlock(
 				'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
 				));
@@ -307,7 +307,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Encodes the given data into a query string format
-	 * @param $data $data - array of string elements to be encoded
+	 * @param array $data - array of string elements to be encoded
 	 * @return string - encoded request
 	 */
 	private function recaptcha_qsencode($data)

@@ -198,7 +198,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 * Gets the Control type for client-side validation. If new cases exists in
 	 * TBaseValidator::$_clientClass, be sure to update the corresponding
 	 * "Javascript/validation3.js" file as well.
-	 * @param TControl $control control to validate.
+	 * @param \Prado\Web\UI\TControl $control control to validate.
 	 * @return string control type for client-side validation.
 	 */
 	private function getClientControlClass($control)
@@ -493,7 +493,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * @throws TConfigurationException if {@link getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
-	 * @return TControl control to be validated. Null if no control is found.
+	 * @return \Prado\Web\UI\TControl control to be validated. Null if no control is found.
 	 */
 	public function getValidationTarget()
 	{
@@ -506,7 +506,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Retrieves the property value of the control being validated.
-	 * @param TControl $control control being validated
+	 * @param \Prado\Web\UI\TControl $control control being validated
 	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
 	 * @return string property value to be validated
 	 */

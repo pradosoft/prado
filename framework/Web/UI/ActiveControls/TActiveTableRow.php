@@ -109,7 +109,7 @@ class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiv
 	 * This method overrides parent's implementation and raises the control's
 	 * callback event. This will fire the {@link onRowSelected OnRowSelected}
 	 * event if an appropriate event handler is implemented.
-	 * @param TControl $sender the sender of the event
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */

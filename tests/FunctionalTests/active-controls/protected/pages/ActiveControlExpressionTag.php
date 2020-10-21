@@ -19,6 +19,6 @@ class ActiveControlExpressionTag extends TPage
 	public function button2_callback($sender, $param)
 	{
 		$this->panel2->Visible = true;
-		$this->Page->CallbackClient->insertContentAfter('contents', $this->panel2);
+		$this->getPage()->CallbackClient->insertContentAfter('contents', $this->panel2);
 	}
 }

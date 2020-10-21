@@ -8,7 +8,7 @@ class Ticket679 extends TPage
 		parent::onLoad($param);
 		$dataArray[0][ 'id' ] = '1' ;
 
-		if (!$this->Page->IsPostBack && !$this->Page->IsCallBack) {
+		if (!$this->getPage()->getIsPostback()) {
 			$this->Repeater->DataSource = $dataArray ;
 			$this->Repeater->dataBind() ;
 		}

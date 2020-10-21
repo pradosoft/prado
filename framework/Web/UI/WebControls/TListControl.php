@@ -82,7 +82,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 abstract class TListControl extends TDataBoundControl implements \Prado\IDataRenderer
 {
 	/**
-	 * @var TListItemCollection item list
+	 * @var \Prado\Collections\TListItemCollection item list
 	 */
 	private $_items;
 	/**
@@ -200,7 +200,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * Performs databinding to populate list items from data source.
 	 * This method is invoked by dataBind().
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable $data the data
+	 * @param \Traversable $data the data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -261,7 +261,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	/**
 	 * Creates a collection object to hold list items.
 	 * This method may be overriden to create a customized collection.
-	 * @return TListItemCollection the collection object
+	 * @return \Prado\Collections\TListItemCollection the collection object
 	 */
 	protected function createListItemCollection()
 	{

@@ -50,10 +50,6 @@ use Prado\TPropertyValue;
 class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\IDataRenderer
 {
 	const MAX_STEPS = 200;
-	/**
-	 * @var TSliderHandle handle component
-	 */
-	private $_handle;
 	/*
 	 * @var boolean Wether the data has changed during postback
 	 */

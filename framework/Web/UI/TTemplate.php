@@ -185,7 +185,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Instantiates the template.
 	 * Content in the template will be instantiated as components and text strings
 	 * and passed to the specified parent control.
-	 * @param TControl $tplControl the control who owns the template
+	 * @param \Prado\Web\UI\TControl $tplControl the control who owns the template
 	 * @param null|TControl $parentControl the control who will become the root parent of the controls on the template. If null, it uses the template control.
 	 */
 	public function instantiateIn($tplControl, $parentControl = null)
@@ -300,7 +300,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a property/event of a control.
-	 * @param TControl $control control to be configured
+	 * @param \Prado\Web\UI\TControl $control control to be configured
 	 * @param string $name property name
 	 * @param mixed $value property initial value
 	 */
@@ -317,7 +317,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a property of a non-control component.
-	 * @param TComponent $component component to be configured
+	 * @param \Prado\TComponent $component component to be configured
 	 * @param string $name property name
 	 * @param mixed $value property initial value
 	 */
@@ -332,10 +332,10 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures an event for a control.
-	 * @param TControl $control control to be configured
+	 * @param \Prado\Web\UI\TControl $control control to be configured
 	 * @param string $name event name
 	 * @param string $value event handler
-	 * @param TControl $contextControl context control
+	 * @param \Prado\Web\UI\TControl $contextControl context control
 	 */
 	protected function configureEvent($control, $name, $value, $contextControl)
 	{
@@ -348,7 +348,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a simple property for a component.
-	 * @param TComponent $component component to be configured
+	 * @param \Prado\TComponent $component component to be configured
 	 * @param string $name property name
 	 * @param mixed $value property initial value
 	 */
@@ -401,7 +401,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a subproperty for a component.
-	 * @param TComponent $component component to be configured
+	 * @param \Prado\TComponent $component component to be configured
 	 * @param string $name subproperty name
 	 * @param mixed $value subproperty initial value
 	 */

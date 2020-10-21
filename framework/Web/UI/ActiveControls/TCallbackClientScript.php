@@ -134,7 +134,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Client script to set the value of a particular input element.
-	 * @param TControl $input control element to set the new value
+	 * @param \Prado\Web\UI\TControl $input control element to set the new value
 	 * @param string $text new value
 	 */
 	public function setValue($input, $text)
@@ -153,7 +153,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 *  - <b>Clear</b>, clears or selections or checks in the list
 	 *  - <b>All</b>, select all
 	 *  - <b>Invert</b>, invert the selection.
-	 * @param TControl $control list control
+	 * @param \Prado\Web\UI\TControl $control list control
 	 * @param string $method selection method
 	 * @param null|int|string $value the value or index to select/check.
 	 * @param null|string $type selection control type, either 'check' or 'select'
@@ -206,7 +206,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Client script to click on an element. <b>This client-side function is unpredictable.</b>
 	 *
-	 * @param TControl $control control element or element id
+	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 */
 	public function click($control)
 	{
@@ -215,7 +215,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Client script to check or uncheck a checkbox or radio button.
-	 * @param TControl $checkbox control element or element id
+	 * @param \Prado\Web\UI\TControl $checkbox control element or element id
 	 * @param bool $checked check or uncheck the checkbox or radio button.
 	 */
 	public function check($checkbox, $checked = true)
@@ -225,7 +225,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Raise the client side event (given by $eventName) on a particular element.
-	 * @param TControl $control control element or element id
+	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param string $eventName Event name, e.g. "click"
 	 */
 	public function raiseClientEvent($control, $eventName)
@@ -235,7 +235,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Sets the attribute of a particular control.
-	 * @param TControl $control control element or element id
+	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param string $name attribute name
 	 * @param string $value attribute value
 	 */
@@ -250,7 +250,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Sets the options of a select input element.
-	 * @param TControl $control control element or element id
+	 * @param \Prado\Web\UI\TControl $control control element or element id
 	 * @param TCollection $items a list of new options
 	 */
 	public function setListItems($control, $items)
@@ -281,7 +281,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Shows an element by changing its CSS display style as empty.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 */
 	public function show($element)
 	{
@@ -290,7 +290,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Hides an element by changing its CSS display style to "none".
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 */
 	public function hide($element)
 	{
@@ -299,7 +299,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Toggles the visibility of the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param null|string $effect visual effect, such as, 'fade' or 'slide'.
 	 * @param array $options additional options.
 	 */
@@ -325,7 +325,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Removes an element from the HTML page.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 */
 	public function remove($element)
 	{
@@ -334,8 +334,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Update the element's innerHTML with new content.
-	 * @param TControl $element control element or element id
-	 * @param TControl $content new HTML content, if content is of a TControl, the
+	 * @param \Prado\Web\UI\TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $content new HTML content, if content is of a TControl, the
 	 * controls render method is called.
 	 */
 	public function update($element, $content)
@@ -345,7 +345,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Add a Css class name to the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $cssClass CssClass name to add.
 	 */
 	public function addCssClass($element, $cssClass)
@@ -355,7 +355,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Remove a Css class name from the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $cssClass CssClass name to remove.
 	 */
 	public function removeCssClass($element, $cssClass)
@@ -367,7 +367,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * Scroll the top of the browser viewing area to the location of the
 	 * element.
 	 *
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options additional options: 'duration' in ms, 'offset' from the top in pixels
 	 */
 	public function scrollTo($element, $options = [])
@@ -377,7 +377,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Focus on a particular element.
-	 * @param TControl $element control element or element id.
+	 * @param \Prado\Web\UI\TControl $element control element or element id.
 	 */
 	public function focus($element)
 	{
@@ -387,7 +387,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Sets the style of element. The style must be a key-value array where the
 	 * key is the style property and the value is the style value.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $styles list of key-value pairs as style property and style value.
 	 */
 	public function setStyle($element, $styles)
@@ -397,7 +397,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Append a HTML fragement to the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $content HTML fragement or the control to be rendered
 	 */
 	public function appendContent($element, $content)
@@ -407,7 +407,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Prepend a HTML fragement to the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $content HTML fragement or the control to be rendered
 	 */
 	public function prependContent($element, $content)
@@ -417,7 +417,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Insert a HTML fragement after the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $content HTML fragement or the control to be rendered
 	 */
 	public function insertContentAfter($element, $content)
@@ -427,7 +427,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Insert a HTML fragement in before the element.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $content HTML fragement or the control to be rendered
 	 */
 	public function insertContentBefore($element, $content)
@@ -440,7 +440,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * be a string or a TControl component. If the <tt>content</tt> parameter is
 	 * a TControl component, its rendered method will be called and its contents
 	 * will be used for replacement.
-	 * @param TControl $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
 	 * @param string $content HTML fragement or the control to be rendered.
 	 * @param bool $self whether to fully replace the element or just its inner content.
 	 * @see insertAbout
@@ -465,7 +465,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Replace the content of an element with new content contained in writer.
-	 * @param TControl $element control element or HTML element id.
+	 * @param \Prado\Web\UI\TControl $element control element or HTML element id.
 	 * @param string $content HTML fragement or the control to be rendered.
 	 * @param bool $self whether to fully replace the element or just its inner content, defaults to true.
 	 */
@@ -514,7 +514,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 * TCallbackResponseWriter. This method should only be used by framework
 	 * component developers. The render() method is defered to be called in the
 	 * TActivePageAdapter class.
-	 * @param TControl $control control to be rendered on callback response.
+	 * @param \Prado\Web\UI\TControl $control control to be rendered on callback response.
 	 * @return string the boundary for which the rendered content is wrapped.
 	 */
 	private function getRenderedContentBoundary($control)
@@ -544,7 +544,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Add a visual effect the element.
 	 * @param string $type visual effect function name.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function visualEffect($type, $element, $options = [])
@@ -557,7 +557,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Gradually make the element appear.
 	 * This effect doesn't need jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function fadeIn($element, $options = [])
@@ -568,7 +568,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Gradually fade the element.
 	 * This effect doesn't need jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function fadeOut($element, $options = [])
@@ -579,7 +579,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Set the opacity on a html element or control.
 	 * This effect doesn't need jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param float $value opacity value between 1 and 0
 	 * @param int $duration animation duration in ms
 	 */
@@ -592,7 +592,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Slide down.
 	 * This effect doesn't need jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function slideDown($element, $options = [])
@@ -603,7 +603,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Slide up.
 	 * This effect doesn't need jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function slideUp($element, $options = [])
@@ -616,7 +616,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of fadeIn()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function appear($element, $options = [])
@@ -627,7 +627,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of fadeOut()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function fade($element, $options = [])
@@ -638,7 +638,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of fadeTo()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param float $value opacity value between 1 and 0
 	 */
 	public function setOpacity($element, $value)
@@ -651,7 +651,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Add a jQuery-ui effect the element.
 	 * This method needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param string $effect visual effect function name.
 	 * @param array $options effect options.
 	 */
@@ -664,7 +664,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Blind.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function blind($element, $options = [])
@@ -675,7 +675,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Drop out.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function drop($element, $options = [])
@@ -686,7 +686,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Fold.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function fold($element, $options = [])
@@ -697,7 +697,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Gradually make an element grow to a predetermined size.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function size($element, $options = [])
@@ -708,7 +708,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Gradually grow and fade the element.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function puff($element, $options = [])
@@ -719,7 +719,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Pulsate.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function pulsate($element, $options = [])
@@ -730,7 +730,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Shake the element.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function shake($element, $options = [])
@@ -741,7 +741,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: Scale the element.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function scale($element, $options = [])
@@ -752,7 +752,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Visual Effect: High light the element for about 2 seconds.
 	 * This effect needs jQueryUI.
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function highlight($element, $options = [])
@@ -765,7 +765,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of blind(), presets the direction to 'down'
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function blindDown($element, $options = [])
@@ -777,7 +777,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of blind(), presets the direction to 'up'
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function blindUp($element, $options = [])
@@ -789,7 +789,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of drop()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function dropOut($element, $options = [])
@@ -800,7 +800,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of size()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function grow($element, $options = [])
@@ -811,7 +811,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of scale()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function shrink($element, $options = [])
@@ -823,7 +823,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of scale()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function squish($element, $options = [])
@@ -836,7 +836,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Alias of scale()
 	 * @deprecated since 3.4
-	 * @param TControl $element control element or element id
+	 * @param \Prado\Web\UI\TControl $element control element or element id
 	 * @param array $options visual effect key-value pair options.
 	 */
 	public function switchOff($element, $options = [])

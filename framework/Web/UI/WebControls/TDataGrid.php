@@ -650,7 +650,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return ITemplate the template applied when no data is bound to the datagrid
+	 * @return \Prado\Web\UI\ITemplate the template applied when no data is bound to the datagrid
 	 */
 	public function getEmptyTemplate()
 	{
@@ -658,7 +658,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when no data is bound to the datagrid
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datagrid
 	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
@@ -679,7 +679,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
-	 * @param TControl $sender the sender of the event
+	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 * @return bool whether the event bubbling should stop here.
 	 */
@@ -978,7 +978,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Performs databinding to populate datagrid items from data source.
 	 * This method is invoked by {@link dataBind()}.
 	 * You may override this function to provide your own way of data population.
-	 * @param Traversable $data the bound data
+	 * @param \Traversable $data the bound data
 	 */
 	protected function performDataBinding($data)
 	{
@@ -1338,7 +1338,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Automatically generates datagrid columns based on datasource schema
-	 * @param Traversable $dataSource data source bound to the datagrid
+	 * @param \Traversable $dataSource data source bound to the datagrid
 	 * @return TDataGridColumnCollection
 	 */
 	protected function createAutoColumns($dataSource)

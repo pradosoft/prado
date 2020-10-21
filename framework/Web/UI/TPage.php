@@ -108,7 +108,7 @@ class TPage extends TTemplateControl
 	 */
 	protected $_controlsRegisteredForPostData = [];
 	/**
-	 * @var TControl control that needs to raise postback event
+	 * @var \Prado\Web\UI\TControl control that needs to raise postback event
 	 */
 	private $_postBackEventTarget;
 	/**
@@ -406,7 +406,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TControl the control responsible for the current callback event,
+	 * @return \Prado\Web\UI\TControl the control responsible for the current callback event,
 	 * null if nonexistent
 	 */
 	public function getCallbackEventTarget()
@@ -416,7 +416,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl $control control registered to raise callback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
@@ -578,7 +578,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl $control a control to be applied skin with
+	 * @param \Prado\Web\UI\TControl $control a control to be applied skin with
 	 */
 	public function applyControlSkin($control)
 	{
@@ -590,7 +590,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Applies a stylesheet skin in the current theme to a control.
 	 * This method should only be used by framework developers.
-	 * @param TControl $control a control to be applied stylesheet skin with
+	 * @param \Prado\Web\UI\TControl $control a control to be applied stylesheet skin with
 	 */
 	public function applyControlStyleSheet($control)
 	{
@@ -819,7 +819,7 @@ class TPage extends TTemplateControl
 	 * This method needs to be invoked if the control to load post data
 	 * may not have a post variable in some cases. For example, a checkbox,
 	 * if not checked, will not have a post value.
-	 * @param TControl $control control registered for loading post data
+	 * @param \Prado\Web\UI\TControl $control control registered for loading post data
 	 */
 	public function registerRequiresPostData($control)
 	{
@@ -832,7 +832,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TControl the control responsible for the current postback event, null if nonexistent
+	 * @return \Prado\Web\UI\TControl the control responsible for the current postback event, null if nonexistent
 	 */
 	public function getPostBackEventTarget()
 	{
@@ -847,7 +847,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Registers a control to raise postback event in the current request.
-	 * @param TControl $control control registered to raise postback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise postback event.
 	 */
 	public function setPostBackEventTarget(TControl $control)
 	{
@@ -960,7 +960,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Ensures the control is rendered within a form.
-	 * @param TControl $control the control to be rendered
+	 * @param \Prado\Web\UI\TControl $control the control to be rendered
 	 * @throws TConfigurationException if the control is outside of the form
 	 */
 	public function ensureRenderInForm($control)

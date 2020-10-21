@@ -57,7 +57,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 * Processes an object that is created during parsing template.
 	 * This method overrides the parent implementation by removing
 	 * all contents enclosed in the template tag.
-	 * @param string|TComponent $object text string or component parsed and instantiated in template
+	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
@@ -110,7 +110,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return ITemplate the template applied when {@link getCondition Condition} is true.
+	 * @return \Prado\Web\UI\ITemplate the template applied when {@link getCondition Condition} is true.
 	 */
 	public function getTrueTemplate()
 	{
@@ -118,7 +118,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when {@link getCondition Condition} is true.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@link getCondition Condition} is true.
 	 */
 	public function setTrueTemplate(ITemplate $value)
 	{
@@ -126,7 +126,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return ITemplate the template applied when {@link getCondition Condition} is false.
+	 * @return \Prado\Web\UI\ITemplate the template applied when {@link getCondition Condition} is false.
 	 */
 	public function getFalseTemplate()
 	{
@@ -134,7 +134,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param ITemplate $value the template applied when {@link getCondition Condition} is false.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@link getCondition Condition} is false.
 	 */
 	public function setFalseTemplate(ITemplate $value)
 	{

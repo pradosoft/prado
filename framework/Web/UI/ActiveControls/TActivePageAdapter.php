@@ -117,7 +117,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Register a control for defered render() call.
-	 * @param TControl $control control for defered rendering
+	 * @param \Prado\Web\UI\TControl $control control for defered rendering
 	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function registerControlToRender($control, $writer)
@@ -209,7 +209,7 @@ class TActivePageAdapter extends TControlAdapter
 		$this->appendContentPart($response, self::CALLBACK_ACTION_HEADER, $actions);
 
 
-		$cs = $this->Page->getClientScript();
+		$cs = $this->getPage()->getClientScript();
 
 		// collect all stylesheet file references
 		$stylesheets = $cs->getStyleSheetUrls();
@@ -275,7 +275,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return TControl the control responsible for the current callback event,
+	 * @return \Prado\Web\UI\TControl the control responsible for the current callback event,
 	 * null if nonexistent
 	 */
 	public function getCallbackEventTarget()
@@ -291,7 +291,7 @@ class TActivePageAdapter extends TControlAdapter
 
 	/**
 	 * Registers a control to raise callback event in the current request.
-	 * @param TControl $control control registered to raise callback event.
+	 * @param \Prado\Web\UI\TControl $control control registered to raise callback event.
 	 */
 	public function setCallbackEventTarget(TControl $control)
 	{
