@@ -1,0 +1,9 @@
+<com:TContent ID="Content">
+  <h1>Issue 724 Test</h1>
+
+    <com:TActiveButton ID="cmdA" Text="Press me first" OnClick="cmdA"/>
+    <br><com:TActiveButton ID="cmdB" Text="Press me second" OnClick="cmdB" />
+    <br><com:TActiveLabel ID="labelA" Text="Waiting for button A..." />
+    <br><com:TActiveLabel ID="labelB" Text="Waiting for button B..." />
+</com:TContent>
+
