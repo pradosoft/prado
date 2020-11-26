@@ -4,6 +4,7 @@ BUG: Issue #706 - TOutputcache: don't serialize controls state (jcass77, ctrlalt
 BUG: Issue #715 - Problem saving files on TActiveFileUpload when Multiple=true (ctrlaltca)
 BUG: Issue #722 - Problem with TactiveButton Text property (ctrlaltca)
 BUG: Fix bug in TStyleDiff that didn't render CssClass and Style correctly on callback (ctrlaltca)
+BUG: Issue #727 - Php compatibility bug in TMysqlMetaData.php (PixelHomie)
 ENH: Issue #724 - Ajax queue improvement (ganiuszka)
 ENH: Add support for SameSite property on cookies (ctrlaltca)
 

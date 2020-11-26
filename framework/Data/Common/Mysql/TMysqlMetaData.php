@@ -271,7 +271,8 @@ class TMysqlMetaData extends TDbMetaData
 
 		$command = $this->getDbConnection()->createCommand($sql);
 		try {
-			return count($result = $command->queryRow()) > 0 && $result['Table_type'] === 'VIEW';
+			$result = $command->queryRow();
+			return $result && count($result) > 0 && $result['Table_type'] === 'VIEW';
 		} catch (TDbException $e) {
 			$table = $schemaName === null ? $tableName : $schemaName . '.' . $tableName;
 			throw new TDbException('dbcommon_invalid_table_name', $table, $e->getMessage());
