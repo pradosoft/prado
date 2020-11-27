@@ -11,7 +11,7 @@ class TUserTest extends PHPUnit\Framework\TestCase
 	public static $app = null;
 	public static $mgr = null;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/app');
@@ -26,7 +26,7 @@ class TUserTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

@@ -7,10 +7,10 @@ class NamespacesTestCase extends \PradoGenericSelenium2Test
 	{
 		$this->url("features/index.php?page=Namespaces.WithoutNamespace");
 		$this->pause(50);
-		$this->assertContains('Without Namespaces loaded', $this->source());
+		$this->assertStringContainsString('Without Namespaces loaded', $this->source());
 
 		$this->url("features/index.php?page=Namespaces.WithNamespace");
 		$this->pause(50);
-		$this->assertContains('With Namespaces loaded', $this->source());
+		$this->assertStringContainsString('With Namespaces loaded', $this->source());
 	}
 }

@@ -13,7 +13,7 @@ class TXmlTransformTest extends PHPUnit\Framework\TestCase
 	private $documentPath;
 	private $transformPath;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->documentPath = __DIR__ . '/data/hello.xml';
 		$this->documentContent = file_get_contents($this->documentPath);

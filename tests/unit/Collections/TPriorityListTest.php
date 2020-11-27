@@ -35,7 +35,7 @@ class TPriorityListTest extends PHPUnit\Framework\TestCase
 	protected $pitem4;
 	protected $pitem5;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->list = new TPriorityList;
 		$this->item1 = new PriorityListItem(1);
@@ -61,7 +61,7 @@ class TPriorityListTest extends PHPUnit\Framework\TestCase
 		// ending setup: pfirst @ -10000000[0], pitem1 @ 10[0], pitem2 @ 10[1], pitem3 @ 100[0]
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->list = null;
 		$this->item1 = null;

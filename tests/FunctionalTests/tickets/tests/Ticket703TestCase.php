@@ -18,7 +18,7 @@ class Ticket703TestCase extends PradoGenericSelenium2Test
 		$this->pauseFairAmount();
 		$this->byId($base . 'ctl1')->click();
 		$this->pause(1000);
-		$this->assertContains("Test of prado logging system", $this->byId($base . 'logBox')->value());
+		$this->assertStringContainsString("Test of prado logging system", $this->byId($base . 'logBox')->value());
 
 		// Clean log for next run
 		$this->byId($base . 'ctl2')->click();

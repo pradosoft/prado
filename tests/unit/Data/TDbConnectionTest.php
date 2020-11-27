@@ -19,7 +19,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 	private $_connection1;
 	private $_connection2;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		@unlink(TEST_DB_FILE);
 		@unlink(TEST_DB_FILE2);
@@ -33,7 +33,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->_connection2 = new TDbConnection('sqlite:' . TEST_DB_FILE2);
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->_connection1 = null;
 		$this->_connection2 = null;

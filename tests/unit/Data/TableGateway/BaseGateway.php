@@ -31,7 +31,7 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 		return $this->gateway2;
 	}
 
-	public function setup()
+	protected function setUp(): void
 	{
 		$this->delete_all();
 	}

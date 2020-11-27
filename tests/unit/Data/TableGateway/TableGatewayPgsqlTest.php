@@ -4,7 +4,7 @@ require_once(__DIR__ . '/BaseGateway.php');
 
 class TableGatewayPgsqlTest extends BaseGateway
 {
-	public function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_pgsql')) {
 			$this->markTestSkipped(

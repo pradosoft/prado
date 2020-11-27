@@ -30,7 +30,7 @@ class JuiDialogTestCase extends PradoDemosSelenium2Test
 		$this->assertVisible("${base}dlg3");
 
 		// Click OK (by keys...)
-		$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::ENTER);
+		$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::ENTER);
 		$this->pause(500);
 		$this->assertEquals('Button Ok clicked', $this->byId("${base}lbl3")->text());
 	}

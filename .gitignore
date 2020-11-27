@@ -1,6 +1,7 @@
 /.buildpath
 /.idea
 /.php_cs.cache
+/.phpunit.result.cache
 atlassian-ide-plugin.xml
 /.project
 /.settings

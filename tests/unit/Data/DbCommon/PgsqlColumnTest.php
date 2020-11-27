@@ -4,7 +4,7 @@ use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
 class PgsqlColumnTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_pgsql')) {
 			$this->markTestSkipped(

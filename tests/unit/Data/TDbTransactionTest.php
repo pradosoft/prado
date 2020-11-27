@@ -11,7 +11,7 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		@unlink(TEST_DB_FILE);
 
@@ -23,7 +23,7 @@ class TDbTransactionTest extends PHPUnit\Framework\TestCase
 		$this->_connection->createCommand('CREATE TABLE foo (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(8))')->execute();
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->_connection = null;
 	}

@@ -5,7 +5,7 @@ use Prado\Data\DataGateway\TTableGateway;
 
 class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('mssql')) {
 			$this->markTestSkipped(

@@ -10,7 +10,7 @@ class ParameterMapTest extends BaseCase
 		$this->initSqlMap();
 	}
 
-	public function setup()
+	protected function setUp(): void
 	{
 		$this->initScript('account-init.sql');
 //		$this->initScript('account-procedure.sql');

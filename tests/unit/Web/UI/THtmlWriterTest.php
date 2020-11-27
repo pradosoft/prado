@@ -51,12 +51,20 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 {
 	private static $output = null;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		// We need an output writer, use a TestWriter for this
 		if (self::$output === null) {
 			self::$output = new TestWriter();
 		}
+	}
+
+	protected function getPrivatePropertyValue($object, $property)
+	{
+		$reflectionClass = new ReflectionClass($object);
+		$reflectionProperty = $reflectionClass->getProperty($property);
+		$reflectionProperty->setAccessible(true);
+		return $reflectionProperty->getValue($object);
 	}
 
 	public function testConstruct()
@@ -77,8 +85,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 	{
 		$writer = new THtmlWriter(self::$output);
 		$writer->addAttributes(['type' => 'text', 'value' => 'Prado & Cie']);
-		// get the private var _attributes
-		$result = self::readAttribute($writer, '_attributes');
+		$result = $this->getPrivatePropertyValue($writer, '_attributes');
 		self::assertEquals('text', $result['type']);
 		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);
 	}
@@ -88,7 +95,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 		$writer = new THtmlWriter(self::$output);
 		$writer->addAttribute('type', 'text');
 		$writer->addAttribute('value', 'Prado & Cie');
-		$result = self::readAttribute($writer, '_attributes');
+		$result = $this->getPrivatePropertyValue($writer, '_attributes');
 		self::assertEquals('text', $result['type']);
 		self::assertEquals(THttpUtility::htmlEncode('Prado & Cie'), $result['value']);
 	}
@@ -99,7 +106,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 		$writer->addAttribute('type', 'text');
 		$writer->addAttribute('value', 'Prado & Cie');
 		$writer->removeAttribute('value');
-		$result = self::readAttribute($writer, '_attributes');
+		$result = $this->getPrivatePropertyValue($writer, '_attributes');
 		// 'type' should be present, 'value' not
 		self::assertTrue(isset($result['type']));
 		self::assertFalse(isset($result['value']));
@@ -109,7 +116,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 	{
 		$writer = new THtmlWriter(self::$output);
 		$writer->addStyleAttributes(['font-size' => '1em', 'background-image' => 'url(image.gif)']);
-		$result = self::readAttribute($writer, '_styles');
+		$result = $this->getPrivatePropertyValue($writer, '_styles');
 		self::assertEquals('1em', $result['font-size']);
 		self::assertEquals(THttpUtility::htmlEncode('url(image.gif)'), $result['background-image']);
 	}
@@ -119,7 +126,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 		$writer = new THtmlWriter(self::$output);
 		$writer->addStyleAttribute('font-size', '1em');
 		$writer->addStyleAttribute('background-image', 'url(image.gif)');
-		$result = self::readAttribute($writer, '_styles');
+		$result = $this->getPrivatePropertyValue($writer, '_styles');
 		self::assertEquals('1em', $result['font-size']);
 		self::assertEquals(THttpUtility::htmlEncode('url(image.gif)'), $result['background-image']);
 	}
@@ -130,7 +137,7 @@ class THtmlWriterTest extends PHPUnit\Framework\TestCase
 		$writer->addStyleAttribute('font-size', '1em');
 		$writer->addStyleAttribute('background-image', 'url(image.gif)');
 		$writer->removeStyleAttribute('font-size');
-		$result = self::readAttribute($writer, '_styles');
+		$result = $this->getPrivatePropertyValue($writer, '_styles');
 		self::assertTrue(isset($result['background-image']));
 		self::assertFalse(isset($result['font-size']));
 	}

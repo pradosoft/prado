@@ -22,7 +22,7 @@ class StatementTest extends BaseCase
 		new F;
 	}
 
-	public function setup()
+	protected function setUp(): void
 	{
 	}
 

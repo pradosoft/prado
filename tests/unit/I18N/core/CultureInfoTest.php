@@ -7,7 +7,7 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 {
 	protected $culture;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->culture = CultureInfo::getInvariantCulture();
 	}

@@ -13,7 +13,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 {
 	private $_connection;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		@unlink(TEST_DB_FILE);
 
@@ -27,7 +27,7 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		$this->_connection->createCommand('INSERT INTO foo (name) VALUES (\'my name 2\')')->execute();
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->_connection = null;
 	}

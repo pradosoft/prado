@@ -522,13 +522,13 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 {
 	protected $component;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->component = new NewComponent();
 	}
 
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		// PHP version 5.3.6 doesn't call the __destruct method when unsetting variables;
 		//	Thus any object that listens must be explicitly call unlisten in this version of PHP.

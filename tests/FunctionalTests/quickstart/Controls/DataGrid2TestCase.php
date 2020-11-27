@@ -18,7 +18,7 @@ class QuickstartDataGrid2TestCase extends PradoDemosSelenium2Test
 		$this->assertElementPresent("//a[@href='http://www.amazon.com/gp/product/0321278658' and text()='Extreme Programming Explained : Embrace Change']", '');
 
 		// verify publishers
-		$this->assertContains("O'Reilly Media, Inc.", $this->source());
+		$this->assertStringContainsString("O'Reilly Media, Inc.", $this->source());
 		$this->assertSourceContains("Addison-Wesley Professional");
 
 		// verify prices

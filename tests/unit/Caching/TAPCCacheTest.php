@@ -10,7 +10,7 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 	protected $app;
 	protected static $cache = null;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('apcu')) {
 			self::markTestSkipped('The APCu extension is not available');
@@ -30,7 +30,7 @@ class TAPCCacheTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$this->app = null;
 		self::$cache = null;

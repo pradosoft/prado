@@ -1,8 +1,6 @@
 <?php
 
-require_once 'PHPUnit/Extensions/Selenium2TestCase.php';
-
-class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
+class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 {
 	public static $browsers = [
 /*
@@ -53,12 +51,12 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		$session = parent::prepareSession();
 		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/295
-		$this->url('/dummy.html');
+		$this->url('dummy.html');
 
 		return $session;
 	}
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		// Workaroun for https://github.com/giorgiosironi/phpunit-selenium/issues/436
 		$this->setDesiredCapabilities([
@@ -71,7 +69,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
 	}
 
-	public function url($t)
+	protected function url($t)
 	{
 		parent::url(static::$baseurl . $t);
 	}
@@ -114,7 +112,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		try {
 			$this->assertEquals($txt, $this->getElement($id)->value());
-		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
 			//stale element reference. try second time.
 			$this->pause(50);
 			$this->assertEquals($txt, $this->getElement($id)->value());
@@ -125,7 +123,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		try {
 			$this->assertTrue($this->getElement($id)->displayed());
-		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
 			//stale element reference. try second time.
 			$this->pause(50);
 			$this->assertTrue($this->getElement($id)->displayed());
@@ -136,7 +134,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		try {
 			$this->assertFalse($this->getElement($id)->displayed());
-		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
+		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
 			//stale element reference. try second time.
 			$this->pause(50);
 			$this->assertFalse($this->getElement($id)->displayed());
@@ -152,8 +150,8 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		try {
 			$el = $this->getElement($id);
-		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
-			$this->assertEquals(PHPUnit_Extensions_Selenium2TestCase_WebDriverException::NoSuchElement, $e->getCode());
+		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
+			$this->assertEquals(\PHPUnit\Extensions\Selenium2TestCase\WebDriverException::NoSuchElement, $e->getCode());
 			return;
 		}
 		$this->fail('The element ' . $id . ' shouldn\'t exist.');
@@ -179,16 +177,16 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 
 		$element->click();
 		while (strlen($element->value()) > 0) {
-			$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
+			$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::END);
 			// the number 100 is purely empiric
 			for ($i = 0;$i < 100;$i++) {
-				$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::BACKSPACE);
+				$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::BACKSPACE);
 			}
 
-			$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::HOME);
+			$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::HOME);
 			// the number 100 is purely empiric
 			for ($i = 0;$i < 100;$i++) {
-				$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::DELETE);
+				$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::DELETE);
 			}
 		}
 
@@ -260,8 +258,8 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 	{
 		try {
 			$foo = $this->alertText();
-		} catch (PHPUnit_Extensions_Selenium2TestCase_WebDriverException $e) {
-			$this->assertEquals(PHPUnit_Extensions_Selenium2TestCase_WebDriverException::NoAlertOpenError, $e->getCode());
+		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
+			$this->assertEquals(\PHPUnit\Extensions\Selenium2TestCase\WebDriverException::NoAlertOpenError, $e->getCode());
 			return;
 		}
 		$this->fail('Failed asserting no alert is open');
@@ -277,7 +275,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		usleep(100000);
 	}
 
-	public function assertSourceContains($text)
+	protected function assertSourceContains($text)
 	{
 		$found = strpos($this->source(), $text) !== false;
 		for ($i = 0;$i < 10 && ! $found; $i++) {
@@ -287,7 +285,7 @@ class PradoGenericSelenium2Test extends PHPUnit_Extensions_Selenium2TestCase
 		$this->assertTrue($found, "Failed asserting that page source contains $text");
 	}
 
-	public function assertSourceNotContains($text)
+	protected function assertSourceNotContains($text)
 	{
 		$found = strpos($this->source(), $text) !== false;
 		for ($i = 0;$i < 10 && $found; $i++) {
