@@ -62,7 +62,7 @@ class TPropertyValue
 	public static function ensureBoolean($value)
 	{
 		if (is_string($value)) {
-			return strcasecmp($value, 'true') == 0 || $value != 0;
+			return strcasecmp($value, 'true') == 0 || (is_numeric($value) && $value != 0);
 		} else {
 			return (boolean) $value;
 		}

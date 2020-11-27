@@ -1,6 +1,6 @@
 language: php
 os: linux
-dist: trusty
+dist: bionic
 
 services:
   - mysql
@@ -10,6 +10,7 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - nightly
 
 before_script:
   - composer self-update
