@@ -4,6 +4,7 @@ dist: bionic
 
 services:
   - mysql
+  - postgresql
 
 php:
   - 7.1
