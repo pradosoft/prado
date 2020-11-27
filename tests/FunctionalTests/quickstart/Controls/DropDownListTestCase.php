@@ -23,13 +23,13 @@ class QuickstartDropDownListTestCase extends PradoDemosSelenium2Test
 		$this->assertAttribute("ctl0\$body\$ctl3@disabled", "regexp:true|disabled");
 
 		// an auto postback dropdown list
-		$this->assertNotContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
+		$this->assertStringNotContainsString("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
 		$this->selectAndWait("ctl0\$body\$ctl4", "item 3");
 		$this->assertSourceContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)");
 
 		// a single selection list box upon postback
 		$this->select("ctl0\$body\$DropDownList1", "item 4");
-		$this->assertNotContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
+		$this->assertStringNotContainsString("Your selection is: (Index: 3, Value: value 4, Text: item 4)", $this->source());
 		$this->byXPath("//input[@type='submit' and @value='Submit']")->click();
 		$this->assertSourceContains("Your selection is: (Index: 3, Value: value 4, Text: item 4)");
 

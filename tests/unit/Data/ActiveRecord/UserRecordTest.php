@@ -4,7 +4,7 @@ require_once(__DIR__ . '/records/UserRecord.php');
 
 class UserRecordTest extends PHPUnit\Framework\TestCase
 {
-	public function setup()
+	protected function setUp(): void
 	{
 		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		TActiveRecordManager::getInstance()->setDbConnection($conn);

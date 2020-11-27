@@ -38,7 +38,7 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 		$this->assertValue("{$base}AutoComplete2", "John");
 		$this->assertText("{$base}Selection2", "Selected ID: 1");
 
-		//$this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::END);
+		//$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::END);
 		$this->keys(',Ge');
 		$this->pause(500);
 		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();

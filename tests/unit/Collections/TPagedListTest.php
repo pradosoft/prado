@@ -33,11 +33,11 @@ class MyPagedList extends TPagedList
 
 class TPagedListTest extends PHPUnit\Framework\TestCase
 {
-	public function setUp()
+	protected function setUp(): void
 	{
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

@@ -8,7 +8,7 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 	protected $app;
 	protected static $cache = null;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('memcached')) {
 			self::markTestSkipped('The memcached extension is not available');
@@ -24,7 +24,7 @@ class TMemCacheTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	protected function tearDown()
+	protected function tearDown(): void
 	{
 		$this->app = null;
 		self::$cache = null;

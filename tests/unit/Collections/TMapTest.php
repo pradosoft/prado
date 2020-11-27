@@ -17,7 +17,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 	protected $item2;
 	protected $item3;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->map = new TMap;
 		$this->item1 = new TMapTest_MapItem;
@@ -27,7 +27,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->map->add('key2', $this->item2);
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->map = null;
 		$this->item1 = null;

@@ -5,7 +5,7 @@ use Prado\Xml\TXmlElement;
 
 class TXmlElementTest extends PHPUnit\Framework\TestCase
 {
-	public function setUp()
+	protected function setUp(): void
 	{
 	}
 

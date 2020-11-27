@@ -12,7 +12,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public static $app = null;
 	public static $assetDir = null;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		// Fake environment variables needed to determine path
 		$_SERVER['HTTP_HOST'] = 'localhost';
@@ -73,7 +73,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		// Make some cleaning :)
 		$this->removeDirectory(self::$assetDir);

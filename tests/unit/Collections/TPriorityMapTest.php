@@ -19,7 +19,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	protected $item4;
 	protected $item5;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		// test that TPriorityMap complies with TMap
 		$this->map = new TPriorityMap;
@@ -41,7 +41,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->map->add('key5', $this->item5, 1);
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->map = null;
 		$this->item1 = null;

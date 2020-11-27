@@ -6,11 +6,11 @@ use Prado\Exceptions\TInvalidOperationException;
 
 class TQueueTest extends PHPUnit\Framework\TestCase
 {
-	public function setUp()
+	protected function setUp(): void
 	{
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

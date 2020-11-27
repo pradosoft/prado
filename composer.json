@@ -57,7 +57,7 @@
 		"psy/psysh": "*"
 	},
 	"require-dev" : {
-		"phpunit/phpunit" : "7.*",
+		"phpunit/phpunit" : "8.*",
 		"phpunit/phpunit-selenium": "*",
 		"pradosoft/apigen": "4.2.x-dev",
 		"pradosoft/prado-apigen-theme" : "*"
@@ -88,7 +88,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.1"
+            "php": "7.2"
         }
     },
 	"support" : {

@@ -6,12 +6,12 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 {
 	protected $obj;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->obj = new TSimpleDateFormatter('');
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

@@ -16,7 +16,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 
 		// Fake environment variables

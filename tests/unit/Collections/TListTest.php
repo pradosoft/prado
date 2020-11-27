@@ -18,7 +18,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 	protected $item3;
 	protected $item4;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		$this->list = new TList;
 		$this->item1 = new ListItem;
@@ -29,7 +29,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->list->add($this->item2);
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 		$this->list = null;
 		$this->item1 = null;

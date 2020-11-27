@@ -4,7 +4,7 @@ use Prado\Data\Common\Mysql\TMysqlMetaData;
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_mysql')) {
 			$this->markTestSkipped(

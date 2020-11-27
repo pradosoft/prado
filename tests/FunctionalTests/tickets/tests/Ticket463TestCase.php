@@ -6,6 +6,6 @@ class Ticket463TestCase extends PradoGenericSelenium2Test
 	{
 		$this->url('tickets/index.php?page=Ticket463');
 		$this->assertEquals("Verifying Ticket 463", $this->title());
-		$this->assertContains('May 1, 2005 at 12:00:00 AM UTC', $this->source());
+		$this->assertStringContainsString('May 1, 2005 at 12:00:00 AM UTC', $this->source());
 	}
 }

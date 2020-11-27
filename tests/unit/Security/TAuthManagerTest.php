@@ -12,7 +12,7 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 	public static $app = null;
 	public static $usrMgr = null;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		// ini_set('session.use_cookies',0);
 		// ini_set('session.cache_limiter', 'none');
@@ -30,7 +30,7 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		}
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

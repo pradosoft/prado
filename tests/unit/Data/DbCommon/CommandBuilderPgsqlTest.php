@@ -4,7 +4,7 @@ use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp()
+	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_pgsql')) {
 			$this->markTestSkipped(

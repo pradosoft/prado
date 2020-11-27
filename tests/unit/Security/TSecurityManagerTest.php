@@ -9,14 +9,14 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app;
 
-	public function setUp()
+	protected function setUp(): void
 	{
 		if (self::$app === null) {
 			self::$app = new TApplication(__DIR__ . '/app');
 		}
 	}
 
-	public function tearDown()
+	protected function tearDown(): void
 	{
 	}
 

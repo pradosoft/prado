@@ -6,11 +6,20 @@ use Prado\Xml\TXmlElementList;
 
 class TXmlElementListTest extends PHPUnit\Framework\TestCase
 {
+	protected function getPrivatePropertyValue($object, $property)
+	{
+		$reflectionClass = new ReflectionClass($object);
+		$reflectionProperty = $reflectionClass->getProperty($property);
+		$reflectionProperty->setAccessible(true);
+		return $reflectionProperty->getValue($object);
+	}
+
 	public function testConstruct()
 	{
 		$element = new TXmlElement('tag');
 		$list = new TXmlElementList($element);
-		self::assertEquals($element, self::readAttribute($list, '_o'));
+		$result = $this->getPrivatePropertyValue($list, '_o');
+		self::assertEquals($element, $result);
 	}
 
 	public function testInsertAt()
