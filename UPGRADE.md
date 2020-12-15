@@ -7,6 +7,10 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.1.1
+---------------------
+ - The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
+
 Upgrading from v4.1.0
 ---------------------
 - TMemCache has been updated to be compatible with memcached: https://www.php.net/manual/en/book.memcached.php:
