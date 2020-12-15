@@ -575,7 +575,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	public function getSelectedValue()
 	{
 		$index = $this->getSelectedIndex();
-		return $index >= 0 ? $this->getItems()->itemAt($index)->getValue() : '';
+		return $index >= 0 ? $this->getItems()->itemAt($index)->getValue() : $this->getPromptValue();
 	}
 
 	/**

@@ -11,6 +11,7 @@ Upgrading from v4.1.1
 ---------------------
 - Wsat has been moved into its own repo; if you use it, you may want to add to your composer.json: "pradosoft/prado-wsat": "*"
 - the prado-cli command used to create a new project has been removed. Use "composer create-project pradosoft/prado-app <directory>" instead.
+ - The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
 
 Upgrading from v4.1.0
 ---------------------
