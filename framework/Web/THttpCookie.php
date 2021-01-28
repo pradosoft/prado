@@ -56,7 +56,7 @@ class THttpCookie extends \Prado\TComponent
 	 * @var THttpCookieSameSite SameSite prevents the browser from sending this cookie on cross-site requests.
 	 * @since 4.1.2
 	 */
-	private $_sameSite = THttpCookieSameSite::None;
+	private $_sameSite = THttpCookieSameSite::Lax;
 
 	/**
 	 * Constructor.
