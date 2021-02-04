@@ -19,7 +19,7 @@ Prado.WebUI.TDatePicker = jQuery.klass(Prado.WebUI.Control,
 
 	CalendarStyle : "default",
 
-	FromYear : 2005, UpToYear: 2020,
+	FromYear : new Date().getFullYear() - 10, UpToYear: new Date().getFullYear() + 5,
 
 	onInit : function(options)
 	{
