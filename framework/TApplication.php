@@ -1023,6 +1023,7 @@ class TApplication extends \Prado\TComponent
 	 * Loads configuration and initializes application.
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
+	 * Finalize any modules by calling onInitComplete, mainly for CLI initialization.
 	 * Afterwards, the requested service is created and initialized.
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
@@ -1043,6 +1044,8 @@ class TApplication extends \Prado\TComponent
 
 			$this->applyConfiguration($config, false);
 		}
+		
+		$this->onInitComplete();
 
 		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->_services))) === null) {
 			$serviceID = $this->getPageServiceID();
@@ -1102,6 +1105,20 @@ class TApplication extends \Prado\TComponent
 		Prado::log($param->getMessage(), TLogger::ERROR, 'Prado\TApplication');
 		$this->raiseEvent('OnError', $this, $param);
 		$this->getErrorHandler()->handleError($this, $param);
+	}
+
+	/**
+	 * Raises onInitComplete event.
+	 * At the time when this method is invoked, application modules are loaded,
+	 * user request is resolved and the corresponding service is loaded and
+	 * initialized. The application is about to start processing the user
+	 * request.  This call is important for CLI applications that do not have
+	 * a web service stack.  This is the first and last call for finalization
+	 * of any loaded modules.
+	 */
+	public function onInitComplete()
+	{
+		$this->raiseEvent('onInitComplete',$this,null);
 	}
 
 	/**
