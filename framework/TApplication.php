@@ -1113,9 +1113,9 @@ class TApplication extends \Prado\TComponent
 	 * At the time when this method is invoked, application modules are loaded,
 	 * user request is resolved and the corresponding service is loaded and
 	 * initialized. The application is about to start processing the user
-	 * request.  This call is important for CLI applications that do not have
+	 * request.  This call is important for Shell applications that do not have
 	 * a web service stack.  This is the first and last call for finalization
-	 * of any loaded modules.
+	 * of any loaded modules in Shell mode.
 	 */
 	public function onInitComplete()
 	{
