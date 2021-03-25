@@ -58,7 +58,7 @@ use Prado\Util\TLogger;
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
  * - [initApplication] : load application configuration and instantiate modules and the requested service
- * - onInitComplete : this event happens right after module initialization but before the Service is Started, this event is called in the shell application
+ * - onInitComplete : this event happens right after module initialization but before the Service is Started, this event is called in the shell application as well.
  * - onBeginRequest : this event happens right after application initialization
  * - onAuthentication : this event happens when authentication is needed for the current request
  * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
