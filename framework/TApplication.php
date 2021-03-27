@@ -58,7 +58,7 @@ use Prado\Util\TLogger;
  * TApplication maintains a lifecycle with the following stages:
  * - [construct] : construction of the application instance
  * - [initApplication] : load application configuration and instantiate modules and the requested service
- * - onInitComplete : this event happens right after module initialization but before the Service is Started, this event is called in the shell application as well.
+ * - onInitComplete : this event happens right after after module and service initialization. This event is particularly useful for CLI/Shell applications
  * - onBeginRequest : this event happens right after application initialization
  * - onAuthentication : this event happens when authentication is needed for the current request
  * - onAuthenticationComplete : this event happens right after the authentication is done for the current request
@@ -1024,8 +1024,8 @@ class TApplication extends \Prado\TComponent
 	 * Loads configuration and initializes application.
 	 * Configuration file will be read and parsed (if a valid cached version exists,
 	 * it will be used instead). Then, modules are created and initialized;
-	 * Finalize any modules by calling onInitComplete, mainly for CLI initialization.
 	 * Afterwards, the requested service is created and initialized.
+	 * Lastly, the onInitComplete event is raised.
 	 * @throws TConfigurationException if module is redefined of invalid type, or service not defined or of invalid type
 	 */
 	protected function initApplication()
@@ -1045,14 +1045,14 @@ class TApplication extends \Prado\TComponent
 
 			$this->applyConfiguration($config, false);
 		}
-		
-		$this->onInitComplete();
 
 		if (($serviceID = $this->getRequest()->resolveRequest(array_keys($this->_services))) === null) {
 			$serviceID = $this->getPageServiceID();
 		}
 
 		$this->startService($serviceID);
+		
+		$this->onInitComplete();
 	}
 
 	/**
@@ -1113,9 +1113,9 @@ class TApplication extends \Prado\TComponent
 	 * At the time when this method is invoked, application modules are loaded,
 	 * user request is resolved and the corresponding service is loaded and
 	 * initialized. The application is about to start processing the user
-	 * request.  This call is important for Shell applications that do not have
-	 * a web service stack.  This is the first and last call for finalization
-	 * of any loaded modules in Shell mode.
+	 * request.  This call is important for CLI/Shell applications that do not have
+	 * a web service lifecycle stack.  This is the first and last event for finalization
+	 * of any loaded modules in CLI/Shell mode.
 	 */
 	public function onInitComplete()
 	{
