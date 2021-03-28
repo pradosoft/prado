@@ -89,7 +89,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 
 	/**
 	 * Array containing valid javascript options
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidOptions()
 	{
@@ -98,7 +98,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 
 	/**
 	 * Array containing valid javascript events
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidEvents()
 	{

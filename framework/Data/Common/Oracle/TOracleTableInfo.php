@@ -63,7 +63,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getInfo($name, $default = null)
 	{
-		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
+		return $this->_info[$name] ?? $default;
 	}
 
 	/**

@@ -140,7 +140,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function itemAt($key)
 	{
-		return isset($this->_d[$key]) ? $this->_d[$key] : null;
+		return $this->_d[$key] ?? null;
 	}
 
 	/**

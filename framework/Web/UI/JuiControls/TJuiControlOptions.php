@@ -161,8 +161,8 @@ class TJuiControlOptions
 				$this->_control->$eventName(
 					new TJuiEventParameter(
 						$this->_control->getResponse(),
-						isset($callbackParam->ui) ? $callbackParam->ui : null
-				)
+						$callbackParam->ui ?? null
+					)
 				);
 			}
 		}

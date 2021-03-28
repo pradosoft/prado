@@ -135,7 +135,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	protected function getLevelName($level)
 	{
-		return isset(self::$_levelNames[$level]) ? self::$_levelNames[$level] : 'Unknown';
+		return self::$_levelNames[$level] ?? 'Unknown';
 	}
 
 	/**
@@ -144,7 +144,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 */
 	protected function getLevelValue($level)
 	{
-		return isset(self::$_levelValues[$level]) ? self::$_levelValues[$level] : 0;
+		return self::$_levelValues[$level] ?? 0;
 	}
 
 	/**

@@ -104,7 +104,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 	/**
 	 * Array containing valid javascript options
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidOptions()
 	{
@@ -113,7 +113,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 	/**
 	 * Array containing valid javascript events
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidEvents()
 	{

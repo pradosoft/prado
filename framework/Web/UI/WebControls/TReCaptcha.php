@@ -245,7 +245,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		if (!$this->getPage()->getIsCallback()) {
 			$writer->write(TJavaScript::renderScriptBlock(
 				'var RecaptchaOptions = ' . TJavaScript::jsonEncode($this->getClientSideOptions()) . ';'
-				));
+			));
 
 			$html = $this->recaptcha_get_html($this->getPublicKey());
 			/*

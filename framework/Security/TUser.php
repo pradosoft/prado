@@ -176,7 +176,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	protected function getState($key, $defaultValue = null)
 	{
-		return isset($this->_state[$key]) ? $this->_state[$key] : $defaultValue;
+		return $this->_state[$key] ?? $defaultValue;
 	}
 
 	/**

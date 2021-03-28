@@ -415,7 +415,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function getGlobalState($key, $defaultValue = null)
 	{
-		return isset($this->_globals[$key]) ? $this->_globals[$key] : $defaultValue;
+		return $this->_globals[$key] ?? $defaultValue;
 	}
 
 	/**

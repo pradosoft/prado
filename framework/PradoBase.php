@@ -353,10 +353,11 @@ class PradoBase
 			if ($className === '*') {  // a directory
 				self::$_usings[substr($namespace, 0, $pos)] = $path;
 			} else {  // a file
-				if (class_exists($className, false) || interface_exists($className, false))
+				if (class_exists($className, false) || interface_exists($className, false)) {
 					return;
+				}
 
-				if(file_exists($path)) {
+				if (file_exists($path)) {
 					include_once($path);
 					if (!class_exists($className, false) && !interface_exists($className, false)) {
 						class_alias($namespace, $className);
@@ -408,7 +409,7 @@ class PradoBase
 	 */
 	public static function getPathOfAlias($alias)
 	{
-		return isset(self::$_aliases[$alias]) ? self::$_aliases[$alias] : null;
+		return self::$_aliases[$alias] ?? null;
 	}
 
 	protected static function getPathAliases()

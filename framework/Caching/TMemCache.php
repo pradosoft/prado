@@ -113,7 +113,7 @@ class TMemCache extends TCache
 	/**
 	 * @var null|string persistent id for the instance of the memcache server
 	 */
-	private $_persistentid = null;
+	private $_persistentid;
 
 	/**
 	 * Destructor.
@@ -143,8 +143,7 @@ class TMemCache extends TCache
 
 		$this->loadConfig($config);
 		$this->_cache = new \Memcached($this->_persistentid);
-		if($this->_persistentid !== null && count($this->_cache->getServerList()) > 0)
-		{
+		if ($this->_persistentid !== null && count($this->_cache->getServerList()) > 0) {
 			Prado::trace('Skipping re-adding servers for persistent id ' . $this->_persistentid, '\Prado\Caching\TMemCache');
 		} else {
 			if (count($this->_servers)) {

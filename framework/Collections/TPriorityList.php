@@ -249,7 +249,7 @@ class TPriorityList extends TList
 		}
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
+		return $this->_d[$priority] ?? null;
 	}
 
 	/**
@@ -266,8 +266,8 @@ class TPriorityList extends TList
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		return !isset($this->_d[$priority]) ? false : (
-			isset($this->_d[$priority][$index]) ? $this->_d[$priority][$index] : false
-			);
+			$this->_d[$priority][$index] ?? false
+		);
 	}
 
 	/**

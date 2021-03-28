@@ -40,7 +40,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	/**
 	 * Inserts a DB record.
 	 * @param array|\Prado\Collections\TMap $values
-	 * @return integer affected rows
+	 * @return int affected rows
 	 */
 	public function insertAt($values)
 	{

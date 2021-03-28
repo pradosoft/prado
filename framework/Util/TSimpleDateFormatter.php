@@ -253,8 +253,7 @@ class TSimpleDateFormatter
 				$token .= $this->charAt($pattern, $i_format++);
 			}
 
-			switch($token)
-			{
+			switch ($token) {
 				case 'yyyy':
 				case 'yy':
 				case 'y':

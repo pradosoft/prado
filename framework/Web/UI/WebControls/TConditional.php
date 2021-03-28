@@ -57,7 +57,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	 * Processes an object that is created during parsing template.
 	 * This method overrides the parent implementation by removing
 	 * all contents enclosed in the template tag.
-	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
+	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)

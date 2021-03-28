@@ -396,7 +396,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Returns the value to be validated.
 	 * This method is required by \Prado\Web\UI\IValidatable interface.
-	 * @return string|int the integer timestamp if valid, otherwise the original text.
+	 * @return int|string the integer timestamp if valid, otherwise the original text.
 	 */
 	public function getValidationPropertyValue()
 	{

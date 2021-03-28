@@ -59,7 +59,7 @@ class TActiveListControlAdapter extends TActiveControlAdapter implements IListCo
 					$this->getControl(),
 					'Index',
 					$index
-			);
+				);
 			}
 		}
 	}

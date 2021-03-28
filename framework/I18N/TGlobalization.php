@@ -208,7 +208,7 @@ class TGlobalization extends \Prado\TModule
 						throw new TConfigurationException(
 							'globalization_source_path_failed',
 							$config['source']
-					);
+						);
 					}
 					chmod($config['source'], PRADO_CHMOD); //make it deletable
 				}

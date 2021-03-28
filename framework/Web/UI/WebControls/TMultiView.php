@@ -54,7 +54,7 @@ class TMultiView extends \Prado\Web\UI\TControl
 	 * Processes an object that is created during parsing template.
 	 * This method overrides the parent implementation by adding only {@link TView}
 	 * controls as children.
-	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
+	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 * @throws TConfigurationException if controls other than {@link TView} is being added
 	 */

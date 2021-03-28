@@ -289,7 +289,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 */
 	protected function getViewState($key, $defaultValue = null)
 	{
-		return isset($this->_viewState[$key]) ? $this->_viewState[$key] : $defaultValue;
+		return $this->_viewState[$key] ?? $defaultValue;
 	}
 
 	/**
