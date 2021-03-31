@@ -29,6 +29,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Collections\TPriorityList;
 use Prado\Collections\TPriorityMap;
+use WeakReference;
 
 /**
  * TComponent class
@@ -759,7 +760,16 @@ class TComponent
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$this->_e[strtolower($name)]->clear();
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
-			$this->getEventHandlers($name)->remove([$this, $name]);
+			if(class_exists('\WeakReference')) {
+				$handlers =  $this->getEventHandlers($name);
+				try {
+					$handlers->remove([\WeakReference::create($this), $name]);
+				} catch (\Exception $e) {
+					$handlers->remove([$this, $name]);
+				}
+			} else {
+				$this->getEventHandlers($name)->remove([$this, $name]);
+			}
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->_behaviorsenabled) {
 			if (isset($this->_m[$name])) {
 				$this->detachBehavior($name);
@@ -981,25 +991,42 @@ class TComponent
 	 * and $param is the event parameter. $name refers to the event name
 	 * being handled.
 	 *
+	 * In the handler, the php callback object (array[0]) can be a WeakReference so PHP
+	 * does not increment the object reference counter.  While this is not a
+	 * valid PHP callback, PRADO will get the weak link if the object is a
+	 * {@link WeakReference}.  The weak referencing is to prevent memory leaks
+	 * when deleting an object where the object is {@link listen}ing.
+	 *
+	 * This method automatically wraps the handler PHP callback object in a WeakReference
+	 * so objects with global event handlers (like those than {@link listen}) don't block
+	 * on their deletion due to circular references.
+	 *
 	 * This is a convenient method to add an event handler.
 	 * It is equivalent to {@link getEventHandlers}($name)->add($handler).
 	 * For complete management of event handlers, use {@link getEventHandlers}
 	 * to get the event handler list first, and then do various
 	 * {@link TPriorityList} operations to append, insert or remove
 	 * event handlers. You may also do these operations like
-	 * getting and setting properties, e.g.,
+	 * getting and setting properties, e.g., (in PHP 7.4)
 	 * <code>
-	 * $component->OnClick[]=array($object,'buttonClicked');
-	 * $component->OnClick->insertAt(0,array($object,'buttonClicked'));
+	 * $component->OnClick[]=array(WeakReference::create($object),'buttonClicked');
+	 * $component->OnClick->insertAt(0,array(WeakReference::create($object),'buttonClicked'));
 	 * </code>
 	 * which are equivalent to the following
+	 * <code>
+	 * $component->getEventHandlers('OnClick')->add(array(WeakReference::create($object),'buttonClicked'));
+	 * $component->getEventHandlers('OnClick')->insertAt(0,array(WeakReference::create($object),'buttonClicked'));
+	 * </code>
+	 *
+	 * For PHP version 7.3 and before, the equivalent is the following
 	 * <code>
 	 * $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
 	 * $component->getEventHandlers('OnClick')->insertAt(0,array($object,'buttonClicked'));
 	 * </code>
 	 *
-	 * Due to the nature of {@link getEventHandlers}, any active behaviors defining
-	 * new 'on' events, this method will pass through to the behavior transparently.
+	 *
+	 * Due to the nature of {@link getEventHandlers}, any active {@link TBehavior}s defining
+	 * new 'on' events, this method will pass through to the behavior event transparently.
 	 *
 	 * @param string $name the event name
 	 * @param callable $handler the event handler
@@ -1009,13 +1036,18 @@ class TComponent
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
 	{
+		if(is_array($handler) && is_object($handler[0]) && class_exists('\WeakReference') && !is_a($handler[0], '\WeakReference')) {
+			$handler[0] = \WeakReference::create($handler[0]);
+		}
 		$this->getEventHandlers($name)->add($handler, $priority);
 	}
 
 	/**
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
-	 * any 'on' events definedb by an objects active behaviors as well.
+	 * any 'on' events defined by an objects active behaviors as well.  It tries to 
+	 * remove the WeakReference version of the handler (in [object, method] format) 
+	 * first, then resorts to removing the non-WeakReference handler.  
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
@@ -1026,9 +1058,20 @@ class TComponent
 	{
 		if ($this->hasEventHandler($name)) {
 			try {
+				if(is_array($handler) && is_object($handler[0]) && class_exists('\WeakReference') && !is_a($handler[0], '\WeakReference')) {
+		  			$handler[0] = \WeakReference::create($handler[0]);
+				}
 				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
 			} catch (\Exception $e) {
+				if(is_array($handler) && is_a($handler[0], '\WeakReference')) {
+					try {
+						$handler[0] = $handler[0]->get();
+						$this->getEventHandlers($name)->remove($handler, $priority);
+						return true;
+					} catch (\Exception $e) {
+					}
+				}
 			}
 		}
 		return false;
@@ -1157,8 +1200,14 @@ class TComponent
 					if (is_string($object)) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
+						if (is_a($object, '\WeakReference')) {
+							$object = $object->get();
+							if(!$object) {
+								continue;
+							}
+						}
 						if (($pos = strrpos($method, '.')) !== false) {
-							$object = $this->getSubProperty(substr($method, 0, $pos));
+							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
 						}
 						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {

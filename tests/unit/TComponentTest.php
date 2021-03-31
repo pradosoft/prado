@@ -1527,6 +1527,16 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$component = new NewComponent();
 		$this->assertEquals(2, $this->component->fxAttachClassBehavior->Count);
 		unset($this->component->fxAttachClassBehavior);
+		$this->assertEquals(1, $this->component->fxAttachClassBehavior->Count);
+		try {
+			unset($this->component->fxAttachClassBehaviors);
+			$this->fail('TInvalidDataValueException not raised when unsetting an fxEvent that is not attached');
+		} catch (Prado\Exceptions\TInvalidDataValueException $e) {
+		}
+		$this->component->fxAttachClassBehavior[] = [$this->component, 'fxAttachClassBehavior'];
+		$this->assertEquals(2, $this->component->fxAttachClassBehavior->Count);
+		unset($this->component->fxAttachClassBehavior);
+
 		// retain the other object event
 		$this->assertEquals(1, $this->component->fxAttachClassBehavior->Count);
 		$component->unlisten();
@@ -1534,7 +1544,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		try {
 			unset($this->component->Object);
 			$this->fail('TInvalidOperationException not raised when unsetting get only property');
-		} catch (TInvalidOperationException $e) {
+		} catch (Prado\Exceptions\TInvalidOperationException $e) {
 		}
 
 		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior);
@@ -1747,6 +1757,17 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		} catch (TInvalidOperationException $e) {
 		}
 		$this->component->enableBehavior('BehaviorTestBehavior');
+		
+		unset($this->component->OnMyEvent);
+		
+		$this->component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
+		if(version_compare(PHP_VERSION, '7.4.0') >= 0) {
+			if(!is_a($this->component->getEventHandlers('OnMyEvent')[0][0],  '\WeakReference')) {
+				$this->fail('object in handler[0] should be a WeakReference after PHP 7.4.0');
+			}
+		} else {
+			//$this->warning('PHP ' . PHP_VERSION . ' does not have \\WeakReferences and could not be tested');
+		}
 	}
 
 	public function testDetachEventHandler()
@@ -1816,15 +1837,27 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 	public function testRaiseEvent()
 	{
-		$this->component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
+		$component = new NewComponent();
+		$component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
 		$this->assertFalse($this->component->isEventHandled());
-		$this->component->raiseEvent('OnMyEvent', $this, null);
-		$this->assertTrue($this->component->isEventHandled());
-		$this->component->attachEventHandler('OnMyEvent', [$this->component, 'Object.myEventHandler']);
 		$this->assertFalse($this->component->Object->isEventHandled());
-		$this->component->raiseEvent('OnMyEvent', $this, null);
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertTrue($this->component->isEventHandled());
+		$this->assertFalse($this->component->Object->isEventHandled());
+		
+		$this->component->resetEventHandled();
+		$this->component->Object->resetEventHandled();
+		$component->detachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
+		
+		
+		$component->attachEventHandler('OnMyEvent', [$this->component, 'Object.myEventHandler']);
+		$this->assertFalse($this->component->isEventHandled());
+		$this->assertFalse($this->component->Object->isEventHandled());
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertFalse($this->component->isEventHandled());
 		$this->assertTrue($this->component->Object->isEventHandled());
-
+		
+		$component->detachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
 		$this->component->resetEventHandled();
 		$this->component->Object->resetEventHandled();
 
@@ -1850,13 +1883,13 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->component->attachEventHandler('onBehaviorEvent', [$this->component, 'myEventHandler']);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (TInvalidOperationException $e) {
+		} catch (Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 		try {
 			$this->component->raiseEvent('onBehaviorEvent', $this, null);
 			$this->fail('exception not raised when getting event handlers for undefined event');
-		} catch (TInvalidOperationException $e) {
+		} catch (Prado\Exceptions\TInvalidOperationException $e) {
 		}
 		$this->assertFalse($this->component->isEventHandled());
 
