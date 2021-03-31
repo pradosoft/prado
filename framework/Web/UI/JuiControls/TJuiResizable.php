@@ -86,7 +86,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 	/**
 	 * Array containing valid javascript options
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidOptions()
 	{
@@ -95,7 +95,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 
 	/**
 	 * Array containing valid javascript events
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidEvents()
 	{

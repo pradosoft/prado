@@ -42,7 +42,7 @@ class TTarFileExtractor
 	private $_tarname = '';
 
 	/**
-	 * @var resource|null file descriptor
+	 * @var null|resource file descriptor
 	 */
 	private $_file = 0;
 
@@ -431,7 +431,7 @@ class TTarFileExtractor
 					$v_header['filename'] = substr(
 						$v_header['filename'],
 						$p_remove_path_size
-		  );
+					);
 				}
 				if (($p_path != './') && ($p_path != '/')) {
 					while (substr($p_path, -1) == '/') {

@@ -68,7 +68,7 @@ class TDbTableInfo extends \Prado\TComponent
 	 */
 	protected function getInfo($name, $default = null)
 	{
-		return isset($this->_info[$name]) ? $this->_info[$name] : $default;
+		return $this->_info[$name] ?? $default;
 	}
 
 	/**

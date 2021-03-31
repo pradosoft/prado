@@ -273,15 +273,15 @@ class TUrlMapping extends TUrlManager
 				if (($regExp = $pattern->getRegularExpression()) !== '') {
 					trigger_error(
 						sPrintF(
-						'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
-						get_class($pattern),
-						$regExp,
-						$pattern->getServiceID(),
-						$pattern->getServiceParameter(),
-						$text
-				),
+							'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
+							get_class($pattern),
+							$regExp,
+							$pattern->getServiceID(),
+							$pattern->getServiceParameter(),
+							$text
+						),
 						E_USER_NOTICE
-				);
+					);
 				}
 				$pattern->setRegularExpression($text);
 			}

@@ -1355,7 +1355,7 @@ class TComponent
 	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
 	 * dyAddParsedObject.
 	 *
-	 * @param string|\Prado\TComponent $object text string or component parsed and instantiated in template
+	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
 	 */
 	public function addParsedObject($object)
@@ -1487,7 +1487,7 @@ class TComponent
 	 */
 	public function asa($behaviorname)
 	{
-		return isset($this->_m[$behaviorname]) ? $this->_m[$behaviorname] : null;
+		return $this->_m[$behaviorname] ?? null;
 	}
 
 	/**

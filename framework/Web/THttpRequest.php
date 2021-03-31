@@ -858,7 +858,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function itemAt($key)
 	{
-		return isset($this->_items[$key]) ? $this->_items[$key] : null;
+		return $this->_items[$key] ?? null;
 	}
 
 	/**

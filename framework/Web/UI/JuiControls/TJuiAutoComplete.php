@@ -139,7 +139,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Array containing valid javascript options
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidOptions()
 	{
@@ -148,7 +148,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Array containing valid javascript events
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidEvents()
 	{

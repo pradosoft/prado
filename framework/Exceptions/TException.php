@@ -78,7 +78,7 @@ class TException extends \Exception
 				}
 			}
 		}
-		return isset(self::$_messageCache[$msgFile][$key]) ? self::$_messageCache[$msgFile][$key] : $key;
+		return self::$_messageCache[$msgFile][$key] ?? $key;
 	}
 
 	/**

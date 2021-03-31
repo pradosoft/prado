@@ -80,7 +80,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 
 	/**
 	 * Array containing valid javascript options
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidOptions()
 	{
@@ -89,7 +89,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 
 	/**
 	 * Array containing valid javascript events
-	 * @return array()
+	 * @return array
 	 */
 	public function getValidEvents()
 	{

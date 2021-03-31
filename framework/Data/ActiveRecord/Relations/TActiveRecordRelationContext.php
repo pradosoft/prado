@@ -117,7 +117,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getCondition()
 	{
-		return isset($this->_relation[3]) ? $this->_relation[3] : null;
+		return $this->_relation[3] ?? null;
 	}
 
 	/**
@@ -126,7 +126,7 @@ class TActiveRecordRelationContext
 	 */
 	public function getParameters()
 	{
-		return isset($this->_relation[4]) ? $this->_relation[4] : [];
+		return $this->_relation[4] ?? [];
 	}
 
 	/**

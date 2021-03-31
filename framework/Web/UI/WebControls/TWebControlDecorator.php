@@ -382,7 +382,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the pre tag text into the {@link TTextWriter}
-	 * @param \Prado\IO\TTextWriter the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPreTagText($writer)
 	{
@@ -391,7 +391,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the pre contents text into the {@link TTextWriter}
-	 * @param \Prado\IO\TTextWriter the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPreContentsText($writer)
 	{
@@ -400,7 +400,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the post contents text into the {@link TTextWriter}
-	 * @param \Prado\IO\TTextWriter the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPostContentsText($writer)
 	{
@@ -409,7 +409,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 	/**
 	 * This method places the post tag text into the {@link TTextWriter}
-	 * @param \Prado\IO\TTextWriter the writer to which the text is written
+	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPostTagText($writer)
 	{

@@ -277,7 +277,7 @@ class TPriorityMap extends TMap
 		}
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
-		return isset($this->_d[$priority]) ? $this->_d[$priority] : null;
+		return $this->_d[$priority] ?? null;
 	}
 
 	/**
