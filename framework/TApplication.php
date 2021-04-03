@@ -274,12 +274,23 @@ class TApplication extends \Prado\TComponent
 	 * @var string Customizable page service ID
 	 */
 	private $_pageServiceID = self::PAGE_SERVICE_ID;
+	
+	/**
+	 * logs the time the application started, for metrics
+	 */
+	private $_startTime;
+	
+	/**
+	 * the initial memory usage
+	 */
+	private $_inititalMemoryUsage;
 
 	/**
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
 	 * Application base path refers to the root directory storing application
-	 * data and code not directly accessible by Web users.
+	 * data and code not directly accessible by Web users.  This captures the
+	 * start time and initial memory usage.
 	 * By default, the base path is assumed to be the <b>protected</b>
 	 * directory under the directory containing the current running script.
 	 * @param string $basePath application base path or configuration file path.
@@ -296,6 +307,11 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
 	{
+		if(function_exists('microtime'))
+			$this->_startTime = microtime(true);
+		if(function_exists('memory_get_usage'))
+			$this->_inititalMemoryUsage = memory_get_usage();
+			
 		// register application as a singleton
 		Prado::setApplication($this);
 		$this->setConfigurationType($configType);
@@ -531,6 +547,22 @@ class TApplication extends \Prado\TComponent
 	public function setMode($value)
 	{
 		$this->_mode = TPropertyValue::ensureEnum($value, '\Prado\TApplicationMode');
+	}
+
+	/**
+	 * @return number the microtime that the application started.  This allows for performance and time monitoring
+	 */
+	public function getStartTime()
+	{
+		return $this->_startTime;
+	}
+
+	/**
+	 * @return number the memory usage at the initialization of the Application. enables comparing memory usage later on.
+	 */
+	public function getInitialMemoryUsage()
+	{
+		return $this->_inititalMemoryUsage;
 	}
 
 	/**
