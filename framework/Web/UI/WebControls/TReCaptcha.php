@@ -230,7 +230,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 		// if we're in a callback, then schedule re-rendering of the control
 		// if not, don't do anything, because a new challenge will be rendered anyway
 		if ($this->getPage()->getIsCallback()) {
-			$this->getPage()->CallbackClient->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
+			$this->getPage()->getCallbackClient()->jQuery($this->getClientID() . ' #recaptcha_reload', 'click');
 		}
 	}
 
