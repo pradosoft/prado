@@ -38,6 +38,7 @@ class TRpcServer extends \Prado\TModule
 	public function __construct(TRpcProtocol $protocolHandler)
 	{
 		$this->handler = $protocolHandler;
+		parent::__construct();
 	}
 
 	/**

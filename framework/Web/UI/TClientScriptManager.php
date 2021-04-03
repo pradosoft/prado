@@ -127,6 +127,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function __construct(TPage $owner)
 	{
 		$this->_page = $owner;
+		parent::__construct();
 	}
 
 	/**

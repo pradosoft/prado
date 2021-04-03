@@ -67,6 +67,7 @@ class THttpCookie extends \Prado\TComponent
 	{
 		$this->_name = $name;
 		$this->_value = $value;
+		parent::__construct();
 	}
 
 	/**

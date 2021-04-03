@@ -99,6 +99,7 @@ class TPriorityMap extends TMap
 		$this->setReadOnly($readOnly);
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
+		parent::__construct();
 	}
 
 	/**

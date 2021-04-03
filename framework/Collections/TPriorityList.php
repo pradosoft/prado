@@ -89,13 +89,13 @@ class TPriorityList extends TList
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
-		parent::__construct();
 		if ($data !== null) {
 			$this->copyFrom($data);
 		}
 		$this->setReadOnly($readOnly);
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
+		parent::__construct();
 	}
 
 	/**

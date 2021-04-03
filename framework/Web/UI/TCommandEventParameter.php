@@ -36,6 +36,7 @@ class TCommandEventParameter extends \Prado\TEventParameter
 	{
 		$this->_name = $name;
 		$this->_param = $parameter;
+		parent::__construct();
 	}
 
 	/**

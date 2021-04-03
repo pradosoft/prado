@@ -108,6 +108,7 @@ class TSoapService extends \Prado\TService
 	public function __construct()
 	{
 		$this->setID('soap');
+		parent::__construct();
 	}
 
 	/**

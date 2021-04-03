@@ -34,6 +34,7 @@ class TControlAdapter extends \Prado\TApplicationComponent
 	public function __construct($control)
 	{
 		$this->_control = $control;
+		parent::__construct();
 	}
 
 	/**

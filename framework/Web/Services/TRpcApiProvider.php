@@ -62,7 +62,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 	public function __construct(TRpcServer $rpcServer)
 	{
 		$this->rpcServer = $rpcServer;
-
+		parent::__construct();
 		foreach ($this->registerMethods() as $_methodName => $_methodDetails) {
 			$this->rpcServer->addRpcMethod($_methodName, $_methodDetails);
 		}

@@ -44,6 +44,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	public function __construct($conn)
 	{
 		$this->_connection = $conn;
+		parent::__construct();
 	}
 
 	/**

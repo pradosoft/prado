@@ -82,6 +82,7 @@ class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITex
 	public function __construct($writer)
 	{
 		$this->_writer = $writer;
+		parent::__construct();
 	}
 
 	public function getWriter()

@@ -51,6 +51,7 @@ class TParameterMap extends \Prado\TComponent
 	{
 		$this->_properties = new TList;
 		$this->_propertyMap = new TMap;
+		parent::__construct();
 	}
 
 	/**

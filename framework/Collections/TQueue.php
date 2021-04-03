@@ -58,6 +58,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 		if ($data !== null) {
 			$this->copyFrom($data);
 		}
+		parent::__construct();
 	}
 
 	/**

@@ -30,6 +30,7 @@ class TResultSetMapItemParameter extends \Prado\TComponent
 		$this->_value = $value;
 		$this->_parameterObject = $parameter;
 		$this->_map = &$map;
+		parent::__construct();
 	}
 
 	public function getKey()

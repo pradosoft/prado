@@ -26,6 +26,7 @@ class TCachingStatement extends \Prado\TComponent implements IMappedStatement
 	public function __construct(TMappedStatement $statement)
 	{
 		$this->_mappedStatement = $statement;
+		parent::__construct();
 	}
 
 	public function getID()

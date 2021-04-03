@@ -186,6 +186,7 @@ class TPage extends TTemplateControl
 	public function __construct()
 	{
 		$this->setPage($this);
+		parent::__construct();
 	}
 
 	/**

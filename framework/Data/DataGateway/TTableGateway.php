@@ -98,6 +98,7 @@ class TTableGateway extends \Prado\TComponent
 		} else {
 			throw new TDbException('dbtablegateway_invalid_table_info');
 		}
+		parent::__construct();
 	}
 
 	/**

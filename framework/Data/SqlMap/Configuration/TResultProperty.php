@@ -65,6 +65,7 @@ class TResultProperty extends \Prado\TComponent
 		if ($resultMap instanceof TResultMap) {
 			$this->_hostResultMapID = $resultMap->getID();
 		}
+		parent::__construct();
 	}
 
 	/**

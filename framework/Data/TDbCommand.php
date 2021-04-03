@@ -56,6 +56,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		$this->_connection = $connection;
 		$this->setText($text);
+		parent::__construct();
 	}
 
 	/**

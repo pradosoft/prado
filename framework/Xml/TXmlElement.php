@@ -59,6 +59,7 @@ class TXmlElement extends \Prado\TComponent
 	public function __construct($tagName)
 	{
 		$this->setTagName($tagName);
+		parent::__construct();
 	}
 
 	/**

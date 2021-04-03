@@ -167,6 +167,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
 			}
 		}
+		parent::__construct();
 	}
 
 	/**
