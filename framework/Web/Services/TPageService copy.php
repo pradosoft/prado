@@ -465,7 +465,12 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * Creates a page instance based on requested page path.
+	 * Creates a page instance based on requested page path.  If nothing is found this
+	 * method calls dyGetAlternatePaths(array(), $pagePath) to get any alternative 
+	 * paths of the possible page from the behaviors.  Any additional paths can only 
+	 * reference Application.  The first parameter is an array that is concatenated with
+	 * new paths, and the first parameter array is returned at the end.
+	 * folder specific paths, nothing outside or system paths allowed.
 	 * @param string $pagePath requested page path
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
@@ -478,7 +483,22 @@ class TPageService extends \Prado\TService
 		$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
 
 		if (!$hasTemplateFile && !$hasClassFile) {
-			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+			$paths = $this->dyGetAlternatePaths(array(), $pagePath);
+			$applicationPath = Prado::getPathOfAlias('Application');
+			$throwException = true;
+			foreach($paths as $path) {
+				if(stripos($path, $applicationPath) !== 0)
+					throw new THttpException(403, 'pageservice_security_violation', $path);
+				$hasTemplateFile = is_file($path . self::PAGE_FILE_EXT);
+				$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
+				if($hasTemplateFile || $hasClassFile) {
+					$throwException = false;
+					break;
+				}
+			}
+			if($throwException) {
+				throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+			}
 		}
 
 		if ($hasClassFile) {
