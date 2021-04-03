@@ -28,6 +28,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	{
 		$this->_owner = $owner;
 		$this->_name = $viewName;
+		parent::__construct();
 	}
 
 	/**

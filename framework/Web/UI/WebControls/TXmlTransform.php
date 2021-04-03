@@ -59,6 +59,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 		if (!class_exists('XSLTProcessor', false)) {
 			throw new TConfigurationException('xmltransform_xslextension_required');
 		}
+		parent::__construct();
 	}
 
 	/**

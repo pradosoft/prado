@@ -49,6 +49,7 @@ class TDataGridSortCommandEventParameter extends \Prado\TEventParameter
 	{
 		$this->_source = $source;
 		$this->_sortExpression = $param->getCommandParameter();
+		parent::__construct();
 	}
 
 	/**

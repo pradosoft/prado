@@ -327,6 +327,7 @@ class TApplication extends \Prado\TComponent
 		$this->_services = [$this->getPageServiceID() => ['TPageService', [], null]];
 
 		Prado::setPathOfAlias('Application', $this->_basePath);
+		parent::__construct();
 	}
 
 	/**

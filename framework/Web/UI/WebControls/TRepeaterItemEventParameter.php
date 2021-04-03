@@ -38,6 +38,7 @@ class TRepeaterItemEventParameter extends \Prado\TEventParameter
 	public function __construct($item)
 	{
 		$this->_item = $item;
+		parent::__construct();
 	}
 
 	/**
