@@ -117,7 +117,24 @@ Starting point:
 ## Testing
 
 PRADO uses phpunit (https://phpunit.de/) for unit testing and Selenium (http://www.seleniumhq.org/) for functional testing.
-A phpunit configuration file is providen, to run the tests just execute
+
+In order to run tests, first clone the PRADO repository and have composer install the needed development libraries:
+```
+git clone https://github.com/pradosoft/prado.git`
+cd prado
+composer install
+```
+
+For functional tests only, you need to manually download and run an app called [Selenium Server](https://www.selenium.dev/downloads/).
+It's a java application, so you'll need to install a [JRE/JDK](https://java.com/) and then run it from a terminal:
+
+```
+java -jar selenium-server-standalone-3.xxx.xx.jar 
+```
+Depending on the browser you want to use to do functional testing, you may need an (additional driver)[https://www.selenium.dev/documentation/en/webdriver/driver_requirements/].
+
+
+Now you are redy to run tests; a phpunit configuration file is providen, to run the tests just execute
 
 ```composer unittest``` to run unit tests and
 ```composer functionaltest``` to run functional tests.
