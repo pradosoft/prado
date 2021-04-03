@@ -131,7 +131,7 @@ It's a java application, so you'll need to install a [JRE/JDK](https://java.com/
 ```
 java -jar selenium-server-standalone-3.xxx.xx.jar 
 ```
-Depending on the browser you want to use to do functional testing, you may need an (additional driver)[https://www.selenium.dev/documentation/en/webdriver/driver_requirements/].
+Depending on the browser you want to use to do functional testing, you may need an [additional driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/).
 
 
 Now you are redy to run tests; a phpunit configuration file is providen, to run the tests just execute
