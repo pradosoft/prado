@@ -274,16 +274,6 @@ class TApplication extends \Prado\TComponent
 	 * @var string Customizable page service ID
 	 */
 	private $_pageServiceID = self::PAGE_SERVICE_ID;
-	
-	/**
-	 * logs the time the application started, for metrics
-	 */
-	private $_startTime;
-	
-	/**
-	 * the initial memory usage
-	 */
-	private $_inititalMemoryUsage;
 
 	/**
 	 * Constructor.
@@ -306,12 +296,7 @@ class TApplication extends \Prado\TComponent
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
-	{
-		if(function_exists('microtime'))
-			$this->_startTime = microtime(true);
-		if(function_exists('memory_get_usage'))
-			$this->_inititalMemoryUsage = memory_get_usage();
-			
+	{		
 		// register application as a singleton
 		Prado::setApplication($this);
 		$this->setConfigurationType($configType);
@@ -548,22 +533,6 @@ class TApplication extends \Prado\TComponent
 	public function setMode($value)
 	{
 		$this->_mode = TPropertyValue::ensureEnum($value, '\Prado\TApplicationMode');
-	}
-
-	/**
-	 * @return number the microtime that the application started.  This allows for performance and time monitoring
-	 */
-	public function getStartTime()
-	{
-		return $this->_startTime;
-	}
-
-	/**
-	 * @return number the memory usage at the initialization of the Application. enables comparing memory usage later on.
-	 */
-	public function getInitialMemoryUsage()
-	{
-		return $this->_inititalMemoryUsage;
 	}
 
 	/**
