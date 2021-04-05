@@ -1,6 +1,6 @@
 <?php
 /**
- * TPriorityList, TPriorityListIterator classes
+ * TPriorityList class
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -81,7 +81,7 @@ class TPriorityList extends TList
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
-	 * @param null|array|\Iterator $data the intial data. Default is null, meaning no initial data.
+	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initial data.
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities

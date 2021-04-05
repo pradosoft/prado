@@ -512,6 +512,31 @@ class TDynamicClassBehavior extends TClassBehavior implements IDynamicMethods
 	}
 }
 
+//we add this as a callable
+function foo($sender, $param)
+{
+	
+}
+//we add this as a callable
+function foopre($sender, $param)
+{
+	
+}
+//we add this as a callable
+function foopost($sender, $param)
+{
+	
+}
+//we add this as a callable
+function foobar($sender, $param)
+{
+	
+}
+//we add this as a callable
+function foobarfoobar($sender, $param)
+{
+	
+}
 
 
 
@@ -1759,15 +1784,6 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->enableBehavior('BehaviorTestBehavior');
 		
 		unset($this->component->OnMyEvent);
-		
-		$this->component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
-		if(version_compare(PHP_VERSION, '7.4.0') >= 0) {
-			if(!is_a($this->component->getEventHandlers('OnMyEvent')[0][0],  '\WeakReference')) {
-				$this->fail('object in handler[0] should be a WeakReference after PHP 7.4.0');
-			}
-		} else {
-			//$this->warning('PHP ' . PHP_VERSION . ' does not have \\WeakReferences and could not be tested');
-		}
 	}
 
 	public function testDetachEventHandler()

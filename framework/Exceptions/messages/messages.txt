@@ -29,6 +29,8 @@ map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 map_readonly							= {0} is read-only.
 
+weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
+
 application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.

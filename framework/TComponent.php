@@ -27,9 +27,8 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Collections\TPriorityList;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Collections\TPriorityMap;
-use WeakReference;
 
 /**
  * TComponent class
@@ -108,7 +107,7 @@ use WeakReference;
  * $component->attachEventHandler('OnClick',$callback);
  * </code>
  * The first two ways make use of the fact that $component->OnClick refers to
- * the event handler list {@link TPriorityList} for the 'OnClick' event.
+ * the event handler list {@link TWeakCallableCollection} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
  * be either a string referring to a global function name, or an array whose
  * first element refers to an object and second element a method name/path that
@@ -613,7 +612,7 @@ class TComponent
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property/event is not defined.
-	 * @return mixed the property value or the event handler list as {@link TPriorityList}
+	 * @return mixed the property value or the event handler list as {@link TWeakCallableCollection}
 	 */
 	public function __get($name)
 	{
@@ -627,14 +626,14 @@ class TComponent
 			// getting an event (handler list)
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TPriorityList;
+				$this->_e[$name] = new TWeakCallableCollection;
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			// getting a global event (handler list)
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TPriorityList;
+				self::$_ue[$name] = new TWeakCallableCollection;
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_behaviorsenabled) {
@@ -760,16 +759,7 @@ class TComponent
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$this->_e[strtolower($name)]->clear();
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
-			if(class_exists('\WeakReference')) {
-				$handlers =  $this->getEventHandlers($name);
-				try {
-					$handlers->remove([\WeakReference::create($this), $name]);
-				} catch (\Exception $e) {
-					$handlers->remove([$this, $name]);
-				}
-			} else {
-				$this->getEventHandlers($name)->remove([$this, $name]);
-			}
+			$this->getEventHandlers($name)->remove([$this, $name]);
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->_behaviorsenabled) {
 			if (isset($this->_m[$name])) {
 				$this->detachBehavior($name);
@@ -946,20 +936,20 @@ class TComponent
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
 	 * @param mixed $name
 	 * @throws TInvalidOperationException if the event is not defined
-	 * @return TPriorityList list of attached event handlers for an event
+	 * @return TWeakCallableCollection list of attached event handlers for an event
 	 */
 	public function getEventHandlers($name)
 	{
 		if (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TPriorityList;
+				$this->_e[$name] = new TWeakCallableCollection;
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TPriorityList;
+				self::$_ue[$name] = new TWeakCallableCollection;
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
@@ -991,87 +981,54 @@ class TComponent
 	 * and $param is the event parameter. $name refers to the event name
 	 * being handled.
 	 *
-	 * In the handler, the php callback object (array[0]) can be a WeakReference so PHP
-	 * does not increment the object reference counter.  While this is not a
-	 * valid PHP callback, PRADO will get the weak link if the object is a
-	 * {@link WeakReference}.  The weak referencing is to prevent memory leaks
-	 * when deleting an object where the object is {@link listen}ing.
-	 *
-	 * This method automatically wraps the handler PHP callback object in a WeakReference
-	 * so objects with global event handlers (like those than {@link listen}) don't block
-	 * on their deletion due to circular references.
-	 *
 	 * This is a convenient method to add an event handler.
 	 * It is equivalent to {@link getEventHandlers}($name)->add($handler).
 	 * For complete management of event handlers, use {@link getEventHandlers}
 	 * to get the event handler list first, and then do various
-	 * {@link TPriorityList} operations to append, insert or remove
+	 * {@link TWeakCallableCollection} operations to append, insert or remove
 	 * event handlers. You may also do these operations like
-	 * getting and setting properties, e.g., (in PHP 7.4)
+	 * getting and setting properties, e.g.,
 	 * <code>
-	 * $component->OnClick[]=array(WeakReference::create($object),'buttonClicked');
-	 * $component->OnClick->insertAt(0,array(WeakReference::create($object),'buttonClicked'));
+	 * $component->OnClick[]=array($object,'buttonClicked');
+	 * $component->OnClick->insertAt(0,array($object,'buttonClicked'));
 	 * </code>
 	 * which are equivalent to the following
-	 * <code>
-	 * $component->getEventHandlers('OnClick')->add(array(WeakReference::create($object),'buttonClicked'));
-	 * $component->getEventHandlers('OnClick')->insertAt(0,array(WeakReference::create($object),'buttonClicked'));
-	 * </code>
-	 *
-	 * For PHP version 7.3 and before, the equivalent is the following
 	 * <code>
 	 * $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
 	 * $component->getEventHandlers('OnClick')->insertAt(0,array($object,'buttonClicked'));
 	 * </code>
 	 *
-	 *
-	 * Due to the nature of {@link getEventHandlers}, any active {@link TBehavior}s defining
-	 * new 'on' events, this method will pass through to the behavior event transparently.
+	 * Due to the nature of {@link getEventHandlers}, any active behaviors defining
+	 * new 'on' events, this method will pass through to the behavior transparently.
 	 *
 	 * @param string $name the event name
 	 * @param callable $handler the event handler
 	 * @param null|numeric $priority the priority of the handler, defaults to null which translates into the
-	 * default priority of 10.0 within {@link TPriorityList}
+	 * default priority of 10.0 within {@link TWeakCallableCollection}
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
 	{
-		if(is_array($handler) && is_object($handler[0]) && class_exists('\WeakReference') && !is_a($handler[0], '\WeakReference')) {
-			$handler[0] = \WeakReference::create($handler[0]);
-		}
 		$this->getEventHandlers($name)->add($handler, $priority);
 	}
 
 	/**
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
-	 * any 'on' events defined by an objects active behaviors as well.  It tries to 
-	 * remove the WeakReference version of the handler (in [object, method] format) 
-	 * first, then resorts to removing the non-WeakReference handler.  
+	 * any 'on' events definedb by an objects active behaviors as well.
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
-	 * to an item of any priority within {@link TPriorityList}; null means the default priority
+	 * to an item of any priority within {@link TWeakCallableCollection}; null means the default priority
 	 * @return bool if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
 	{
 		if ($this->hasEventHandler($name)) {
 			try {
-				if(is_array($handler) && is_object($handler[0]) && class_exists('\WeakReference') && !is_a($handler[0], '\WeakReference')) {
-		  			$handler[0] = \WeakReference::create($handler[0]);
-				}
 				$this->getEventHandlers($name)->remove($handler, $priority);
 				return true;
 			} catch (\Exception $e) {
-				if(is_array($handler) && is_a($handler[0], '\WeakReference')) {
-					try {
-						$handler[0] = $handler[0]->get();
-						$this->getEventHandlers($name)->remove($handler, $priority);
-						return true;
-					} catch (\Exception $e) {
-					}
-				}
 			}
 		}
 		return false;
@@ -1080,7 +1037,7 @@ class TComponent
 	/**
 	 * Raises an event.  This raises both inter-object 'on' events and global 'fx' events.
 	 * This method represents the happening of an event and will
-	 * invoke all attached event handlers for the event in {@link TPriorityList} order.
+	 * invoke all attached event handlers for the event in {@link TWeakCallableCollection} order.
 	 * This method does not handle intra-object/behavior dynamic 'dy' events.
 	 *
 	 * There are ways to handle event responses.  By defailt {@link EVENT_RESULT_FILTER},
@@ -1200,12 +1157,6 @@ class TComponent
 					if (is_string($object)) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
-						if (is_a($object, '\WeakReference')) {
-							$object = $object->get();
-							if(!$object) {
-								continue;
-							}
-						}
 						if (($pos = strrpos($method, '.')) !== false) {
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
@@ -1409,7 +1360,7 @@ class TComponent
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
-	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
+	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TWeakCallableCollection}  Optional.
 	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
@@ -1450,7 +1401,7 @@ class TComponent
 	 * @param string $name the key of the class behavior
 	 * @param string $class class on which to attach this behavior.  Defaults to null.
 	 * @param null|false|numeric $priority priority: false is any priority, null is default
-	 *		{@link TPriorityList} priority, and numeric is a specific priority.
+	 *		{@link TWeakCallableCollection} priority, and numeric is a specific priority.
 	 * @throws Exception if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
 	 * @since 3.2.3
