@@ -52,6 +52,17 @@ class TWeakCallableCollection extends TPriorityList
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
 	}
 	
+
+	/**
+	 * TWeakCallableCollection cannot auto listen to global events or there will be a loop.
+	 *
+	 * @return bool returns false
+	 */
+	public function getAutoGlobalListen()
+	{
+		return false;
+	}
+	
 	/**
 	 * returns whether or not WeakReference is enabled, thus the PHP version is over 7.4.0
 	 * @return bool is WeakReference available

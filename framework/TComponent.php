@@ -445,7 +445,7 @@ class TComponent
 		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
 
 		foreach ($fx as $func) {
-			$this->attachEventHandler($func, [$this, $func]);
+			$this->getEventHandlers($func)->add([$this, $func]);
 		}
 
 		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {

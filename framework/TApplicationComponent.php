@@ -34,6 +34,17 @@ namespace Prado;
 class TApplicationComponent extends \Prado\TComponent
 {
 	/**
+	 * TApplicationComponents auto listen to global events. If there is no
+	 * {@link WeakReference}, then this does not auto global listen.
+	 *
+	 * @return bool returns whether or not WeakReference is available.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return class_exists('\WeakReference');
+	}
+	
+	/**
 	 * @return TApplication current application instance
 	 */
 	public function getApplication()

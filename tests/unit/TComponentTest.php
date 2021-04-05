@@ -549,15 +549,20 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
+		$component = new TComponent();
+		$component->getEventHandlers('fxAttachClassBehavior')->clear();
+		$component->getEventHandlers('fxDetachClassBehavior')->clear();
+		unset($component);
+		
 		$this->component = new NewComponent();
 	}
 
 
 	protected function tearDown(): void
 	{
-		// PHP version 5.3.6 doesn't call the __destruct method when unsetting variables;
-		//	Thus any object that listens must be explicitly call unlisten in this version of PHP.
-		if ($this->component) {
+		// PHP versions less than 7.4 (without WeakReference) doesn't call the __destruct method when unsetting variables;
+		//	Thus any object that listens must be explicitly call unlisten.
+		if ($this->component && !class_exists('\WeakReference')) {
 			$this->component->unlisten();
 		}
 		$this->component = null;

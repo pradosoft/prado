@@ -118,8 +118,14 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$this->assertTrue(is_a($p[$priority][5], 'WeakReference'));
 		
 		//The WeakReference should refer to the proper objects
+		$this->assertEquals($p[$priority][0], 'foo');
+		$this->assertEquals($p[$priority][1], ['CallableListItem', 'staticHandler']);
 		$this->assertEquals($p[$priority][2][0]->get(), $this->item1);
+		$this->assertEquals($p[$priority][2][1], 'eventHandler');
+		$this->assertEquals($p[$priority][3], 'CallableListItem::staticHandler');
+		$this->assertEquals($p[$priority][4], ['CallableListItemChild','parent::staticHandler']);
 		$this->assertEquals($p[$priority][5]->get(), $this->item2);
+		
 	}
 	
 }
