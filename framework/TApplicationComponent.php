@@ -41,7 +41,7 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	public function getAutoGlobalListen()
 	{
-		return class_exists('\WeakReference');
+		return true;
 	}
 	
 	/**
