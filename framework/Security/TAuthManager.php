@@ -37,6 +37,11 @@ use Prado\Web\THttpCookie;
  * <module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="login" />
  * <module id="users" class="Prado\Security\TUserManager" />
  *
+ * When a user logs in, onLogin event is raised with the TUser as the parameter.  
+ * If the user trying to login but fails the check, onLoginFailed is raised with the 
+ * user name as paramete.  When the user logs out, onLogout is raised with the TUser
+ * as parameter.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Security
  * @since 3.0
@@ -435,8 +440,10 @@ class TAuthManager extends \Prado\TModule
 				$this->_userManager->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
 			}
+			$this->onLogin($user);
 			return true;
 		} else {
+			$this->onLoginFailed($username);
 			return false;
 		}
 	}
@@ -448,6 +455,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function logout()
 	{
+		$this->onLogout($this->getApplication()->getUser());
 		if (($session = $this->getSession()) === null) {
 			throw new TConfigurationException('authmanager_session_required');
 		}
@@ -457,5 +465,32 @@ class TAuthManager extends \Prado\TModule
 			$cookie = new THttpCookie($this->getUserKey(), '');
 			$this->getResponse()->getCookies()->add($cookie);
 		}
+	}
+	
+	/**
+	 * onLogin event is raised when a user logs in
+	 * @param mixed parameter
+	 */
+	public function onLogin($param)
+	{
+		$this->raiseEvent('onLogin',$this,$param);
+	}
+	
+	/**
+	 * onLoginFailed event is raised when a user login fails
+	 * @param string username trying to log in
+	 */
+	public function onLoginFailed($param)
+	{
+		$this->raiseEvent('onLoginFailed',$this,$param);
+	}
+	
+	/**
+	 * onLogout event is raised when a user logs out.
+	 * @param mixed parameter
+	 */
+	public function onLogout($param)
+	{
+		$this->raiseEvent('onLogout',$this,$param);
 	}
 }
