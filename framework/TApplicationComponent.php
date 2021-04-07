@@ -36,7 +36,7 @@ class TApplicationComponent extends \Prado\TComponent
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
-	 * @return bool returns whether or not WeakReference is available.
+	 * @return bool returns whether or not to listen.
 	 */
 	public function getAutoGlobalListen()
 	{
