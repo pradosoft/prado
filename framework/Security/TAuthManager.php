@@ -420,6 +420,7 @@ class TAuthManager extends \Prado\TModule
 	 * Logs in a user with username and password.
 	 * The username and password will be used to validate if login is successful.
 	 * If yes, a user object will be created for the application.
+	 * On successful Login, onLogin is raised.  When the login fails, onLoginFailed is raised.
 	 * @param string $username username
 	 * @param string $password password
 	 * @param int $expire number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
@@ -449,7 +450,7 @@ class TAuthManager extends \Prado\TModule
 	}
 
 	/**
-	 * Logs out a user.
+	 * Logs out a user.  Raises onLogout before logging out.
 	 * User session will be destroyed after this method is called.
 	 * @throws TConfigurationException if session module is not loaded.
 	 */

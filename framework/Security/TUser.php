@@ -41,6 +41,16 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @var IUserManager user manager
 	 */
 	private $_manager;
+	
+	/**
+	 * TUser auto listen to global events.
+	 *
+	 * @return bool returns whether or not WeakReference is available.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return true;
+	}
 
 	/**
 	 * Constructor.

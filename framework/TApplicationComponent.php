@@ -34,8 +34,7 @@ namespace Prado;
 class TApplicationComponent extends \Prado\TComponent
 {
 	/**
-	 * TApplicationComponents auto listen to global events. If there is no
-	 * {@link WeakReference}, then this does not auto global listen.
+	 * TApplicationComponents auto listen to global events.
 	 *
 	 * @return bool returns whether or not WeakReference is available.
 	 */
