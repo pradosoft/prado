@@ -234,13 +234,13 @@ class TPriorityMap extends TMap
 	{
 		if ($priority === false) {
 			$map = $this->flattenPriorities();
-			return $map[$key] ?? null;
+			return $map[$key] ?? $this->dyNoItem(null, $key, $priority);
 		} else {
 			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
 			}
 			$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
-			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : null;
+			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : $this->dyNoItem(null, $key, $priority);
 		}
 	}
 
