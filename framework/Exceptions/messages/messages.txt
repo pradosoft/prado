@@ -111,8 +111,6 @@ apccache_extension_required				= TAPCCache requires APC PHP extension.
 apccache_extension_not_enabled			= TAPCCache need apc.enabled = 1 in php.ini in order to work.
 apccache_extension_not_enabled_cli		= TAPCCache need apc.enable_cli = 1 in php.ini in order to work with PHP from the command line.
 
-eacceleratorcache_extension_required	= TEACache requires eAccellerator PHP extension.
-
 errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' is invalid. Make sure it is in namespace form and points to a valid directory containing error template files.
 
 pageservice_page_unknown				= Page '{0}' Not Found

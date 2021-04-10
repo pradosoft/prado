@@ -67,7 +67,6 @@
 	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
-		"ext-eaccelerator" : "Enables the use of TEACache as a cache handler",
 		"ext-hash" : "Enables use of hash functions other than md5 and sha1",
 		"ext-iconv" : "Used by some internationaization components",
 		"ext-mbstring" : "Prado can use the mbstring extension for locale-aware string operations",

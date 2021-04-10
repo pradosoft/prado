@@ -22,7 +22,6 @@ return [
 'TChainedCacheDependency' => 'Prado\Caching\TChainedCacheDependency',
 'TDbCache' => 'Prado\Caching\TDbCache',
 'TDirectoryCacheDependency' => 'Prado\Caching\TDirectoryCacheDependency',
-'TEACache' => 'Prado\Caching\TEACache',
 'TFileCacheDependency' => 'Prado\Caching\TFileCacheDependency',
 'TGlobalStateCacheDependency' => 'Prado\Caching\TGlobalStateCacheDependency',
 'TMemCache' => 'Prado\Caching\TMemCache',
