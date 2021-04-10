@@ -24,7 +24,7 @@ interface ICache
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * @param string $id a key identifying the cached value
-	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function get($id);
 	/**

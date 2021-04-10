@@ -120,7 +120,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	/**
 	 * Retrieves a value from cache with a specified key.
 	 * @param string $id a key identifying the cached value
-	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function get($id)
 	{
@@ -203,7 +203,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * in {@link get()} already. So only the implementation of data retrieval
 	 * is needed.
 	 * @param string $key a unique key identifying the cached value
-	 * @return string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	abstract protected function getValue($key);
 
@@ -258,7 +258,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Retrieves the value from cache with a specified key.
 	 * This method is required by the interface \ArrayAccess.
 	 * @param string $id a key identifying the cached value
-	 * @return mixed the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	public function offsetGet($id)
 	{

@@ -139,19 +139,17 @@ class TDbCache extends TCache
 	 * This method is required by the IModule interface.
 	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
 	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
-	 *
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
-		$this -> getApplication() -> attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
-		$this -> getApplication() -> attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		$this->getApplication()->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
 		parent::init($config);
 	}
 
 	/**
 	 * Event listener for TApplication.OnSaveState
-	 * @return void
 	 * @since 3.1.5
 	 * @see flushCacheExpired
 	 */
@@ -163,7 +161,6 @@ class TDbCache extends TCache
 	/**
 	 * Event listener for TApplication.OnLoadStateComplete
 	 *
-	 * @return void
 	 * @since 3.1.5
 	 * @see initializeCache
 	 */
@@ -180,7 +177,6 @@ class TDbCache extends TCache
 	 *
 	 * @param bool $force Force override global state check
 	 * @throws TConfigurationException if any error happens during creating database or cache table.
-	 * @return void
 	 * @since 3.1.5
 	 */
 	protected function initializeCache($force = false)
@@ -192,19 +188,19 @@ class TDbCache extends TCache
 		try {
 			$key = 'TDbCache:' . $this->_cacheTable . ':created';
 			if ($force) {
-				$this -> _createCheck = false;
+				$this->_createCheck = false;
 			} else {
-				$this -> _createCheck = $this -> getApplication() -> getGlobalState($key, 0);
+				$this->_createCheck = $this->getApplication()->getGlobalState($key, 0);
 			}
 
-			if ($this->_autoCreate && !$this -> _createCheck) {
-				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
+			if ($this->_autoCreate && !$this->_createCheck) {
+				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->_connID . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 
 				$sql = 'SELECT 1 FROM ' . $this->_cacheTable . ' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
 
-				$this -> _createCheck = true;
-				$this -> getApplication() -> setGlobalState($key, time());
+				$this->_createCheck = true;
+				$this->getApplication()->setGlobalState($key, time());
 			}
 		} catch (\Exception $e) {
 			// DB table not exists
@@ -226,8 +222,8 @@ class TDbCache extends TCache
 				$sql = 'CREATE INDEX IX_expire ON ' . $this->_cacheTable . ' (expire)';
 				$db->createCommand($sql)->execute();
 
-				$this -> _createCheck = true;
-				$this -> getApplication() -> setGlobalState($key, time());
+				$this->_createCheck = true;
+				$this->getApplication()->setGlobalState($key, time());
 			} else {
 				throw new TConfigurationException('db_cachetable_inexistent', $this->_cacheTable);
 			}
@@ -238,28 +234,27 @@ class TDbCache extends TCache
 	/**
 	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
 	 * @param bool $force override {@link setFlushInterval FlushInterval} and force deletion of expired items
-	 * @return void
 	 * @since 3.1.5
 	 */
 	public function flushCacheExpired($force = false)
 	{
-		$interval = $this -> getFlushInterval();
+		$interval = $this->getFlushInterval();
 		if (!$force && $interval === 0) {
 			return;
 		}
 
 		$key = 'TDbCache:' . $this->_cacheTable . ':flushed';
 		$now = time();
-		$next = $interval + (integer) $this -> getApplication() -> getGlobalState($key, 0);
+		$next = $interval + (integer) $this->getApplication()->getGlobalState($key, 0);
 
 		if ($force || $next <= $now) {
 			if (!$this->_cacheInitialized) {
 				$this->initializeCache();
 			}
-			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this -> id . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
+			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this->_connID . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
 			$sql = 'DELETE FROM ' . $this->_cacheTable . ' WHERE expire<>0 AND expire<' . $now;
 			$this->getDbConnection()->createCommand($sql)->execute();
-			$this -> getApplication() -> setGlobalState($key, $now);
+			$this->getApplication()->setGlobalState($key, $now);
 		}
 	}
 
@@ -549,6 +544,7 @@ class TDbCache extends TCache
 	/**
 	 * Deletes all values from cache.
 	 * Be careful of performing this operation if the cache is shared by multiple applications.
+	 * @return bool if no error happens during flush
 	 */
 	public function flush()
 	{
