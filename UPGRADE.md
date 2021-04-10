@@ -14,6 +14,9 @@ Upgrading from v4.1.1
 - The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
 - TEACache has been removed. The eAccelerator project has been abandoned and doesn't work with PHP > 5.4.
 - TXCache has been removed. The XCache project has been abandoned and doesn't work with PHP > 5.6.
+- TFastSqlMapApplicationCache has been removed. It depended to an unavailable external DxUtil library.
+- Previously the Prado class was an empty subclass of PradoBase, so that the Prado class could be overloaded.
+  Since the introduction of namespaces this is not doable anymore, so the PradoBase class has been removed and all the methods have been moved to the Prado class.
 
 Upgrading from v4.1.0
 ---------------------
