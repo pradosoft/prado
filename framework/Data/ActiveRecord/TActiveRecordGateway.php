@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecordGateway, TActiveRecordStatementType, TActiveRecordEventParameter classes file.
+ * TActiveRecordGateway class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -446,23 +446,5 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function deleteRecordsByCriteria(TActiveRecord $record, $criteria)
 	{
 		return $this->getCommand($record)->delete($criteria);
-	}
-
-	/**
-	 * Raise the corresponding command event, insert, update, delete or select.
-	 * @param string $event command type
-	 * @param TDbCommand $command sql command to be executed.
-	 * @param TActiveRecord $record active record
-	 * @param TActiveRecordCriteria $criteria data for the command.
-	 */
-	protected function raiseCommandEvent($event, $command, $record, $criteria)
-	{
-		if (!($criteria instanceof TSqlCriteria)) {
-			$criteria = new TActiveRecordCriteria(null, $criteria);
-		}
-		$param = new TActiveRecordEventParameter($command, $record, $criteria);
-		$manager = $record->getRecordManager();
-		$manager->{$event}($param);
-		$record->{$event}($param);
 	}
 }

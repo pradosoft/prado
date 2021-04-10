@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI\JuiControls;
 
-use Prado\Prado;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;

@@ -80,9 +80,9 @@ class TGlobalizationAutoDetect extends TGlobalization
 	{
 		static $allLocales;
 		if ($allLocales === null) {
-			$all = \ResourceBundle::getLocales('');
+			$allLocales = \ResourceBundle::getLocales('');
 		}
-		return in_array($locale, $all);
+		return in_array($locale, $allLocales);
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 	 */
 	public function getAvailableLanguages()
 	{
-		return $this->validLangs;
+		return $this->validLanguages;
 	}
 
 	/**

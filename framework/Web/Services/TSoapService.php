@@ -243,12 +243,7 @@ class TSoapService extends \Prado\TService
 	protected function createServer()
 	{
 		$properties = $this->_servers[$this->_serverID];
-		$serverClass = null;
-		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP && isset($config['class'])) {
-			$serverClass = $config['class'];
-		} elseif ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML) {
-			$serverClass = $properties->remove('class');
-		}
+		$serverClass = $properties->remove('class');
 		if ($serverClass === null) {
 			$serverClass = self::DEFAULT_SOAP_SERVER;
 		}

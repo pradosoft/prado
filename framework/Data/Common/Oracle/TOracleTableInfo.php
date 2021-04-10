@@ -124,6 +124,7 @@ class TOracleTableInfo extends \Prado\TComponent
 	 */
 	public function getColumnNames()
 	{
+		$names = [];
 		foreach ($this->getColumns() as $column) {
 			$names[] = $column->getColumnName();
 		}

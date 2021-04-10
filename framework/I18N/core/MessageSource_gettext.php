@@ -295,8 +295,8 @@ class MessageSource_gettext extends MessageSource
 
 		foreach ($result['strings'] as $string => $value) {
 			if ($string == $message) {
-				$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
 				unset($result['strings'][$string]);
+				$result['meta']['PO-Revision-Date'] = @date('Y-m-d H:i:s');
 
 				$po->fromArray($result);
 				$mo = $po->toMO();

@@ -230,7 +230,7 @@ class TResultProperty extends \Prado\TComponent
 	 */
 	public function setLazyLoad($value)
 	{
-		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value, false);
+		$this->_isLazyLoad = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

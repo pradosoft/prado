@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
  * Load active callback control.
  */
 use Prado\Exceptions\TConfigurationException;
-use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**

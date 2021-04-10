@@ -113,7 +113,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function setButtonCssClass($value)
 	{
-		$this->setViewState('ButtonCssClass', TPropertyValue::ensureString($value, ''), '');
+		$this->setViewState('ButtonCssClass', TPropertyValue::ensureString($value), '');
 	}
 
 	/**

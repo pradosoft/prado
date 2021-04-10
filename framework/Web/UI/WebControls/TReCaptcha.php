@@ -155,12 +155,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	protected function getChallengeFieldName()
 	{
-		return /*$this->ClientID.'_'.*/self::ChallengeFieldName;
+		return /*$this->getClientID().'_'.*/self::ChallengeFieldName;
 	}
 
 	public function getResponseFieldName()
 	{
-		return /*$this->ClientID.'_'.*/self::ResponseFieldName;
+		return /*$this->getClientID().'_'.*/self::ResponseFieldName;
 	}
 
 	public function getClientSideOptions()

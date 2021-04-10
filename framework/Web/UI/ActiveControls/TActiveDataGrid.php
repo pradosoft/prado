@@ -199,7 +199,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	{
 		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
 		foreach ($pager as $item) {
-			if ($item->ControlToPaginate == $this->ID) {
+			if ($item->ControlToPaginate == $this->getID()) {
 				$writer = $this->getResponse()->createHtmlWriter();
 				$this->getPage()->getAdapter()->registerControlToRender($item, $writer);
 			}

@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI\JuiControls;
 
-use Prado\Prado;
 use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 /**

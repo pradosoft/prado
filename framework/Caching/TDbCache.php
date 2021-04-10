@@ -453,16 +453,17 @@ class TDbCache extends TCache
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
-	 * @return string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
 		if (!$this->_cacheInitialized) {
 			$this->initializeCache();
 		}
+
+		$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>' . time() . ') ORDER BY expire DESC';
+		$command = $this->getDbConnection()->createCommand($sql);
 		try {
-			$sql = 'SELECT value FROM ' . $this->_cacheTable . ' WHERE itemkey=\'' . $key . '\' AND (expire=0 OR expire>' . time() . ') ORDER BY expire DESC';
-			$command = $this->getDbConnection()->createCommand($sql);
 			return unserialize($command->queryScalar());
 		} catch (\Exception $e) {
 			$this->initializeCache(true);
@@ -501,10 +502,11 @@ class TDbCache extends TCache
 		}
 		$expire = ($expire <= 0) ? 0 : time() + $expire;
 		$sql = "INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES(:key,:value,$expire)";
+		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':key', $key, \PDO::PARAM_STR);
+		$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
+
 		try {
-			$command = $this->getDbConnection()->createCommand($sql);
-			$command->bindValue(':key', $key, \PDO::PARAM_STR);
-			$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
 			$command->execute();
 			return true;
 		} catch (\Exception $e) {
@@ -529,9 +531,10 @@ class TDbCache extends TCache
 		if (!$this->_cacheInitialized) {
 			$this->initializeCache();
 		}
+
+		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
+		$command->bindValue(':key', $key, \PDO::PARAM_STR);
 		try {
-			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable} WHERE itemkey=:key");
-			$command->bindValue(':key', $key, \PDO::PARAM_STR);
 			$command->execute();
 			return true;
 		} catch (\Exception $e) {
@@ -551,8 +554,8 @@ class TDbCache extends TCache
 		if (!$this->_cacheInitialized) {
 			$this->initializeCache();
 		}
+		$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable}");
 		try {
-			$command = $this->getDbConnection()->createCommand("DELETE FROM {$this->_cacheTable}");
 			$command->execute();
 		} catch (\Exception $e) {
 			try {

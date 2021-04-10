@@ -37,6 +37,9 @@ use Prado\Prado;
  */
 class TScaffoldView extends TScaffoldBase
 {
+	private $_panForNewButton;
+	private $_panForSearch;
+
 	/**
 	 * Copy basic record details to the list/edit/search controls.
 	 * @param mixed $param

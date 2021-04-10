@@ -465,6 +465,9 @@ Prado.WebUI.TTextHighlighter = jQuery.klass(Prado.WebUI.Control,
 
 		if(this.options.copycode)
 		{
+			jQuery('#'+this.options.ID).css({
+				'position': 'relative'
+			});
 			btn = jQuery('<input type="button">')
 				.addClass("copycode")
 				.val('Copy code')
@@ -472,9 +475,13 @@ Prado.WebUI.TTextHighlighter = jQuery.klass(Prado.WebUI.Control,
 					'id': '#'+this.options.ID+'_copy',
 					'data-clipboard-text': code.text()
 				})
-				.css({'float': 'right'});
+				.css({
+					'position': 'absolute',
+					'margin': '5px',
+					'right': '0'
+					});
 
-			var clipboard = new Clipboard(jQuery(btn).get(0));
+			var clipboard = new ClipboardJS(jQuery(btn).get(0));
 		}
 
 		hljs.configure({
@@ -488,7 +495,7 @@ Prado.WebUI.TTextHighlighter = jQuery.klass(Prado.WebUI.Control,
 
 		if(this.options.copycode)
 		{
-			btn.prependTo('#'+this.options.ID+'_code');
+			btn.prependTo('#'+this.options.ID);
 		}
 	}
 });

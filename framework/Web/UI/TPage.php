@@ -1257,7 +1257,7 @@ class TPage extends TTemplateControl
 	public function flushWriter()
 	{
 		if ($this->_writer) {
-			$this->Response->write($this->_writer->flush());
+			$this->getResponse()->write($this->_writer->flush());
 		}
 	}
 }

@@ -518,10 +518,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		} elseif ($formatString[0] === '#') {
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
 			try {
-				if (eval("\$result=$expression;") === false) {
-					throw new Exception('');
-				}
-				return $result;
+				return eval("return $expression;");
 			} catch (Exception $e) {
 				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', get_class($this), $expression, $e->getMessage());
 			}

@@ -96,14 +96,8 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 			$hour = $container->findControl('scaffold_time_hour')->getSelectedValue();
 			$mins = $container->findControl('scaffold_time_min')->getSelectedValue();
 			$secs = $container->findControl('scaffold_time_sec')->getSelectedValue();
-			return $s->getTimeStamp(
-				$hour,
-				$mins,
-				$secs,
-				$dt->format('n'),
-				$dt->format('j'),
-				$dt->format('Y')
-			);
+			$dt->setTime($hour, $mins, $secs);
+			return $dt->getTimeStamp();
 		} else {
 			return parent::getDateTimeValue($container, $column, $record);
 		}

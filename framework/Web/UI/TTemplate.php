@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\TComponent;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TException;
 use Prado\Exceptions\TTemplateException;
 
 /**

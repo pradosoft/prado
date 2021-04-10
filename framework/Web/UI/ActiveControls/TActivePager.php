@@ -13,7 +13,6 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
-use Prado\Prado;
 use Prado\Web\UI\WebControls\TDisplayStyle;
 use Prado\Web\UI\WebControls\TLabel;
 use Prado\Web\UI\WebControls\TPager;

@@ -885,7 +885,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 			if (!empty($state)) {
 				$this->_autoColumns = new TDataGridColumnCollection($this);
 				foreach ($state as $st) {
-					$column = new $this->AutoGenerateColumnName;
+					$column = new $this->getAutoGenerateColumnName();
 					$column->loadState($st);
 					$this->_autoColumns->add($column);
 				}
@@ -1350,7 +1350,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		$autoColumns->clear();
 		foreach ($dataSource as $row) {
 			foreach ($row as $key => $value) {
-				$column = new $this->AutoGenerateColumnName;
+				$column = new $this->getAutoGenerateColumnName();
 				if (is_string($key)) {
 					$column->setHeaderText($key);
 					$column->setDataField($key);

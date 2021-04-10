@@ -15,6 +15,11 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Web\UI\WebControls\TContent;
 use Prado\Web\UI\WebControls\TContentPlaceHolder;
+use Prado\Web\UI\WebControls\TCheckBox;
+use Prado\Web\UI\WebControls\TDatePicker;
+use Prado\Web\UI\WebControls\TListControl;
+use Prado\Web\UI\WebControls\TTextBox;
+use Prado\Data\ActiveRecord\TActiveRecord;
 
 /**
  * TTemplateControl class.
@@ -282,7 +287,7 @@ class TTemplateControl extends TCompositeControl
 					}
 					break;
 				}
-			} catch (Exception $ex) {
+			} catch (\Exception $ex) {
 				if ($throwExceptions) {
 					throw $ex;
 				}
@@ -312,7 +317,7 @@ class TTemplateControl extends TCompositeControl
 				} elseif ($control instanceof TDatePicker) {
 					$arObj->{$key} = $control->Date;
 				}
-			} catch (Exception $ex) {
+			} catch (\Exception $ex) {
 				if ($throwExceptions) {
 					throw $ex;
 				}

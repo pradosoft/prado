@@ -11,7 +11,6 @@
 namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Collections\TMap;
-use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
 

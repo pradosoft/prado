@@ -847,10 +847,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 		} elseif ($formatString[0] === '#') {
 			$expression = strtr(substr($formatString, 1), ['{0}' => '$value']);
 			try {
-				if (eval("\$result=$expression;") === false) {
-					throw new Exception('');
-				}
-				return $result;
+				return eval("return $expression;");
 			} catch (Exception $e) {
 				throw new TInvalidDataValueException('listcontrol_expression_invalid', get_class($this), $expression, $e->getMessage());
 			}

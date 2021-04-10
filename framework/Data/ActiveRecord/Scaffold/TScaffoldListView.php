@@ -55,6 +55,10 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  */
 class TScaffoldListView extends TScaffoldBase
 {
+	private $_sort;
+	private $_header;
+	private $_list;
+
 	/**
 	 * Initialize the sort drop down list and the column names repeater.
 	 */

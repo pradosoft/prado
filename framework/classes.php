@@ -119,7 +119,6 @@ return [
 'TSqlMapXmlConfiguration' => 'Prado\Data\SqlMap\Configuration\TSqlMapXmlConfiguration',
 'TSqlMapXmlMappingConfiguration' => 'Prado\Data\SqlMap\Configuration\TSqlMapXmlMappingConfiguration',
 'TSubMap' => 'Prado\Data\SqlMap\Configuration\TSubMap',
-'TFastSqlMapApplicationCache' => 'Prado\Data\SqlMap\DataMapper\TFastSqlMapApplicationCache',
 'TInvalidPropertyException' => 'Prado\Data\SqlMap\DataMapper\TInvalidPropertyException',
 'TLazyLoadList' => 'Prado\Data\SqlMap\DataMapper\TLazyLoadList',
 'TObjectProxy' => 'Prado\Data\SqlMap\DataMapper\TObjectProxy',

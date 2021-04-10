@@ -430,7 +430,7 @@ EOD;
 	public function findTableNames($schema = 'public')
 	{
 		if ($schema === '') {
-			$schema = self::DEFAULT_SCHEMA;
+			$schema = $this->_defaultSchema;
 		}
 		$sql = <<<EOD
 SELECT table_name, table_schema FROM information_schema.tables
@@ -441,7 +441,7 @@ EOD;
 		$rows = $command->queryAll();
 		$names = [];
 		foreach ($rows as $row) {
-			if ($schema === self::DEFAULT_SCHEMA) {
+			if ($schema === $this->_defaultSchema) {
 				$names[] = $row['table_name'];
 			} else {
 				$names[] = $row['table_schema'] . '.' . $row['table_name'];

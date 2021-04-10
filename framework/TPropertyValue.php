@@ -122,8 +122,7 @@ class TPropertyValue
 			$value = trim($value);
 			$len = strlen($value);
 			if ($len >= 2 && $value[0] == '(' && $value[$len - 1] == ')') {
-				eval('$array=array' . $value . ';');
-				return $array;
+				return eval('return array' . $value . ';');
 			} else {
 				return $len > 0 ? [$value] : [];
 			}

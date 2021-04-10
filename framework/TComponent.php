@@ -1225,10 +1225,7 @@ class TComponent
 	{
 		$expression = $this->dyEvaluateExpressionFilter($expression);
 		try {
-			if (eval("\$result=$expression;") === false) {
-				throw new \Exception('');
-			}
-			return $result;
+			return eval("return $expression;");
 		} catch (\Exception $e) {
 			throw new TInvalidOperationException('component_expression_invalid', get_class($this), $expression, $e->getMessage());
 		}

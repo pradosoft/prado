@@ -249,7 +249,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		if ($cache = Prado::getApplication()->getCache()) {
 			// this is the most secure method, file info can't be forged from client side, no matter what
-			$token = md5('TActiveFileUpload::Params::' . $this->ClientID . '::' . rand(1000 * 1000, 9999 * 1000));
+			$token = md5('TActiveFileUpload::Params::' . $this->getClientID() . '::' . rand(1000 * 1000, 9999 * 1000));
 			$cache->set($token, serialize($params), 5 * 60); // expire in 5 minutes - the callback should arrive back in seconds, actually
 		} elseif ($mgr = Prado::getApplication()->getSecurityManager()) {
 			// this is a less secure method, file info can be still forged from client side, but only if attacker knows the secret application key
