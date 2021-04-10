@@ -143,6 +143,7 @@ class TRedisCache extends TCache
 	}
 
 	/**
+	 * @param mixed $key
 	 * @return bool always true
 	 */
 	public function valid($key)
