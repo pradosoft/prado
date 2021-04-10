@@ -13,6 +13,7 @@ Upgrading from v4.1.1
 - the prado-cli command used to create a new project has been removed. Use "composer create-project pradosoft/prado-app <directory>" instead.
 - The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
 - TEACache has been removed. The eAccelerator project has been abandoned and doesn't work with PHP > 5.4.
+- TXCache has been removed. The XCache project has been abandoned and doesn't work with PHP > 5.6.
 
 Upgrading from v4.1.0
 ---------------------

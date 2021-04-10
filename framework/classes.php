@@ -25,7 +25,6 @@ return [
 'TFileCacheDependency' => 'Prado\Caching\TFileCacheDependency',
 'TGlobalStateCacheDependency' => 'Prado\Caching\TGlobalStateCacheDependency',
 'TMemCache' => 'Prado\Caching\TMemCache',
-'TXCache' => 'Prado\Caching\TXCache',
 'TAttributeCollection' => 'Prado\Collections\TAttributeCollection',
 'TDummyDataSource' => 'Prado\Collections\TDummyDataSource',
 'TDummyDataSourceIterator' => 'Prado\Collections\TDummyDataSourceIterator',
