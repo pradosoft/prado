@@ -351,6 +351,7 @@ class TPriorityMap extends TMap
 			}
 			$this->_c++;
 			$this->_fd = null;
+			$this->dyAddItem($key, $value);
 		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
 		}
@@ -388,6 +389,7 @@ class TPriorityMap extends TMap
 							$this->_o = false;
 						}
 						$this->_fd = null;
+						$this->dyRemoveItem($key, $value);
 						return $value;
 					}
 				}
@@ -403,6 +405,7 @@ class TPriorityMap extends TMap
 						$this->_o = false;
 					}
 					$this->_fd = null;
+					$this->dyRemoveItem($key, $value);
 					return $value;
 				} else {
 					return null;

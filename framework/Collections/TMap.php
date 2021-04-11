@@ -155,6 +155,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	{
 		if (!$this->_r) {
 			$this->_d[$key] = $value;
+			$this->dyAddItem($key, $value);
 		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
 		}
@@ -172,6 +173,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			if (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) {
 				$value = $this->_d[$key];
 				unset($this->_d[$key]);
+				$this->dyRemoveItem($key, $value);
 				return $value;
 			} else {
 				return null;
