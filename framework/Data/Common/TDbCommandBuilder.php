@@ -12,6 +12,7 @@ namespace Prado\Data\Common;
 
 use PDO;
 use Traversable;
+use Prado\Data\TDbCommand;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
@@ -27,7 +28,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	private $_tableInfo;
 
 	/**
-	 * @param null|TDbConnection $connection database connection.
+	 * @param null|\Prado\Data\TDbConnection $connection database connection.
 	 * @param null|TDbTableInfo $tableInfo table information.
 	 */
 	public function __construct($connection = null, $tableInfo = null)
@@ -37,7 +38,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -45,7 +46,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $value database connection.
+	 * @param \Prado\Data\TDbConnection $value database connection.
 	 */
 	public function setDbConnection($value)
 	{
@@ -496,7 +497,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * @param mixed $value PHP value
-	 * @return int PDO parameter types.
+	 * @return null|int PDO parameter types.
 	 */
 	public static function getPdoType($value)
 	{
@@ -506,10 +507,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 			case 'string': return PDO::PARAM_STR;
 			case 'NULL': return PDO::PARAM_NULL;
 		}
+		return null;
 	}
 
 	/**
-	 * @param array $array * @return boolean true if any array key is an integer.
+	 * @param array $array
+	 * @return bool true if any array key is an integer.
 	 */
 	protected function hasIntegerKey($array)
 	{

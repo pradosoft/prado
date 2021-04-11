@@ -49,7 +49,7 @@ abstract class TSqlMapCache implements ICache
 	public function setCacheSize($value)
 	{
 		$this->_cacheSize = TPropertyValue::ensureInteger($value);
-		if($this->_cacheSize == 0) {
+		if ($this->_cacheSize == 0) {
 			$this->_cacheSize = 100;
 		}
 	}

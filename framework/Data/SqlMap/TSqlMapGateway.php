@@ -10,6 +10,9 @@
 
 namespace Prado\Data\SqlMap;
 
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
+use Prado\Collections\TPagedList;
 use Prado\Data\SqlMap\DataMapper\TSqlMapPagedList;
 use Prado\Prado;
 
@@ -48,7 +51,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{

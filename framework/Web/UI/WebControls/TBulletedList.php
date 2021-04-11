@@ -42,7 +42,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 */
 	private $_isEnabled;
 	/**
-	 * @var TPostBackOptions postback options
+	 * @var array postback options
 	 */
 	private $_postBackOptions;
 

@@ -152,7 +152,7 @@ class TErrorHandler extends \Prado\TModule
 
 	/**
 	 * @param string $value
-	 * @param Exception|null$exception
+	 * @param null|\Exception $exception
 	 * @return string
 	 * @since 3.1.6
 	 */
@@ -189,7 +189,7 @@ class TErrorHandler extends \Prado\TModule
 	 * THttpException and errors happened when the application is in <b>Debug</b>
 	 * mode will be displayed to the client user.
 	 * @param int $statusCode response status code
-	 * @param Exception $exception exception instance
+	 * @param \Exception $exception exception instance
 	 */
 	protected function handleExternalError($statusCode, $exception)
 	{
@@ -228,7 +228,7 @@ class TErrorHandler extends \Prado\TModule
 	 * THttpException and errors happened when the application is in <b>Debug</b>
 	 * mode will be displayed to the client user.
 	 * Error is displayed without using existing template to prevent further errors.
-	 * @param Exception $exception exception instance
+	 * @param \Exception $exception exception instance
 	 */
 	protected function handleRecursiveError($exception)
 	{
@@ -263,7 +263,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Exceptions are displayed with rich context information, including
 	 * the call stack and the context source code.
 	 * This method is only invoked when application is in <b>Debug</b> mode.
-	 * @param Exception $exception exception instance
+	 * @param \Exception $exception exception instance
 	 */
 	protected function displayException($exception)
 	{
@@ -317,7 +317,7 @@ class TErrorHandler extends \Prado\TModule
 	 * Retrieves the template used for displaying internal exceptions.
 	 * Internal exceptions will be displayed with source code causing the exception.
 	 * This occurs when the application is in debug mode.
-	 * @param Exception $exception the exception to be displayed
+	 * @param \Exception $exception the exception to be displayed
 	 * @return string the template content
 	 */
 	protected function getExceptionTemplate($exception)
@@ -346,7 +346,7 @@ class TErrorHandler extends \Prado\TModule
 	 * %%Time%% : the time the exception occurs at
 	 *
 	 * @param int $statusCode status code (such as 404, 500, etc.)
-	 * @param Exception $exception the exception to be displayed
+	 * @param \Exception $exception the exception to be displayed
 	 * @return string the template content
 	 */
 	protected function getErrorTemplate($statusCode, $exception)

@@ -13,6 +13,7 @@ namespace Prado\Web\UI\JuiControls;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
 /**
  * TJuiProgressbar class.

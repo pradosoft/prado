@@ -36,13 +36,16 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, openssl, pcre, spl, zlib
-          tools: php-cs-fixer, cs2pr
+          tools: php-cs-fixer, phpstan, cs2pr
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
-      - name: Validate code syntax
+      - name: Validate code syntax using php-cs-fixer
         run: php-cs-fixer fix --dry-run --format=checkstyle | cs2pr
+
+      - name: Validate code using phpstan
+        run: phpstan analyse --error-format=checkstyle --level=1 framework | cs2pr
 
       - name: Get composer cache directory
         id: composer-cache

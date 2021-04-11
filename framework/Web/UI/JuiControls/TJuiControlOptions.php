@@ -61,7 +61,7 @@ class TJuiControlOptions
 	public function setControl($control)
 	{
 		if (!$control instanceof IJuiOptions) {
-			throw new THttpException(500, 'juioptions_control_invalid', $control->ID);
+			throw new THttpException(500, 'juioptions_control_invalid', $control->getID());
 		}
 		$this->_control = $control;
 	}
@@ -100,7 +100,7 @@ class TJuiControlOptions
 			}
 		}
 
-		throw new TConfigurationException('juioptions_option_invalid', $this->_control->ID, $name);
+		throw new TConfigurationException('juioptions_option_invalid', $this->_control->getID(), $name);
 	}
 
 	/**

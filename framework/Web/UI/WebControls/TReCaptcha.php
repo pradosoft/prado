@@ -237,7 +237,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function renderContents($writer)
 	{
 		$readyscript = 'jQuery(document).trigger(' . TJavaScript::quoteString('captchaready:' . $this->getClientID()) . ')';
-		$cs = $this->getPage()->ClientScript;
+		$cs = $this->getPage()->getClientScript();
 		$id = $this->getClientID();
 		$divid = $id . '_1_recaptchadiv';
 		$writer->write('<div id="' . htmlspecialchars($divid) . '">');

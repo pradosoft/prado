@@ -57,6 +57,7 @@ class TFirePhpLogRoute extends TLogRoute
 		$firephp->log('Time,  Message');
 
 		$first = $logs[0][3];
+		$total = 0;
 		$c = count($logs);
 		for ($i = 0, $n = $c; $i < $n; ++$i) {
 			$message = $logs[$i][0];

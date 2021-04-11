@@ -26,8 +26,8 @@ use Prado\Prado;
 class TSqliteTableInfo extends TDbTableInfo
 {
 	/**
-	 * @param TDbConnection $connection database connection.
-	 * @return TDbCommandBuilder new command builder
+	 * @param \Prado\Data\TDbConnection $connection database connection.
+	 * @return \Prado\Data\Common\TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)
 	{

@@ -512,4 +512,6 @@ accordion_activeviewid_invalid			= TAccordion.ActiveViewID has an invalid ID '{0
 accordion_activeviewindex_invalid		= TAccordion.ActiveViewIndex has an invalid Index '{0}'.
 accordion_view_inexistent				= TAccordion cannot find the specified view.
 
-juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.
+juidatepicker_settextmode_unsupported 	= TextMode of TJuiDatePicker cannot be changed.
+
+control_adapter_not_active				= BaseActiveControl property called on a non-active Control.

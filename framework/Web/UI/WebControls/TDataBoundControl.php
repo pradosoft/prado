@@ -62,7 +62,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	private $_isDataBound = false;
 
 	/**
-	 * @return Traversable data source object, defaults to null.
+	 * @return \Traversable data source object, defaults to null.
 	 */
 	public function getDataSource()
 	{
@@ -71,10 +71,10 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets the data source object associated with the databound control.
-	 * The data source must implement Traversable interface.
+	 * The data source must implement \Traversable interface.
 	 * If an array is given, it will be converted to xxx.
 	 * If a string is given, it will be converted to xxx.
-	 * @param array|string|Traversable $value data source object
+	 * @param array|string|\Traversable $value data source object
 	 */
 	public function setDataSource($value)
 	{
@@ -362,9 +362,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	public function dataSourceViewChanged($sender, $param)
 	{
-		if (!$this->_ignoreDataSourceViewChanged) {
-			$this->setRequiresDataBinding(true);
-		}
+		$this->setRequiresDataBinding(true);
 	}
 
 	protected function getDataSourceView()
@@ -467,9 +465,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Validates if the parameter is a valid data source.
 	 * If it is a string or an array, it will be converted as a TList object.
-	 * @param array|string|Traversable $value data source to be validated
+	 * @param array|string|\Traversable $value data source to be validated
 	 * @throws TInvalidDataTypeException if the data is neither null nor Traversable
-	 * @return Traversable the data that is traversable
+	 * @return \Traversable the data that is traversable
 	 */
 	protected function validateDataSource($value)
 	{

@@ -481,6 +481,7 @@ class TCache_Lite
 			// because the filesize can be cached by PHP itself...
 			clearstatcache();
 			$length = @filesize($this->_file);
+			$hashControl = '';
 			if ($this->_readControl) {
 				$hashControl = @fread($fp, 32);
 				$length = $length - 32;
@@ -543,7 +544,7 @@ class TCache_Lite
 	protected function _writeAndControl($data)
 	{
 		$this->_write($data);
-		$dataRead = $this->_read($data);
+		$dataRead = $this->_read();
 		return ($dataRead == $data);
 	}
 

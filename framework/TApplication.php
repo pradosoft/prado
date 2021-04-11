@@ -848,7 +848,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return ICache the cache module, null if cache module is not installed
+	 * @return null|\Prado\Caching\ICache the cache module, null if cache module is not installed
 	 */
 	public function getCache()
 	{

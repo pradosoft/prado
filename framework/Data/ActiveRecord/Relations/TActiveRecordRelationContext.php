@@ -201,7 +201,7 @@ class TActiveRecordRelationContext
 
 	/**
 	 * @param mixed $updateBelongsTo
-	 * @return TActiveRecordRelationCommand
+	 * @return bool
 	 */
 	public function updateAssociatedRecords($updateBelongsTo = false)
 	{

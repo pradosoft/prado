@@ -201,6 +201,7 @@ class TSqlCriteria extends \Prado\TComponent
 		foreach ($this->getParameters() as $k => $v) {
 			return is_string($k);
 		}
+		return false;
 	}
 
 	/**

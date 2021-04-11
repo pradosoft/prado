@@ -177,7 +177,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @return Traversable data source to be bound to the dropdown list boxes.
+	 * @return \Traversable data source to be bound to the dropdown list boxes.
 	 */
 	public function getListDataSource()
 	{
@@ -185,7 +185,7 @@ class TDropDownListColumn extends TDataGridColumn
 	}
 
 	/**
-	 * @param array|string|Traversable $value data source to be bound to the dropdown list boxes.
+	 * @param array|string|\Traversable $value data source to be bound to the dropdown list boxes.
 	 */
 	public function setListDataSource($value)
 	{

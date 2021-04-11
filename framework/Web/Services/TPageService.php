@@ -16,6 +16,7 @@ use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
 
@@ -229,6 +230,7 @@ class TPageService extends \Prado\TService
 	{
 		$application = $this->getApplication();
 		$pagePath = $this->getRequestedPagePath();
+		$pageConfig = null;
 		if (($cache = $application->getCache()) === null) {
 			$pageConfig = new TPageConfiguration($pagePath);
 			if ($config !== null) {

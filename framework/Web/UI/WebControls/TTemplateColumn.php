@@ -193,6 +193,8 @@ class TTemplateColumn extends TDataGridColumn
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
+			$template = null;
+			$classPath = '';
 			if ($itemType === TListItemType::EditItem) {
 				if (($classPath = $this->getEditItemRenderer()) === '' && ($template = $this->_editItemTemplate) === null) {
 					$classPath = $this->getItemRenderer();

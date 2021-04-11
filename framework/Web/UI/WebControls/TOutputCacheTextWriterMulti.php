@@ -42,6 +42,7 @@ class TOutputCacheTextWriterMulti extends TTextWriter
 
 	public function flush()
 	{
+		$s = '';
 		foreach ($this->_writers as $writer) {
 			$s = $writer->flush();
 		}

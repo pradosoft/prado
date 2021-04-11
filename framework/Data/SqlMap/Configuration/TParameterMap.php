@@ -138,10 +138,10 @@ class TParameterMap extends \Prado\TComponent
 
 	/**
 	 * Get the value of a property from the the parameter object.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry.
 	 * @param TParameterProperty $property parameter proproperty.
 	 * @param mixed $parameterValue parameter object to get the value from.
-	 * @return unknown
+	 * @return mixed value
 	 */
 	public function getPropertyValue($registry, $property, $parameterValue)
 	{
@@ -164,8 +164,8 @@ class TParameterMap extends \Prado\TComponent
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
 	 * @param TParameterProperty $property parameter property
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
-	 * @return TSqlMapTypeHandler type handler.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($property, $registry)
 	{

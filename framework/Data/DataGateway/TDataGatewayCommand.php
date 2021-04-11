@@ -10,6 +10,10 @@
 
 namespace Prado\Data\DataGateway;
 
+use Prado\Data\TDbCommand;
+use Prado\Data\TDbDataReader;
+use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
 
 /**
@@ -53,7 +57,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 		return $this->_builder->getTableInfo();
 	}
 	/**
-	 * @return TDbConnection
+	 * @return \Prado\Data\TDbConnection
 	 */
 	public function getDbConnection()
 	{
@@ -381,7 +385,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	 * @param string $method __call method name
 	 * @param string $condition criteria conditions
 	 * @param array $args method arguments
-	 * @return TActiveRecordCriteria criteria created from the method name and its arguments.
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria criteria created from the method name and its arguments.
 	 */
 	public function createCriteriaFromString($method, $condition, $args)
 	{

@@ -12,6 +12,7 @@ namespace Prado\Data\SqlMap\Statements;
 
 use Prado\Collections\TList;
 use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\SqlMap\Configuration\TResultMap;
 use Prado\Data\SqlMap\Configuration\TResultProperty;
 use Prado\Data\SqlMap\Configuration\TSqlMapInsert;
 use Prado\Data\SqlMap\Configuration\TSqlMapStatement;
@@ -44,7 +45,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	private $_command;
 
 	/**
-	 * @var TSqlMapper sqlmap used by this mapper.
+	 * @var TSqlMapManager sqlmap used by this mapper.
 	 */
 	private $_manager;
 
@@ -59,22 +60,22 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	private $_IsRowDataFound = false;
 
 	/**
-	 * @var TSQLMapObjectCollectionTree group by object collection tree
+	 * @var TSqlMapObjectCollectionTree group by object collection tree
 	 */
 	private $_groupBy;
 
 	/**
-	 * @var Post select is to query for list.
+	 * @var int select is to query for list.
 	 */
 	const QUERY_FOR_LIST = 0;
 
 	/**
-	 * @var Post select is to query for list.
+	 * @var int select is to query for array.
 	 */
 	const QUERY_FOR_ARRAY = 1;
 
 	/**
-	 * @var Post select is to query for object.
+	 * @var int select is to query for object.
 	 */
 	const QUERY_FOR_OBJECT = 2;
 
@@ -84,7 +85,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 */
 	public function getID()
 	{
-		return $this->_statement->ID;
+		return $this->_statement->getID();
 	}
 
 	/**
@@ -138,37 +139,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	}
 
 	/**
-	 * Execute SQL Query.
-	 * @param IDbConnection $connection database connection
-	 * @param array $sql SQL statement and parameters.
-	 * @param mixed $command
-	 * @param mixed $max
-	 * @param mixed $skip
-	 * @throws TSqlMapExecutionException if execution error or false record set.
-	 * @throws TSqlMapQueryExecutionException if any execution error
-	 * @return mixed record set if applicable.
-	 */
-	/*	protected function executeSQLQuery($connection, $sql)
-		{
-			try
-			{
-				if(!($recordSet = $connection->execute($sql['sql'],$sql['parameters'])))
-				{
-					throw new TSqlMapExecutionException(
-						'sqlmap_execution_error_no_record', $this->getID(),
-						$connection->ErrorMsg());
-				}
-				return $recordSet;
-			}
-			catch (Exception $e)
-			{
-				throw new TSqlMapQueryExecutionException($this->getStatement(), $e);
-			}
-		}*/
-
-	/**
 	 * Execute SQL Query with limits.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param $command
 	 * @param int $max The maximum number of rows to return.
 	 * @param int $skip The number of rows to skip over.
@@ -185,28 +157,11 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		}
 		$connection->setActive(true);
 		return $command->query();
-
-		/*//var_dump($command);
-		try
-		{
-			$recordSet = $connection->selectLimit($sql['sql'],$max,$skip,$sql['parameters']);
-			if(!$recordSet)
-			{
-				throw new TSqlMapExecutionException(
-							'sqlmap_execution_error_query_for_list',
-							$connection->ErrorMsg());
-			}
-			return $recordSet;
-		}
-		catch (Exception $e)
-		{
-			throw new TSqlMapQueryExecutionException($this->getStatement(), $e);
-		}*/
 	}
 
 	/**
 	 * Executes the SQL and retuns a List of result objects.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param null|object $result result collection object.
 	 * @param int $skip The number of rows to skip over.
@@ -227,7 +182,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * This method should only be called by internal developers, consider using
 	 * <tt>executeQueryForList()</tt> first.
 	 *
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param array $sql SQL string and subsititution parameters.
 	 * @param object $result result collection object.
@@ -242,7 +197,6 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 							$this->_statement->createInstanceOfListClass($registry);
 		$connection->setActive(true);
 		$reader = $sql->query();
-		//$reader = $this->executeSQLQueryLimit($connection, $sql, $max, $skip);
 		if ($delegate !== null) {
 			foreach ($reader as $row) {
 				$obj = $this->applyResultMap($row);
@@ -250,9 +204,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				$this->raiseRowDelegate($delegate, $param);
 			}
 		} else {
-			//var_dump($sql,$parameter);
 			foreach ($reader as $row) {
-//				var_dump($row);
 				$list[] = $this->applyResultMap($row);
 			}
 		}
@@ -273,7 +225,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * the property named in the keyProperty parameter.  The value at each key
 	 * will be the value of the property specified in the valueProperty parameter.
 	 * If valueProperty is null, the entire result object will be entered.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
 	 * @param null|string $valueProperty The property of the result object to be used as the value (or null).
@@ -297,7 +249,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * This method should only be called by internal developers, consider using
 	 * <tt>executeQueryForMap()</tt> first.
 	 *
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param mixed $command
 	 * @param string $keyProperty The property of the result object to be used as the key.
@@ -309,11 +261,9 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	public function runQueryForMap($connection, $parameter, $command, $keyProperty, $valueProperty = null, $delegate = null)
 	{
 		$map = [];
-		//$recordSet = $this->executeSQLQuery($connection, $sql);
 		$connection->setActive(true);
 		$reader = $command->query();
 		if ($delegate !== null) {
-			//while($row = $recordSet->fetchRow())
 			foreach ($reader as $row) {
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
@@ -323,7 +273,6 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				$this->raiseRowDelegate($delegate, $param);
 			}
 		} else {
-			//while($row = $recordSet->fetchRow())
 			foreach ($reader as $row) {
 				$obj = $this->applyResultMap($row);
 				$key = TPropertyAccess::get($obj, $keyProperty);
@@ -366,7 +315,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Executes an SQL statement that returns a single row as an object of the
 	 * type of the <tt>$result</tt> passed in as a parameter.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The parameter data (object, arrary, primitive) used to set the parameters in the SQL
 	 * @param null|mixed $result The result object.
 	 * @return object the object.
@@ -384,7 +333,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * This method should only be called by internal developers, consider using
 	 * <tt>executeQueryForObject()</tt> first.
 	 *
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param $command
 	 * @param object &$result The result object.
 	 * @return object the object.
@@ -413,7 +362,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Execute an insert statement. Fill the parameter object with the ouput
 	 * parameters if any, also could return the insert generated key.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The parameter object used to fill the statement.
 	 * @return string the insert generated key.
 	 */
@@ -436,7 +385,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the insert generated ID before executing an insert statement.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
 	 * @return string new insert ID if pre-select key statement was executed, null otherwise.
 	 */
@@ -452,7 +401,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Gets the inserted row ID after executing an insert statement.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
 	 * @return string last insert ID, null otherwise.
 	 */
@@ -468,7 +417,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Execute the select key statement, used to obtain last insert ID.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter
 	 * @param TSqlMapSelectKey $selectKey select key statement
 	 * @return string last insert ID.
@@ -490,7 +439,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Execute an update statement. Also used for delete statement.
 	 * Return the number of rows effected.
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @return int The number of rows effected.
 	 */
@@ -498,7 +447,6 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$sql = $this->_command->create($this->getManager(), $connection, $this->_statement, $parameter);
 		$affectedRows = $sql->execute();
-		//$this->executeSQLQuery($connection, $sql);
 		$this->executePostSelect($connection);
 		$this->onExecuteQuery($sql);
 		return $affectedRows;
@@ -506,7 +454,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 
 	/**
 	 * Process 'select' result properties
-	 * @param IDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 */
 	protected function executePostSelect($connection)
 	{

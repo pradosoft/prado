@@ -7,7 +7,7 @@ class FocusControl extends TPage
 		$selected = $this->list->SelectedIndex;
 		if ($selected >= 0) {
 			$id = "button" . ($selected + 1);
-			$controlID = $this->{$id}->ClientID;
+			$controlID = $this->{$id}->getClientID();
 			$this->getClientScript()->registerFocusControl($controlID);
 		}
 	}

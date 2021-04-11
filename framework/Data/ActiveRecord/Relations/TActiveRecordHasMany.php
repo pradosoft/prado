@@ -70,7 +70,7 @@ class TActiveRecordHasMany extends TActiveRecordRelation
 	/**
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects.
-	 * @param array &$results original results.
+	 * @param array $results by reference, original results.
 	 */
 	protected function collectForeignObjects(&$results)
 	{

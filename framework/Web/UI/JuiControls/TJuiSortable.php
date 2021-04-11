@@ -14,6 +14,7 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\WebControls\TRepeater;
 

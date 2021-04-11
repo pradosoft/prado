@@ -150,7 +150,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	public function set($id, $value, $expire = 0, $dependency = null)
 	{
 		if (empty($value) && $expire === 0) {
-			$this->delete($id);
+			return $this->delete($id);
 		} else {
 			$data = [$value, $dependency];
 			return $this->setValue($this->generateUniqueKey($id), $data, $expire);
@@ -286,6 +286,6 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 */
 	public function offsetUnset($id)
 	{
-		$this->delete($id);
+		return $this->delete($id);
 	}
 }

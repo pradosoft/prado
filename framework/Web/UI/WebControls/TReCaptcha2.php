@@ -110,7 +110,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
 		foreach ($captchas as $captcha) {
-			if ($this->getClientID() == $captcha->ClientID) {
+			if ($this->getClientID() == $captcha->getClientID()) {
 				$responseFieldName .= ($cont > 0) ? '-' . $cont : '';
 			}
 			$cont++;
@@ -287,7 +287,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$id = $this->getClientID();
 		$options = TJavaScript::encode($this->getClientOptions());
 		$className = $this->getClientClassName();
-		$cs = $this->getPage()->ClientScript;
+		$cs = $this->getPage()->getClientScript();
 		$code = "new $className($options);";
 
 		$cs->registerPradoScript('ajax');

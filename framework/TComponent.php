@@ -295,6 +295,22 @@ use Prado\Collections\TPriorityMap;
  * @author Brad Anderson <javalizard@mac.com>
  * @package Prado
  * @since 3.0
+ * @method void dyListen(array $globalEvents)
+ * @method void dyUnlisten(array $globalEvents)
+ * @method string dyPreRaiseEvent(string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|function $postfunction)
+ * @method dyIntraRaiseEventTestHandler(callable $handler, mixed $sender, \Prado\TEventParameter $param, string $name)
+ * @method bool dyIntraRaiseEventPostHandler(string $name, mixed $sender, \Prado\TEventParameter $param, callable $handler, $response)
+ * @method array dyPostRaiseEvent(array $responses, string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|function $postfunction)
+ * @method string dyEvaluateExpressionFilter(string $statements)
+ * @method string dyEvaluateStatementsFilter(string $statements)
+ * @method dyCreatedOnTemplate(\Prado\TComponent $parent)
+ * @method void dyAddParsedObject(\Prado\TComponent|string $object)
+ * @method void dyAttachBehavior(string $name, IBehavior $behavior)
+ * @method void dyDetachBehavior(string $name, IBehavior $behavior)
+ * @method void dyEnableBehavior(string $name, IBehavior $behavior)
+ * @method void dyDisableBehavior(string $name, IBehavior $behavior)
+ * @method void dyEnableBehaviors()
+ * @method void dyDisableBehaviors()
  */
 class TComponent
 {
@@ -1730,7 +1746,7 @@ class TComponent
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
-	 * @param array &$exprops
+	 * @param array $exprops by reference
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

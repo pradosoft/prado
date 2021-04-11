@@ -15,6 +15,8 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  */
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
+use Prado\Web\UI\WebControls\TButton;
+use Prado\Web\UI\WebControls\TTextBox;
 
 /**
  * TScaffoldSearch provide a simple textbox and a button that is used
@@ -98,6 +100,7 @@ class TScaffoldSearch extends TScaffoldBase
 			$builder = $table->createCommandBuilder($this->getRecordFinder()->getDbConnection());
 			return $builder->getSearchExpression($this->getFields(), $str);
 		}
+		return '';
 	}
 
 	/**

@@ -53,7 +53,7 @@ class TDbTableInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $connection database connection.
+	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 * @return TDbCommandBuilder new command builder
 	 */
 	public function createCommandBuilder($connection)

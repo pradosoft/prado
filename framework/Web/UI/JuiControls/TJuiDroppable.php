@@ -13,6 +13,7 @@ namespace Prado\Web\UI\JuiControls;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
 /**
  * TJuiDroppable class.
@@ -49,7 +50,7 @@ use Prado\Web\UI\ActiveControls\TActivePanel;
  *		$target=$param->getCallbackParameter()->target->offset;
  *		$top=$offset->top - $target->top;
  *		$left=$offset->left - $target->left;
- *		$this->label1->Text="Dropped ".$draggable->ID." at: <br/>Top=".$top." Left=".$left;
+ *		$this->label1->Text="Dropped ".$draggable->getID()." at: <br/>Top=".$top." Left=".$left;
  *	}
  * </code>
  *

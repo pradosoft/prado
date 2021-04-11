@@ -70,7 +70,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	{
 		$page = $this->getService()->getRequestedPage();
 		if ($page->getIsCallback()) {
-			$string = <<<EOD
+			return <<<EOD
 
 <script>
 /*<![CDATA[*/
@@ -84,8 +84,6 @@ if (typeof(console) == 'object')
 
 EOD;
 		}
-
-		return $string;
 	}
 
 	protected function renderMessage($log, $info)

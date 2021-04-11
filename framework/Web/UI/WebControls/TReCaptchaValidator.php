@@ -117,7 +117,7 @@ class TReCaptchaValidator extends TBaseValidator
 				'function ' . $fn . '(valid)',
 				'{',
 				'  jQuery(' . TJavaScript::quoteString('#' . $this->getClientID() . '_1') . ').val(valid);',
-				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->ClientID) . '); ',
+				'  Prado.Validation.validateControl(' . TJavaScript::quoteString($control->getClientID()) . '); ',
 				'}',
 				'',
 				// update the validator to the result if we're in a callback

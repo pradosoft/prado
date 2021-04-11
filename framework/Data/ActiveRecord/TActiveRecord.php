@@ -10,9 +10,8 @@
 
 namespace Prado\Data\ActiveRecord;
 
-/**
- * Load record manager, criteria and relations.
- */
+use Prado\Data\TDbConnection;
+use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\DataGateway\TSqlCriteria;
@@ -328,7 +327,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Gets the current Db connection, the connection object is obtained from
 	 * the TActiveRecordManager if connection is currently null.
-	 * @return TDbConnection current db connection for this object.
+	 * @return \Prado\Data\TDbConnection current db connection for this object.
 	 */
 	public function getDbConnection()
 	{
@@ -339,7 +338,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $connection db connection object for this record.
+	 * @param \Prado\Data\TDbConnection $connection db connection object for this record.
 	 */
 	public function setDbConnection($connection)
 	{
@@ -536,7 +535,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbDataReader $reader data reader
+	 * @param \Prado\Data\TDbDataReader $reader data reader
 	 * @return array the AR objects populated by the query result
 	 * @since 3.1.2
 	 */
@@ -732,7 +731,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * value equal to the $property value.
 	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
 	 * @param array $args method call arguments.
-	 * @return TActiveRecordRelation, null if the context or the handler doesn't exist
+	 * @return \Prado\Data\ActiveRecord\Relations\TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
 	protected function getRelationHandler($name, $args = [])
 	{
@@ -931,7 +930,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayEventParameter $param
 	 */
 	public function onCreateCommand($param)
 	{
@@ -948,7 +947,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are
 	 * bound to a static finder object and not to each distinct active record object.
-	 * @param TDataGatewayResultEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayResultEventParameter $param
 	 */
 	public function onExecuteCommand($param)
 	{
@@ -1065,7 +1064,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Return record data as JSON
-	 * @return JSON
+	 * @return false|string json
 	 * @since 3.2.4
 	 */
 	public function toJSON()

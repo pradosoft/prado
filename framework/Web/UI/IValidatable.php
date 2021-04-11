@@ -31,7 +31,6 @@ interface IValidatable
 	public function getIsValid();
 	/**
 	 * @param mixed $value
-	 * @return bool wether this control's validators validated successfully
 	 */
 	public function setIsValid($value);
 }

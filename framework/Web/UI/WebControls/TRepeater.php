@@ -16,6 +16,7 @@ use Prado\Collections\TMap;
 use Prado\Collections\TList;
 use Prado\Prado;
 use Prado\Util\TDataFieldAccessor;
+use Prado\Web\UI\ITemplate;
 
 /**
  * TRepeater class.

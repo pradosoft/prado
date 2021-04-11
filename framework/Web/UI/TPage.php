@@ -64,9 +64,9 @@ class TPage extends TTemplateControl
 	 */
 	private $_head;
 	/**
-	 * @var array list of registered validators
+	 * @var TList list of registered validators
 	 */
-	private $_validators = [];
+	private $_validators;
 	/**
 	 * @var bool if validation has been performed
 	 */

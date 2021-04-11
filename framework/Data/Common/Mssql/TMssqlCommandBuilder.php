@@ -25,7 +25,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 {
 	/**
 	 * Overrides parent implementation. Uses "SELECT @@Identity".
-	 * @return int last insert id, null if none is found.
+	 * @return null|int last insert id, null if none is found.
 	 */
 	public function getLastInsertID()
 	{
@@ -35,6 +35,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 				return (int) ($command->queryScalar());
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -95,7 +96,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * @param string $sql sql query
 	 * @param int $limit > 0
 	 * @param int $offset > 0
-	 * @return sql modified sql query applied with limit and offset.
+	 * @return string sql modified sql query applied with limit and offset.
 	 */
 	protected function rewriteLimitOffsetSql($sql, $limit, $offset)
 	{
@@ -153,6 +154,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 			}
 			return 'ORDER BY ' . implode(', ', $str);
 		}
+		return '';
 	}
 
 	/**

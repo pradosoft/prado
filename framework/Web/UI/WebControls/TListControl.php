@@ -443,7 +443,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	}
 
 	/**
-	 * @return TListItemCollection the item collection
+	 * @return \Prado\Collections\TListItemCollection the item collection
 	 */
 	public function getItems()
 	{

@@ -32,7 +32,7 @@ abstract class TDbUser extends TUser
 	/**
 	 * Returns a database connection that may be used to retrieve data from database.
 	 *
-	 * @return TDbConnection database connection that may be used to retrieve data from database
+	 * @return \Prado\Data\TDbConnection database connection that may be used to retrieve data from database
 	 */
 	public function getDbConnection()
 	{

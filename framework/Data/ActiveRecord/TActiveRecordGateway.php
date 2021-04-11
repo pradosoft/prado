@@ -14,6 +14,7 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
 use Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\Common\TDbTableInfo;
 use Prado\Data\DataGateway\TDataGatewayCommand;
 use Prado\Data\DataGateway\TSqlCriteria;
 use Prado\Data\TDbConnection;
@@ -116,7 +117,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 
 	/**
 	 * Returns table information for table in the database connection.
-	 * @param TDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param string $tableName table name
 	 * @return TDbTableInfo table details.
 	 */
@@ -158,8 +159,8 @@ class TActiveRecordGateway extends \Prado\TComponent
 		if (!isset($this->_commandBuilders[$connStr])) {
 			$builder = $tableInfo->createCommandBuilder($record->getDbConnection());
 			$command = Prado::createComponent($this->getDataGatewayClass(), $builder);
-			$command->OnCreateCommand[] = [$this, 'onCreateCommand'];
-			$command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
+			$command->attachEventHandler('OnCreateCommand', [$this, 'onCreateCommand']);
+			$command->attachEventHandler('OnExecuteCommand', [$this, 'onExecuteCommand']);
 			$this->_commandBuilders[$connStr] = $command;
 		}
 		$this->_commandBuilders[$connStr]->getBuilder()->setTableInfo($tableInfo);
@@ -192,7 +193,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * This method also raises the OnCreateCommand event on the ActiveRecord
 	 * object calling this gateway.
 	 * @param TDataGatewayCommand $sender originator
-	 * @param TDataGatewayEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayEventParameter $param
 	 */
 	public function onCreateCommand($sender, $param)
 	{
@@ -211,7 +212,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * This method also raises the OnCreateCommand event on the ActiveRecord
 	 * object calling this gateway.
 	 * @param TDataGatewayCommand $sender originator
-	 * @param TDataGatewayResultEventParameter $param
+	 * @param \Prado\Data\DataGateway\TDataGatewayResultEventParameter $param
 	 */
 	public function onExecuteCommand($sender, $param)
 	{
@@ -275,7 +276,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	 * Return record data from sql query.
 	 * @param TActiveRecord $record active record finder instance.
 	 * @param TActiveRecordCriteria $criteria sql query
-	 * @return TDbDataReader result iterator.
+	 * @return \Prado\Data\TDbDataReader result iterator.
 	 */
 	public function findRecordsBySql(TActiveRecord $record, $criteria)
 	{
@@ -324,7 +325,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 		$tableInfo = $command->getTableInfo();
 		foreach ($tableInfo->getColumns() as $name => $column) {
 			if ($column->hasSequence()) {
-				$record->setColumnValue($name, $command->getLastInsertID($column->getSequenceName()));
+				$record->setColumnValue($name, $command->getLastInsertID());
 			}
 		}
 	}

@@ -49,7 +49,7 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Constructor.
-	 * @param TDbConnection $connection the database connection
+	 * @param \Prado\Data\TDbConnection $connection the database connection
 	 * @param string $text the SQL statement to be executed
 	 */
 	public function __construct(TDbConnection $connection, $text)
@@ -86,7 +86,7 @@ class TDbCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection the connection associated with this command
+	 * @return \Prado\Data\TDbConnection the connection associated with this command
 	 */
 	public function getConnection()
 	{

@@ -14,6 +14,7 @@ use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\TActivePanel;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\WebControls\TRepeater;
 
@@ -216,18 +217,6 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	public function setDataSource($data)
 	{
 		$this->getSelectables()->setDataSource($data);
-	}
-
-	/**
-	 * Overrides parent implementation. Callback {@link renderSelectables()} when
-	 * page's IsCallback property is true.
-	 */
-	public function dataBind()
-	{
-		parent::dataBind();
-		if ($this->getPage()->getIsCallback()) {
-			$this->renderSelectables($this->getResponse()->createHtmlWriter());
-		}
 	}
 
 	/**

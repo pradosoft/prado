@@ -201,7 +201,7 @@ class Prado
 	 * module of the Prado application to handle the exception.
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
-	 * @param Exception $exception exception that is not caught
+	 * @param \Exception $exception exception that is not caught
 	 */
 	public static function exceptionHandler($exception)
 	{

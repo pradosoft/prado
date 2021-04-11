@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI;
 
+use Prado\Exceptions\TInvalidOperationException;
+
 /**
  * TControlAdapter class
  *

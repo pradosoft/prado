@@ -34,7 +34,7 @@ namespace Prado;
 class TApplicationComponent extends \Prado\TComponent
 {
 	/**
-	 * @return TApplication current application instance
+	 * @return \Prado\TApplication current application instance
 	 */
 	public function getApplication()
 	{
@@ -42,7 +42,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IService the current service
+	 * @return \Prado\IService the current service
 	 */
 	public function getService()
 	{
@@ -50,7 +50,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpRequest the current user request
+	 * @return \Prado\Web\THttpRequest the current user request
 	 */
 	public function getRequest()
 	{
@@ -58,7 +58,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpResponse the response
+	 * @return \Prado\Web\THttpResponse the response
 	 */
 	public function getResponse()
 	{
@@ -66,7 +66,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return THttpSession user session
+	 * @return \Prado\Web\THttpSession user session
 	 */
 	public function getSession()
 	{
@@ -74,7 +74,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IUser information about the current user
+	 * @return \Prado\Security\IUser information about the current user
 	 */
 	public function getUser()
 	{

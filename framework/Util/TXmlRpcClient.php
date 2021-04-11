@@ -43,7 +43,7 @@ class TXmlRpcClient extends TRpcClient
 		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'text/xml');
 
 		// skip response handling if the request was just a notification request
-		if ($this->isNotification) {
+		if ($this->getIsNotification()) {
 			return true;
 		}
 

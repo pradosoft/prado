@@ -11,6 +11,7 @@
 namespace Prado\Data\ActiveRecord;
 
 use Prado\Prado;
+use Prado\Caching\ICache;
 use Prado\TPropertyValue;
 
 /**
@@ -73,7 +74,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $conn default database connection
+	 * @param \Prado\Data\TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{
@@ -81,7 +82,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection default database connection
+	 * @return \Prado\Data\TDbConnection default database connection
 	 */
 	public function getDbConnection()
 	{
