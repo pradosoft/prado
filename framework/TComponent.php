@@ -144,7 +144,8 @@ use Prado\Collections\TPriorityMap;
  * __destruct method, if an object is listening to global events, then {@link unlisten} is called.
  * {@link unlisten} is required to be manually called before an object is
  * left without references if it is currently listening to any global events. This includes
- * class wide behaviors.
+ * class wide behaviors.  This is corrected in PHP 7.4.0 with WeakReferences and {@link 
+ * TWeakCallableCollection}
  *
  * An object that contains a method that starts with 'fx' will have those functions
  * automatically receive those events of the same name after {@link listen} is called on the object.
@@ -189,7 +190,7 @@ use Prado\Collections\TPriorityMap;
  * there are class wide behaviors.  Class behaviors depend upon object behaviors.
  *
  * When a new class implements {@link IBehavior} or {@link IClassBehavior} or
- * extends {@link TBehavior} or {@link TClassBehavior}, it may be added to an
+ * extends {@link TBehavior} or {@link TClassBehavior}, it may be attached to an
  * object by calling the object's {@link attachBehavior}.  The behaviors associated
  * name can then be used to {@link enableBehavior} or {@link disableBehavior}
  * the specific behavior.
@@ -381,7 +382,8 @@ class TComponent
 	 * This unlistens from the global event routines if listening
 	 *
 	 * PHP 5.3 does not __destruct objects when they are nulled and thus unlisten must be
-	 * called must be explicitly called.
+	 * called must be explicitly called. PHP 7.4.0 uses WeakReferences and this will be called
+	 * automatically.
 	 */
 	public function __destruct()
 	{
@@ -1345,6 +1347,37 @@ class TComponent
 			return $this->detachBehavior($param->getName(), $param->getPriority());
 		}
 	}
+	
+	/**
+	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of 
+	 * ['class' => 'MyBehavior', 'property1' => 'Value1'...] and creates a Behavior in return. eg.
+	 * <code>
+	 *		$b = $this->instanceBehavior('MyBehavior');
+	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
+	 * 		$b = $this->instanceBehavior(new MyBehavior);
+	 * </code>
+	 * @param mixed $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
+	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
+	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
+	 * @since 4,2,0
+	 */
+	protected static function instanceBehavior($behavior)
+	{
+		if (is_string($behavior)) {
+			$behavior = Prado::createComponent($behavior);
+		} elseif (is_array($behavior) && isset($behavior['class'])) {
+			$b = Prado::createComponent($behavior['class']);
+			unset($behavior['class']);
+			foreach($behavior as $property => $value) {
+				$b->setSubProperty($property, $value);
+			}
+			$behavior = $b;
+		}
+		if (!($behavior instanceof IBaseBehavior)) {
+			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
+		}
+		return $behavior;
+	}
 
 
 	/**
@@ -1387,9 +1420,11 @@ class TComponent
 		if (isset(self::$_um[$class][$name])) {
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
+		$behaviorObject = self::instanceBehavior($behavior);
 		$param = new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
 		self::$_um[$class] = [$name => $param] + self::$_um[$class];
-		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
+		//$behaviorObject = $this->instanceBehavior($behavior);
+		//$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 	}
 
@@ -1424,8 +1459,9 @@ class TComponent
 		}
 		$param = self::$_um[$class][$name];
 		$behavior = $param->getBehavior();
+		$behaviorObject = self::instanceBehavior($behavior);
 		unset(self::$_um[$class][$name]);
-		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
+		//$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 	}
 
@@ -1552,20 +1588,17 @@ class TComponent
 	 * dyAttachBehavior.
 	 *
 	 * @param string $name the behavior's name. It should uniquely identify this behavior.
-	 * @param mixed $behavior the behavior configuration. This is passed as the first
-	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
+	 * @param mixed $behavior the behavior configuration. This is the name of the Behavior Class
+	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of 
+	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
+	 * with values.
 	 * @param null|numeric $priority
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
-		if (is_string($behavior)) {
-			$behavior = Prado::createComponent($behavior);
-		}
-		if (!($behavior instanceof IBaseBehavior)) {
-			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
-		}
+		$behavior = self::instanceBehavior($behavior);
 		if ($behavior instanceof IBehavior) {
 			$behavior->setEnabled(true);
 		}
