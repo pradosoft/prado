@@ -1423,8 +1423,6 @@ class TComponent
 		$behaviorObject = self::instanceBehavior($behavior);
 		$param = new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
 		self::$_um[$class] = [$name => $param] + self::$_um[$class];
-		//$behaviorObject = $this->instanceBehavior($behavior);
-		//$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 	}
 
@@ -1461,7 +1459,6 @@ class TComponent
 		$behavior = $param->getBehavior();
 		$behaviorObject = self::instanceBehavior($behavior);
 		unset(self::$_um[$class][$name]);
-		//$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 	}
 
