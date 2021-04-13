@@ -1017,7 +1017,7 @@ class TComponent
 	/**
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
-	 * any 'on' events definedb by an objects active behaviors as well.
+	 * any 'on' events defined by an objects active behaviors as well.
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
@@ -1359,7 +1359,7 @@ class TComponent
 	 * @param mixed $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
 	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
-	 * @since 4,2,0
+	 * @since 4.2.0
 	 */
 	protected static function instanceBehavior($behavior)
 	{
