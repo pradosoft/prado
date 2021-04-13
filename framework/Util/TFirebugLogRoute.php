@@ -10,6 +10,7 @@
 
 namespace Prado\Util;
 
+use Prado\Exceptions\TException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 
@@ -50,7 +51,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 
 		try {
 			$blocks = TJavaScript::jsonEncode($blocks);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			// strip everythin not 7bit ascii
 			$blocks = preg_replace('/[^(\x20-\x7F)]*/', '', serialize($blocks));
 		}
@@ -69,7 +70,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	{
 		$page = $this->getService()->getRequestedPage();
 		if ($page->getIsCallback()) {
-			$string = <<<EOD
+			return <<<EOD
 
 <script>
 /*<![CDATA[*/
@@ -83,8 +84,6 @@ if (typeof(console) == 'object')
 
 EOD;
 		}
-
-		return $string;
 	}
 
 	protected function renderMessage($log, $info)

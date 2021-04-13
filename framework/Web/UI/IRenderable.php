@@ -24,7 +24,7 @@ interface IRenderable
 {
 	/**
 	 * Renders the component to end-users.
-	 * @param ITextWriter $writer writer for the rendering purpose
+	 * @param \Prado\IO\ITextWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer);
 }

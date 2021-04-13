@@ -178,7 +178,7 @@ class TMysqlMetaData extends TDbMetaData
 		}
 
 		$class = $this->getTableColumnClass();
-		$tableInfo->Columns[$columnId] = new $class($info);
+		$tableInfo->getColumns()[$columnId] = new $class($info);
 	}
 
 	/**

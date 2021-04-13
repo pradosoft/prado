@@ -14,6 +14,7 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  * Import scaffold base, list, edit and search controls.
  */
 use Prado\Prado;
+use Prado\Web\UI\WebControls\TButton;
 
 /**
  * TScaffoldView is a composite control consisting of TScaffoldListView
@@ -37,6 +38,9 @@ use Prado\Prado;
  */
 class TScaffoldView extends TScaffoldBase
 {
+	private $_panForNewButton;
+	private $_panForSearch;
+
 	/**
 	 * Copy basic record details to the list/edit/search controls.
 	 * @param mixed $param

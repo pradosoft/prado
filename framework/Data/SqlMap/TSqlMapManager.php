@@ -56,7 +56,7 @@ class TSqlMapManager extends \Prado\TComponent
 
 	/**
 	 * Constructor, create a new SqlMap manager.
-	 * @param TDbConnection $connection database connection
+	 * @param \Prado\Data\TDbConnection $connection database connection
 	 */
 	public function __construct($connection = null)
 	{
@@ -70,7 +70,7 @@ class TSqlMapManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbConnection $conn default database connection
+	 * @param \Prado\Data\TDbConnection $conn default database connection
 	 */
 	public function setDbConnection($conn)
 	{
@@ -78,7 +78,7 @@ class TSqlMapManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection default database connection
+	 * @return \Prado\Data\TDbConnection default database connection
 	 */
 	public function getDbConnection()
 	{

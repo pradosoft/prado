@@ -133,7 +133,7 @@ class TUrlMapping extends TUrlManager
 		if (is_file($this->_configFile)) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$config = include $this->_configFile;
-				$this->loadUrlMappings($dom);
+				$this->loadUrlMappings($config);
 			} else {
 				$dom = new TXmlDocument;
 				$dom->loadFromFile($this->_configFile);

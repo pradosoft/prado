@@ -349,7 +349,8 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		//create a new dom, import the existing xml
-		$dom = DOMDocument::load($filename);
+		$dom = new DOMDocument();
+		$dom->load($filename);
 
 		//find the body element
 		$xpath = new DOMXpath($dom);
@@ -435,7 +436,8 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		//create a new dom, import the existing xml
-		$dom = DOMDocument::load($filename);
+		$dom = new DOMDocument();
+		$dom->load($filename);
 
 		//find the body element
 		$xpath = new DOMXpath($dom);

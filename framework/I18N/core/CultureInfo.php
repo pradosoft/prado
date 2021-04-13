@@ -164,19 +164,6 @@ class CultureInfo
 	}
 
 	/**
-	 * Gets the CultureInfo that for this culture string
-	 * @param mixed $culture
-	 * @return CultureInfo invariant culture info is "en".
-	 */
-	public static function getInstance($culture)
-	{
-		if (!isset(self::$instances[$culture])) {
-			self::$instances[$culture] = new CultureInfo($culture);
-		}
-		return self::$instances[$culture];
-	}
-
-	/**
 	 * Determine if a given culture is valid. Simply checks that the
 	 * culture data exists.
 	 * @param string $culture a culture

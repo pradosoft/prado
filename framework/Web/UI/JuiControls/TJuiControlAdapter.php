@@ -10,7 +10,6 @@
 
 namespace Prado\Web\UI\JuiControls;
 
-use Prado\Prado;
 use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 /**
@@ -79,7 +78,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 
 	/**
 	 * Publish the jQuery-ui style Css asset file.
-	 * @param file $file name
+	 * @param string $file name
 	 * @return string Css file url.
 	 */
 	public function publishJuiStyle($file)

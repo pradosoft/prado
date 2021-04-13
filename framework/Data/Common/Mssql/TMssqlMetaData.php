@@ -26,6 +26,8 @@ use Prado\Prado;
  */
 class TMssqlMetaData extends TDbMetaData
 {
+	const DEFAULT_SCHEMA = 'dbo';
+
 	/**
 	 * @return string TDbTableInfo class name.
 	 */
@@ -168,7 +170,7 @@ EOD;
 		if ($col['NUMERIC_SCALE'] !== null) {
 			$info['NumericScale'] = (int) ($col['NUMERIC_SCALE']);
 		}
-		$tableInfo->Columns[$columnId] = new TMssqlTableColumn($info);
+		$tableInfo->getColumns()[$columnId] = new TMssqlTableColumn($info);
 	}
 
 	/**
@@ -289,8 +291,8 @@ SELECT TABLE_NAME, TABLE_SCHEMA FROM [INFORMATION_SCHEMA].[TABLES]
 WHERE TABLE_SCHEMA=:schema AND $condition
 EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
-		$command->bindParam(":schema", $schema);
-		$rows = $command->queryAll();
+		$command->bindParameter(":schema", $schema);
+		$rows = $command->query();
 		$names = [];
 		foreach ($rows as $row) {
 			if ($schema == self::DEFAULT_SCHEMA) {

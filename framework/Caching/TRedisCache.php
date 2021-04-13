@@ -142,6 +142,10 @@ class TRedisCache extends TCache
 		$this->_initialized = true;
 	}
 
+	/**
+	 * @param mixed $key
+	 * @return bool always true
+	 */
 	public function valid($key)
 	{
 		return true;
@@ -235,7 +239,7 @@ class TRedisCache extends TCache
 	 * Retrieves a value from cache with a specified key.
 	 * This is the implementation of the method declared in the parent class.
 	 * @param string $key a unique key identifying the cached value
-	 * @return string the value stored in cache, false if the value is not in the cache or expired.
+	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
 	 */
 	protected function getValue($key)
 	{
@@ -286,6 +290,7 @@ class TRedisCache extends TCache
 
 	/**
 	 * Deletes all values from cache, only clearing the currently selected database.
+	 * @return bool if no error happens during flush
 	 */
 	public function flush()
 	{

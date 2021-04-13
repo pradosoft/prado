@@ -73,7 +73,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	/**
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects.
-	 * @param array &$results original results.
+	 * @param array $results by reference, original results.
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -100,7 +100,7 @@ class TActiveRecordBelongsTo extends TActiveRecordRelation
 	 * Sets the foreign objects to the given property on the source object.
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $source source object.
 	 * @param array $properties foreign objects.
-	 * @param array &$collections
+	 * @param array $collections by reference
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{

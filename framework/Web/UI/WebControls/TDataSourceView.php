@@ -34,7 +34,7 @@ abstract class TDataSourceView extends \Prado\TComponent
 	/**
 	 * Performs DB selection based on specified parameters.
 	 * @param mixed $parameters
-	 * @return Traversable
+	 * @return \Traversable
 	 */
 	abstract public function select($parameters);
 

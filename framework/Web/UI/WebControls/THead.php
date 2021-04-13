@@ -45,11 +45,6 @@ use Prado\Web\THttpUtility;
 class THead extends \Prado\Web\UI\TControl
 {
 	/**
-	 * @var TList list of meta name tags to be loaded by {@link THead}
-	 */
-	private $_metaTags;
-
-	/**
 	 * Registers the head control with the current page.
 	 * This method is invoked when the control enters 'Init' stage.
 	 * The method raises 'Init' event.

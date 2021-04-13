@@ -84,8 +84,10 @@ class TScaffoldInputCommon extends TScaffoldInputBase
 		$control = $container->findControl(self::DEFAULT_ID);
 		if ($control instanceof TCheckBox) {
 			return $control->getChecked();
-		} elseif ($control instanceof TControl) {
+		} elseif ($control instanceof TTextBox) {
 			return $control->getText();
+		} else {
+			return '';
 		}
 	}
 

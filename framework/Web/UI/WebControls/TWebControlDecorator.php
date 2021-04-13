@@ -13,6 +13,7 @@ namespace Prado\Web\UI\WebControls;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TCompositeControl;
+use Prado\Web\UI\TTemplate;
 
 /**
  * TWebControlDecorator class

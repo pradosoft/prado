@@ -14,7 +14,6 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * Load active control adapter.
  */
-use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\TControl;

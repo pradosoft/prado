@@ -277,7 +277,7 @@ class TRepeatInfo extends \Prado\TComponent
 		}
 
 		if ($user->getHasFooter()) {
-			$this->renderFooter($writer, $user, $tableLayout, $totalColumns, $needBreak);
+			$this->renderFooter($writer, $user, $tableLayout, $totalColumns);
 		}
 	}
 
@@ -408,7 +408,7 @@ class TRepeatInfo extends \Prado\TComponent
 		}
 
 		if ($user->getHasFooter()) {
-			$this->renderFooter($writer, $user, $tableLayout, $totalColumns, false);
+			$this->renderFooter($writer, $user, $tableLayout, $totalColumns);
 		}
 	}
 

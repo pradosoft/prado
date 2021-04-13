@@ -17,6 +17,7 @@ use Prado\IO\TTextWriter;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\TActiveTextBox;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\UI\INamingContainer;
 use Prado\Web\UI\TTemplate;
 use Prado\Web\UI\WebControls\TRepeater;
@@ -374,7 +375,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 			$data = [];
 			$items = $this->getSuggestions()->getItems();
 			$writer = new TTextWriter;
-			for ($i = 0; $i < $items->Count; $i++) {
+			for ($i = 0; $i < $items->getCount(); $i++) {
 				$items->itemAt($i)->render($writer);
 				$item = $writer->flush();
 				$data[] = ['id' => $i, 'label' => $item];

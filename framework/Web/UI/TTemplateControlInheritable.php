@@ -38,17 +38,16 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * Uses the controls template if available or the base class template otherwise.
 	 *
 	 * @throws TConfigurationException if a template control directive is invalid
-	 * @return void
 	 */
 	public function createChildControls()
 	{
 		if (null === ($_template = $this->getTemplate())) {
-			return $this->doCreateChildControlsFor(get_class($this));
+			$this->doCreateChildControlsFor(get_class($this));
 		}
 
 		foreach ($_template->getDirective() as $_name => $_value) {
 			if (!is_string($_value)) {
-				throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
+				throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $_name);
 			}
 
 			$this->setSubProperty($_name, $_value);
@@ -61,7 +60,6 @@ class TTemplateControlInheritable extends TTemplateControl
 	 * This method creates the cild controls for the given class
 	 *
 	 * @param string $parentClass $parentClass The class to generate the child controls for
-	 * @return void
 	 */
 	public function doCreateChildControlsFor($parentClass)
 	{
@@ -77,14 +75,13 @@ class TTemplateControlInheritable extends TTemplateControl
 	 *
 	 * @param string $parentClass The class to create the template from
 	 * @throws TConfigurationException if a template control directive is invalid
-	 * @return void
 	 */
 	public function doTemplateForClass($parentClass)
 	{
 		if (null !== ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName($parentClass))) {
 			foreach ($_template->getDirective() as $_name => $_value) {
 				if (!is_string($_value)) {
-					throw new TConfigurationException('templatecontrol_directive_invalid', get_class(this), $_name);
+					throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $_name);
 				}
 
 				$this->setSubProperty($_name, $_value);

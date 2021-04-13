@@ -12,6 +12,7 @@ namespace Prado\Data\SqlMap\DataMapper;
 
 use Prado\Collections\TList;
 use Prado\Collections\TPagedList;
+use Prado\Collections\TPagedListFetchDataEventParameter;
 use Prado\Data\SqlMap\Statements\IMappedStatement;
 use Prado\Prado;
 

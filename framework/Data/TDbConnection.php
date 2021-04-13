@@ -223,7 +223,8 @@ class TDbConnection extends \Prado\TComponent
 		if ($this->_charset === '' || $this->_active === false) {
 			return;
 		}
-		switch ($this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+		$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		switch ($driver) {
 			case 'mysql':
 			case 'sqlite':
 				$stmt = $this->_pdo->prepare('SET NAMES ?');

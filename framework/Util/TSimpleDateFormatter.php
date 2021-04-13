@@ -221,7 +221,7 @@ class TSimpleDateFormatter
 			return $value;
 		}
 		if (!is_string($value)) {
-			throw new TInvalidDataValueException('date_to_parse_must_be_string', \Prado::varDump($value));
+			throw new TInvalidDataValueException('date_to_parse_must_be_string', Prado::varDump($value));
 		}
 
 		if (empty($this->pattern)) {

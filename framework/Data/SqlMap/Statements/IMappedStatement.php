@@ -38,7 +38,7 @@ interface IMappedStatement
 	 * each key will be the value of the property specified  in the
 	 * <tt>$valueProperty</tt> parameter.  If <tt>$valueProperty</tt> is
 	 * <tt>null</tt>, the entire result object will be entered.
-	 * @param IDbConnection $connection database connection to execute the query
+	 * @param \Prado\Data\TDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
 	 * @param string $valueProperty The property of the result object to be used as the value (or null)
@@ -50,7 +50,7 @@ interface IMappedStatement
 	/**
 	 * Execute an update statement. Also used for delete statement. Return the
 	 * number of row effected.
-	 * @param IDbConnection $connection database connection to execute the query
+	 * @param \Prado\Data\TDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @return int The number of row effected.
 	 */
@@ -59,7 +59,7 @@ interface IMappedStatement
 
 	/**
 	 * Executes the SQL and retuns a subset of the rows selected.
-	 * @param IDbConnection $connection database connection to execute the query
+	 * @param \Prado\Data\TDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param null|TList $result A list to populate the result with.
 	 * @param int $skip The number of rows to skip over.
@@ -72,7 +72,7 @@ interface IMappedStatement
 	/**
 	 * Executes an SQL statement that returns a single row as an object
 	 * of the type of the <tt>$result</tt> passed in as a parameter.
-	 * @param IDbConnection $connection database connection to execute the query
+	 * @param \Prado\Data\TDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param object $result The result object.
 	 * @return object result.

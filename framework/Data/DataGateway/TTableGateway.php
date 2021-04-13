@@ -13,6 +13,7 @@ namespace Prado\Data\DataGateway;
 /**
  * Loads the data gateway command builder and sql criteria.
  */
+use Prado\Data\TDbDataReader;
 use Prado\Data\Common\TDbMetaData;
 use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TDbException;
@@ -86,7 +87,7 @@ class TTableGateway extends \Prado\TComponent
 	 * Creates a new generic table gateway for a given table or view name
 	 * and a database connection.
 	 * @param string|TDbTableInfo $table table or view name or table information.
-	 * @param TDbConnection $connection database connection.
+	 * @param \Prado\Data\TDbConnection $connection database connection.
 	 */
 	public function __construct($table, $connection)
 	{
@@ -131,13 +132,13 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TDbCommandBuilder $builder database specific command builder.
+	 * @param \Prado\Data\Common\TDbCommandBuilder $builder database specific command builder.
 	 */
 	protected function initCommandBuilder($builder)
 	{
 		$this->_command = new TDataGatewayCommand($builder);
-		$this->_command->OnCreateCommand[] = [$this, 'onCreateCommand'];
-		$this->_command->OnExecuteCommand[] = [$this, 'onExecuteCommand'];
+		$this->_command->attachEventHandler('OnCreateCommand', [$this, 'onCreateCommand']);
+		$this->_command->attachEventHandler('OnExecuteCommand', [$this, 'onExecuteCommand']);
 	}
 
 	/**
@@ -176,7 +177,7 @@ class TTableGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{

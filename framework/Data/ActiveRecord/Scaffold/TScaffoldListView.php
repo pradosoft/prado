@@ -18,7 +18,10 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\IItemDataRenderer;
+use Prado\Web\UI\WebControls\TDropDownList;
 use Prado\Web\UI\WebControls\TListItemType;
+use Prado\Web\UI\WebControls\TPager;
+use Prado\Web\UI\WebControls\TRepeater;
 use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
 
 /**
@@ -55,6 +58,10 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  */
 class TScaffoldListView extends TScaffoldBase
 {
+	private $_sort;
+	private $_header;
+	private $_list;
+
 	/**
 	 * Initialize the sort drop down list and the column names repeater.
 	 */
@@ -122,7 +129,7 @@ class TScaffoldListView extends TScaffoldBase
 		}
 		$order = explode(' ', $this->_sort->getSelectedValue(), 2);
 		if (is_array($order) && count($order) === 2) {
-			$criteria->OrdersBy[$order[0]] = $order[1];
+			$criteria->setOrdersBy($order);
 		}
 		return $criteria;
 	}

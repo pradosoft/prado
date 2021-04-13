@@ -38,7 +38,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	 * It creates a checkbox inside the cell.
 	 * If the column is read-only or if the item is not in edit mode,
 	 * the checkbox will be set disabled.
-	 * @param TTableCell $cell the cell to be initialized.
+	 * @param \Prado\Web\UI\WebControls\TTableCell $cell the cell to be initialized.
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
 	 * @param string $itemType the type of cell (Header,Footer,Item,AlternatingItem,EditItem,SelectedItem)
 	 */

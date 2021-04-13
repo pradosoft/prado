@@ -14,6 +14,7 @@ use Prado\Web\UI\TControl;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
+use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 
 /**

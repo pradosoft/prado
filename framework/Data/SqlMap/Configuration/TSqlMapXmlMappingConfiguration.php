@@ -127,7 +127,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the result maps.
-	 * @param SimpleXmlElement $node result map node.
+	 * @param \SimpleXmlElement $node result map node.
 	 */
 	protected function loadResultMap($node)
 	{
@@ -164,7 +164,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Create a new result map and its associated result properties,
 	 * disciminiator and sub maps.
-	 * @param SimpleXmlElement $node result map node
+	 * @param \SimpleXmlElement $node result map node
 	 * @return TResultMap SqlMap result mapping.
 	 */
 	protected function createResultMap($node)
@@ -211,7 +211,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load parameter map from xml.
 	 *
-	 * @param SimpleXmlElement $node parameter map node.
+	 * @param \SimpleXmlElement $node parameter map node.
 	 */
 	protected function loadParameterMap($node)
 	{
@@ -244,7 +244,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Create a new parameter map from xml node.
-	 * @param SimpleXmlElement $node parameter map node.
+	 * @param \SimpleXmlElement $node parameter map node.
 	 * @return TParameterMap new parameter mapping.
 	 */
 	protected function createParameterMap($node)
@@ -261,7 +261,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load statement mapping from xml configuration file.
-	 * @param SimpleXmlElement $node statement node.
+	 * @param \SimpleXmlElement $node statement node.
 	 */
 	protected function loadStatementTag($node)
 	{
@@ -276,7 +276,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * Load extended SQL statements if application. Replaces global properties
 	 * in the sql text. Extracts inline parameter maps.
 	 * @param TSqlMapStatement $statement mapped statement.
-	 * @param SimpleXmlElement $node statement node.
+	 * @param \SimpleXmlElement $node statement node.
 	 */
 	protected function processSqlStatement($statement, $node)
 	{
@@ -303,7 +303,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * Extract inline parameter maps.
 	 * @param TSqlMapStatement $statement statement object.
 	 * @param string $sqlStatement sql text
-	 * @param SimpleXmlElement $node statement node.
+	 * @param \SimpleXmlElement $node statement node.
 	 */
 	protected function applyInlineParameterMap($statement, $sqlStatement, $node)
 	{
@@ -335,7 +335,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 * Prepare the sql text (may extend to dynamic sql).
 	 * @param TSqlMapStatement $statement mapped statement.
 	 * @param string $sqlStatement sql text.
-	 * @param SimpleXmlElement $node statement node.
+	 * @param \SimpleXmlElement $node statement node.
 	 * @todo Extend to dynamic sql.
 	 */
 	protected function prepareSql($statement, $sqlStatement, $node)
@@ -356,7 +356,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load select statement from xml mapping.
-	 * @param SimpleXmlElement $node select node.
+	 * @param \SimpleXmlElement $node select node.
 	 */
 	protected function loadSelectTag($node)
 	{
@@ -373,7 +373,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load insert statement from xml mapping.
-	 * @param SimpleXmlElement $node insert node.
+	 * @param \SimpleXmlElement $node insert node.
 	 */
 	protected function loadInsertTag($node)
 	{
@@ -385,7 +385,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Create new insert statement from xml node.
-	 * @param SimpleXmlElement $node insert node.
+	 * @param \SimpleXmlElement $node insert node.
 	 * @return TSqlMapInsert insert statement.
 	 */
 	protected function createInsertStatement($node)
@@ -401,7 +401,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load the selectKey statement from xml mapping.
 	 * @param mixed $insert
-	 * @param SimpleXmlElement $node selectkey node
+	 * @param \SimpleXmlElement $node selectkey node
 	 */
 	protected function loadSelectKeyTag($insert, $node)
 	{
@@ -417,7 +417,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load update statement from xml mapping.
-	 * @param SimpleXmlElement $node update node.
+	 * @param \SimpleXmlElement $node update node.
 	 */
 	protected function loadUpdateTag($node)
 	{
@@ -430,7 +430,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load delete statement from xml mapping.
-	 * @param SimpleXmlElement $node delete node.
+	 * @param \SimpleXmlElement $node delete node.
 	 */
 	protected function loadDeleteTag($node)
 	{
@@ -444,7 +444,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load procedure statement from xml mapping.
 	 * @todo Implement loading procedure
-	 * @param SimpleXmlElement $node procedure node
+	 * @param \SimpleXmlElement $node procedure node
 	 */
 	protected function loadProcedureTag($node)
 	{
@@ -453,7 +453,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load cache models from xml mapping.
-	 * @param SimpleXmlElement $node cache node.
+	 * @param \SimpleXmlElement $node cache node.
 	 */
 	protected function loadCacheModel($node)
 	{
@@ -497,7 +497,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load the flush interval
 	 * @param TSqlMapCacheModel $cacheModel cache model
-	 * @param SimpleXmlElement $node cache node
+	 * @param \SimpleXmlElement $node cache node
 	 */
 	protected function loadFlushInterval($cacheModel, $node)
 	{
@@ -531,8 +531,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Load the flush on cache properties.
 	 * @param TSqlMapCacheModel $cacheModel cache model
-	 * @param SimpleXmlElement $parent parent node.
-	 * @param SimpleXmlElement $node flush node.
+	 * @param \SimpleXmlElement $parent parent node.
+	 * @param \SimpleXmlElement $node flush node.
 	 */
 	protected function loadFlushOnCache($cacheModel, $parent, $node)
 	{

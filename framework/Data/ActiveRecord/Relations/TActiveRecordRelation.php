@@ -44,7 +44,7 @@ abstract class TActiveRecordRelation
 	}
 
 	/**
-	 * @return TActiveRecordCriteria
+	 * @return \Prado\Data\ActiveRecord\TActiveRecordCriteria
 	 */
 	protected function getCriteria()
 	{
@@ -218,9 +218,9 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Populate the results with the foreign objects found.
-	 * @param array &$results source results
+	 * @param array $results by reference, source results
 	 * @param array $properties source property names
-	 * @param array &$fkObjects foreign objects
+	 * @param array $fkObjects by reference, foreign objects
 	 * @param array $fields foreign object field names.
 	 */
 	protected function populateResult(&$results, $properties, &$fkObjects, $fields)
@@ -234,8 +234,8 @@ abstract class TActiveRecordRelation
 
 	/**
 	 * Populates the result array with foreign objects (matched using foreign key hashed property values).
-	 * @param array &$results
-	 * @param array &$collections
+	 * @param array $results by reference
+	 * @param array $collections by reference
 	 * @param array $properties property names
 	 */
 	protected function setResultCollection(&$results, &$collections, $properties)
@@ -253,7 +253,7 @@ abstract class TActiveRecordRelation
 	 * Sets the foreign objects to the given property on the source object.
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $source source object.
 	 * @param array $properties source properties
-	 * @param array &$collections foreign objects.
+	 * @param array $collections by reference, foreign objects.
 	 */
 	protected function setObjectProperty($source, $properties, &$collections)
 	{
@@ -261,4 +261,10 @@ abstract class TActiveRecordRelation
 		$prop = $this->getContext()->getProperty();
 		$source->$prop = $collections[$hash] ?? [];
 	}
+
+	/**
+	 * Updates the associated foreign objects.
+	 * @return bool true if all update are success (including if no update was required), false otherwise .
+	 */
+	abstract public function updateAssociatedRecords();
 }

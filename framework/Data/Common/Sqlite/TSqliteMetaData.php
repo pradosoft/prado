@@ -67,7 +67,7 @@ class TSqliteMetaData extends TDbMetaData
 	/**
 	 * Get the column definitions for given table.
 	 * @param string $tableName table name.
-	 * @return TPgsqlTableInfo table information.
+	 * @return \Prado\Data\Common\Sqlite\TSqliteTableInfo table information.
 	 */
 	protected function createTableInfo($tableName)
 	{

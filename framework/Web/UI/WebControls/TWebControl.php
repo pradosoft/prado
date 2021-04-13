@@ -512,7 +512,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 			$writer->renderEndTag();
 			$decorator->renderPostTagText($writer);
 		} else {
-			$writer->renderEndTag($writer);
+			$writer->renderEndTag();
 		}
 	}
 }

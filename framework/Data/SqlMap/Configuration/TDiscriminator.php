@@ -11,6 +11,7 @@
 namespace Prado\Data\SqlMap\Configuration;
 
 use Prado\TPropertyValue;
+use Prado\Data\TSqlMapManager;
 
 /**
  * The TDiscriminator corresponds to the <discriminator> tag within a <resultMap>.
@@ -69,7 +70,6 @@ class TDiscriminator extends \Prado\TComponent
 	 * cannot otherwise determine the type, the type is assumed from the default
 	 * value of the property.
 	 * @param mixed $value
-	 * @return string property type of the parameter to be set.
 	 */
 	public function setType($value)
 	{
@@ -144,18 +144,19 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * @param string $value database value
-	 * @return TResultMap result mapping.
+	 * @return null|TResultMap result mapping.
 	 */
 	public function getSubMap($value)
 	{
 		if (isset($this->_resultMaps[$value])) {
 			return $this->_resultMaps[$value];
 		}
+		return null;
 	}
 
 	/**
 	 * Copies the discriminator properties to a new TResultProperty.
-	 * @param TResultMap $resultMap result map holding the discriminator.
+	 * @param mixed $resultMap
 	 */
 	public function initMapping($resultMap)
 	{
@@ -169,7 +170,7 @@ class TDiscriminator extends \Prado\TComponent
 
 	/**
 	 * Set the result maps for particular sub-mapping values.
-	 * @param TSqlMapManager $manager sql map manager instance.
+	 * @param \Prado\Data\SqlMap\TSqlMapManager $manager sql map manager instance.
 	 */
 	public function initialize($manager)
 	{

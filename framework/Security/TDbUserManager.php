@@ -148,7 +148,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
-	 * @return TDbConnection the database connection that may be used to retrieve user data.
+	 * @return \Prado\Data\TDbConnection the database connection that may be used to retrieve user data.
 	 */
 	public function getDbConnection()
 	{
@@ -163,7 +163,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	 * Creates the DB connection.
 	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return TDbConnection the created DB connection
+	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
 	{

@@ -24,7 +24,7 @@ abstract class TSqlMapXmlConfigBuilder
 	/**
 	 * Create an instance of an object give by the attribute named 'class' in the
 	 * node and set the properties on the object given by attribute names and values.
-	 * @param SimpleXmlNode $node property node
+	 * @param \SimpleXmlNode $node property node
 	 * @return Object new instance of class with class name given by 'class' attribute value.
 	 */
 	protected function createObjectFromNode($node)
@@ -45,7 +45,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * property of the $obj given by the name of the attribute with the value
 	 * of the attribute.
 	 * @param object $obj object instance
-	 * @param SimpleXmlNode $node property node
+	 * @param \SimpleXmlNode $node property node
 	 * @param array $except exception property name
 	 */
 	protected function setObjectPropFromNode($obj, $node, $except = [])
@@ -92,7 +92,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * Load document using simple xml.
 	 * @param string $filename
 	 * @param TSqlMapXmlConfiguration $config
-	 * @return SimpleXmlElement xml document.
+	 * @return \SimpleXmlElement xml document.
 	 */
 	protected function loadXmlDocument($filename, TSqlMapXmlConfiguration $config)
 	{
@@ -109,10 +109,10 @@ abstract class TSqlMapXmlConfigBuilder
 	}
 	/**
 	 * Get element node by ID value (try for attribute name ID as case insensitive).
-	 * @param SimpleXmlDocument $document
+	 * @param \SimpleXmlDocument $document
 	 * @param string $tag tag name.
 	 * @param string $value id value.
-	 * @return SimpleXmlElement node if found, null otherwise.
+	 * @return \SimpleXmlElement node if found, null otherwise.
 	 */
 	protected function getElementByIdValue($document, $tag, $value)
 	{

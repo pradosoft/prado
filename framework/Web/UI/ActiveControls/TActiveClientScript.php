@@ -47,7 +47,7 @@ class TActiveClientScript extends TClientScript
 		if (($scriptUrl = $this->getScriptUrl()) !== '') {
 			if ($this->getPage()->getIsCallback()) {
 				$cs = $this->getPage()->getClientScript();
-				$uniqueid = $this->ClientID . '_custom';
+				$uniqueid = $this->getClientID() . '_custom';
 				if (!$cs->isScriptFileRegistered($uniqueid)) {
 					$cs->registerScriptFile($uniqueid, $scriptUrl);
 				}

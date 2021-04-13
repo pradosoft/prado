@@ -83,7 +83,8 @@ class TPagedList extends TList
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
-		parent::__construct($data, true);
+		$readOnly = true;
+		parent::__construct($data, $readOnly);
 	}
 
 	/**

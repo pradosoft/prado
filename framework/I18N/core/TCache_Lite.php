@@ -356,7 +356,7 @@ class TCache_Lite
 	{
 		$this->_setFileName($id, $group);
 		if (!@unlink($this->_file)) {
-			$this->raiseError('TCache_Lite : Unable to remove cache !', -3);
+			throw new Exception('TCache_Lite: Unable to remove cache');
 			return false;
 		}
 		return true;
@@ -382,7 +382,7 @@ class TCache_Lite
 		if ($this->_memoryCaching) {
 			foreach ($this->_memoryCachingArray as $key => $v) {
 				if (strpos($key, $motif, 0)) {
-					unset($this->_memoryCaching[$key]);
+					unset($this->_memoryCachingArray[$key]);
 					$this->_memoryCachingCounter =
 							$this->_memoryCachingCounter - 1;
 				}
@@ -392,7 +392,7 @@ class TCache_Lite
 			}
 		}
 		if (!($dh = opendir($this->_cacheDir))) {
-			$this->raiseError('TCache_Lite : Unable to open cache directory !');
+			throw new Exception('TCache_Lite: Unable to open cache directory');
 			return false;
 		}
 		while ($file = readdir($dh)) {
@@ -401,7 +401,7 @@ class TCache_Lite
 				if (is_file($file)) {
 					if (strpos($file, $motif, 0)) {
 						if (!@unlink($file)) {
-							$this->raiseError('Cache_Lite : Unable to remove cache !', -3);
+							throw new Exception('Cache_Lite: Unable to remove cache');
 							return false;
 						}
 					}
@@ -421,73 +421,6 @@ class TCache_Lite
 	{
 		$this->_lifeTime = $newLifeTime;
 		$this->_refreshTime = time() - $newLifeTime;
-	}
-
-	/**
-	 *
-	 * @access public
-	 * @param mixed $id
-	 * @param mixed $group
-	 */
-	public function saveMemoryCachingState($id, $group = 'default')
-	{
-		if ($this->_caching) {
-			$array = [
-				'counter' => $this->_memoryCachingCounter,
-				'array' => $this->_memoryCachingState
-			];
-			$data = serialize($array);
-			$this->save($data, $id, $group);
-		}
-	}
-
-	/**
-	 *
-	 * @access public
-	 * @param mixed $id
-	 * @param mixed $group
-	 * @param mixed $doNotTestCacheValidity
-	 */
-	public function getMemoryCachingState(
-		$id,
-		$group = 'default',
-		$doNotTestCacheValidity = false
-	) {
-		if ($this->_caching) {
-			if ($data = $this->get($id, $group, $doNotTestCacheValidity)) {
-				$array = unserialize($data);
-				$this->_memoryCachingCounter = $array['counter'];
-				$this->_memoryCachingArray = $array['array'];
-			}
-		}
-	}
-
-	/**
-	 * Return the cache last modification time
-	 *
-	 * BE CAREFUL : THIS METHOD IS FOR HACKING ONLY !
-	 *
-	 * @return int last modification time
-	 */
-	public function lastModified()
-	{
-		return filemtime($this->cache->_file);
-	}
-
-	/**
-	 * Trigger a PEAR error
-	 *
-	 * To improve performances, the PEAR.php file is included dynamically.
-	 * The file is so included only when an error is triggered. So, in most
-	 * cases, the file isn't included and perfs are much better.
-	 *
-	 * @param string $msg error message
-	 * @param int $code error code
-	 * @access public
-	 */
-	public function raiseError($msg, $code)
-	{
-		throw new Exception($msg);
 	}
 
 	// --- Private methods ---
@@ -548,6 +481,7 @@ class TCache_Lite
 			// because the filesize can be cached by PHP itself...
 			clearstatcache();
 			$length = @filesize($this->_file);
+			$hashControl = '';
 			if ($this->_readControl) {
 				$hashControl = @fread($fp, 32);
 				$length = $length - 32;
@@ -566,7 +500,7 @@ class TCache_Lite
 			}
 			return $data;
 		}
-		$this->raiseError('Cache_Lite : Unable to read cache !', -2);
+		throw new Exception('Cache_Lite: Unable to read cache');
 		return false;
 	}
 
@@ -595,7 +529,7 @@ class TCache_Lite
 			@fclose($fp);
 			return true;
 		}
-		$this->raiseError('Cache_Lite : Unable to write cache !', -1);
+		throw new Exception('Cache_Lite: Unable to write cache');
 		return false;
 	}
 
@@ -610,7 +544,7 @@ class TCache_Lite
 	protected function _writeAndControl($data)
 	{
 		$this->_write($data);
-		$dataRead = $this->_read($data);
+		$dataRead = $this->_read();
 		return ($dataRead == $data);
 	}
 
@@ -632,8 +566,7 @@ class TCache_Lite
 			case 'strlen':
 				return sprintf('% 32d', strlen($data));
 			default:
-				$this->raiseError('Unknown controlType ! ' .
-				'(available values are only \'md5\', \'crc32\', \'strlen\')', -5);
+				throw new Exception('Unknown controlType (available values are only \'md5\', \'crc32\', \'strlen\')');
 		}
 	}
 }

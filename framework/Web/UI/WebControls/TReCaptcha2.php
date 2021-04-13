@@ -61,7 +61,6 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
 	const ChallengeFieldName = 'g-recaptcha-response';
-	private $_widgetId = 0;
 	private $_isValid = true;
 
 	public function __construct()
@@ -111,7 +110,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
 		foreach ($captchas as $captcha) {
-			if ($this->getClientID() == $captcha->ClientID) {
+			if ($this->getClientID() == $captcha->getClientID()) {
 				$responseFieldName .= ($cont > 0) ? '-' . $cont : '';
 			}
 			$cont++;
@@ -239,7 +238,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	 */
 	public function reset()
 	{
-		$this->getPage()->getCallbackClient()->callClientFunction('grecaptcha.reset', [[$this->WidgetId]]);
+		$this->getPage()->getCallbackClient()->callClientFunction('grecaptcha.reset', [[$this->getWidgetId()]]);
 	}
 	/**
 	 * Gets the response for the reCAPTCHA widget.
@@ -288,7 +287,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$id = $this->getClientID();
 		$options = TJavaScript::encode($this->getClientOptions());
 		$className = $this->getClientClassName();
-		$cs = $this->getPage()->ClientScript;
+		$cs = $this->getPage()->getClientScript();
 		$code = "new $className($options);";
 
 		$cs->registerPradoScript('ajax');
@@ -330,13 +329,13 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	public function raiseCallbackEvent($param)
 	{
 		$params = $param->getCallbackParameter();
-		if ($params instanceof stdClass) {
+		if ($params instanceof \stdClass) {
 			$callback = property_exists($params, 'onCallback');
 			$callbackExpired = property_exists($params, 'onCallbackExpired');
 
 			if ($callback) {
-				$this->WidgetId = $params->widgetId;
-				$this->Response = $params->response;
+				$this->setWidgetId($params->widgetId);
+				$this->setResponse($params->response);
 				$this->getPage()->getCallbackClient()->jQuery($params->responseField, 'text', [$params->response]);
 
 				if ($params->onCallback) {
@@ -345,7 +344,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 			}
 
 			if ($callbackExpired) {
-				$this->Response = '';
+				$this->setResponse('');
 				$this->reset();
 
 				if ($params->onCallbackExpired) {
