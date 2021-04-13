@@ -47,7 +47,7 @@ class MessageSource_Database extends MessageSource
 	}
 
 	/**
-	 * @return TDbConnection the database connection that may be used to retrieve messages.
+	 * @return \Prado\Data\TDbConnection the database connection that may be used to retrieve messages.
 	 */
 	public function getDbConnection()
 	{
@@ -62,7 +62,7 @@ class MessageSource_Database extends MessageSource
 	 * Creates the DB connection.
 	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return TDbConnection the created DB connection
+	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
 	{
@@ -249,7 +249,6 @@ class MessageSource_Database extends MessageSource
 		);
 		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
 		$command->bindParameter(':id', $count, PDO::PARAM_INT);
-		$command->bindParameter(':source', $message, PDO::PARAM_STR);
 		$command->bindParameter(':dateadded', $time, PDO::PARAM_INT);
 		foreach ($messages as $message) {
 			if (empty($message)) {
@@ -257,6 +256,7 @@ class MessageSource_Database extends MessageSource
 			}
 			$count++;
 			$inserted++;
+			$command->bindParameter(':source', $message, PDO::PARAM_STR);
 			$command->execute();
 		}
 		if ($inserted > 0) {

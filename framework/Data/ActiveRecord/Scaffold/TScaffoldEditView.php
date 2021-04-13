@@ -13,11 +13,14 @@ namespace Prado\Data\ActiveRecord\Scaffold;
 /**
  * Load scaffold base.
  */
+use Prado\Data\ActiveRecord\TActiveRecord;
 use Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TListItemType;
+use Prado\Web\UI\WebControls\TRepeater;
 
 /**
  * Template control for editing an Active Record instance.

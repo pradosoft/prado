@@ -45,7 +45,7 @@ class TJsonRpcClient extends TRpcClient
 		$_response = $this->performRequest($this->getServerUrl(), $this->encodeRequest($method, $parameters), 'application/json');
 
 		// skip response handling if the request was just a notification request
-		if ($this->isNotification) {
+		if ($this->getIsNotification()) {
 			return true;
 		}
 
@@ -76,7 +76,7 @@ class TJsonRpcClient extends TRpcClient
 		return json_encode([
 			'method' => $method,
 			'params' => $parameters,
-			'id' => $this->isNotification ? null : $_requestId
+			'id' => $this->getIsNotification() ? null : $_requestId
 		]);
 	}
 

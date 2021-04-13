@@ -32,7 +32,7 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return TDbCommand database command executed.
+	 * @return \Prado\Data\TDbCommand database command executed.
 	 */
 	public function getCommand()
 	{

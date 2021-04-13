@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveRecord, TActiveRecordEventParameter, TActiveRecordInvalidFinderResult class file.
+ * TActiveRecordChangeEventParameter class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado

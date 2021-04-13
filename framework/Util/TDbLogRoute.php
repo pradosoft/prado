@@ -140,7 +140,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Creates the DB connection.
 	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return TDbConnection the created DB connection
+	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
 	protected function createDbConnection()
 	{
@@ -161,7 +161,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @return TDbConnection the DB connection instance
+	 * @return \Prado\Data\TDbConnection the DB connection instance
 	 */
 	public function getDbConnection()
 	{

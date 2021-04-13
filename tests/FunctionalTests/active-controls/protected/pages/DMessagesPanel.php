@@ -38,8 +38,8 @@ class DMessagesPanel extends TTemplateControl
 		if ($effect !== null) {
 			$text = "<script language=\"javascript\">\r\n";
 			$text .= "// <![CDATA[\r\n";
-			//$text .= "new Effect.$effect(\"" . $this->getPage()->DMessagesPanel->MessagesPanel->ClientID . "\");\r\n";
-			$text .= "new Effect.$effect(\"" . $this->ClientID . "\");\r\n";
+			//$text .= "new Effect.$effect(\"" . $this->getPage()->DMessagesPanel->MessagesPanel->getClientID() . "\");\r\n";
+			$text .= "new Effect.$effect(\"" . $this->getClientID() . "\");\r\n";
 			$text .= "// ]]>\r\n";
 			$text .= "</script>";
 			$this->MessagesPanelEffect->Text = $text;

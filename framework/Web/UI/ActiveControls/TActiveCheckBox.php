@@ -163,7 +163,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 
 	/**
 	 * Overrides parent implementation to ensure label has ID.
-	 * @return TMap list of attributes to be rendered for label beside the checkbox
+	 * @return \Prado\Collections\TMap list of attributes to be rendered for label beside the checkbox
 	 */
 	public function getLabelAttributes()
 	{

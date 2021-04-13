@@ -191,7 +191,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 	public function render($writer)
 	{
 		if (($document = $this->getSourceXmlDocument()) === null) {
-			$htmlWriter = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), new TTextWriter());
+			$htmlWriter = Prado::createComponent($this->getResponse()->getHtmlWriterType(), new TTextWriter());
 			parent::render($htmlWriter);
 			$document = new DOMDocument();
 			$document->loadXML($htmlWriter->flush());

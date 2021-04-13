@@ -12,6 +12,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
 use Prado\Prado;
+use Prado\Web\THttpUtility;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
@@ -40,7 +41,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
-class TTextHighlighter extends TWebControl
+class TTextHighlighter extends TTextProcessor
 {
 	/**
 	 * @return string tag name of the panel
@@ -202,18 +203,17 @@ class TTextHighlighter extends TWebControl
 	}
 
 	/**
-	 * Renders the body content enclosed between the control tag.
-	 * By default, child controls and text strings will be rendered.
-	 * You can override this method to provide customized content rendering.
-	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
+	 * Processes a text string.
+	 * This method must be implemented by child classes.
+	 * @param string $text text string to be processed
+	 * @return string the processed text result
 	 */
-	public function renderContents($writer)
+	public function processText($text)
 	{
 		if ($this->getEncodeHtml()) {
-			$escapedWriter = new TTextHighlighterWriter($writer);
-			parent::renderChildren($escapedWriter);
+			return THttpUtility::htmlEncode(ltrim($text));
 		} else {
-			parent::renderChildren($writer);
+			return $text;
 		}
 	}
 

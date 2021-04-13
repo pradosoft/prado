@@ -10,10 +10,6 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
-/**
- * Load active control adapter.
- */
-use Prado\Prado;
 use Prado\Web\UI\WebControls\TButton;
 use Prado\Web\UI\WebControls\TButtonTag;
 

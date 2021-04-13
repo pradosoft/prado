@@ -23,7 +23,7 @@ use Prado\Web\UI\WebControls\THiddenField;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, IActiveControl
+class TActiveHiddenField extends THiddenField implements IActiveControl
 {
 	/**
 	 * Creates a new callback control, sets the adapter to
@@ -66,62 +66,5 @@ class TActiveHiddenField extends THiddenField implements ICallbackEventHandler, 
 		if ($this->getActiveControl()->canUpdateClientSide() && $this->getHasLoadedPostData()) {
 			$this->getPage()->getCallbackClient()->setValue($this, $value);
 		}
-	}
-
-	/**
-	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface.
-	 * This method is mainly used by framework and control developers.
-	 * @param TCallbackEventParameter $param the event parameter
-	 */
-	public function raiseCallbackEvent($param)
-	{
-		$this->onCallback($param);
-	}
-
-	/**
-	 * This method is invoked when a callback is requested. The method raises
-	 * 'OnCallback' event to fire up the event handlers. If you override this
-	 * method, be sure to call the parent implementation so that the event
-	 * handler can be invoked.
-	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
-	 */
-	public function onCallback($param)
-	{
-		$this->raiseEvent('OnCallback', $this, $param);
-	}
-
-	/**
-	 * Gets the name of the javascript class responsible for performing postback for this control.
-	 * This method overrides the parent implementation.
-	 * @return string the javascript class name
-	 */
-	protected function getClientClassName()
-	{
-		return 'Prado.WebUI.TActiveHiddenField';
-	}
-
-	/**
-	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
-	 * @param mixed $writer
-	 */
-	protected function renderClientControlScript($writer)
-	{
-	}
-
-	/**
-	 * Ensure that the ID attribute is rendered and registers the javascript code
-	 * for initializing the active control.
-	 * @param mixed $writer
-	 */
-	protected function addAttributesToRender($writer)
-	{
-		parent::addAttributesToRender($writer);
-		$writer->addAttribute('id', $this->getClientID());
-		$this->getActiveControl()->registerCallbackClientScript(
-			$this->getClientClassName(),
-			$this->getPostBackOptions()
-		);
 	}
 }

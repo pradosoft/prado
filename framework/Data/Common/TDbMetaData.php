@@ -39,7 +39,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	protected static $delimiterIdentifier = ['[', ']', '"', '`', "'"];
 
 	/**
-	 * @param TDbConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $conn database connection.
 	 */
 	public function __construct($conn)
 	{
@@ -48,7 +48,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbConnection database connection.
+	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
 	{
@@ -57,7 +57,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 
 	/**
 	 * Obtain database specific TDbMetaData class using the driver name of the database connection.
-	 * @param TDbConnection $conn database connection.
+	 * @param \Prado\Data\TDbConnection $conn database connection.
 	 * @return TDbMetaData database specific TDbMetaData.
 	 */
 	public static function getInstance($conn)

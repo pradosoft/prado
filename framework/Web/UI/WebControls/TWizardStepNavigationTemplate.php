@@ -22,7 +22,7 @@ class TWizardStepNavigationTemplate extends TWizardNavigationTemplate
 {
 	/**
 	 * Instantiates the template.
-	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
+	 * @param \Prado\Web\UI\WebControls\TWizardNavigationContainer $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)
 	{

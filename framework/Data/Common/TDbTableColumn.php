@@ -152,7 +152,7 @@ class TDbTableColumn extends \Prado\TComponent
 	{
 		if (($precision = $this->getNumericPrecision()) !== null) {
 			$scale = $this->getNumericScale();
-			return $scale === null ? pow(10, $precision) : pow(10, $precision - $scale);
+			return $scale === null ? pow(10, (int) $precision) : pow(10, (int) $precision - (int) $scale);
 		}
 	}
 

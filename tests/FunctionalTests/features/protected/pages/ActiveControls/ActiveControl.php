@@ -10,7 +10,7 @@ class ActiveControl extends TPage
 	public function slowResponse($sender, $param)
 	{
 		//sleep(1);
-		$this->label1->setText("The time is " . time() . " from " . $sender->ID);
+		$this->label1->setText("The time is " . time() . " from " . $sender->getID());
 		$this->label1->setForeColor($this->getColor());
 		$this->label1->renderControl($param->getOutput());
 
@@ -24,7 +24,7 @@ class ActiveControl extends TPage
 	
 	public function onButtonClicked($sender, $param)
 	{
-		$this->label2->setText("Muahaha !!! the time is " . time() . " from " . $sender->ID);
+		$this->label2->setText("Muahaha !!! the time is " . time() . " from " . $sender->getID());
 	}
 	
 	public function fastResponse($sender, $param)

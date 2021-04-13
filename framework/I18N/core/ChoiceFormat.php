@@ -173,10 +173,8 @@ class ChoiceFormat
 
 	protected function isValidSetNotation($number, $set)
 	{
-		$str = '$result = ' . str_replace('n', '$number', $set) . ';';
 		try {
-			eval($str);
-			return $result;
+			return eval('return ' . str_replace('n', '$number', $set) . ';');
 		} catch (Exception $e) {
 			return false;
 		}

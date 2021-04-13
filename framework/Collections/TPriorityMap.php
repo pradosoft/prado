@@ -85,7 +85,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
-	 * @param null|array|\Iterator|map|TPriorityMap $data the intial data. Default is null, meaning no initialization.
+	 * @param null|array|TPriorityMap|\Traversable $data the intial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities
@@ -492,7 +492,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param array|TPriorityMap|Traversable $data the data to be copied from, must be an array, object implementing
+	 * @param array|TPriorityMap|\Traversable $data the data to be copied from, must be an array, object implementing
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data)
@@ -521,7 +521,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param array|TPriorityMap|Traversable $data the data to be merged with, must be an array,
+	 * @param array|TPriorityMap|\Traversable $data the data to be merged with, must be an array,
 	 * object implementing Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */

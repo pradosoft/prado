@@ -222,13 +222,13 @@ EOD;
 		} else {
 			$info['DbType'] = $col['type'];
 		}
-		$tableInfo->Columns[$columnId] = new TOracleTableColumn($info);
+		$tableInfo->getColumns()[$columnId] = new TOracleTableColumn($info);
 	}
 
 	/**
 	 * @param mixed $tableInfo
 	 * @param mixed $src
-	 * @return string serial name if found, null otherwise.
+	 * @return null|string serial name if found, null otherwise.
 	 */
 	protected function getSequenceName($tableInfo, $src)
 	{
@@ -240,6 +240,7 @@ EOD;
 				return $tableInfo->getSchemaName() . '.' . $matches[1];
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -317,7 +318,7 @@ EOD;
 	/**
 	 * Gets foreign relationship constraint keys and table name
 	 * @param string $src Oracle foreign key definition
-	 * @return array foreign relationship table name and keys, null otherwise
+	 * @return null|array foreign relationship table name and keys, null otherwise
 	 */
 	protected function getForeignKeys($src)
 	{
@@ -332,6 +333,7 @@ EOD;
 			}
 			return ['table' => str_replace('"', '', $matches[2]), 'keys' => $fkeys];
 		}
+		return null;
 	}
 
 	/**
@@ -369,10 +371,10 @@ SELECT object_name as table_name, owner as table_schema FROM all_objects
 WHERE object_type = 'TABLE' AND owner=:schema
 EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
-			$command->bindParam(':schema', $schema);
+			$command->bindParameter(':schema', $schema);
 		}
 
-		$rows = $command->queryAll();
+		$rows = $command->query();
 		$names = [];
 		foreach ($rows as $row) {
 			if ($schema === $this->getDefaultSchema() || $schema === '') {

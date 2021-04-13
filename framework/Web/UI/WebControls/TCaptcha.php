@@ -356,7 +356,7 @@ class TCaptcha extends TImage
 		$this->setPublicKey('');
 		$this->clearViewState('TokenGenerated');
 		$this->clearViewState('RandomSeed');
-		$this->clearViewState('TestNumber', 0);
+		$this->clearViewState('TestNumber');
 	}
 
 	/**

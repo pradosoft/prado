@@ -108,12 +108,12 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string Sets $value the css class of the buttons that will be rendered by this pager.
+	 * @param string $value Sets the css class of the buttons that will be rendered by this pager to $value.
 	 * @since 3.2.1
 	 */
 	public function setButtonCssClass($value)
 	{
-		$this->setViewState('ButtonCssClass', TPropertyValue::ensureString($value, ''), '');
+		$this->setViewState('ButtonCssClass', TPropertyValue::ensureString($value), '');
 	}
 
 	/**

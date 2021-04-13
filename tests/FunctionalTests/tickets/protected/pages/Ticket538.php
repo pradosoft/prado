@@ -5,7 +5,7 @@ class Ticket538 extends TPage
 {
 	public function checkboxClicked($sender, $param)
 	{
-		$sender->Text = $sender->ClientID . " clicked";
+		$sender->Text = $sender->getClientID() . " clicked";
 	}
 
 	public function checkboxCallback($sender, $param)

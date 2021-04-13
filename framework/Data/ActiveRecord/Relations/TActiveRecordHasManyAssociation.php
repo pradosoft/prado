@@ -92,7 +92,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	/**
 	 * Get the foreign key index values from the results and make calls to the
 	 * database to find the corresponding foreign objects using association table.
-	 * @param array &$results original results.
+	 * @param array $results by reference, original results.
 	 */
 	protected function collectForeignObjects(&$results)
 	{
@@ -115,7 +115,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo association table information.
+	 * @return \Prado\Data\Common\TDbTableInfo association table information.
 	 */
 	protected function getAssociationTable()
 	{
@@ -134,7 +134,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo source table information.
+	 * @return \Prado\Data\Common\TDbTableInfo source table information.
 	 */
 	protected function getSourceTable()
 	{
@@ -146,7 +146,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbTableInfo foreign table information.
+	 * @return \Prado\Data\Common\TDbTableInfo foreign table information.
 	 */
 	protected function getForeignTable()
 	{
@@ -159,7 +159,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDataGatewayCommand
+	 * @return \Prado\Data\DataGateway\TDataGatewayCommand
 	 */
 	protected function getCommandBuilder()
 	{
@@ -167,7 +167,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDataGatewayCommand
+	 * @return \Prado\Data\DataGateway\TDataGatewayCommand
 	 */
 	protected function getForeignCommandBuilder()
 	{
@@ -178,7 +178,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 
 	/**
 	 * Fetches the foreign objects using TActiveRecord::findAllByIndex()
-	 * @param array &$result &$results original results.
+	 * @param array $results by reference, original results.
 	 * @param array $foreignKeys field names
 	 * @param array $indexValues foreign key index values.
 	 * @param array $sourceKeys source table column names.
@@ -222,7 +222,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @param TSqlCriteria $criteria
+	 * @param \Prado\Data\DataGateway\TSqlCriteria $criteria
 	 * @param array $foreignKeys field names
 	 * @param array $indexValues field values
 	 * @param array $sourceKeys source table column names.
@@ -317,7 +317,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	}
 
 	/**
-	 * @return TDbCommandBuilder
+	 * @return \Prado\Data\Common\TDbCommandBuilder
 	 */
 	protected function getAssociationTableCommandBuilder()
 	{

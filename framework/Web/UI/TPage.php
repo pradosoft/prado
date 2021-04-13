@@ -64,9 +64,9 @@ class TPage extends TTemplateControl
 	 */
 	private $_head;
 	/**
-	 * @var array list of registered validators
+	 * @var TList list of registered validators
 	 */
-	private $_validators = [];
+	private $_validators;
 	/**
 	 * @var bool if validation has been performed
 	 */
@@ -1258,7 +1258,7 @@ class TPage extends TTemplateControl
 	public function flushWriter()
 	{
 		if ($this->_writer) {
-			$this->Response->write($this->_writer->flush());
+			$this->getResponse()->write($this->_writer->flush());
 		}
 	}
 }

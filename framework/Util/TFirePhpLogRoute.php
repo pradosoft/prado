@@ -51,12 +51,13 @@ class TFirePhpLogRoute extends TLogRoute
 			return;
 		}
 
-		$firephp = FirePHP::getInstance(true);
+		$firephp = \FirePHP::getInstance(true);
 		$firephp->setOptions(['useNativeJsonEncode' => false]);
 		$firephp->group($this->getGroupLabel(), ['Collapsed' => true]);
 		$firephp->log('Time,  Message');
 
 		$first = $logs[0][3];
+		$total = 0;
 		$c = count($logs);
 		for ($i = 0, $n = $c; $i < $n; ++$i) {
 			$message = $logs[$i][0];
@@ -87,18 +88,18 @@ class TFirePhpLogRoute extends TLogRoute
 	{
 		switch ($level) {
 			case TLogger::INFO:
-				return FirePHP::INFO;
+				return \FirePHP::INFO;
 			case TLogger::DEBUG:
 			case TLogger::NOTICE:
-				return FirePHP::LOG;
+				return \FirePHP::LOG;
 			case TLogger::WARNING:
-				return FirePHP::WARN;
+				return \FirePHP::WARN;
 			case TLogger::ERROR:
 			case TLogger::ALERT:
 			case TLogger::FATAL:
-				return FirePHP::ERROR;
+				return \FirePHP::ERROR;
 			default:
-				return FirePHP::LOG;
+				return \FirePHP::LOG;
 		}
 	}
 

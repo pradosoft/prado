@@ -25,6 +25,6 @@ class PopulateActiveList extends TPage
 	public function list_changed($sender, $param)
 	{
 		$text = $sender->SelectedItem ? $sender->SelectedItem->Text : 'Not selected';
-		$this->label1->Text = $sender->ID . ': ' . $text;
+		$this->label1->Text = $sender->getID() . ': ' . $text;
 	}
 }

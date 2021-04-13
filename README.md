@@ -3,7 +3,7 @@
 PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 7.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
-[![Build Status](https://travis-ci.org/pradosoft/prado.png?branch=master)](https://travis-ci.org/pradosoft/prado)
+[![Build Status](https://github.com/pradosoft/prado/actions/workflows/prado.yml/badge.svg)](https://github.com/pradosoft/prado/actions/workflows/prado.yml)
 [![Code Quality](https://scrutinizer-ci.com/g/pradosoft/prado/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pradosoft/prado)
 [![Code Coverage](https://scrutinizer-ci.com/g/pradosoft/prado/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/pradosoft/prado/?branch=master)
 [![Total Downloads](https://poser.pugx.org/pradosoft/prado/downloads.png)](https://packagist.org/packages/pradosoft/prado)
@@ -65,28 +65,16 @@ Then you can include the autoloader, and you will have access to the library cla
 require 'vendor/autoload.php';
 ```
 
-## Quickstart Documentation
+## Documentation
 
 A great introduction to PRADO is available in the [Quickstart tutorial](http://www.pradoframework.net/demos/quickstart/).
 The tutorial itself is a PRADO application included in the [demos](https://github.com/pradosoft/prado-demos)
-
-## API Documentation
-
 The complete API documentation can be found on the [API Manual](http://pradosoft.github.io/docs/manual/)
-
-PRADO uses its own fork of ApiGen 4 (http://www.apigen.org) to generate its API documentation.
-An ApiGen configuration file is providen, to generate the documentation just execute
-
-```sh
-composer gendoc
-```
-
-The documentation will be generated in the `build/docs/` directory.
 
 ## Demo Apps
 
-Several different example PRADO applications are provided in the https://github.com/pradosoft/prado-demos repository. You can see these applications running here: http://www.pradoframework.net/site/demos/ .
-When you create your own PRADO application you do NOT need these folders.
+Several different example PRADO applications are provided in the https://github.com/pradosoft/prado-demos repository.
+You can see these applications running here: http://www.pradoframework.net/site/demos/ .
 
 ## Integration with your favorite IDE/editor
 
@@ -140,3 +128,14 @@ Now you are redy to run tests; a phpunit configuration file is providen, to run 
 ```composer functionaltest``` to run functional tests.
 
 Test results will be saved in in the `build/tests/` directory.
+
+## Generatting the API documentation
+
+PRADO uses its own fork of ApiGen 4 (http://www.apigen.org) to generate its API documentation.
+An ApiGen configuration file is providen, to generate the documentation just execute
+
+```sh
+composer gendoc
+```
+
+The documentation will be generated in the `build/docs/` directory.

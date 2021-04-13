@@ -11,9 +11,9 @@
 namespace Prado\Web\UI\ActiveControls;
 
 use Prado\Collections\TMap;
-use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\TControl;
+use Prado\Web\UI\TPage;
 
 /**
  * TBaseActiveControl class provided additional basic property for every

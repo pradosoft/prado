@@ -17,6 +17,9 @@ define('THEME_HAS_SCRIBBLE', 0x0008);
 define('THEME_MORPH_BACKGROUND', 0x0010);
 define('THEME_SHADOWED_TEXT', 0x0020);
 
+$privateKey = '';
+$fontSize = 22;
+
 require_once(__DIR__ . '/captcha_key.php');
 
 $token = 'error';
@@ -36,9 +39,7 @@ if (isset($_GET['options'])) {
 			$fontSize = $options['fontSize'];
 			$theme = $options['theme'];
 			if (($randomSeed = $options['randomSeed']) > 0) {
-				srand($randomSeed);
-			} else {
-				srand((int) (microtime() * 1000000));
+				mt_srand($randomSeed);
 			}
 			$token = generateToken($publicKey, $privateKey, $alphabet, $tokenLength, $caseSensitive);
 		}

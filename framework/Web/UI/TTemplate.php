@@ -14,6 +14,7 @@ use Prado\Prado;
 use Prado\TComponent;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TException;
 use Prado\Exceptions\TTemplateException;
 
 /**
@@ -659,6 +660,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		// optimization by merging consecutive strings, expressions, statements and bindings
 		$objects = [];
 		$parent = null;
+		$id = null;
 		$merged = [];
 		foreach ($tpl as $id => $object) {
 			if (isset($object[2]) || $object[0] !== $parent) {
@@ -680,7 +682,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				$merged[1][] = $object[1];
 			}
 		}
-		if ($parent !== null) {
+		if ($parent !== null && $id !== null) {
 			if (count($merged[1]) === 1 && is_string($merged[1][0])) {
 				$objects[$id] = [$merged[0], $merged[1][0]];
 			} else {
@@ -869,7 +871,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * Handles template parsing exception.
 	 * This method rethrows the exception caught during template parsing.
 	 * It adjusts the error location by giving out correct error line number and source file.
-	 * @param Exception $e template exception
+	 * @param \Exception $e template exception
 	 * @param int $line line number
 	 * @param null|string $input template string if no source file is used
 	 */
@@ -934,7 +936,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Checks if the given method belongs to a previously attached class behavior.
-	 * @param ReflectionClass $class
+	 * @param \ReflectionClass $class
 	 * @param string $method
 	 * @return bool
 	 */

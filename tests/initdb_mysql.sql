@@ -1,6 +1,7 @@
 DROP DATABASE IF EXISTS `prado_unitest`;
 CREATE DATABASE `prado_unitest`;
-GRANT ALL ON `prado_unitest`.* TO prado_unitest@localhost identified by 'prado_unitest';
+CREATE USER 'prado_unitest'@'localhost' identified by 'prado_unitest';
+GRANT ALL ON `prado_unitest`.* TO 'prado_unitest'@'localhost';
 FLUSH PRIVILEGES;
 
 USE `prado_unitest`;

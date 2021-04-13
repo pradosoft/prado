@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI;
 
+use Prado\IO\ITextWriter;
 use Prado\Web\THttpUtility;
 
 /**

@@ -10,6 +10,7 @@
 
 namespace Prado\Data\SqlMap\Configuration;
 
+use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 
 /**
@@ -89,7 +90,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load global replacement property.
-	 * @param SimpleXmlElement $node property node.
+	 * @param \SimpleXmlElement $node property node.
 	 */
 	protected function loadGlobalProperty($node)
 	{
@@ -98,7 +99,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the type handler configurations.
-	 * @param SimpleXmlElement $node type handler node
+	 * @param \SimpleXmlElement $node type handler node
 	 */
 	protected function loadTypeHandler($node)
 	{
@@ -108,7 +109,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load the database connection tag.
-	 * @param SimpleXmlElement $node connection node.
+	 * @param \SimpleXmlElement $node connection node.
 	 */
 	protected function loadDatabaseConnection($node)
 	{
@@ -118,7 +119,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 
 	/**
 	 * Load SqlMap mapping configuration.
-	 * @param unknown_type $node
+	 * @param array $node
 	 */
 	protected function loadSqlMappingFiles($node)
 	{

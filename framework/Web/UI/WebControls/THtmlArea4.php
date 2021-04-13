@@ -333,7 +333,7 @@ class THtmlArea4 extends TTextBox
 
 		$options = TJavaScript::encode($options, true, true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea4' . $this->ClientID, $script);
+		$scripts->registerEndScript('prado:THtmlArea4' . $this->getClientID(), $script);
 	}
 
 	protected function copyCustomPlugins()

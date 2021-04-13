@@ -11,6 +11,8 @@
 
 namespace Prado\Data\SqlMap\Configuration;
 
+use Prado\Data\TSqlMapManager;
+
 /**
  * TSqlMapStatement class corresponds to <statement> element.
  *

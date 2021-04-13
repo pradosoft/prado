@@ -14,6 +14,7 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  * Include the base Active Record class.
  */
 use Prado\Data\ActiveRecord\TActiveRecord;
+use Prado\Data\Common\TDbTableInfo;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -41,7 +42,7 @@ abstract class TScaffoldBase extends TTemplateControl
 	private $_record;
 
 	/**
-	 * @return TDbMetaData table/view information
+	 * @return TDbTableInfo table/view information
 	 */
 	protected function getTableInfo()
 	{

@@ -155,7 +155,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	{
 		$errnum = json_last_error();
 		if ($errnum != JSON_ERROR_NONE) {
-			throw new \Exception("JSON error: $msg", $err);
+			throw new \Exception("JSON error: " . $errnum);
 		}
 	}
 

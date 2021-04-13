@@ -1,0 +1,78 @@
+name: Prado
+on: [push, pull_request]
+jobs:
+  prado:
+    name: Prado
+    runs-on: ubuntu-latest
+    services:
+      memcached:
+        image: memcached
+        ports:
+          - 11211:11211
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['7.4', '8.0']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, openssl, pcre, spl, zlib
+          tools: php-cs-fixer, phpstan, cs2pr
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Validate code syntax using php-cs-fixer
+        run: php-cs-fixer fix --dry-run --format=checkstyle | cs2pr
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Validate code using phpstan
+        run: phpstan analyse --error-format=checkstyle --level=1 framework | cs2pr
+
+      - name: Setup mysql service
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -proot < ./tests/initdb_mysql.sql
+
+      - name: Setup postgres service
+        run: |
+          createdb -h 127.0.0.1 -U postgres prado_unitest
+          psql -h 127.0.0.1 -U postgres -a -w prado_unitest -f ./tests/initdb_pgsql.sql
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run Tests
+        run: |
+          composer unittest

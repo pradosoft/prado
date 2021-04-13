@@ -505,6 +505,8 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 			$boundary = $this->getRenderedContentBoundary($content);
 		} elseif ($content instanceof THtmlWriter) {
 			$boundary = $this->getResponseContentBoundary($content);
+		} else {
+			$boundary = null;
 		}
 
 		$this->callClientFunction('Prado.Element.appendScriptBlock', [$boundary]);

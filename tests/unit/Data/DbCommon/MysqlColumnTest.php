@@ -29,7 +29,7 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 
 		$columns['id'] = [
 			'ColumnName' => '`id`',
-			'ColumnSize' => 10,
+//			'ColumnSize' => 10,
 			'ColumnIndex' => 0,
 			'DbType' => 'int unsigned',
 			'AllowNull' => false,
@@ -59,7 +59,7 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 
 		$columns['field1'] = [
 			'ColumnName' => '`field1`',
-			'ColumnSize' => 4,
+//			'ColumnSize' => 4,
 			'ColumnIndex' => 2,
 			'DbType' => 'tinyint',
 			'AllowNull' => false,
@@ -194,7 +194,7 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 
 		$columns['field10_year'] = [
 			'ColumnName' => '`field10_year`',
-			'ColumnSize' => 4,
+//			'ColumnSize' => 4,
 			'ColumnIndex' => 11,
 			'DbType' => 'year',
 			'AllowNull' => false,
