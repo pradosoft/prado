@@ -37,7 +37,7 @@ use Prado\TPropertyValue;
 class TException extends \Exception
 {
 	private $_errorCode = '';
-	private static $_messagefiles = array();
+	private static $_messagefiles = [];
 	protected static $_messageCache = [];
 
 	/**
