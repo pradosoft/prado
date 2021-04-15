@@ -86,6 +86,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_themeUrl = $themeUrl;
 		$this->_themePath = realpath($themePath);
 		$this->_name = basename($themePath);
+		parent::__construct();
 		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
 		if (($cache = $this->getApplication()->getCache()) !== null) {
@@ -167,7 +168,6 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
 			}
 		}
-		parent::__construct();
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setBaseUrl($value)
 	{
-		$this->_themeUrl = rtrim($value, '/');
+		$this->_themeUrl = rtrim($value, DIRECTORY_SEPARATOR);
 	}
 
 	/**
