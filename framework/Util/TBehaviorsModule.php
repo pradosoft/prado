@@ -119,7 +119,7 @@ class TBehaviorsModule extends \Prado\TModule
 						$this->_pageBehaviors[$name] = $properties;
 						continue;
 					} elseif(strncasecmp($attachTo, 'module:', 7) === 0) {
-						$owner = $this->getApplication->getModule(trim(substr($attachTo, 7)));
+						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
@@ -163,7 +163,7 @@ class TBehaviorsModule extends \Prado\TModule
 						$this->_pageBehaviors[$name] = $properties;
 						continue;
 					} elseif(strncasecmp($attachTo, 'module:', 7) === 0) {
-						$owner = $this->getApplication->getModule(trim(substr($attachTo, 7)));
+						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
