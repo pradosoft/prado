@@ -107,8 +107,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @param mixed $value
-	 * @return array|string list of roles that the user is of. If it is a string, roles are assumed by separated by comma
+	 * @param array|string $value list of roles that the user is of. If it is a string, roles are assumed by separated by comma
 	 */
 	public function setRoles($value)
 	{

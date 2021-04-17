@@ -61,7 +61,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * @param mixed $column Number of the column (1-indexed) or name of the column
 	 * in the result set. If using the column name, be aware that the name
 	 * should match the case of the column, as returned by the driver.
-	 * @param mixed &$value Name of the PHP variable to which the column will be bound.
+	 * @param mixed $value Name of the PHP variable to which the column will be bound.
 	 * @param null|int $dataType Data type of the parameter
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php
 	 */

@@ -282,7 +282,6 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Update the ControlToValidate component's css class depending
 	 * if the ControlCssClass property is set, and whether this is valid.
-	 * @return bool true if change, false otherwise.
 	 */
 	protected function updateControlCssClass()
 	{

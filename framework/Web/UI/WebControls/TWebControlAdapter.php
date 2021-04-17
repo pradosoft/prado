@@ -21,6 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method \Prado\Web\UI\WebControls\TWebControl getControl();
  */
 class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 {

@@ -87,8 +87,8 @@ class TActiveListItemCollection extends TListItemCollection
 	 * The new option is added on the client-side during callback.
 	 * @param int $index the location where the item will be inserted.
 	 * The current item at the place and the following ones will be moved backward.
-	 * @param TListItem $value the item to be inserted.
-	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
+	 * @param \Prado\Web\UI\WebControls\TListItem $value the item to be inserted.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
 	public function insertAt($index, $value)
 	{

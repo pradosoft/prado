@@ -751,9 +751,8 @@ class TComponent
 					return isset($behavior->$name);
 				}
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -1116,7 +1115,7 @@ class TComponent
 	 * @param \Prado\TEventParameter $param the event parameter
 	 * @param null|numeric $responsetype how the results of the event are tabulated.  default: {@link EVENT_RESULT_FILTER}  The default filters out
 	 *		null responses. optional
-	 * @param null|function $postfunction any per handler filtering of the response result needed is passed through
+	 * @param null|callable $postfunction any per handler filtering of the response result needed is passed through
 	 *		this if not null. default: null.  optional
 	 * @throws TInvalidOperationException if the event is undefined
 	 * @throws TInvalidDataValueException If an event handler is invalid
@@ -1367,7 +1366,7 @@ class TComponent
 	 * This is done so class behaviors are added last first.
 	 * @param string $name name the key of the class behavior
 	 * @param object|string $behavior class behavior or name of the object behavior per instance
-	 * @param null|class|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param null|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
@@ -1415,7 +1414,7 @@ class TComponent
 	 * @param string $class class on which to attach this behavior.  Defaults to null.
 	 * @param null|false|numeric $priority priority: false is any priority, null is default
 	 *		{@link TPriorityList} priority, and numeric is a specific priority.
-	 * @throws Exception if the the class cannot be derived from Late Static Binding and is not
+	 * @throws TInvalidOperationException if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
 	 * @since 3.2.3
 	 */
@@ -1605,7 +1604,7 @@ class TComponent
 	 *
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
 	 * @param false|numeric $priority the behavior's priority. This defaults to false, aka any priority.
-	 * @return IBehavior the detached behavior. Null if the behavior does not exist.
+	 * @return null|IBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */
 	public function detachBehavior($name, $priority = false)
@@ -1617,6 +1616,7 @@ class TComponent
 			$this->dyDetachBehavior($name, $behavior);
 			return $behavior;
 		}
+		return null;
 	}
 
 	/**

@@ -162,7 +162,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 
 	/**
 	 * Overrides parent implementation to ensure label has ID.
-	 * @return TMap list of attributes to be rendered for label beside the radio button
+	 * @return \Prado\Collections\TMap list of attributes to be rendered for label beside the radio button
 	 */
 	public function getLabelAttributes()
 	{

@@ -39,7 +39,7 @@ use Traversable;
 class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	/**
-	 * @var array internal data storage
+	 * @var array<mixed, mixed> internal data storage
 	 */
 	protected $_d = [];
 	/**
@@ -126,7 +126,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return array the key list
+	 * @return array<mixed> the key list
 	 */
 	public function getKeys()
 	{
@@ -201,7 +201,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return array the list of items in array
+	 * @return array<mixed, mixed> the list of items in array
 	 */
 	public function toArray()
 	{
@@ -259,7 +259,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Returns the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param int $offset the offset to retrieve element.
+	 * @param mixed $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
 	public function offsetGet($offset)
@@ -270,7 +270,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Sets the element at the specified offset.
 	 * This method is required by the interface \ArrayAccess.
-	 * @param int $offset the offset to set element
+	 * @param mixed $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
 	public function offsetSet($offset, $item)

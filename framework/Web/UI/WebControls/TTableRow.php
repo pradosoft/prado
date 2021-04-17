@@ -23,6 +23,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TTableItemStyle getStyle()
  */
 class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 {

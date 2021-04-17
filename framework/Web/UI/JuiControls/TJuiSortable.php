@@ -42,6 +42,11 @@ use Prado\Web\UI\WebControls\TRepeater;
  */
 class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
 {
+	/**
+	 * @var \Prado\Web\UI\ITemplate template for repeater items
+	 */
+	private $_repeater;
+
 	protected $_options;
 
 	/**
@@ -258,11 +263,6 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	{
 		$this->raiseEvent('OnUpdate', $this, $params);
 	}
-
-	/**
-	 * @var ITemplate template for repeater items
-	 */
-	private $_repeater;
 
 	/**
 	 * @param array $data data source for Sortables.

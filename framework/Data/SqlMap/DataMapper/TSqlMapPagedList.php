@@ -81,7 +81,7 @@ class TSqlMapPagedList extends TPagedList
 
 	/**
 	 * Fetch data by executing the SqlMap statement.
-	 * @param TPageList $sender current object.
+	 * @param TSqlMapPagedList $sender current object.
 	 * @param TPagedListFetchDataEventParameter $param fetch parameters
 	 */
 	protected function fetchDataFromStatement($sender, $param)

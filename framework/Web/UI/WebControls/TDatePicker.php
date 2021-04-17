@@ -754,7 +754,7 @@ class TDatePicker extends TTextBox
 	 * Returns the localized month names that depends on the month format pattern.
 	 * "MMMM" will return the month names, "MM" or "MMM" return abbr. month names
 	 * and "M" return month digits.
-	 * @param DateTimeFormatInfo $info localized date format information.
+	 * @param \Prado\I18N\core\CultureInfo $info localized date format information.
 	 * @return array localized month names.
 	 */
 	protected function getLocalizedMonthNames($info)
@@ -812,8 +812,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Adds an additional button such that when clicked it shows the date picker.
-	 * @param mixed $writer
-	 * @return \Prado\Web\UI\THtmlWriter writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	protected function renderButtonDatePicker($writer)
 	{
@@ -830,8 +829,7 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Adds an additional image button such that when clicked it shows the date picker.
-	 * @param mixed $writer
-	 * @return \Prado\Web\UI\THtmlWriter writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer
 	 */
 	protected function renderImageButtonDatePicker($writer)
 	{

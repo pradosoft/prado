@@ -61,6 +61,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TTableStyle getStyle()
  */
 class TTable extends \Prado\Web\UI\WebControls\TWebControl
 {

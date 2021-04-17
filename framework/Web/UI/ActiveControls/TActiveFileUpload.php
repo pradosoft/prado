@@ -83,7 +83,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 */
 	private $_target;
 	/**
-	 * @var class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@link TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = '\Prado\Web\UI\ActiveControls\TActiveFileUploadItem';
 

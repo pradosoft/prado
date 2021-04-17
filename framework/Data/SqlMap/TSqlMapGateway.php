@@ -259,7 +259,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandler $typeHandler new type handler.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler $typeHandler new type handler.
 	 */
 	public function registerTypeHandler($typeHandler)
 	{

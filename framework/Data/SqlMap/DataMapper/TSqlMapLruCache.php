@@ -50,5 +50,6 @@ class TSqlMapLruCache extends TSqlMapCache
 			$oldestKey = $this->_keyList->removeAt(0);
 			$this->_cache->remove($oldestKey);
 		}
+		return true;
 	}
 }

@@ -851,8 +851,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	}
 
 	/**
-	 * @param mixed $value
-	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @param TTableCaptionAlign $value alignment of the caption of the table layout.
 	 * @deprecated use the CSS properties caption-side and text-align instead.
 	 */
 	public function setCaptionAlign($value)

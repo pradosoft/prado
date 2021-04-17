@@ -24,6 +24,7 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
  * @package Prado\Util
  * @since 3.1.2
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TFirebugLogRoute extends TBrowserLogRoute
 {
@@ -84,6 +85,7 @@ if (typeof(console) == 'object')
 
 EOD;
 		}
+		return '';
 	}
 
 	protected function renderMessage($log, $info)

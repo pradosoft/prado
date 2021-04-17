@@ -79,8 +79,7 @@ class TRepeatInfo extends \Prado\TComponent
 	}
 
 	/**
-	 * @param mixed $value
-	 * @return TTableCaptionAlign alignment of the caption of the table layout.
+	 * @param TTableCaptionAlign $value alignment of the caption of the table layout.
 	 */
 	public function setCaptionAlign($value)
 	{

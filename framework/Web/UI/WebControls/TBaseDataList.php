@@ -36,6 +36,7 @@ use Prado\Util\TDataFieldAccessor;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TTableStyle getStyle()
  */
 abstract class TBaseDataList extends TDataBoundControl
 {
@@ -171,7 +172,7 @@ abstract class TBaseDataList extends TDataBoundControl
 	 * Otherwise, an exception will be raised.
 	 * @param mixed $data data item
 	 * @param mixed $field field name
-	 * @throws TInvalidDataValueException if the data is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the data is invalid
 	 * @return mixed data value at the specified field
 	 */
 	protected function getDataFieldValue($data, $field)

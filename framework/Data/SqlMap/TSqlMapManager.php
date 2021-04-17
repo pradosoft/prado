@@ -86,7 +86,7 @@ class TSqlMapManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TTypeHandlerFactory The TypeHandlerFactory
+	 * @return TSqlMapTypeHandlerRegistry The TypeHandlerFactory
 	 */
 	public function getTypeHandlers()
 	{

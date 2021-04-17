@@ -10,6 +10,8 @@
 
 namespace Prado\Data\SqlMap\DataMapper;
 
+use Prado\Data\SqlMap\Statements\TMappedStatement;
+
 /**
  * TLazyLoadList executes mapped statements when the proxy collection is first accessed.
  *

@@ -344,7 +344,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Overrides parent implementation by rendering TValidationSummary-specific presentation.
 	 * @param mixed $writer
-	 * @return string the rendering result
 	 */
 	public function renderContents($writer)
 	{
@@ -370,8 +369,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a simple list.
-	 * @param string $writer the header text
-	 * @return string summary list
+	 * @param mixed $writer
 	 */
 	protected function renderList($writer)
 	{
@@ -389,8 +387,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a paragraph.
-	 * @param string $writer the header text
-	 * @return string summary paragraph
+	 * @param mixed $writer
 	 */
 	protected function renderSingleParagraph($writer)
 	{
@@ -405,8 +402,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Render the validation summary as a bullet list.
-	 * @param string $writer the header text
-	 * @return string summary bullet list
+	 * @param mixed $writer
 	 */
 	protected function renderBulletList($writer)
 	{

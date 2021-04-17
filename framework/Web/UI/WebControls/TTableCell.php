@@ -32,6 +32,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TTableItemStyle getStyle()
  */
 class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer
 {

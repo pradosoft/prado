@@ -321,7 +321,7 @@ class TWebControlDecorator extends \Prado\TComponent
 			if ($this->getUseState()) {
 				$this->ensureTemplateDecoration();
 			} else {
-				$this->_control->getPage()->onSaveStateComplete[] = [$this, 'ensureTemplateDecoration'];
+				$this->_control->getPage()->attachEventHandler('OnSaveStateComplete', [$this, 'ensureTemplateDecoration']);
 			}
 		}
 	}

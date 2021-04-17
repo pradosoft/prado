@@ -197,7 +197,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Strips slashes from input data.
 	 * This method is applied when magic quotes is enabled.
-	 * @param mixed &$data input data to be processed
+	 * @param mixed $data by reference, input data to be processed
 	 * @return mixed processed data
 	 * @deprecated useless since get_magic_quotes_gpc() is unavailable from php 5.4
 	 */
@@ -875,7 +875,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	/**
 	 * Removes an item from the request by its key.
 	 * @param mixed $key the key of the item to be removed
-	 * @throws TInvalidOperationException if the item cannot be removed
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the item cannot be removed
 	 * @return mixed the removed value, null if no such key exists.
 	 */
 	public function remove($key)

@@ -170,8 +170,7 @@ class TGlobalizationAutoDetect extends TGlobalization
 
 	/**
 	 * Set the available languages.
-	 * @param Comma separated string of available languages.
-	 * @param mixed $langs
+	 * @param mixed $langs Comma separated string of available languages.
 	 */
 	public function setAvailableLanguages($langs)
 	{

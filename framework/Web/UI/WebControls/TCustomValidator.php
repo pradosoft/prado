@@ -108,7 +108,8 @@ class TCustomValidator extends TBaseValidator
 	}
 
 	/**
-	 * @return null|TControl control to be validated. Null if no control is found.
+	 * @throws TInvalidDataTypeException
+	 * @return null|\Prado\Web\UI\TControl control to be validated. Null if no control is found.
 	 */
 	public function getValidationTarget()
 	{

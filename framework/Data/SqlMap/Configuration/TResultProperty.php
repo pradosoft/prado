@@ -161,7 +161,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TResult $value nested result map.
+	 * @param TResultMap $value nested result map.
 	 */
 	public function setNestedResultMap($value)
 	{
@@ -236,7 +236,7 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Gets the value for the current property, converts to applicable type if necessary.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param array $row result row
 	 * @return mixed property value.
 	 */
@@ -257,7 +257,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param mixed $value raw property value
 	 * @return mixed property value casted to specific type.
 	 */
@@ -272,8 +272,8 @@ class TResultProperty extends \Prado\TComponent
 
 	/**
 	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
-	 * @return TSqlMapTypeHandler type handler.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler.
 	 */
 	protected function createTypeHandler($registry)
 	{
@@ -306,6 +306,7 @@ class TResultProperty extends \Prado\TComponent
 		if (strtolower($type) == 'array') {
 			return self::ARRAY_TYPE;
 		}
+		return self::LIST_TYPE;
 	}
 
 	/**
