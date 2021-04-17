@@ -101,8 +101,8 @@ class TBehaviorsModule extends \Prado\TModule
 					throw new TConfigurationException('behaviormodule_behaviorname_required');
 				}
 				
-				$attachTo = $properties['attachto'];
-				$attachToClass = $properties['attachtoclass'];
+				$attachTo = $properties['attachto']??null;
+				$attachToClass = $properties['attachtoclass']??null;
 				unset($properties['attachto']);
 				unset($properties['attachtoclass']);
 				if ($attachTo === null && $attachToClass === null) {
@@ -111,7 +111,7 @@ class TBehaviorsModule extends \Prado\TModule
 					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
 				}
 				if($attachToClass) {
-					$priority = $properties['priority'];
+					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 				} else {
@@ -123,7 +123,7 @@ class TBehaviorsModule extends \Prado\TModule
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
-					$priority = $properties['priority'];
+					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					if(!$owner) {
 						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
@@ -142,8 +142,8 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 				
 				$class = $properties['class'];
-				$attachTo = $properties['attachto'];
-				$attachToClass = $properties['attachtoclass'];
+				$attachTo = $properties['attachto']??null;
+				$attachToClass = $properties['attachtoclass']??null;
 				unset($properties['attachto']);
 				unset($properties['attachtoclass']);
 				if(!$class) {
@@ -155,7 +155,7 @@ class TBehaviorsModule extends \Prado\TModule
 					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
 				}
 				if($attachToClass) {
-					$priority = $properties['priority'];
+					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 				} else {
@@ -167,7 +167,7 @@ class TBehaviorsModule extends \Prado\TModule
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
-					$priority = $properties['priority'];
+					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					if(!$owner) {
 						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
