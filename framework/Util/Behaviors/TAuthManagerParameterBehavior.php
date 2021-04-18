@@ -41,7 +41,7 @@ class TAuthManagerParameterBehavior extends TBehavior
 	 * @var object {@link TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setPHPTimezone.
 	 */
-	private $_paramBehavior = null;
+	private $_paramBehavior;
 	
 	/**
 	 * This method sets the Owner (TAuthManager) AuthExpire to the Application Parameter of

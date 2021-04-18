@@ -122,6 +122,7 @@ class TWeakCallableCollection extends TPriorityList
 	/**
 	 * Converts the $handler callable into a WeakReference version for storage
 	 * @param callable $handler callable to convert into a WeakReference version
+	 * @param bool $validate whether or not to validate the input as a callable
 	 * @return mixed callable but with the objects as WeakReferences
 	 */
 	protected function filterItemForInput($handler, $validate=false)
