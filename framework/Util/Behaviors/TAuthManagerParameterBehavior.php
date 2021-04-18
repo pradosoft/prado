@@ -46,7 +46,7 @@ class TAuthManagerParameterBehavior extends TBehavior
 	/**
 	 * This method sets the Owner (TAuthManager) AuthExpire to the Application Parameter of
 	 * AuthExpireParameter, and the Owner (TAuthManager) AllowAutoLogin to the Application Parameter of
-	  * AuthExpireParameter.
+	 * AuthExpireParameter.
 	 * @param $owner object the object to which this behavior is being attached
 	 */
 	public function attach($owner)

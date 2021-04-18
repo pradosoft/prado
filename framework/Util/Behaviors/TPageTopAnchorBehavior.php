@@ -34,7 +34,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 */
 	public function events()
 	{
-		return ['OnSaveStateComplete' => 'addFormANameTop'];
+		return ['OnSaveStateComplete' => 'addFormANameAnchor'];
 	}
 	
 	/**
@@ -42,7 +42,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 * @param $page object raising the event
 	 * @param $param mixed the parameter of the raised event
 	 */
-	 public function addFormANameTop($page, $param)
+	 public function addFormANameAnchor($page, $param)
 	 {
 		$toplink = '<a name="' . $this->_topAnchor . '"></a>';
 		if($form = $page->getForm()) {

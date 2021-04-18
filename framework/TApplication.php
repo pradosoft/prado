@@ -296,7 +296,7 @@ class TApplication extends \Prado\TComponent
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
-	{		
+	{
 		// register application as a singleton
 		Prado::setApplication($this);
 		$this->setConfigurationType($configType);
