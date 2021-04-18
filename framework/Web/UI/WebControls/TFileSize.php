@@ -48,6 +48,7 @@ class TFileSize extends TLabel
 	 * for marketing terms, and bytes, kibibytes, mebibytes gibibytes, 
 	 * tebibytes, pebibytes, exbibytes, zebibytes, and yobibytes for technical 
 	 * terms.
+	 * @param $writer object where the method writes output.
 	 */
 	public function renderContents($writer) {
 		
