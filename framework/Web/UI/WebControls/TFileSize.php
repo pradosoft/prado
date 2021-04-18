@@ -92,7 +92,7 @@ class TFileSize extends TLabel
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 			$t = $s . ' ' . Prado::localize($binary[$index]);
 		} elseif(!$abbr && !$marketingSize) {
-			$binaryname = ['bytes', 'kibibytes', 'mebibytes', 'gibibytes', 'tebibytes', 'pebibytes', 'exbibytes', 'zebibytes', 'yobibytes'];
+			$binaryname = ['byte', 'kibibyte', 'mebibyte', 'gibibyte', 'tebibyte', 'pebibyte', 'exbibyte', 'zebibyte', 'yobibyte'];
 			$appendix = '';
 			if($s != 1)
 				$appendix = 's';
