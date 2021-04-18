@@ -91,8 +91,9 @@ class TWeakCallableCollection extends TPriorityList
 				$result[] = [$handler[0]->get(), $handler[1]];
 			} elseif(is_object($handler) && is_a($handler, '\WeakReference')) {
 				$result[] = $handler->get();
-			} else
+			} else {
 				$result[] = $handler;
+			}
 		}
 		return $result;
 	}
@@ -132,8 +133,9 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		if(is_array($handler) && is_object($handler[0]) && !is_a($handler[0], '\WeakReference')) {
 			return [\WeakReference::create($handler[0]), $handler[1]];
-		} elseif(is_object($handler) && !is_a($handler, '\WeakReference')) 
+		} elseif(is_object($handler) && !is_a($handler, '\WeakReference')) {
 			return \WeakReference::create($handler);
+		}
 		
 		return $handler;
 	}
@@ -264,8 +266,9 @@ class TWeakCallableCollection extends TPriorityList
 	public function toPriorityArray()
 	{
 		$result = [];
-		foreach(parent::toPriorityArray() as $i => $v)
+		foreach(parent::toPriorityArray() as $i => $v) {
 			$result[$i] = $this->filterItemsForOutput($v);
+		}
 		return $result;
 	}
 

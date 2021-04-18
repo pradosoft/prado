@@ -53,8 +53,9 @@ class TAuthManagerParameterBehavior extends TBehavior
 	{
 		parent::attach($owner);
 		$appParams = Prado::getApplication()->getParameters();
-		if($authExpire = $appParams->itemAt($this->_authExpireParameter))
+		if($authExpire = $appParams->itemAt($this->_authExpireParameter)) {
 			$owner->setAuthExpire($authExpire);
+		}
 		
 		$this->_paramBehavior = new TMapRouteBehavior($this->_authExpireParameter, [$owner, 'setAuthExpire']);
 		$appParams->attachBehavior(self::APP_PARAM_AUTH_EXPIRE_BEHAVIOR_NAME, $this->_paramBehavior);

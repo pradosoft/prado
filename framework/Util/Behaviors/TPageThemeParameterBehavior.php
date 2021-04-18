@@ -53,8 +53,9 @@ class TPageThemeParameterBehavior extends TBehavior
 	 */
 	public function setPageThemeFromParameter($sender, $param)
 	{
-		if($theme = Prado::getApplication()->getParameters()->itemAt($this->_themeParameter))
+		if($theme = Prado::getApplication()->getParameters()->itemAt($this->_themeParameter)) {
 			$this->getOwner()->setTheme($theme);
+		}
 	}
 	
 	/**

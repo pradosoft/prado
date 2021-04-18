@@ -53,8 +53,9 @@ class TPageTitleParameterBehavior extends TBehavior
 	 */
 	public function setPageTitleFromParameter($sender, $param)
 	{
-		if($title = Prado::getApplication()->getParameters()->itemAt($this->_titleParameter))
+		if($title = Prado::getApplication()->getParameters()->itemAt($this->_titleParameter)) {
 			$this->getOwner()->setTitle($title);
+		}
 	}
 	
 	/**

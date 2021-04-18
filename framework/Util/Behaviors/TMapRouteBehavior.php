@@ -59,10 +59,11 @@ class TMapRouteBehavior extends TBehavior
 	 */
 	public function dyAddItem($key, $value, $callchain)
 	{
-		if($key == $this->_parameter && $key != null && $this->_handler)
+		if($key == $this->_parameter && $key != null && $this->_handler) {
 			call_user_func($this->_handler, $value);
-		elseif($this->_parameter == null)
+		} elseif($this->_parameter == null) {
 			call_user_func($this->_handler, $key, $value);
+		}
 		return $callchain->dyAddItem($key, $value);
 	}
 	
@@ -75,10 +76,11 @@ class TMapRouteBehavior extends TBehavior
 	 */
 	public function dyRemoveItem($key, $value, $callchain)
 	{
-		if($key == $this->_parameter && $key != null && $this->_handler)
+		if($key == $this->_parameter && $key != null && $this->_handler) {
 			call_user_func($this->_handler, null);
-		elseif($this->_parameter == null)
+		} elseif($this->_parameter == null) {
 			call_user_func($this->_handler, $key, null);
+		}
 		return $callchain->dyRemoveItem($key, $value);
 	}
 }
