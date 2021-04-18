@@ -44,7 +44,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 */
 	 public function addFormANameTop($page, $param)
 	 {
-		$toplink = '<a name="'.$this->_topAnchor.'"></a>';
+		$toplink = '<a name="' . $this->_topAnchor . '"></a>';
 		if($form=$page->getForm()) {
 			$form->getParent()->getControls()->insertBefore($form,$toplink);
 		}
