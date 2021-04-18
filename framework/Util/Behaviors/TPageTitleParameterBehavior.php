@@ -16,7 +16,7 @@ use Prado\Util\TBehavior;
 /**
  * TPageTitleParameterBehavior sets the Title of a page from a parameter.
  * This parameterizes the TPage title variable.   {@link TitleParameter} is
- * the  key to the Application Parameters for setting the TPage.Title.  
+ * the  key to the Application Parameters for setting the TPage.Title.
  *
  * This is useful for setting Titles on Plugin Modules.
  *
@@ -53,13 +53,12 @@ class TPageTitleParameterBehavior extends TBehavior
 	 */
 	public function setPageTitleFromParameter($sender, $param)
 	{
-		if($title = Prado::getApplication()->getParameters()->itemAt($this->_titleParameter)) {
+		if($title = Prado::getApplication()->getParameters()->itemAt($this->_titleParameter))
 			$this->getOwner()->setTitle($title);
-		}
 	}
 	
 	/**
-	 * @return string Application parameter key to set the TPage.Theme.
+	 * @return string Application parameter key to set the TPage.Title.
 	 */
 	public function getTitleParameter()
 	{
@@ -67,7 +66,7 @@ class TPageTitleParameterBehavior extends TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the TPage.Theme.
+	 * @param $value string Application parameter key to set the TPage.Title.
 	 */
 	public function setTitleParameter($value)
 	{
