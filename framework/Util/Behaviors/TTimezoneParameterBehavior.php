@@ -57,7 +57,7 @@ class TTimezoneParameterBehavior extends TBehavior
 	 * @var object {@link TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setPHPTimezone.
 	 */
-	private $_paramBehavior = null;
+	private $_paramBehavior;
 	
 	/**
 	 * This sets the date_default_timezone_set with the value of the TimezoneParameter
