@@ -13,13 +13,13 @@ namespace Prado\Util\Behaviors;
 use Prado\Util\TBehavior;
 
 /**
- * TMapRouteBehavior routes the changes to Application Parameters to 
+ * TMapRouteBehavior routes the changes to Application Parameters to
  * actual functions to affect change.
  * <code>
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapRouteBehavior('parameterToHook', [$obj, 'setParam']));
  * </code>
- * This code will call $obj->setParam($value) every time the parameter 
+ * This code will call $obj->setParam($value) every time the parameter
  * 'parameterToHook' changes in the Application Parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -29,7 +29,7 @@ use Prado\Util\TBehavior;
 class TMapRouteBehavior extends TBehavior
 {
 	/**
-	 * @var string the parameter to check for when there are changes.  This 
+	 * @var string the parameter to check for when there are changes.  This
 	 * is public because this call shouldn't add any other getter/setter functions.
 	 * it is possible for the Parameter to change its key
 	 */

@@ -39,8 +39,8 @@ class TPageTopAnchorBehavior extends TBehavior
 	
 	/**
 	 * This method places an '<a name="">' before the TForm
-	 * @param $sender object raising the event
-	 * @param $param the parameter of the raised event
+	 * @param $page object raising the event
+	 * @param $param mixed the parameter of the raised event
 	 */
 	 public function addFormANameTop($page, $param)
 	 {

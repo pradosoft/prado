@@ -54,7 +54,6 @@ class TMapLazyLoadBehavior extends TBehavior
 		if($this->_handler) {
 			$value = call_user_func($this->_handler, $key);
 		}
-		//echo('load '. $key . '='.$value);
 		return $callchain->dyNoItem($value, $key);
 	}
 }
