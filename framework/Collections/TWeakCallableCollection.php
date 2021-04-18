@@ -125,7 +125,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function filterItemForInput($handler, $validate=false)
 	{
-		if($validate && !is_callable($handler,false))
+		if($validate && !is_callable($handler, false))
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
 		if(!self::$_weak) {
 			return $handler;
@@ -211,7 +211,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{
-		return parent::insertAtIndexInPriority($this->filterItemForInput($item,true), $index, $priority, $preserveCache);
+		return parent::insertAtIndexInPriority($this->filterItemForInput($item, true), $index, $priority, $preserveCache);
 	}
 
 	/**
