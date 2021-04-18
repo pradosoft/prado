@@ -17,9 +17,9 @@ use WeakReference;
  * TWeakCallableCollection class
  *
  * TWeakCallableCollection implements a priority ordered list collection of callables.  This extends
- * {@link TPriorityList}.  This holds the callables for object event handlers and global event handlers by 
+ * {@link TPriorityList}.  This holds the callables for object event handlers and global event handlers by
  * converting all callable objects into a WeakReference (for PHP 7.4+).  TWeakCallableCollection prevents circular
- * references in global events that would otherwise block object destruction, and thus removal of the callable 
+ * references in global events that would otherwise block object destruction, and thus removal of the callable
  * in __destruct. All data out has the callable objects converted back to the regular object reference in a callable.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -36,7 +36,7 @@ class TWeakCallableCollection extends TPriorityList
 
 	/**
 	 * Constructor.
-	 * Initializes the list with an array or an iterable object. Discovers the availability of the 
+	 * Initializes the list with an array or an iterable object. Discovers the availability of the
 	 * {@link WeakReference} object in PHP 7.4.0+.
 	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initial data.
 	 * @param bool $readOnly whether the list is read-only
@@ -74,7 +74,7 @@ class TWeakCallableCollection extends TPriorityList
 	
 	
 	/**
-	 * If WeakReference is available, converts the $items array of callable that 
+	 * If WeakReference is available, converts the $items array of callable that
 	 * has WeakReferences rather than the actual object back into a regular callable.
 	 * @param array $items an array of callable where objects are WeakReference
 	 * @return array array of callable where WeakReference are converted back to the object
@@ -150,10 +150,10 @@ class TWeakCallableCollection extends TPriorityList
 
 
 	/**
-	 * This flattens the priority list into a flat array [0,...,n-1], but 
-	 * leaves the objects in the array as WeakReference rather than standard 
-	 * callable
-	 * @return array array of items in the list in priority and index order, 
+	 * This flattens the priority list into a flat array [0,...,n-1], but
+	 * leaves the objects in the array as WeakReference rather than standard
+	 * callable.
+	 * @return array array of items in the list in priority and index order,
 	 *    where objects are WeakReference
 	 */
 	protected function flattenPrioritiesWeak()
@@ -181,7 +181,8 @@ class TWeakCallableCollection extends TPriorityList
 
 	/**
 	 * Gets all the items at a specific priority. This is needed to filter the output.
-	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
+	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled
+	 * in with the default priority, if left blank.
 	 * @return array all items at priority in index order, null if there are no items at that priority
 	 */
 	public function itemsAtPriority($priority = null)
@@ -242,7 +243,7 @@ class TWeakCallableCollection extends TPriorityList
 
 	/**
 	 * Returns the priority of a particular item.  This is needed to filter the input.
-	 * @param mixed $item the item to look for within the list
+	 * @param mixed $item the item to look for within the list.
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
 	 * @return array|numeric the priority of the item in the list, false if not found.
@@ -257,7 +258,7 @@ class TWeakCallableCollection extends TPriorityList
 
 	/**
 	 *  This is needed to filter the output.
-	 * @return array the array of priorities keys with values of arrays of callables.  
+	 * @return array the array of priorities keys with values of arrays of callables.
 	 * The priorities are sorted so important priorities, lower numerics, are first.
 	 */
 	public function toPriorityArray()
@@ -270,8 +271,8 @@ class TWeakCallableCollection extends TPriorityList
 
 
 	/**
-	 * @return array the array of priorities keys with values of arrays of callables with 
-	 * WeakReference rather than objects.  The priorities are sorted so important priorities, 
+	 * @return array the array of priorities keys with values of arrays of callables with
+	 * WeakReference rather than objects.  The priorities are sorted so important priorities,
 	 * lower numerics, are first.
 	 */
 	public function toPriorityArrayWeak()
