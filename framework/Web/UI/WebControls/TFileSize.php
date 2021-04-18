@@ -10,7 +10,9 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
+
 /**
  * TFileSize class
  *
@@ -79,22 +81,22 @@ class TFileSize extends TLabel
 		$marketingSize = $this->getUseMarketingSize();
 		if($abbr && $marketingSize) {
 			$decimal = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-			$t = $s . ' ' . $decimal[$index];
+			$t = $s . ' ' . Prado::localize($decimal[$index]);
 		} elseif(!$abbr && $marketingSize) {
 			$decimalname = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
 			$appendix = '';
 			if($s != 1)
 				$appendix = 's';
-			$t = $s . ' ' . $decimalname[$index].$appendix;
+			$t = $s . ' ' . Prado::localize($decimalname[$index].$appendix);
 		} elseif($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-			$t = $s . ' ' . $binary[$index];
+			$t = $s . ' ' . Prado::localize($binary[$index]);
 		} elseif(!$abbr && !$marketingSize) {
 			$binaryname = ['bytes', 'kibibytes', 'mebibytes', 'gibibytes', 'tebibytes', 'pebibytes', 'exbibytes', 'zebibytes', 'yobibytes'];
 			$appendix = '';
 			if($s != 1)
 				$appendix = 's';
-			$t = $s . ' ' . $binaryname[$index].$appendix;
+			$t = $s . ' ' . Prado::localize($binaryname[$index].$appendix);
 		}
 		$writer->write($t);
 	}
