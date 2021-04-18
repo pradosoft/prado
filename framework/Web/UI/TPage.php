@@ -685,7 +685,7 @@ class TPage extends TTemplateControl
 		$theme = $this->getTheme();
 		if ($theme instanceof ITheme) {
 			foreach ($theme->getStyleSheetFiles() as $url) {
-				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
+				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url, $theme));
 			}
 			foreach ($theme->getJavaScriptFiles() as $url) {
 				$cs->registerHeadScriptFile($url, $url);
@@ -694,7 +694,7 @@ class TPage extends TTemplateControl
 		$styleSheet = $this->getStyleSheetTheme();
 		if ($styleSheet instanceof ITheme) {
 			foreach ($styleSheet->getStyleSheetFiles() as $url) {
-				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url));
+				$cs->registerStyleSheetFile($url, $url, $this->getCssMediaType($url, $styleSheet));
 			}
 			foreach ($styleSheet->getJavaScriptFiles() as $url) {
 				$cs->registerHeadScriptFile($url, $url);
@@ -714,8 +714,10 @@ class TPage extends TTemplateControl
 	 * @param string $url CSS URL
 	 * @return string media type of the CSS file
 	 */
-	private function getCssMediaType($url)
+	private function getCssMediaType($url, $theme)
 	{
+		if($type = $theme->dyCssMediaType(null, $url))
+			return $type;
 		$segs = explode('.', basename($url));
 		if (isset($segs[2])) {
 			return $segs[count($segs) - 2];
