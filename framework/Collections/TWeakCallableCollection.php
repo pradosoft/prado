@@ -126,8 +126,9 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function filterItemForInput($handler, $validate=false)
 	{
-		if($validate && !is_callable($handler, false))
+		if($validate && !is_callable($handler, false)) {
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
+		}
 		if(!self::$_weak) {
 			return $handler;
 		}
