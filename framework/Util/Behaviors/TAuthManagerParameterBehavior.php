@@ -15,7 +15,7 @@ use Prado\Util\TBehavior;
 
 /**
  * TAuthManagerParameterBehavior sets the TAuthManager.AuthExpire to an
- * application parameter.  
+ * application parameter.
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
  * @since 4.2.0

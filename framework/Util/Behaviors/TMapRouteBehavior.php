@@ -74,7 +74,7 @@ class TMapRouteBehavior extends TBehavior
 	 * @param $key string the key of the item being added
 	 * @param $value mixed the value of the item being added
 	 * @param $callchain TCallChain of event handlers
-	 * @return mixed returns the argv[0], chained to all handlers 
+	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	public function dyRemoveItem($key, $value, $callchain)
 	{

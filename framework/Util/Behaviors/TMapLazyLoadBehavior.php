@@ -48,7 +48,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	 * @param $value mixed the value of the item being added
 	 * @param $key string the key of the item being added
 	 * @param $callchain {@link TCallChain} of event handlers
-	 * @return mixed returns the argv[0], chained to all handlers 
+	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	 public function dyNoItem($value, $key, $callchain)
 	{
