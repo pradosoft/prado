@@ -20,13 +20,13 @@ use Prado\Util\TBehavior;
  *
  * This Behavior is designed to attach to TApplication, but can be
  * attached to any TComponent.
- * 
+ *
  * <code>
  *		<behavior name="TimezoneParameter" Class="Prado\Util\Behaviors\TTimezoneParameterBehavior" AttachTo="Application" TimezoneParameter="Timezone" Timezone="America/New_York"/>
  * </code>
- * This code will set the default timezone to "America/New_York", and then 
- * if there is any Application Parameter in "Timezone", then that takes 
- * precedence.  Setting the TimezoneParameter to "" will disable the 
+ * This code will set the default timezone to "America/New_York", and then
+ * if there is any Application Parameter in "Timezone", then that takes
+ * precedence.  Setting the TimezoneParameter to "" will disable the
  * parameter functionality and set the Timezone from the attribute Timezone.
  *
  * This routes changes in the Application Parameter {@link TimezoneParameter}
@@ -60,7 +60,7 @@ class TTimezoneParameterBehavior extends TBehavior
 	private $_paramBehavior = null;
 	
 	/**
-	 * This sets the date_default_timezone_set with the value of the TimezoneParameter 
+	 * This sets the date_default_timezone_set with the value of the TimezoneParameter
 	 * in the application parameters.  It attaches the Application Parameter handler behavior.
 	 * @param $owner object the object that this behavior is attached to.
 	 */
