@@ -87,6 +87,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_themePath = realpath($themePath);
 		$this->_name = basename($themePath);
 		parent::__construct();
+		$this->dyThemeConstruct($themePath, $themeUrl);
 		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
 		if (($cache = $this->getApplication()->getCache()) !== null) {
@@ -99,7 +100,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 					}
 					$cacheValid = true;
 					while (($file = readdir($dir)) !== false) {
-						if ($file === '.' || $file === '..') {
+						if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
 							continue;
 						} elseif (basename($file, '.css') !== $file) {
 							$this->_cssFiles[] = $themeUrl . '/' . $file;
@@ -130,7 +131,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				throw new TIOException('theme_path_inexistent', $themePath);
 			}
 			while (($file = readdir($dir)) !== false) {
-				if ($file === '.' || $file === '..') {
+				if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
 					continue;
 				} elseif (basename($file, '.css') !== $file) {
 					$this->_cssFiles[] = $themeUrl . '/' . $file;
@@ -162,6 +163,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				}
 			}
 			closedir($dir);
+			$this->dyThemeProcess();
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
 			if ($cache !== null) {
