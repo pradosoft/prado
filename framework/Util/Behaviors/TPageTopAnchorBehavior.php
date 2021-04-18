@@ -13,7 +13,7 @@ namespace Prado\Util\Behaviors;
 use Prado\Util\TBehavior;
 
 /**
- * TPageTopAnchorBehavior adds an <a name='top'> anchor at the top of 
+ * TPageTopAnchorBehavior adds an <a name='top'> anchor at the top of
  * every page just before the TForm.
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
@@ -27,7 +27,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	private $_topAnchor = 'top';
 	
 	/**
-	 * This handles the TPage.OnSaveStateComplete event to place the 
+	 * This handles the TPage.OnSaveStateComplete event to place the
 	 * '<a name="">' at the last moment and have least interference with
 	 * anything else
 	 * @return array of events as keys and methods as values
@@ -45,7 +45,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 public function addFormANameTop($page, $param)
 	 {
 		$toplink = '<a name="' . $this->_topAnchor . '"></a>';
-		if($form=$page->getForm()) {
+		if($form = $page->getForm()) {
 			$form->getParent()->getControls()->insertBefore($form,$toplink);
 		}
 	 }
