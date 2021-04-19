@@ -149,7 +149,7 @@ class TSecurityManager extends \Prado\TModule
 	public function setHashAlgorithm($value)
 	{
 		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
-		if (!in_array($this->_hashAlgorithm, hash_hmac_algos())) {
+		if (!in_array($this->_hashAlgorithm, function_exists('hash_hmac_algos')?hash_hmac_algos():hash_algos())) {
 			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
 		}
 	}
