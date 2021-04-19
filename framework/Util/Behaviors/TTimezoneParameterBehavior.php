@@ -67,11 +67,11 @@ class TTimezoneParameterBehavior extends TBehavior
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		if(!$this->_timezoneParameter) {
+		if (!$this->_timezoneParameter) {
 			return;
 		}
 		$appParams = Prado::getApplication()->getParameters();
-		if($default_timezone=$appParams->itemAt($this->_timezoneParameter)) {
+		if ($default_timezone=$appParams->itemAt($this->_timezoneParameter)) {
 			$this->setTimezone($default_timezone);
 		}
 		$this->_paramBehavior = new TMapRouteBehavior($this->_timezoneParameter, [$this, 'setTimezone']);
@@ -84,7 +84,7 @@ class TTimezoneParameterBehavior extends TBehavior
 	 */
 	public function detach($owner)
 	{
-		if($this->_paramBehavior) {
+		if ($this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 		}
 		parent::detach($owner);
@@ -103,7 +103,7 @@ class TTimezoneParameterBehavior extends TBehavior
 	 */
 	public function setTimezoneParameter($value)
 	{
-		if($this->_paramBehavior) {
+		if ($this->_paramBehavior) {
 			$this->_paramBehavior->_parameter = $value;
 		}
 		$this->_timezoneParameter = $value;
@@ -124,6 +124,6 @@ class TTimezoneParameterBehavior extends TBehavior
 	{
 		try {
 			date_default_timezone_set($value);
-		} catch (Exception $e){}
+		} catch (Exception $e) {}
 	}
 }

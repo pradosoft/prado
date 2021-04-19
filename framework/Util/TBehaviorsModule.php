@@ -53,7 +53,7 @@ class TBehaviorsModule extends \Prado\TModule
 	{
 		$this->loadBehaviors($config);
 		
-		if(count($this->_pageBehaviors)) {
+		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachTPageServiceHandler']);
 		}
 	}
@@ -66,7 +66,7 @@ class TBehaviorsModule extends \Prado\TModule
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if($service->isa('Prado\Web\Services\TPageService')) {
+		if ($service->isa('Prado\Web\Services\TPageService')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors']);
 		}
 	}
@@ -76,7 +76,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 */
 	public function attachTPageBehaviors($sender, $page)
 	{
-		foreach($this->_pageBehaviors as $name => $properties) {
+		foreach ($this->_pageBehaviors as $name => $properties) {
 			$priority = $properties['priority'];
 			unset($properties['priority']);
 			$page->attachBehavior($name, $properties, $priority);
@@ -97,7 +97,7 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 				$name = $properties['name'];
 				unset($properties['name']);
-				if(!$name) {
+				if (!$name) {
 					throw new TConfigurationException('behaviormodule_behaviorname_required');
 				}
 				
@@ -110,22 +110,22 @@ class TBehaviorsModule extends \Prado\TModule
 				} elseif ($attachTo !== null && $attachToClass !== null) {
 					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
 				}
-				if($attachToClass) {
+				if ($attachToClass) {
 					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 				} else {
-					if(strtolower($attachTo) == "page") {
+					if (strtolower($attachTo) == "page") {
 						$this->_pageBehaviors[$name] = $properties;
 						continue;
-					} elseif(strncasecmp($attachTo, 'module:', 7) === 0) {
+					} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
 						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
 					$priority = $properties['priority']??null;
 					unset($properties['priority']);
-					if(!$owner) {
+					if (!$owner) {
 						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
 					}
 					$owner->attachBehavior($name,$properties,$priority);
@@ -137,7 +137,7 @@ class TBehaviorsModule extends \Prado\TModule
 				
 				$name = $properties['name'];
 				unset($properties['name']);
-				if(!$name) {
+				if (!$name) {
 					throw new TConfigurationException('behaviormodule_behaviorname_required');
 				}
 				
@@ -146,7 +146,7 @@ class TBehaviorsModule extends \Prado\TModule
 				$attachToClass = $properties['attachtoclass']??null;
 				unset($properties['attachto']);
 				unset($properties['attachtoclass']);
-				if(!$class) {
+				if (!$class) {
 					throw new TConfigurationException('behaviormodule_behaviorclass_required');
 				}
 				if ($attachTo === null && $attachToClass === null) {
@@ -154,22 +154,22 @@ class TBehaviorsModule extends \Prado\TModule
 				} elseif ($attachTo !== null && $attachToClass !== null) {
 					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
 				}
-				if($attachToClass) {
+				if ($attachToClass) {
 					$priority = $properties['priority']??null;
 					unset($properties['priority']);
 					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 				} else {
-					if(strtolower($attachTo) == "page") {
+					if (strtolower($attachTo) == "page") {
 						$this->_pageBehaviors[$name] = $properties;
 						continue;
-					} elseif(strncasecmp($attachTo, 'module:', 7) === 0) {
+					} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
 						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
 					} else {
 						$owner = $this->getSubProperty($attachTo);
 					}
 					$priority = $properties['priority']??null;
 					unset($properties['priority']);
-					if(!$owner) {
+					if (!$owner) {
 						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
 					}
 					$owner->attachBehavior($name,$properties,$priority);

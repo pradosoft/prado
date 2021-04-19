@@ -53,7 +53,7 @@ class TAuthManagerParameterBehavior extends TBehavior
 	{
 		parent::attach($owner);
 		$appParams = Prado::getApplication()->getParameters();
-		if($authExpire = $appParams->itemAt($this->_authExpireParameter)) {
+		if ($authExpire = $appParams->itemAt($this->_authExpireParameter)) {
 			$owner->setAuthExpire($authExpire);
 		}
 		
@@ -67,7 +67,7 @@ class TAuthManagerParameterBehavior extends TBehavior
 	 */
 	public function detach($owner)
 	{
-		if($this->_paramBehavior) {
+		if ($this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_AUTH_EXPIRE_BEHAVIOR_NAME);
 		}
 		parent::detach($owner);
