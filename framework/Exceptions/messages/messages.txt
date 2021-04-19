@@ -139,6 +139,9 @@ behaviormodule_behaviorclass_required	= <behavior> must contain a 'class' attrib
 behaviormodule_attachto_class_required	= <behavior> must have an 'attachto' or 'attachtoclass' attribute
 behaviormodule_attachto_and_class_only_one	= <behavior> must have either 'attachto' or 'attachtoclass' attribute, not both.
 behaviormodule_behaviorowner_required	= <behavior> AttachTo '{0}' object is not found
+parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
+parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
+parameterizebehavior_owner_has_no_set_property		= TParameterizeBehavior must have a settable Property Attribute and {0} is not settable.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
