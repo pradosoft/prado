@@ -45,10 +45,10 @@ class TDataSize extends TLabel
 	private $_abbreviate = true;
 	
 	/**
-	 * renders the size in the closes base, bytes, kilobytes, megabytes, 
+	 * renders the size in the closes base, bytes, kilobytes, megabytes,
 	 * gigabytes, terabytes, petabytes, exabytes, zettabytes, and yottabytes
-	 * for marketing terms, and bytes, kibibytes, mebibytes gibibytes, 
-	 * tebibytes, pebibytes, exbibytes, zebibytes, and yobibytes for technical 
+	 * for marketing terms, and bytes, kibibytes, mebibytes gibibytes,
+	 * tebibytes, pebibytes, exbibytes, zebibytes, and yobibytes for technical
 	 * terms.
 	 * @param $writer object where the method writes output.
 	 */
