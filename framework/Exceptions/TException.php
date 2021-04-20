@@ -63,15 +63,17 @@ class TException extends \Exception
 	
 	/**
 	 * Adds to the various files to read when rendering an error
+	 * @param $file
 	 */
 	public static function addMessageFile($file)
 	{
-		if(preg_match('/^(.*)(-.{2.4})?\.(.{2,4})$/', $file, $matching))
+		if (preg_match('/^(.*)(-.{2.4})?\.(.{2,4})$/', $file, $matching))
 		{
 			$lang=Prado::getPreferredLanguage();
 			$msgFile=$matching[1].'-'.$lang.'.'.$matching[2];
-			if(is_file($msgFile))
-				$file=$msgFile;
+			if (is_file($msgFile)) {
+				$file = $msgFile;
+			}
 		}
 		TException::$_messagefiles[] = $file;
 	}
@@ -88,7 +90,7 @@ class TException extends \Exception
 		$value = $key;
 
 		// Cache messages
-		foreach($msgFiles as $msgFile) {
+		foreach ($msgFiles as $msgFile) {
 			if (!isset(self::$_messageCache[$msgFile])) {
 				if (($entries = @file($msgFile)) !== false) {
 					foreach ($entries as $entry) {
