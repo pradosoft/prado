@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
-class TPageTopAnchorBehavior extends TBehavior 
+class TPageTopAnchorBehavior extends TBehavior
 {
 	/**
 	 * @var string the page theme is set to this parameter key
@@ -43,28 +43,28 @@ class TPageTopAnchorBehavior extends TBehavior
 	 * @param $page object raising the event
 	 * @param $param mixed the parameter of the raised event
 	 */
-	 public function addFormANameAnchor($page, $param)
-	 {
+	public function addFormANameAnchor($page, $param)
+	{
 		$topanchor = '<a name="' . $this->_topAnchor . '"></a>';
 		
 		if ($form = $page->getForm()) {
 			$form->getParent()->getControls()->insertBefore($form, $topanchor);
 		}
-	 }
+	}
 	 
-	 /**
-	  * @return string the top anchor name, defaults to 'top'.
-	  */
-	 public function getTopAnchor()
-	 {
-		 return $this->_topAnchor;
-	 }
+	/**
+	 * @return string the top anchor name, defaults to 'top'.
+	 */
+	public function getTopAnchor()
+	{
+		return $this->_topAnchor;
+	}
 	 
-	 /**
-	  * @param $value string the top anchor name.
-	  */
-	 public function setTopAnchor($value)
-	 {
-		 $this->_topAnchor = TPropertyValue::ensureString($value);
-	 }
+	/**
+	 * @param $value string the top anchor name.
+	 */
+	public function setTopAnchor($value)
+	{
+		$this->_topAnchor = TPropertyValue::ensureString($value);
+	}
 }

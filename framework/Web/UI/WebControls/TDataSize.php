@@ -53,7 +53,7 @@ class TDataSize extends TLabel
 	 * @param $writer object where the method writes output.
 	 */
 	public function renderContents($writer)
-	{	
+	{
 		$s = $this->_size;
 		$d = 1024;
 		
@@ -65,7 +65,7 @@ class TDataSize extends TLabel
 		
 		$index = 0;
 		foreach ($number as $k => $size) {
-			if(abs($s) < $size) {
+			if (abs($s) < $size) {
 				break;
 			} else {
 				$index = $k;

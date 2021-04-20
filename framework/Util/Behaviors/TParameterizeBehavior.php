@@ -29,7 +29,7 @@ use Prado\TPropertyValue;
  * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
-class TParameterizeBehavior extends \Prado\Util\TBehavior 
+class TParameterizeBehavior extends \Prado\Util\TBehavior
 {
 	/**
 	 * @var string the key to the application parameter

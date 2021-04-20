@@ -109,7 +109,7 @@ class TWeakCallableCollection extends TPriorityList
 		if (!self::$_weak) {
 			return $handler;
 		}
-		if (is_array($handler) && is_object($handler[0])  && is_a($handler[0], '\WeakReference')) {
+		if (is_array($handler) && is_object($handler[0]) && is_a($handler[0], '\WeakReference')) {
 			return [$handler[0]->get(), $handler[1]];
 		} elseif (is_object($handler) && is_a($handler, '\WeakReference')) {
 			return $handler->get();
@@ -124,7 +124,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @param bool $validate whether or not to validate the input as a callable
 	 * @return mixed callable but with the objects as WeakReferences
 	 */
-	protected function filterItemForInput($handler, $validate=false)
+	protected function filterItemForInput($handler, $validate = false)
 	{
 		if ($validate && !is_callable($handler, false)) {
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');

@@ -381,7 +381,7 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
  * @since 4.2.0
  */
 class PradoCommandLineAppHelp extends PradoCommandLineAppAction
-{	
+{
 	protected $action = 'help';
 	protected $parameters = [];
 	protected $optional = [];

@@ -36,7 +36,7 @@ use Prado\Util\TBehavior;
  * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
-class TTimezoneParameterBehavior extends TBehavior 
+class TTimezoneParameterBehavior extends TBehavior
 {
 	/**
 	 * Name of the Application Parameter Routing Behavior
