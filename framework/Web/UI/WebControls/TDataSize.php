@@ -102,7 +102,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @return int data size in bytes.
+	 * @return integer data size in bytes.
 	 */
 	public function getSize()
 	{
@@ -110,7 +110,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @param $size int data size in bytes
+	 * @param $size integer data size in bytes
 	 */
 	public function setSize($size)
 	{
