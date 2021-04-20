@@ -1362,7 +1362,7 @@ class TComponent
 	}
 	
 	/**
-	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of 
+	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of
 	 * ['class' => 'MyBehavior', 'property1' => 'Value1'...] and creates a Behavior in return. eg.
 	 * <code>
 	 *		$b = $this->instanceBehavior('MyBehavior');

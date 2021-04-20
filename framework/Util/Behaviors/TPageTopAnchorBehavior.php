@@ -11,6 +11,7 @@
 namespace Prado\Util\Behaviors;
 
 use Prado\Util\TBehavior;
+use Prado\TPropertyValue;
 
 /**
  * TPageTopAnchorBehavior adds an <a name='top'> anchor at the top of
@@ -34,9 +35,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 */
 	public function events()
 	{
-		return [
-			'OnSaveStateComplete' => 'addFormANameAnchor'
-		];
+		return [ 'OnSaveStateComplete' => 'addFormANameAnchor' ];
 	}
 	
 	/**
@@ -66,6 +65,6 @@ class TPageTopAnchorBehavior extends TBehavior
 	  */
 	 public function setTopAnchor($value)
 	 {
-		 $this->_topAnchor = $value;
+		 $this->_topAnchor = TPropertyValue::ensureString($value);
 	 }
 }
