@@ -271,7 +271,7 @@ EOD;
  * @author Brad Anderson <belisoful[at]icloud[dot]com>
  * @since 4.2.0
  */
-abstract class PradoCommandLineAppAction extends PradoCommandLineAction
+class PradoCommandLineAppAction extends PradoCommandLineAction
 {
 	/**
 	 * Checks if specified parameters are suitable for the specified action
