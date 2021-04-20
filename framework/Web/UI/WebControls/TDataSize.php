@@ -136,7 +136,7 @@ class TDataSize extends TLabel
 	 */
 	public function setUseMarketingSize($marketing)
 	{
-		$this->_usemarketingsize=TPropertyValue::ensureBoolean($marketing);
+		$this->_usemarketingsize = TPropertyValue::ensureBoolean($marketing);
 	}
 	
 	/**
@@ -152,6 +152,6 @@ class TDataSize extends TLabel
 	 */
 	public function setAbbreviate($abbr)
 	{
-		$this->_abbreviate=TPropertyValue::ensureBoolean($abbr);
+		$this->_abbreviate = TPropertyValue::ensureBoolean($abbr);
 	}
 }
