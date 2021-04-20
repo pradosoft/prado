@@ -712,6 +712,7 @@ class TPage extends TTemplateControl
 	 *        xxx.media-type.extension
 	 * For example, 'mystyle.print.css' means its media type is 'print'.
 	 * @param string $url CSS URL
+	 * @param object $theme the theme being applied
 	 * @return string media type of the CSS file
 	 */
 	private function getCssMediaType($url, $theme)
