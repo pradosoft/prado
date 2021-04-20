@@ -69,8 +69,8 @@ class TException extends \Exception
 	{
 		if (preg_match('/^(.*)(-.{2.4})?\.(.{2,4})$/', $file, $matching))
 		{
-			$lang=Prado::getPreferredLanguage();
-			$msgFile=$matching[1].'-'.$lang.'.'.$matching[2];
+			$lang = Prado::getPreferredLanguage();
+			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[2];
 			if (is_file($msgFile)) {
 				$file = $msgFile;
 			}
