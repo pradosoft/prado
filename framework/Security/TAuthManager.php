@@ -474,7 +474,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function onLogin($param)
 	{
-		$this->raiseEvent('onLogin',$this,$param);
+		$this->raiseEvent('onLogin', $this, $param);
 	}
 	
 	/**
@@ -483,7 +483,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function onLoginFailed($param)
 	{
-		$this->raiseEvent('onLoginFailed',$this,$param);
+		$this->raiseEvent('onLoginFailed', $this, $param);
 	}
 	
 	/**
@@ -492,6 +492,6 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function onLogout($param)
 	{
-		$this->raiseEvent('onLogout',$this,$param);
+		$this->raiseEvent('onLogout', $this, $param);
 	}
 }
