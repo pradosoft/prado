@@ -30,7 +30,7 @@ use Prado\TPropertyValue;
 class TDataSize extends TLabel
 {
 	/**
-	 * @var integer size of the data
+	 * @var int size of the data
 	 */
 	private $_size = 0;
 	
@@ -102,7 +102,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @return integer data size in bytes.
+	 * @return int data size in bytes.
 	 */
 	public function getSize()
 	{
@@ -110,7 +110,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @param $size integer data size in bytes
+	 * @param $size int data size in bytes
 	 */
 	public function setSize($size)
 	{
