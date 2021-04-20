@@ -716,8 +716,9 @@ class TPage extends TTemplateControl
 	 */
 	private function getCssMediaType($url, $theme)
 	{
-		if($type = $theme->dyCssMediaType(null, $url))
+		if ($type = $theme->dyCssMediaType(null, $url)) {
 			return $type;
+		}
 		$segs = explode('.', basename($url));
 		if (isset($segs[2])) {
 			return $segs[count($segs) - 2];
