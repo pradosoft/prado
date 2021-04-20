@@ -19,6 +19,7 @@ namespace Prado;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado
  * @since 3.0
+ * @method void dyPreInit(mixed $config)
  */
 abstract class TModule extends \Prado\TApplicationComponent implements IModule
 {
