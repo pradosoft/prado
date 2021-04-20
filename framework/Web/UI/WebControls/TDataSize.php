@@ -1,6 +1,6 @@
 <?php
 /**
- * TFileSize class file
+ * TDataSize class file
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -14,12 +14,12 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
- * TFileSize class
+ * TDataSize class
  *
- * TFileSize produces the size of a file in its natural size for human
+ * TDataSize produces the size of a file in its natural size for human
  * readability rather than bytes.
  * <code>
- *		<com:TFileSize Size="475837458" UseMarketingSize="true" Abbreviate="true"/>
+ *		<com:TDataSize Size="475837458" UseMarketingSize="true" Abbreviate="true"/>
  * </code>
  * will output "476 MB"
  *
@@ -27,7 +27,7 @@ use Prado\TPropertyValue;
  * @package Prado\Web\UI\WebControls
  * @since 4.2.0
  */
-class TFileSize extends TLabel
+class TDataSize extends TLabel
 {
 	/**
 	 * @var integer size of the data
