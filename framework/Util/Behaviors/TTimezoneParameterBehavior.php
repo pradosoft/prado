@@ -124,6 +124,7 @@ class TTimezoneParameterBehavior extends TBehavior
 	{
 		try {
 			date_default_timezone_set($value);
-		} catch (Exception $e) {}
+		} catch (Exception $e) {
+		}
 	}
 }

@@ -83,7 +83,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			$owner->setSubProperty($this->_property, $value);
 		}
 		
-		if($this->_routeBehaviorName) {
+		if ($this->_routeBehaviorName) {
 			$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, $this->_property]);
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
