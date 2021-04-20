@@ -57,6 +57,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * @author Brad Anderson <javalizard@mac.com>
  * @package Prado\Collections
  * @since 3.2a
+ * @method void dyAddItem(mixed $key, mixed $value)
+ * @method void dyRemoveItem(mixed $key, mixed $value)
+ * @method mixed dyNoItem(mixed $returnValue, mixed $key)
  */
 
 class TPriorityMap extends TMap

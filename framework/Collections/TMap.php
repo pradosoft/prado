@@ -35,6 +35,9 @@ use Traversable;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Collections
  * @since 3.0
+ * @method void dyAddItem(mixed $key, mixed $value)
+ * @method void dyRemoveItem(mixed $key, mixed $value)
+ * @method mixed dyNoItem(mixed $returnValue, mixed $key)
  */
 class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess, \Countable
 {

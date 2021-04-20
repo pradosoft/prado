@@ -39,6 +39,9 @@ use Prado\TApplicationMode;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method void dyThemeConstruct(string $themePath, string $themeUrl)
+ * @method bool dyProcessFile(bool $returnValue, string $file))
+ * @method void dyThemeProcess()
  */
 class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
