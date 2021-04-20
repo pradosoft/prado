@@ -50,7 +50,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	 * @param $callchain {@link TCallChain} of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
 	 */
-	 public function dyNoItem($value, $key, $callchain)
+	public function dyNoItem($value, $key, $callchain)
 	{
 		if ($this->_handler) {
 			$value = call_user_func($this->_handler, $key);
