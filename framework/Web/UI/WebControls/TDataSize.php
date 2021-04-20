@@ -52,19 +52,19 @@ class TDataSize extends TLabel
 	 * terms.
 	 * @param $writer object where the method writes output.
 	 */
-	public function renderContents($writer) {
-		
+	public function renderContents($writer)
+	{	
 		$s = $this->_size;
 		$d = 1024;
 		
-		if($this->_usemarketingsize) {
+		if ($this->_usemarketingsize) {
 			$d = 1000;
 		}
 		
 		$number = [1, $d, pow($d, 2), pow($d, 3), pow($d, 4), pow($d, 5), pow($d, 6), pow($d, 7), pow($d, 8)];
 		
 		$index = 0;
-		foreach($number as $k => $size) {
+		foreach ($number as $k => $size) {
 			if(abs($s) < $size) {
 				break;
 			} else {
@@ -76,30 +76,30 @@ class TDataSize extends TLabel
 		$s /= $size;
 		
 		$sf = 2;
-		if($s > 1000) {
+		if ($s > 1000) {
 			$sf = 3;
 		}
 			
 		$s = round($s, (int) ceil($sf - log10(abs($s))));
 		$abbr = $this->getAbbreviate();
 		$marketingSize = $this->getUseMarketingSize();
-		if($abbr && $marketingSize) {
+		if ($abbr && $marketingSize) {
 			$decimal = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 			$t = $s . ' ' . Prado::localize($decimal[$index]);
-		} elseif(!$abbr && $marketingSize) {
+		} elseif (!$abbr && $marketingSize) {
 			$decimalname = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
 			$appendix = '';
-			if($s != 1) {
+			if ($s != 1) {
 				$appendix = 's';
 			}
 			$t = $s . ' ' . Prado::localize($decimalname[$index] . $appendix);
-		} elseif($abbr && !$marketingSize) {
+		} elseif ($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 			$t = $s . ' ' . Prado::localize($binary[$index]);
-		} elseif(!$abbr && !$marketingSize) {
+		} elseif (!$abbr && !$marketingSize) {
 			$binaryname = ['byte', 'kibibyte', 'mebibyte', 'gibibyte', 'tebibyte', 'pebibyte', 'exbibyte', 'zebibyte', 'yobibyte'];
 			$appendix = '';
-			if($s != 1) {
+			if ($s != 1) {
 				$appendix = 's';
 			}
 			$t = $s . ' ' . Prado::localize($binaryname[$index] . $appendix);
