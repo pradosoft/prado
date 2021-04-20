@@ -34,7 +34,9 @@ class TPageTopAnchorBehavior extends TBehavior
 	 */
 	public function events()
 	{
-		return ['OnSaveStateComplete' => 'addFormANameAnchor'];
+		return [
+			'OnSaveStateComplete' => 'addFormANameAnchor'
+		];
 	}
 	
 	/**
