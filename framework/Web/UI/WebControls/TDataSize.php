@@ -76,7 +76,7 @@ class TDataSize extends TLabel
 		if($s > 1000)
 			$sf = 3;
 			
-		$s = round($s, (int)ceil($sf - log10(abs($s))));
+		$s = round($s, (int) ceil($sf - log10(abs($s))));
 		$abbr = $this->getAbbreviate();
 		$marketingSize = $this->getUseMarketingSize();
 		if($abbr && $marketingSize) {
@@ -87,7 +87,7 @@ class TDataSize extends TLabel
 			$appendix = '';
 			if($s != 1)
 				$appendix = 's';
-			$t = $s . ' ' . Prado::localize($decimalname[$index].$appendix);
+			$t = $s . ' ' . Prado::localize($decimalname[$index] . $appendix);
 		} elseif($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 			$t = $s . ' ' . Prado::localize($binary[$index]);
@@ -96,7 +96,7 @@ class TDataSize extends TLabel
 			$appendix = '';
 			if($s != 1)
 				$appendix = 's';
-			$t = $s . ' ' . Prado::localize($binaryname[$index].$appendix);
+			$t = $s . ' ' . Prado::localize($binaryname[$index] . $appendix);
 		}
 		$writer->write($t);
 	}
