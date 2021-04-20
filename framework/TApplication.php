@@ -1122,7 +1122,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onInitComplete()
 	{
-		$this->raiseEvent('onInitComplete',$this,null);
+		$this->raiseEvent('onInitComplete', $this, null);
 	}
 
 	/**
