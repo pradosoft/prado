@@ -1381,7 +1381,7 @@ class TComponent
 		} elseif (is_array($behavior) && isset($behavior['class'])) {
 			$b = Prado::createComponent($behavior['class']);
 			unset($behavior['class']);
-			foreach($behavior as $property => $value) {
+			foreach ($behavior as $property => $value) {
 				$b->setSubProperty($property, $value);
 			}
 			$behavior = $b;
