@@ -42,6 +42,7 @@ use Prado\TApplicationMode;
  * @method void dyThemeConstruct(string $themePath, string $themeUrl)
  * @method bool dyProcessFile(bool $returnValue, string $file))
  * @method void dyThemeProcess()
+ * @method string dyCssMediaType(string $returnType, string $url)
  */
 class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
