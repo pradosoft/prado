@@ -85,8 +85,7 @@ class TWeakCallableCollection extends TPriorityList
 			return $items;
 		}
 		$result = [];
-		foreach ($items as $i => $handler)
-		{
+		foreach ($items as $i => $handler) {
 			if (is_array($handler) && is_object($handler[0]) && is_a($handler[0], '\WeakReference')) {
 				$result[] = [$handler[0]->get(), $handler[1]];
 			} elseif (is_object($handler) && is_a($handler, '\WeakReference')) {

@@ -144,7 +144,7 @@ use Prado\Collections\TPriorityMap;
  * __destruct method, if an object is listening to global events, then {@link unlisten} is called.
  * {@link unlisten} is required to be manually called before an object is
  * left without references if it is currently listening to any global events. This includes
- * class wide behaviors.  This is corrected in PHP 7.4.0 with WeakReferences and {@link 
+ * class wide behaviors.  This is corrected in PHP 7.4.0 with WeakReferences and {@link
  * TWeakCallableCollection}
  *
  * An object that contains a method that starts with 'fx' will have those functions
@@ -1370,8 +1370,8 @@ class TComponent
 	 * 		$b = $this->instanceBehavior(new MyBehavior);
 	 * </code>
 	 * @param mixed $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
-	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
+	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
 	 * @since 4.2.0
 	 */
 	protected static function instanceBehavior($behavior)
