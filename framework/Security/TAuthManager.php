@@ -37,8 +37,8 @@ use Prado\Web\THttpCookie;
  * <module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="login" />
  * <module id="users" class="Prado\Security\TUserManager" />
  *
- * When a user logs in, onLogin event is raised with the TUser as the parameter.  
- * If the user trying to login but fails the check, onLoginFailed is raised with the 
+ * When a user logs in, onLogin event is raised with the TUser as the parameter.
+ * If the user trying to login but fails the check, onLoginFailed is raised with the
  * user name as paramete.  When the user logs out, onLogout is raised with the TUser
  * as parameter.
  *
@@ -470,7 +470,7 @@ class TAuthManager extends \Prado\TModule
 	
 	/**
 	 * onLogin event is raised when a user logs in
-	 * @param mixed parameter
+	 * @param mixed $param parameter
 	 */
 	public function onLogin($param)
 	{
@@ -479,7 +479,7 @@ class TAuthManager extends \Prado\TModule
 	
 	/**
 	 * onLoginFailed event is raised when a user login fails
-	 * @param string username trying to log in
+	 * @param string $param username trying to log in
 	 */
 	public function onLoginFailed($param)
 	{
@@ -488,7 +488,7 @@ class TAuthManager extends \Prado\TModule
 	
 	/**
 	 * onLogout event is raised when a user logs out.
-	 * @param mixed parameter
+	 * @param mixed $param parameter
 	 */
 	public function onLogout($param)
 	{
