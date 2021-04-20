@@ -34,11 +34,11 @@ namespace Prado;
  */
 class TShellApplication extends TApplication
 {
-    /**
-     * @var cli shell Application commands. Modules can add their own command 
-     */
-    private $_actionClasses = array();
-    
+	/**
+	 * @var cli shell Application commands. Modules can add their own command 
+	 */
+	private $_actionClasses = array();
+	
 	/**
 	 * Runs the application.
 	 * This method overrides the parent implementation by initializing
@@ -48,20 +48,20 @@ class TShellApplication extends TApplication
 	{
 		$this->initApplication();
 	}
-    
-    /**
-     * @param $v string a CLI Action class to add to the list of what the app is capable
-     */
-    public function addCLIActionClass($v)
-    {
-        $this->_actionClasses[]=$v;
-    }
-    
-    /**
-     * @@return array the CLI Action classes that the application has registered
-     */
-    public function getCLIActionClasses()
-    {
-        return $this->_actionClasses;
-    }
+	
+	/**
+	 * @param $v string a CLI Action class to add to the list of what the app is capable
+	 */
+	public function addCLIActionClass($v)
+	{
+		$this->_actionClasses[]=$v;
+	}
+	
+	/**
+	 * @@return array the CLI Action classes that the application has registered
+	 */
+	public function getCLIActionClasses()
+	{
+		return $this->_actionClasses;
+	}
 }
