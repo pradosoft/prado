@@ -33,7 +33,7 @@ class TImageMapEventParameter extends \Prado\TEventParameter
 	public function __construct($postBackValue)
 	{
 		$this->_postBackValue = $postBackValue;
-                parent::__construct();
+		parent::__construct();
 	}
 
 	/**
