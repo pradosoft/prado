@@ -71,7 +71,7 @@ class TTimezoneParameterBehavior extends TBehavior
 			return;
 		}
 		$appParams = Prado::getApplication()->getParameters();
-		if ($default_timezone=$appParams->itemAt($this->_timezoneParameter)) {
+		if ($default_timezone = $appParams->itemAt($this->_timezoneParameter)) {
 			$this->setTimezone($default_timezone);
 		}
 		$this->_paramBehavior = new TMapRouteBehavior($this->_timezoneParameter, [$this, 'setTimezone']);
