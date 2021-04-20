@@ -271,7 +271,7 @@ EOD;
  * @author Brad Anderson <belisoful[at]icloud[dot]com>
  * @since 4.2.0
  */
-class PradoCommandLineAppAction extends PradoCommandLineAction
+abstract class PradoCommandLineAppAction extends PradoCommandLineAction
 {
 	/**
 	 * Checks if specified parameters are suitable for the specified action
@@ -366,7 +366,7 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
 		}
 		PradoCommandLineInterpreter::getInstance()->clearActionClass();
 		PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineAppHelp');
-		foreach(Prado::getApplication()->getCLIActionClasses() as $actions) {
+		foreach (Prado::getApplication()->getCLIActionClasses() as $actions) {
 			PradoCommandLineInterpreter::getInstance()->addActionClass($actions);
 		}
 		PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
