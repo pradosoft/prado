@@ -142,6 +142,7 @@ behaviormodule_behaviorowner_required	= <behavior> AttachTo '{0}' object is not 
 parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
 parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
 parameterizebehavior_owner_has_no_set_property		= TParameterizeBehavior must have a settable Property Attribute and {0} is not settable.
+parameterizebehavior_cannot_set_name_after_initialize = TParameterizeBehavior cannot set the RouteBehaviorName after being attached.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.

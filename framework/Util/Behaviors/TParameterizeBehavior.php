@@ -12,6 +12,8 @@ namespace Prado\Util\Behaviors;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
 
 /**
  * TParameterizeBehavior sets a specific Property on the owner object
@@ -96,7 +98,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function detach($owner)
 	{
 		if ($this->_paramBehavior) {
-			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_AUTH_EXPIRE_BEHAVIOR_NAME);
+			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 		}
 		parent::detach($owner);
 	}
@@ -162,6 +164,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	public function setRouteBehaviorName($value)
 	{
-		$this->_routeBehaviorName = TPropertyValue::ensureString($value);
+		if (!$this->_paramBehavior) {
+			$this->_routeBehaviorName = TPropertyValue::ensureString($value);
+		} else {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_name_after_initialize');
+		}
 	}
 }
