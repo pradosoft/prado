@@ -28,9 +28,9 @@ use Prado\Xml\TXmlElement;
  * <module class="Prado\Util\TBehaviorsModule">
  *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
  *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
- *   <behavior name="MyAppBehavior" Class="MyAppBehavior" AttachTo="Application" Priority="10" Property1="Value1" Property2="Value2" ... />
+ *   <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
  *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
- *   <behavior name="MyPageBehavior" Class="Prado\Util\Behaviors\TPageThemeParameterBehavior" AttachTo="Page" Priority="10" ThemeParameter="ThemeName" />
+ *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" />
  * </module>
  * </code>
  *

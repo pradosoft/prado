@@ -44,7 +44,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	const APP_PARAM_ROUTE_BEHAVIOR_NAME = 'TimeZoneParameter';
 	
 	/**
-	 * Default TimezoneParameter
+	 * Default TimeZoneParameter
 	 */
 	const TIMEZONE_PARAMETER_NAME = 'prop:TimeZone';
 	
