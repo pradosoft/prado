@@ -49,8 +49,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_property;
 	
 	/**
-	 * @var object {@link TMapRouteBehavior} that routes changes to the parameter
-	 * is handled by setPHPTimezone.
+	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
 	
