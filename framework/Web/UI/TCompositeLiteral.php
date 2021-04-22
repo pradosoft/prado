@@ -54,6 +54,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 				$this->_items[$id] = $item;
 			}
 		}
+		parent::__construct();
 	}
 
 	/**

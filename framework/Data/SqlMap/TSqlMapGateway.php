@@ -40,6 +40,7 @@ class TSqlMapGateway extends \Prado\TComponent
 	public function __construct($manager)
 	{
 		$this->_manager = $manager;
+		parent::__construct();
 	}
 
 	/**

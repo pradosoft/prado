@@ -46,6 +46,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	public function __construct($directory)
 	{
 		$this->setDirectory($directory);
+		parent::__construct();
 	}
 
 	/**

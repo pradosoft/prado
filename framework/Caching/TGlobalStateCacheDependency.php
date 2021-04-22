@@ -36,6 +36,7 @@ class TGlobalStateCacheDependency extends TCacheDependency
 	public function __construct($name)
 	{
 		$this->setStateName($name);
+		parent::__construct();
 	}
 
 	/**

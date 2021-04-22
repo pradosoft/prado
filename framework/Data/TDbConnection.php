@@ -131,6 +131,7 @@ class TDbConnection extends \Prado\TComponent
 		$this->_username = $username;
 		$this->_password = $password;
 		$this->_charset = $charset;
+		parent::__construct();
 	}
 
 	/**

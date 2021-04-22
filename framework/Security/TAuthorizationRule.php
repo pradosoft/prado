@@ -133,6 +133,7 @@ class TAuthorizationRule extends \Prado\TComponent
 				$this->_ipRules[] = $ipRule;
 			}
 		}
+		parent::__construct();
 	}
 
 	/**

@@ -44,6 +44,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	{
 		$this->_currentStep = $currentStep;
 		$this->_nextStep = $currentStep;
+		parent::__construct();
 	}
 
 	/**

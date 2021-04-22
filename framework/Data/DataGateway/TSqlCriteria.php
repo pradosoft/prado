@@ -62,6 +62,7 @@ class TSqlCriteria extends \Prado\TComponent
 		$this->_ordersBy->setCaseSensitive(true);
 
 		$this->setCondition($condition);
+		parent::__construct();
 	}
 
 	/**

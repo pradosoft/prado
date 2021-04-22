@@ -54,6 +54,7 @@ class TDbTransaction extends \Prado\TComponent
 	{
 		$this->_connection = $connection;
 		$this->setActive(true);
+		parent::__construct();
 	}
 
 	/**

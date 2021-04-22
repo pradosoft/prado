@@ -36,6 +36,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	public function __construct(TWizard $wizard)
 	{
 		$this->_wizard = $wizard;
+		parent::__construct();
 	}
 
 	/**

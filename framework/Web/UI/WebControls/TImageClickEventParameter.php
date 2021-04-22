@@ -44,6 +44,7 @@ class TImageClickEventParameter extends \Prado\TEventParameter
 	{
 		$this->_x = $x;
 		$this->_y = $y;
+		parent::__construct();
 	}
 
 	/**

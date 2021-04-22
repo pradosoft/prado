@@ -64,6 +64,7 @@ class TListItem extends \Prado\TComponent
 		$this->setValue($value);
 		$this->setEnabled($enabled);
 		$this->setSelected($selected);
+		parent::__construct();
 	}
 
 	/**

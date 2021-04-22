@@ -28,6 +28,7 @@ class TResultSetListItemParameter extends \Prado\TComponent
 		$this->_resultObject = $result;
 		$this->_parameterObject = $parameter;
 		$this->_list = &$list;
+		parent::__construct();
 	}
 
 	public function getResult()

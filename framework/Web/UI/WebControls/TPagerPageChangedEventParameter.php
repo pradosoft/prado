@@ -46,6 +46,7 @@ class TPagerPageChangedEventParameter extends \Prado\TEventParameter
 	{
 		$this->_source = $source;
 		$this->_newIndex = $newPageIndex;
+		parent::__construct();
 	}
 
 	/**

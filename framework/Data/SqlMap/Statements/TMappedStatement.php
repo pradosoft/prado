@@ -131,6 +131,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$this->_statement = $statement;
 		$this->_command = new TPreparedCommand();
 		$this->initialGroupByResults();
+		parent::__construct();
 	}
 
 	public function getSqlString()

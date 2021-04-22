@@ -203,6 +203,7 @@ class THtmlArea extends TTextBox
 	{
 		$this->setWidth('470px');
 		$this->setHeight('250px');
+		parent::__construct();
 	}
 
 	/**

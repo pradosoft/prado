@@ -69,6 +69,7 @@ class TRpcClient extends \Prado\TApplicationComponent
 	{
 		$this->_serverUrl = $serverUrl;
 		$this->_isNotification = TPropertyValue::ensureBoolean($isNotification);
+		parent::__construct();
 	}
 
 	// methods

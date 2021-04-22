@@ -51,6 +51,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	{
 		$this->_statement = $command->getPdoStatement();
 		$this->_statement->setFetchMode(PDO::FETCH_ASSOC);
+		parent::__construct();
 	}
 
 	/**

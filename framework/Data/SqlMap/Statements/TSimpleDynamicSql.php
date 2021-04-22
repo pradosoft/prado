@@ -27,6 +27,7 @@ class TSimpleDynamicSql extends TStaticSql
 	public function __construct($mappings)
 	{
 		$this->_mappings = $mappings;
+		parent::__construct();
 	}
 
 	public function replaceDynamicParameter($sql, $parameter)
