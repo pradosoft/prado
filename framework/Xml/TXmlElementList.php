@@ -36,6 +36,7 @@ class TXmlElementList extends \Prado\Collections\TList
 	public function __construct(TXmlElement $owner)
 	{
 		$this->_o = $owner;
+		parent::__construct();
 	}
 
 	/**

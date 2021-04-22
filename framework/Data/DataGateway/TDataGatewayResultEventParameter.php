@@ -28,6 +28,7 @@ class TDataGatewayResultEventParameter extends \Prado\TEventParameter
 	{
 		$this->_command = $command;
 		$this->_result = $result;
+		parent::__construct();
 	}
 
 	/**

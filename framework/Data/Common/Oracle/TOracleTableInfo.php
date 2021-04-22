@@ -45,6 +45,7 @@ class TOracleTableInfo extends \Prado\TComponent
 		$this->_primaryKeys = $primary;
 		$this->_foreignKeys = $foreign;
 		$this->_columns = new TMap;
+		parent::__construct();
 	}
 
 	/**

@@ -34,6 +34,7 @@ class TFileCacheDependency extends TCacheDependency
 	public function __construct($fileName)
 	{
 		$this->setFileName($fileName);
+		parent::__construct();
 	}
 
 	/**

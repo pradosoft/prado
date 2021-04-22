@@ -167,6 +167,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	public function __construct(TUrlManager $manager)
 	{
 		$this->_manager = $manager;
+		parent::__construct();
 	}
 
 	/**

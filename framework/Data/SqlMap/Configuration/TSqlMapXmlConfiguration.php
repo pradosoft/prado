@@ -43,6 +43,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	public function __construct($manager)
 	{
 		$this->_manager = $manager;
+		parent::__construct();
 	}
 
 	public function getManager()

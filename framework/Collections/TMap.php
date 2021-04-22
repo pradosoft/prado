@@ -78,6 +78,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			$this->copyFrom($data);
 		}
 		$this->setReadOnly($readOnly);
+		parent::__construct();
 	}
 
 	/**

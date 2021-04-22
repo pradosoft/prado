@@ -54,6 +54,7 @@ class TComponentReflection extends \Prado\TComponent
 		} else {
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
 		}
+		parent::__construct();
 		$this->reflect();
 	}
 

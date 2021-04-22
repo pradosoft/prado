@@ -31,6 +31,7 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	public function __construct($wizard)
 	{
 		$this->_wizard = $wizard;
+		parent::__construct();
 	}
 
 	/**

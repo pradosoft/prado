@@ -233,6 +233,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if (!empty($data)) { //$data may be an object
 			$this->copyFrom($data);
 		}
+		parent::__construct();
 	}
 
 	/**

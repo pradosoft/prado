@@ -70,6 +70,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 			$this->copyFrom($data);
 		}
 		$this->setReadOnly($readOnly);
+		parent::__construct();
 	}
 
 	/**

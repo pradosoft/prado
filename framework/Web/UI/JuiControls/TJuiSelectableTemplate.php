@@ -29,6 +29,7 @@ class TJuiSelectableTemplate extends \Prado\TComponent implements ITemplate
 	public function __construct($template)
 	{
 		$this->_template = $template;
+		parent::__construct();
 	}
 	/**
 	 * Instantiates the template.

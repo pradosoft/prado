@@ -53,6 +53,7 @@ class TCallbackEventParameter extends \Prado\TEventParameter
 	{
 		$this->_response = $response;
 		$this->_parameter = $parameter;
+		parent::__construct();
 	}
 
 	/**

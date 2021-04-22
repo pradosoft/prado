@@ -35,6 +35,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	{
 		$this->setDbConnection($connection);
 		$this->setTableInfo($tableInfo);
+		parent::__construct();
 	}
 
 	/**

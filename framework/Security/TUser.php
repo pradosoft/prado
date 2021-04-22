@@ -51,6 +51,7 @@ class TUser extends \Prado\TComponent implements IUser
 		$this->_state = [];
 		$this->_manager = $manager;
 		$this->setName($manager->getGuestName());
+		parent::__construct();
 	}
 
 	/**

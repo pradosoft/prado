@@ -42,6 +42,7 @@ class TClassBehaviorEventParameter extends \Prado\TEventParameter
 		$this->_name = $name;
 		$this->_behavior = $behavior;
 		$this->_priority = $priority;
+		parent::__construct();
 	}
 
 	/**

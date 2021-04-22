@@ -32,6 +32,7 @@ class TDbTableColumn extends \Prado\TComponent
 	public function __construct($columnInfo)
 	{
 		$this->_info = $columnInfo;
+		parent::__construct();
 	}
 
 	/**

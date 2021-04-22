@@ -32,6 +32,7 @@ use Prado\Xml\TXmlElement;
  * <parameters>
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
+ *   <parameter id="param3" Class="MyDataObject" Property1="Value1" Property2="Value2" ... />
  * </parameters>
  * </code>
  *
@@ -41,11 +42,15 @@ use Prado\Xml\TXmlElement;
  * <module class="Prado\Util\TParameterModule">
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
+ *   <parameter id="param3" Class="MyDataObject" Property1="Value1" Property2="Value2" ... />
  * </module>
  * </code>
  *
  * If a parameter is defined both in the external file and within the module
  * tag, the former takes precedence.
+ *
+ * When a parameter has an Class Attribute, the parameter is instanced as an object
+ * of the specified class and the attribute=value pairs are then set on the object.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>

@@ -44,6 +44,7 @@ class MessageSource_Database extends MessageSource
 	public function __construct($source)
 	{
 		$this->_connID = (string) $source;
+		parent::__construct();
 	}
 
 	/**
