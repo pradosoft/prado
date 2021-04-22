@@ -35,6 +35,7 @@ class PradoShellApplication extends TShellApplication
 restore_exception_handler();
 
 //register action classes
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineApplicationCommand');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGen');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGenAll');
@@ -68,6 +69,13 @@ class PradoCommandLineInterpreter
 	}
 
 	/**
+	 */
+	public function clearActionClass()
+	{
+		$this->_actions = [];
+	}
+
+	/**
 	 * @return PradoCommandLineInterpreter static instance
 	 */
 	public static function getInstance()
@@ -94,7 +102,8 @@ class PradoCommandLineInterpreter
 			array_shift($args);
 		}
 		$valid = false;
-		foreach ($this->_actions as $class => $action) {
+		$_actions = $this->_actions;
+		foreach ($_actions as $class => $action) {
 			if ($action->isValidAction($args)) {
 				$valid |= $action->performAction($args);
 				break;
@@ -231,7 +240,77 @@ EOD;
 		}
 		return false;
 	}
+
+	/**
+	 * @param string $app_dir application directory
+	 * @return false|string
+	 */
+	protected function getAppConfigFile($app_dir)
+	{
+		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
+			return $xml;
+		}
+		if (false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml)) {
+			return $xml;
+		}
+		if (false !== ($php = realpath($app_dir . '/application.php')) && is_file($php)) {
+			return $php;
+		}
+		if (false !== ($php = realpath($app_dir . '/protected/application.php')) && is_file($php)) {
+			return $php;
+		}
+		echo '** Unable to find application.xml or application.php in ' . $app_dir . "\n";
+		return false;
+	}
 }
+
+
+/**
+ * Base class for command line Application actions.
+ *
+ * @author Brad Anderson <belisoful[at]icloud[dot]com>
+ * @since 4.2.0
+ */
+abstract class PradoCommandLineAppAction extends PradoCommandLineAction
+{
+	/**
+	 * Checks if specified parameters are suitable for the specified action
+	 * @param array $args parameters
+	 * @return bool
+	 */
+	public function isValidAction($args)
+	{
+		return isset($args[2]) && 0 == strcasecmp($args[2], $this->action) &&
+			count($args) - 1 >= count($this->parameters);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function renderHelp()
+	{
+		$params = [];
+		foreach ($this->parameters as $v) {
+			$params[] = '<' . $v . '>';
+		}
+		$parameters = implode(' ', $params);
+		$options = [];
+		foreach ($this->optional as $v) {
+			$options[] = '[' . $v . ']';
+		}
+		$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
+		$description = '';
+		foreach (explode("\n", wordwrap($this->description, 65)) as $line) {
+			$description .= '    ' . $line . "\n";
+		}
+		return <<<EOD
+ app <directory> {$this->action} {$parameters}{$optional}
+{$description}
+
+EOD;
+	}
+}
+
 
 /**
  * Creates and run a Prado application in a PHP Shell.
@@ -261,6 +340,62 @@ class PradoCommandLinePhpShell extends PradoCommandLineAction
 	}
 }
 
+
+/**
+ * Creates and run Prado application specific commands.
+ *
+ * @author Brad Anderson <belisoful[at]icloud[dot]com>
+ * @since 4.2.0
+ */
+class PradoCommandLineApplicationCommand extends PradoCommandLineAction
+{
+	protected $action = 'app';
+	protected $parameters = [];
+	protected $optional = ['directory', 'app-action'];
+	protected $description = 'Initializes the Prado application in the given [directory] and performs the app action';
+
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
+	public function performAction($args)
+	{
+		$app = null;
+		if (count($args) > 1) {
+			$app = $this->initializePradoApplication($args[1]);
+		}
+		PradoCommandLineInterpreter::getInstance()->clearActionClass();
+		PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineAppHelp');
+		foreach (Prado::getApplication()->getCLIActionClasses() as $actions) {
+			PradoCommandLineInterpreter::getInstance()->addActionClass($actions);
+		}
+		PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
+		return true;
+	}
+}
+
+/**
+ * The Application specific action for help.
+ *
+ * @author Brad Anderson <belisoful[at]icloud[dot]com>
+ * @since 4.2.0
+ */
+class PradoCommandLineAppHelp extends PradoCommandLineAppAction
+{
+	protected $action = 'help';
+	protected $parameters = [];
+	protected $optional = [];
+	protected $description = 'outputs the CLI Application help';
+	
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
+	public function performAction($args)
+	{
+	}
+}
+
 /**
  * Create active record skeleton
  *
@@ -272,7 +407,7 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	protected $action = 'generate';
 	protected $parameters = ['table', 'output'];
 	protected $optional = ['directory', 'soap'];
-	protected $description = 'Generate Active Record skeleton for <table> to <output> file using application.xml in [directory]. May also generate [soap] properties.';
+	protected $description = 'Generate Active Record skeleton for <table> to <output> file using application.xml/php in [directory]. May also generate [soap] properties.';
 	private $_soap = false;
 
 	/**
@@ -316,25 +451,9 @@ class PradoCommandLineActiveRecordGen extends PradoCommandLineAction
 	 * @param string $app_dir application directory
 	 * @return false|string
 	 */
-	protected function getXmlFile($app_dir)
-	{
-		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		if (false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		echo '** Unable to find application.xml in ' . $app_dir . "\n";
-		return false;
-	}
-
-	/**
-	 * @param string $app_dir application directory
-	 * @return false|string
-	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
-		if (false === ($xml = $this->getXmlFile($app_dir))) {
+		if (false === ($xml = $this->getAppConfigFile($app_dir))) {
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {
@@ -573,25 +692,9 @@ class PradoCommandLineActiveRecordGenAll extends PradoCommandLineAction
 	 * @param string $app_dir application directory
 	 * @return false|string
 	 */
-	protected function getXmlFile($app_dir)
-	{
-		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		if (false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		echo '** Unable to find application.xml in ' . $app_dir . "\n";
-		return false;
-	}
-
-	/**
-	 * @param string $app_dir application directory
-	 * @return false|string
-	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
-		if (false === ($xml = $this->getXmlFile($app_dir))) {
+		if (false === ($xml = $this->getAppConfigFile($app_dir))) {
 			return false;
 		}
 		if (false !== ($app = $this->initializePradoApplication($app_dir))) {

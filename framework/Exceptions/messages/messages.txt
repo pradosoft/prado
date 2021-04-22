@@ -29,6 +29,8 @@ map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 map_readonly							= {0} is read-only.
 
+weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
+
 application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.
@@ -131,6 +133,16 @@ pageserviceconf_moduletype_required		= <module id="{0}"> must have a "class" att
 pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
+
+behaviormodule_behaviorname_required	= <behavior> must contain a 'name' attribute for attaching the behavior.
+behaviormodule_behaviorclass_required	= <behavior> must contain a 'class' attribute defining the behavior class
+behaviormodule_attachto_class_required	= <behavior> must have an 'attachto' or 'attachtoclass' attribute
+behaviormodule_attachto_and_class_only_one	= <behavior> must have either 'attachto' or 'attachtoclass' attribute, not both.
+behaviormodule_behaviorowner_required	= <behavior> AttachTo '{0}' object is not found
+parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
+parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
+parameterizebehavior_owner_has_no_set_property		= TParameterizeBehavior must have a settable Property Attribute and {0} is not settable.
+parameterizebehavior_cannot_set_name_after_initialize = TParameterizeBehavior cannot set the RouteBehaviorName after being attached.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.

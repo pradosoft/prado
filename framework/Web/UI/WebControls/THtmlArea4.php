@@ -174,6 +174,7 @@ class THtmlArea4 extends TTextBox
 	 */
 	public function __construct()
 	{
+		parent::__construct();
 		$this->setWidth('600px');
 		$this->setHeight('250px');
 		parent::__construct();

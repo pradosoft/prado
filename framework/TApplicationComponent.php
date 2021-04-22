@@ -34,6 +34,16 @@ namespace Prado;
 class TApplicationComponent extends \Prado\TComponent
 {
 	/**
+	 * TApplicationComponents auto listen to global events.
+	 *
+	 * @return bool returns whether or not to listen.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return true;
+	}
+	
+	/**
 	 * @return \Prado\TApplication current application instance
 	 */
 	public function getApplication()

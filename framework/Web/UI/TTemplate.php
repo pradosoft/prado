@@ -129,6 +129,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		$this->_startingLine = $startingLine;
 		$this->_content = $template;
 		$this->_hashCode = md5($template);
+		parent::__construct();
 		$this->parse($template);
 		$this->_content = null; // reset to save memory
 	}

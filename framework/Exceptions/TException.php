@@ -37,6 +37,7 @@ use Prado\TPropertyValue;
 class TException extends \Exception
 {
 	private $_errorCode = '';
+	private static $_messagefiles = [];
 	protected static $_messageCache = [];
 
 	/**
@@ -59,6 +60,22 @@ class TException extends \Exception
 		}
 		parent::__construct(strtr($errorMessage, $tokens));
 	}
+	
+	/**
+	 * Adds to the various files to read when rendering an error
+	 * @param $file
+	 */
+	public static function addMessageFile($file)
+	{
+		if (preg_match('/^(.*)(-.{2.4})?\.(.{2,4})$/', $file, $matching)) {
+			$lang = Prado::getPreferredLanguage();
+			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[2];
+			if (is_file($msgFile)) {
+				$file = $msgFile;
+			}
+		}
+		TException::$_messagefiles[] = $file;
+	}
 
 	/**
 	 * Translates an error code into an error message.
@@ -67,18 +84,23 @@ class TException extends \Exception
 	 */
 	protected function translateErrorMessage($key)
 	{
-		$msgFile = $this->getErrorMessageFile();
+		$msgFiles = TException::$_messagefiles;
+		$msgFiles[] = $this->getErrorMessageFile();
+		$value = $key;
 
 		// Cache messages
-		if (!isset(self::$_messageCache[$msgFile])) {
-			if (($entries = @file($msgFile)) !== false) {
-				foreach ($entries as $entry) {
-					[$code, $message] = array_merge(explode('=', $entry, 2), ['']);
-					self::$_messageCache[$msgFile][trim($code)] = trim($message);
+		foreach ($msgFiles as $msgFile) {
+			if (!isset(self::$_messageCache[$msgFile])) {
+				if (($entries = @file($msgFile)) !== false) {
+					foreach ($entries as $entry) {
+						[$code, $message] = array_merge(explode('=', $entry, 2), ['']);
+						self::$_messageCache[$msgFile][trim($code)] = trim($message);
+					}
+					$value = self::$_messageCache[$msgFile][$key] ?? $value;
 				}
 			}
 		}
-		return self::$_messageCache[$msgFile][$key] ?? $key;
+		return $value;
 	}
 
 	/**
