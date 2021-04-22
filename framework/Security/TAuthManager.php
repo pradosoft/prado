@@ -386,7 +386,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * Updates the user data stored in session.
 	 * @param IUser $user user object
-	 * @throws new TConfigurationException if session module is not loaded.
+	 * @throws TConfigurationException if session module is not loaded.
 	 */
 	public function updateSessionUser($user)
 	{

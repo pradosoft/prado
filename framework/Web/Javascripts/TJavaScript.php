@@ -101,7 +101,7 @@ class TJavaScript
 
 	/**
 	 * @param mixed $js
-	 * @return Marks a string as a javascript function. Once marke, the string is considered as a
+	 * @return TJavaScriptLiteral Marks a string as a javascript function. Once marke, the string is considered as a
 	 * raw javascript function that is not supposed to be encoded by {@link encode}
 	 */
 	public static function quoteJsLiteral($js)
@@ -286,7 +286,7 @@ class TJavaScript
 	 * Minimize the size of a javascript script.
 	 * This method is based on Douglas Crockford's JSMin.
 	 * @param string $code code that you want to minimzie
-	 * @return minimized version of the code
+	 * @return string minimized version of the code
 	 */
 	public static function JSMin($code)
 	{

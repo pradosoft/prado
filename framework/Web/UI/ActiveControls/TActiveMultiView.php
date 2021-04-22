@@ -79,7 +79,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	/**
 	 * Renders the TActiveMultiView by writing a span tag with the container id obtained from {@link getContainerID()}
 	 * which will be called by the replacement method of the client script to update it's content.
-	 * @param $writer $writer THtmlWriter writer for the rendering purpose
+	 * @param \Prado\Web\UI\THtmlWriter $writer THtmlWriter writer for the rendering purpose
 	 */
 	protected function renderMultiView($writer)
 	{
@@ -91,7 +91,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 
 	/**
 	 * @param int $value the zero-based index of the current view in the view collection. -1 if no active view.
-	 * @throws TInvalidDataValueException if the view index is invalid
+	 * @throws \Prado\Exceptions\TInvalidDataValueException if the view index is invalid
 	 */
 	public function setActiveViewIndex($value)
 	{
@@ -102,8 +102,8 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	 * @param TView $value the view to be activated
-	 * @throws TInvalidOperationException if the view is not in the view collection
+	 * @param \Prado\Web\UI\WebControls\TView $value the view to be activated
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the view is not in the view collection
 	 */
 	public function setActiveView($value)
 	{

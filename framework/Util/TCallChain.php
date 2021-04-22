@@ -22,7 +22,7 @@ use Prado\Collections\TList;
 class TCallChain extends TList implements IDynamicMethods
 {
 	/**
-	 *	@var {@link ArrayIterator} for moving through the chained method calls
+	 *	@var \ArrayIterator for moving through the chained method calls
 	 */
 	private $_iterator;
 

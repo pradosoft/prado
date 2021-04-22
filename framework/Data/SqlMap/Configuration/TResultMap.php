@@ -156,7 +156,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Create a new instance of the class of this result map.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry.
 	 * @throws TSqlMapException
 	 * @return mixed new result object.
 	 */
@@ -181,7 +181,7 @@ class TResultMap extends \Prado\TComponent
 
 	/**
 	 * Result sub-mappings using the discriminiator column.
-	 * @param TSqlMapTypeHandlerRegistry $registry type handler registry
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @param array $row row data.
 	 * @return TResultMap result sub-map.
 	 */

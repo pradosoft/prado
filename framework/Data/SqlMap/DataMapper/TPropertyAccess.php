@@ -120,7 +120,7 @@ class TPropertyAccess
 
 	/**
 	 * Sets the property value.
-	 * @param mixed &$originalObject object or array
+	 * @param mixed $originalObject by reference, object or array
 	 * @param string $path property path.
 	 * @param mixed $value new property value.
 	 * @throws TInvalidDataValueException if property path is invalid.

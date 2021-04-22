@@ -182,7 +182,7 @@ class TSimpleDateFormatter
 	/**
 	 * Gets the time stamp from string or integer.
 	 * @param int|string $value date to parse
-	 * @return array date info array
+	 * @return \DateTime date info
 	 */
 	private function getDate($value)
 	{

@@ -197,8 +197,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @param mixed $value
-	 * @return TRatingListStyle current rating style
+	 * @param string $value caption text
 	 */
 	public function setCaption($value)
 	{
@@ -214,7 +213,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * @return TRatingListStyle current rating style
+	 * @return string current rating style
 	 */
 	public function getRatingStyle()
 	{

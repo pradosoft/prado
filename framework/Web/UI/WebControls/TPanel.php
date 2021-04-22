@@ -35,6 +35,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TPanelStyle getStyle()
  */
 class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 {

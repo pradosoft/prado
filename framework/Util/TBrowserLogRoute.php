@@ -103,8 +103,8 @@ EOD;
 	}
 
 	/**
-	 * @param $log
-	 * @param $info
+	 * @param array $log
+	 * @param array $info
 	 * @return string
 	 */
 	protected function renderMessage($log, $info)

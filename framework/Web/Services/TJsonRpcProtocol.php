@@ -10,6 +10,7 @@
 namespace Prado\Web\Services;
 
 use Prado\Exceptions\THttpException;
+use Prado\Web\THttpResponse;
 
 /**
  * TJsonRpcProtocol class
@@ -31,6 +32,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	/**
 	 * Handles the RPC request
 	 * @param string $requestPayload $requestPayload
+	 * @throws TRpcException
 	 * @return string JSON RPC response
 	 */
 	public function callMethod($requestPayload)
@@ -86,6 +88,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 		} catch (\Exception $e) {
 			return $this->createErrorResponse(new TRpcException('An internal error occured', '-32603'));
 		}
+		return '';
 	}
 
 	/**

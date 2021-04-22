@@ -45,6 +45,7 @@ class TServerValidateEventParameter extends \Prado\TEventParameter
 		parent::__construct();
 		$this->_value = $value;
 		$this->setIsValid($isValid);
+		parent::__construct();
 	}
 
 	/**

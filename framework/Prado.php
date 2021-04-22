@@ -34,7 +34,7 @@ if (!defined('PRADO_CHMOD')) {
 // Defines the Composer's vendor/ path.
 if (!defined('PRADO_VENDORDIR')) {
 	$reflector = new \ReflectionClass('\Composer\Autoload\ClassLoader');
-	define('PRADO_VENDORDIR', dirname($reflector->getFileName(), 2));
+	define('PRADO_VENDORDIR', dirname((string) $reflector->getFileName(), 2));
 	unset($reflector);
 }
 
@@ -58,43 +58,46 @@ class Prado
 	 */
 	const CLASS_FILE_EXT = '.php';
 	/**
-	 * @var array list of path aliases
+	 * @var array<string, string> list of path aliases
 	 */
 	private static $_aliases = [
 		'Prado' => PRADO_DIR,
 		'Vendor' => PRADO_VENDORDIR
 		];
 	/**
-	 * @var array list of namespaces currently in use
+	 * @var array<string, string> list of namespaces currently in use
 	 */
 	private static $_usings = [
 		'Prado' => PRADO_DIR
 		];
 	/**
-	 * @var array list of namespaces currently in use
+	 * @var array<string, string> list of namespaces currently in use
 	 */
 	public static $classMap = [];
 	/**
-	 * @var TApplication the application instance
+	 * @var null|TApplication the application instance
 	 */
-	private static $_application = null;
+	private static $_application;
 	/**
-	 * @var TLogger logger instance
+	 * @var null|TLogger logger instance
 	 */
-	private static $_logger = null;
+	private static $_logger;
 	/**
-	 * @var array list of class exists checks
+	 * @var array<string, bool> list of class exists checks
 	 */
 	protected static $classExists = [];
 	/**
 	 * @return string the version of Prado framework
 	 */
-	public static function getVersion()
+	public static function getVersion(): string
 	{
 		return '4.2.0';
 	}
 
-	public static function init()
+	/**
+	 * Initializes the Prado static class
+	 */
+	public static function init(): void
 	{
 		static::initAutoloader();
 		static::initErrorHandlers();
@@ -103,7 +106,7 @@ class Prado
 	/**
 	 * Loads the static classmap and registers the autoload function.
 	 */
-	public static function initAutoloader()
+	public static function initAutoloader(): void
 	{
 		self::$classMap = require(__DIR__ . '/classes.php');
 
@@ -115,7 +118,7 @@ class Prado
 	 * This method set error and exception handlers to be functions
 	 * defined in this class.
 	 */
-	public static function initErrorHandlers()
+	public static function initErrorHandlers(): void
 	{
 		/**
 		 * Sets error handler to be Prado::phpErrorHandler
@@ -132,7 +135,7 @@ class Prado
 		/**
 		 * Disable php's builtin error reporting to avoid duplicated reports
 		 */
-		ini_set('display_errors', 0);
+		ini_set('display_errors', '0');
 	}
 
 	/**
@@ -140,7 +143,7 @@ class Prado
 	 * This method is provided to be registered within an spl_autoload_register() method.
 	 * @param string $className class name
 	 */
-	public static function autoload($className)
+	public static function autoload($className): void
 	{
 		static::using($className);
 	}
@@ -149,12 +152,12 @@ class Prado
 	 * @param int $logoType the type of "powered logo". Valid values include 0 and 1.
 	 * @return string a string that can be displayed on your Web page showing powered-by-PRADO information
 	 */
-	public static function poweredByPrado($logoType = 0)
+	public static function poweredByPrado($logoType = 0): string
 	{
 		$logoName = $logoType == 1 ? 'powered2' : 'powered';
 		if (self::$_application !== null) {
 			$am = self::$_application->getAssetManager();
-			$url = $am->publishFilePath(self::getPathOfNamespace('Prado\\' . $logoName, '.gif'));
+			$url = $am->publishFilePath((string) self::getPathOfNamespace('Prado\\' . $logoName, '.gif'));
 		} else {
 			$url = 'http://pradosoft.github.io/docs/' . $logoName . '.gif';
 		}
@@ -171,11 +174,12 @@ class Prado
 	 * @param string $errfile the filename that the error was raised in
 	 * @param int $errline the line number the error was raised at
 	 */
-	public static function phpErrorHandler($errno, $errstr, $errfile, $errline)
+	public static function phpErrorHandler($errno, $errstr, $errfile, $errline): bool
 	{
 		if (error_reporting() & $errno) {
 			throw new TPhpErrorException($errno, $errstr, $errfile, $errline);
 		}
+		return true;
 	}
 
 	/**
@@ -184,7 +188,7 @@ class Prado
 	 * {@link register_shutdown_function}. The method throws an exception that
 	 * contains the error information.
 	 */
-	public static function phpFatalErrorHandler()
+	public static function phpFatalErrorHandler(): void
 	{
 		$error = error_get_last();
 		if ($error &&
@@ -201,9 +205,9 @@ class Prado
 	 * module of the Prado application to handle the exception.
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
-	 * @param \Exception $exception exception that is not caught
+	 * @param \Throwable $exception exception that is not caught
 	 */
-	public static function exceptionHandler($exception)
+	public static function exceptionHandler($exception): void
 	{
 		if (self::$_application !== null && ($errorHandler = self::$_application->getErrorHandler()) !== null) {
 			$errorHandler->handleError(null, $exception);
@@ -222,7 +226,7 @@ class Prado
 	 * @param TApplication $application the application instance
 	 * @throws TInvalidOperationException if this method is invoked twice or more.
 	 */
-	public static function setApplication($application)
+	public static function setApplication($application): void
 	{
 		if (self::$_application !== null && !defined('PRADO_TEST_RUN')) {
 			throw new TInvalidOperationException('prado_application_singleton_required');
@@ -231,9 +235,9 @@ class Prado
 	}
 
 	/**
-	 * @return TApplication the application singleton, null if the singleton has not be created yet.
+	 * @return null|TApplication the application singleton, null if the singleton has not be created yet.
 	 */
-	public static function getApplication()
+	public static function getApplication(): ?TApplication
 	{
 		return self::$_application;
 	}
@@ -241,9 +245,17 @@ class Prado
 	/**
 	 * @return string the path of the framework
 	 */
-	public static function getFrameworkPath()
+	public static function getFrameworkPath(): string
 	{
 		return PRADO_DIR;
+	}
+
+	/**
+	 * @return int chmod permissions, defaults to 0777
+	 */
+	public static function getDefaultPermissions(): int
+	{
+		return PRADO_CHMOD;
 	}
 
 	/**
@@ -251,7 +263,7 @@ class Prado
 	 * @param string $type old class name in Prado3 namespace format
 	 * @return string Equivalent class name in PHP namespace format
 	 */
-	protected static function prado3NamespaceToPhpNamespace($type)
+	protected static function prado3NamespaceToPhpNamespace($type): string
 	{
 		if (substr($type, 0, 6) === 'System') {
 			$type = 'Prado' . substr($type, 6);
@@ -273,10 +285,11 @@ class Prado
 	 * This method can also pass parameters to component constructors.
 	 * All parameters passed to this method except the first one (the component type)
 	 * will be supplied as component constructor parameters.
-	 * @param string $requestedType component type
-	 * @param array $params
+	 * @template T
+	 * @param class-string<T> $requestedType component type
+	 * @param array<mixed> $params
 	 * @throws TInvalidDataValueException if the component type is unknown
-	 * @return \Prado\TComponent component instance of the specified type
+	 * @return T component instance of the specified type
 	 */
 	public static function createComponent($requestedType, ...$params)
 	{
@@ -316,7 +329,7 @@ class Prado
 	 * @param string $namespace namespace to be used
 	 * @throws TInvalidDataValueException if the namespace is invalid
 	 */
-	public static function using($namespace)
+	public static function using($namespace): void
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
@@ -378,9 +391,9 @@ class Prado
 	 * Note, this method does not ensure the existence of the resulting file path.
 	 * @param string $namespace namespace
 	 * @param string $ext extension to be appended if the namespace refers to a file
-	 * @return string file path corresponding to the namespace, null if namespace is invalid
+	 * @return null|string file path corresponding to the namespace, null if namespace is invalid
 	 */
-	public static function getPathOfNamespace($namespace, $ext = '')
+	public static function getPathOfNamespace($namespace, $ext = ''): ?string
 	{
 		$namespace = static::prado3NamespaceToPhpNamespace($namespace);
 
@@ -406,14 +419,17 @@ class Prado
 
 	/**
 	 * @param string $alias alias to the path
-	 * @return string the path corresponding to the alias, null if alias not defined.
+	 * @return null|string the path corresponding to the alias, null if alias not defined.
 	 */
-	public static function getPathOfAlias($alias)
+	public static function getPathOfAlias($alias): ?string
 	{
 		return self::$_aliases[$alias] ?? null;
 	}
 
-	protected static function getPathAliases()
+	/**
+	 * @return array<string, string> list of path aliases
+	 */
+	protected static function getPathAliases() :array
 	{
 		return self::$_aliases;
 	}
@@ -424,7 +440,7 @@ class Prado
 	 * @throws TInvalidOperationException $alias if the alias is already defined
 	 * @throws TInvalidDataValueException $path if the path is not a valid file path
 	 */
-	public static function setPathOfAlias($alias, $path)
+	public static function setPathOfAlias($alias, $path): void
 	{
 		if (isset(self::$_aliases[$alias]) && !defined('PRADO_TEST_RUN')) {
 			throw new TInvalidOperationException('prado_alias_redefined', $alias);
@@ -445,7 +461,7 @@ class Prado
 	 * The application will exit after calling this method.
 	 * @param string $msg error message
 	 */
-	public static function fatalError($msg)
+	public static function fatalError($msg): void
 	{
 		echo '<h1>Fatal Error</h1>';
 		echo '<p>' . $msg . '</p>';
@@ -511,9 +527,9 @@ class Prado
 	 * The languages are returned as an array. Each array element
 	 * represents a single language preference. The languages are ordered
 	 * according to user preferences. The first language is the most preferred.
-	 * @return array list of user preferred languages.
+	 * @return array<string> list of user preferred languages.
 	 */
-	public static function getUserLanguages()
+	public static function getUserLanguages(): array
 	{
 		static $languages = null;
 		if ($languages === null) {
@@ -539,7 +555,7 @@ class Prado
 	 * Returns the most preferred language by the client user.
 	 * @return string the most preferred language by the client user, defaults to English.
 	 */
-	public static function getPreferredLanguage()
+	public static function getPreferredLanguage(): string
 	{
 		static $language = null;
 		if ($language === null) {
@@ -563,10 +579,10 @@ class Prado
 	 * Otherwise, the message is logged at INFO level.
 	 * @param string $msg message to be logged
 	 * @param string $category category of the message
-	 * @param (string|TControl) $ctl control of the message
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
 	 * @see log, getLogger
 	 */
-	public static function trace($msg, $category = 'Uncategorized', $ctl = null)
+	public static function trace($msg, $category = 'Uncategorized', $ctl = null): void
 	{
 		if (self::$_application && self::$_application->getMode() === TApplicationMode::Performance) {
 			return;
@@ -593,9 +609,9 @@ class Prado
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string $category category of the message
-	 * @param (string|TControl) $ctl control of the message
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
 	 */
-	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null)
+	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null): void
 	{
 		if (self::$_logger === null) {
 			self::$_logger = new TLogger;
@@ -606,7 +622,7 @@ class Prado
 	/**
 	 * @return TLogger message logger
 	 */
-	public static function getLogger()
+	public static function getLogger(): TLogger
 	{
 		if (self::$_logger === null) {
 			self::$_logger = new TLogger;
@@ -623,7 +639,7 @@ class Prado
 	 * @param bool $highlight whether to syntax highlight the output. Defaults to false.
 	 * @return string the string representation of the variable
 	 */
-	public static function varDump($var, $depth = 10, $highlight = false)
+	public static function varDump($var, $depth = 10, $highlight = false): string
 	{
 		return TVarDumper::dump($var, $depth, $highlight);
 	}
@@ -631,24 +647,24 @@ class Prado
 	/**
 	 * Localize a text to the locale/culture specified in the globalization handler.
 	 * @param string $text text to be localized.
-	 * @param array $parameters a set of parameters to substitute.
+	 * @param array<string, string> $parameters a set of parameters to substitute.
 	 * @param string $catalogue a different catalogue to find the localize text.
 	 * @param string $charset the input AND output charset.
 	 * @return string localized text.
 	 * @see TTranslate::formatter()
 	 * @see TTranslate::init()
 	 */
-	public static function localize($text, $parameters = [], $catalogue = null, $charset = null)
+	public static function localize($text, $parameters = [], $catalogue = null, $charset = null): string
 	{
-		$app = Prado::getApplication()->getGlobalization(false);
-
 		$params = [];
 		foreach ($parameters as $key => $value) {
 			$params['{' . $key . '}'] = $value;
 		}
 
-		//no translation handler provided
-		if ($app === null || ($config = $app->getTranslationConfiguration()) === null) {
+		// no translation handler provided
+		if (self::$_application === null
+			|| ($app = self::$_application->getGlobalization(false)) === null
+			|| ($config = $app->getTranslationConfiguration()) === null) {
 			return strtr($text, $params);
 		}
 
@@ -659,17 +675,13 @@ class Prado
 		Translation::init($catalogue);
 
 		//globalization charset
-		$appCharset = $app === null ? '' : $app->getCharset();
+		if (empty($charset)) {
+			$charset = $app->getCharset();
+		}
 
 		//default charset
-		$defaultCharset = ($app === null) ? 'UTF-8' : $app->getDefaultCharset();
-
-		//fall back
 		if (empty($charset)) {
-			$charset = $appCharset;
-		}
-		if (empty($charset)) {
-			$charset = $defaultCharset;
+			$charset = $app->getDefaultCharset();
 		}
 
 		return Translation::formatter($catalogue)->format($text, $params, $catalogue, $charset);

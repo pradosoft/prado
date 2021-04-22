@@ -191,7 +191,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Runs through the page lifecycles.
-	 * @param THtmlTextWriter $writer the HTML writer
+	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */
 	public function run($writer)
 	{

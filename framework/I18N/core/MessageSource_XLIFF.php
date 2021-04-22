@@ -20,8 +20,10 @@ namespace Prado\I18N\core;
 
 use DOMDocument;
 use DOMXPath;
+use DOMElement;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
+use Prado\Prado;
 
 /**
  * MessageSource_XLIFF class.
@@ -285,7 +287,7 @@ class MessageSource_XLIFF extends MessageSource
 		$body = $xpath->query('//body')->item(0);
 
 		$lastNodes = $xpath->query('//trans-unit[last()]');
-		if (($last = $lastNodes->item(0)) !== null) {
+		if (($last = $lastNodes->item(0)) !== null && $last instanceof DOMElement) {
 			$count = (int) $last->getAttribute('id');
 		} else {
 			$count = 0;
@@ -315,7 +317,9 @@ class MessageSource_XLIFF extends MessageSource
 
 
 		$fileNode = $xpath->query('//file')->item(0);
-		$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+		if ($fileNode instanceof DOMElement) {
+			$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+		}
 
 		//save it and clear the cache for this variant
 		$dom->save($filename);
@@ -403,7 +407,9 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		$fileNode = $xpath->query('//file')->item(0);
-		$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+		if ($fileNode instanceof DOMElement) {
+			$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+		}
 
 		if ($dom->save($filename) > 0) {
 			if (!empty($this->cache)) {
@@ -453,7 +459,9 @@ class MessageSource_XLIFF extends MessageSource
 					//we found it, remove and save the xml file.
 					$unit->parentNode->removeChild($unit);
 					$fileNode = $xpath->query('//file')->item(0);
-					$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+					if ($fileNode instanceof DOMElement) {
+						$fileNode->setAttribute('date', @date('Y-m-d\TH:i:s\Z'));
+					}
 
 					if (false !== $dom->save($filename)) {
 						if (!empty($this->cache)) {
@@ -486,7 +494,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir, PRADO_CHMOD);
+			@chmod($dir, Prado::getDefaultPermissions());
 		}
 
 		if (!is_dir($dir)) {
@@ -494,7 +502,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));
-		chmod($file, PRADO_CHMOD);
+		chmod($file, Prado::getDefaultPermissions());
 
 		return [$variant, $file];
 	}

@@ -26,12 +26,12 @@ interface IBaseBehavior
 {
 	/**
 	 * Attaches the behavior object to the component.
-	 * @param CComponent $component the component that this behavior is to be attached to.
+	 * @param \Prado\TComponent $component the component that this behavior is to be attached to.
 	 */
 	public function attach($component);
 	/**
 	 * Detaches the behavior object from the component.
-	 * @param CComponent $component the component that this behavior is to be detached from.
+	 * @param \Prado\TComponent $component the component that this behavior is to be detached from.
 	 */
 	public function detach($component);
 }

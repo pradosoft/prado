@@ -109,7 +109,7 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @param string style $value of syntax highlightning
+	 * @param string $value style of syntax highlightning
 	 */
 	public function setSyntaxStyle($value)
 	{

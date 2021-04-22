@@ -32,6 +32,7 @@ class TReadOnlyDataSource extends TDataSourceControl
 		}
 		$this->_dataSource = $dataSource;
 		$this->_dataMember = $dataMember;
+		parent::__construct();
 	}
 
 	public function getView($viewName)

@@ -24,7 +24,7 @@ use Prado\Exceptions\THttpException;
 class TXmlRpcProtocol extends TRpcProtocol
 {
 	/**
-	 * @var XML RPC server resource
+	 * @var mixed XML RPC server resource
 	 */
 	private $_xmlrpcServer;
 
@@ -95,7 +95,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 
 	/**
 	 * Sets the correct response headers
-	 * @param THttpResponse $response
+	 * @param \Prado\Web\THttpResponse $response
 	 */
 	public function createResponseHeaders($response)
 	{

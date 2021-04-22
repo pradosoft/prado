@@ -134,7 +134,7 @@ class TComponentReflection extends \Prado\TComponent
 	/**
 	 * Determines the property type.
 	 * This method uses the doc comment to determine the property type.
-	 * @param ReflectionMethod $method * @return string the property type, '{unknown}' if type cannot be determined from comment
+	 * @param \ReflectionMethod $method * @return string the property type, '{unknown}' if type cannot be determined from comment
 	 */
 	protected function determinePropertyType($method)
 	{

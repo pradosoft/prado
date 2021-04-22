@@ -21,6 +21,7 @@ namespace Prado\I18N\core;
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
 use Prado\I18N\core\Gettext\TGettext;
+use Prado\Prado;
 
 /**
  * Get the Gettext class.
@@ -436,7 +437,7 @@ class MessageSource_gettext extends MessageSource
 		$dir = dirname($mo_file);
 		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir, PRADO_CHMOD);
+			@chmod($dir, Prado::getDefaultPermissions());
 		}
 		if (!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");

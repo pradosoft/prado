@@ -66,6 +66,7 @@ class TDropDownListColumn extends TDataGridColumn
 	{
 		parent::__construct();
 		$this->_listControl = new TDropDownList;
+		parent::__construct();
 	}
 
 	/**

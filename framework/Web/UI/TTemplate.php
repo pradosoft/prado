@@ -783,9 +783,8 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				$literal = trim(substr($value, 3, strlen($value) - 5));
 				return [self::CONFIG_EXPRESSION, "rtrim(dirname(\$this->getApplication()->getRequest()->getApplicationUrl()), '\/').'/$literal'"];
 			}
-		} else {
-			return $value;
 		}
+		return $value;
 	}
 
 	protected function validateAttributes($type, $attributes)

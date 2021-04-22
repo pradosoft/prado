@@ -252,7 +252,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	/**
 	 * Sets the options of a select input element.
 	 * @param \Prado\Web\UI\TControl $control control element or element id
-	 * @param TCollection $items a list of new options
+	 * @param array|TListControl $items a list of new options
 	 */
 	public function setListItems($control, $items)
 	{

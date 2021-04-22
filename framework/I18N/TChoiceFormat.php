@@ -108,5 +108,6 @@ class TChoiceFormat extends TTranslate
 		if ($string) {
 			return strtr($string, ['{Value}' => $value]);
 		}
+		return '';
 	}
 }

@@ -50,7 +50,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
 	 * Cached IntlDateFormatter set to the application culture.
-	 * @var IntlDateFormatter
+	 * @var \IntlDateFormatter
 	 */
 	protected static $formatters;
 
@@ -184,7 +184,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * @param string $culture
 	 * @param mixed $datetype
 	 * @param mixed $timetype
-	 * @return NumberFormatter
+	 * @return \NumberFormatter
 	 */
 	protected function getFormatter($culture, $datetype, $timetype)
 	{

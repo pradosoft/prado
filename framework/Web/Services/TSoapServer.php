@@ -137,7 +137,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 
 	/**
 	 * Creates the SoapServer instance.
-	 * @return SoapServer
+	 * @return \SoapServer
 	 */
 	protected function createServer()
 	{
@@ -341,8 +341,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	}
 
 	/**
-	 * @param mixed $classes
-	 * @return string comma delimit list of class names
+	 * @param string $classes comma delimit list of class names
 	 */
 	public function setClassMaps($classes)
 	{

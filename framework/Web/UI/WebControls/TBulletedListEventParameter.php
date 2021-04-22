@@ -35,6 +35,7 @@ class TBulletedListEventParameter extends \Prado\TEventParameter
 	{
 		parent::__construct();
 		$this->_index = $index;
+		parent::__construct();
 	}
 
 	/**

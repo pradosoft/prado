@@ -23,12 +23,12 @@ interface IMappedStatement
 	public function getID();
 
 	/**
-	 * @return TSqlMapStatement The SQL statment used by this TMappedStatement.
+	 * @return \Prado\Data\SqlMap\Configuration\TSqlMapStatement The SQL statment used by this TMappedStatement.
 	 */
 	public function getStatement();
 
 	/**
-	 * @return TSqlMap The TSqlMap used by this TMappedStatement
+	 * @return \Prado\Data\SqlMap\TSqlMapManager The TSqlMap used by this TMappedStatement
 	 */
 	public function getManager();
 
@@ -42,10 +42,12 @@ interface IMappedStatement
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
 	 * @param string $keyProperty The property of the result object to be used as the key.
 	 * @param string $valueProperty The property of the result object to be used as the value (or null)
-	 * @return TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
+	 * @param int $skip The number of rows to skip over.
+	 * @param int $max The maximum number of rows to return.
+	 * @param null|mixed $delegate
+	 * @return \Prado\Collections\TMap A map of object containing the rows keyed by <tt>$keyProperty</tt>.
 	 */
-	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null);
-
+	public function executeQueryForMap($connection, $parameter, $keyProperty, $valueProperty = null, $skip = -1, $max = -1, $delegate = null);
 
 	/**
 	 * Execute an update statement. Also used for delete statement. Return the
@@ -61,13 +63,13 @@ interface IMappedStatement
 	 * Executes the SQL and retuns a subset of the rows selected.
 	 * @param \Prado\Data\TDbConnection $connection database connection to execute the query
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
-	 * @param null|TList $result A list to populate the result with.
+	 * @param null|\Prado\Collections\TList $result A list to populate the result with.
 	 * @param int $skip The number of rows to skip over.
 	 * @param int $max The maximum number of rows to return.
-	 * @return TList A TList of result objects.
+	 * @param null|mixed $delegate
+	 * @return \Prado\Collections\TList A TList of result objects.
 	 */
-	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1);
-
+	public function executeQueryForList($connection, $parameter, $result = null, $skip = -1, $max = -1, $delegate = null);
 
 	/**
 	 * Executes an SQL statement that returns a single row as an object
@@ -78,4 +80,13 @@ interface IMappedStatement
 	 * @return object result.
 	 */
 	public function executeQueryForObject($connection, $parameter, $result = null);
+
+	/**
+	 * Execute an insert statement. Fill the parameter object with the ouput
+	 * parameters if any, also could return the insert generated key.
+	 * @param \Prado\Data\TDbConnection $connection database connection
+	 * @param mixed $parameter The parameter object used to fill the statement.
+	 * @return string the insert generated key.
+	 */
+	public function executeInsert($connection, $parameter);
 }

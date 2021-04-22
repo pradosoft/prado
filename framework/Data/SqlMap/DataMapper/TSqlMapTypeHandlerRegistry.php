@@ -26,7 +26,7 @@ class TSqlMapTypeHandlerRegistry
 
 	/**
 	 * @param string $dbType database field type
-	 * @return TSqlMapTypeHandler type handler for give database field type.
+	 * @return null|TSqlMapTypeHandler type handler for give database field type.
 	 */
 	public function getDbTypeHandler($dbType = 'NULL')
 	{
@@ -35,17 +35,19 @@ class TSqlMapTypeHandlerRegistry
 				return $handler;
 			}
 		}
+		return null;
 	}
 
 	/**
 	 * @param string $class type handler class name
-	 * @return TSqlMapTypeHandler type handler
+	 * @return null|TSqlMapTypeHandler type handler
 	 */
 	public function getTypeHandler($class)
 	{
 		if (isset($this->_typeHandlers[$class])) {
 			return $this->_typeHandlers[$class];
 		}
+		return null;
 	}
 
 	/**

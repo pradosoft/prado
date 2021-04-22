@@ -238,7 +238,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_session;
 	/**
-	 * @var ICache cache module, could be null
+	 * @var \Prado\Caching\ICache cache module, could be null
 	 */
 	private $_cache;
 	/**
@@ -246,7 +246,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_statePersister;
 	/**
-	 * @var IUser user instance, could be null
+	 * @var \Prado\Security\IUser user instance, could be null
 	 */
 	private $_user;
 	/**
@@ -262,11 +262,11 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_assetManager;
 	/**
-	 * @var TAuthorizationRuleCollection collection of authorization rules
+	 * @var \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
 	 */
 	private $_authRules;
 	/**
-	 * @var TApplicationMode application mode
+	 * @var string|TApplicationMode application mode
 	 */
 	private $_mode = TApplicationMode::Debug;
 
@@ -292,7 +292,7 @@ class TApplication extends \Prado\TComponent
 	 *        will be looked for. If found, the file is considered as the application
 	 *        configuration file.
 	 * @param bool $cacheConfig whether to cache application configuration. Defaults to true.
-	 * @param int $configType configuration type. Defaults to CONFIG_TYPE_XML.
+	 * @param string $configType configuration type. Defaults to CONFIG_TYPE_XML.
 	 * @throws TConfigurationException if configuration file cannot be read or the runtime path is invalid.
 	 */
 	public function __construct($basePath = 'protected', $cacheConfig = true, $configType = self::CONFIG_TYPE_XML)
@@ -349,7 +349,7 @@ class TApplication extends \Prado\TComponent
 					if (@mkdir($runtimePath) === false) {
 						throw new TConfigurationException('application_runtimepath_failed', $runtimePath);
 					}
-					@chmod($runtimePath, PRADO_CHMOD); //make it deletable
+					@chmod($runtimePath, Prado::getDefaultPermissions()); //make it deletable
 				}
 				$this->setConfigurationFile($configFile);
 			}
@@ -520,7 +520,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TApplicationMode application mode. Defaults to TApplicationMode::Debug.
+	 * @return string|TApplicationMode application mode. Defaults to TApplicationMode::Debug.
 	 */
 	public function getMode()
 	{
@@ -743,7 +743,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @param THttpRequest $response the request module
+	 * @param THttpResponse $response the request module
 	 */
 	public function setResponse(THttpResponse $response)
 	{
@@ -867,7 +867,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IUser the application user
+	 * @return \Prado\Security\IUser the application user
 	 */
 	public function getUser()
 	{
@@ -884,7 +884,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param bool $createIfNotExists whether to create globalization if it does not exist
-	 * @return TGlobalization globalization module
+	 * @return null|TGlobalization globalization module
 	 */
 	public function getGlobalization($createIfNotExists = true)
 	{
@@ -904,7 +904,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TAuthorizationRuleCollection list of authorization rules for the current request
+	 * @return \Prado\Security\TAuthorizationRuleCollection list of authorization rules for the current request
 	 */
 	public function getAuthorizationRules()
 	{

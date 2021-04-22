@@ -995,7 +995,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
 	 * @throws TInvalidDataValueException if a control's ID is found not unique within its naming container.
-	 * @return null|TControl the control found, null if not found
+	 * @return null|mixed the control found, null if not found
 	 */
 	public function findControl($id)
 	{

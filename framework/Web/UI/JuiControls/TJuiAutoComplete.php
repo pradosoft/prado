@@ -90,7 +90,7 @@ use Prado\Web\UI\WebControls\TPanel;
 class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
 	/**
-	 * @var ITemplate template for repeater items
+	 * @var \Prado\Web\UI\ITemplate template for repeater items
 	 */
 	private $_repeater;
 	/**
