@@ -102,7 +102,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 	/**
 	 * Renders the content stored in this component.
 	 * This method is required by {@link IRenderable}
-	 * @param ITextWriter $writer
+	 * @param \Prado\IO\ITextWriter $writer
 	 */
 	public function render($writer)
 	{

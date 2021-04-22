@@ -368,7 +368,7 @@ class TCache_Lite
 	 * if no group is specified all cache files will be destroyed
 	 * else only cache files of the specified group will be destroyed
 	 *
-	 * @param string $group name of the cache group
+	 * @param false|string $group name of the cache group, or false
 	 * @return bool true if no problem
 	 * @access public
 	 */

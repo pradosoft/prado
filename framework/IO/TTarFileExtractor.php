@@ -8,6 +8,8 @@
 
 namespace Prado\IO;
 
+use Prado\Prado;
+
 /* vim: set ts=4 sw=4: */
 // +----------------------------------------------------------------------+
 // | PHP Version 4                                                        |
@@ -479,12 +481,12 @@ class TTarFileExtractor
 				if ($v_extract_file) {
 					if ($v_header['typeflag'] == "5") {
 						if (!@file_exists($v_header['filename'])) {
-							if (!@mkdir($v_header['filename'], PRADO_CHMOD)) {
+							if (!@mkdir($v_header['filename'], Prado::getDefaultPermissions())) {
 								$this->_error('Unable to create directory {'
 								  . $v_header['filename'] . '}');
 								return false;
 							}
-							chmod($v_header['filename'], PRADO_CHMOD);
+							chmod($v_header['filename'], Prado::getDefaultPermissions());
 						}
 					} else {
 						if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
@@ -574,11 +576,11 @@ class TTarFileExtractor
 			return false;
 		}
 
-		if (!@mkdir($p_dir, PRADO_CHMOD)) {
+		if (!@mkdir($p_dir, Prado::getDefaultPermissions())) {
 			$this->_error("Unable to create directory '$p_dir'");
 			return false;
 		}
-		chmod($p_dir, PRADO_CHMOD);
+		chmod($p_dir, Prado::getDefaultPermissions());
 
 		return true;
 	}

@@ -105,7 +105,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 
 	/**
 	 * Initialize the cache implementation, sets the actual cache contain if supplied.
-	 * @param ISqLMapCache $cache cache implementation instance.
+	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapCache $cache cache implementation instance.
 	 */
 	public function initialize($cache = null)
 	{
@@ -131,11 +131,12 @@ class TSqlMapCacheModel extends \Prado\TComponent
 			case TSqlMapCacheTypes::LRU: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapLruCache';
 			case TSqlMapCacheTypes::Basic: return '\\Prado\\Data\\SqlMap\\DataMapper\\TSqlMapApplicationCache';
 		}
+		return '';
 	}
 
 	/**
 	 * Register a mapped statement that will trigger a cache flush.
-	 * @param TMappedStatement $mappedStatement mapped statement that may flush the cache.
+	 * @param \Prado\Data\SqlMap\Statements\TMappedStatement $mappedStatement mapped statement that may flush the cache.
 	 */
 	public function registerTriggerStatement($mappedStatement)
 	{

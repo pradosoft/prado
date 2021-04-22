@@ -273,17 +273,17 @@ class TTemplateControl extends TCompositeControl
 					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
 						$relControl = $this->{$relKey};
 						switch ($relValues[0]) {
-														case TActiveRecord::BELONGS_TO:
-														case TActiveRecord::HAS_ONE:
-																$relControl->Text = $arObj->{$relKey};
-																break;
-														case TActiveRecord::HAS_MANY:
-																if ($relControl instanceof TListControl) {
-																	$relControl->DataSource = $arObj->{$relKey};
-																	$relControl->dataBind();
-																}
-																break;
-												}
+							case TActiveRecord::BELONGS_TO:
+							case TActiveRecord::HAS_ONE:
+								$relControl->Text = $arObj->{$relKey};
+								break;
+							case TActiveRecord::HAS_MANY:
+								if ($relControl instanceof TListControl) {
+									$relControl->DataSource = $arObj->{$relKey};
+									$relControl->dataBind();
+								}
+								break;
+						}
 					}
 					break;
 				}

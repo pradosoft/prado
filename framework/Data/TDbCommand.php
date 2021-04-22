@@ -137,7 +137,7 @@ class TDbCommand extends \Prado\TComponent
 	 * placeholders, this will be the 1-indexed position of the parameter.
 	 * Unlike {@link bindValue}, the variable is bound as a reference and will
 	 * only be evaluated at the time that {@link execute} or {@link query} is called.
-	 * @param mixed &$value The value to bind to the parameter
+	 * @param mixed $value The value to bind to the parameter
 	 * @param null|int $dataType SQL data type of the parameter
 	 * @param null|int $length length of the data type
 	 * @see http://www.php.net/manual/en/function.PDOStatement-bindParam.php

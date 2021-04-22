@@ -44,7 +44,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
 	/**
 	 * Cached NumberFormatters set to the application culture.
-	 * @var NumberFormatter
+	 * @var \NumberFormatter
 	 */
 	protected static $formatters;
 
@@ -140,7 +140,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	/**
 	 * Set the formatting type for this control.
 	 * @param string $type formatting type, either "decimal", "currency", "percentage", "scientific", "spellout", "ordinal" or "duration"
-	 * @throws TPropertyTypeInvalidException
+	 * @throws TInvalidDataValueException
 	 */
 	public function setType($type)
 	{
@@ -190,7 +190,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	 * culture will be used.
 	 * @param string $culture
 	 * @param mixed $type
-	 * @return NumberFormatter
+	 * @return \NumberFormatter
 	 */
 	protected function getFormatter($culture, $type)
 	{

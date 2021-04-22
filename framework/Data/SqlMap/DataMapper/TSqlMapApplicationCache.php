@@ -75,6 +75,7 @@ class TSqlMapApplicationCache implements ICache
 		$keyList->remove($key);
 		$this->getCache()->delete($key);
 		$this->setKeyList($keyList);
+		return true;
 	}
 
 	/**
@@ -124,6 +125,7 @@ class TSqlMapApplicationCache implements ICache
 			$keyList->add($key);
 			$this->setKeyList($keyList);
 		}
+		return true;
 	}
 
 	/**

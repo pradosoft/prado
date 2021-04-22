@@ -55,7 +55,7 @@ class TGlobalization extends \Prado\TModule
 
 	/**
 	 * Translation source parameters.
-	 * @var TMap
+	 * @var \Prado\Collections\TMap
 	 */
 	private $_translation;
 
@@ -175,7 +175,7 @@ class TGlobalization extends \Prado\TModule
 	}
 
 	/**
-	 * @return TMap translation source configuration.
+	 * @return null|\Prado\Collections\TMap translation source configuration.
 	 */
 	public function getTranslationConfiguration()
 	{
@@ -196,7 +196,7 @@ class TGlobalization extends \Prado\TModule
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
 	 * </code>
 	 * Throws exception is source is not found.
-	 * @param array|TMap $config configuration options
+	 * @param array|\Prado\Collections\TMap $config configuration options
 	 */
 	protected function setTranslationConfiguration($config)
 	{
@@ -210,7 +210,7 @@ class TGlobalization extends \Prado\TModule
 							$config['source']
 						);
 					}
-					chmod($config['source'], PRADO_CHMOD); //make it deletable
+					chmod($config['source'], Prado::getDefaultPermissions()); //make it deletable
 				}
 			} else {
 				throw new TConfigurationException("invalid source dir '{$config['source']}'");
@@ -225,7 +225,7 @@ class TGlobalization extends \Prado\TModule
 						$config['cache']
 					);
 				}
-				chmod($config['cache'], PRADO_CHMOD); //make it deletable
+				chmod($config['cache'], Prado::getDefaultPermissions()); //make it deletable
 			}
 		} else {
 			unset($config['cache']);

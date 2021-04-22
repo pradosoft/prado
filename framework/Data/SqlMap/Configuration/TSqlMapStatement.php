@@ -11,7 +11,9 @@
 
 namespace Prado\Data\SqlMap\Configuration;
 
-use Prado\Data\TSqlMapManager;
+use Prado\Data\SqlMap\TSqlMapManager;
+use Prado\Data\SqlMap\Statements\TStaticSql;
+use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry;
 
 /**
  * TSqlMapStatement class corresponds to <statement> element.
@@ -237,7 +239,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * @param TInlineParameterMap $map parameter extracted from the sql text.
+	 * @param TParameterMap $map parameter extracted from the sql text.
 	 */
 	public function setInlineParameterMap($map)
 	{

@@ -50,7 +50,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	}
 
 	/**
-	 * @return TBaseActiveCallbackControl standard callback control options.
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
 	 */
 	public function getActiveControl()
 	{
@@ -103,7 +103,7 @@ class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiv
 	 */
 	public function raiseCallbackEvent($param)
 	{
-		if ($param->CallbackParameter === 'onClick') {
+		if ($param->getCallbackParameter() === 'onClick') {
 			$this->onClick($param);
 		}
 	}

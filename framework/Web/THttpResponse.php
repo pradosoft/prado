@@ -69,7 +69,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
-	 * @var The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
+	 * @var array<int, string> The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
 	 */
 	private static $HTTP_STATUS_CODES = [
 		100 => 'Continue', 101 => 'Switching Protocols',
@@ -207,8 +207,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param mixed $type
-	 * @return string content type, default is text/html
+	 * @param string $type content type, default is text/html
 	 */
 	public function setContentType($type)
 	{
@@ -754,7 +753,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * Create a new html writer instance.
 	 * This method is used internally. Please use {@link createHtmlWriter} instead.
 	 * @param string $type type of HTML writer to be created.
-	 * @param ITextWriter $writer text writer holding the contents.
+	 * @param \Prado\IO\ITextWriter $writer text writer holding the contents.
 	 */
 	public function createNewHtmlWriter($type, $writer)
 	{

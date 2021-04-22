@@ -28,7 +28,7 @@ interface IBroadcastEventReceiver
 	 * the event parameter to determine  whether you should respond to
 	 * this event.
 	 * @param \Prado\Web\UI\TControl $sender sender of the event
-	 * @param TBroadCastEventParameter $param event parameter
+	 * @param TBroadcastEventParameter $param event parameter
 	 */
 	public function broadcastEventReceived($sender, $param);
 }

@@ -17,6 +17,8 @@
 
 namespace Prado\I18N\core\Gettext;
 
+use Prado\Prado;
+
 // +----------------------------------------------------------------------+
 // | PEAR :: File :: Gettext :: PO                                        |
 // +----------------------------------------------------------------------+
@@ -162,7 +164,7 @@ class TGettext_PO extends TGettext
 		//done
 		@flock($fh, LOCK_UN);
 		@fclose($fh);
-		chmod($file, PRADO_CHMOD);
+		chmod($file, Prado::getDefaultPermissions());
 		return true;
 	}
 }

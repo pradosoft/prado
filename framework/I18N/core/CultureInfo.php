@@ -150,7 +150,6 @@ class CultureInfo
 	 * The culture indentifier must be of the form
 	 * "language_(country/region/variant)".
 	 * @param string $culture a culture name, e.g. "en_AU".
-	 * @return return new CultureInfo.
 	 */
 	public function __construct($culture = 'en')
 	{
@@ -192,8 +191,7 @@ class CultureInfo
 
 	/**
 	 * Load the ICU culture data for the specific culture identifier.
-	 * @param string $culture the culture identifier.
-	 * @param mixed $key
+	 * @param string $key the culture identifier.
 	 */
 	protected function loadCultureData($key)
 	{
@@ -245,9 +243,8 @@ class CultureInfo
 	 * Search the array for a specific value using a path separated using
 	 * slash "/" separated path. e.g to find $info['hello']['world'],
 	 * the path "hello/world" will return the corresponding value.
-	 * @param array $info the array for search
+	 * @param array $resource the array for search
 	 * @param string $path slash "/" separated array path.
-	 * @param mixed $resource
 	 * @return mixed the value array using the path
 	 */
 	private function searchResources($resource, $path = '/')
@@ -366,8 +363,6 @@ class CultureInfo
 		$all = \ResourceBundle::getLocales('');
 
 		switch ($type) {
-			case CultureInfo::ALL:
-				return $all;
 			case CultureInfo::NEUTRAL:
 				foreach ($all as $key => $culture) {
 					if (strlen($culture) != 2) {
@@ -382,6 +377,9 @@ class CultureInfo
 					}
 				}
 				return $all;
+			case CultureInfo::ALL:
+			default:
+				return $all;
 		}
 	}
 
@@ -389,8 +387,7 @@ class CultureInfo
 	 * Simplify a single element array into its own value.
 	 * E.g. <code>array(0 => array('hello'), 1 => 'world');</code>
 	 * becomes <code>array(0 => 'hello', 1 => 'world');</code>
-	 * @param array $array with single elements arrays
-	 * @param mixed $obj
+	 * @param mixed $obj with single elements arrays
 	 * @return array simplified array.
 	 */
 	protected function simplify($obj)

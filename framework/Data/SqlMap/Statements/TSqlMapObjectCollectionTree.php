@@ -80,7 +80,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 
 	/**
 	 * Find the parent node and add the new node as its child.
-	 * @param array &$childs list of nodes to check
+	 * @param array $childs list of nodes to check
 	 * @param string $parent parent node id
 	 * @param string $node new node id
 	 * @return bool true if parent node is found.
@@ -114,7 +114,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	}
 
 	/**
-	 * @param array &$nodes list of nodes to check
+	 * @param array $nodes list of nodes to check
 	 * @return bool true if all nodes are leaf nodes, false otherwise
 	 */
 	protected function hasChildren(&$nodes)
@@ -131,7 +131,7 @@ class TSqlMapObjectCollectionTree extends \Prado\TComponent
 	/**
 	 * Visit all the child nodes and collect them by removing.
 	 * @param string $parent parent node id
-	 * @param array &$nodes list of child nodes.
+	 * @param array $nodes list of child nodes.
 	 */
 	protected function collectChildren($parent, &$nodes)
 	{

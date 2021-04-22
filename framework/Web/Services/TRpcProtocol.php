@@ -32,19 +32,19 @@ abstract class TRpcProtocol
 	/**
 	 * @param string $requestPayload request payload
 	 * Processed the request ans returns the response, if any
-	 * @return processed response
+	 * @return string processed response
 	 * @abstract
 	 */
 	abstract public function callMethod($requestPayload);
 	/**
 	 * @param TRpcException $exception the exception with error details
 	 * Creates a proper response for an error condition
-	 * @return a response representing the error
+	 * @return string a response representing the error
 	 * @abstract
 	 */
 	abstract public function createErrorResponse(TRpcException $exception);
 	/**
-	 * @param response $response * Sets the needed headers for the response (eg: content-type, charset)
+	 * @param \Prado\Web\THttpResponse $response * Sets the needed headers for the response (eg: content-type, charset)
 	 * @abstract
 	 */
 	abstract public function createResponseHeaders($response);

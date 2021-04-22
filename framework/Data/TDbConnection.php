@@ -451,12 +451,13 @@ class TDbConnection extends \Prado\TComponent
 	public function getColumnCase()
 	{
 		switch ($this->getAttribute(PDO::ATTR_CASE)) {
-			case PDO::CASE_NATURAL:
-				return TDbColumnCaseMode::Preserved;
 			case PDO::CASE_LOWER:
 				return TDbColumnCaseMode::LowerCase;
 			case PDO::CASE_UPPER:
 				return TDbColumnCaseMode::UpperCase;
+			case PDO::CASE_NATURAL:
+			default:
+				return TDbColumnCaseMode::Preserved;
 		}
 	}
 
@@ -485,12 +486,13 @@ class TDbConnection extends \Prado\TComponent
 	public function getNullConversion()
 	{
 		switch ($this->getAttribute(PDO::ATTR_ORACLE_NULLS)) {
-			case PDO::NULL_NATURAL:
-				return TDbNullConversionMode::Preserved;
 			case PDO::NULL_EMPTY_STRING:
 				return TDbNullConversionMode::EmptyStringToNull;
 			case PDO::NULL_TO_STRING:
 				return TDbNullConversionMode::NullToEmptyString;
+			case PDO::NULL_NATURAL:
+			default:
+				return TDbNullConversionMode::Preserved;
 		}
 	}
 

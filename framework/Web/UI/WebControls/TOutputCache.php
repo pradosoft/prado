@@ -391,8 +391,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * The names should be concatenated by semicolons.
 	 * By setting this value, the output cache will use different cached data
 	 * for each different set of request parameter values.
-	 * @param mixed $value
-	 * @return string a semicolon-separated list of strings used to vary the output cache.
+	 * @param string $value a semicolon-separated list of strings used to vary the output cache.
 	 */
 	public function setVaryByParam($value)
 	{

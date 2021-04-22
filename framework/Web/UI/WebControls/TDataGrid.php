@@ -143,6 +143,7 @@ use Prado\Web\UI\ITemplate;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.0
+ * @method TTableStyle getStyle()
  */
 class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 {

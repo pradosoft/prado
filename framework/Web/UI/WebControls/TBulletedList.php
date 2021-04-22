@@ -185,8 +185,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param mixed $value
-	 * @return TBulletedListDisplayMode display mode of the list.
+	 * @param TBulletedListDisplayMode $value display mode of the list.
 	 */
 	public function setDisplayMode($value)
 	{

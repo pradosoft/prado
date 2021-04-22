@@ -204,7 +204,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 									if (!in_array($url = $baseUrl . '/' . $minPath, $packagesUrl)) {
 										if (!is_file($filePath = $path . DIRECTORY_SEPARATOR . $minPath)) {
 											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base . '/' . $subPath)));
-											chmod($filePath, PRADO_CHMOD);
+											chmod($filePath, Prado::getDefaultPermissions());
 										}
 										$packagesUrl[] = $url;
 									}
@@ -921,10 +921,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Checks whether page rendering has not begun yet
+	 * @throws \Exception
 	 */
 	protected function checkIfNotInRender()
 	{
-		if ($form = $this->_page->InFormRender) {
+		if ($form = $this->_page->getInFormRender()) {
 			throw new \Exception('Operation invalid when page is already rendering');
 		}
 	}

@@ -16,6 +16,7 @@ use Prado\Data\SqlMap\Configuration\TResultMap;
 use Prado\Data\SqlMap\Configuration\TResultProperty;
 use Prado\Data\SqlMap\Configuration\TSqlMapInsert;
 use Prado\Data\SqlMap\Configuration\TSqlMapStatement;
+use Prado\Data\SqlMap\Configuration\TSqlMapSelectKey;
 use Prado\Data\SqlMap\DataMapper\TLazyLoadList;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
@@ -142,11 +143,10 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Execute SQL Query with limits.
 	 * @param \Prado\Data\TDbConnection $connection database connection
-	 * @param $command
+	 * @param \Prado\Data\TDbCommand $command
 	 * @param int $max The maximum number of rows to return.
 	 * @param int $skip The number of rows to skip over.
 	 * @throws TSqlMapExecutionException if execution error or false record set.
-	 * @throws TSqlMapQueryExecutionException if any execution error
 	 * @return mixed record set if applicable.
 	 */
 	protected function executeSQLQueryLimit($connection, $command, $max, $skip)
@@ -185,7 +185,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 *
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter The object used to set the parameters in the SQL.
-	 * @param array $sql SQL string and subsititution parameters.
+	 * @param \Prado\Data\TDbCommand $sql SQL string and subsititution parameters.
 	 * @param object $result result collection object.
 	 * @param null|callable $delegate row delegate handler
 	 * @return array a list of result objects
@@ -335,8 +335,8 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * <tt>executeQueryForObject()</tt> first.
 	 *
 	 * @param \Prado\Data\TDbConnection $connection database connection
-	 * @param $command
-	 * @param object &$result The result object.
+	 * @param \Prado\Data\TDbCommand $command
+	 * @param object $result The result object.
 	 * @return object the object.
 	 * @see executeQueryForObject()
 	 */
@@ -388,7 +388,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Gets the insert generated ID before executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return string new insert ID if pre-select key statement was executed, null otherwise.
+	 * @return null|string new insert ID if pre-select key statement was executed, null otherwise.
 	 */
 	protected function getPreGeneratedSelectKey($connection, $parameter)
 	{
@@ -398,13 +398,14 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 			}
 		}
+		return null;
 	}
 
 	/**
 	 * Gets the inserted row ID after executing an insert statement.
 	 * @param \Prado\Data\TDbConnection $connection database connection
 	 * @param mixed $parameter insert statement parameter.
-	 * @return string last insert ID, null otherwise.
+	 * @return null|string last insert ID, null otherwise.
 	 */
 	protected function getPostGeneratedSelectKey($connection, $parameter)
 	{
@@ -414,6 +415,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 				return $this->executeSelectKey($connection, $parameter, $selectKey);
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -493,7 +495,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * Apply result mapping.
 	 * @param array $row a result set row retrieved from the database
-	 * @param null|&object $resultObject the result object, will create if necessary.
+	 * @param null|object $resultObject the result object, will create if necessary.
 	 * @return object the result filled with data, null if not filled.
 	 */
 	protected function applyResultMap($row, &$resultObject = null)
@@ -592,7 +594,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param string $resultMapName result map name.
 	 * @param array $row a result set row retrieved from the database
 	 * @param null|mixed $parentGroup
-	 * @param null|&object $resultObject result object to fill, will create new instances if required.
+	 * @param null|object $resultObject result object to fill, will create new instances if required.
 	 * @return object result object filled with data.
 	 */
 	protected function fillResultMap($resultMapName, $row, $parentGroup = null, &$resultObject = null)
@@ -625,7 +627,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param array $row a result set row retrieved from the database
 	 * @param mixed $parent
-	 * @param object &$resultObject the result object
+	 * @param object $resultObject the result object
 	 * @return object result object.
 	 */
 	protected function addResultMapGroupBy($resultMap, $row, $parent, &$resultObject)
@@ -750,7 +752,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * @param TResultMap $resultMap result mapping details.
 	 * @param TResultProperty $property the result property to fill.
 	 * @param array $row a result set row retrieved from the database
-	 * @param object &$resultObject the result object
+	 * @param object $resultObject the result object
 	 */
 	protected function setObjectProperty($resultMap, $property, $row, &$resultObject)
 	{
@@ -860,7 +862,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	 * Fills the property with result mapping results.
 	 * @param TResultMap $resultMap nested result mapping details.
 	 * @param array $row a result set row retrieved from the database
-	 * @param object &$resultObject the result object
+	 * @param object $resultObject the result object
 	 * @return bool true if the data was found, false otherwise.
 	 */
 	protected function fillPropertyWithResultMap($resultMap, $row, &$resultObject)

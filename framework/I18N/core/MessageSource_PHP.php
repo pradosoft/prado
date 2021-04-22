@@ -22,6 +22,7 @@ namespace Prado\I18N\core;
  */
 use Prado\Exceptions\TException;
 use Prado\Exceptions\TIOException;
+use Prado\Prado;
 
 /**
  * MessageSource_PHP class.
@@ -389,7 +390,7 @@ class MessageSource_PHP extends MessageSource
 
 		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir, PRADO_CHMOD);
+			@chmod($dir, Prado::getDefaultPermissions());
 		}
 
 		if (!is_dir($dir)) {
@@ -397,7 +398,7 @@ class MessageSource_PHP extends MessageSource
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));
-		chmod($file, PRADO_CHMOD);
+		chmod($file, Prado::getDefaultPermissions());
 
 		return [$variant, $file];
 	}

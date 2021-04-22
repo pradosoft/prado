@@ -70,7 +70,7 @@ abstract class TRpcApiProvider extends \Prado\TModule
 
 	/**
 	 * Processes the request using the server
-	 * @return processed request
+	 * @return string processed request
 	 */
 	public function processRequest()
 	{

@@ -101,8 +101,7 @@ class TEmailLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @param mixed $emails
-	 * @return array|string list of destination email addresses. If the value is
+	 * @param array|string $emails list of destination email addresses. If the value is
 	 * a string, it is assumed to be comma-separated email addresses.
 	 */
 	public function setEmails($emails)

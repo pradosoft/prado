@@ -44,7 +44,7 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 	 * Returns a new instance of THtmlWriter.
 	 * An instance of TCallbackResponseWriter is created to hold the content.
 	 * @param string $type writer class name.
-	 * @param THttpResponse $response http response handler.
+	 * @param \Prado\Web\THttpResponse $response http response handler.
 	 */
 	public function createNewHtmlWriter($type, $response)
 	{

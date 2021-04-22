@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Collections\TMap;
 use Prado\Exceptions\TNotSupportedException;
 
 /**
