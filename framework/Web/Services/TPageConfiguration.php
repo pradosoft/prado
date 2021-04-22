@@ -60,6 +60,7 @@ class TPageConfiguration extends \Prado\TComponent
 	public function __construct($pagePath)
 	{
 		$this->_pagePath = $pagePath;
+		parent::__construct();
 	}
 
 	/**

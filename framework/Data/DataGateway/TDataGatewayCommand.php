@@ -48,6 +48,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function __construct($builder)
 	{
 		$this->_builder = $builder;
+		parent::__construct();
 	}
 	/**
 	 * @return TDbTableInfo

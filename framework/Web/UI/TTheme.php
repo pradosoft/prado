@@ -86,6 +86,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_themeUrl = $themeUrl;
 		$this->_themePath = realpath($themePath);
 		$this->_name = basename($themePath);
+		parent::__construct();
 		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
 		if (($cache = $this->getApplication()->getCache()) !== null) {

@@ -29,8 +29,8 @@ class TOutputCacheTextWriterMulti extends TTextWriter
 
 	public function __construct(array $writers)
 	{
-		//parent::__construct();
 		$this->_writers = $writers;
+		parent::__construct();
 	}
 
 	public function write($s)

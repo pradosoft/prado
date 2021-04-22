@@ -60,6 +60,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public function __construct(TActiveRecordManager $manager)
 	{
 		$this->_manager = $manager;
+		parent::__construct();
 	}
 
 	/**

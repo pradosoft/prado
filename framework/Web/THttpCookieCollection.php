@@ -41,6 +41,7 @@ class THttpCookieCollection extends \Prado\Collections\TList
 	public function __construct($owner = null)
 	{
 		$this->_o = $owner;
+		parent::__construct();
 	}
 
 	/**

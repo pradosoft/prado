@@ -135,6 +135,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	{
 		$this->_control = $control;
 		$this->_internalonly = $onlyinternal;
+		parent::__construct();
 	}
 
 	/**

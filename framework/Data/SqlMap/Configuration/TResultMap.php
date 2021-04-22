@@ -54,6 +54,7 @@ class TResultMap extends \Prado\TComponent
 	public function __construct()
 	{
 		$this->_columns = new TMap;
+		parent::__construct();
 	}
 
 	/**
