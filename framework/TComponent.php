@@ -1359,6 +1359,37 @@ class TComponent
 			return $this->detachBehavior($param->getName(), $param->getPriority());
 		}
 	}
+	
+	/**
+	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of
+	 * ['class' => 'MyBehavior', 'property1' => 'Value1'...] and creates a Behavior in return. eg.
+	 * <code>
+	 *		$b = $this->instanceBehavior('MyBehavior');
+	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
+	 * 		$b = $this->instanceBehavior(new MyBehavior);
+	 * </code>
+	 * @param string|class|array $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
+	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
+	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
+	 * @since 4.2.0
+	 */
+	protected static function instanceBehavior($behavior)
+	{
+		if (is_string($behavior)) {
+			$behavior = Prado::createComponent($behavior);
+		} elseif (is_array($behavior) && isset($behavior['class'])) {
+			$b = Prado::createComponent($behavior['class']);
+			unset($behavior['class']);
+			foreach ($behavior as $property => $value) {
+				$b->setSubProperty($property, $value);
+			}
+			$behavior = $b;
+		}
+		if (!($behavior instanceof IBaseBehavior)) {
+			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
+		}
+		return $behavior;
+	}
 
 
 	/**
@@ -1401,9 +1432,9 @@ class TComponent
 		if (isset(self::$_um[$class][$name])) {
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
+		$behaviorObject = self::instanceBehavior($behavior);
 		$param = new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
 		self::$_um[$class] = [$name => $param] + self::$_um[$class];
-		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 	}
 
@@ -1415,7 +1446,7 @@ class TComponent
 	 * @param string $name the key of the class behavior
 	 * @param string $class class on which to attach this behavior.  Defaults to null.
 	 * @param null|false|numeric $priority priority: false is any priority, null is default
-	 *		{@link TPriorityList} priority, and numeric is a specific priority.
+	 *		{@link TWeakCallableCollection} priority, and numeric is a specific priority.
 	 * @throws TInvalidOperationException if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
 	 * @since 3.2.3
@@ -1438,8 +1469,8 @@ class TComponent
 		}
 		$param = self::$_um[$class][$name];
 		$behavior = $param->getBehavior();
+		$behaviorObject = self::instanceBehavior($behavior);
 		unset(self::$_um[$class][$name]);
-		$behaviorObject = is_string($behavior) ? new $behavior : $behavior;
 		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 	}
 
@@ -1566,20 +1597,17 @@ class TComponent
 	 * dyAttachBehavior.
 	 *
 	 * @param string $name the behavior's name. It should uniquely identify this behavior.
-	 * @param mixed $behavior the behavior configuration. This is passed as the first
-	 * parameter to {@link PradoBase::createComponent} to create the behavior object.
+	 * @param string|class|array $behavior the behavior configuration. This is the name of the Behavior Class
+	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of
+	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
+	 * with values.
 	 * @param null|numeric $priority
 	 * @return IBehavior the behavior object
 	 * @since 3.2.3
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
-		if (is_string($behavior)) {
-			$behavior = Prado::createComponent($behavior);
-		}
-		if (!($behavior instanceof IBaseBehavior)) {
-			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
-		}
+		$behavior = self::instanceBehavior($behavior);
 		if ($behavior instanceof IBehavior) {
 			$behavior->setEnabled(true);
 		}
