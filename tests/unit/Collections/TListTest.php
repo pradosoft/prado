@@ -98,16 +98,20 @@ class TListTest extends PHPUnit\Framework\TestCase
 	public function testCanNotInsertAtWhenReadOnly()
 	{
 		$list = new TList([], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->insertAt(1, 2);
+		try {
+			$list->insertAt(1, 2);
+			$this->fail('TInvalidOperationException not raised when inserting into read only TList');
+		} catch(TInvalidOperationException $e){}
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->insertAt(0, 2);
 	}
 
 	public function testInsertBefore()
 	{
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
-		$this->list->insertBefore($this->item4, $this->item3);
+		try {
+			$this->list->insertBefore($this->item4, $this->item3);
+			$this->fail('TInvalidDataValueException item4 not in list');
+		} catch(TInvalidDataValueException $e){}
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(0, $this->list->insertBefore($this->item1, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
@@ -119,29 +123,34 @@ class TListTest extends PHPUnit\Framework\TestCase
 	public function testCanNotInsertBeforeWhenReadOnly()
 	{
 		$list = new TList([5], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->insertBefore(5, 6);
+		try {
+			$list->insertBefore(5, 6);
+			$this->fail('TInvalidDataValueException not raised when insertBefore item when read only');
+		} catch(TInvalidOperationException $e) {}
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->insertBefore(8, 6);
 	}
 
 	public function testInsertAfter()
 	{
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
-		$this->list->insertAfter($this->item4, $this->item3);
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(2, $this->list->insertAfter($this->item2, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
 		$this->assertEquals(0, $this->list->indexOf($this->item1));
 		$this->assertEquals(1, $this->list->indexOf($this->item2));
 		$this->assertEquals(2, $this->list->indexOf($this->item3));
+		
+		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		$this->list->insertAfter($this->item4, $this->item3);
 	}
 
 	public function testCanNotInsertAfterWhenReadOnly()
 	{
 		$list = new TList([5], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->insertAfter(5, 6);
+		try {
+			$list->insertAfter(5, 6);
+			$this->fail('TInvalidDataValueException ot insertAfter on a read only list');
+		} catch(TInvalidOperationException $e) {}
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->insertAfter(8, 6);
 	}
@@ -159,8 +168,10 @@ class TListTest extends PHPUnit\Framework\TestCase
 	public function testCanNotRemoveWhenReadOnly()
 	{
 		$list = new TList([1, 2, 3], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->remove(2);
+		try {
+			$list->remove(2);
+			$this->fail('TInvalidDataValueException not raised when removing at index when read only');
+		} catch(TInvalidOperationException $e) {}
 
 		$list = new TList([1, 2, 3], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
@@ -181,8 +192,10 @@ class TListTest extends PHPUnit\Framework\TestCase
 	public function testCanNotRemoveAtWhenReadOnly()
 	{
 		$list = new TList([1, 2, 3], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->removeAt(2);
+		try {
+			$list->removeAt(2);
+			$this->fail('TInvalidDataValueException not raised when removing at index when read only');
+		} catch(TInvalidOperationException $e) {}
 
 		$list = new TList([1, 2, 3], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
