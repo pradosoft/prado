@@ -1,1 +1,0 @@
-class TWeakCallableCollection extends TPriorityList
