@@ -27,7 +27,7 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Collections\TPriorityList;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Collections\TPriorityMap;
 
 /**
@@ -107,7 +107,7 @@ use Prado\Collections\TPriorityMap;
  * $component->attachEventHandler('OnClick',$callback);
  * </code>
  * The first two ways make use of the fact that $component->OnClick refers to
- * the event handler list {@link TPriorityList} for the 'OnClick' event.
+ * the event handler list {@link TWeakCallableCollection} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
  * be either a string referring to a global function name, or an array whose
  * first element refers to an object and second element a method name/path that
@@ -144,7 +144,8 @@ use Prado\Collections\TPriorityMap;
  * __destruct method, if an object is listening to global events, then {@link unlisten} is called.
  * {@link unlisten} is required to be manually called before an object is
  * left without references if it is currently listening to any global events. This includes
- * class wide behaviors.
+ * class wide behaviors.  This is corrected in PHP 7.4.0 with WeakReferences and {@link
+ * TWeakCallableCollection}
  *
  * An object that contains a method that starts with 'fx' will have those functions
  * automatically receive those events of the same name after {@link listen} is called on the object.
@@ -189,7 +190,7 @@ use Prado\Collections\TPriorityMap;
  * there are class wide behaviors.  Class behaviors depend upon object behaviors.
  *
  * When a new class implements {@link IBehavior} or {@link IClassBehavior} or
- * extends {@link TBehavior} or {@link TClassBehavior}, it may be added to an
+ * extends {@link TBehavior} or {@link TClassBehavior}, it may be attached to an
  * object by calling the object's {@link attachBehavior}.  The behaviors associated
  * name can then be used to {@link enableBehavior} or {@link disableBehavior}
  * the specific behavior.
@@ -397,7 +398,8 @@ class TComponent
 	 * This unlistens from the global event routines if listening
 	 *
 	 * PHP 5.3 does not __destruct objects when they are nulled and thus unlisten must be
-	 * called must be explicitly called.
+	 * called must be explicitly called. PHP 7.4.0 uses WeakReferences and this will be called
+	 * automatically.
 	 */
 	public function __destruct()
 	{
@@ -628,7 +630,7 @@ class TComponent
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property/event is not defined.
-	 * @return mixed the property value or the event handler list as {@link TPriorityList}
+	 * @return mixed the property value or the event handler list as {@link TWeakCallableCollection}
 	 */
 	public function __get($name)
 	{
@@ -642,14 +644,14 @@ class TComponent
 			// getting an event (handler list)
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TPriorityList;
+				$this->_e[$name] = new TWeakCallableCollection;
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			// getting a global event (handler list)
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TPriorityList;
+				self::$_ue[$name] = new TWeakCallableCollection;
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_behaviorsenabled) {
@@ -951,20 +953,20 @@ class TComponent
 	 * checks through all the behaviors for 'on' event lists when behaviors are enabled.
 	 * @param mixed $name
 	 * @throws TInvalidOperationException if the event is not defined
-	 * @return TPriorityList list of attached event handlers for an event
+	 * @return TWeakCallableCollection list of attached event handlers for an event
 	 */
 	public function getEventHandlers($name)
 	{
 		if (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TPriorityList;
+				$this->_e[$name] = new TWeakCallableCollection;
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TPriorityList;
+				self::$_ue[$name] = new TWeakCallableCollection;
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
@@ -1000,7 +1002,7 @@ class TComponent
 	 * It is equivalent to {@link getEventHandlers}($name)->add($handler).
 	 * For complete management of event handlers, use {@link getEventHandlers}
 	 * to get the event handler list first, and then do various
-	 * {@link TPriorityList} operations to append, insert or remove
+	 * {@link TWeakCallableCollection} operations to append, insert or remove
 	 * event handlers. You may also do these operations like
 	 * getting and setting properties, e.g.,
 	 * <code>
@@ -1019,7 +1021,7 @@ class TComponent
 	 * @param string $name the event name
 	 * @param callable $handler the event handler
 	 * @param null|numeric $priority the priority of the handler, defaults to null which translates into the
-	 * default priority of 10.0 within {@link TPriorityList}
+	 * default priority of 10.0 within {@link TWeakCallableCollection}
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
@@ -1034,7 +1036,7 @@ class TComponent
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
-	 * to an item of any priority within {@link TPriorityList}; null means the default priority
+	 * to an item of any priority within {@link TWeakCallableCollection}; null means the default priority
 	 * @return bool if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
@@ -1052,7 +1054,7 @@ class TComponent
 	/**
 	 * Raises an event.  This raises both inter-object 'on' events and global 'fx' events.
 	 * This method represents the happening of an event and will
-	 * invoke all attached event handlers for the event in {@link TPriorityList} order.
+	 * invoke all attached event handlers for the event in {@link TWeakCallableCollection} order.
 	 * This method does not handle intra-object/behavior dynamic 'dy' events.
 	 *
 	 * There are ways to handle event responses.  By defailt {@link EVENT_RESULT_FILTER},
@@ -1366,13 +1368,13 @@ class TComponent
 	 * This is done so class behaviors are added last first.
 	 * @param string $name name the key of the class behavior
 	 * @param object|string $behavior class behavior or name of the object behavior per instance
-	 * @param null|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param null|class|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
 	 * </code>
-	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TPriorityList}  Optional.
+	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TWeakCallableCollection}  Optional.
 	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @since 3.2.3
