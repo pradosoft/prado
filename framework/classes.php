@@ -42,6 +42,7 @@ return [
 'TQueue' => 'Prado\Collections\TQueue',
 'TQueueIterator' => 'Prado\Collections\TQueueIterator',
 'TStack' => 'Prado\Collections\TStack',
+'TWeakCallableCollection' => 'Prado\Collections\TWeakCallableCollection',
 'TActiveRecordConfigurationException' => 'Prado\Data\ActiveRecord\Exceptions\TActiveRecordConfigurationException',
 'TActiveRecordException' => 'Prado\Data\ActiveRecord\Exceptions\TActiveRecordException',
 'TActiveRecordBelongsTo' => 'Prado\Data\ActiveRecord\Relations\TActiveRecordBelongsTo',
