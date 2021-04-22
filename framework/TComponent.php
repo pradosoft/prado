@@ -1368,7 +1368,7 @@ class TComponent
 	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
 	 * 		$b = $this->instanceBehavior(new MyBehavior);
 	 * </code>
-	 * @param string|class|array $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
+	 * @param array|class|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
 	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
 	 * @since 4.2.0
@@ -1597,7 +1597,7 @@ class TComponent
 	 * dyAttachBehavior.
 	 *
 	 * @param string $name the behavior's name. It should uniquely identify this behavior.
-	 * @param string|class|array $behavior the behavior configuration. This is the name of the Behavior Class
+	 * @param array|class|string $behavior the behavior configuration. This is the name of the Behavior Class
 	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
 	 * with values.
