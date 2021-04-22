@@ -461,7 +461,7 @@ class TComponent
 		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
 
 		foreach ($fx as $func) {
-			$this->attachEventHandler($func, [$this, $func]);
+			$this->getEventHandlers($func)->add([$this, $func]);
 		}
 
 		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
@@ -1031,7 +1031,7 @@ class TComponent
 	/**
 	 * Detaches an existing event handler.
 	 * This method is the opposite of {@link attachEventHandler}.  It will detach
-	 * any 'on' events definedb by an objects active behaviors as well.
+	 * any 'on' events defined by an objects active behaviors as well.
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
@@ -1174,7 +1174,7 @@ class TComponent
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
 						if (($pos = strrpos($method, '.')) !== false) {
-							$object = $this->getSubProperty(substr($method, 0, $pos));
+							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
 						}
 						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {

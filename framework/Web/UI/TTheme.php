@@ -102,9 +102,9 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 						if ($file === '.' || $file === '..') {
 							continue;
 						} elseif (basename($file, '.css') !== $file) {
-							$this->_cssFiles[] = $themeUrl . '/' . $file;
+							$this->_cssFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 						} elseif (basename($file, '.js') !== $file) {
-							$this->_jsFiles[] = $themeUrl . '/' . $file;
+							$this->_jsFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 						} elseif (basename($file, self::SKIN_FILE_EXT) !== $file && filemtime($themePath . DIRECTORY_SEPARATOR . $file) > $timestamp) {
 							$cacheValid = false;
 							break;
@@ -133,11 +133,11 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				if ($file === '.' || $file === '..') {
 					continue;
 				} elseif (basename($file, '.css') !== $file) {
-					$this->_cssFiles[] = $themeUrl . '/' . $file;
+					$this->_cssFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 				} elseif (basename($file, '.js') !== $file) {
-					$this->_jsFiles[] = $themeUrl . '/' . $file;
+					$this->_jsFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file) {
-					$template = new TTemplate(file_get_contents($themePath . '/' . $file), $themePath, $themePath . '/' . $file);
+					$template = new TTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . '/' . $file);
 					foreach ($template->getItems() as $skin) {
 						if (!isset($skin[2])) {  // a text string, ignored
 							continue;
@@ -199,7 +199,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	protected function setBaseUrl($value)
 	{
-		$this->_themeUrl = rtrim($value, '/');
+		$this->_themeUrl = rtrim($value, DIRECTORY_SEPARATOR);
 	}
 
 	/**

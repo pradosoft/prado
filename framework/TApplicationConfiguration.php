@@ -344,7 +344,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				if (isset($parameter['class'])) {
 					$type = $parameter['class'];
 					unset($parameter['class']);
-					$properties = $service['properties'] ?? [];
+					$properties = $parameter['properties'] ?? [];
 					$properties['id'] = $id;
 					$this->_parameters[$id] = [$type, $properties];
 				}
