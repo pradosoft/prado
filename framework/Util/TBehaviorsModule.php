@@ -221,7 +221,7 @@ class TBehaviorsModule extends \Prado\TModule
 		if (is_string($behaviors)) {
 			if (($b = @unserialize($behaviors)) !== false) {
 				$behaviors = $b;
-			} elseif (($b = json_decode($value, true)) !== null) {
+			} elseif (($b = json_decode($behaviors, true)) !== null) {
 				$behaviors = $b;
 			} else {
 				$xmldoc = new TXmlDocument('1.0', 'utf-8');
