@@ -59,7 +59,6 @@ class MessageSource_XLIFF extends MessageSource
 	public function __construct($source)
 	{
 		$this->source = (string) $source;
-		parent::__construct();
 	}
 
 	/**

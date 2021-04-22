@@ -58,7 +58,6 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	{
 		$this->_xmlConfig = $xmlConfig;
 		$this->_manager = $xmlConfig->getManager();
-		parent::__construct();
 	}
 
 	protected function getConfigFile()
