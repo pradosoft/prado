@@ -25,7 +25,7 @@ use Prado\Xml\TXmlElement;
  *
  * Content enclosed within the module tag is treated as behaviors, e.g.,
  * <code>
- * <module class="Prado\Util\TBehaviorsModule">
+ * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
  *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
  *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
  *   <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
@@ -34,6 +34,18 @@ use Prado\Xml\TXmlElement;
  * </module>
  * </code>
  *
+ * When {@link setAdditionalBehaviors AdditionalBehaviors} is set, then this module
+ * loads the behaviors from that property. It can be an array of php behavior definition arrays.
+ * or a string that is then passed through unserialize or json_decode; otherwise is treated as
+ * an xml document of behavior like above.
+ *
+ * The format is in the PHP style module configuration:
+ * </code>
+ *		[['name' => 'behaviorname', 'class' => 'TMyBehaviorClass', 'attachto' => 'page', 'priority' => '10', 'behaviorProperty'=>"value1'], ...]
+ * </code>
+ *
+ * This allows TParameterizeBehavior to set and eable TBehaviorsModule to load behaviors, dynamically, from parameters.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util
  * @since 4.2.0
@@ -41,12 +53,17 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var behavior instance attaching to the TPage, if available
+	 * @var Tbehavior instances attaching to the TPage
 	 */
 	private $_pageBehaviors = [];
 	
 	/**
-	 * Initializes the module by loading parameters.
+	 * @var array additional behaviors in an array,
+	 */
+	private $_additionalBehaviors;
+	
+	/**
+	 * Initializes the module by loading behaviors.
 	 * @param mixed $config content enclosed within the module tag
 	 */
 	public function init($config)
@@ -56,6 +73,8 @@ class TBehaviorsModule extends \Prado\TModule
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachTPageServiceHandler']);
 		}
+		
+		$this->loadBehaviors($this->getAdditionalBehaviors());
 	}
 	
 	/**
@@ -180,5 +199,39 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @return array additional behaviors in a list.
+	 */
+	public function getAdditionalBehaviors()
+	{
+		return $this->_additionalBehaviors;
+	}
+	 
+	/**
+	 * this will take a string that is an array of behaviors that has been
+	 * through serialize(), or json array of behaviors.  If one behavior is
+	 * set, then it is automatically placed into an array..
+	 * @param $behaviors array additional behaviors in an array [0..n],  or
+	 * a single php behavior definition.
+	 */
+	public function setAdditionalBehaviors($behaviors)
+	{
+		if (is_string($behaviors)) {
+			if (($b = @unserialize($behaviors)) !== false) {
+				$behaviors = $b;
+			} elseif (($b = json_decode($value, true)) !== null) {
+				$behaviors = $b;
+			} else {
+				$xmldoc = new TXmlDocument('1.0', 'utf-8');
+				$xmldoc->loadFromString($behaviors);
+				$behaviors = $xmldoc;
+			}
+		}
+		if (is_array($behaviors) && isset($behaviors['class'])) {
+			$behaviors = [$behaviors];
+		}
+		return $this->_additionalBehaviors = $behaviors ?? [];
 	}
 }
