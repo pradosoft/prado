@@ -206,7 +206,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 */
 	public function getAdditionalBehaviors()
 	{
-		return $this->_additionalBehaviors;
+		return $this->_additionalBehaviors ?? [];
 	}
 	 
 	/**
@@ -232,6 +232,6 @@ class TBehaviorsModule extends \Prado\TModule
 		if (is_array($behaviors) && isset($behaviors['class'])) {
 			$behaviors = [$behaviors];
 		}
-		return $this->_additionalBehaviors = $behaviors ?? [];
+		$this->_additionalBehaviors = $behaviors ?? [];
 	}
 }
