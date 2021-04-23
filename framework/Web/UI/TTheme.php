@@ -169,6 +169,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			closedir($dir);
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
+			$this->postProcessCssRTL();
 			$this->dyThemeProcess();
 			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
@@ -336,5 +337,24 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	protected function setJavaScriptFiles($value)
 	{
 		$this->_jsFiles = $value;
+	}
+	
+	/**
+	 *
+	 */
+	protected function postProcessCssRTL()
+	{
+		$rtlCss = [];
+		foreach ($this->_cssFiles as $key => $url) {
+			if (substr_compare($url, 'rtl.css', -7) === 0) {
+				$rtlCss[] = $url;
+				unset($this->_cssFiles[$key]);
+			}
+		}
+		if ($globalization = $this->getApplication()->getGlobalization()) {
+			if ($globalization->getIsCultureRTL()) {
+				$this->_cssFiles = $this->_cssFiles + $rtlCss;
+			}
+		}
 	}
 }
