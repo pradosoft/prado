@@ -340,7 +340,10 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	}
 	
 	/**
-	 *
+	 * This post-processes the theme for RTL.  It loops through all the
+	 * css files, removes all the '.*rtl.css' and '.*rtl.(media).css' files,
+	 * then if there is globalization and globalization is RTL then re-adds
+	 * the rtl css at the end.
 	 */
 	protected function postProcessCssRTL()
 	{
