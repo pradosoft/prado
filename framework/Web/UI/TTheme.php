@@ -347,7 +347,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$rtlCss = [];
 		foreach ($this->_cssFiles as $key => $url) {
 			$segs = explode('.', basename($url));
-			if ((substr_compare(strtolower($url), 'rtl.css', -7) === 0) || 
+			if ((substr_compare(strtolower($url), 'rtl.css', -7) === 0) ||
 				(isset($segs[2]) && (substr_compare(strtolower($segs[count($segs) - 3]), 'rtl', -3) === 0))) {
 				$rtlCss[] = $url;
 				unset($this->_cssFiles[$key]);

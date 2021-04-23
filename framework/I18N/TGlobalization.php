@@ -315,7 +315,7 @@ class TGlobalization extends \Prado\TModule
 	 * This returns whether or not the current culture or the specified
 	 * culture is right to left orientation.  Default $culture is null, which
 	 * equal to using  $this->Culture as the parameter.
-	 * @param null|string culture, default null which makes this grab the current object culture
+	 * @param null|string $culture, default null which makes this grab the current object culture
 	 * @return bool
 	 */
 	public function getIsCultureRTL($culture = null)
@@ -331,18 +331,15 @@ class TGlobalization extends \Prado\TModule
 		$ci = new \Prado\I18N\core\CultureInfo($culture);
 		$textDirection = $ci->findInfo('layout/characters');
 		$isRTL = ($textDirection == 'right-to-left');
-		if($culture == $currentCulture) {
+		if ($culture == $currentCulture) {
 			$this->_cultureRTL = $isRTL;
 		}
 		return $isRTL;
 	}
 	
 	/**
-	 * This returns whether or not the current culture or the specified
-	 * culture is right to left orientation.  Default $culture is null, which
-	 * equal to using  $this->Culture as the parameter.
-	 * @param null|string culture, default null which makes this grab the current object culture
-	 * @return bool
+	 * This hard sets the IsCultureRTL property to the value.
+	 * @param bool $rtl
 	 */
 	public function setIsCultureRTL($rtl)
 	{
