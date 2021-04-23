@@ -346,14 +346,16 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	{
 		$rtlCss = [];
 		foreach ($this->_cssFiles as $key => $url) {
-			if (substr_compare($url, 'rtl.css', -7) === 0) {
+			$segs = explode('.', basename($url));
+			if ((substr_compare($url, 'rtl.css', -7) === 0) || 
+				(isset($segs[2]) && (substr_compare($segs[count($segs) - 3], 'rtl', -3) === 0))) {
 				$rtlCss[] = $url;
 				unset($this->_cssFiles[$key]);
 			}
 		}
 		if ($globalization = $this->getApplication()->getGlobalization()) {
 			if ($globalization->getIsCultureRTL()) {
-				$this->_cssFiles = $this->_cssFiles + $rtlCss;
+				$this->_cssFiles = array_merge($this->_cssFiles, $rtlCss);
 			}
 		}
 	}
