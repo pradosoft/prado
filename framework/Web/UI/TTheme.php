@@ -167,9 +167,9 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				}
 			}
 			closedir($dir);
-			$this->dyThemeProcess();
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
+			$this->dyThemeProcess();
 			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
 			}
