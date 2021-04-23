@@ -24,7 +24,7 @@ use WeakReference;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Collections
- * @since 4.2
+ * @since 4.2.0
  */
 class TWeakCallableCollection extends TPriorityList
 {
