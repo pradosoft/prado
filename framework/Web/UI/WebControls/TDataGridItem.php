@@ -60,7 +60,6 @@ class TDataGridItem extends TTableRow implements \Prado\Web\UI\INamingContainer
 	 */
 	public function __construct($itemIndex, $dataSourceIndex, $itemType)
 	{
-		parent::__construct();
 		$this->_itemIndex = $itemIndex;
 		$this->_dataSourceIndex = $dataSourceIndex;
 		$this->setItemType($itemType);
