@@ -305,7 +305,7 @@ class TGlobalization extends \Prado\TModule
 	
 	/**
 	 * This returns whether or not the current culture or the specified
-	 * culture is right to left orientation.  Default $culture is null, which 
+	 * culture is right to left orientation.  Default $culture is null, which
 	 * equal to using  $this->Culture as the parameter.
 	 * @param null|string culture, default null which makes this grab the current object culture
 	 * @return bool
