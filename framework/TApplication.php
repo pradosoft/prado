@@ -1119,6 +1119,7 @@ class TApplication extends \Prado\TComponent
 	 * request.  This call is important for CLI/Shell applications that do not have
 	 * a web service lifecycle stack.  This is the first and last event for finalization
 	 * of any loaded modules in CLI/Shell mode.
+	 * @since 4.2.0
 	 */
 	public function onInitComplete()
 	{

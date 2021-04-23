@@ -473,6 +473,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * onLogin event is raised when a user logs in
 	 * @param TUser $user user being logged in
+	 * @since 4.2.0
 	 */
 	public function onLogin($user)
 	{
@@ -482,6 +483,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * onLoginFailed event is raised when a user login fails
 	 * @param string $username username trying to log in
+	 * @since 4.2.0
 	 */
 	public function onLoginFailed($username)
 	{
@@ -491,6 +493,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * onLogout event is raised when a user logs out.
 	 * @param TUser $user user being logged out
+	 * @since 4.2.0
 	 */
 	public function onLogout($user)
 	{
