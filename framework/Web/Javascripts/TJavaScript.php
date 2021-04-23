@@ -41,12 +41,17 @@ class TJavaScript
 
 	/**
 	 * Renders a javascript file
-	 * @param string $file URL to the javascript file
+	 * @param array|string $file URL to the javascript file or array [string $url, bool $async]
 	 * @return string rendering result
 	 */
 	public static function renderScriptFile($file)
 	{
-		return '<script src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";
+		$async = '';
+		if(is_array($file) && $file[1]) {
+			$async = 'async ';
+			$file = $file[0];
+		}
+		return '<script ' . $async . 'src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";
 	}
 
 	/**
