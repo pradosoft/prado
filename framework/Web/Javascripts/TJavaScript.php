@@ -47,7 +47,7 @@ class TJavaScript
 	public static function renderScriptFile($file)
 	{
 		$async = '';
-		if(is_array($file) && $file[1]) {
+		if (is_array($file) && $file[1]) {
 			$async = 'async ';
 			$file = $file[0];
 		}
