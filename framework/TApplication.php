@@ -940,6 +940,7 @@ class TApplication extends \Prado\TComponent
 		$module->dyPreInit($configElement);
 		// keep the key to avoid reuse of the old module id
 		$this->_lazyModules[$id] = null;
+		$module->dyPreInit($configElement);
 
 		return [$module, $configElement];
 	}
@@ -1054,7 +1055,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		$this->startService($serviceID);
-		
+
 		$this->onInitComplete();
 	}
 
@@ -1119,6 +1120,7 @@ class TApplication extends \Prado\TComponent
 	 * request.  This call is important for CLI/Shell applications that do not have
 	 * a web service lifecycle stack.  This is the first and last event for finalization
 	 * of any loaded modules in CLI/Shell mode.
+	 * @since 4.2.0
 	 */
 	public function onInitComplete()
 	{
