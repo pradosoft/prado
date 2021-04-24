@@ -37,6 +37,11 @@ use Prado\Web\THttpCookie;
  * <module id="auth" class="Prado\Security\TAuthManager" UserManager="users" LoginPage="login" />
  * <module id="users" class="Prado\Security\TUserManager" />
  *
+ * When a user logs in, onLogin event is raised with the TUser as the parameter.
+ * If the user trying to login but fails the check, onLoginFailed is raised with the
+ * user name as parameter.  When the user logs out, onLogout is raised with the TUser
+ * as parameter.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Security
  * @since 3.0
@@ -415,6 +420,8 @@ class TAuthManager extends \Prado\TModule
 	 * Logs in a user with username and password.
 	 * The username and password will be used to validate if login is successful.
 	 * If yes, a user object will be created for the application.
+	 * On successful Login, onLogin is raised with the TUser as parameter.
+	 * When the login fails, onLoginFailed is raised with the username as parameter.
 	 * @param string $username username
 	 * @param string $password password
 	 * @param int $expire number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
@@ -435,19 +442,23 @@ class TAuthManager extends \Prado\TModule
 				$this->_userManager->saveUserToCookie($cookie);
 				$this->getResponse()->getCookies()->add($cookie);
 			}
+			$this->onLogin($user);
 			return true;
 		} else {
+			$this->onLoginFailed($username);
 			return false;
 		}
 	}
 
 	/**
-	 * Logs out a user.
-	 * User session will be destroyed after this method is called.
+	 * Logs out a user.  Raises onLogout with the TUser as parameter
+	 * before logging out. User session will be destroyed after this
+	 * method is called.
 	 * @throws TConfigurationException if session module is not loaded.
 	 */
 	public function logout()
 	{
+		$this->onLogout($this->getApplication()->getUser());
 		if (($session = $this->getSession()) === null) {
 			throw new TConfigurationException('authmanager_session_required');
 		}
@@ -457,5 +468,35 @@ class TAuthManager extends \Prado\TModule
 			$cookie = new THttpCookie($this->getUserKey(), '');
 			$this->getResponse()->getCookies()->add($cookie);
 		}
+	}
+	
+	/**
+	 * onLogin event is raised when a user logs in
+	 * @param TUser $user user being logged in
+	 * @since 4.2.0
+	 */
+	public function onLogin($user)
+	{
+		$this->raiseEvent('onLogin', $this, $user);
+	}
+	
+	/**
+	 * onLoginFailed event is raised when a user login fails
+	 * @param string $username username trying to log in
+	 * @since 4.2.0
+	 */
+	public function onLoginFailed($username)
+	{
+		$this->raiseEvent('onLoginFailed', $this, $username);
+	}
+	
+	/**
+	 * onLogout event is raised when a user logs out.
+	 * @param TUser $user user being logged out
+	 * @since 4.2.0
+	 */
+	public function onLogout($user)
+	{
+		$this->raiseEvent('onLogout', $this, $user);
 	}
 }

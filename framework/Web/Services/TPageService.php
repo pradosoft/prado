@@ -517,7 +517,7 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * Executes a page.
+	 * Executes a page.  Between setting the subproperties and running the page, onPreRunPage event is raised
 	 * @param TPage $page the page instance to be run
 	 * @param array $properties list of initial page properties
 	 */
@@ -526,7 +526,19 @@ class TPageService extends \Prado\TService
 		foreach ($properties as $name => $value) {
 			$page->setSubProperty($name, $value);
 		}
+		$this->onPreRunPage($page);
 		$page->run($this->getResponse()->createHtmlWriter());
+	}
+	
+	/**
+	 * This event is raised just before the page is run.  Any part of the system can  patch into the page
+	 * events with an onPreRunPage handler.
+	 * @param mixed $param what is passed as the parameter to the event
+	 * @since 4.2.0
+	 */
+	public function onPreRunPage($param)
+	{
+		$this->raiseEvent('onPreRunPage', $this, $param);
 	}
 
 	/**
