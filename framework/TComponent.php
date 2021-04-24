@@ -451,7 +451,7 @@ class TComponent
 		if (isset($_classfx[$className])) {
 			return $_classfx[$className];
 		}
-		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$fx = array_filter(get_class_methods($class), [$this, 'filter_prado_fx']);
 		$_classfx[$className] = $fx;
 		return $fx;
 	}
