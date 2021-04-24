@@ -47,8 +47,10 @@ class TJavaScript
 	public static function renderScriptFile($file)
 	{
 		$async = '';
-		if (is_array($file) && $file[1]) {
-			$async = 'async ';
+		if (is_array($file)) {
+			if($file[1]) {
+				$async = 'async ';
+			}
 			$file = $file[0];
 		}
 		return '<script ' . $async . 'src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";

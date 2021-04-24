@@ -279,8 +279,7 @@ class TApplication extends \Prado\TComponent
 	 * Constructor.
 	 * Sets application base path and initializes the application singleton.
 	 * Application base path refers to the root directory storing application
-	 * data and code not directly accessible by Web users.  This captures the
-	 * start time and initial memory usage.
+	 * data and code not directly accessible by Web users.
 	 * By default, the base path is assumed to be the <b>protected</b>
 	 * directory under the directory containing the current running script.
 	 * @param string $basePath application base path or configuration file path.
