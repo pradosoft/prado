@@ -26,7 +26,6 @@ class TReadOnlyDataSource extends TDataSourceControl
 
 	public function __construct($dataSource, $dataMember)
 	{
-		parent::__construct();
 		if (!is_array($dataSource) && !($dataSource instanceof IDataSource) && !($dataSource instanceof \Traversable)) {
 			throw new TInvalidDataTypeException('readonlydatasource_datasource_invalid');
 		}
