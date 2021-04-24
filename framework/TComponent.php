@@ -440,8 +440,8 @@ class TComponent
 	}
 	
 	/**
-	 *
-	 * @param mixed $class
+	 * This caches the 'fx' events for classes.
+	 * @param object $class
 	 */
 	protected function getClassFxEvents($class)
 	{
