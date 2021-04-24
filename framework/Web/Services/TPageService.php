@@ -534,6 +534,7 @@ class TPageService extends \Prado\TService
 	 * This event is raised just before the page is run.  Any part of the system can  patch into the page
 	 * events with an onPreRunPage handler.
 	 * @param mixed $param what is passed as the parameter to the event
+	 * @since 4.2.0
 	 */
 	public function onPreRunPage($param)
 	{
