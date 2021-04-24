@@ -937,7 +937,6 @@ class TApplication extends \Prado\TComponent
 			$module->setSubProperty($name, $value);
 		}
 		$this->setModule($id, $module);
-		$module->dyPreInit($configElement);
 		// keep the key to avoid reuse of the old module id
 		$this->_lazyModules[$id] = null;
 		$module->dyPreInit($configElement);
