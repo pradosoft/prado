@@ -48,7 +48,7 @@ class TJavaScript
 	{
 		$async = '';
 		if (is_array($file)) {
-			if($file[1]) {
+			if ($file[1]) {
 				$async = 'async ';
 			}
 			$file = $file[0];
