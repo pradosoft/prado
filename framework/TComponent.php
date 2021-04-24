@@ -438,7 +438,22 @@ class TComponent
 		}
 		return $classes;
 	}
-
+	
+	/**
+	 *
+	 * @param mixed $class
+	 */
+	protected function getClassFxEvents($class)
+	{
+		static $_classfx = [];
+		$className = get_class($class);
+		if (isset($_classfx[$className])) {
+			return $_classfx[$className];
+		}
+		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$_classfx[$className] = $fx;
+		return $fx;
+	}
 
 	/**
 	 * This adds an object's fx event handlers into the global broadcaster to listen into any
@@ -460,7 +475,7 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$fx = $this->getClassFxEvents($this);
 
 		foreach ($fx as $func) {
 			$this->getEventHandlers($func)->add([$this, $func]);
@@ -497,7 +512,7 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$fx = $this->getClassFxEvents($this);
 
 		foreach ($fx as $func) {
 			$this->detachEventHandler($func, [$this, $func]);
