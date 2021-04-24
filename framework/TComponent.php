@@ -416,7 +416,7 @@ class TComponent
 	 */
 	private function filter_prado_fx($name)
 	{
-		return strncasecmp($name, 'fx', 2) === 0;
+		return isset($name[1]) && ($name[0] == 'f' || $name[0] == 'F') && ($name[1] == 'x' || $name[1] == 'X');
 	}
 
 
