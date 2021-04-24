@@ -31,6 +31,11 @@ use Prado\TApplicationMode;
  * If a skin does not have SkinID, it is the default skin that will be applied
  * to controls that do not specify particular SkinID.
  *
+ * For globalization, Themes remove all css files that end in ".*rtl.css" or
+ * ".*rtl.(media).css".  Then if there is Application Globalization, and
+ * globalization current culture is Right-to-left then the rtl css files are
+ * re-added at the end of the css files so rtl css has priority.
+ *
  * Whenever possible, TTheme will try to make use of available cache to save
  * the parsing time.
  *
