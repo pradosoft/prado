@@ -16,6 +16,9 @@ namespace Prado;
  * TModule implements the basic methods required by IModule and may be
  * used as the basic class for application modules.
  *
+ * void dyPreInit($config) is called after loading the module but before 
+ * init.  
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado
  * @since 3.0
