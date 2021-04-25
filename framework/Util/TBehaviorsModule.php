@@ -69,12 +69,11 @@ class TBehaviorsModule extends \Prado\TModule
 	public function init($config)
 	{
 		$this->loadBehaviors($config);
+		$this->loadBehaviors($this->getAdditionalBehaviors());
 		
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachTPageServiceHandler']);
 		}
-		
-		$this->loadBehaviors($this->getAdditionalBehaviors());
 	}
 	
 	/**
@@ -87,7 +86,7 @@ class TBehaviorsModule extends \Prado\TModule
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->isa('Prado\Web\Services\TPageService')) {
+		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors']);
 		}
 	}
