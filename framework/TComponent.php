@@ -586,17 +586,20 @@ class TComponent
 
 		if ($this->_m !== null && $this->_behaviorsenabled) {
 			if (strncasecmp($method, 'dy', 2) === 0) {
-				$callchain = new TCallChain($method);
+				$callchain = null;
 				foreach ($this->_m->toArray() as $behavior) {
 					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && (method_exists($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
 						$behavior_args = $args;
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($behavior_args, $this);
 						}
+						if (!$callchain) {
+							$callchain = new TCallChain($method);
+						}
 						$callchain->addCall([$behavior, $method], $behavior_args);
 					}
 				}
-				if ($callchain->getCount() > 0) {
+				if ($callchain) {
 					return call_user_func_array([$callchain, 'call'], $args);
 				}
 			} else {
