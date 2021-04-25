@@ -137,7 +137,7 @@ class TCallChain extends TList implements IDynamicMethods
 	 * public function dyExampleMethod($param1, $param2, $param3, $callchain)
 	 * $callchain->dyExampleMethod($param1, $param2, $param3)
 	 * }
-	 * {
+	 * }
 	 * </code>
 	 * to call the next event in the chain.
 	 * @param string $method method name of the unspecified object method
