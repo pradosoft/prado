@@ -527,3 +527,6 @@ accordion_view_inexistent				= TAccordion cannot find the specified view.
 juidatepicker_settextmode_unsupported 	= TextMode of TJuiDatePicker cannot be changed.
 
 control_adapter_not_active				= BaseActiveControl property called on a non-active Control.
+
+gravatar_bad_rating						= TGravatar Rating is not g, pg, r, x, or nothing, but is set to '{0}'
+gravatar_bad_default					= TGravatar Default property '{0}' is not supported

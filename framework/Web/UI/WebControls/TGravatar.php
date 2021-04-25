@@ -11,6 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;
+use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TGravatar class
@@ -82,11 +83,12 @@ class TGravatar extends TImage
 	 */
 	public function setDefault($default)
 	{
+		$default = TPropertyValue::ensureString($default);
 		if ($valid = in_array(strtolower($default), ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash', 'blank', '404', ''])) {
 			$default = strtolower($default);
 		}
 		if (!$valid && !preg_match('/^https?:\/\//i', $default)) {
-			throw new TException('');
+			throw new TInvalidDataValueException('gravatar_bad_default', $default);
 		}
 		$this->setViewState('default', $default);
 	}
@@ -120,11 +122,11 @@ class TGravatar extends TImage
 	 */
 	public function setRating($rating)
 	{
-		$rating = strtolower($rating);
+		$rating = strtolower(TPropertyValue::ensureString($rating));
 		if (!in_array($rating, ['g', 'pg', 'r', 'x', ''])) {
-			throw new TException('');
+			throw new TInvalidDataValueException('gravatar_bad_rating', $rating);
 		}
-		$this->setViewState('rating', TPropertyValue::ensureString($rating));
+		$this->setViewState('rating', $rating);
 	}
 	
 	/**
