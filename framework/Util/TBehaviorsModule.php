@@ -64,7 +64,7 @@ class TBehaviorsModule extends \Prado\TModule
 	
 	/**
 	 * Initializes the module by loading behaviors.
-	 * @param mixed $config content enclosed within the module tag
+	 * @param $config mixed content enclosed within the module tag
 	 */
 	public function init($config)
 	{
@@ -77,11 +77,11 @@ class TBehaviorsModule extends \Prado\TModule
 	}
 	
 	/**
-	 * Handler that adds handler {@link attachTPageBehaviors} to
+	 * TApplication::onInitComplete Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, {@link attachTPageBehaviors}
 	 * adds the page behaviors.
-	 * @param $sender object the object that raised the event
-	 * @param $param object parameter of the event
+	 * @param object $sender the object that raised the event
+	 * @param object $param parameter of the event
 	 */
 	public function attachTPageServiceHandler($sender, $param)
 	{
@@ -93,8 +93,8 @@ class TBehaviorsModule extends \Prado\TModule
 	
 	/**
 	 * This method attaches page behaviors to the TPage in the TPageService::OnPreInitPage event.
-	 * @param $sender object the object that raised the event
-	 * @param $page TPage the page being initialized
+	 * @param object $sender the object that raised the event
+	 * @param TPage $page the page being initialized
 	 */
 	public function attachTPageBehaviors($sender, $page)
 	{
