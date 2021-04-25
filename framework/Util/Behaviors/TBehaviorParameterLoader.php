@@ -81,12 +81,12 @@ class TBehaviorParameterLoader extends \Prado\TComponent
 			} else {
 				$owner = \Prado::getApplication()->getSubProperty($this->_attachto);
 			}
-			$priority = $properties['priority'] ?? null;
-			unset($properties['priority']);
+			$priority = $this->_properties['priority'] ?? null;
+			unset($this->_properties['priority']);
 			if (!$owner) {
-				throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
+				throw new TConfigurationException('behaviormodule_behaviorowner_required', $this->_attachto);
 			}
-			$owner->attachBehavior($name, $properties, $priority);
+			$owner->attachBehavior($this->_behaviorName, $this->_properties, $this->_priority);
 		}
 	}
 	
