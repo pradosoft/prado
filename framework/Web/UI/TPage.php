@@ -190,6 +190,17 @@ class TPage extends TTemplateControl
 	}
 
 	/**
+	 * TPage does autoGlobalListen and unlisten.  Developers
+	 * may put fx events in the page that need to be picked up.
+	 *
+	 * @return bool returns true
+	 */
+	public function getAutoGlobalListen()
+	{
+		return true;
+	}
+
+	/**
 	 * Runs through the page lifecycles.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the HTML writer
 	 */

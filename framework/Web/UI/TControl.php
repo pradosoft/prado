@@ -175,6 +175,18 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	private $_rf = [];
 
 	/**
+	 * TControl need not auto listen to global events because class
+	 * behaviors are not typically added in the middle of running a page
+	 * and the overhead of so many TControls listening and unlistening.
+	 *
+	 * @return bool returns false
+	 */
+	public function getAutoGlobalListen()
+	{
+		return false;
+	}
+
+	/**
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
 	 * a control via its ID using the following syntax,

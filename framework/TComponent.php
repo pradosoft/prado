@@ -366,7 +366,8 @@ class TComponent
 			$this->listen();
 		}
 
-		$classes = array_reverse($this->getClassHierarchy(true));
+		$classes = $this->getClassHierarchy(true);
+		array_pop($classes);
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
 				$this->attachBehaviors(self::$_um[$class]);
@@ -421,24 +422,47 @@ class TComponent
 
 
 	/**
-	 * This returns an array of the class name and the names of all its parents.  The base object first,
-	 * {@link TComponent}, and the deepest subclass is last.
+	 * This returns an array of the class name and the names of all its parents.  The base object last,
+	 * {@link TComponent}, and the deepest subclass is first.
 	 * @param bool $lowercase optional should the names be all lowercase true/false
-	 * @return array array of strings being the class hierarchy of $this.
+	 * @return string[] array of strings being the class hierarchy of $this.
 	 */
 	public function getClassHierarchy($lowercase = false)
 	{
+		static $_classhierarchy = [];
 		$class = get_class($this);
+		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
+			return $_classhierarchy[$class][$lowercase ? 1 : 0];
+		}
 		$classes = [$class];
 		while ($class = get_parent_class($class)) {
-			array_unshift($classes, $class);
+			array_push($classes, $class);
 		}
 		if ($lowercase) {
-			return array_map('strtolower', $classes);
+			$classes = array_map('strtolower', $classes);
 		}
+		$_classhierarchy[$class] = $_classhierarchy[$class] ?? [];
+		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
+		
 		return $classes;
 	}
-
+	
+	/**
+	 * This caches the 'fx' events for classes.
+	 * @param object $class
+	 * @return string[] fx events from a specific class
+	 */
+	protected function getClassFxEvents($class)
+	{
+		static $_classfx = [];
+		$className = get_class($class);
+		if (isset($_classfx[$className])) {
+			return $_classfx[$className];
+		}
+		$fx = array_filter(get_class_methods($class), [$this, 'filter_prado_fx']);
+		$_classfx[$className] = $fx;
+		return $fx;
+	}
 
 	/**
 	 * This adds an object's fx event handlers into the global broadcaster to listen into any
@@ -460,7 +484,7 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$fx = $this->getClassFxEvents($this);
 
 		foreach ($fx as $func) {
 			$this->getEventHandlers($func)->add([$this, $func]);
@@ -497,7 +521,7 @@ class TComponent
 			return;
 		}
 
-		$fx = array_filter(get_class_methods($this), [$this, 'filter_prado_fx']);
+		$fx = $this->getClassFxEvents($this);
 
 		foreach ($fx as $func) {
 			$this->detachEventHandler($func, [$this, $func]);
@@ -570,17 +594,20 @@ class TComponent
 
 		if ($this->_m !== null && $this->_behaviorsenabled) {
 			if (strncasecmp($method, 'dy', 2) === 0) {
-				$callchain = new TCallChain($method);
+				$callchain = null;
 				foreach ($this->_m->toArray() as $behavior) {
 					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && (method_exists($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
 						$behavior_args = $args;
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($behavior_args, $this);
 						}
+						if (!$callchain) {
+							$callchain = new TCallChain($method);
+						}
 						$callchain->addCall([$behavior, $method], $behavior_args);
 					}
 				}
-				if ($callchain->getCount() > 0) {
+				if ($callchain) {
 					return call_user_func_array([$callchain, 'call'], $args);
 				}
 			} else {
