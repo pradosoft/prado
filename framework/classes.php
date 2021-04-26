@@ -566,6 +566,7 @@ return [
 'TOutputCacheCheckDependencyEventParameter' => 'Prado\Web\UI\WebControls\TOutputCacheCheckDependencyEventParameter',
 'TOutputCacheTextWriterMulti' => 'Prado\Web\UI\WebControls\TOutputCacheTextWriterMulti',
 'TPager' => 'Prado\Web\UI\WebControls\TPager',
+'TPageLoadTime' => 'Prado\Web\UI\WebControls\TPageLoadTime',
 'TPagerButtonType' => 'Prado\Web\UI\WebControls\TPagerButtonType',
 'TPagerMode' => 'Prado\Web\UI\WebControls\TPagerMode',
 'TPagerPageChangedEventParameter' => 'Prado\Web\UI\WebControls\TPagerPageChangedEventParameter',
