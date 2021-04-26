@@ -951,7 +951,12 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				continue;
 			}
 			foreach ($list as $param) {
-				if (method_exists($param->getBehavior(), $method)) {
+				$behavior = $param->getBehavior();
+				if (is_array($behavior)) {
+					if (method_exists($behavior['class'], $method)) {
+						return true;
+					}
+				} elseif (method_exists($behavior, $method)) {
 					return true;
 				}
 			}
