@@ -979,6 +979,7 @@ class TApplication extends \Prado\TComponent
 				foreach ($parameter[1] as $name => $value) {
 					$component->setSubProperty($name, $value);
 				}
+				$component->dyInit();
 				$this->_parameters->add($id, $component);
 			} else {
 				$this->_parameters->add($id, $parameter);
