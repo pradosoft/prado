@@ -423,6 +423,7 @@ return [
 'TControlAdapter' => 'Prado\Web\UI\TControlAdapter',
 'TControlCollection' => 'Prado\Web\UI\TControlCollection',
 'TEmptyControlCollection' => 'Prado\Web\UI\TEmptyControlCollection',
+'TEventContent' => 'Prado\Web\UI\TEventContent',
 'TForm' => 'Prado\Web\UI\TForm',
 'THtmlWriter' => 'Prado\Web\UI\THtmlWriter',
 'TPage' => 'Prado\Web\UI\TPage',
