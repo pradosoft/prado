@@ -63,7 +63,7 @@ class TException extends \Exception
 	
 	/**
 	 * Adds to the various files to read when rendering an error
-	 * @param $file
+	 * @param string $file the extra message file
 	 */
 	public static function addMessageFile($file)
 	{
