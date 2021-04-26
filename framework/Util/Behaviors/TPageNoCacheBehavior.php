@@ -10,7 +10,6 @@
 
 namespace Prado\Util\Behaviors;
 
-use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TMetaTag;
 
 /**
