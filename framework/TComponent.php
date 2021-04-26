@@ -367,6 +367,7 @@ class TComponent
 		}
 
 		$classes = array_reverse($this->getClassHierarchy(true));
+		array_pop($classes);
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
 				$this->attachBehaviors(self::$_um[$class]);
