@@ -366,7 +366,7 @@ class TComponent
 			$this->listen();
 		}
 
-		$classes = array_reverse($this->getClassHierarchy(true));
+		$classes = $this->getClassHierarchy(true);
 		array_pop($classes);
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
@@ -422,10 +422,10 @@ class TComponent
 
 
 	/**
-	 * This returns an array of the class name and the names of all its parents.  The base object first,
-	 * {@link TComponent}, and the deepest subclass is last.
+	 * This returns an array of the class name and the names of all its parents.  The base object last,
+	 * {@link TComponent}, and the deepest subclass is first.
 	 * @param bool $lowercase optional should the names be all lowercase true/false
-	 * @return array array of strings being the class hierarchy of $this.
+	 * @return sting[] array of strings being the class hierarchy of $this.
 	 */
 	public function getClassHierarchy($lowercase = false)
 	{
@@ -436,7 +436,7 @@ class TComponent
 		}
 		$classes = [$class];
 		while ($class = get_parent_class($class)) {
-			array_unshift($classes, $class);
+			array_push($classes, $class);
 		}
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);

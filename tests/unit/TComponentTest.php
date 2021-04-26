@@ -799,9 +799,9 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	public function testGetClassHierarchy()
 	{
 		$component = new DynamicCatchingComponent;
-		$this->assertEquals(['Prado\TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'], $component->getClassHierarchy());
-		$this->assertEquals(['Prado\TComponent', 'NewComponent', 'NewComponentNoListen', 'DynamicCatchingComponent'], $component->getClassHierarchy(false));
-		$this->assertEquals(['prado\tcomponent', 'newcomponent', 'newcomponentnolisten', 'dynamiccatchingcomponent'], $component->getClassHierarchy(true));
+		$this->assertEquals(['DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy());
+		$this->assertEquals(['DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy(false));
+		$this->assertEquals(['dynamiccatchingcomponent', 'newcomponentnolisten', 'newcomponent', 'prado\tcomponent'], $component->getClassHierarchy(true));
 	}
 
 
