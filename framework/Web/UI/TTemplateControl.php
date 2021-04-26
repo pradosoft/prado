@@ -215,7 +215,11 @@ class TTemplateControl extends TCompositeControl
 			$loc = $controls->remove($placeholder);
 			$controls->insertAt($loc, $content);
 		} else {
-			throw new TConfigurationException('templatecontrol_placeholder_inexistent', $id);
+			if ($this->_masterClass !== '') {
+				$this->_contents[$id] = $content;
+			} else {
+				throw new TConfigurationException('templatecontrol_placeholder_inexistent', $id);
+			}
 		}
 	}
 
