@@ -425,7 +425,7 @@ class TComponent
 	 * This returns an array of the class name and the names of all its parents.  The base object last,
 	 * {@link TComponent}, and the deepest subclass is first.
 	 * @param bool $lowercase optional should the names be all lowercase true/false
-	 * @return sting[] array of strings being the class hierarchy of $this.
+	 * @return string[] array of strings being the class hierarchy of $this.
 	 */
 	public function getClassHierarchy($lowercase = false)
 	{
@@ -441,7 +441,7 @@ class TComponent
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
 		}
-		$_classhierarchy[$class] = [];
+		$_classhierarchy[$class] = $_classhierarchy[$class] ?? [];
 		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
 		
 		return $classes;
