@@ -24,11 +24,11 @@ namespace Prado\Web\UI\WebControls;
 class TPageLoadTime extends TLabel
 {
 	/**
-   * writes the difference in time that the request started to the moment of this method call.
-   */
+	 * writes the difference in time that the request started to the moment of this method call.
+	 * @param mixed $writer
+	 */
 	public function renderContents($writer)
-	{	
-		$writer->write((round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 100000) / 100000).'s');
+	{
+		$writer->write((round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 100000) / 100000) . 's');
 	}
-
 }
