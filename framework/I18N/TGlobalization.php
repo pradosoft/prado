@@ -63,6 +63,11 @@ class TGlobalization extends \Prado\TModule
 	 * @var bool whether we should translate the default culture
 	 */
 	private $_translateDefaultCulture = true;
+	
+	/**
+	 * @var bool whether the current culture is Right to Left.
+	 */
+	private $_cultureRTL;
 
 	/**
 	 * Initialize the Culture and Charset for this application.
@@ -155,7 +160,10 @@ class TGlobalization extends \Prado\TModule
 	 */
 	public function setCulture($culture)
 	{
-		$this->_culture = str_replace('-', '_', $culture);
+		if (($culture = str_replace('-', '_', $culture)) != $this->_culture) {
+			$this->_culture = $culture;
+			$this->_cultureRTL = null;
+		}
 	}
 
 	/**
@@ -301,5 +309,42 @@ class TGlobalization extends \Prado\TModule
 		}
 		$files[] = $file;
 		return $files;
+	}
+	
+	/**
+	 * This returns whether or not the current culture or the specified
+	 * culture is right to left orientation.  Default $culture is null, which
+	 * equal to using $this->Culture as the parameter.
+	 * @param null|string $culture, default null which makes this grab the current object culture
+	 * @return bool whether or not the specifeid or current culture is right to left
+	 * @since 4.2.0
+	 */
+	public function getIsCultureRTL($culture = null)
+	{
+		$currentCulture = $this->getCulture();
+		
+		if (($culture === null || $culture == $currentCulture) && $this->_cultureRTL !== null) {
+			return $this->_cultureRTL;
+		}
+		if ($culture === null) {
+			$culture = $currentCulture;
+		}
+		$ci = new \Prado\I18N\core\CultureInfo($culture);
+		$textDirection = $ci->findInfo('layout/characters');
+		$isRTL = ($textDirection == 'right-to-left');
+		if ($culture == $currentCulture) {
+			$this->_cultureRTL = $isRTL;
+		}
+		return $isRTL;
+	}
+	
+	/**
+	 * This hard sets the IsCultureRTL property to the value.
+	 * @param bool $rtl whether or not the culture is right to left
+	 * @since 4.2.0
+	 */
+	public function setIsCultureRTL($rtl)
+	{
+		$this->_cultureRTL = TPropertyValue::ensureBoolean($rtl);
 	}
 }

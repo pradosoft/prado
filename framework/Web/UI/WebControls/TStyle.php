@@ -175,6 +175,28 @@ class TStyle extends \Prado\TComponent
 	}
 
 	/**
+	 * @return string the border radius of the panel
+	 * @since 4.2.0
+	 */
+	public function getBorderRadius()
+	{
+		return $this->_fields['border-radius'] ?? '';
+	}
+
+	/**
+	 * @param string $value the border radius of the panel
+	 * @since 4.2.0
+	 */
+	public function setBorderRadius($value)
+	{
+		if (trim($value) === '') {
+			unset($this->_fields['border-radius']);
+		} else {
+			$this->_fields['border-radius'] = $value;
+		}
+	}
+
+	/**
 	 * @return string the CSS class of the control
 	 */
 	public function getCssClass()

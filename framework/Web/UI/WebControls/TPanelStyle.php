@@ -42,6 +42,10 @@ class TPanelStyle extends TStyle
 	 * @var bool whether the content wraps within the panel
 	 */
 	protected $_wrap;
+	/**
+	 * @var bool whether the content wraps within the panel
+	 */
+	protected $_boxshadow;
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
@@ -67,6 +71,9 @@ class TPanelStyle extends TStyle
 		}
 		if ($this->_wrap === null) {
 			$exprops[] = "\0*\0_wrap";
+		}
+		if ($this->_boxshadow === null) {
+			$exprops[] = "\0*\0_boxshadow";
 		}
 	}
 
@@ -102,6 +109,9 @@ class TPanelStyle extends TStyle
 			} else {
 				$this->setStyleField('direction', 'rtl');
 			}
+		}
+		if ($boxShadow = $this->getBoxShadow()) {
+			$this->setStyleField('box-shadow', $boxShadow);
 		}
 
 		parent::addAttributesToRender($writer);
@@ -189,6 +199,24 @@ class TPanelStyle extends TStyle
 	{
 		$this->_scrollBars = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TScrollBars');
 	}
+	
+	/**
+	 * @return string the box shadow of the panel
+	 * @since 4.2.0
+	 */
+	public function getBoxShadow()
+	{
+		return $this->_boxshadow === null ? '' : $this->_boxshadow;
+	}
+
+	/**
+	 * @param string $value the box shadow of the panel
+	 * @since 4.2.0
+	 */
+	public function setBoxShadow($value)
+	{
+		$this->_boxshadow = $value;
+	}
 
 	/**
 	 * Sets the style attributes to default values.
@@ -203,6 +231,7 @@ class TPanelStyle extends TStyle
 		$this->_horizontalAlign = null;
 		$this->_scrollBars = null;
 		$this->_wrap = null;
+		$this->_boxshadow = null;
 	}
 
 	/**
@@ -229,6 +258,9 @@ class TPanelStyle extends TStyle
 			}
 			if ($style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
+			if ($style->_boxshadow !== null) {
+				$this->_boxshadow = $style->_boxshadow;
 			}
 		}
 	}
@@ -257,6 +289,9 @@ class TPanelStyle extends TStyle
 			}
 			if ($this->_wrap === null && $style->_wrap !== null) {
 				$this->_wrap = $style->_wrap;
+			}
+			if ($this->_boxshadow === null && $style->_boxshadow !== null) {
+				$this->_boxshadow = $style->_boxshadow;
 			}
 		}
 	}

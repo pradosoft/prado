@@ -31,6 +31,11 @@ use Prado\TApplicationMode;
  * If a skin does not have SkinID, it is the default skin that will be applied
  * to controls that do not specify particular SkinID.
  *
+ * For globalization, Themes remove all css files that end in ".*rtl.css" or
+ * ".*rtl.(media).css".  Then if there is Application Globalization, and
+ * globalization current culture is Right-to-left then the rtl css files are
+ * re-added at the end of the css files so rtl css has priority.
+ *
  * Whenever possible, TTheme will try to make use of available cache to save
  * the parsing time.
  *
@@ -164,6 +169,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			closedir($dir);
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
+			$this->postProcessCssRTL();
 			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
 			}
@@ -330,5 +336,30 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	protected function setJavaScriptFiles($value)
 	{
 		$this->_jsFiles = $value;
+	}
+	
+	/**
+	 * This post-processes the theme for RTL.  It loops through all the
+	 * css files, removes all the '.*rtl.css' and '.*rtl.(media).css' files,
+	 * then if there is globalization and globalization is RTL then re-adds
+	 * the rtl css at the end.
+	 * @since 4.2.0
+	 */
+	protected function postProcessCssRTL()
+	{
+		$rtlCss = [];
+		foreach ($this->_cssFiles as $key => $url) {
+			$segs = explode('.', basename($url));
+			if ((substr_compare(strtolower($url), 'rtl.css', -7) === 0) ||
+				(isset($segs[2]) && (substr_compare(strtolower($segs[count($segs) - 3]), 'rtl', -3) === 0))) {
+				$rtlCss[] = $url;
+				unset($this->_cssFiles[$key]);
+			}
+		}
+		if ($globalization = $this->getApplication()->getGlobalization()) {
+			if ($globalization->getIsCultureRTL()) {
+				$this->_cssFiles = array_merge($this->_cssFiles, $rtlCss);
+			}
+		}
 	}
 }
