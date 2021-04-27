@@ -44,6 +44,10 @@ use Prado\TApplicationMode;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method void dyThemeConstruct(string $themePath, string $themeUrl)
+ * @method bool dyProcessFile(bool $returnValue, string $file))
+ * @method void dyThemeProcess()
+ * @method string dyCssMediaType(string $returnType, string $url)
  */
 class TTheme extends \Prado\TApplicationComponent implements ITheme
 {
@@ -92,6 +96,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 		$this->_themePath = realpath($themePath);
 		$this->_name = basename($themePath);
 		parent::__construct();
+		$this->dyThemeConstruct($themePath, $themeUrl);
 		$cacheValid = false;
 		// TODO: the following needs to be cleaned up (Qiang)
 		if (($cache = $this->getApplication()->getCache()) !== null) {
@@ -104,7 +109,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 					}
 					$cacheValid = true;
 					while (($file = readdir($dir)) !== false) {
-						if ($file === '.' || $file === '..') {
+						if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
 							continue;
 						} elseif (basename($file, '.css') !== $file) {
 							$this->_cssFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
@@ -135,7 +140,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				throw new TIOException('theme_path_inexistent', $themePath);
 			}
 			while (($file = readdir($dir)) !== false) {
-				if ($file === '.' || $file === '..') {
+				if ($file === '.' || $file === '..' || $this->dyProcessFile(false, $file)) {
 					continue;
 				} elseif (basename($file, '.css') !== $file) {
 					$this->_cssFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
@@ -170,6 +175,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 			sort($this->_cssFiles);
 			sort($this->_jsFiles);
 			$this->postProcessCssRTL();
+			$this->dyThemeProcess();
 			if ($cache !== null) {
 				$cache->set(self::THEME_CACHE_PREFIX . $themePath, [$this->_skins, $this->_cssFiles, $this->_jsFiles, time()]);
 			}
