@@ -361,8 +361,9 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
 	public function performAction($args)
 	{
 		$app = null;
-		if (count($args) == 1)
+		if (count($args) == 1) {
 			$args[1] = '.';
+		}
 		if (false === ($xml = $this->getAppConfigFile($args[1]))) {
 			echo "** Application '$args[1]' was not found. \n";
 			return false;
