@@ -415,7 +415,7 @@ class TComponent
 	 * that start with 'fx' are filtered in.
 	 * @param mixed $name
 	 */
-	private function filter_prado_fx($name)
+	protected function filter_prado_fx($name)
 	{
 		return strncasecmp($name, 'fx', 2) === 0;
 	}
