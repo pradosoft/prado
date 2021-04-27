@@ -143,6 +143,11 @@ parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter
 parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
 parameterizebehavior_owner_has_no_set_property		= TParameterizeBehavior must have a settable Property Attribute and {0} is not settable.
 parameterizebehavior_cannot_set_name_after_initialize = TParameterizeBehavior cannot set the RouteBehaviorName after being attached.
+behaviorParameterLoader_no_behavior_name = TBehaviorParameterLoader must have a Behavior Name.
+behaviorParameterLoader_no_behavior_class = TBehaviorParameterLoader must have a Behavior Class.
+behaviorParameterLoader_attachto_class_required = TBehaviorParameterLoader must have an AttachTo or AttachToClass Property defined.
+behaviorParameterLoader_attachto_and_class_only_one = TBehaviorParameterLoader must only have one AttachTo or AttachToClass Property.
+behaviormodule_behaviorowner_required	= TBehaviorParameterLoader must have an Owner and cannot find {0}.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
