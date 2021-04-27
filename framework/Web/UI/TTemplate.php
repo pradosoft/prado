@@ -98,6 +98,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	private $_content;
 	/**
+	 * @var bool tells whether the class and attributes should be validated before moving on	 */
+	private $_attributevalidation = true;
+	/**
 	 * @var bool whether this template is a source template
 	 */
 	private $_sourceTemplate = true;
@@ -181,6 +184,24 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	public function &getItems()
 	{
 		return $this->_tpl;
+	}
+	
+	/**
+	 * @return bool whether or not validation of the template is active
+	 * @since 4.2.0
+	 */
+	public function getAttributeValidation()
+	{
+		return $this->_attributevalidation;
+	}
+
+	/**
+	 * @param bool $value whether or not validation of the template is active
+	 * @since 4.2.0
+	 */
+	public function setAttributeValidation($value)
+	{
+		$this->_attributevalidation = $value;
 	}
 
 	/**
@@ -794,6 +815,9 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 			$className = substr($type, $pos + 1);
 		} else {
 			$className = $type;
+		}
+		if (!$this->_attributevalidation) {
+			return $className;
 		}
 		$class = new \ReflectionClass($className);
 		if (is_subclass_of($className, '\Prado\Web\UI\TControl') || $className === '\Prado\Web\UI\TControl') {
