@@ -176,6 +176,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * @return string the border radius of the panel
+	 * @since 4.2.0
 	 */
 	public function getBorderRadius()
 	{
@@ -184,6 +185,7 @@ class TStyle extends \Prado\TComponent
 
 	/**
 	 * @param string $value the border radius of the panel
+	 * @since 4.2.0
 	 */
 	public function setBorderRadius($value)
 	{

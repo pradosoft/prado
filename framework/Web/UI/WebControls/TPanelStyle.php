@@ -204,6 +204,7 @@ class TPanelStyle extends TStyle
 	
 	/**
 	 * @return string the box shadow of the panel
+	 * @since 4.2.0
 	 */
 	public function getBoxShadow()
 	{
@@ -212,6 +213,7 @@ class TPanelStyle extends TStyle
 
 	/**
 	 * @param string $value the box shadow of the panel
+	 * @since 4.2.0
 	 */
 	public function setBoxShadow($value)
 	{

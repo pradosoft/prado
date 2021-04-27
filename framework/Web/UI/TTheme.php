@@ -343,6 +343,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 * css files, removes all the '.*rtl.css' and '.*rtl.(media).css' files,
 	 * then if there is globalization and globalization is RTL then re-adds
 	 * the rtl css at the end.
+	 * @since 4.2.0
 	 */
 	protected function postProcessCssRTL()
 	{
