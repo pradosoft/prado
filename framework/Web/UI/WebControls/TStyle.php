@@ -190,12 +190,8 @@ class TStyle extends \Prado\TComponent
 	public function setBorderRadius($value)
 	{
 		if (trim($value) === '') {
-			unset($this->_fields['-moz-border-radius']);
-			unset($this->_fields['-webkit-border-radius']);
 			unset($this->_fields['border-radius']);
 		} else {
-			$this->_fields['-moz-border-radius'] = $value;
-			$this->_fields['-webkit-border-radius'] = $value;
 			$this->_fields['border-radius'] = $value;
 		}
 	}
