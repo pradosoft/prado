@@ -23,6 +23,7 @@ namespace Prado;
  * @package Prado
  * @since 3.0
  * @method void dyPreInit(mixed $config)
+ * @method void dyInit(mixed $config)
  */
 abstract class TModule extends \Prado\TApplicationComponent implements IModule
 {
@@ -34,10 +35,12 @@ abstract class TModule extends \Prado\TApplicationComponent implements IModule
 	/**
 	 * Initializes the module.
 	 * This method is required by IModule and is invoked by application.
+	 * This raises dyInit() for behaviors.
 	 * @param \Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
+		$this->dyInit($config);
 	}
 
 	/**
