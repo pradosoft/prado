@@ -111,8 +111,6 @@ class TPanelStyle extends TStyle
 			}
 		}
 		if ($boxShadow = $this->getBoxShadow()) {
-			$this->setStyleField('-moz-box-shadow', $boxShadow);
-			$this->setStyleField('-webkit-box-shadow', $boxShadow);
 			$this->setStyleField('box-shadow', $boxShadow);
 		}
 

@@ -97,9 +97,9 @@ class TException extends \Exception
 						[$code, $message] = array_merge(explode('=', $entry, 2), ['']);
 						self::$_messageCache[$msgFile][trim($code)] = trim($message);
 					}
-					$value = self::$_messageCache[$msgFile][$key] ?? $value;
 				}
 			}
+			$value = self::$_messageCache[$msgFile][$key] ?? $value;
 		}
 		return $value;
 	}
