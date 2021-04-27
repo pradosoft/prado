@@ -62,7 +62,7 @@ class TGravatar extends TImage
 			if ($params != '') {
 				$params .= '&';
 			}
-			$params .= 'd=' . urlencode($default);
+			$params .= 'd=' . rawurlencode($default);
 		}
 		if ($params != '') {
 			$params = '?' . $params;
@@ -106,7 +106,11 @@ class TGravatar extends TImage
 	 */
 	public function setSize($size)
 	{
-		$this->setViewState('size', TPropertyValue::ensureInteger($size));
+		$size = TPropertyValue::ensureInteger($size);
+		if ($size > 512 || $size <= 0) {
+			throw new TInvalidDataValueException('gravatar_bad_size', $size);
+		}
+		$this->setViewState('size', $size);
 	}
 	
 	/**
