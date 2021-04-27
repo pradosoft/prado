@@ -36,6 +36,7 @@ restore_exception_handler();
 
 //register action classes
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineApplicationCommand');
+PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinFlushCacheCommand');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLinePhpShell');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGen');
 PradoCommandLineInterpreter::getInstance()->addActionClass('PradoCommandLineActiveRecordGenAll');
@@ -375,6 +376,48 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
 			PradoCommandLineInterpreter::getInstance()->addActionClass($actions);
 		}
 		PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
+		return true;
+	}
+}
+
+
+/**
+ * This command clears all application modules implementing ICache.
+ *
+ * @author Brad Anderson <belisoful[at]icloud[dot]com>
+ * @since 4.2.0
+ */
+class PradoCommandLinFlushCacheCommand extends PradoCommandLineAction
+{
+	protected $action = 'flushcache';
+	protected $parameters = [];
+	protected $optional = ['directory'];
+	protected $description = 'Flushes all application TCache modules. Use case: upgrading a performance mode website by clearing out the old cache.';
+
+	/**
+	 * @param array $args parameters
+	 * @return bool
+	 */
+	public function performAction($args)
+	{
+		$app = null;
+		if (count($args) > 1) {
+			if (false === ($xml = $this->getAppConfigFile($args[1]))) {
+				return false;
+			}
+			$app = $this->initializePradoApplication($args[1]);
+		}
+		$cachesFlushed = [];
+		foreach ($app->getModules() as $module) {
+			if ($module->isa('Prado\Caching\ICache')) {
+				$module->flush();
+				$cachesFlushed[] = get_class($module);
+			}
+		}
+		if (!count($cachesFlushed)) {
+			$cachesFlushed[] = 'no caches (none were found)';
+		}
+		echo "** Application flushed " . implode(', ', $cachesFlushed) . "\n";
 		return true;
 	}
 }
