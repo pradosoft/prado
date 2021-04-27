@@ -40,6 +40,9 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TGravatar extends TImage
 {
+	const HTTP_URL = 'http://www.gravatar.com/avatar/';
+	const HTTPS_URL = 'https://secure.gravatar.com/avatar/';
+	
 	/**
 	 * @return string the URL to the gravatar
 	 */
@@ -67,7 +70,7 @@ class TGravatar extends TImage
 		if ($params != '') {
 			$params = '?' . $params;
 		}
-		return 'https://gravatar.com/avatar/' . md5(strtolower(trim($this->getEmail()))) . $params;
+		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . $params;
 	}
 	
 	/**
@@ -147,5 +150,21 @@ class TGravatar extends TImage
 	public function setEmail($email)
 	{
 		$this->setViewState('email', TPropertyValue::ensureString($email));
+	}
+	
+	/**
+	 * @return string the email address associated with the gravatar icon
+	 */
+	public function getUseSecureUrl()
+	{
+		return $this->getViewState('use_secure_url');
+	}
+	
+	/**
+	 * @param $email string the email address associated with the gravatar icon
+	 */
+	public function setUseSecureUrl($useSecureUrl)
+	{
+		$this->setViewState('use_secure_url', TPropertyValue::ensureBoolean($useSecureUrl));
 	}
 }
