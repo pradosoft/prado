@@ -153,7 +153,7 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @return string the email address associated with the gravatar icon
+	 * @return bool whether or not to use the secure HTTPS url
 	 */
 	public function getUseSecureUrl()
 	{
@@ -161,7 +161,7 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @param $email string the email address associated with the gravatar icon
+	 * @param bool $useSecureUrl whether or not to use the secure HTTPS url
 	 */
 	public function setUseSecureUrl($useSecureUrl)
 	{
