@@ -60,7 +60,7 @@ class TApplicationComponent extends \Prado\TComponent
 			}
 		}
 		$fx = parent::getClassFxEvents($class);
-		if($app) {
+		if ($app) {
 			if ($pos = strrpos($className, '\\')) {
 				$baseClassName = substr($className, $pos + 1);
 			} else {
