@@ -1073,6 +1073,29 @@ jQuery.extend(String.prototype, {
 								+ ((digits > 0) ? "." + m[7] : "");
 		var num = parseFloat(cleanInput);
 		return (isNaN(num) ? null : num);
+	},
+	
+	/**
+	 * Appends 'px' at the end if it is not there.
+	 * @function {string} ?
+	 * @returns string with 'px' at the end
+	 * @since 4.2.0
+	 */
+	px : function() {
+		return this.endsWith('px') ? this : this + 'px';
+	}
+});
+
+jQuery.extend(Number.prototype,
+{
+	/**
+	 * Appends 'px' at the end if it is not there.
+	 * @function {string} ?
+	 * @returns string with 'px' at the end
+	 * @since 4.2.0
+	 */
+	px : function() {
+		return this + 'px';
 	}
 });
 
