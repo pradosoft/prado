@@ -57,7 +57,7 @@ class TApplicationComponent extends \Prado\TComponent
 			return $_classfx[$className];
 		}
 		$fx = array_filter(get_class_methods($class), [$this, 'filter_prado_fx']);
-		if($pos = strrpos($className, '\\')) {
+		if ($pos = strrpos($className, '\\')) {
 			$baseClassName = substr($className, $pos + 1);
 		} else {
 			$baseClassName = $className;

@@ -1089,7 +1089,7 @@ jQuery.extend(String.prototype, {
 jQuery.extend(Number.prototype,
 {
 	/**
-	 * Appends 'px' at the end if it is not there.
+	 * Appends 'px' at the end of the number.
 	 * @function {string} ?
 	 * @returns string with 'px' at the end
 	 * @since 4.2.0
