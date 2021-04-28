@@ -1091,7 +1091,7 @@ jQuery.extend(Number.prototype,
 	/**
 	 * Appends 'px' at the end of the number.
 	 * @function {string} ?
-	 * @returns string with 'px' at the end
+	 * @returns string with number plus 'px' at the end
 	 * @since 4.2.0
 	 */
 	px : function() {
