@@ -51,20 +51,25 @@ class TApplicationComponent extends \Prado\TComponent
 	 */
 	protected function getClassFxEvents($class)
 	{
-		$_classfx = $this->getApplication()->getGlobalState(self::APP_COMPONENT_FX_CACHE, []);
-		$className = get_class($class);
-		if (isset($_classfx[$className])) {
-			return $_classfx[$className];
+		$app = $this->getApplication();
+		if ($app) {
+			$_classfx = $app->getGlobalState(self::APP_COMPONENT_FX_CACHE, []);
+			$className = get_class($class);
+			if (isset($_classfx[$className])) {
+				return $_classfx[$className];
+			}
 		}
-		$fx = array_filter(get_class_methods($class), [$this, 'filter_prado_fx']);
-		if ($pos = strrpos($className, '\\')) {
-			$baseClassName = substr($className, $pos + 1);
-		} else {
-			$baseClassName = $className;
-		}
-		if (isset(Prado::$classMap[$baseClassName])) {
-			$_classfx[$className] = $fx;
-			$this->getApplication()->setGlobalState(self::APP_COMPONENT_FX_CACHE, $_classfx, []);
+		$fx = parent::getClassFxEvents($class);
+		if($app) {
+			if ($pos = strrpos($className, '\\')) {
+				$baseClassName = substr($className, $pos + 1);
+			} else {
+				$baseClassName = $className;
+			}
+			if (isset(Prado::$classMap[$baseClassName])) {
+				$_classfx[$className] = $fx;
+				$app->setGlobalState(self::APP_COMPONENT_FX_CACHE, $_classfx);
+			}
 		}
 		return $fx;
 	}
