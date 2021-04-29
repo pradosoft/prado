@@ -60,6 +60,8 @@ class PradoCommandLineInterpreter
 	 * @var array command action classes
 	 */
 	protected $_actions = [];
+	
+	protected $_helpPrinted = false;
 
 	/**
 	 * @param string $class action class name
@@ -88,9 +90,12 @@ class PradoCommandLineInterpreter
 		return $instance;
 	}
 
-	public static function printGreeting()
+	public function printGreeting()
 	{
-		echo "Command line tools for Prado " . Prado::getVersion() . ".\n";
+		if (!$this->_helpPrinted) {
+			echo "Command line tools for Prado " . Prado::getVersion() . ".\n";
+			$this->_helpPrinted = true;
+		}
 	}
 
 	/**
@@ -122,7 +127,7 @@ class PradoCommandLineInterpreter
 	 */
 	public function printHelp()
 	{
-		PradoCommandLineInterpreter::printGreeting();
+		PradoCommandLineInterpreter::getInstance()->printGreeting();
 
 		echo "usage: php prado-cli.php action <parameter> [optional]\n";
 		echo "example: php prado-cli.php -c mysite\n\n";
@@ -228,13 +233,13 @@ EOD;
 				$app = new PradoShellApplication($app_dir);
 				$app->run();
 				$dir = substr(str_replace(realpath('./'), '', $app_dir), 1);
-				PradoCommandLineInterpreter::printGreeting();
+				PradoCommandLineInterpreter::getInstance()->printGreeting();
 				echo '** Loaded PRADO appplication in directory "' . $dir . "\".\n";
 			}
 
 			return Prado::getApplication();
 		} else {
-			PradoCommandLineInterpreter::printGreeting();
+			PradoCommandLineInterpreter::getInstance()->printGreeting();
 			echo '+' . str_repeat('-', 77) . "+\n";
 			echo '** Unable to load PRADO application in directory "' . $directory . "\".\n";
 			echo '+' . str_repeat('-', 77) . "+\n";
