@@ -89,9 +89,9 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		
 		$appParams = Prado::getApplication()->getParameters();
-		if (($value = $appParams->itemAt($this->_parameter)) === null || $this->getValidNullValue()) {
+		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
 			$owner->setSubProperty($this->_property, $value);
-		} else {
+		} elseif ($this->_defaultValue !== null) {
 			$owner->setSubProperty($this->_property, $this->_defaultValue);
 		}
 		
