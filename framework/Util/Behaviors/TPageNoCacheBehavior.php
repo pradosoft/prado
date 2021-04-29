@@ -13,6 +13,8 @@ namespace Prado\Util\Behaviors;
 use Prado\Web\UI\WebControls\TMetaTag;
 
 /**
+ * TPageNoCacheBehavior class.
+ *
  * TPageNoCacheBehavior attaches to pages and adds no-cache meta to the head.
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors

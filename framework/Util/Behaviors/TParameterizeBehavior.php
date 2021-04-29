@@ -16,13 +16,15 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 
 /**
+ * TParameterizeBehavior class.
+ *
  * TParameterizeBehavior sets a specific Property on the owner object
  * to a specific application parameter.  It also can install a behavior
  * on the Application parameters to apply any changes to the application
  * parameter to then route the change to the property.
  *
  * <code>
- *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" />
+ *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" DefaultValue="Basic"/>
  *  <behavior name="PageTitle" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="TPageTitle" Property="Title" />
  *  <behavior name="AuthManagerExpireParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="module:auth" Parameter="prop:TAuthManager.AuthExpire" Property="AuthExpire" RouteBehaviorName="TAuthManagerAuthExpireRouter" />
  *	<behavior name="TSecurityManagerValidationKey" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="TSecurityManager" Parameter="prop:TSecurityManager.ValidationKey" Property="ValidationKey" />
@@ -51,6 +53,11 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_property;
 	
 	/**
+	 * @var string the default value of the property if there is no Parameter
+	 */
+	protected $_defaultValue;
+	
+	/**
 	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
@@ -61,9 +68,9 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_routeBehaviorName;
 	
 	/**
-	 * This method sets the Owner (TAuthManager) AuthExpire to the Application Parameter of
-	 * AuthExpireParameter, and the Owner (TAuthManager) AllowAutoLogin to the Application Parameter of
-	 * AuthExpireParameter.
+	 * This method sets the Owner Property to the Application Parameter of Parameter. When
+	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
+	 * the Application Parameter on the key so any changes are also routed to the Property.
 	 * @param $owner object the object to which this behavior is being attached
 	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set
 	 */
@@ -82,8 +89,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		
 		$appParams = Prado::getApplication()->getParameters();
-		if (($value = $appParams->itemAt($this->_parameter)) || $this->getValidNullValue()) {
+		if (($value = $appParams->itemAt($this->_parameter)) === null || $this->getValidNullValue()) {
 			$owner->setSubProperty($this->_property, $value);
+		} else {
+			$owner->setSubProperty($this->_property, $this->_defaultValue);
 		}
 		
 		if ($this->_routeBehaviorName) {
@@ -137,7 +146,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @return string Application parameter key to set the TPage.Theme.
+	 * @return string Application parameter key to set the property.
 	 */
 	public function getProperty()
 	{
@@ -145,7 +154,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the TPage.Theme.
+	 * @param $value string Application parameter key to set the property.
 	 */
 	public function setProperty($value)
 	{
@@ -153,7 +162,23 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @return string Application parameter key to set the TPage.Theme.
+	 * @return string The default value when there is no property and ValidNullValue is false.
+	 */
+	public function getDefaultValue()
+	{
+		return $this->_defaultValue;
+	}
+	
+	/**
+	 * @param $value string The default value when there is no property and ValidNullValue is false.
+	 */
+	public function setDefaultValue($value)
+	{
+		$this->_defaultValue = TPropertyValue::ensureString($value);
+	}
+	
+	/**
+	 * @return string The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
 	 */
 	public function getRouteBehaviorName()
 	{
@@ -161,7 +186,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the TPage.Theme.
+	 * @param $value string The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
 	 */
 	public function setRouteBehaviorName($value)
 	{

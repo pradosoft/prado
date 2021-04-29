@@ -14,6 +14,8 @@ use Prado\Prado;
 use Prado\Util\TBehavior;
 
 /**
+ * TTimeZoneParameterBehavior class.
+ *
  * TTimeZoneParameterBehavior sets the date_default_timezone_set.
  * This parameterizes the TimeZone.   {@link TimeZoneParameter} is
  * the key to the Application Parameter for setting the TimeZone.

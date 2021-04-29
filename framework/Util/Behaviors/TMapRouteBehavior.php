@@ -13,6 +13,8 @@ namespace Prado\Util\Behaviors;
 use Prado\Util\TBehavior;
 
 /**
+ * TMapRouteBehavior class.
+ *
  * TMapRouteBehavior routes the changes to Application Parameters to
  * actual functions to affect change.
  * <code>

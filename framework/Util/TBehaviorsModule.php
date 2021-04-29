@@ -17,7 +17,7 @@ use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
 /**
- * TBehaviorsModule class
+ * TBehaviorsModule class.
  *
  * TBehaviorsModule loads and attaches {@link TBehaviors}.  This attaches
  * Behaviors to classes and to application objects like the TApplication,

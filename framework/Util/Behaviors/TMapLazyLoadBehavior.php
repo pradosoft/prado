@@ -13,6 +13,8 @@ namespace Prado\Util\Behaviors;
 use Prado\Util\TBehavior;
 
 /**
+ * TMapLazyLoadBehavior class.
+ *
  * TMapLazyLoadBehavior handles Application Parameters whene there is
  * no parameter.  This allows for lazy loading of the parameter.
  * <code>

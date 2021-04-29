@@ -13,6 +13,8 @@ namespace Prado\Util\Behaviors;
 use Prado\Web\UI\WebControls\TMetaTag;
 
 /**
+ * TPageGlobalizationCharsetBehavior class.
+ *
  * TPageGlobalizationCharsetBehavior attaches to pages and adds charset
  * meta to the head from globalization.  If there is no globalization,
  * the default charset is used, 'utf-8'.

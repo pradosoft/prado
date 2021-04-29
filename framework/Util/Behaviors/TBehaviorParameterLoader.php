@@ -14,6 +14,8 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 
 /**
+ * TBehaviorParameterLoader class.
+ *
  * TBehaviorParameterLoader implements attaching Behaviors from Parameters
  * before any work is done.  Here is an example of how to attach a behavior
  * via parameter:
