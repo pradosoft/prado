@@ -32,7 +32,13 @@ class TEventContent extends TCompositeControl
 	public function createChildControls()
 	{
 		if ($event = $this->getBroadcastEvent()) {
-			$this->raiseEvent($event, $this, null);
+			$newCtls = $this->raiseEvent($event, $this, null);
+			if ($newCtls) {
+				$ctls = $this->getControls();
+				foreach ($newCtls as $ctl) {
+					$ctls[] = $ctl;
+				}
+			}
 		}
 	}
 
