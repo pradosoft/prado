@@ -112,90 +112,53 @@ class TBehaviorsModule extends \Prado\TModule
 	 */
 	protected function loadBehaviors($config)
 	{
-		if (is_array($config)) {
-			foreach ($config as $properties) {
+		$isXml = false;
+		if ($config instanceof TXmlElement) {
+			$isXml = true;
+			$config = $config->getElementsByTagName('behavior');
+		}
+		foreach ($config as $properties) {
+			if ($isXml) {
+				$properties = array_change_key_case($properties->getAttributes()->toArray());
+			} else {
 				if (!is_array($properties)) {
 					throw new TConfigurationException('behaviormodule_behavior_as_array_required');
 				}
-				$name = $properties['name'];
-				unset($properties['name']);
-				if (!$name) {
-					throw new TConfigurationException('behaviormodule_behaviorname_required');
-				}
-				
-				$attachTo = $properties['attachto'] ?? null;
-				$attachToClass = $properties['attachtoclass'] ?? null;
-				unset($properties['attachto']);
-				unset($properties['attachtoclass']);
-				if ($attachTo === null && $attachToClass === null) {
-					throw new TConfigurationException('behaviormodule_attachto_class_required');
-				} elseif ($attachTo !== null && $attachToClass !== null) {
-					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
-				}
-				if ($attachToClass) {
-					$priority = $properties['priority'] ?? null;
-					unset($properties['priority']);
-					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
-				} else {
-					if (strtolower($attachTo) == "page") {
-						$this->_pageBehaviors[$name] = $properties;
-						continue;
-					} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
-						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
-					} else {
-						$owner = $this->getSubProperty($attachTo);
-					}
-					$priority = $properties['priority'] ?? null;
-					unset($properties['priority']);
-					if (!$owner) {
-						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
-					}
-					$owner->attachBehavior($name, $properties, $priority);
-				}
 			}
-		} elseif ($config instanceof TXmlElement) {
-			foreach ($config->getElementsByTagName('behavior') as $node) {
-				$properties = array_change_key_case($node->getAttributes()->toArray());
-				
-				$name = $properties['name'];
-				unset($properties['name']);
-				if (!$name) {
-					throw new TConfigurationException('behaviormodule_behaviorname_required');
-				}
-				
-				$class = $properties['class'];
-				$attachTo = $properties['attachto'] ?? null;
-				$attachToClass = $properties['attachtoclass'] ?? null;
-				unset($properties['attachto']);
-				unset($properties['attachtoclass']);
-				if (!$class) {
-					throw new TConfigurationException('behaviormodule_behaviorclass_required');
-				}
-				if ($attachTo === null && $attachToClass === null) {
-					throw new TConfigurationException('behaviormodule_attachto_class_required');
-				} elseif ($attachTo !== null && $attachToClass !== null) {
-					throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
-				}
-				if ($attachToClass) {
-					$priority = $properties['priority'] ?? null;
-					unset($properties['priority']);
-					TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
+			$name = $properties['name'];
+			unset($properties['name']);
+			if (!$name) {
+				throw new TConfigurationException('behaviormodule_behaviorname_required');
+			}
+			
+			$attachTo = $properties['attachto'] ?? null;
+			$attachToClass = $properties['attachtoclass'] ?? null;
+			unset($properties['attachto']);
+			unset($properties['attachtoclass']);
+			if ($attachTo === null && $attachToClass === null) {
+				throw new TConfigurationException('behaviormodule_attachto_class_required');
+			} elseif ($attachTo !== null && $attachToClass !== null) {
+				throw new TConfigurationException('behaviormodule_attachto_and_class_only_one');
+			}
+			if ($attachToClass) {
+				$priority = $properties['priority'] ?? null;
+				unset($properties['priority']);
+				TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
+			} else {
+				if (strtolower($attachTo) == "page") {
+					$this->_pageBehaviors[$name] = $properties;
+					continue;
+				} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
+					$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
 				} else {
-					if (strtolower($attachTo) == "page") {
-						$this->_pageBehaviors[$name] = $properties;
-						continue;
-					} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
-						$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
-					} else {
-						$owner = $this->getSubProperty($attachTo);
-					}
-					$priority = $properties['priority'] ?? null;
-					unset($properties['priority']);
-					if (!$owner) {
-						throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
-					}
-					$owner->attachBehavior($name, $properties, $priority);
+					$owner = $this->getSubProperty($attachTo);
 				}
+				$priority = $properties['priority'] ?? null;
+				unset($properties['priority']);
+				if (!$owner) {
+					throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
+				}
+				$owner->attachBehavior($name, $properties, $priority);
 			}
 		}
 	}
