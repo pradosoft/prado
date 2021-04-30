@@ -25,7 +25,7 @@ use Prado\Exceptions\TInvalidOperationException;
  *
  * <code>
  *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" DefaultValue="Basic"/>
- *  <behavior name="PageTitle" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="TPageTitle" Property="Title" />
+ *  <behavior name="PageTitle" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="TPageTitle" Property="Title" Localize="true"/>
  *  <behavior name="AuthManagerExpireParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="module:auth" Parameter="prop:TAuthManager.AuthExpire" Property="AuthExpire" RouteBehaviorName="TAuthManagerAuthExpireRouter" />
  *	<behavior name="TSecurityManagerValidationKey" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="TSecurityManager" Parameter="prop:TSecurityManager.ValidationKey" Property="ValidationKey" />
  *	<behavior name="TSecurityManagerEncryptionKey" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="TSecurityManager" Parameter="prop:TSecurityManager.EncryptionKey" Property="EncryptionKey" />
@@ -56,6 +56,11 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 * @var string the default value of the property if there is no Parameter
 	 */
 	protected $_defaultValue;
+	
+	/**
+	 * @var bool should the value be localized
+	 */
+	protected $_localize;
 	
 	/**
 	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
@@ -90,13 +95,24 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		
 		$appParams = Prado::getApplication()->getParameters();
 		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
+			if ($this->_localize && $value && is_string($value)) {
+				$value = Prado::localize($value);
+			}
 			$owner->setSubProperty($this->_property, $value);
 		} elseif ($this->_defaultValue !== null) {
-			$owner->setSubProperty($this->_property, $this->_defaultValue);
+			$value = $this->_defaultValue;
+			if ($this->_localize && is_string($value)) {
+				$value = Prado::localize($value);
+			}
+			$owner->setSubProperty($this->_property, $value);
 		}
 		
 		if ($this->_routeBehaviorName) {
-			$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, $this->_property]);
+			if ($this->_localize){
+				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, function($v){$owner->$this->_property = Prado::localize($v);});
+			} else {
+				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, $this->_property]);
+			}
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
 	}
@@ -175,6 +191,22 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function setDefaultValue($value)
 	{
 		$this->_defaultValue = TPropertyValue::ensureString($value);
+	}
+	
+	/**
+	 * @return string should the parameter or defaultValue be localized.
+	 */
+	public function getLocalize()
+	{
+		return $this->_localize;
+	}
+	
+	/**
+	 * @param $value string should the parameter or defaultValue be localized.
+	 */
+	public function setLocalize($value)
+	{
+		$this->_localize = TPropertyValue::ensureBoolean($value);
 	}
 	
 	/**
