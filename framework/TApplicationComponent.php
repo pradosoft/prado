@@ -52,15 +52,18 @@ class TApplicationComponent extends \Prado\TComponent
 	protected function getClassFxEvents($class)
 	{
 		$app = $this->getApplication();
-		if ($app) {
-			$_classfx = $app->getGlobalState(self::APP_COMPONENT_FX_CACHE, []);
+		if ($app && ($cache = $app->getCache())) {
+			static $_classfx = null;
+			if ($_classfx === null) {
+				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
+			}
 			$className = get_class($class);
 			if (isset($_classfx[$className])) {
 				return $_classfx[$className];
 			}
 		}
 		$fx = parent::getClassFxEvents($class);
-		if ($app) {
+		if ($cache) {
 			if ($pos = strrpos($className, '\\')) {
 				$baseClassName = substr($className, $pos + 1);
 			} else {
@@ -68,7 +71,7 @@ class TApplicationComponent extends \Prado\TComponent
 			}
 			if (isset(Prado::$classMap[$baseClassName])) {
 				$_classfx[$className] = $fx;
-				$app->setGlobalState(self::APP_COMPONENT_FX_CACHE, $_classfx);
+				$cache->set(self::APP_COMPONENT_FX_CACHE, $_classfx);
 			}
 		}
 		return $fx;
