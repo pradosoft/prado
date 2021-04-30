@@ -109,8 +109,9 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		
 		if ($this->_routeBehaviorName) {
 			if ($this->_localize) {
-				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, function ($v) {
-					//TODO $owner->$this->_property = Prado::localize($v);
+				$_property = $this->_property;
+				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, function ($v) use ($owner, $_property) {
+					$owner->$_property = Prado::localize($v);
 				});
 			} else {
 				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, $this->_property]);
