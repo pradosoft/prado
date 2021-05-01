@@ -17,11 +17,17 @@ use Prado\TPropertyValue;
  * TBehaviorParameterLoader class.
  *
  * TBehaviorParameterLoader implements attaching Behaviors from Parameters
- * before any work is done.  Here is an example of how to attach a behavior
- * via parameter:
+ * before any work has been done.  Here is an example of how to attach a behavior
+ * via parameter within an application.xml:
  * <code>
- *		<parameter id="pagethemebehaviorloader" class="Prado\Util\Behaviors\TBehaviorParameterLoader" BehaviorName="testBehavior" BehaviorClass="Prado\Util\Behaviors\TParameterizeBehavior" Priority="10" AttachToClass="Prado\Web\UI\TPage" Parameter="ThemeName" Property="Theme" />
+ * <application id="prado-app">
+ *		<parameter id="pagethemebehaviorloader" class="Prado\Util\Behaviors\TBehaviorParameterLoader" BehaviorName="testBehavior" BehaviorClass="Prado\Util\Behaviors\TParameterizeBehavior" Priority="10" AttachToClass="Prado\Web\UI\TPage" Parameter="ThemeName" Property="Theme" DefaultValue="America/Los Angeles" />
+ *		<parameters>
+ * 	  ...
  * </code>
+ *
+ * TBehaviorParameterLoader can be used in parameters to load behaviors through the
+ * {@link TParameterModule}, as well in each folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
