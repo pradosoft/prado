@@ -13,6 +13,7 @@ namespace Prado\Util;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Exceptions\TInvalidOperationException;
@@ -44,7 +45,7 @@ use Prado\Exceptions\TConfigurationException;
  * @package Prado\Util
  * @since 4.2.0
  */
-class TDbParameterModule extends TParameterModule
+class TDbParameterModule extends TModule
 {
 	const SERIALIZE_PHP = 'php';
 	const SERIALIZE_JSON = 'json';
