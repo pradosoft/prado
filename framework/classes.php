@@ -255,6 +255,7 @@ return [
 'TClassBehaviorEventParameter' => 'Prado\Util\TClassBehaviorEventParameter',
 'TDataFieldAccessor' => 'Prado\Util\TDataFieldAccessor',
 'TDbLogRoute' => 'Prado\Util\TDbLogRoute',
+'TDbParameterModule' => 'Prado\Util\TDbParameterModule',
 'TEmailLogRoute' => 'Prado\Util\TEmailLogRoute',
 'TFileLogRoute' => 'Prado\Util\TFileLogRoute',
 'TFirebugLogRoute' => 'Prado\Util\TFirebugLogRoute',
