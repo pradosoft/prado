@@ -458,7 +458,7 @@ class TDbParameterModule extends TParameterModule
 
 	/**
 	 * Serializer sets the type of serialization of objects and arrays in parameters
-	 * to and from the database.  'php' uses serialze and unserialize. 'json' uses 
+	 * to and from the database.  'php' uses serialze and unserialize. 'json' uses
 	 * json_encode and json_decade. or you can provide your own callable to serialized
 	 * and unserialize objects and arrays.
 	 * @param callable|string $value the type of un/serialization.
