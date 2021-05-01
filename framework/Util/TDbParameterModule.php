@@ -117,6 +117,7 @@ class TDbParameterModule extends TModule
 		if ($this->getConnectionID() && $this->_autoLoadField) {
 			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getParameter']));
 		}
+		parent::init($config);
 	}
 	
 	/**
