@@ -15,6 +15,8 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\TPropertyValue;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TDbParameterModule class
@@ -266,7 +268,7 @@ class TDbParameterModule extends TParameterModule
 	 */
 	public function remove($key)
 	{
-		$value = $this->getParameter($key);
+		$value = $this->get($key);
 		$connection = $this->getDbConnection();
 		$cmd = $connection->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1");
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
