@@ -59,7 +59,6 @@ use Prado\Xml\TXmlElement;
  */
 class TParameterModule extends \Prado\TModule
 {
-	const PARAM_FILE_EXT = '.xml';
 	private $_initialized = false;
 	private $_paramFile;
 
@@ -90,6 +89,7 @@ class TParameterModule extends \Prado\TModule
 			$this->loadParameters($configFile);
 		}
 		$this->_initialized = true;
+		parent::init($config);
 	}
 
 	/**
@@ -134,6 +134,7 @@ class TParameterModule extends \Prado\TModule
 				foreach ($parameter[1] as $name => $value) {
 					$component->setSubProperty($name, $value);
 				}
+				$component->dyInit(null);
 				$appParams->add($id, $component);
 			} else {
 				$appParams->add($id, $parameter);

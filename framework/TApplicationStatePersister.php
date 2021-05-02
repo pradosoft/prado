@@ -35,6 +35,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	public function init($config)
 	{
 		$this->getApplication()->setApplicationStatePersister($this);
+		parent::init($config);
 	}
 
 	/**

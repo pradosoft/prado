@@ -67,6 +67,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 		if (!($this->_userFactory instanceof TDbUser)) {
 			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
 		}
+		parent::init($config);
 	}
 
 	/**
