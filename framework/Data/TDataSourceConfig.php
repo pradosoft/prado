@@ -74,7 +74,7 @@ class TDataSourceConfig extends \Prado\TModule
 				}
 			}
 		}
-		parent::init($config);
+		parent::init($xml);
 	}
 
 	/**
