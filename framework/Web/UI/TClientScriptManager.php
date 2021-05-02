@@ -576,11 +576,12 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * Registers a javascript file in the page head
 	 * @param string $key a unique key identifying the file
 	 * @param string $url URL to the javascript file
+	 * @param bool $async load the javascript file asynchronously, default false
 	 */
-	public function registerHeadScriptFile($key, $url)
+	public function registerHeadScriptFile($key, $url, $async = false)
 	{
 		$this->checkIfNotInRender();
-		$this->_headScriptFiles[$key] = $url;
+		$this->_headScriptFiles[$key] = $async ? [$url, $async] : $url;
 
 		$params = func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript', 'registerHeadScriptFile', $params);
@@ -796,6 +797,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	public function markScriptFileAsRendered($url)
 	{
+		$url = is_array($url) ? $url[0] : $url;
 		$this->_renderedScriptFiles[$url] = $url;
 		$params = func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);
