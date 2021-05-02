@@ -187,7 +187,9 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function regenerate($deleteOld = false)
 	{
 		$old = $this->getSessionID();
-		session_regenerate_id($deleteOld);
+		if (php_sapi_name() !== 'cli') {
+			session_regenerate_id($deleteOld);
+		}
 		return $old;
 	}
 
