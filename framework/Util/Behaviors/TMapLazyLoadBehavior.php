@@ -15,13 +15,13 @@ use Prado\Util\TBehavior;
 /**
  * TMapLazyLoadBehavior class.
  *
- * TMapLazyLoadBehavior handles Application Parameters whene there is
+ * TMapLazyLoadBehavior handles Application Parameters when there is
  * no parameter.  This allows for lazy loading of the parameter.
  * <code>
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapLazyLoadBehavior([$obj, 'getParam']));
  * </code>
- * This code will call $obj->getParam($value) every time the parameter
+ * This code will call $obj->getParam($key) every time the parameter
  * is not found in the TMap or TPriorityMap.
  *
  * @author Brad Anderson <belisoful@icloud.com>
