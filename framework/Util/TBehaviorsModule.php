@@ -30,7 +30,7 @@ use Prado\Xml\TXmlElement;
  *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
  *   <behavior name="TimeZoneBehavior" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" Priority="10" TimeZone="America/New York" TimeZoneParameter="prop:TimeZone" />
  *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
- *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" />
+ *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
  * </module>
  * </code>
  *
@@ -44,7 +44,7 @@ use Prado\Xml\TXmlElement;
  *		[['name' => 'behaviorname', 'class' => 'TMyBehaviorClass', 'attachto' => 'page', 'priority' => '10', 'behaviorProperty'=>"value1'], ...]
  * </code>
  *
- * This allows TParameterizeBehavior to set and eable TBehaviorsModule to load behaviors, dynamically, from parameters.
+ * This allows TBehaviorsModule to load behaviors, dynamically, from parameters with the TParameterizeBehavior.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util
