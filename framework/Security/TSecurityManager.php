@@ -67,6 +67,7 @@ class TSecurityManager extends \Prado\TModule
 	{
 		$this->_mbstring = extension_loaded('mbstring');
 		$this->getApplication()->setSecurityManager($this);
+		parent::init($config);
 	}
 
 	/**

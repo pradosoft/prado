@@ -53,6 +53,7 @@ class TTemplateManager extends \Prado\TModule
 	public function init($config)
 	{
 		$this->getService()->setTemplateManager($this);
+		parent::init($config);
 	}
 
 	/**

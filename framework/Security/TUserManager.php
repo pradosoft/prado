@@ -121,6 +121,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			}
 		}
 		$this->_initialized = true;
+		parent::init($config);
 	}
 
 	/*

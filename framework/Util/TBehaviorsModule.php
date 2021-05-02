@@ -74,6 +74,7 @@ class TBehaviorsModule extends \Prado\TModule
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachTPageServiceHandler']);
 		}
+		parent::init($config);
 	}
 	
 	/**
