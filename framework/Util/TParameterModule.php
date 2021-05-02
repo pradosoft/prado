@@ -134,6 +134,7 @@ class TParameterModule extends \Prado\TModule
 				foreach ($parameter[1] as $name => $value) {
 					$component->setSubProperty($name, $value);
 				}
+				$component->dyInit(null);
 				$appParams->add($id, $component);
 			} else {
 				$appParams->add($id, $parameter);
