@@ -730,7 +730,7 @@ class TApplication extends \Prado\TComponent
 				}
 			}
 		}
-		if ($first || !count($m)) {
+		if ($first) {
 			return null;
 		} else {
 			return $m;
