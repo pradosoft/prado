@@ -412,7 +412,9 @@ class TAuthManager extends \Prado\TModule
 		if (($user = $this->_userManager->getUser($username)) === null) {
 			return false;
 		}
-		$this->updateSessionUser($user);
+		if (php_sapi_name() !== 'cli') {
+			$this->updateSessionUser($user);
+		}
 		$this->getApplication()->setUser($user);
 		return true;
 	}
