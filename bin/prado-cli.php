@@ -381,6 +381,8 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
 			PradoCommandLineInterpreter::getInstance()->addActionClass($actions);
 		}
 		PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
+		$app->onSaveState();
+		$app->onSaveStateComplete();
 		return true;
 	}
 }
@@ -413,11 +415,9 @@ class PradoCommandLinFlushCacheCommand extends PradoCommandLineAction
 			$app = $this->initializePradoApplication($args[1]);
 		}
 		$cachesFlushed = [];
-		foreach ($app->getModules() as $module) {
-			if ($module->isa('Prado\Caching\ICache')) {
-				$module->flush();
-				$cachesFlushed[] = get_class($module);
-			}
+		foreach ($app->getModulesOfClass('Prado\\Caching\\ICache') as $module) {
+			$module->flush();
+			$cachesFlushed[] = get_class($module);
 		}
 		if (!count($cachesFlushed)) {
 			$cachesFlushed[] = 'no caches (none were found)';
