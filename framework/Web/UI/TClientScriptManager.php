@@ -256,7 +256,9 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 */
 	public function getScriptUrls()
 	{
-		$scripts = array_values($this->_headScriptFiles);
+		$scripts = array_values(array_map(function ($v) {
+			return is_array($v) ? $v[0] : $v;
+		}, $this->_headScriptFiles));
 		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
 		$scripts = array_unique($scripts);
 
