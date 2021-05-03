@@ -20,10 +20,10 @@ use Prado\Xml\TXmlElement;
  * TBehaviorsModule class.
  *
  * TBehaviorsModule loads and attaches {@link TBehaviors}.  This attaches
- * Behaviors to classes and to application objects like the TApplication,
+ * Behaviors to classes and to application components like the TApplication,
  * individual modules, and TPage of the TPageService.
  *
- * Content enclosed within the module tag is treated as behaviors, e.g.,
+ * Contents enclosed within the module tag are treated as behaviors, e.g.,
  * <code>
  * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
  *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
@@ -34,7 +34,9 @@ use Prado\Xml\TXmlElement;
  * </module>
  * </code>
  *
- * When {@link setAdditionalBehaviors AdditionalBehaviors} is set, then this module
+ * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.
+ *
+ * When {@link setAdditionalBehaviors AdditionalBehaviors} is set, this module
  * loads the behaviors from that property. It can be an array of php behavior definition arrays.
  * or a string that is then passed through unserialize or json_decode; otherwise is treated as
  * an xml document of behavior like above.
@@ -53,18 +55,20 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var Tbehavior instances attaching to the TPage
+	 * @var Tbehavior[] behaviors attaching to the TPage
 	 */
 	private $_pageBehaviors = [];
 	
 	/**
-	 * @var array additional behaviors in an array,
+	 * @var array[] additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
 	 */
 	private $_additionalBehaviors;
 	
 	/**
-	 * Initializes the module by loading behaviors.
-	 * @param $config mixed content enclosed within the module tag
+	 * Initializes the module by loading behaviors.  If there are page behaviors, this
+	 * attaches behaviors to TPage through TApplication:onInitComplete and then
+	 * TPageService::onPreRunPage.
+	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
 	{
@@ -79,10 +83,10 @@ class TBehaviorsModule extends \Prado\TModule
 	
 	/**
 	 * TApplication::onInitComplete Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, {@link attachTPageBehaviors}
-	 * adds the page behaviors.
+	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
-	 * @param object $param parameter of the event
+	 * @param mixed $param parameter of the event
 	 */
 	public function attachTPageServiceHandler($sender, $param)
 	{
@@ -93,7 +97,7 @@ class TBehaviorsModule extends \Prado\TModule
 	}
 	
 	/**
-	 * This method attaches page behaviors to the TPage in the TPageService::OnPreInitPage event.
+	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
 	 * @param TPage $page the page being initialized
 	 */
@@ -104,11 +108,13 @@ class TBehaviorsModule extends \Prado\TModule
 			unset($properties['priority']);
 			$page->attachBehavior($name, $properties, $priority);
 		}
+		$this->_pageBehaviors = [];
 	}
 
 	/**
-	 * Loads behaviors and attach to the proper object.
-	 * @param $config mixed XML of PHP representation of the behaviors
+	 * Loads behaviors and attach to the proper object. behaviors for pages are
+	 * attached separately if and when the TPage is loaded on TPageSerivce::onPreRunPage
+	 * @param mixed $config XML of PHP representation of the behaviors
 	 * @throws prado\Exceptions\TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadBehaviors($config)
@@ -175,9 +181,8 @@ class TBehaviorsModule extends \Prado\TModule
 	/**
 	 * this will take a string that is an array of behaviors that has been
 	 * through serialize(), or json array of behaviors.  If one behavior is
-	 * set, then it is automatically placed into an array..
-	 * @param $behaviors array additional behaviors in an array [0..n],  or
-	 * a single php behavior definition.
+	 * set as an array, then it is automatically placed into an array.
+	 * @param array[]|string $behaviors additional behaviors
 	 */
 	public function setAdditionalBehaviors($behaviors)
 	{

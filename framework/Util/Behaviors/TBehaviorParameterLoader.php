@@ -11,6 +11,8 @@
 namespace Prado\Util\Behaviors;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
+use Prado\TComponent;
 use Prado\TPropertyValue;
 
 /**
@@ -34,7 +36,7 @@ use Prado\TPropertyValue;
  * @since 4.2.0
  */
 
-class TBehaviorParameterLoader extends \Prado\TComponent
+class TBehaviorParameterLoader extends TComponent
 {
 	/** @var string name of the behavior attaching to the owner */
 	private $_behaviorName;
@@ -58,9 +60,11 @@ class TBehaviorParameterLoader extends \Prado\TComponent
 	private static $_pageBehaviors = [];
 	
 	/**
-	 * Install the behavior
+	 * Install the behavior via dynamic event dyInit, called after a parameter
+	 * class is loaded in TParameterModule or TApplication configurations.
+	 * @param null|mixed $config for Parameters this is null.
 	 */
-	public function dyInit()
+	public function dyInit($config)
 	{
 		if (!$this->_behaviorName) {
 			throw new TConfigurationException('behaviorParameterLoader_no_behavior_name');
@@ -76,18 +80,18 @@ class TBehaviorParameterLoader extends \Prado\TComponent
 		}
 		$this->_properties['class'] = $this->_behaviorClass;
 		if ($this->_attachtoclass) {
-			\Prado\TComponent::attachClassBehavior($this->_behaviorName, $this->_properties, $this->_attachtoclass, $this->_priority);
+			TComponent::attachClassBehavior($this->_behaviorName, $this->_properties, $this->_attachtoclass, $this->_priority);
 		} else {
 			if (strtolower($this->_attachto) == "page") {
 				if (!count(self::$_pageBehaviors)) {
-					\Prado::getApplication()->onInitComplete[] = [$this, 'attachTPageServiceHandler'];
+					Prado::getApplication()->onInitComplete[] = [$this, 'attachTPageServiceHandler'];
 				}
 				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
 				return;
 			} elseif (strncasecmp($this->_attachto, 'module:', 7) === 0) {
-				$owner = \Prado::getApplication()->getModule(trim(substr($this->_attachto, 7)));
+				$owner = Prado::getApplication()->getModule(trim(substr($this->_attachto, 7)));
 			} else {
-				$owner = \Prado::getApplication()->getSubProperty($this->_attachto);
+				$owner = Prado::getApplication()->getSubProperty($this->_attachto);
 			}
 			$priority = $this->_properties['priority'] ?? null;
 			unset($this->_properties['priority']);
@@ -100,23 +104,23 @@ class TBehaviorParameterLoader extends \Prado\TComponent
 	
 	/**
 	 * TApplication::onInitComplete Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, {@link attachTPageBehaviors}
-	 * adds the page behaviors.
-	 * @param object $sender the object that raised the event.
-	 * @param object $param parameter of the event.
+	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * to TPageService to then adds the page behaviors.
+	 * @param object $sender the object that raised the event
+	 * @param mixed $param parameter of the event
 	 */
 	public function attachTPageServiceHandler($sender, $param)
 	{
-		$service = \Prado::getApplication()->getService();
+		$service = Prado::getApplication()->getService();
 		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors']);
 		}
 	}
 	
 	/**
-	 * This method attaches page behaviors to the TPage in the TPageService::OnPreInitPage event.
-	 * @param object $sender the object that raised the event.
-	 * @param TPage $page the page being initialized.
+	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
+	 * @param object $sender the object that raised the event
+	 * @param Prado\Web\UI\TPage $page the page being initialized
 	 */
 	public function attachTPageBehaviors($sender, $page)
 	{
@@ -219,7 +223,8 @@ class TBehaviorParameterLoader extends \Prado\TComponent
 	}
 	
 	/**
-	 * magic method for storing the properties for the behavior.
+	 * magic method for storing the properties for the behavior. If there is no
+	 * set Property then it stores the property to set on the behavior.
 	 * @param string $name name of the property being set.
 	 * @param string $value value of the property being set.
 	 */
