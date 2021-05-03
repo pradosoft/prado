@@ -10,6 +10,7 @@
 
 namespace Prado\Util;
 
+use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
@@ -82,22 +83,27 @@ class TDbParameterModule extends TModule
 	/**
 	 * @var string The table name for the parameters from the database
 	 */
-	private $_tableName = 'options';
+	private $_tableName = 'parameters';
 	
 	/**
 	 * @var string autoload Field. default "", meaning no autoload field
 	 */
-	private $_autoLoadField = '';
+	private $_autoLoadField = 'autoload';
 	
 	/**
 	 * @var string autoload True value. default sql "true"
 	 */
-	private $_autoLoadValue = 'true';
+	private $_autoLoadValue = '1';
 	
 	/**
 	 * @var string autoload False value. default sql "false"
 	 */
-	private $_autoLoadValueFalse = 'false';
+	private $_autoLoadValueFalse = '0';
+	
+	/**
+	 * @var bool whether the log DB table should be created automatically
+	 */
+	private $_autoCreate = true;
 	
 	/**
 	 * @var callable|string which serialize function to use,
@@ -126,13 +132,12 @@ class TDbParameterModule extends TModule
 	 */
 	protected function loadDbParameters()
 	{
-		if (!$this->getConnectionID()) {
-			return;
-		}
+		$db = $this->getDbConnection();
 		
-		$connection = $this->getDbConnection();
+		$this->ensureTable();
+		
 		$where = ($this->_autoLoadField ? " WHERE {$this->_autoLoadField}={$this->_autoLoadValue}" : '');
-		$cmd = $connection->createCommand(
+		$cmd = $db->createCommand(
 			"SELECT {$this->_keyField}, {$this->_valueField} FROM {$this->_tableName}{$where}"
 		);
 		$results = $cmd->query();
@@ -157,6 +162,56 @@ class TDbParameterModule extends TModule
 			$appParameters[$row[$this->_keyField]] = $value;
 		}
 	}
+
+	/**
+	 * Creates the DB table for storing log messages.
+	 * @todo create sequence for PostgreSQL
+	 */
+	protected function createDbTable()
+	{
+		$db = $this->getDbConnection();
+		$driver = $db->getDriverName();
+		$autoidAttributes = '';
+		$postIndices = '';
+		$index = '';
+		if ($driver === 'mysql') {
+			$autoidAttributes = 'AUTO_INCREMENT';
+			$index = ', INDEX(`' . $this->_keyField . '`)' . ($this->_autoLoadField ? ', INDEX(`' . $this->_autoLoadField . '`)' : '');
+		} elseif ($driver === 'sqlite') {
+			$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
+			($this->_autoLoadField ? ' CREATE UNIQUE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
+		} else {
+			$index = ', INDEX(`' . $this->_keyField . '`)' . ($this->_autoLoadField ? ', INDEX(`' . $this->_autoLoadField . '`)' : '');
+		}
+
+		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
+			param_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ', ' .
+			$this->_keyField . ' VARCHAR(128),' .
+			$this->_valueField . ' MEDIUMTEXT' .
+			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN' : '') . $index .
+			')' . $postIndices;
+		$db->createCommand($sql)->execute();
+	}
+
+	/**
+	 * checks for the table, and if not there and autoCreate, then creates the table else throw error.
+	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
+	 */
+	protected function ensureTable()
+	{
+		$db = $this->getDbConnection();
+		$sql = 'SELECT * FROM ' . $this->_tableName . ' WHERE 0=1';
+		try {
+			$db->createCommand($sql)->query()->close();
+		} catch (Exception $e) {
+			// DB table not exists
+			if ($this->_autoCreate) {
+				$this->createDbTable();
+			} else {
+				throw new TConfigurationException('db_paramtable_nonexistent', $this->_tableName);
+			}
+		}
+	}
 	
 	/**
 	 * Loads parameters into application.
@@ -177,8 +232,8 @@ class TDbParameterModule extends TModule
 				return $appParams[$key];
 			}
 		}
-		$connection = $this->getDbConnection();
-		$cmd = $connection->createCommand(
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand(
 			"SELECT {$this->_valueField} FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
@@ -227,11 +282,11 @@ class TDbParameterModule extends TModule
 				$value = call_user_func($serializer, $value, true);
 			}
 		}
-		$connection = $this->getDbConnection();
+		$db = $this->getDbConnection();
 		$field = ($this->_autoLoadField ? ", {$this->_autoLoadField}" : '');
 		$values = ($this->_autoLoadField ? ", :auto" : '');
 		$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
-		$cmd = $connection->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
+		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
 					"VALUES (:key, :value{$values}) ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}");
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->bindParameter(":value", $value, PDO::PARAM_STR);
@@ -253,8 +308,8 @@ class TDbParameterModule extends TModule
 	 */
 	public function exists($key)
 	{
-		$connection = $this->getDbConnection();
-		$cmd = $connection->createCommand(
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$this->_keyField}=:key"
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
@@ -271,8 +326,8 @@ class TDbParameterModule extends TModule
 	public function remove($key)
 	{
 		$value = $this->get($key);
-		$connection = $this->getDbConnection();
-		$cmd = $connection->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1");
+		$db = $this->getDbConnection();
+		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1");
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->execute();
 		return $value;
@@ -313,7 +368,10 @@ class TDbParameterModule extends TModule
 	}
 
 	/**
-	 * Creates the DB connection.
+	 * Creates the DB connection.  If no ConnectionID is set, this creates a
+	 * sqlite3 database in the RuntimePath "sqlite3.params".  If the
+	 * {@link getAutoLoadField} is not set, the default, then the autoLoadField
+	 * is set to "autoload" to enable the feature by default.
 	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return TDbConnection the created DB connection
@@ -328,7 +386,11 @@ class TDbParameterModule extends TModule
 				throw new TConfigurationException('dbparametermodule_connectionid_invalid', $connectionID);
 			}
 		} else {
-			throw new TConfigurationException('dbparametermodule_connectionid_required');
+			$db = new TDbConnection;
+			// default to SQLite3 database
+			$dbFile = $this->getApplication()->getRuntimePath() . '/app.params';
+			$db->setConnectionString('sqlite:' . $dbFile);
+			return $db;
 		}
 	}
 
@@ -450,6 +512,24 @@ class TDbParameterModule extends TModule
 			throw new TInvalidOperationException('dbparametermodule_autoloadvaluefalse_unchangeable');
 		}
 		$this->_autoLoadValueFalse = TPropertyValue::ensureString($value);
+	}
+
+	/**
+	 * @return bool whether the paramter DB table should be automatically created if not exists. Defaults to true.
+	 * @see setAutoCreateLogTable
+	 */
+	public function getAutoCreateParamTable()
+	{
+		return $this->_autoCreate;
+	}
+
+	/**
+	 * @param bool $value whether the parameter DB table should be automatically created if not exists.
+	 * @see setLogTableName
+	 */
+	public function setAutoCreateParamTable($value)
+	{
+		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 	
 	/**
