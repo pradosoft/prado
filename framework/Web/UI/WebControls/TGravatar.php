@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 use Prado\Exceptions\TInvalidDataValueException;
 
 /**
- * TGravatar class
+ * TGravatar class.
  *
  * TGravatar extends TImage and outputs a gravatar ImageUrl based
  * upon an email address, size, rating, and default style of the gravatar.
@@ -130,9 +130,7 @@ class TGravatar extends TImage
 	public function setRating($rating)
 	{
 		$rating = strtolower(TPropertyValue::ensureString($rating));
-		if (!in_array($rating, ['g', 'pg', 'r', 'x', ''])) {
-			throw new TInvalidDataValueException('gravatar_bad_rating', $rating);
-		}
+		$rating = TPropertyValue::ensureEnum($rating, ['g', 'pg', 'r', 'x', '']);
 		$this->setViewState('rating', $rating);
 	}
 	
@@ -153,11 +151,11 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @return bool whether or not to use the secure HTTPS url
+	 * @return bool whether or not to use the secure HTTPS url, defaults to the connection being used
 	 */
 	public function getUseSecureUrl()
 	{
-		return $this->getViewState('use_secure_url');
+		return $this->getViewState('use_secure_url', $this->getRequest()->getIsSecureConnection());
 	}
 	
 	/**
