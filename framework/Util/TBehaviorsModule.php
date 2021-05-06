@@ -66,7 +66,7 @@ class TBehaviorsModule extends \Prado\TModule
 	
 	/**
 	 * Initializes the module by loading behaviors.  If there are page behaviors, this
-	 * attaches behaviors to TPage through TApplication:onInitComplete and then
+	 * attaches behaviors to TPage through TApplication::onBeginRequest and then
 	 * TPageService::onPreRunPage.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
@@ -76,13 +76,13 @@ class TBehaviorsModule extends \Prado\TModule
 		$this->loadBehaviors($this->getAdditionalBehaviors());
 		
 		if (count($this->_pageBehaviors)) {
-			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachTPageServiceHandler']);
+			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
 		parent::init($config);
 	}
 	
 	/**
-	 * TApplication::onInitComplete Handler that adds {@link attachTPageBehaviors} to
+	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event

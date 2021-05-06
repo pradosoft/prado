@@ -84,7 +84,7 @@ class TBehaviorParameterLoader extends TComponent
 		} else {
 			if (strtolower($this->_attachto) == "page") {
 				if (!count(self::$_pageBehaviors)) {
-					Prado::getApplication()->onInitComplete[] = [$this, 'attachTPageServiceHandler'];
+					Prado::getApplication()->onBeginRequest[] = [$this, 'attachTPageServiceHandler'];
 				}
 				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
 				return;
@@ -103,7 +103,7 @@ class TBehaviorParameterLoader extends TComponent
 	}
 	
 	/**
-	 * TApplication::onInitComplete Handler that adds {@link attachTPageBehaviors} to
+	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
