@@ -73,7 +73,7 @@ class TBehaviorsModule extends \Prado\TModule
 	public function init($config)
 	{
 		$this->loadBehaviors($config);
-		$this->loadBehaviors($this->getAdditionalBehaviors());
+		$this->loadBehaviors(['behaviors' => $this->getAdditionalBehaviors()]);
 		
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
@@ -123,6 +123,10 @@ class TBehaviorsModule extends \Prado\TModule
 		if ($config instanceof TXmlElement) {
 			$isXml = true;
 			$config = $config->getElementsByTagName('behavior');
+		} elseif (is_array($config)) {
+			$config = $config['behaviors'];
+		} elseif (!$config) {
+			return;
 		}
 		foreach ($config as $properties) {
 			if ($isXml) {
