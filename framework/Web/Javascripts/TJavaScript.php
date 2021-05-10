@@ -41,19 +41,15 @@ class TJavaScript
 
 	/**
 	 * Renders a javascript file
-	 * @param array|string $file URL to the javascript file or array [string $url, bool $async]
+	 * @param Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
 	 * @return string rendering result
 	 */
-	public static function renderScriptFile($file)
+	public static function renderScriptFile($asset)
 	{
-		$async = '';
-		if (is_array($file)) {
-			if ($file[1]) {
-				$async = 'async ';
-			}
-			$file = $file[0];
+		if (is_object($asset) && ($asset instanceof TJavaScriptAsset)) {
+			return $asset->__toString() . "\n";
 		}
-		return '<script ' . $async . 'src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";
+		return '<script src="' . THttpUtility::htmlEncode($asset) . "\"></script>\n";
 	}
 
 	/**

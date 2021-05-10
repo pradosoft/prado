@@ -15,6 +15,7 @@ use Prado\Prado;
 use Prado\TApplicationMode;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Web\Javascripts\TJavaScript;
+use Prado\Web\Javascripts\TJavaScriptAsset;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\THttpUtility;
 
@@ -257,7 +258,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function getScriptUrls()
 	{
 		$scripts = array_values(array_map(function ($v) {
-			return is_array($v) ? $v[0] : $v;
+			return $v->getUrl();
 		}, $this->_headScriptFiles));
 		$scripts = array_merge($scripts, array_values($this->_scriptFiles));
 		$scripts = array_unique($scripts);
@@ -583,7 +584,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	public function registerHeadScriptFile($key, $url, $async = false)
 	{
 		$this->checkIfNotInRender();
-		$this->_headScriptFiles[$key] = $async ? [$url, $async] : $url;
+		$this->_headScriptFiles[$key] = new TJavaScriptAsset($url, $async);
 
 		$params = func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript', 'registerHeadScriptFile', $params);
@@ -799,7 +800,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	public function markScriptFileAsRendered($url)
 	{
-		$url = is_array($url) ? $url[0] : $url;
+		$url = (is_object($url) && ($url instanceof TJavaScriptAsset)) ? $url->getUrl() : $url;
 		$this->_renderedScriptFiles[$url] = $url;
 		$params = func_get_args();
 		$this->_page->registerCachingAction('Page.ClientScript', 'markScriptFileAsRendered', $params);

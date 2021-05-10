@@ -266,6 +266,7 @@ return [
 'TVarDumper' => 'Prado\Util\TVarDumper',
 'TXmlRpcClient' => 'Prado\Util\TXmlRpcClient',
 'TJavaScript' => 'Prado\Web\Javascripts\TJavaScript',
+'TJavaScriptAsset' => 'Prado\Web\Javascripts\TJavaScriptAsset',
 'TJavaScriptLiteral' => 'Prado\Web\Javascripts\TJavaScriptLiteral',
 'TJavaScriptString' => 'Prado\Web\Javascripts\TJavaScriptString',
 'IFeedContentProvider' => 'Prado\Web\Services\IFeedContentProvider',
