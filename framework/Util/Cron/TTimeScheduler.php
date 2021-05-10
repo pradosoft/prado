@@ -551,16 +551,16 @@ class TTimeScheduler extends \Prado\TComponent
 			$priortime = strtotime($priortime);
 		}
 		$lastdata = getdate($priortime);
-		
+
 		$oyear = $year = $lastdata['year'];
 		$omonth = $month = $lastdata['mon'];
-		
+
 		$minutes = $this->getMinutesArray();
 		$hours = $this->geHoursArray();
 		$days = $this->getDaysArray($month, $year);
 		$months = $this->getMonthsArray();
 		$years = $this->getYearsArray();
-		
+
 		// Do Minutes
 		$z = -1;
 		$s = (!$hours[$lastdata['hours']] || !$days[$lastdata['mday']] || !$months[$month] || !$years[$year]) ? 0 : $lastdata['minutes'] + 1;
@@ -575,7 +575,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// Do Hours
 		$z = -1;
 		$s = (!$days[$lastdata['mday']] || !$months[$lastdata['mon']] || !$years[$year]) ? 0 : $lastdata['hours'];
@@ -590,7 +590,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// Adjust Month/year for extra day
 		$nday = '01';
 		if ($dextra) {
@@ -601,7 +601,7 @@ class TTimeScheduler extends \Prado\TComponent
 				$days = $this->getDaysArray($month, $year);
 			}
 		}
-		
+
 		// Do the Day of Month
 		$dim = $this->days_in_month($month, $year);
 		$zeroIndex = !$months[$lastdata['mon']] || !$years[$year];
@@ -627,7 +627,7 @@ class TTimeScheduler extends \Prado\TComponent
 				break;
 			}
 		}
-		
+
 		// Do the Month of the Year
 		$z = -1;
 		$s = (!$years[$year]) ? 1 : $lastdata['mon'];
@@ -643,7 +643,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// If month or year different, recompute day of month for that month/year
 		if ($yextra || $nmonth != $omonth) {
 			$month = $nmonth;
@@ -673,7 +673,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		}
-		
+
 		// Do Year
 		$nyear = null;
 		for ($i = $lastdata['year'] + $yextra; $i <= self::YEAR_MAX; $i++) {

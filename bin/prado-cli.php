@@ -380,6 +380,8 @@ class PradoCommandLineApplicationCommand extends PradoCommandLineAction
 		foreach ($app->getCLIActionClasses() as $actions) {
 			PradoCommandLineInterpreter::getInstance()->addActionClass($actions);
 		}
+		$app->onLoadState();
+		$app->onLoadStateComplete();
 		PradoCommandLineInterpreter::getInstance()->run($_SERVER['argv']);
 		$app->onSaveState();
 		$app->onSaveStateComplete();
