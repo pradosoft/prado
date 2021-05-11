@@ -97,7 +97,7 @@ class TBehaviorParameterLoader extends TComponent
 				}
 				$moduleid = trim(substr($this->_attachto, 7));
 				if (!$moduleid) {
-					throw new TConfigurationException('behaviormodule_behaviormodule_required', $id);
+					throw new TConfigurationException('behaviormodule_behaviormodule_required', $moduleid);
 				}
 				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
 				self::$_moduleBehaviors[$moduleid][$this->_behaviorName] = $this->_properties;
