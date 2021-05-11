@@ -40,8 +40,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TGravatar extends TImage
 {
-	const HTTP_URL = 'http://www.gravatar.com/avatar/';
-	const HTTPS_URL = 'https://secure.gravatar.com/avatar/';
+	public const HTTP_URL = 'http://www.gravatar.com/avatar/';
+	public const HTTPS_URL = 'https://secure.gravatar.com/avatar/';
 	
 	/**
 	 * @return string the URL to the gravatar

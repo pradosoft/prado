@@ -48,12 +48,12 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TDbParameterModule extends TModule
 {
-	const SERIALIZE_PHP = 'php';
-	const SERIALIZE_JSON = 'json';
+	public const SERIALIZE_PHP = 'php';
+	public const SERIALIZE_JSON = 'json';
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
-	const APP_PARAMETER_LAZY_BEHAVIOR = 'lazyDbParameter';
+	public const APP_PARAMETER_LAZY_BEHAVIOR = 'lazyDbParameter';
 	/**
 	 * @var string the ID of TDataSourceConfig module
 	 */

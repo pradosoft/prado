@@ -43,12 +43,12 @@ class TTimeZoneParameterBehavior extends TBehavior
 	/**
 	 * Name of the Application Parameter Routing Behavior
 	 */
-	const APP_PARAM_ROUTE_BEHAVIOR_NAME = 'TimeZoneParameter';
+	public const APP_PARAM_ROUTE_BEHAVIOR_NAME = 'TimeZoneParameter';
 	
 	/**
 	 * Default TimeZoneParameter
 	 */
-	const TIMEZONE_PARAMETER_NAME = 'prop:TimeZone';
+	public const TIMEZONE_PARAMETER_NAME = 'prop:TimeZone';
 	
 	/**
 	 * @var string the page theme is set to this parameter key

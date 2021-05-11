@@ -33,7 +33,7 @@ namespace Prado;
  */
 class TApplicationComponent extends \Prado\TComponent
 {
-	const APP_COMPONENT_FX_CACHE = 'prado:applicationcomponent:fxcache';
+	public const APP_COMPONENT_FX_CACHE = 'prado:applicationcomponent:fxcache';
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
