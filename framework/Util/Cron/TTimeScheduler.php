@@ -719,6 +719,7 @@ class TTimeScheduler extends \Prado\TComponent
 		$years = $this->getYearsArray();
 		
 		// Do Minutes
+		$nmin = null;
 		$z = -1;
 		$s = (!$hours[$lastdata['hours']] || !$days[$lastdata['mday']] || !$months[$month] || !$years[$year]) ? 0 : $lastdata['minutes'] + 1;
 		for ($i = $s, $hextra = 0; $i != $s + $z; $i++) {
@@ -734,6 +735,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		
 		// Do Hours
+		$nhour = null;
 		$z = -1;
 		$s = (!$days[$lastdata['mday']] || !$months[$lastdata['mon']] || !$years[$year]) ? 0 : $lastdata['hours'];
 		for ($i = $s + $hextra, $dextra = 0; $i != $s + $hextra + $z ; $i++) {
@@ -786,6 +788,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		
 		// Do the Month of the Year
+		$nmonth = null;
 		$z = -1;
 		$s = (!$years[$year]) ? 1 : $lastdata['mon'];
 		for ($i = $s, $yextra = 0; $i != $s + $z; $i++) {
