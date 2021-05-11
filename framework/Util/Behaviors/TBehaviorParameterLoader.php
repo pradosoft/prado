@@ -23,13 +23,15 @@ use Prado\TPropertyValue;
  * via parameter within an application.xml:
  * <code>
  * <application id="prado-app">
+ *		<parameters>
  *		<parameter id="pagethemebehaviorloader" class="Prado\Util\Behaviors\TBehaviorParameterLoader" BehaviorName="testBehavior" BehaviorClass="Prado\Util\Behaviors\TParameterizeBehavior" Priority="10" AttachToClass="Prado\Web\UI\TPage" Parameter="ThemeName" Property="Theme" DefaultValue="America/Los Angeles" />
  *		<parameters>
  * 	  ...
  * </code>
  *
  * TBehaviorParameterLoader can be used in parameters to load behaviors through the
- * {@link TParameterModule}, as well in each folder through the config.xml/php files.
+ * application configuration parameters, {@link TParameterModule}, as well in each
+ * folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
@@ -70,16 +72,16 @@ class TBehaviorParameterLoader extends TComponent
 	public function dyInit($config)
 	{
 		if (!$this->_behaviorName) {
-			throw new TConfigurationException('behaviorParameterLoader_no_behavior_name');
+			throw new TConfigurationException('behaviorparameterloader_no_behavior_name');
 		}
 		if (!$this->_behaviorClass) {
-			throw new TConfigurationException('behaviorParameterLoader_no_behavior_class');
+			throw new TConfigurationException('behaviorparameterloader_no_behavior_class');
 		}
 		
 		if ($this->_attachto === null && $this->_attachtoclass === null) {
-			throw new TConfigurationException('behaviorParameterLoader_attachto_class_required');
+			throw new TConfigurationException('behaviorparameterloader_attachto_class_required');
 		} elseif ($this->_attachto !== null && $this->_attachtoclass !== null) {
-			throw new TConfigurationException('behaviorParameterLoader_attachto_and_class_only_one');
+			throw new TConfigurationException('behaviorparameterloader_attachto_and_class_only_one');
 		}
 		$this->_properties['class'] = $this->_behaviorClass;
 		if ($this->_attachtoclass) {
@@ -97,7 +99,7 @@ class TBehaviorParameterLoader extends TComponent
 				}
 				$moduleid = trim(substr($this->_attachto, 7));
 				if (!$moduleid) {
-					throw new TConfigurationException('behaviormodule_behaviormodule_required', $moduleid);
+					throw new TConfigurationException('behaviorparameterloader_moduleid_required', $moduleid);
 				}
 				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
 				self::$_moduleBehaviors[$moduleid][$this->_behaviorName] = $this->_properties;
@@ -110,7 +112,7 @@ class TBehaviorParameterLoader extends TComponent
 			$priority = $this->_properties['priority'] ?? null;
 			unset($this->_properties['priority']);
 			if (!$owner) {
-				throw new TConfigurationException('behaviormodule_behaviorowner_required', $this->_attachto);
+				throw new TConfigurationException('behaviorparameterloader_behaviorowner_required', $this->_attachto);
 			}
 			$owner->attachBehavior($this->_behaviorName, $this->_properties, $this->_priority);
 		}
@@ -141,7 +143,7 @@ class TBehaviorParameterLoader extends TComponent
 		foreach (self::$_moduleBehaviors as $id => $behaviors) {
 			$owner = Prado::getApplication()->getModule($id);
 			if (!$owner) {
-				throw new TConfigurationException('behaviormodule_behaviormodule_required', $id);
+				throw new TConfigurationException('behaviorparameterloader_behaviormodule_not_found', $id);
 			}
 			foreach ($behaviors as $name => $properties) {
 				$priority = $properties['priority'] ?? null;
