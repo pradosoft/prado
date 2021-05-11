@@ -104,7 +104,7 @@ class TBehaviorsModule extends \Prado\TModule
 	public function attachTPageBehaviors($sender, $page)
 	{
 		foreach ($this->_pageBehaviors as $name => $properties) {
-			$priority = $properties['priority'];
+			$priority = $properties['priority'] ?? null;
 			unset($properties['priority']);
 			$page->attachBehavior($name, $properties, $priority);
 		}

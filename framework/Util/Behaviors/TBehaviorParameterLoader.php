@@ -56,8 +56,11 @@ class TBehaviorParameterLoader extends TComponent
 	/** @var array<string, string> additional properties to feed the behavior */
 	private $_properties = [];
 	
-	/** @var array<string, array> the list of behaviors to attach to the page */
+	/** @var array<string, array<properties>> the list of behaviors to attach to the page */
 	private static $_pageBehaviors = [];
+	
+	/** @var array<string, array<behaviors> the list of behaviors to attach to the page */
+	private static $_moduleBehaviors = [];
 	
 	/**
 	 * Install the behavior via dynamic event dyInit, called after a parameter
@@ -88,8 +91,19 @@ class TBehaviorParameterLoader extends TComponent
 				}
 				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
 				return;
-			} elseif (strncasecmp($this->_attachto, 'module:', 7) === 0) {
-				$owner = Prado::getApplication()->getModule(trim(substr($this->_attachto, 7)));
+			} elseif (strncasecmp(strtolower($this->_attachto), 'module:', 7) === 0) {
+				if (!count(self::$_moduleBehaviors)) {
+					Prado::getApplication()->attachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors'], -20);
+				}
+				$moduleid = trim(substr($this->_attachto, 7));
+				if (!$moduleid) {
+					throw new TConfigurationException('behaviormodule_behaviormodule_required', $id);
+				}
+				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
+				self::$_moduleBehaviors[$moduleid][$this->_behaviorName] = $this->_properties;
+				return;
+			} elseif (strtolower($this->_attachto) == "application") {
+				$owner = Prado::getApplication();
 			} else {
 				$owner = Prado::getApplication()->getSubProperty($this->_attachto);
 			}
@@ -113,8 +127,29 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$service = Prado::getApplication()->getService();
 		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
-			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors']);
+			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors'], -20);
 		}
+	}
+	
+	/**
+	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
+	 * @param object $sender the object that raised the event
+	 * @param Prado\Web\UI\TPage $page the page being initialized
+	 */
+	public function attachModuleBehaviors($sender, $page)
+	{
+		foreach (self::$_moduleBehaviors as $id => $behaviors) {
+			$owner = Prado::getApplication()->getModule($id);
+			if (!$owner) {
+				throw new TConfigurationException('behaviormodule_behaviormodule_required', $id);
+			}
+			foreach ($behaviors as $name => $properties) {
+				$priority = $properties['priority'] ?? null;
+				unset($properties['priority']);
+				$owner->attachBehavior($name, $properties, $priority);
+			}
+		}
+		self::$_moduleBehaviors = [];
 	}
 	
 	/**
@@ -125,11 +160,32 @@ class TBehaviorParameterLoader extends TComponent
 	public function attachTPageBehaviors($sender, $page)
 	{
 		foreach (self::$_pageBehaviors as $name => $properties) {
-			$priority = $properties['priority'];
+			$priority = $properties['priority'] ?? null;
 			unset($properties['priority']);
 			$page->attachBehavior($name, $properties, $priority);
 		}
 		self::$_pageBehaviors = [];
+	}
+	
+	/**
+	 * This resets the module and page behavior cache data.
+	 */
+	public function reset()
+	{
+		if ($this->_attachtoclass) {
+			TComponent::detachClassBehavior($this->_behaviorName, $this->_attachtoclass);
+		}
+		Prado::getApplication()->detachEventHandler('onInitComplete', [$this, 'attachModulesBehaviors']);
+		Prado::getApplication()->detachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
+		self::$_moduleBehaviors = [];
+		self::$_pageBehaviors = [];
+		
+		$this->_behaviorName = null;
+		$this->_behaviorClass = null;
+		$this->_priority = null;
+		$this->_attachto = null;
+		$this->_attachtoclass = null;
+		$this->_properties = [];
 	}
 	
 	/**
@@ -220,6 +276,15 @@ class TBehaviorParameterLoader extends TComponent
 	public function setAttachToClass($attachto)
 	{
 		$this->_attachtoclass = TPropertyValue::ensureString($attachto);
+	}
+	
+	/**
+	 * gets the Additional Properties of the behavior.
+	 * @return array additional behaviors for the behavior class.
+	 */
+	public function getProperties()
+	{
+		return $this->_properties;
 	}
 	
 	/**
