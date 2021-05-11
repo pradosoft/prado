@@ -59,12 +59,12 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 {
 	private $_isValid = true;
 
-	const ChallengeFieldName = 'recaptcha_challenge_field';
-	const ResponseFieldName = 'recaptcha_response_field';
-	const RECAPTCHA_API_SERVER = "http://www.google.com/recaptcha/api";
-	const RECAPTCHA_API_SECURE_SERVER = "https://www.google.com/recaptcha/api";
-	const RECAPTCHA_VERIFY_SERVER = "www.google.com";
-	const RECAPTCHA_JS = 'http://www.google.com/recaptcha/api/js/recaptcha_ajax.js';
+	public const ChallengeFieldName = 'recaptcha_challenge_field';
+	public const ResponseFieldName = 'recaptcha_response_field';
+	public const RECAPTCHA_API_SERVER = "http://www.google.com/recaptcha/api";
+	public const RECAPTCHA_API_SECURE_SERVER = "https://www.google.com/recaptcha/api";
+	public const RECAPTCHA_VERIFY_SERVER = "www.google.com";
+	public const RECAPTCHA_JS = 'http://www.google.com/recaptcha/api/js/recaptcha_ajax.js';
 
 	public function getTagName()
 	{

@@ -28,13 +28,13 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * Log levels.
 	 */
-	const DEBUG = 0x01;
-	const INFO = 0x02;
-	const NOTICE = 0x04;
-	const WARNING = 0x08;
-	const ERROR = 0x10;
-	const ALERT = 0x20;
-	const FATAL = 0x40;
+	public const DEBUG = 0x01;
+	public const INFO = 0x02;
+	public const NOTICE = 0x04;
+	public const WARNING = 0x08;
+	public const ERROR = 0x10;
+	public const ALERT = 0x20;
+	public const FATAL = 0x40;
 	/**
 	 * @var array log messages
 	 */

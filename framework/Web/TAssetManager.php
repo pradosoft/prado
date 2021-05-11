@@ -54,7 +54,7 @@ class TAssetManager extends \Prado\TModule
 	/**
 	 * Default web accessible base path for storing private files
 	 */
-	const DEFAULT_BASEPATH = 'assets';
+	public const DEFAULT_BASEPATH = 'assets';
 	/**
 	 * @var string base web accessible path for storing private files
 	 */

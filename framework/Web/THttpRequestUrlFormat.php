@@ -26,7 +26,7 @@ namespace Prado\Web;
  */
 class THttpRequestUrlFormat extends \Prado\TEnumerable
 {
-	const Get = 'Get';
-	const Path = 'Path';
-	const HiddenPath = 'HiddenPath';
+	public const Get = 'Get';
+	public const Path = 'Path';
+	public const HiddenPath = 'HiddenPath';
 }

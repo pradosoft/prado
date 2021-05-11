@@ -41,11 +41,11 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * Regex pattern for email address.
 	 */
-	const EMAIL_PATTERN = '/^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$/';
+	public const EMAIL_PATTERN = '/^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$/';
 	/**
 	 * Default email subject.
 	 */
-	const DEFAULT_SUBJECT = 'Prado Application Log';
+	public const DEFAULT_SUBJECT = 'Prado Application Log';
 	/**
 	 * @var array list of destination email addresses.
 	 */

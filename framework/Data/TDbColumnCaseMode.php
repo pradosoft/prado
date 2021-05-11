@@ -22,13 +22,13 @@ class TDbColumnCaseMode extends \Prado\TEnumerable
 	/**
 	 * Column name cases are kept as is from the database
 	 */
-	const Preserved = 'Preserved';
+	public const Preserved = 'Preserved';
 	/**
 	 * Column names are converted to lower case
 	 */
-	const LowerCase = 'LowerCase';
+	public const LowerCase = 'LowerCase';
 	/**
 	 * Column names are converted to upper case
 	 */
-	const UpperCase = 'UpperCase';
+	public const UpperCase = 'UpperCase';
 }

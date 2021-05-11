@@ -24,6 +24,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDatePickerPositionMode extends \Prado\TEnumerable
 {
-	const Top = 'Top';
-	const Bottom = 'Bottom';
+	public const Top = 'Top';
+	public const Bottom = 'Bottom';
 }

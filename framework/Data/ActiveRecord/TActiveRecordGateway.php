@@ -31,7 +31,7 @@ use ReflectionClass;
  */
 class TActiveRecordGateway extends \Prado\TComponent
 {
-	const DEFAULT_DATA_GATEWAY_CLASS = '\Prado\Data\DataGateway\TDataGatewayCommand';
+	public const DEFAULT_DATA_GATEWAY_CLASS = '\Prado\Data\DataGateway\TDataGatewayCommand';
 
 	/**
 	 * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
@@ -47,11 +47,11 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Constant name for specifying optional table name in TActiveRecord.
 	 */
-	const TABLE_CONST = 'TABLE';
+	public const TABLE_CONST = 'TABLE';
 	/**
 	 * Method name for returning optional table name in in TActiveRecord
 	 */
-	const TABLE_METHOD = 'table';
+	public const TABLE_METHOD = 'table';
 
 	/**
 	 * Record gateway constructor.

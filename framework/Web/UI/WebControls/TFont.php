@@ -26,22 +26,22 @@ class TFont extends \Prado\TComponent
 	/**
 	 * Bits indicating the font states.
 	 */
-	const IS_BOLD = 0x01;
-	const IS_ITALIC = 0x02;
-	const IS_OVERLINE = 0x04;
-	const IS_STRIKEOUT = 0x08;
-	const IS_UNDERLINE = 0x10;
+	public const IS_BOLD = 0x01;
+	public const IS_ITALIC = 0x02;
+	public const IS_OVERLINE = 0x04;
+	public const IS_STRIKEOUT = 0x08;
+	public const IS_UNDERLINE = 0x10;
 
 	/**
 	 * Bits indicating whether particular font states are changed.
 	 */
-	const IS_SET_BOLD = 0x01000;
-	const IS_SET_ITALIC = 0x02000;
-	const IS_SET_OVERLINE = 0x04000;
-	const IS_SET_STRIKEOUT = 0x08000;
-	const IS_SET_UNDERLINE = 0x10000;
-	const IS_SET_SIZE = 0x20000;
-	const IS_SET_NAME = 0x40000;
+	public const IS_SET_BOLD = 0x01000;
+	public const IS_SET_ITALIC = 0x02000;
+	public const IS_SET_OVERLINE = 0x04000;
+	public const IS_SET_STRIKEOUT = 0x08000;
+	public const IS_SET_UNDERLINE = 0x10000;
+	public const IS_SET_SIZE = 0x20000;
+	public const IS_SET_NAME = 0x40000;
 
 	/**
 	 * @var int bits representing various states

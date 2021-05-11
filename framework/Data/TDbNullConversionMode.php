@@ -22,13 +22,13 @@ class TDbNullConversionMode extends \Prado\TEnumerable
 	/**
 	 * No conversion is performed for null and empty values.
 	 */
-	const Preserved = 'Preserved';
+	public const Preserved = 'Preserved';
 	/**
 	 * NULL is converted to empty string
 	 */
-	const NullToEmptyString = 'NullToEmptyString';
+	public const NullToEmptyString = 'NullToEmptyString';
 	/**
 	 * Empty string is converted to NULL
 	 */
-	const EmptyStringToNull = 'EmptyStringToNull';
+	public const EmptyStringToNull = 'EmptyStringToNull';
 }

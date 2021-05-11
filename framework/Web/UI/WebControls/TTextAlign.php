@@ -24,6 +24,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTextAlign extends \Prado\TEnumerable
 {
-	const Left = 'Left';
-	const Right = 'Right';
+	public const Left = 'Left';
+	public const Right = 'Right';
 }

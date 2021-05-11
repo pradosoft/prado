@@ -46,12 +46,12 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * default themes base path
 	 */
-	const DEFAULT_BASEPATH = 'themes';
+	public const DEFAULT_BASEPATH = 'themes';
 
 	/**
 	 * default theme class
 	 */
-	const DEFAULT_THEMECLASS = '\Prado\Web\UI\TTheme';
+	public const DEFAULT_THEMECLASS = '\Prado\Web\UI\TTheme';
 
 	/**
 	 * @var string

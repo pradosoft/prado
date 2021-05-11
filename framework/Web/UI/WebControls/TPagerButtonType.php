@@ -24,7 +24,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TPagerButtonType extends \Prado\TEnumerable
 {
-	const LinkButton = 'LinkButton';
-	const PushButton = 'PushButton';
-	const ImageButton = 'ImageButton';
+	public const LinkButton = 'LinkButton';
+	public const PushButton = 'PushButton';
+	public const ImageButton = 'ImageButton';
 }

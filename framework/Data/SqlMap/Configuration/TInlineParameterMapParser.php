@@ -28,7 +28,7 @@ class TInlineParameterMapParser
 	/**
 	 * Regular expression for parsing inline parameter maps.
 	 */
-	const PARAMETER_TOKEN_REGEXP = '/#([^#]+)#/';
+	public const PARAMETER_TOKEN_REGEXP = '/#([^#]+)#/';
 
 	/**
 	 * Parse the sql text for inline parameters.

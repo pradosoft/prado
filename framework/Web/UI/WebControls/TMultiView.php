@@ -43,10 +43,10 @@ use Prado\Web\UI\TControl;
  */
 class TMultiView extends \Prado\Web\UI\TControl
 {
-	const CMD_NEXTVIEW = 'NextView';
-	const CMD_PREVIOUSVIEW = 'PreviousView';
-	const CMD_SWITCHVIEWID = 'SwitchViewID';
-	const CMD_SWITCHVIEWINDEX = 'SwitchViewIndex';
+	public const CMD_NEXTVIEW = 'NextView';
+	public const CMD_PREVIOUSVIEW = 'PreviousView';
+	public const CMD_SWITCHVIEWID = 'SwitchViewID';
+	public const CMD_SWITCHVIEWINDEX = 'SwitchViewIndex';
 	private $_cachedActiveViewIndex = -1;
 	private $_ignoreBubbleEvents = false;
 

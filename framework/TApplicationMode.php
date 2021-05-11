@@ -25,8 +25,8 @@ namespace Prado;
  */
 class TApplicationMode extends \Prado\TEnumerable
 {
-	const Off = 'Off';
-	const Debug = 'Debug';
-	const Normal = 'Normal';
-	const Performance = 'Performance';
+	public const Off = 'Off';
+	public const Debug = 'Debug';
+	public const Normal = 'Normal';
+	public const Performance = 'Performance';
 }

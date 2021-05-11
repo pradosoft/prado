@@ -38,11 +38,11 @@ class TTemplateManager extends \Prado\TModule
 	/**
 	 * Template file extension
 	 */
-	const TEMPLATE_FILE_EXT = '.tpl';
+	public const TEMPLATE_FILE_EXT = '.tpl';
 	/**
 	 * Prefix of the cache variable name for storing parsed templates
 	 */
-	const TEMPLATE_CACHE_PREFIX = 'prado:template:';
+	public const TEMPLATE_CACHE_PREFIX = 'prado:template:';
 
 	/**
 	 * Initializes the module.

@@ -48,8 +48,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TSessionPageStatePersister extends \Prado\TComponent implements IPageStatePersister
 {
-	const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
-	const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
+	public const STATE_SESSION_KEY = 'PRADO_SESSION_PAGESTATE';
+	public const QUEUE_SESSION_KEY = 'PRADO_SESSION_STATEQUEUE';
 
 	private $_page;
 	private $_historySize = 10;

@@ -53,7 +53,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	/**
 	 * Maximum file size (in bytes) allowed to be uploaded, defaults to 1MB.
 	 */
-	const MAX_FILE_SIZE = 1048576;
+	public const MAX_FILE_SIZE = 1048576;
 
 	private $_dataChanged = false;
 	private $_isValid = true;

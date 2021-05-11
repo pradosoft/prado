@@ -34,7 +34,7 @@ class TSqlMapConfig extends TDataSourceConfig
 	/**
 	 * File extension of external configuration file
 	 */
-	const CONFIG_FILE_EXT = '.xml';
+	public const CONFIG_FILE_EXT = '.xml';
 
 	/**
 	 * @return string module ID + configuration file path.

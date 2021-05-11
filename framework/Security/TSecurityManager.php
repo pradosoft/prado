@@ -49,8 +49,8 @@ use Prado\TPropertyValue;
  */
 class TSecurityManager extends \Prado\TModule
 {
-	const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
-	const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';
+	public const STATE_VALIDATION_KEY = 'prado:securitymanager:validationkey';
+	public const STATE_ENCRYPTION_KEY = 'prado:securitymanager:encryptionkey';
 
 	private $_validationKey;
 	private $_encryptionKey;

@@ -20,8 +20,8 @@ namespace Prado\Data\SqlMap\Configuration;
  */
 class TSimpleDynamicParser
 {
-	const PARAMETER_TOKEN_REGEXP = '/\$([^\$]+)\$/';
-	const DYNAMIC_TOKEN = '`!`';
+	public const PARAMETER_TOKEN_REGEXP = '/\$([^\$]+)\$/';
+	public const DYNAMIC_TOKEN = '`!`';
 
 	/**
 	 * Parse the sql text for dynamic place holders of the form $name$.

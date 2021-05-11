@@ -60,7 +60,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
-	const ChallengeFieldName = 'g-recaptcha-response';
+	public const ChallengeFieldName = 'g-recaptcha-response';
 	private $_isValid = true;
 
 	public function __construct()

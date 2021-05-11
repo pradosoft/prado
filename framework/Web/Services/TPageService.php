@@ -82,31 +82,31 @@ class TPageService extends \Prado\TService
 	/**
 	 * Configuration file name
 	 */
-	const CONFIG_FILE_XML = 'config.xml';
+	public const CONFIG_FILE_XML = 'config.xml';
 	/**
 	 * Configuration file name
 	 */
-	const CONFIG_FILE_PHP = 'config.php';
+	public const CONFIG_FILE_PHP = 'config.php';
 	/**
 	 * Default base path
 	 */
-	const DEFAULT_BASEPATH = 'Pages';
+	public const DEFAULT_BASEPATH = 'Pages';
 	/**
 	 * Fallback base path - used to be the default up to Prado < 3.2
 	 */
-	const FALLBACK_BASEPATH = 'pages';
+	public const FALLBACK_BASEPATH = 'pages';
 	/**
 	 * Prefix of ID used for storing parsed configuration in cache
 	 */
-	const CONFIG_CACHE_PREFIX = 'prado:pageservice:';
+	public const CONFIG_CACHE_PREFIX = 'prado:pageservice:';
 	/**
 	 * Page template file extension
 	 */
-	const PAGE_FILE_EXT = '.page';
+	public const PAGE_FILE_EXT = '.page';
 	/**
 	 * Prefix of Pages used for instantiating new pages
 	 */
-	const PAGE_NAMESPACE_PREFIX = 'Application\\Pages\\';
+	public const PAGE_NAMESPACE_PREFIX = 'Application\\Pages\\';
 	/**
 	 * @var string root path of pages
 	 */

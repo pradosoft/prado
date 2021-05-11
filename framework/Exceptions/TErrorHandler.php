@@ -56,19 +56,19 @@ class TErrorHandler extends \Prado\TModule
 	/**
 	 * error template file basename
 	 */
-	const ERROR_FILE_NAME = 'error';
+	public const ERROR_FILE_NAME = 'error';
 	/**
 	 * exception template file basename
 	 */
-	const EXCEPTION_FILE_NAME = 'exception';
+	public const EXCEPTION_FILE_NAME = 'exception';
 	/**
 	 * number of lines before and after the error line to be displayed in case of an exception
 	 */
-	const SOURCE_LINES = 12;
+	public const SOURCE_LINES = 12;
 	/**
 	 * number of prado internal function calls to be dropped from stack traces on fatal errors
 	 */
-	const FATAL_ERROR_TRACE_DROP_LINES = 5;
+	public const FATAL_ERROR_TRACE_DROP_LINES = 5;
 
 	/**
 	 * @var string error template directory

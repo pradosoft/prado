@@ -26,8 +26,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDisplayStyle extends \Prado\TEnumerable
 {
-	const None = 'None';
-	const Dynamic = 'Dynamic';
-	const Fixed = 'Fixed';
-	const Hidden = 'Hidden';
+	public const None = 'None';
+	public const Dynamic = 'Dynamic';
+	public const Fixed = 'Fixed';
+	public const Hidden = 'Hidden';
 }
