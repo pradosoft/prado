@@ -44,25 +44,27 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TTimeScheduler extends \Prado\TComponent
 {
-	const YEAR_MAX = 2099;
+	public const YEAR_MIN = 1970;
+	
+	public const YEAR_MAX = 2099;
 	
 	/** the minute attributes of the schedule */
-	const MINUTE = 0;
+	protected const MINUTE = 0;
 	
 	/** the hour attributes of the schedule */
-	const HOUR = 1;
+	protected const HOUR = 1;
 	
 	/** the day of month attributes of the schedule */
-	const DAY_OF_MONTH = 2;
+	protected const DAY_OF_MONTH = 2;
 	
 	/** the month of year attributes of the schedule */
-	const MONTH_OF_YEAR = 3;
+	protected const MONTH_OF_YEAR = 3;
 	
 	/** the day of week attributes of the schedule */
-	const DAY_OF_WEEK = 4;
+	protected const DAY_OF_WEEK = 4;
 	
 	/** the year attributes of the schedule */
-	const YEAR = 5;
+	protected const YEAR = 5;
 	
 	/** The cron schedule */
 	private $_schedule;
@@ -294,7 +296,7 @@ class TTimeScheduler extends \Prado\TComponent
 		foreach (explode(',', $matches[7]) as $match) {
 			if (preg_match('/^(\*|' . $year . ')(?:\-(' . $year . '))?(?:\/([1-9]?[0-9]))?$/i', $match, $m2)) {
 				if ($m2[1] === '*') {
-					$data = ['year' => 1970];
+					$data = ['year' => self::YEAR_MIN];
 					$data['end'] = self::YEAR_MAX;
 				} else {
 					$data = ['year' => $m2[1]];
@@ -519,7 +521,7 @@ class TTimeScheduler extends \Prado\TComponent
 	protected function getYearsArray()
 	{
 		$ya = [];
-		for ($i = 1970; $i <= self::YEAR_MAX; $i++) {
+		for ($i = self::YEAR_MIN; $i <= self::YEAR_MAX; $i++) {
 			$ya['' . $i] = 0;
 		}
 		foreach ($this->_attr[self::YEAR] as $m) {
