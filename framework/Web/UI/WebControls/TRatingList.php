@@ -28,7 +28,7 @@ class TRatingList extends TRadioButtonList
 	/**
 	 * Script path relative to the TClientScriptManager::SCRIPT_PATH
 	 */
-	const SCRIPT_PATH = 'ratings';
+	public const SCRIPT_PATH = 'ratings';
 
 	/**
 	 * @var array list of published rating images.

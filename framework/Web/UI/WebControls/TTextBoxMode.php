@@ -43,20 +43,20 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTextBoxMode extends \Prado\TEnumerable
 {
-	const SingleLine = 'SingleLine';
-	const MultiLine = 'MultiLine';
-	const Password = 'Password';
-	const Color = 'Color';
-	const Date = 'Date';
-	const Datetime = 'Datetime';
-	const DatetimeLocal = 'DatetimeLocal';
-	const Email = 'Email';
-	const Month = 'Month';
-	const Number = 'Number';
-	const Range = 'Range';
-	const Search = 'Search';
-	const Tel = 'Tel';
-	const Time = 'Time';
-	const Url = 'Url';
-	const Week = 'Week';
+	public const SingleLine = 'SingleLine';
+	public const MultiLine = 'MultiLine';
+	public const Password = 'Password';
+	public const Color = 'Color';
+	public const Date = 'Date';
+	public const Datetime = 'Datetime';
+	public const DatetimeLocal = 'DatetimeLocal';
+	public const Email = 'Email';
+	public const Month = 'Month';
+	public const Number = 'Number';
+	public const Range = 'Range';
+	public const Search = 'Search';
+	public const Tel = 'Tel';
+	public const Time = 'Time';
+	public const Url = 'Url';
+	public const Week = 'Week';
 }

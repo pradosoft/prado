@@ -41,7 +41,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TColorPicker extends TTextBox
 {
-	const SCRIPT_PATH = 'colorpicker';
+	public const SCRIPT_PATH = 'colorpicker';
 
 	private $_clientSide;
 

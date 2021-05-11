@@ -53,8 +53,8 @@ class TResultProperty extends \Prado\TComponent
 
 	private $_hostResultMapID = 'inplicit internal mapping';
 
-	const LIST_TYPE = 0;
-	const ARRAY_TYPE = 1;
+	public const LIST_TYPE = 0;
+	public const ARRAY_TYPE = 1;
 
 	/**
 	 * Gets the containing result map ID.

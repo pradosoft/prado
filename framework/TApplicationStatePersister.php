@@ -26,7 +26,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	/**
 	 * Name of the value stored in cache
 	 */
-	const CACHE_NAME = 'prado:appstate';
+	public const CACHE_NAME = 'prado:appstate';
 
 	/**
 	 * Initializes module.

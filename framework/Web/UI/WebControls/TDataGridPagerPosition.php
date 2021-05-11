@@ -30,7 +30,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDataGridPagerPosition extends \Prado\TEnumerable
 {
-	const Bottom = 'Bottom';
-	const Top = 'Top';
-	const TopAndBottom = 'TopAndBottom';
+	public const Bottom = 'Bottom';
+	public const Top = 'Top';
+	public const TopAndBottom = 'TopAndBottom';
 }

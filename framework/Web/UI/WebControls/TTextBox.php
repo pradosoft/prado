@@ -59,11 +59,11 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * Default number of rows (for MultiLine text box)
 	 */
-	const DEFAULT_ROWS = 4;
+	public const DEFAULT_ROWS = 4;
 	/**
 	 * Default number of columns (for MultiLine text box)
 	 */
-	const DEFAULT_COLUMNS = 20;
+	public const DEFAULT_COLUMNS = 20;
 	/**
 	 * @var mixed safe text parser
 	 */

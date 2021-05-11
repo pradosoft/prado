@@ -74,56 +74,56 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * format of control ID
 	 */
-	const ID_FORMAT = '/^[a-zA-Z_]\\w*$/';
+	public const ID_FORMAT = '/^[a-zA-Z_]\\w*$/';
 	/**
 	 * separator char between IDs in a UniqueID
 	 */
-	const ID_SEPARATOR = '$';
+	public const ID_SEPARATOR = '$';
 	/**
 	 * separator char between IDs in a ClientID
 	 */
-	const CLIENT_ID_SEPARATOR = '_';
+	public const CLIENT_ID_SEPARATOR = '_';
 	/**
 	 * prefix to an ID automatically generated
 	 */
-	const AUTOMATIC_ID_PREFIX = 'ctl';
+	public const AUTOMATIC_ID_PREFIX = 'ctl';
 
 	/**
 	 * the stage of lifecycles that the control is currently at
 	 */
-	const CS_CONSTRUCTED = 0;
-	const CS_CHILD_INITIALIZED = 1;
-	const CS_INITIALIZED = 2;
-	const CS_STATE_LOADED = 3;
-	const CS_LOADED = 4;
-	const CS_PRERENDERED = 5;
+	public const CS_CONSTRUCTED = 0;
+	public const CS_CHILD_INITIALIZED = 1;
+	public const CS_INITIALIZED = 2;
+	public const CS_STATE_LOADED = 3;
+	public const CS_LOADED = 4;
+	public const CS_PRERENDERED = 5;
 
 	/**
 	 * State bits.
 	 */
-	const IS_ID_SET = 0x01;
-	const IS_DISABLE_VIEWSTATE = 0x02;
-	const IS_SKIN_APPLIED = 0x04;
-	const IS_STYLESHEET_APPLIED = 0x08;
-	const IS_DISABLE_THEMING = 0x10;
-	const IS_CHILD_CREATED = 0x20;
-	const IS_CREATING_CHILD = 0x40;
+	public const IS_ID_SET = 0x01;
+	public const IS_DISABLE_VIEWSTATE = 0x02;
+	public const IS_SKIN_APPLIED = 0x04;
+	public const IS_STYLESHEET_APPLIED = 0x08;
+	public const IS_DISABLE_THEMING = 0x10;
+	public const IS_CHILD_CREATED = 0x20;
+	public const IS_CREATING_CHILD = 0x40;
 
 	/**
 	 * Indexes for the rare fields.
 	 * In order to save memory, rare fields will only be created if they are needed.
 	 */
-	const RF_CONTROLS = 0;			// child controls
-	const RF_CHILD_STATE = 1;			// child state field
-	const RF_NAMED_CONTROLS = 2;		// list of controls whose namingcontainer is this control
-	const RF_NAMED_CONTROLS_ID = 3;	// counter for automatic id
-	const RF_SKIN_ID = 4;				// skin ID
-	const RF_DATA_BINDINGS = 5;		// data bindings
-	const RF_EVENTS = 6;				// event handlers
-	const RF_CONTROLSTATE = 7;		// controlstate
-	const RF_NAMED_OBJECTS = 8;		// controls declared with ID on template
-	const RF_ADAPTER = 9;				// adapter
-	const RF_AUTO_BINDINGS = 10;		// auto data bindings
+	public const RF_CONTROLS = 0;			// child controls
+	public const RF_CHILD_STATE = 1;			// child state field
+	public const RF_NAMED_CONTROLS = 2;		// list of controls whose namingcontainer is this control
+	public const RF_NAMED_CONTROLS_ID = 3;	// counter for automatic id
+	public const RF_SKIN_ID = 4;				// skin ID
+	public const RF_DATA_BINDINGS = 5;		// data bindings
+	public const RF_EVENTS = 6;				// event handlers
+	public const RF_CONTROLSTATE = 7;		// controlstate
+	public const RF_NAMED_OBJECTS = 8;		// controls declared with ID on template
+	public const RF_ADAPTER = 9;				// adapter
+	public const RF_AUTO_BINDINGS = 10;		// auto data bindings
 
 	/**
 	 * @var string control ID

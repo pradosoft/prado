@@ -29,6 +29,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDataGridPagerMode extends \Prado\TEnumerable
 {
-	const NextPrev = 'NextPrev';
-	const Numeric = 'Numeric';
+	public const NextPrev = 'NextPrev';
+	public const Numeric = 'Numeric';
 }

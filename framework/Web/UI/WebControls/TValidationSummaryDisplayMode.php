@@ -27,8 +27,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class TValidationSummaryDisplayMode extends \Prado\TEnumerable
 {
-	const SimpleList = 'SimpleList';
-	const SingleParagraph = 'SingleParagraph';
-	const BulletList = 'BulletList';
-	const HeaderOnly = 'HeaderOnly';
+	public const SimpleList = 'SimpleList';
+	public const SingleParagraph = 'SingleParagraph';
+	public const BulletList = 'BulletList';
+	public const HeaderOnly = 'HeaderOnly';
 }

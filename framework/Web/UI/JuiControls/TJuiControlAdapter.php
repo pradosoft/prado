@@ -25,8 +25,8 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  */
 class TJuiControlAdapter extends TActiveControlAdapter
 {
-	const CSS_PATH = 'themes';
-	const BASE_CSS_FILENAME = 'jquery-ui.css';
+	public const CSS_PATH = 'themes';
+	public const BASE_CSS_FILENAME = 'jquery-ui.css';
 
 	/**
 	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for

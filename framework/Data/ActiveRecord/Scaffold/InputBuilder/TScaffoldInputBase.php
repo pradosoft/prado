@@ -21,7 +21,7 @@ use Prado\Exceptions\TConfigurationException;
 
 class TScaffoldInputBase
 {
-	const DEFAULT_ID = 'scaffold_input';
+	public const DEFAULT_ID = 'scaffold_input';
 	private $_parent;
 
 	protected function getParent()

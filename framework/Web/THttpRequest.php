@@ -75,8 +75,8 @@ use Prado\TApplicationMode;
  */
 class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
-	const CGIFIX__PATH_INFO = 1;
-	const CGIFIX__SCRIPT_NAME = 2;
+	public const CGIFIX__PATH_INFO = 1;
+	public const CGIFIX__SCRIPT_NAME = 2;
 	/**
 	 * @var TUrlManager the URL manager module
 	 */

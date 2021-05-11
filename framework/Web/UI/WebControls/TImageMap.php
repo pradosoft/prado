@@ -35,7 +35,7 @@ use Prado\TPropertyValue;
  */
 class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 {
-	const MAP_NAME_PREFIX = 'ImageMap';
+	public const MAP_NAME_PREFIX = 'ImageMap';
 
 	/**
 	 * Processes an object that is created during parsing template.

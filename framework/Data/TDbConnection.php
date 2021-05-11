@@ -90,7 +90,7 @@ class TDbConnection extends \Prado\TComponent
 	 *
 	 * @since 3.1.7
 	 */
-	const DEFAULT_TRANSACTION_CLASS = '\Prado\Data\TDbTransaction';
+	public const DEFAULT_TRANSACTION_CLASS = '\Prado\Data\TDbTransaction';
 
 	private $_dsn = '';
 	private $_username = '';

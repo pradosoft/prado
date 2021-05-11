@@ -28,9 +28,9 @@ namespace Prado\Web\UI\WebControls;
  */
 class THorizontalAlign extends \Prado\TEnumerable
 {
-	const NotSet = 'NotSet';
-	const Left = 'Left';
-	const Right = 'Right';
-	const Center = 'Center';
-	const Justify = 'Justify';
+	public const NotSet = 'NotSet';
+	public const Left = 'Left';
+	public const Right = 'Right';
+	public const Center = 'Center';
+	public const Justify = 'Justify';
 }

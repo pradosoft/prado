@@ -24,6 +24,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TListSelectionMode extends \Prado\TEnumerable
 {
-	const Single = 'Single';
-	const Multiple = 'Multiple';
+	public const Single = 'Single';
+	public const Multiple = 'Multiple';
 }

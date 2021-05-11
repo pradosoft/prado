@@ -152,11 +152,11 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * Command name that TDataList understands. They are case-insensitive.
 	 */
-	const CMD_SELECT = 'Select';
-	const CMD_EDIT = 'Edit';
-	const CMD_UPDATE = 'Update';
-	const CMD_DELETE = 'Delete';
-	const CMD_CANCEL = 'Cancel';
+	public const CMD_SELECT = 'Select';
+	public const CMD_EDIT = 'Edit';
+	public const CMD_UPDATE = 'Update';
+	public const CMD_DELETE = 'Delete';
+	public const CMD_CANCEL = 'Cancel';
 
 	/**
 	 * @var TDataListItemCollection item list

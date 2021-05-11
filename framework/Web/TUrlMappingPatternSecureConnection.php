@@ -26,29 +26,29 @@ class TUrlMappingPatternSecureConnection extends \Prado\TEnumerable
 	 * Keep current SecureConnection status
 	 * means no prefixing
 	 */
-	const Automatic = 'Automatic';
+	public const Automatic = 'Automatic';
 
 	/**
 	 * Force use secured connection
 	 * always prefixing with https://example.com/path/to/app
 	 */
-	const Enable = 'Enable';
+	public const Enable = 'Enable';
 
 	/**
 	 * Force use unsecured connection
 	 * always prefixing with http://example.com/path/to/app
 	 */
-	const Disable = 'Disable';
+	public const Disable = 'Disable';
 
 	/**
 	 * Force use secured connection, if in unsecured mode
 	 * prefixing with https://example.com/path/to/app
 	 */
-	const EnableIfNotSecure = 'EnableIfNotSecure';
+	public const EnableIfNotSecure = 'EnableIfNotSecure';
 
 	/**
 	 * Force use unsecured connection, if in secured mode
 	 * prefixing with https://example.com/path/to/app
 	 */
-	const DisableIfSecure = 'DisableIfSecure';
+	public const DisableIfSecure = 'DisableIfSecure';
 }

@@ -1,6 +1,14 @@
 <?php
 
-$config = PhpCsFixer\Config::create()
+$finder = PhpCsFixer\Finder::create()
+	->exclude('build/')
+	->exclude('docs/')
+	->exclude('tests/')
+	->exclude('vendor/')
+	->in(__DIR__);
+
+$config = new PhpCsFixer\Config();
+$config
 	->setRiskyAllowed(true)
     ->setIndent("\t")
     ->setLineEnding("\n")
@@ -25,21 +33,13 @@ $config = PhpCsFixer\Config::create()
 		'phpdoc_order' => true,
 		'phpdoc_scalar' => true,
 		'phpdoc_types_order' => true,
-		'psr4' => true,
+		'psr_autoloading' => true,
 		'ternary_operator_spaces' => true,
 		'ternary_to_null_coalescing' => true,
 		'trim_array_spaces' => true,
 		'visibility_required' => true,
 		'whitespace_after_comma_in_array' => true,
 	])
-	->setFinder(
-		PhpCsFixer\Finder::create()
-			->exclude('build/')
-			->exclude('docs/')
-			->exclude('tests/')
-			->exclude('vendor/')
-			->in(__DIR__)
-	)
-;
+	->setFinder($finder);
 
 return $config;

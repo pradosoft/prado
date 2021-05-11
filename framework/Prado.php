@@ -56,7 +56,7 @@ class Prado
 	/**
 	 * File extension for Prado class files.
 	 */
-	const CLASS_FILE_EXT = '.php';
+	public const CLASS_FILE_EXT = '.php';
 	/**
 	 * @var array<string, string> list of path aliases
 	 */

@@ -54,11 +54,11 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	/**
 	 * prefix for cache variable name used to store parsed themes
 	 */
-	const THEME_CACHE_PREFIX = 'prado:theme:';
+	public const THEME_CACHE_PREFIX = 'prado:theme:';
 	/**
 	 * Extension name of skin files
 	 */
-	const SKIN_FILE_EXT = '.skin';
+	public const SKIN_FILE_EXT = '.skin';
 	/**
 	 * @var string theme path
 	 */

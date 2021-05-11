@@ -350,7 +350,7 @@ class TComponent
 	/**
 	 * @const string the name of the global {@link raiseEvent} listener
 	 */
-	const GLOBAL_RAISE_EVENT_LISTENER = 'fxGlobalListener';
+	public const GLOBAL_RAISE_EVENT_LISTENER = 'fxGlobalListener';
 
 
 	/**

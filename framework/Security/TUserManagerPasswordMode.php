@@ -26,7 +26,7 @@ namespace Prado\Security;
  */
 class TUserManagerPasswordMode extends \Prado\TEnumerable
 {
-	const Clear = 'Clear';
-	const MD5 = 'MD5';
-	const SHA1 = 'SHA1';
+	public const Clear = 'Clear';
+	public const MD5 = 'MD5';
+	public const SHA1 = 'SHA1';
 }

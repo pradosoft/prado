@@ -84,7 +84,7 @@ class TDatePicker extends TTextBox
 	/**
 	 * Script path relative to the TClientScriptManager::SCRIPT_PATH
 	 */
-	const SCRIPT_PATH = 'datepicker';
+	public const SCRIPT_PATH = 'datepicker';
 
 	/**
 	 * @var TDatePickerClientScript validator client-script options.

@@ -45,8 +45,8 @@ use XSLTProcessor;
  */
 class TXmlTransform extends \Prado\Web\UI\TControl
 {
-	const EXT_XML_FILE = '.xml';
-	const EXT_XSL_FILE = '.xsl';
+	public const EXT_XML_FILE = '.xml';
+	public const EXT_XSL_FILE = '.xsl';
 
 	/**
 	 * Constructor

@@ -60,7 +60,7 @@ use Prado\Web\Javascripts\TJavaScript;
  */
 class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallbackEventHandler, INamingContainer
 {
-	const SCRIPT_PATH = 'activefileupload';
+	public const SCRIPT_PATH = 'activefileupload';
 
 	/**
 	 * @var THiddenField a flag to tell which component is doing the callback.

@@ -68,17 +68,17 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	/**
 	 * @var int select is to query for list.
 	 */
-	const QUERY_FOR_LIST = 0;
+	public const QUERY_FOR_LIST = 0;
 
 	/**
 	 * @var int select is to query for array.
 	 */
-	const QUERY_FOR_ARRAY = 1;
+	public const QUERY_FOR_ARRAY = 1;
 
 	/**
 	 * @var int select is to query for object.
 	 */
-	const QUERY_FOR_OBJECT = 2;
+	public const QUERY_FOR_OBJECT = 2;
 
 	/**
 	 * @return string Name used to identify the TMappedStatement amongst the others.

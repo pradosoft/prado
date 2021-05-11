@@ -75,7 +75,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer
 {
-	const CACHE_ID_PREFIX = 'prado:outputcache';
+	public const CACHE_ID_PREFIX = 'prado:outputcache';
 	private $_cacheModuleID = '';
 	private $_dataCached = false;
 	private $_cacheAvailable = false;

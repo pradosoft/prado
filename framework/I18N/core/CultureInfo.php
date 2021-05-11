@@ -85,21 +85,21 @@ class CultureInfo
 	 * @see getCultures()
 	 * @var int
 	 */
-	const ALL = 0;
+	public const ALL = 0;
 
 	/**
 	 * Culture type, neutral.
 	 * @see getCultures()
 	 * @var int
 	 */
-	const NEUTRAL = 1;
+	public const NEUTRAL = 1;
 
 	/**
 	 * Culture type, specific.
 	 * @see getCultures()
 	 * @var int
 	 */
-	const SPECIFIC = 2;
+	public const SPECIFIC = 2;
 
 	/**
 	 * Display the culture name.

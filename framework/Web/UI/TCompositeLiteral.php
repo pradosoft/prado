@@ -22,9 +22,9 @@ namespace Prado\Web\UI;
  */
 class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBindable
 {
-	const TYPE_EXPRESSION = 0;
-	const TYPE_STATEMENTS = 1;
-	const TYPE_DATABINDING = 2;
+	public const TYPE_EXPRESSION = 0;
+	public const TYPE_STATEMENTS = 1;
+	public const TYPE_DATABINDING = 2;
 	private $_container;
 	private $_items = [];
 	private $_expressions = [];

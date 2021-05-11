@@ -30,7 +30,7 @@ use Prado\Wsdl\WsdlGenerator;
  */
 class TSoapServer extends \Prado\TApplicationComponent
 {
-	const WSDL_CACHE_PREFIX = 'wsdl.';
+	public const WSDL_CACHE_PREFIX = 'wsdl.';
 
 	private $_id;
 	private $_provider;

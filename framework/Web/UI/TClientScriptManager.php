@@ -34,11 +34,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * file containing javascript packages and their cross dependencies
 	 */
-	const PACKAGES_FILE = 'Web/Javascripts/packages.php';
+	public const PACKAGES_FILE = 'Web/Javascripts/packages.php';
 	/**
 	 * file containing css packages and their cross dependencies
 	 */
-	const CSS_PACKAGES_FILE = 'Web/Javascripts/css-packages.php';
+	public const CSS_PACKAGES_FILE = 'Web/Javascripts/css-packages.php';
 	/**
 	 * @var TPage page who owns this manager
 	 */

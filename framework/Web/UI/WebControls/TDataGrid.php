@@ -150,17 +150,17 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * Command name that TDataGrid understands.
 	 */
-	const CMD_SELECT = 'Select';
-	const CMD_EDIT = 'Edit';
-	const CMD_UPDATE = 'Update';
-	const CMD_DELETE = 'Delete';
-	const CMD_CANCEL = 'Cancel';
-	const CMD_SORT = 'Sort';
-	const CMD_PAGE = 'Page';
-	const CMD_PAGE_NEXT = 'Next';
-	const CMD_PAGE_PREV = 'Previous';
-	const CMD_PAGE_FIRST = 'First';
-	const CMD_PAGE_LAST = 'Last';
+	public const CMD_SELECT = 'Select';
+	public const CMD_EDIT = 'Edit';
+	public const CMD_UPDATE = 'Update';
+	public const CMD_DELETE = 'Delete';
+	public const CMD_CANCEL = 'Cancel';
+	public const CMD_SORT = 'Sort';
+	public const CMD_PAGE = 'Page';
+	public const CMD_PAGE_NEXT = 'Next';
+	public const CMD_PAGE_PREV = 'Previous';
+	public const CMD_PAGE_FIRST = 'First';
+	public const CMD_PAGE_LAST = 'Last';
 
 	/**
 	 * @var TDataGridColumnCollection manually created column collection

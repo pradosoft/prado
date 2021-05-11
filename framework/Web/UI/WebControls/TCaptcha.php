@@ -63,8 +63,8 @@ use Prado\TPropertyValue;
  */
 class TCaptcha extends TImage
 {
-	const MIN_TOKEN_LENGTH = 2;
-	const MAX_TOKEN_LENGTH = 40;
+	public const MIN_TOKEN_LENGTH = 2;
+	public const MAX_TOKEN_LENGTH = 40;
 	private $_privateKey;
 	private $_validated = false;
 

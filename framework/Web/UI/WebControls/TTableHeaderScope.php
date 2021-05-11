@@ -25,7 +25,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TTableHeaderScope extends \Prado\TEnumerable
 {
-	const NotSet = 'NotSet';
-	const Row = 'Row';
-	const Column = 'Column';
+	public const NotSet = 'NotSet';
+	public const Row = 'Row';
+	public const Column = 'Column';
 }

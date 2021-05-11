@@ -24,6 +24,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TDatePickerInputMode extends \Prado\TEnumerable
 {
-	const TextBox = 'TextBox';
-	const DropDownList = 'DropDownList';
+	public const TextBox = 'TextBox';
+	public const DropDownList = 'DropDownList';
 }
