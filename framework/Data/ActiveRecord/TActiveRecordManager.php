@@ -35,7 +35,7 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordManager extends \Prado\TComponent
 {
-	const DEFAULT_GATEWAY_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordGateway';
+	public const DEFAULT_GATEWAY_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordGateway';
 
 	/**
 	 * Defaults to {@link TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}

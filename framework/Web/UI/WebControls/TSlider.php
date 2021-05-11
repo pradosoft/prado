@@ -49,7 +49,7 @@ use Prado\TPropertyValue;
  */
 class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\IDataRenderer
 {
-	const MAX_STEPS = 200;
+	public const MAX_STEPS = 200;
 	/*
 	 * @var boolean Wether the data has changed during postback
 	 */

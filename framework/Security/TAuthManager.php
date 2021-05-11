@@ -51,7 +51,7 @@ class TAuthManager extends \Prado\TModule
 	/**
 	 * GET variable name for return url
 	 */
-	const RETURN_URL_VAR = 'ReturnUrl';
+	public const RETURN_URL_VAR = 'ReturnUrl';
 	/**
 	 * @var bool if the module has been initialized
 	 */

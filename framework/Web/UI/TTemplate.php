@@ -61,17 +61,17 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 *	'<%[%#~\/\\$=\\[](.*?)%>'  - expressions
 	 *  '<prop:([\w\.\-]+)((?:\s*[\w\.\-]+=\'.*?\'|\s*[\w\.\-]+=".*?"|\s*[\w\.\-]+=<%.*?%>)*)\s*\/>' - group subproperty tags
 	 */
-	const REGEX_RULES = '/<!--.*?--!>|<!---.*?--->|<\/?com:([\w\.\\\]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.\-]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\/\\$=\\[](.*?)%>|<prop:([\w\.\-]+)((?:\s*[\w\.\-]+\s*=\s*\'.*?\'|\s*[\w\.\-]+\s*=\s*".*?"|\s*[\w\.\-]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
+	public const REGEX_RULES = '/<!--.*?--!>|<!---.*?--->|<\/?com:([\w\.\\\]+)((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?"|\s*[\w\.]+\s*=\s*<%.*?%>)*)\s*\/?>|<\/?prop:([\w\.\-]+)\s*>|<%@\s*((?:\s*[\w\.]+\s*=\s*\'.*?\'|\s*[\w\.]+\s*=\s*".*?")*)\s*%>|<%[%#~\/\\$=\\[](.*?)%>|<prop:([\w\.\-]+)((?:\s*[\w\.\-]+\s*=\s*\'.*?\'|\s*[\w\.\-]+\s*=\s*".*?"|\s*[\w\.\-]+\s*=\s*<%.*?%>)*)\s*\/>/msS';
 
 	/**
 	 * Different configurations of component property/event/attribute
 	 */
-	const CONFIG_DATABIND = 0;
-	const CONFIG_EXPRESSION = 1;
-	const CONFIG_ASSET = 2;
-	const CONFIG_PARAMETER = 3;
-	const CONFIG_LOCALIZATION = 4;
-	const CONFIG_TEMPLATE = 5;
+	public const CONFIG_DATABIND = 0;
+	public const CONFIG_EXPRESSION = 1;
+	public const CONFIG_ASSET = 2;
+	public const CONFIG_PARAMETER = 3;
+	public const CONFIG_LOCALIZATION = 4;
+	public const CONFIG_TEMPLATE = 5;
 
 	/**
 	 * @var array list of component tags and strings

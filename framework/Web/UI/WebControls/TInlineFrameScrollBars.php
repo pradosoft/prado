@@ -28,7 +28,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TInlineFrameScrollBars extends \Prado\TEnumerable
 {
-	const None = 'None';
-	const Auto = 'Auto';
-	const Both = 'Both';
+	public const None = 'None';
+	public const Auto = 'Auto';
+	public const Both = 'Both';
 }

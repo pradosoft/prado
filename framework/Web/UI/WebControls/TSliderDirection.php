@@ -26,6 +26,6 @@ namespace Prado\Web\UI\WebControls;
  */
 class TSliderDirection extends \Prado\TEnumerable
 {
-	const Horizontal = 'Horizontal';
-	const Vertical = 'Vertical';
+	public const Horizontal = 'Horizontal';
+	public const Vertical = 'Vertical';
 }

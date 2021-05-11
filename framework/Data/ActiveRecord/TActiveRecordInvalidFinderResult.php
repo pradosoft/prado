@@ -28,6 +28,6 @@ namespace Prado\Data\ActiveRecord;
  */
 class TActiveRecordInvalidFinderResult extends \Prado\TEnumerable
 {
-	const Null = 'Null';
-	const Exception = 'Exception';
+	public const Null = 'Null';
+	public const Exception = 'Exception';
 }

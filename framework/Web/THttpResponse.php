@@ -65,8 +65,8 @@ use Prado\TPropertyValue;
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
-	const DEFAULT_CONTENTTYPE = 'text/html';
-	const DEFAULT_CHARSET = 'UTF-8';
+	public const DEFAULT_CONTENTTYPE = 'text/html';
+	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
 	 * @var array<int, string> The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}

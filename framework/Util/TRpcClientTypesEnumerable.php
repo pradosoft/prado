@@ -19,6 +19,6 @@ namespace Prado\Util;
 
 class TRpcClientTypesEnumerable extends \Prado\TEnumerable
 {
-	const JSON = 'TJsonRpcClient';
-	const XML = 'TXmlRpcClient';
+	public const JSON = 'TJsonRpcClient';
+	public const XML = 'TXmlRpcClient';
 }

@@ -37,7 +37,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * template file extension.
 	 */
-	const EXT_TEMPLATE = '.tpl';
+	public const EXT_TEMPLATE = '.tpl';
 
 	/**
 	 * @var ITemplate the parsed template structure shared by the same control class

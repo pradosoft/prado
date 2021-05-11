@@ -74,7 +74,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	/**
 	 * extension name to the user file
 	 */
-	const USER_FILE_EXT = '.xml';
+	public const USER_FILE_EXT = '.xml';
 
 	/**
 	 * @var array list of users managed by this module

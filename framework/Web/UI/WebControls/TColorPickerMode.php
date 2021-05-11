@@ -26,7 +26,7 @@ namespace Prado\Web\UI\WebControls;
  */
 class TColorPickerMode extends \Prado\TEnumerable
 {
-	const Simple = 'Simple';
-	const Basic = 'Basic';
-	const Full = 'Full';
+	public const Simple = 'Simple';
+	public const Basic = 'Basic';
+	public const Full = 'Full';
 }

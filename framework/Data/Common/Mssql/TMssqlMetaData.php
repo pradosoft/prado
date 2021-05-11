@@ -26,7 +26,7 @@ use Prado\Prado;
  */
 class TMssqlMetaData extends TDbMetaData
 {
-	const DEFAULT_SCHEMA = 'dbo';
+	public const DEFAULT_SCHEMA = 'dbo';
 
 	/**
 	 * @return string TDbTableInfo class name.

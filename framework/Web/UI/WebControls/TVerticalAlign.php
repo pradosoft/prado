@@ -27,8 +27,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class TVerticalAlign extends \Prado\TEnumerable
 {
-	const NotSet = 'NotSet';
-	const Top = 'Top';
-	const Bottom = 'Bottom';
-	const Middle = 'Middle';
+	public const NotSet = 'NotSet';
+	public const Top = 'Top';
+	public const Bottom = 'Bottom';
+	public const Middle = 'Middle';
 }

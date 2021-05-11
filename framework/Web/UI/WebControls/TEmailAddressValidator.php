@@ -30,7 +30,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 	 * Regular expression used to validate the email address
 	 * @see http://www.regular-expressions.info/email.html
 	 */
-	const EMAIL_REGEXP = '[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
+	public const EMAIL_REGEXP = '[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
 
 	/**
 	 * Gets the name of the javascript class responsible for performing validation for this control.

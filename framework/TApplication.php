@@ -96,43 +96,43 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Page service ID
 	 */
-	const PAGE_SERVICE_ID = 'page';
+	public const PAGE_SERVICE_ID = 'page';
 	/**
 	 * Application configuration file name
 	 */
-	const CONFIG_FILE_XML = 'application.xml';
+	public const CONFIG_FILE_XML = 'application.xml';
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT_XML = '.xml';
+	public const CONFIG_FILE_EXT_XML = '.xml';
 	/**
 	 * Configuration file type, application.xml and config.xml
 	 */
-	const CONFIG_TYPE_XML = 'xml';
+	public const CONFIG_TYPE_XML = 'xml';
 	/**
 	 * Application configuration file name
 	 */
-	const CONFIG_FILE_PHP = 'application.php';
+	public const CONFIG_FILE_PHP = 'application.php';
 	/**
 	 * File extension for external config files
 	 */
-	const CONFIG_FILE_EXT_PHP = '.php';
+	public const CONFIG_FILE_EXT_PHP = '.php';
 	/**
 	 * Configuration file type, application.php and config.php
 	 */
-	const CONFIG_TYPE_PHP = 'php';
+	public const CONFIG_TYPE_PHP = 'php';
 	/**
 	 * Runtime directory name
 	 */
-	const RUNTIME_PATH = 'runtime';
+	public const RUNTIME_PATH = 'runtime';
 	/**
 	 * Config cache file
 	 */
-	const CONFIGCACHE_FILE = 'config.cache';
+	public const CONFIGCACHE_FILE = 'config.cache';
 	/**
 	 * Global data file
 	 */
-	const GLOBAL_FILE = 'global.cache';
+	public const GLOBAL_FILE = 'global.cache';
 
 	/**
 	 * @var array list of events that define application lifecycles

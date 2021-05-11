@@ -31,10 +31,10 @@ namespace Prado\Web\UI\WebControls;
  */
 class TInlineFrameAlign extends \Prado\TEnumerable
 {
-	const NotSet = 'NotSet';
-	const Left = 'Left';
-	const Right = 'Right';
-	const Top = 'Top';
-	const Middle = 'Middle';
-	const Bottom = 'Bottom';
+	public const NotSet = 'NotSet';
+	public const Left = 'Left';
+	public const Right = 'Right';
+	public const Top = 'Top';
+	public const Middle = 'Middle';
+	public const Bottom = 'Bottom';
 }

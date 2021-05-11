@@ -44,12 +44,12 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	/**
 	 * Regular expressions for escaping simple/inline parameter symbols
 	 */
-	const SIMPLE_MARK = '$';
-	const INLINE_SYMBOL = '#';
-	const ESCAPED_SIMPLE_MARK_REGEXP = '/\$\$/';
-	const ESCAPED_INLINE_SYMBOL_REGEXP = '/\#\#/';
-	const SIMPLE_PLACEHOLDER = '`!!`';
-	const INLINE_PLACEHOLDER = '`!!!`';
+	public const SIMPLE_MARK = '$';
+	public const INLINE_SYMBOL = '#';
+	public const ESCAPED_SIMPLE_MARK_REGEXP = '/\$\$/';
+	public const ESCAPED_INLINE_SYMBOL_REGEXP = '/\#\#/';
+	public const SIMPLE_PLACEHOLDER = '`!!`';
+	public const INLINE_PLACEHOLDER = '`!!!`';
 
 	/**
 	 * @param TSqlMapXmlConfiguration $xmlConfig parent xml configuration.

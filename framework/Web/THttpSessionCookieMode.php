@@ -26,7 +26,7 @@ namespace Prado\Web;
  */
 class THttpSessionCookieMode extends \Prado\TEnumerable
 {
-	const None = 'None';
-	const Allow = 'Allow';
-	const Only = 'Only';
+	public const None = 'None';
+	public const Allow = 'Allow';
+	public const Only = 'Only';
 }

@@ -31,12 +31,12 @@ namespace Prado\Web\UI\WebControls;
  */
 class TListItemType extends \Prado\TEnumerable
 {
-	const Header = 'Header';
-	const Footer = 'Footer';
-	const Item = 'Item';
-	const Separator = 'Separator';
-	const AlternatingItem = 'AlternatingItem';
-	const EditItem = 'EditItem';
-	const SelectedItem = 'SelectedItem';
-	const Pager = 'Pager';
+	public const Header = 'Header';
+	public const Footer = 'Footer';
+	public const Item = 'Item';
+	public const Separator = 'Separator';
+	public const AlternatingItem = 'AlternatingItem';
+	public const EditItem = 'EditItem';
+	public const SelectedItem = 'SelectedItem';
+	public const Pager = 'Pager';
 }

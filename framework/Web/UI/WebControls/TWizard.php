@@ -83,19 +83,19 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Navigation commands.
 	 */
-	const CMD_PREVIOUS = 'PreviousStep';
-	const CMD_NEXT = 'NextStep';
-	const CMD_CANCEL = 'Cancel';
-	const CMD_COMPLETE = 'Complete';
-	const CMD_MOVETO = 'MoveTo';
+	public const CMD_PREVIOUS = 'PreviousStep';
+	public const CMD_NEXT = 'NextStep';
+	public const CMD_CANCEL = 'Cancel';
+	public const CMD_COMPLETE = 'Complete';
+	public const CMD_MOVETO = 'MoveTo';
 	/**
 	 * Side bar button ID
 	 */
-	const ID_SIDEBAR_BUTTON = 'SideBarButton';
+	public const ID_SIDEBAR_BUTTON = 'SideBarButton';
 	/**
 	 * Side bar data list
 	 */
-	const ID_SIDEBAR_LIST = 'SideBarList';
+	public const ID_SIDEBAR_LIST = 'SideBarList';
 
 	/**
 	 * @var TMultiView multiview that contains the wizard steps

@@ -21,7 +21,7 @@ use PDO;
  */
 class TDbTableColumn extends \Prado\TComponent
 {
-	const UNDEFINED_VALUE = INF; //use infinity for undefined value
+	public const UNDEFINED_VALUE = INF; //use infinity for undefined value
 
 	private $_info = [];
 

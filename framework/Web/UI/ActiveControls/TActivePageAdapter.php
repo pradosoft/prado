@@ -35,44 +35,44 @@ class TActivePageAdapter extends TControlAdapter
 	/**
 	 * Callback response data header name.
 	 */
-	const CALLBACK_DATA_HEADER = 'X-PRADO-DATA';
+	public const CALLBACK_DATA_HEADER = 'X-PRADO-DATA';
 	/**
 	 * Callback response client-side action header name.
 	 */
-	const CALLBACK_ACTION_HEADER = 'X-PRADO-ACTIONS';
+	public const CALLBACK_ACTION_HEADER = 'X-PRADO-ACTIONS';
 	/**
 	 * Callback error header name.
 	 */
-	const CALLBACK_ERROR_HEADER = 'X-PRADO-ERROR';
+	public const CALLBACK_ERROR_HEADER = 'X-PRADO-ERROR';
 	/**
 	 * Callback error header name.
 	 */
-	const CALLBACK_DEBUG_HEADER = 'X-PRADO-DEBUG';
+	public const CALLBACK_DEBUG_HEADER = 'X-PRADO-DEBUG';
 	/**
 	 * Callback page state header name.
 	 */
-	const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
+	public const CALLBACK_PAGESTATE_HEADER = 'X-PRADO-PAGESTATE';
 	/**
 	 * Script list header name.
 	 */
-	const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
+	public const CALLBACK_SCRIPTLIST_HEADER = 'X-PRADO-SCRIPTLIST';
 	/**
 	 * Stylesheet list header name.
 	 */
-	const CALLBACK_STYLESHEETLIST_HEADER = 'X-PRADO-STYLESHEETLIST';
+	public const CALLBACK_STYLESHEETLIST_HEADER = 'X-PRADO-STYLESHEETLIST';
 	/**
 	 * Stylesheet header name.
 	 */
-	const CALLBACK_STYLESHEET_HEADER = 'X-PRADO-STYLESHEET';
+	public const CALLBACK_STYLESHEET_HEADER = 'X-PRADO-STYLESHEET';
 	/**
 	 * Hidden field list header name.
 	 */
-	const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
+	public const CALLBACK_HIDDENFIELDLIST_HEADER = 'X-PRADO-HIDDENFIELDLIST';
 
 	/**
 	 * Callback redirect url header name.
 	 */
-	const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
+	public const CALLBACK_REDIRECT = 'X-PRADO-REDIRECT';
 
 	/**
 	 * @var ICallbackEventHandler callback event handler.

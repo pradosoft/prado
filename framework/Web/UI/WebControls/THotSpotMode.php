@@ -26,8 +26,8 @@ namespace Prado\Web\UI\WebControls;
  */
 class THotSpotMode extends \Prado\TEnumerable
 {
-	const NotSet = 'NotSet';
-	const Navigate = 'Navigate';
-	const PostBack = 'PostBack';
-	const Inactive = 'Inactive';
+	public const NotSet = 'NotSet';
+	public const Navigate = 'Navigate';
+	public const PostBack = 'PostBack';
+	public const Inactive = 'Inactive';
 }

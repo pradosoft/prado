@@ -32,7 +32,7 @@ namespace Prado\Web;
  */
 class THttpCookieSameSite extends \Prado\TEnumerable
 {
-	const Lax = 'Lax';
-	const Strict = 'Strict';
-	const None = 'None';
+	public const Lax = 'Lax';
+	public const Strict = 'Strict';
+	public const None = 'None';
 }

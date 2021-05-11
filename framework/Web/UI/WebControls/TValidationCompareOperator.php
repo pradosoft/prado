@@ -29,10 +29,10 @@ namespace Prado\Web\UI\WebControls;
  */
 class TValidationCompareOperator extends \Prado\TEnumerable
 {
-	const Equal = 'Equal';
-	const NotEqual = 'NotEqual';
-	const GreaterThan = 'GreaterThan';
-	const GreaterThanEqual = 'GreaterThanEqual';
-	const LessThan = 'LessThan';
-	const LessThanEqual = 'LessThanEqual';
+	public const Equal = 'Equal';
+	public const NotEqual = 'NotEqual';
+	public const GreaterThan = 'GreaterThan';
+	public const GreaterThanEqual = 'GreaterThanEqual';
+	public const LessThan = 'LessThan';
+	public const LessThanEqual = 'LessThanEqual';
 }

@@ -57,11 +57,11 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	/**
 	 * Command name that TPager understands.
 	 */
-	const CMD_PAGE = 'Page';
-	const CMD_PAGE_NEXT = 'Next';
-	const CMD_PAGE_PREV = 'Previous';
-	const CMD_PAGE_FIRST = 'First';
-	const CMD_PAGE_LAST = 'Last';
+	public const CMD_PAGE = 'Page';
+	public const CMD_PAGE_NEXT = 'Next';
+	public const CMD_PAGE_PREV = 'Previous';
+	public const CMD_PAGE_FIRST = 'First';
+	public const CMD_PAGE_LAST = 'Last';
 
 	private $_pageCount = 0;
 

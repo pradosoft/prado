@@ -149,14 +149,14 @@ use ReflectionClass;
  */
 abstract class TActiveRecord extends \Prado\TComponent
 {
-	const BELONGS_TO = 'BELONGS_TO';
-	const HAS_ONE = 'HAS_ONE';
-	const HAS_MANY = 'HAS_MANY';
-	const MANY_TO_MANY = 'MANY_TO_MANY';
+	public const BELONGS_TO = 'BELONGS_TO';
+	public const HAS_ONE = 'HAS_ONE';
+	public const HAS_MANY = 'HAS_MANY';
+	public const MANY_TO_MANY = 'MANY_TO_MANY';
 
-	const STATE_NEW = 0;
-	const STATE_LOADED = 1;
-	const STATE_DELETED = 2;
+	public const STATE_NEW = 0;
+	public const STATE_LOADED = 1;
+	public const STATE_DELETED = 2;
 
 	/**
 	 * @var int record state: 0 = new, 1 = loaded, 2 = deleted.
