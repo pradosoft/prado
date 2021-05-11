@@ -84,8 +84,12 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->assertEquals(0, count($app->onBeginRequest));
 			
 			$this->obj->init($xmldoc);
+			
+			//Check was App behavior installed
 			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
+			
+			// Check that the Page behavhiors will be installed onBeginRequest->OnPreRunPage
 			$this->assertEquals(1, count($app->onBeginRequest));
 			$app->onBeginRequest->clear();
 			
