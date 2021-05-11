@@ -2160,6 +2160,11 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(['pregl', 'primary', 'postgl', 'fxGL', 'fxcall', 'com'], $component->getCallOrders());
 
 		$component->unlisten();
+		
+		//These are not 'fx' so these need to be removed individually.
+		$component->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$component, 'commonRaiseEventListener']);
+		$component->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$component, 'postglobalRaiseEventListener'], 1);
+		$component->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$component, 'preglobalRaiseEventListener'], -1);
 	}
 
 
