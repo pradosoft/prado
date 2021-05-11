@@ -41,12 +41,15 @@ class TJavaScript
 
 	/**
 	 * Renders a javascript file
-	 * @param string $file URL to the javascript file
+	 * @param Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
 	 * @return string rendering result
 	 */
-	public static function renderScriptFile($file)
+	public static function renderScriptFile($asset)
 	{
-		return '<script src="' . THttpUtility::htmlEncode($file) . "\"></script>\n";
+		if (is_object($asset) && ($asset instanceof TJavaScriptAsset)) {
+			return $asset->__toString() . "\n";
+		}
+		return '<script src="' . THttpUtility::htmlEncode($asset) . "\"></script>\n";
 	}
 
 	/**

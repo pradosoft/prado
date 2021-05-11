@@ -83,6 +83,7 @@ class TErrorHandler extends \Prado\TModule
 	public function init($config)
 	{
 		$this->getApplication()->setErrorHandler($this);
+		parent::init($config);
 	}
 
 	/**

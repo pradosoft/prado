@@ -99,6 +99,7 @@ class TAssetManager extends \Prado\TModule
 		}
 		$application->setAssetManager($this);
 		$this->_initialized = true;
+		parent::init($config);
 	}
 
 	/**

@@ -171,6 +171,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		}
 		$this->_initialized = true;
 		$this->getApplication()->setResponse($this);
+		parent::init($config);
 	}
 
 	/**

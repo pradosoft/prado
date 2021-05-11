@@ -97,6 +97,7 @@ class TGlobalization extends \Prado\TModule
 			}
 		}
 		$this->getApplication()->setGlobalization($this);
+		parent::init($config);
 	}
 
 	/**

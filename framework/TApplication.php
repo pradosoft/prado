@@ -1256,7 +1256,7 @@ class TApplication extends \Prado\TComponent
 	public function onEndRequest()
 	{
 		$this->flushOutput(false); // flush all remaining content in the buffer
-		$this->saveGlobals();  // save global state
 		$this->raiseEvent('OnEndRequest', $this, null);
+		$this->saveGlobals();  // save global state
 	}
 }

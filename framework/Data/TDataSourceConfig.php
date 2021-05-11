@@ -55,25 +55,26 @@ class TDataSourceConfig extends \Prado\TModule
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
-	 * @param \Prado\Xml\TXmlDocument $xml xml configuration.
+	 * @param \Prado\Xml\TXmlDocument $config xml or php configuration.
 	 */
-	public function init($xml)
+	public function init($config)
 	{
 		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-			if (isset($xml['database']) && is_array($xml['database'])) {
+			if (isset($config['database']) && is_array($config['database'])) {
 				$db = $this->getDbConnection();
-				foreach ($xml['database'] as $name => $value) {
+				foreach ($config['database'] as $name => $value) {
 					$db->setSubProperty($name, $value);
 				}
 			}
 		} else {
-			if ($prop = $xml->getElementByTagName('database')) {
+			if ($prop = $config->getElementByTagName('database')) {
 				$db = $this->getDbConnection();
 				foreach ($prop->getAttributes() as $name => $value) {
 					$db->setSubproperty($name, $value);
 				}
 			}
 		}
+		parent::init($config);
 	}
 
 	/**

@@ -85,6 +85,7 @@ class TThemeManager extends \Prado\TModule
 		} else {
 			throw new TConfigurationException('thememanager_service_unavailable');
 		}
+		parent::init($config);
 	}
 
 	/**
