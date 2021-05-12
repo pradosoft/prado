@@ -5,10 +5,10 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
+ * @package Prado\Shell
  */
 
-namespace Prado;
+namespace Prado\Shell;
 
 /**
  * TShellApplication class.
@@ -29,10 +29,10 @@ namespace Prado;
  * accessibility to resources as the PRADO Web applications.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
+ * @package Prado\Shell
  * @since 3.1.0
  */
-class TShellApplication extends TApplication
+class TShellApplication extends \Prado\TApplication
 {
 	/**
 	 * @var cli shell Application commands. Modules can add their own command
@@ -52,7 +52,7 @@ class TShellApplication extends TApplication
 	/**
 	 * @param $v string a CLI Action class to add to the list of what the app is capable
 	 */
-	public function addCLIActionClass($v)
+	public function addShellActionClass($v)
 	{
 		$this->_actionClasses[] = $v;
 	}
@@ -60,7 +60,7 @@ class TShellApplication extends TApplication
 	/**
 	 * @@return array the CLI Action classes that the application has registered
 	 */
-	public function getCLIActionClasses()
+	public function getShellActionClasses()
 	{
 		return $this->_actionClasses;
 	}
