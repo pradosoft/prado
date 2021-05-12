@@ -699,6 +699,45 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
+	 * Returns a list of application modules of a specific class.
+	 * Modules that have not been loaded yet are loaded.
+	 * @param string $className class name of the modules to look for.
+	 * @param bool $first return the first module found, default false.
+	 * @return array|object list of loaded application module of a specific class
+	 * or the first object of a specific class
+	 * @since 4.2.0
+	 */
+	public function getModulesOfClass($className, $first = false)
+	{
+		$m = [];
+		foreach ($this->_modules as $id => $module) {
+			if ($module === null) {
+				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
+				if ($moduleClass == $className) {
+					$module = $this->internalLoadModule($id, true);
+					$module[0]->init($module[1]);
+					if ($first) {
+						return $module[0];
+					} else {
+						$m[] = $module[0];
+					}
+				}
+			} elseif ($module->isa($className)) {
+				if ($first) {
+					return $module;
+				} else {
+					$m[] = $module;
+				}
+			}
+		}
+		if ($first) {
+			return null;
+		} else {
+			return $m;
+		}
+	}
+
+	/**
 	 * Returns the list of application parameters.
 	 * Since the parameters are returned as a {@link \Prado\Collections\TMap} object, you may use
 	 * the returned result to access, add or remove individual parameters.

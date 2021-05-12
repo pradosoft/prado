@@ -26,7 +26,8 @@ use Prado\TApplicationMode;
  * whose name has the extension ".skin" are parsed and saved as controls skins.
  *
  * A skin is essentially a list of initial property values that are to be applied
- * to a control when the skin is applied.
+ * to a control when the skin is applied.  {@link TSkinTemplate} is used to
+ * turn off class and attribute validation.
  * Each type of control can have multiple skins identified by the SkinID.
  * If a skin does not have SkinID, it is the default skin that will be applied
  * to controls that do not specify particular SkinID.
@@ -147,7 +148,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				} elseif (basename($file, '.js') !== $file) {
 					$this->_jsFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file) {
-					$template = new TTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . '/' . $file);
+					$template = new TSkinTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . '/' . $file);
 					foreach ($template->getItems() as $skin) {
 						if (!isset($skin[2])) {  // a text string, ignored
 							continue;

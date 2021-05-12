@@ -33,6 +33,7 @@ namespace Prado;
  */
 class TApplicationComponent extends \Prado\TComponent
 {
+	public const APP_COMPONENT_FX_CACHE = 'prado:applicationcomponent:fxcache';
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
@@ -41,6 +42,40 @@ class TApplicationComponent extends \Prado\TComponent
 	public function getAutoGlobalListen()
 	{
 		return true;
+	}
+	
+	/**
+	 * This caches the 'fx' events for PRADO classes in the global state
+	 * @param object $class
+	 * @return string[] fx events from a specific class
+	 */
+	protected function getClassFxEvents($class)
+	{
+		$app = $this->getApplication();
+		$className = $cache = null;
+		if ($app && ($cache = $app->getCache())) {
+			static $_classfx = null;
+			if ($_classfx === null) {
+				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
+			}
+			$className = get_class($class);
+			if (isset($_classfx[$className])) {
+				return $_classfx[$className];
+			}
+		}
+		$fx = parent::getClassFxEvents($class);
+		if ($cache) {
+			if ($pos = strrpos($className, '\\')) {
+				$baseClassName = substr($className, $pos + 1);
+			} else {
+				$baseClassName = $className;
+			}
+			if (isset(Prado::$classMap[$baseClassName])) {
+				$_classfx[$className] = $fx;
+				$cache->set(self::APP_COMPONENT_FX_CACHE, $_classfx);
+			}
+		}
+		return $fx;
 	}
 	
 	/**
