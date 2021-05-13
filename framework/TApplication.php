@@ -701,19 +701,19 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Returns a list of application modules of a specific class.
 	 * Modules that have not been loaded yet are loaded.
-	 * @param string $className class name of the modules to look for.
+	 * @param string $type class name of the modules to look for.
 	 * @param bool $first return the first module found, default false.
 	 * @return array|object list of loaded application module of a specific class
 	 * or the first object of a specific class
 	 * @since 4.2.0
 	 */
-	public function getModulesOfClass($className, $first = false)
+	public function getModulesByType($type, $first = false)
 	{
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
 			if ($module === null) {
 				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
-				if ($moduleClass == $className) {
+				if ($moduleClass == $type) {
 					$module = $this->internalLoadModule($id, true);
 					$module[0]->init($module[1]);
 					if ($first) {
@@ -722,7 +722,7 @@ class TApplication extends \Prado\TComponent
 						$m[] = $module[0];
 					}
 				}
-			} elseif ($module->isa($className)) {
+			} elseif ($module->isa($type)) {
 				if ($first) {
 					return $module;
 				} else {
