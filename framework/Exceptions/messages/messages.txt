@@ -118,6 +118,7 @@ errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' i
 pageservice_page_unknown				= Page '{0}' Not Found
 pageservice_pageclass_unknown			= Page class '{0}' is unknown.
 pageservice_basepath_invalid			= TPageService.BasePath '{0}' is not a valid directory.
+pageservice_security_violation			= TPageService cannot access directory '{0}'.
 pageservice_page_required				= Page Name Required
 pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
 pageservice_basepath_unchangeable		= TPageService.BasePath cannot be modified after the service is initialized.
@@ -148,6 +149,13 @@ behaviorparameterloader_attachto_and_class_only_one = TBehaviorParameterLoader m
 behaviorparameterloader_moduleid_required = TBehaviorParameterLoader attachto 'module:' requires a module id.
 behaviorparameterloader_behaviorowner_required = TBehaviorParameterLoader attachto '{0}' could not be found.
 behaviorparameterloader_behaviormodule_not_found 	= TBehaviorParameterLoader could not find module '{0}' to attach behaviors.
+
+maplazyloadbehavior_handler_not_callable = TMapLazyLoadbehavior must have a callable to construct.
+
+parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
+parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
+parameterizebehavior_owner_has_no_set_property		= TParameterizeBehavior must have a settable Property Attribute and {0} is not settable.
+parameterizebehavior_cannot_set_name_after_initialize = TParameterizeBehavior cannot set the RouteBehaviorName after being attached.
 
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
@@ -532,3 +540,8 @@ accordion_view_inexistent				= TAccordion cannot find the specified view.
 juidatepicker_settextmode_unsupported 	= TextMode of TJuiDatePicker cannot be changed.
 
 control_adapter_not_active				= BaseActiveControl property called on a non-active Control.
+
+timescheduler_invalid_string			= TTimeScheduler could not parse the schedule '{0}'
+
+gravatar_bad_rating						= TGravatar Rating is not g, pg, r, x, or nothing, but is set to '{0}'
+gravatar_bad_default					= TGravatar Default property '{0}' is not supported

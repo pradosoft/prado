@@ -53,6 +53,10 @@ $packages = [
 		'prado/controls/tabpanel.js',
 	],
 
+	'timeago' => [
+		'prado/controls/timeago.js',
+	],
+
 	'activedatepicker' => [
 		'prado/activecontrols/activedatepicker.js',
 	],
@@ -129,6 +133,7 @@ $dependencies = [
 	'htmlarea4' => ['jquery', 'prado', 'htmlarea4', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
+	'timeago' => ['jquery', 'prado', 'timeago'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],
 	'accordion' => ['jquery', 'prado', 'accordion'],
 	'ratings' => ['jquery', 'prado', 'ajax', 'ratings'],
