@@ -41,7 +41,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	 */
 	public function __construct($handler)
 	{
-		if(!is_callable($handler)) {
+		if (!is_callable($handler)) {
 			throw new TInvalidDataTypeException('maplazyloadbehavior_handler_not_callable');
 		}
 		$this->_handler = $handler;

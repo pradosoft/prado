@@ -56,7 +56,7 @@ class TMapRouteBehavior extends TBehavior
 	 */
 	public function __construct($parameter, $handler)
 	{
-		if(!is_callable($handler)) {
+		if (!is_callable($handler)) {
 			throw new TInvalidDataTypeException('maproutebehavior_handler_not_callable');
 		}
 		$this->_parameter = $parameter;
