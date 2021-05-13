@@ -43,7 +43,7 @@ class TFlushCachesAction extends TShellAction
 		$app->onLoadState();
 		$app->onLoadStateComplete();
 		$cachesFlushed = [];
-		foreach ($app->getModulesOfClass('Prado\\Caching\\ICache') as $module) {
+		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $module) {
 			$module->flush();
 			$cachesFlushed[] = get_class($module);
 		}
