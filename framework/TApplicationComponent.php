@@ -10,6 +10,8 @@
 
 namespace Prado;
 
+use Prado\TApplicationMode;
+
 /**
  * TApplicationComponent class
  *
@@ -53,7 +55,7 @@ class TApplicationComponent extends \Prado\TComponent
 	{
 		$app = $this->getApplication();
 		$className = $cache = null;
-		if ($app && ($cache = $app->getCache())) {
+		if ($app && (($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && ($cache = $app->getCache())) {
 			static $_classfx = null;
 			if ($_classfx === null) {
 				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
