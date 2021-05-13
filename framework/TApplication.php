@@ -703,8 +703,8 @@ class TApplication extends \Prado\TComponent
 	 * Returns a list of application modules of a specific class.
 	 * Modules that have not been loaded yet are loaded.
 	 * @param string $type class name of the modules to look for.
+	 * @param bool $strict should just the class be found or subclasses of the class
 	 * @param bool $first return the first module found, default false.
-	 * @param mixed $strict
 	 * @return array|object list of loaded application module of a specific class
 	 * or the first object of a specific class
 	 * @since 4.2.0
