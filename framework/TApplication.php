@@ -20,6 +20,7 @@ use Prado\Web\THttpRequest;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpSession;
 use Prado\Util\TLogger;
+use ReflectionClass;
 
 /**
  * TApplication class.
@@ -703,17 +704,32 @@ class TApplication extends \Prado\TComponent
 	 * Modules that have not been loaded yet are loaded.
 	 * @param string $type class name of the modules to look for.
 	 * @param bool $first return the first module found, default false.
+	 * @param mixed $strict
 	 * @return array|object list of loaded application module of a specific class
 	 * or the first object of a specific class
 	 * @since 4.2.0
 	 */
-	public function getModulesByType($type, $first = false)
+	public function getModulesByType($type, $strict = false, $first = false)
 	{
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
 			if ($module === null) {
 				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
-				if ($moduleClass == $type) {
+				
+				$match = ($moduleClass === $type);
+				if (!$strict && !$match) {
+					$reflect = new ReflectionClass($moduleClass);
+					if ($reflect = $reflect->getParentClass()) {
+						do {
+							if ($reflect->getName() === $type) {
+								$match = true;
+								break;
+							}
+						} while ($reflect = $reflect->getParentClass());
+					}
+				}
+				
+				if ($match) {
 					$module = $this->internalLoadModule($id, true);
 					$module[0]->init($module[1]);
 					if ($first) {
@@ -722,7 +738,7 @@ class TApplication extends \Prado\TComponent
 						$m[] = $module[0];
 					}
 				}
-			} elseif ($module->isa($type)) {
+			} elseif (get_class($module) === $type || (!$strict && ($module->isa($type)))) {
 				if ($first) {
 					return $module;
 				} else {

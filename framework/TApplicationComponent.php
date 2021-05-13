@@ -43,6 +43,7 @@ class TApplicationComponent extends \Prado\TComponent
 		return true;
 	}
 	
+		return $fx;
 	/**
 	 * @return \Prado\TApplication current application instance
 	 */
