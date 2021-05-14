@@ -4,9 +4,37 @@
 
 class TTemplateTest extends PHPUnit\Framework\TestCase
 {
+	protected $obj;
+	
+	private $_baseClass;
+
+	protected function setUp(): void
+	{
+		$this->_baseClass = $this->getTestClass();
+		$this->obj = new $this->_baseClass('', '');
+	}
+
+	protected function tearDown(): void
+	{
+		$this->obj = null;
+	}
+	
+	protected function getTestClass()
+	{
+		return 'Prado\\Web\\UI\\TTemplate';
+	}
+	
 	public function testConstruct()
 	{
 		throw new PHPUnit\Framework\IncompleteTestError();
+	}
+
+	public function testAttributeValidation()
+	{
+		$this->obj->setAttributeValidation(false);
+		self::assertFalse($this->obj->getAttributeValidation());
+		$this->obj->setAttributeValidation(true);
+		self::assertTrue($this->obj->getAttributeValidation());
 	}
 
 	public function testGetTemplateFile()
