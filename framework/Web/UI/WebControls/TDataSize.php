@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
@@ -50,7 +51,7 @@ class TDataSize extends TLabel
 	 * for marketing terms, and bytes, kibibytes, mebibytes gibibytes,
 	 * tebibytes, pebibytes, exbibytes, zebibytes, and yobibytes for technical
 	 * terms.
-	 * @param $writer object where the method writes output.
+	 * @param object $writer  where the method writes output.
 	 */
 	public function renderContents($writer)
 	{
@@ -76,7 +77,7 @@ class TDataSize extends TLabel
 		$s /= $size;
 		
 		$sf = 2;
-		if ($s > 1000) {
+		if ($s >= 1000) {
 			$sf = 3;
 		}
 			
@@ -116,11 +117,14 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @param $size int data size in bytes
+	 * @param int $size data size in bytes
 	 */
 	public function setSize($size)
 	{
-		$this->_size = TPropertyValue::ensureInteger($size);
+		$this->_size = TPropertyValue::ensureFloat($size);
+		if ($this->_size < 0) {
+			throw new TInvalidDataValueException('datasize_no_negative_size', $this->_size);
+		}
 	}
 	
 	/**
@@ -132,7 +136,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @param $marketing bool using marketing sizes (base 1000) or not (base 1024)
+	 * @param bool $marketing using marketing sizes (base 1000) or not (base 1024)
 	 */
 	public function setUseMarketingSize($marketing)
 	{
@@ -148,7 +152,7 @@ class TDataSize extends TLabel
 	}
 	
 	/**
-	 * @param $abbr bool using abbreviations or not
+	 * @param bool $abbr using abbreviations or not
 	 */
 	public function setAbbreviate($abbr)
 	{
