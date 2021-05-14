@@ -76,14 +76,12 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 		$this->obj->setDefault($url);
 		self::assertEquals($url, $this->obj->getDefault());
 		$search = '/d=' . addslashes(rawurlencode($url)) . '/';
-		echo($search . ' ' . $this->obj->getImageUrl());
 		self::assertTrue(1 === preg_match($search, $this->obj->getImageUrl()));
 		
 		$url = 'https://GitHub.com/#tag?value=1 2';
 		$this->obj->setDefault($url);
 		self::assertEquals($url, $this->obj->getDefault());
 		$search = '/d=' . addslashes(rawurlencode($url)) . '/';
-		echo($search . ' ' . $this->obj->getImageUrl());
 		self::assertTrue(1 === preg_match('/d=' . addslashes(rawurlencode($url)) . '/', $this->obj->getImageUrl()));
 	}
 	
