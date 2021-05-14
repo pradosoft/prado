@@ -8,6 +8,10 @@ use Prado\Exceptions\TInvalidOperationException;
 class ListItem
 {
 	public $data = 'data';
+	public function __construct($d)
+	{
+		$this->data = $d;
+	}
 }
 
 class TListTest extends PHPUnit\Framework\TestCase
@@ -17,14 +21,31 @@ class TListTest extends PHPUnit\Framework\TestCase
 	protected $item2;
 	protected $item3;
 	protected $item4;
+	
+	protected function newList()
+	{
+		return  'TPriorityList';
+	}
+	protected function newListItem()
+	{
+		return 'PriorityListItem';
+	}
+	protected function getCanAddNull()
+	{
+		return true;
+	}
+	protected $_baseClass;
+	protected $_baseItemClass;
 
 	protected function setUp(): void
 	{
-		$this->list = new TList;
-		$this->item1 = new ListItem;
-		$this->item2 = new ListItem;
-		$this->item3 = new ListItem;
-		$this->item4 = new ListItem;
+		$this->_baseClass = $this->newList();
+		$this->_baseItemClass = $this->newListItem();
+		$this->list = new $this->_baseClass();
+		$this->item1 = new $this->_baseItemClass(1);
+		$this->item2 = new $this->_baseItemClass(2);
+		$this->item3 = new $this->_baseItemClass(3);
+		$this->item4 = new $this->_baseItemClass(4);
 		$this->list->add($this->item1);
 		$this->list->add($this->item2);
 	}
@@ -37,31 +58,33 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->item3 = null;
 		$this->item4 = null;
 	}
-
-	public function testConstruct()
+	
+	public function testConstructTList()
 	{
-		$a = [1, 2, 3];
-		$list = new TList($a);
+		$a = [
+			$this->item1, $this->item2, $this->item3
+		];
+		$list = new $this->_baseClass($a);
 		$this->assertEquals(3, $list->getCount());
-		$list2 = new TList($this->list);
+		$list2 = new $this->_baseClass($this->list);
 		$this->assertEquals(2, $list2->getCount());
 	}
 
-	public function testGetReadOnly()
+	public function testGetReadOnlyTList()
 	{
-		$list = new TList(null, true);
+		$list = new $this->_baseClass(null, true);
 		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
-		$list = new TList(null, false);
+		$list = new $this->_baseClass(null, false);
 		self::assertEquals(false, $list->getReadOnly(), 'List is read-only');
 	}
 
-	public function testGetCount()
+	public function testGetCountTList()
 	{
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(2, $this->list->Count);
 	}
 
-	public function testItemAt()
+	public function testItemAtTList()
 	{
 		$this->assertTrue($this->list->itemAt(0) === $this->item1);
 		$this->assertTrue($this->list->itemAt(1) === $this->item2);
@@ -69,22 +92,26 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->list->itemAt(2);
 	}
 
-	public function testAdd()
+	public function testAddTList()
 	{
-		$this->assertEquals(2, $this->list->add(null));
-		$this->assertEquals(3, $this->list->add($this->item3));
-		$this->assertEquals(4, $this->list->getCount());
-		$this->assertEquals(3, $this->list->indexOf($this->item3));
+		$this->assertEquals(2, $this->list->add($this->item3));
+		$this->assertEquals(3, $this->list->getCount());
+		$this->assertEquals(2, $this->list->indexOf($this->item3));
+		
+		if(!$this->getCanAddNull())
+			self::expectException('Prado\\Exceptions\TInvalidDataValueException');
+			
+		$this->assertEquals(3, $this->list->add(null));
 	}
 
-	public function testCanNotAddWhenReadOnly()
+	public function testCanNotAddWhenReadOnlyTList()
 	{
-		$list = new TList([], true);
+		$list = new $this->_baseClass([], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->add(1);
 	}
 
-	public function testInsertAt()
+	public function testInsertAtTList()
 	{
 		$this->assertNull($this->list->insertAt(0, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
@@ -95,23 +122,25 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->list->insertAt(4, $this->item3);
 	}
 
-	public function testCanNotInsertAtWhenReadOnly()
+	public function testCanNotInsertAtWhenReadOnlyTList()
 	{
-		$list = new TList([], true);
+		$list = new $this->_baseClass([], true);
 		try {
 			$list->insertAt(1, 2);
-			$this->fail('TInvalidOperationException not raised when inserting into read only TList');
-		} catch(TInvalidOperationException $e){}
+			$this->fail('TInvalidOperationException not raised when inserting into read only beyond bounds');
+		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		}
+
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->insertAt(0, 2);
 	}
 
-	public function testInsertBefore()
+	public function testInsertBeforeTList()
 	{
 		try {
 			$this->list->insertBefore($this->item4, $this->item3);
-			$this->fail('TInvalidDataValueException item4 not in list');
-		} catch(TInvalidDataValueException $e){}
+			$this->fail('TInvalidOperationException item4 not in list');
+		} catch(Prado\Exceptions\TInvalidDataValueException $e) {}
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(0, $this->list->insertBefore($this->item1, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
@@ -120,19 +149,24 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $this->list->indexOf($this->item2));
 	}
 
-	public function testCanNotInsertBeforeWhenReadOnly()
+	public function testCanNotInsertBeforeWhenReadOnlyTList()
 	{
-		$list = new TList([5], true);
+		$list = new $this->_baseClass([
+			$this->item1
+		], true);
+
 		try {
-			$list->insertBefore(5, 6);
-			$this->fail('TInvalidDataValueException not raised when insertBefore item when read only');
-		} catch(TInvalidOperationException $e) {}
+			$list->insertBefore($this->item1, $this->item2);
+			$this->fail('TInvalidOperationException not raised when insertBefore item when read only');
+		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		}
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->insertBefore(8, 6);
 	}
 
-	public function testInsertAfter()
+	public function testInsertAfterTList()
 	{
+
 		$this->assertEquals(2, $this->list->getCount());
 		$this->assertEquals(2, $this->list->insertAfter($this->item2, $this->item3));
 		$this->assertEquals(3, $this->list->getCount());
@@ -144,65 +178,84 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->list->insertAfter($this->item4, $this->item3);
 	}
 
-	public function testCanNotInsertAfterWhenReadOnly()
+	public function testCanNotInsertAfterWhenReadOnlyTList()
 	{
-		$list = new TList([5], true);
+		$list = new $this->_baseClass([
+			$this->item1
+		], true);
+
 		try {
-			$list->insertAfter(5, 6);
-			$this->fail('TInvalidDataValueException ot insertAfter on a read only list');
-		} catch(TInvalidOperationException $e) {}
+			$list->insertAfter($this->item1, 6);
+			$this->fail('TInvalidOperationException cannot insertAfter on a read only list');
+		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		}
+
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
-		$list->insertAfter(8, 6);
+		$list->insertAfter($this->item2, 6);
 	}
 
-	public function testRemove()
+	public function testRemoveTList()
 	{
 		$this->assertEquals(0, $this->list->remove($this->item1));
 		$this->assertEquals(1, $this->list->getCount());
 		$this->assertEquals(-1, $this->list->indexOf($this->item1));
 		$this->assertEquals(0, $this->list->indexOf($this->item2));
+
 		self::expectException('Exception');
 		$this->list->remove($this->item1);
 	}
 
-	public function testCanNotRemoveWhenReadOnly()
+	public function testCanNotRemoveWhenReadOnlyTList()
 	{
-		$list = new TList([1, 2, 3], true);
-		try {
-			$list->remove(2);
-			$this->fail('TInvalidDataValueException not raised when removing at index when read only');
-		} catch(TInvalidOperationException $e) {}
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		], true);
 
-		$list = new TList([1, 2, 3], true);
+		try {
+			$list->remove($this->item2);
+			$this->fail('TInvalidOperationException cannot insert on a read only list');
+		} catch(Prado\Exceptions\TInvalidOperationException $e) {
+		}
+
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		], true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->remove(10);
 	}
 
-	public function testRemoveAt()
+	public function testRemoveAtTList()
 	{
 		$this->list->add($this->item3);
 		$this->assertEquals($this->item2, $this->list->removeAt(1));
 		$this->assertEquals(-1, $this->list->indexOf($this->item2));
 		$this->assertEquals(1, $this->list->indexOf($this->item3));
 		$this->assertEquals(0, $this->list->indexOf($this->item1));
+
 		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
 		$this->list->removeAt(2);
 	}
 
-	public function testCanNotRemoveAtWhenReadOnly()
+	public function testCanNotRemoveAtWhenReadOnlyTList()
 	{
-		$list = new TList([1, 2, 3], true);
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		], true);
+
 		try {
 			$list->removeAt(2);
 			$this->fail('TInvalidDataValueException not raised when removing at index when read only');
 		} catch(TInvalidOperationException $e) {}
 
-		$list = new TList([1, 2, 3], true);
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		], true);
+
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->removeAt(10);
 	}
 
-	public function testClear()
+	public function testClearTList()
 	{
 		$this->list->clear();
 		$this->assertEquals(0, $this->list->getCount());
@@ -210,65 +263,75 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(-1, $this->list->indexOf($this->item2));
 	}
 
-	public function testCanNotClearWhenReadOnly()
+	public function testCanNotClearWhenReadOnlyTList()
 	{
-		$list = new TList([1, 2, 3], true);
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		], true);
+
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$list->clear();
 	}
 
-	public function testContains()
+	public function testContainTLists()
 	{
 		$this->assertTrue($this->list->contains($this->item1));
 		$this->assertTrue($this->list->contains($this->item2));
 		$this->assertFalse($this->list->contains($this->item3));
 	}
 
-	public function testIndexOf()
+	public function testIndexOfTList()
 	{
 		$this->assertEquals(0, $this->list->indexOf($this->item1));
 		$this->assertEquals(1, $this->list->indexOf($this->item2));
 		$this->assertEquals(-1, $this->list->indexOf($this->item3));
 	}
 
-	public function testCopyFrom()
+	public function testCopyFromTList()
 	{
-		$array = [$this->item3, $this->item1];
+		$array = [
+			$this->item3, $this->item1
+		];
 		$this->list->copyFrom($array);
 		$this->assertTrue(count($array) == 2 && $this->list[0] === $this->item3 && $this->list[1] === $this->item1);
+
 		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
 		$this->list->copyFrom($this);
 	}
 
-	public function testMergeWith()
+	public function testMergeWithTList()
 	{
-		$array = [$this->item3, $this->item1];
+		$array = [
+			$this->item3, $this->item1
+		];
 		$this->list->mergeWith($array);
 		$this->assertTrue($this->list->getCount() == 4 && $this->list[0] === $this->item1 && $this->list[3] === $this->item1);
+
 		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
 		$this->list->mergeWith($this);
 	}
 
-	public function testToArray()
+	public function testToArrayTList()
 	{
 		$array = $this->list->toArray();
 		$this->assertTrue(count($array) == 2 && $array[0] === $this->item1 && $array[1] === $this->item2);
 	}
 
-	public function testArrayRead()
+	public function testArrayReadTList()
 	{
 		$this->assertTrue($this->list[0] === $this->item1);
 		$this->assertTrue($this->list[1] === $this->item2);
+
 		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
 		$a = $this->list[2];
 	}
 
-	public function testGetIterator()
+	public function testGetIteratorTList()
 	{
 		$n = 0;
 		$found = 0;
 		foreach ($this->list as $index => $item) {
-			foreach ($this->list as $a => $b);	// test of iterator
+			foreach ($this->list as $a => $b); // test of iterator
 			$n++;
 			if ($index === 0 && $item === $this->item1) {
 				$found++;
@@ -280,31 +343,43 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($n == 2 && $found == 2);
 	}
 
-	public function testArrayMisc()
+	public function testArrayMiscTList()
 	{
 		$this->assertEquals($this->list->Count, count($this->list));
 		$this->assertTrue(isset($this->list[1]));
 		$this->assertFalse(isset($this->list[2]));
 	}
 
-	public function testOffsetSetAdd()
+	public function testOffsetSetAddTList()
 	{
-		$list = new TList([1, 2, 3]);
-		$list->offsetSet(null, 4);
-		self::assertEquals([1, 2, 3, 4], $list->toArray());
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		]);
+		$list->offsetSet(null, $this->item4);
+		self::assertEquals([
+			$this->item1, $this->item2, $this->item3, $this->item4
+		], $list->toArray());
 	}
 
-	public function testOffsetSetReplace()
+	public function testOffsetSetReplaceTList()
 	{
-		$list = new TList([1, 2, 3]);
-		$list->offsetSet(1, 4);
-		self::assertEquals([1, 4, 3], $list->toArray());
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		]);
+		$list->offsetSet(1, $this->item4);
+		self::assertEquals([
+			$this->item1, $this->item4, $this->item3
+		], $list->toArray());
 	}
 
-	public function testOffsetUnset()
+	public function testOffsetUnsetTList()
 	{
-		$list = new TList([1, 2, 3]);
+		$list = new $this->_baseClass([
+			$this->item1, $this->item2, $this->item3
+		]);
 		$list->offsetUnset(1);
-		self::assertEquals([1, 3], $list->toArray());
+		self::assertEquals([
+			$this->item1, $this->item3
+		], $list->toArray());
 	}
 }
