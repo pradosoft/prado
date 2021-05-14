@@ -545,3 +545,4 @@ timescheduler_invalid_string			= TTimeScheduler could not parse the schedule '{0
 
 gravatar_bad_rating						= TGravatar Rating is not g, pg, r, x, or nothing, but is set to '{0}'
 gravatar_bad_default					= TGravatar Default property '{0}' is not supported
+gravatar_bad_size						= TGravatar Size is not proper '{0}'

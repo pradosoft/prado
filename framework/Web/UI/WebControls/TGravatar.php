@@ -93,6 +93,9 @@ class TGravatar extends TImage
 		if (!$valid && !preg_match('/^https?:\/\//i', $default)) {
 			throw new TInvalidDataValueException('gravatar_bad_default', $default);
 		}
+		if ($default === '') {
+			$default = null;
+		}
 		$this->setViewState('default', $default);
 	}
 	
@@ -109,11 +112,12 @@ class TGravatar extends TImage
 	 */
 	public function setSize($size)
 	{
-		$size = TPropertyValue::ensureInteger($size);
-		if ($size > 512 || $size <= 0) {
+		$_size = TPropertyValue::ensureInteger($size);
+		if (($_size > 512 || $_size < 1) && $size !== null) {
 			throw new TInvalidDataValueException('gravatar_bad_size', $size);
 		}
-		$this->setViewState('size', $size);
+		$_size = ($size === null) ? null : $_size;
+		$this->setViewState('size', $_size, null);
 	}
 	
 	/**
@@ -131,7 +135,10 @@ class TGravatar extends TImage
 	{
 		$rating = strtolower(TPropertyValue::ensureString($rating));
 		$rating = TPropertyValue::ensureEnum($rating, ['g', 'pg', 'r', 'x', '']);
-		$this->setViewState('rating', $rating);
+		if (!$rating) {
+			$rating = null;
+		}
+		$this->setViewState('rating', $rating, null);
 	}
 	
 	/**
@@ -139,7 +146,7 @@ class TGravatar extends TImage
 	 */
 	public function getEmail()
 	{
-		return $this->getViewState('email');
+		return $this->getViewState('email', '');
 	}
 	
 	/**
