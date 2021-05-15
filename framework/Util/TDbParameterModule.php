@@ -44,6 +44,18 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * serialized.  The specific serializer can be chose to be 'php',
  * 'json', or provide your own function or callable.  Default to 'php'.
  *
+ * setting {@link setSerializer} to your own function that has the
+ * following format:
+ * <code>
+ *		function mySerializerFunction($data, $encode) {...}
+ * </code>
+ * If $encode is true, then encode, otherwise decode, to text.
+ *
+ * When {@link getCaptureParameterChanges} is true, the default,
+ * then this will route any changes to the Application Parameters
+ * after TApplication::onInitComplete back to the TDbParameterModule
+ * and be saved to the database.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util
  * @since 4.2.0
@@ -51,6 +63,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 class TDbParameterModule extends TModule
 {
 	public const SERIALIZE_PHP = 'php';
+	
 	public const SERIALIZE_JSON = 'json';
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
