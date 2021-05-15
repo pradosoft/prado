@@ -124,9 +124,12 @@ class TTimeZoneParameterBehavior extends TBehavior
 	 */
 	public function setTimeZone($value)
 	{
+		$set = true;
 		try {
 			date_default_timezone_set($value);
 		} catch (\Exception $e) {
+			$set = false;
 		}
+		return $set;
 	}
 }
