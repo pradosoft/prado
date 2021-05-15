@@ -17,8 +17,10 @@ use Prado\Data\TDbConnection;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Util\Behaviors\TMapRouteBehavior;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDbParameterModule class
@@ -29,7 +31,7 @@ use Prado\Exceptions\TConfigurationException;
  * autoload field, and autoload values (both true and false values)
  * are parameterized.  Set them to your application specific values.
  *
- * The following will read the options from a WordPress Database:
+ * The following will load the options from a WordPress Database:
  * <code>
  *		<module id="dbparams" class="Prado\Util\TDbParameterModule"
  * ConnectionID="DB" KeyField="option_name" ValueField="option_value" TableName="wp_options" Serializer="php"
@@ -53,7 +55,13 @@ class TDbParameterModule extends TModule
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
-	public const APP_PARAMETER_LAZY_BEHAVIOR = 'lazyDbParameter';
+	public const APP_PARAMETER_LAZY_BEHAVIOR = 'lazyTDbParameter';
+	
+	/**
+	 * The name of the Application Parameter Lazy Load Behavior
+	 */
+	public const APP_PARAMETER_SET_BEHAVIOR = 'setTDbParameter';
+	
 	/**
 	 * @var string the ID of TDataSourceConfig module
 	 */
@@ -73,12 +81,12 @@ class TDbParameterModule extends TModule
 	/**
 	 * @var string The key field for the parameter from the database
 	 */
-	private $_keyField = 'option_key';
+	private $_keyField = 'param_key';
 	
 	/**
 	 * @var string The value field for the parameter from the database
 	 */
-	private $_valueField = 'option_value';
+	private $_valueField = 'param_value';
 	
 	/**
 	 * @var string The table name for the parameters from the database
@@ -109,6 +117,11 @@ class TDbParameterModule extends TModule
 	 * @var callable|string which serialize function to use,
 	 */
 	private $_serializer = self::SERIALIZE_PHP;
+	
+	/**
+	 * @var bool automatically capture changes to Parameters after Application Initialize
+	 */
+	private $_autoCapture = true;
 
 	
 	/**
@@ -119,9 +132,12 @@ class TDbParameterModule extends TModule
 	{
 		$this->loadDbParameters();
 		$this->_initialized = true;
-
-		if ($this->getConnectionID() && $this->_autoLoadField) {
-			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getParameter']));
+		
+		if ($this->_autoLoadField) {
+			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'get']));
+		}
+		if ($this->_autoCapture) {
+			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachParameterStorage'], 19);
 		}
 		parent::init($config);
 	}
@@ -162,6 +178,15 @@ class TDbParameterModule extends TModule
 			$appParameters[$row[$this->_keyField]] = $value;
 		}
 	}
+	
+	/**
+	 * This attaches the TMapRouteBehavior on the Parameters .
+	 * @throws TDbException if the Fields and table is not correct
+	 */
+	public function attachParameterStorage()
+	{
+		$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_SET_BEHAVIOR, new TMapRouteBehavior(null, [$this, 'setFromBehavior']));
+	}
 
 	/**
 	 * Creates the DB table for storing log messages.
@@ -174,13 +199,13 @@ class TDbParameterModule extends TModule
 		$autoidAttributes = '';
 		$postIndices = '';
 		$index = '';
-		if ($driver === 'mysql') {
-			$autoidAttributes = 'AUTO_INCREMENT';
-			$index = ', INDEX(`' . $this->_keyField . '`)' . ($this->_autoLoadField ? ', INDEX(`' . $this->_autoLoadField . '`)' : '');
-		} elseif ($driver === 'sqlite') {
+		if ($driver === 'sqlite') {
 			$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
-			($this->_autoLoadField ? ' CREATE UNIQUE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
+			($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
 		} else {
+			if ($driver === 'mysql') {
+				$autoidAttributes = 'AUTO_INCREMENT';
+			}
 			$index = ', INDEX(`' . $this->_keyField . '`)' . ($this->_autoLoadField ? ', INDEX(`' . $this->_autoLoadField . '`)' : '');
 		}
 
@@ -188,7 +213,7 @@ class TDbParameterModule extends TModule
 			param_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ', ' .
 			$this->_keyField . ' VARCHAR(128),' .
 			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN' : '') . $index .
+			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN DEFAULT 1' : '') . $index .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}
@@ -263,11 +288,11 @@ class TDbParameterModule extends TModule
 	 * @param string $key the key of the parameter
 	 * @param mixed $value the key of the parameter
 	 * @param bool $autoLoad should the key be autoloaded at init
+	 * @param mixed $setParameter
 	 * @throws TInvalidOperationException if the $key is blank
 	 * @throws TDbException if the Fields and table is not correct
-	 * @throws
 	 */
-	public function set($key, $value, $autoLoad = true)
+	public function set($key, $value, $autoLoad = true, $setParameter = true)
 	{
 		if (empty($key)) {
 			throw new TInvalidOperationException('dbparametermodule_setparameter_blank_key');
@@ -283,11 +308,18 @@ class TDbParameterModule extends TModule
 			}
 		}
 		$db = $this->getDbConnection();
+		$driver = $db->getDriverName();
+		$appendix = '';
+		if ($driver === 'mysql') {
+			$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
+			$appendix = " ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}";
+		} else {
+			$this->remove($key);
+		}
 		$field = ($this->_autoLoadField ? ", {$this->_autoLoadField}" : '');
 		$values = ($this->_autoLoadField ? ", :auto" : '');
-		$dupl = ($this->_autoLoadField ? ", {$this->_autoLoadField}=values({$this->_autoLoadField})" : '');
 		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
-					"VALUES (:key, :value{$values}) ON DUPLICATE KEY UPDATE {$this->_valueField}=values({$this->_valueField}){$dupl}");
+					"VALUES (:key, :value{$values})" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->bindParameter(":value", $value, PDO::PARAM_STR);
 		if ($this->_autoLoadField) {
@@ -296,8 +328,23 @@ class TDbParameterModule extends TModule
 		}
 		$cmd->execute();
 		
-		$appParameters = $this->getApplication()->getParameters();
-		$appParameters[$key] = $value;
+		if ($setParameter) {
+			$appParameters = $this->getApplication()->getParameters();
+			$appParameters[$key] = $value;
+		}
+	}
+	
+	/**
+	 * Sets a parameter in the database and the Application Parameter.
+	 * from changes to the Parameter through a TMapRouteBehavior.
+	 * @param string $key the key of the parameter
+	 * @param mixed $value the key of the parameter
+	 * @throws TInvalidOperationException if the $key is blank
+	 * @throws TDbException if the Fields and table is not correct
+	 */
+	public function setFromBehavior($key, $value)
+	{
+		$this->set($key, $value, true, false);
 	}
 	
 	/**
@@ -314,7 +361,7 @@ class TDbParameterModule extends TModule
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$result = $cmd->queryRow();
-		return $result['count'];
+		return $result['count'] > 0;
 	}
 	
 	/**
@@ -327,7 +374,12 @@ class TDbParameterModule extends TModule
 	{
 		$value = $this->get($key);
 		$db = $this->getDbConnection();
-		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1");
+		$driver = $db->getDriverName();
+		$appendix = '';
+		if ($driver === 'mysql') {
+			$appendix = ' LIMIT 1';
+		}
+		$cmd = $db->createCommand("DELETE FROM {$this->_tableName} WHERE {$this->_keyField}=:key" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$cmd->execute();
 		return $value;
@@ -346,6 +398,7 @@ class TDbParameterModule extends TModule
 	 * The datasource module will be used to establish the DB connection
 	 * that will be used by the user manager.
 	 * @param string $value module ID.
+	 * @throws TInvalidOperationException if the module is initialized
 	 */
 	public function setConnectionID($value)
 	{
@@ -516,7 +569,7 @@ class TDbParameterModule extends TModule
 
 	/**
 	 * @return bool whether the paramter DB table should be automatically created if not exists. Defaults to true.
-	 * @see setAutoCreateLogTable
+	 * @see setAutoCreateParamTable
 	 */
 	public function getAutoCreateParamTable()
 	{
@@ -525,7 +578,7 @@ class TDbParameterModule extends TModule
 
 	/**
 	 * @param bool $value whether the parameter DB table should be automatically created if not exists.
-	 * @see setLogTableName
+	 * @see setTableName
 	 */
 	public function setAutoCreateParamTable($value)
 	{
@@ -547,12 +600,32 @@ class TDbParameterModule extends TModule
 	 * and unserialize objects and arrays.
 	 * @param callable|string $value the type of un/serialization.
 	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws TInvalidDataTypeException if the $value is not 'php', 'json', or a callable
 	 */
 	public function setSerializer($value)
 	{
 		if ($this->_initialized) {
 			throw new TInvalidOperationException('dbparametermodule_serializer_unchangeable');
 		}
+		if ($value !== self::SERIALIZE_PHP && $value !== self::SERIALIZE_JSON && !is_callable($value)) {
+			throw new TInvalidDataTypeException('dbparametermodule_serializer_not_callable');
+		}
 		$this->_serializer = $value;
+	}
+
+	/**
+	 * @return bool whether the paramter DB table should be automatically created if not exists. Defaults to true.
+	 */
+	public function getCaptureParameterChanges()
+	{
+		return $this->_autoCapture;
+	}
+
+	/**
+	 * @param bool $value whether the parameter DB table should be automatically created if not exists.
+	 */
+	public function setCaptureParameterChanges($value)
+	{
+		$this->_autoCapture = TPropertyValue::ensureBoolean($value);
 	}
 }

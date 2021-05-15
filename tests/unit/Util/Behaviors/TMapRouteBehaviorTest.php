@@ -2,7 +2,7 @@
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TComponent;
-use Prado\Util\Behaviors\TMapLazyLoadBehavior;
+use Prado\Util\Behaviors\TMapRouteBehavior;
 
 
 class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
