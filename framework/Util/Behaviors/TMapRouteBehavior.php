@@ -39,9 +39,11 @@ use Prado\Util\TBehavior;
 class TMapRouteBehavior extends TBehavior
 {
 	/**
-	 * @var string the parameter to check for when there are changes.
+	 * @var string the parameter to check for when there are changes.  This
+	 * is public because this call shouldn't add any other getter/setter functions.
+	 * it is possible for the Parameter to change its key
 	 */
-	private $_parameter;
+	public $_parameter;
 	
 	/**
 	 * @var callable the parameter to check for when there are changes
@@ -101,22 +103,5 @@ class TMapRouteBehavior extends TBehavior
 			call_user_func($this->_handler, $key, null);
 		}
 		return $callchain->dyRemoveItem($key, $value);
-	}
-	
-	/**
-	 * @return string parameter
-	 */
-	public function getParameter()
-	{
-		return $this->_parameter;
-	}
-	
-	/**
-	 *
-	 * @param mixed $param
-	 */
-	public function setParameter($param)
-	{
-		$this->_parameter = $param;
 	}
 }

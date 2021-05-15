@@ -131,11 +131,4 @@ class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, $this->_value);
 	}
 	
-
-	public function testParameter()
-	{
-		self::assertNull($this->obj->getParameter());
-		$this->obj->setParameter('key1');
-		self::assertEquals('key1', $this->obj->getParameter());
-	}
 }
