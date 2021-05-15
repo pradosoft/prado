@@ -22,7 +22,7 @@ class TTimeZoneParameterBehaviorTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TTimeZoneParameterBehavior', $this->obj);
 	}
 	
-	// test the attach and detach method
+	// test the attach _and_ detach methods
 	public function testAttachBehavior()
 	{
 		$app = Prado::getApplication();
