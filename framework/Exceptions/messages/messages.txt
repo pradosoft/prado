@@ -150,7 +150,8 @@ behaviorparameterloader_moduleid_required = TBehaviorParameterLoader attachto 'm
 behaviorparameterloader_behaviorowner_required = TBehaviorParameterLoader attachto '{0}' could not be found.
 behaviorparameterloader_behaviormodule_not_found 	= TBehaviorParameterLoader could not find module '{0}' to attach behaviors.
 
-maplazyloadbehavior_handler_not_callable = TMapLazyLoadbehavior must have a callable to construct.
+maplazyloadbehavior_handler_not_callable = TMapLazyLoadBehavior must have a callable to construct.
+maproutebehavior_handler_not_callable	= TMapRouteBehavior must have a callable to construct.
 
 parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
 parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.

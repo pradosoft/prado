@@ -24,11 +24,11 @@ class TListTest extends PHPUnit\Framework\TestCase
 	
 	protected function newList()
 	{
-		return  'TPriorityList';
+		return  'TList';
 	}
 	protected function newListItem()
 	{
-		return 'PriorityListItem';
+		return 'ListItem';
 	}
 	protected function getCanAddNull()
 	{
