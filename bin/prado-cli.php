@@ -27,14 +27,14 @@ use Prado\Shell\Actions\TActiveRecordGenAction;
 use Prado\Shell\Actions\TActiveRecordGenAllAction;
 use Prado\Shell\Actions\TAppAction;
 use Prado\Shell\Actions\TFlushCachesAction;
-use Prado\Shell\Actions\TPphShellAction;
+use Prado\Shell\Actions\TPhpShellAction;
 
 restore_exception_handler();
 
 //register action classes
 TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TAppAction');
 TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TPphShellAction');
+TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
 TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TActiveRecordGenAction');
 TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TActiveRecordGenAllAction');
 

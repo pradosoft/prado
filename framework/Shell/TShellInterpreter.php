@@ -97,7 +97,9 @@ class TShellInterpreter
 		TShellInterpreter::getInstance()->printGreeting();
 
 		echo "usage: php prado-cli.php action <parameter> [optional]\n";
-		echo "example: php prado-cli.php -c mysite\n\n";
+		echo "example: php prado-cli.php flushcaches /prado_app_directory\n\n";
+		echo "example: php prado-cli.php app /prado_app_directory help\n\n";
+		echo "example: php prado-cli.php app /prado_app_directory cron tasks\n\n";
 		echo "actions:\n";
 		foreach ($this->_actions as $action) {
 			echo $action->renderHelp();

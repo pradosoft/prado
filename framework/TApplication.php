@@ -20,7 +20,6 @@ use Prado\Web\THttpRequest;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpSession;
 use Prado\Util\TLogger;
-use ReflectionClass;
 
 /**
  * TApplication class.
@@ -701,56 +700,27 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Returns a list of application modules of a specific class.
-	 * Modules that have not been loaded yet are loaded.
+	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
+	 * When null modules are found, load them with {@link getModule}.
 	 * @param string $type class name of the modules to look for.
-	 * @param bool $first return the first module found, default false.
-	 * @param mixed $strict
-	 * @return array|object list of loaded application module of a specific class
-	 * or the first object of a specific class
+	 * @param bool $strict should the module be the class or can the module be a subclass
+	 * @return array keys are the ids of the module and values are module of a specific class
 	 * @since 4.2.0
 	 */
-	public function getModulesByType($type, $strict = false, $first = false)
+	public function getModulesByType($type, $strict = false)
 	{
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
 			if ($module === null) {
 				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
-				
-				$match = ($moduleClass === $type);
-				if (!$strict && !$match) {
-					$reflect = new ReflectionClass($moduleClass);
-					if ($reflect = $reflect->getParentClass()) {
-						do {
-							if ($reflect->getName() === $type) {
-								$match = true;
-								break;
-							}
-						} while ($reflect = $reflect->getParentClass());
-					}
+				if ($strict ? ($moduleClass === $type) : ($moduleClass instanceof $type)) {
+					$m[$id] = null;
 				}
-				
-				if ($match) {
-					$module = $this->internalLoadModule($id, true);
-					$module[0]->init($module[1]);
-					if ($first) {
-						return $module[0];
-					} else {
-						$m[] = $module[0];
-					}
-				}
-			} elseif (get_class($module) === $type || (!$strict && ($module->isa($type)))) {
-				if ($first) {
-					return $module;
-				} else {
-					$m[] = $module;
-				}
+			} elseif ($strict ? (get_class($module) === $type) : $module->isa($type)) {
+				$m[$id] = $module;
 			}
 		}
-		if ($first) {
-			return null;
-		} else {
-			return $m;
-		}
+		return $m;
 	}
 
 	/**

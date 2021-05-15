@@ -1,6 +1,6 @@
 <?php
 /**
- * TPphShellAction class file
+ * TPhpShellAction class file
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -20,7 +20,7 @@ use Prado\Shell\TShellAction;
  * @package Prado\Shell\Actions
  * @since 3.0.5
  */
-class TPphShellAction extends TShellAction
+class TPhpShellAction extends TShellAction
 {
 	protected $action = 'shell';
 	protected $parameters = [];
