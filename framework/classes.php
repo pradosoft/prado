@@ -246,6 +246,8 @@ return [
 'TPropertyValue' => 'Prado\TPropertyValue',
 'TService' => 'Prado\TService',
 'TBehaviorParameterLoader' => 'Prado\Util\Behaviors\TBehaviorParameterLoader',
+'TMapLazyLoadBehavior' => 'Prado\Util\Behaviors\TMapLazyLoadBehavior',
+'TMapRouteBehavior' => 'Prado\Util\Behaviors\TMapRouteBehavior',
 'IBaseBehavior' => 'Prado\Util\IBaseBehavior',
 'IBehavior' => 'Prado\Util\IBehavior',
 'IClassBehavior' => 'Prado\Util\IClassBehavior',
