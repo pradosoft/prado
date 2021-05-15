@@ -29,8 +29,8 @@ use Prado\Util\TBehavior;
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapRouteBehavior(null, [$obj, 'setParam']));
  * </code>
- * This code will call $obj->setParam($key, $value) every time the parameter
- * 'parameterToHook' changes in the Application Parameters.
+ * This code will call $obj->setParam($key, $value) every time any parameter
+ * changes in the Application Parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
