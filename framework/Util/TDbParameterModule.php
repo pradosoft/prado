@@ -53,8 +53,10 @@ use Prado\Exceptions\TInvalidDataTypeException;
  *
  * When {@link getCaptureParameterChanges} is true, the default,
  * then this will route any changes to the Application Parameters
- * after TApplication::onInitComplete back to the TDbParameterModule
- * and be saved to the database.
+ * after TPageService::onPreRunPage back to the TDbParameterModule
+ * and be saved to the database.  This captures any changes when
+ * done by the page or user.  These changes are restored when
+ * this module is loaded again.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util
@@ -150,7 +152,7 @@ class TDbParameterModule extends TModule
 			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'get']));
 		}
 		if ($this->_autoCapture) {
-			$this->getApplication()->attachEventHandler('onInitComplete', [$this, 'attachParameterStorage'], 19);
+			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
 		parent::init($config);
 	}
@@ -189,6 +191,21 @@ class TDbParameterModule extends TModule
 				}
 			}
 			$appParameters[$row[$this->_keyField]] = $value;
+		}
+	}
+	
+	/**
+	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * to TPageService to then adds the page behaviors.
+	 * @param object $sender the object that raised the event
+	 * @param mixed $param parameter of the event
+	 */
+	public function attachTPageServiceHandler($sender, $param)
+	{
+		$service = $this->getService();
+		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
+			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}
 	

@@ -29,7 +29,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 	{
 		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR);
 		Prado::getApplication()->getParameters()->detachBehavior(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR);
-		Prado::getApplication()->onInitComplete->clear();
+		Prado::getApplication()->onBeginRequest->clear();
 		$key = 'testparam';
 		$key2 = 'testparam2';
 		$key3 = 'testparam3';
@@ -64,6 +64,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		
 		self::assertNull($this->obj->get($key, false));
 		self::assertInstanceOf('Prado\\Util\\Behaviors\\TMapLazyLoadBehavior', $app->getParameters()->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
+		self::assertEquals(1, Prado::getApplication()->onBeginRequest->count());
 		
 		try {
 			$this->obj->setConnectionID('db');
