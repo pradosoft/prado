@@ -4,14 +4,39 @@ use Prado\Collections\TList;
 use Prado\Collections\TPriorityMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Util\IDynamicMethods;
+use Prado\Util\TBehavior;
 
 class TPriorityMapTest_MapItem
 {
 	public $data = 'data';
 }
+class TPriorityMapTestBehavior extends TBehavior implements IDynamicMethods
+{
+	public $method;
+	public $args;
+	public function __dycall($method, $args)
+	{
+		$this->method = $method;
+		$this->args = $args;
+	}
+}
+class TPriorityMapTestNoItemBehavior extends TBehavior
+{
+	public function dyNoItem($returnValue, $key, $callchain)
+	{
+		if($key == 'key3') {
+			$returnValue = new TPriorityMapTest_MapItem;
+			$returnValue->data = 'value';
+		}
+		return $callchain->dyNoItem($returnValue, $key);
+	}
+}
 
 class TPriorityMapTest extends PHPUnit\Framework\TestCase
 {
+	protected const BEHAVIOR_NAME = 'catcher';
+	
 	protected $map;
 	protected $item1;
 	protected $item2;
@@ -82,13 +107,22 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	public function testGetKeys()
 	{
 		$keys = $this->map->getKeys();
-		$this->assertTrue(count($keys) === 2 && $keys[0] === 'key1' && $keys[1] === 'key2');
+		$this->assertTrue(count($keys) === 2);
+		$this->assertTrue($keys[0] === 'key1');
+		$this->assertTrue($keys[1] === 'key2');
 	}
 
 	public function testAdd()
 	{
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TPriorityMapTestBehavior);
+		
 		$this->map->add('key3', $this->item3);
-		$this->assertTrue($this->map->getCount() == 3 && $this->map->contains('key3'));
+		$this->assertTrue($this->map->getCount() == 3);
+		$this->assertTrue($this->map->contains('key3'));
+		
+		$this->assertEquals('dyAddItem', $b->method);
+		$this->assertEquals('key3', $b->args[0]);
+		$this->assertEquals($this->item3, $b->args[1]);
 	}
 
 	public function testCanNotAddWhenReadOnly()
@@ -100,9 +134,20 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 
 	public function testRemove()
 	{
-		$this->map->remove('key1');
-		$this->assertTrue($this->map->getCount() == 1 && !$this->map->contains('key1'));
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TPriorityMapTestBehavior);
+		
 		$this->assertTrue($this->map->remove('unknown key') === null);
+		
+		$this->assertNull($b->method);
+		$this->assertNull($b->args);
+		
+		$this->assertEquals($this->item1, $this->map->remove('key1'));
+		$this->assertTrue($this->map->getCount() == 1);
+		$this->assertFalse($this->map->contains('key1'));
+		
+		$this->assertEquals('dyRemoveItem', $b->method);
+		$this->assertEquals('key1', $b->args[0]);
+		$this->assertEquals($this->item1, $b->args[1]);
 	}
 
 	public function testCanNotRemoveWhenReadOnly()
@@ -115,7 +160,9 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	public function testClear()
 	{
 		$this->map->clear();
-		$this->assertTrue($this->map->getCount() == 0 && !$this->map->contains('key1') && !$this->map->contains('key2'));
+		$this->assertTrue($this->map->getCount() == 0);
+		$this->assertFalse($this->map->contains('key1'));
+		$this->assertFalse($this->map->contains('key2'));
 	}
 
 	public function testContains()
@@ -129,7 +176,9 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	{
 		$array = ['key3' => $this->item3, 'key4' => $this->item1];
 		$this->map->copyFrom($array);
-		$this->assertTrue($this->map->getCount() == 2 && $this->map['key3'] === $this->item3 && $this->map['key4'] === $this->item1);
+		$this->assertTrue($this->map->getCount() == 2);
+		$this->assertTrue($this->map['key3'] === $this->item3);
+		$this->assertTrue($this->map['key4'] === $this->item1);
 		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
 		$this->map->copyFrom($this);
 	}
@@ -147,21 +196,49 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 
 	public function testArrayRead()
 	{
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TPriorityMapTestBehavior);
+		
 		$this->assertTrue($this->map['key1'] === $this->item1);
 		$this->assertTrue($this->map['key2'] === $this->item2);
+		
+		$this->assertNull($b->method);
+		$this->assertNull($b->args);
+		
 		$this->assertEquals(null, $this->map['key3']);
+		
+		$this->assertEquals('dyNoItem', $b->method);
+		$this->assertNull($b->args[0]);
+		$this->assertEquals('key3', $b->args[1]);
+		
+		$this->map->detachBehavior(self::BEHAVIOR_NAME);
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TPriorityMapTestNoItemBehavior);
+		
+		$this->assertInstanceOf('TPriorityMapTest_MapItem', $item3 = $this->map['key3']);
+		
+		$this->assertEquals('value', $item3->data);
 	}
 
 	public function testArrayWrite()
 	{
+		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestBehavior);
+		
 		$this->map['key3'] = $this->item3;
+		$this->assertEquals('dyAddItem', $b->method);
+		$this->assertEquals('key3', $b->args[0]);
+		$this->assertEquals($this->item3, $b->args[1]);
 		$this->assertTrue($this->map['key3'] === $this->item3);
-		$this->assertEquals(3, $this->map->getCount());
+		$this->assertTrue($this->map->getCount() === 3);
 		$this->map['key1'] = $this->item3;
+		$this->assertEquals('dyAddItem', $b->method);
+		$this->assertEquals('key1', $b->args[0]);
+		$this->assertEquals($this->item3, $b->args[1]);
 		$this->assertTrue($this->map['key1'] === $this->item3);
-		$this->assertEquals(3, $this->map->getCount());
+		$this->assertTrue($this->map->getCount() === 3);
 		unset($this->map['key2']);
-		$this->assertEquals(2, $this->map->getCount());
+		$this->assertEquals('dyRemoveItem', $b->method);
+		$this->assertEquals('key2', $b->args[0]);
+		$this->assertEquals($this->item2, $b->args[1]);
+		$this->assertTrue($this->map->getCount() === 2);
 		$this->assertFalse($this->map->contains('key2'));
 	}
 

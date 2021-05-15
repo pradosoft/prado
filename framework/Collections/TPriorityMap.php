@@ -57,6 +57,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * @author Brad Anderson <javalizard@mac.com>
  * @package Prado\Collections
  * @since 3.2a
+ * @method void dyAddItem(mixed $key, mixed $value)
+ * @method void dyRemoveItem(mixed $key, mixed $value)
+ * @method mixed dyNoItem(mixed $returnValue, mixed $key)
  */
 
 class TPriorityMap extends TMap
@@ -234,13 +237,13 @@ class TPriorityMap extends TMap
 	{
 		if ($priority === false) {
 			$map = $this->flattenPriorities();
-			return $map[$key] ?? null;
+			return $map[$key] ?? $this->dyNoItem(null, $key);
 		} else {
 			if ($priority === null) {
 				$priority = $this->getDefaultPriority();
 			}
 			$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
-			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : null;
+			return (isset($this->_d[$priority]) && isset($this->_d[$priority][$key])) ? $this->_d[$priority][$key] : $this->dyNoItem(null, $key);
 		}
 	}
 
@@ -351,6 +354,7 @@ class TPriorityMap extends TMap
 			}
 			$this->_c++;
 			$this->_fd = null;
+			$this->dyAddItem($key, $value);
 		} else {
 			throw new TInvalidOperationException('map_readonly', get_class($this));
 		}
@@ -388,6 +392,7 @@ class TPriorityMap extends TMap
 							$this->_o = false;
 						}
 						$this->_fd = null;
+						$this->dyRemoveItem($key, $value);
 						return $value;
 					}
 				}
@@ -403,6 +408,7 @@ class TPriorityMap extends TMap
 						$this->_o = false;
 					}
 					$this->_fd = null;
+					$this->dyRemoveItem($key, $value);
 					return $value;
 				} else {
 					return null;
