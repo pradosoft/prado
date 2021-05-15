@@ -106,7 +106,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	public function setTimeZoneParameter($value)
 	{
 		if ($this->_paramBehavior) {
-			$this->_paramBehavior->_parameter = $value;
+			$this->_paramBehavior->setParameter($value);
 		}
 		$this->_timeZoneParameter = $value;
 	}
