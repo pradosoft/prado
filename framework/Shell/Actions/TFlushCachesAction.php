@@ -34,16 +34,19 @@ class TFlushCachesAction extends TShellAction
 	public function performAction($args)
 	{
 		$app = null;
-		if (count($args) > 1) {
-			if (false === ($xml = $this->getAppConfigFile($args[1]))) {
-				return false;
-			}
-			$app = $this->initializePradoApplication($args[1]);
+		if (count($args) <= 1) {
+			$args[1] = '.';
 		}
+		if (false === ($xml = $this->getAppConfigFile($args[1]))) {
+			return false;
+		}
+		$app = $this->initializePradoApplication($args[1]);
+		
 		$app->onLoadState();
 		$app->onLoadStateComplete();
 		$cachesFlushed = [];
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $module) {
+		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+			$module = (!$module) ? $app->getModule($id) : $module;
 			$module->flush();
 			$cachesFlushed[] = get_class($module);
 		}
@@ -52,7 +55,7 @@ class TFlushCachesAction extends TShellAction
 		if (!count($cachesFlushed)) {
 			$cachesFlushed[] = 'no caches (none were found)';
 		}
-		echo "** Application flushed " . implode(', ', $cachesFlushed) . "\n";
+		echo "** Application flushed " . implode(', ', $cachesFlushed) . "\n\n";
 		return true;
 	}
 }

@@ -32,5 +32,7 @@ class TAppHelpAction extends TShellAppAction
 	 */
 	public function performAction($args)
 	{
+		// by not handling this, the parent caller will render the help automatically.
+		return false;
 	}
 }
