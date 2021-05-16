@@ -21,7 +21,8 @@ use Prado\Exceptions\TInvalidOperationException;
  * TParameterizeBehavior sets a specific Property on the owner object
  * to a specific application parameter.  It also can install a behavior
  * on the Application parameters to apply any changes to the application
- * parameter to then route the change to the property.
+ * parameter to then route the change to the property by setting the
+ * RouteBehaviorName.
  *
  * <code>
  *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" DefaultValue="Basic"/>
@@ -43,9 +44,9 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	private $_parameter;
 	
 	/**
-	 * @var bool whether or not a null/false/''/0 parameter value should be set on the property
+	 * @var bool whether or not a null parameter value should be set on the property
 	 */
-	private $_validNullValue = false;
+	private $_validNullValue;
 	
 	/**
 	 * @var string the key to the application parameter
@@ -72,6 +73,9 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 */
 	protected $_routeBehaviorName;
 	
+	/** @var bool is the behavior attached */
+	private $_initialized = false;
+	
 	/**
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
 	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
@@ -90,7 +94,11 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			throw new TConfigurationException('parameterizebehavior_no_property');
 		}
 		if (!$owner->canSetProperty($this->_property)) {
-			throw new TConfigurationException('parameterizebehavior_owner_has_no_set_property', $this->_property);
+			if ($owner->canGetProperty($this->_property)) {
+				throw new TConfigurationException('parameterizebehavior_owner_get_only_property', $this->_property);
+			} else {
+				throw new TConfigurationException('parameterizebehavior_owner_has_no_property', $this->_property);
+			}
 		}
 		
 		$appParams = Prado::getApplication()->getParameters();
@@ -106,7 +114,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			}
 			$owner->setSubProperty($this->_property, $value);
 		}
-		
+		$this->_initialized = true;
 		if ($this->_routeBehaviorName) {
 			if ($this->_localize) {
 				$_property = $this->_property;
@@ -114,7 +122,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 					$owner->$_property = Prado::localize($v);
 				});
 			} else {
-				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, $this->_property]);
+				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, 'set' . $this->_property]);
 			}
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
@@ -129,6 +137,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		if ($this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
 		}
+		$this->_initialized = false;
 		parent::detach($owner);
 	}
 	
@@ -141,11 +150,17 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the property.
+	 * @param string $value Application parameter key to set the property.
 	 */
 	public function setParameter($value)
 	{
 		$this->_parameter = TPropertyValue::ensureString($value);
+		if ($this->_paramBehavior) {
+			if (!strlen($value)) {
+				throw new TInvalidOperationException('parameterizebehavior_cannot_set_parameter_to_blank_after_attach');
+			}
+			$this->_paramBehavior->setParameter($value);
+		}
 	}
 	
 	/**
@@ -157,10 +172,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the property.
+	 * @param string $value Application parameter key to set the property.
 	 */
 	public function setValidNullValue($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_validNullValue_after_attach');
+		}
 		$this->_validNullValue = TPropertyValue::ensureBoolean($value);
 	}
 	
@@ -173,10 +191,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the property.
+	 * @param string $value Application parameter key to set the property.
 	 */
 	public function setProperty($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_property_after_attach');
+		}
 		$this->_property = TPropertyValue::ensureString($value);
 	}
 	
@@ -189,10 +210,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string The default value when there is no property and ValidNullValue is false.
+	 * @param string $value The default value when there is no property and ValidNullValue is false.
 	 */
 	public function setDefaultValue($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_defaultValue_after_attach');
+		}
 		$this->_defaultValue = TPropertyValue::ensureString($value);
 	}
 	
@@ -205,10 +229,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string should the parameter or defaultValue be localized.
+	 * @param string $value should the parameter or defaultValue be localized.
 	 */
 	public function setLocalize($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_localize_after_attach');
+		}
 		$this->_localize = TPropertyValue::ensureBoolean($value);
 	}
 	
@@ -221,14 +248,13 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param $value string The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
+	 * @param string $value The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
 	 */
 	public function setRouteBehaviorName($value)
 	{
-		if (!$this->_paramBehavior) {
-			$this->_routeBehaviorName = TPropertyValue::ensureString($value);
-		} else {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_name_after_initialize');
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_routeBehaviorName_after_initialize');
 		}
+		$this->_routeBehaviorName = TPropertyValue::ensureString($value);
 	}
 }
