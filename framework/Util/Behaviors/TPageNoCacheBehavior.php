@@ -17,7 +17,7 @@ use Prado\Web\UI\WebControls\TMetaTag;
  * TPageNoCacheBehavior class.
  *
  * TPageNoCacheBehavior attaches to pages and adds no-cache meta to the head.
- *
+ * 
  * {@link getCheckMetaNoCache} specifies whether or not to check the existing
  * meta tags (in THead of the TPage) before adding the no cache tags. By default
  * getCheckMetaNoCache is turned off for performance.
@@ -53,11 +53,12 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 			$metatags = $head->getMetaTags();
 			if ($this->_checkMetaNoCache) {
 				foreach ($metatags as $meta) {
-					if ($meta->getHttpEquiv() == 'Expires') {
+					$httpEquiv = strtolower($meta->getHttpEquiv());
+					if ($httpEquiv == 'expires') {
 						$hasExpires = true;
-					} elseif ($meta->getHttpEquiv() == 'Pragma') {
+					} elseif ($httpEquiv == 'pragma') {
 						$hasPragma = true;
-					} elseif ($meta->getHttpEquiv() == 'Cache-Control') {
+					} elseif ($httpEquiv == 'cache-control') {
 						$hasCacheControl = true;
 					}
 				}
