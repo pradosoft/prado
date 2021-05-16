@@ -10,6 +10,8 @@
 
 namespace Prado\Util\Behaviors;
 
+use Prado\Prado;
+use Prado\TPropertyValue;
 use Prado\Web\UI\WebControls\TMetaTag;
 
 /**
@@ -24,6 +26,8 @@ use Prado\Web\UI\WebControls\TMetaTag;
  */
 class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 {
+	/** @var bool check the existing meta tags for the charset before adding it */
+	private $_checkMetaCharset = false;
 	
 	/**
 	 * This handles the TPage.OnInitComplete event to place no-cache
@@ -45,14 +49,16 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 		if ($head = $page->getHead()) {
 			$hasCharset = false;
 			$metatags = $head->getMetaTags();
-			foreach ($metatags as $meta) {
-				if (empty($meta->getHttpEquiv()) && empty($meta->getContent()) && empty($meta->getName()) && empty($meta->getScheme()) && !empty($meta->getCharset())) {
-					$hasCharset = true;
+			if ($this->_checkMetaCharset) {
+				foreach ($metatags as $meta) {
+					if (empty($meta->getHttpEquiv()) && empty($meta->getContent()) && empty($meta->getName()) && empty($meta->getScheme()) && !empty($meta->getCharset())) {
+						$hasCharset = true;
+					}
 				}
 			}
 			if (!$hasCharset) {
 				$charset = 'utf-8';
-				if ($globalization = \Prado::getApplication()->getGlobalization()) {
+				if ($globalization = Prado::getApplication()->getGlobalization()) {
 					$charset = $globalization->getCharset();
 				}
 				$meta = new TMetaTag();
@@ -60,5 +66,21 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 				$metatags->add($meta);
 			}
 		}
+	}
+	
+	/**
+	 * @return bool checks existing meta tags for no cache
+	 */
+	public function getCheckMetaCharset()
+	{
+		return $this->_checkMetaCharset;
+	}
+	
+	/**
+	 * @param bool $value checks existing meta tags for no cache
+	 */
+	public function setCheckMetaCharset($value)
+	{
+		$this->_checkMetaCharset = TPropertyValue::ensureBoolean($value);
 	}
 }

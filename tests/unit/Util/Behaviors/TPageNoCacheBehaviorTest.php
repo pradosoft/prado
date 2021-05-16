@@ -32,15 +32,34 @@ class TPageNoCacheBehaviorTest extends PHPUnit\Framework\TestCase
 		$this->obj->addNoCacheMeta($page, null);
 		self::assertEquals(3, $head->getMetaTags()->count());
 		
+		$hasExpires = $hasPragma = $hasCacheControl = false;
+		
+		foreach ($head->getMetaTags() as $meta) {
+			$httpEquiv = strtolower($meta->getHttpEquiv());
+			$content = strtolower($meta->getContent());
+			if ($httpEquiv == 'expires') {
+				$hasExpires = true;
+			} elseif ($httpEquiv == 'pragma' && $content == 'no-cache') {
+				$hasPragma = true;
+			} elseif ($httpEquiv == 'cache-control' && $content == 'no-cache') {
+				$hasCacheControl = true;
+			}
+		}
+		self::assertTrue($hasExpires);
+		self::assertTrue($hasPragma);
+		self::assertTrue($hasCacheControl);
+		
 		$this->obj->setCheckMetaNoCache(true);
 		
 		$this->obj->addNoCacheMeta($page, null);
 		self::assertEquals(3, $head->getMetaTags()->count());
 		
+		self::assertEquals(3, $head->getMetaTags()->count());
 		$this->obj->setCheckMetaNoCache(false);
 		
 		$this->obj->addNoCacheMeta($page, null);
 		self::assertEquals(6, $head->getMetaTags()->count());
+		$metas = $head->getMetaTags();
 	}
 
 	public function testCheckMetaNoCache()
