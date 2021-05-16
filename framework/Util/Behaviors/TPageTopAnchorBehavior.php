@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
 /**
  * TPageTopAnchorBehavior class.
  *
- * TPageTopAnchorBehavior adds an <a name='top'> anchor at the top of
+ * TPageTopAnchorBehavior adds an "<a name='top'>" anchor at the top of
  * every page just before the TForm.
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
