@@ -32,7 +32,7 @@ use Prado\Util\TBehavior;
  * parameter functionality and set the TimeZone from the attribute TimeZone.
  *
  * This routes changes in the Application Parameter {@link TimeZoneParameter}
- * to {@link setTimeZone}.
+ * to {@link setTimeZone}. The default TimeZoneParameter is 'prop:TimeZone'.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Behaviors
