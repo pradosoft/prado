@@ -436,6 +436,7 @@ return [
 'TPageStateFormatter' => 'Prado\Web\UI\TPageStateFormatter',
 'TPageStatePersister' => 'Prado\Web\UI\TPageStatePersister',
 'TSessionPageStatePersister' => 'Prado\Web\UI\TSessionPageStatePersister',
+'TSkinTemplate' => 'Prado\Web\UI\TSkinTemplate',
 'TTemplate' => 'Prado\Web\UI\TTemplate',
 'TTemplateControl' => 'Prado\Web\UI\TTemplateControl',
 'TTemplateControlInheritable' => 'Prado\Web\UI\TTemplateControlInheritable',

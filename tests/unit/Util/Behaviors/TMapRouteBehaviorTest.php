@@ -40,7 +40,7 @@ class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
 	{
 		$this->map = null;
 		$this->behavior = null;
-		$this->behavior = null;
+		$this->behaviorall = null;
 	}
 
 	public function testConstruct()
@@ -131,4 +131,11 @@ class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, $this->_value);
 	}
 	
+
+	public function testParameter()
+	{
+		self::assertEquals('key1', $this->behavior->getParameter());
+		$this->behavior->setParameter('key2');
+		self::assertEquals('key2', $this->behavior->getParameter());
+	}
 }
