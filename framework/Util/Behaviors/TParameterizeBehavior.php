@@ -253,7 +253,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function setRouteBehaviorName($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('parameterizebehavior_cannot_set_routeBehaviorName_after_initialize');
+			throw new TInvalidOperationException('parameterizebehavior_cannot_set_routeBehaviorName_after_attach');
 		}
 		$this->_routeBehaviorName = TPropertyValue::ensureString($value);
 	}
