@@ -152,6 +152,17 @@ behaviorparameterloader_behaviormodule_not_found 	= TBehaviorParameterLoader cou
 maplazyloadbehavior_handler_not_callable = TMapLazyLoadBehavior must have a callable to construct.
 maproutebehavior_handler_not_callable	= TMapRouteBehavior must have a callable to construct.
 
+parameterizebehavior_no_parameter		= TParameterizeBehavior must have a Parameter attribute.
+parameterizebehavior_no_property		= TParameterizeBehavior must have a Property attribute.
+parameterizebehavior_owner_get_only_property = TParameterizeBehavior owner has Property '{0}' but is read-only.
+parameterizebehavior_owner_has_no_property = TParameterizeBehavior owner has no Property '{0}'.
+parameterizebehavior_cannot_set_parameter_to_blank_after_attach = TParameterizeBehavior cannot blank the Parameter after being attached.
+parameterizebehavior_cannot_set_property_after_attach = TParameterizeBehavior cannot set Property after being attached.
+parameterizebehavior_cannot_set_validNullValue_after_attach = TParameterizeBehavior cannot set ValidNullValue after being attached.
+parameterizebehavior_cannot_set_defaultValue_after_attach = TParameterizeBehavior cannot set DefaultValue after being attached.
+parameterizebehavior_cannot_set_localize_after_attach = TParameterizeBehavior cannot set Localize after being attached.
+parameterizebehavior_cannot_set_routeBehaviorName_after_attach = TParameterizeBehavior cannot set RouteBehaviorName after being attached.
+
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
 template_directive_nonunique			= Directive '<%@ ... %>' must appear at the beginning of the template and can appear at most once.
