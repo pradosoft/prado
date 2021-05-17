@@ -258,15 +258,6 @@ class TDbCache extends TCache
 			$this->getApplication()->setGlobalState($key, $now);
 		}
 	}
-
-	/**
-	 * Allows cron to clear the DB Cache
-	 * @since 4.2.0
-	 */
-	public function cronFlushCacheExpired()
-	{
-		$this->flushCacheExpired(true);
-	}
 	
 	/**
 	 * @param mixed $cron
