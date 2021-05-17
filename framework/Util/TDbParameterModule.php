@@ -169,14 +169,14 @@ class TDbParameterModule extends TModule
 		
 		$where = ($this->_autoLoadField ? " WHERE {$this->_autoLoadField}={$this->_autoLoadValue}" : '');
 		$cmd = $db->createCommand(
-			"SELECT {$this->_keyField}, {$this->_valueField} FROM {$this->_tableName}{$where}"
+			"SELECT {$this->_keyField} as keyField, {$this->_valueField}  as valueField FROM {$this->_tableName}{$where}"
 		);
 		$results = $cmd->query();
 		
 		$appParameters = $this->getApplication()->getParameters();
 		$serializer = $this->getSerializer();
 		foreach ($results->readAll() as $row) {
-			$value = $row[$this->_valueField];
+			$value = $row['valueField'];
 			if ($serializer == self::SERIALIZE_PHP) {
 				if (($avalue = @unserialize($value)) !== false) {
 					$value = $avalue;
@@ -190,7 +190,7 @@ class TDbParameterModule extends TModule
 					$value = $avalue;
 				}
 			}
-			$appParameters[$row[$this->_keyField]] = $value;
+			$appParameters[$row['keyField']] = $value;
 		}
 	}
 	
@@ -289,12 +289,12 @@ class TDbParameterModule extends TModule
 		}
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
-			"SELECT {$this->_valueField} FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
+			"SELECT {$this->_valueField} as valueField FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
 		);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$results = $cmd->queryRow();
 		$serializer = $this->getSerializer();
-		if (is_array($results) && ($value = $results[$this->_valueField])) {
+		if (is_array($results) && ($value = $results['valueField'])) {
 			$appParams = $this->getApplication()->getParameters();
 			if ($serializer == self::SERIALIZE_PHP) {
 				if (($avalue = @unserialize($value)) !== false) {
