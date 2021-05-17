@@ -47,7 +47,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 	
 	/**
-	 * This caches the 'fx' events for PRADO classes in the global state
+	 * This caches the 'fx' events for PRADO classes in the application cache
 	 * @param object $class
 	 * @return string[] fx events from a specific class
 	 */
