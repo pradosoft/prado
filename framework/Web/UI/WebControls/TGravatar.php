@@ -32,7 +32,12 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * A rating of the gravatar can be provided as g, pg, r, and x.
  *
- * See https://gravatar.com for more information.
+ * The size must be between 1 and 512, inclusive.
+ *
+ * {@link TParameterizeBehavior} can be attached to TGravatar to give
+ * default values for various properties like Default and Rating.
+ *
+ * See {@link https://gravatar.com} for more information.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Web\UI\WebControls
