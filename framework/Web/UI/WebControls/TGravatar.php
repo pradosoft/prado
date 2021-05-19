@@ -53,35 +53,18 @@ class TGravatar extends TImage
 	 */
 	public function getImageUrl()
 	{
-		$params = '';
-		if ($size = $this->getSize()) {
-			if ($params != '') {
-				$params .= '&';
-			}
-			$params .= 's=' . $size;
-		}
-		if ($rating = $this->getRating()) {
-			if ($params != '') {
-				$params .= '&';
-			}
-			$params .= 'r=' . $rating;
-		}
-		if ($default = $this->getDefault()) {
-			if ($params != '') {
-				$params .= '&';
-			}
-			$params .= 'd=' . rawurlencode($default);
-		}
-		if ($params != '') {
-			$params = '?' . $params;
-		}
-		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . $params;
+		$params = [];
+		$params['s'] = $this->getSize();
+		$params['r'] = $this->getRating();
+		$params['d'] = $this->getDefaultImageStyle();
+		
+		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, null, '&', PHP_QUERY_RFC3986);
 	}
 	
 	/**
 	 * @return string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
 	 */
-	public function getDefault()
+	public function getDefaultImageStyle()
 	{
 		return $this->getViewState('default');
 	}
@@ -89,11 +72,12 @@ class TGravatar extends TImage
 	/**
 	 * @param $default string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
 	 */
-	public function setDefault($default)
+	public function setDefaultImageStyle($default)
 	{
 		$default = TPropertyValue::ensureString($default);
-		if ($valid = in_array(strtolower($default), ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash', 'blank', '404', ''])) {
-			$default = strtolower($default);
+		$lowerDefault = strtolower($default);
+		if ($valid = in_array($lowerDefault, ['mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash', 'blank', '404', ''])) {
+			$default = $lowerDefault;
 		}
 		if (!$valid && !preg_match('/^https?:\/\//i', $default)) {
 			throw new TInvalidDataValueException('gravatar_bad_default', $default);
