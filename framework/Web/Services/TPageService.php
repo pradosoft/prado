@@ -467,7 +467,9 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * Creates a page instance based on requested page path.
+	 * Creates a page instance based on requested page path.  If the Page is not
+	 * found in the BasePath then this method raises onAdditionalPagePaths($pagePath)
+	 * to query for any additional page paths. eg. from composer package modules.
 	 * @param string $pagePath requested page path
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
@@ -480,7 +482,23 @@ class TPageService extends \Prado\TService
 		$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
 
 		if (!$hasTemplateFile && !$hasClassFile) {
-			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+			$paths = $this->onAdditionalPagePaths($pagePath);
+			$applicationPath = Prado::getPathOfAlias('Application');
+			$throwException = true;
+			foreach ($paths as $path) {
+				if (stripos($path, $applicationPath) !== 0) {
+					throw new THttpException(403, 'pageservice_security_violation', $path);
+				}
+				$hasTemplateFile = is_file($path . self::PAGE_FILE_EXT);
+				$hasClassFile = is_file($path . Prado::CLASS_FILE_EXT);
+				if ($hasTemplateFile || $hasClassFile) {
+					$throwException = false;
+					break;
+				}
+			}
+			if ($throwException) {
+				throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
+			}
 		}
 
 		if ($hasClassFile) {
@@ -528,6 +546,24 @@ class TPageService extends \Prado\TService
 		}
 		$this->onPreRunPage($page);
 		$page->run($this->getResponse()->createHtmlWriter());
+	}
+	
+	/**
+	 * This event is raised if the page is not found in the BasePath.
+	 * This provides additional possible Page Paths to look for the page.
+	 * The typical handler would look like:
+	 * <code>
+	 * public function additionalPagePaths($service, $pagePath)
+	 * {
+	 *	 return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
+	 * }
+	 * </code>
+	 * @param mixed $param what is passed as the parameter to the event
+	 * @since 4.2.0
+	 */
+	public function onAdditionalPagePaths($param)
+	{
+		return $this->raiseEvent('onAdditionalPagePaths', $this, $param);
 	}
 	
 	/**
