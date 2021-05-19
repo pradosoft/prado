@@ -149,7 +149,7 @@ class TDbParameterModule extends TModule
 		$this->_initialized = true;
 		
 		if ($this->_autoLoadField) {
-			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'get']));
+			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
 		}
 		if ($this->_autoCapture) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
@@ -228,22 +228,17 @@ class TDbParameterModule extends TModule
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
 		$postIndices = '';
-		$index = '';
-		if ($driver === 'sqlite') {
-			$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
-			($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
-		} else {
-			if ($driver === 'mysql') {
-				$autoidAttributes = 'AUTO_INCREMENT';
-			}
-			$index = ', INDEX(`' . $this->_keyField . '`)' . ($this->_autoLoadField ? ', INDEX(`' . $this->_autoLoadField . '`)' : '');
+		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
+		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
+		if ($driver === 'mysql') {
+			$autoidAttributes = 'AUTO_INCREMENT';
 		}
 
 		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
 			param_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ', ' .
 			$this->_keyField . ' VARCHAR(128),' .
 			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN DEFAULT 1' : '') . $index .
+			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN DEFAULT 1' : '') .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}
@@ -268,14 +263,16 @@ class TDbParameterModule extends TModule
 		}
 	}
 	
+	
 	/**
 	 * Loads parameters into application.
 	 * @param string $key key to get the value
 	 * @param bool $checkParameter checks the Application Parameters first
+	 * @param bool $setParams should the method set the application parameters
 	 * @throws TInvalidOperationException if the $key is blank
 	 * @throws TDbException if the Fields and table is not correct
 	 */
-	public function get($key, $checkParameter = true)
+	public function get($key, $checkParameter = true, $setParams = true)
 	{
 		if ($key == '') {
 			throw new TInvalidOperationException('dbparametermodule_getparameter_blank_key');
@@ -294,8 +291,7 @@ class TDbParameterModule extends TModule
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
 		$results = $cmd->queryRow();
 		$serializer = $this->getSerializer();
-		if (is_array($results) && ($value = $results['valueField'])) {
-			$appParams = $this->getApplication()->getParameters();
+		if (is_array($results) && ($value = $results['valueField']) !== null) {
 			if ($serializer == self::SERIALIZE_PHP) {
 				if (($avalue = @unserialize($value)) !== false) {
 					$value = $avalue;
@@ -307,10 +303,24 @@ class TDbParameterModule extends TModule
 			} elseif ($serializer && ($avalue = call_user_func($serializer, $value, false)) !== null) {
 				$value = $avalue;
 			}
-			$appParams[$key] = $value;
+			if ($setParams) {
+				$appParams = $this->getApplication()->getParameters();
+				$appParams[$key] = $value;
+			}
 			return $value;
 		}
 		return null;
+	}
+	
+	/**
+	 * Loads parameters into application.
+	 * @param string $key key to get the value
+	 * @throws TInvalidOperationException if the $key is blank
+	 * @throws TDbException if the Fields and table is not correct
+	 */
+	public function getFromBehavior($key)
+	{
+		return $this->get($key, false, true);
 	}
 	
 	/**
@@ -374,7 +384,11 @@ class TDbParameterModule extends TModule
 	 */
 	public function setFromBehavior($key, $value)
 	{
-		$this->set($key, $value, true, false);
+		if ($value !== null) {
+			$this->set($key, $value, true, false);
+		} else {
+			$this->remove($key);
+		}
 	}
 	
 	/**
@@ -402,7 +416,7 @@ class TDbParameterModule extends TModule
 	 */
 	public function remove($key)
 	{
-		$value = $this->get($key);
+		$value = $this->get($key, false, false);
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$appendix = '';
