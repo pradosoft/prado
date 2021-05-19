@@ -75,7 +75,6 @@ use Prado\Web\UI\TThemeManager;
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @package Prado\Web\Services
  * @since 3.0
- * @method string[] $this->dyGetAlternatePaths($returnValue, $pagePath)
  */
 class TPageService extends \Prado\TService
 {
@@ -470,7 +469,7 @@ class TPageService extends \Prado\TService
 	/**
 	 * Creates a page instance based on requested page path.  If the Page is not
 	 * found in the BasePath then this method raises onAdditionalPagePaths($pagePath)
-	 * to query for any additional page pathes
+	 * to query for any additional page paths. eg. from composer package modules.
 	 * @param string $pagePath requested page path
 	 * @throws THttpException if requested page path is invalid
 	 * @throws TConfigurationException if the page class cannot be found
@@ -552,6 +551,13 @@ class TPageService extends \Prado\TService
 	/**
 	 * This event is raised if the page is not found in the BasePath.
 	 * This provides additional possible Page Paths to look for the page.
+	 * The typical handler would look like:
+	 * <code>
+	 * public function additionalPagePaths($service, $pagePath)
+	 * {
+	 *	 return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
+	 * }
+	 * </code>
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */
