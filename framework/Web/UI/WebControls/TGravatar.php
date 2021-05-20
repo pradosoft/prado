@@ -62,7 +62,7 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @return null|string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_; 
+	 * @return null|string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_;
 	 * this defaults to null
 	 */
 	public function getDefaultImageStyle()
