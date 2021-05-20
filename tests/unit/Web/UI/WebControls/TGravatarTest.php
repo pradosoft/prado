@@ -21,73 +21,74 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 		self::assertInstanceOf('\\Prado\\Web\\UI\\WebControls\\TGravatar', $this->obj);
 	}
 
-	public function testDefault()
+	public function testDefaultImageStyle()
 	{
-		self::assertNull($this->obj->getDefault());
+		self::assertEquals('', $this->obj->getDefaultImageStyle());
+		echo($this->obj->getImageUrl());
 		self::assertTrue(0 === preg_match('/d=/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('Mp'); //Mystery Person
-		self::assertEquals('mp', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('Mp'); //Mystery Person
+		self::assertEquals('mp', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=mp/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('identicon'); //Mystery Person
-		self::assertEquals('identicon', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('identicon'); //Mystery Person
+		self::assertEquals('identicon', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=identicon/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('monsterid'); //Mystery Person
-		self::assertEquals('monsterid', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('monsterid'); //Mystery Person
+		self::assertEquals('monsterid', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=monsterid/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('wavatar'); //Mystery Person
-		self::assertEquals('wavatar', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('wavatar'); //Mystery Person
+		self::assertEquals('wavatar', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=wavatar/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('retro'); //Mystery Person
-		self::assertEquals('retro', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('retro'); //Mystery Person
+		self::assertEquals('retro', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=retro/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('robohash'); //Mystery Person
-		self::assertEquals('robohash', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('robohash'); //Mystery Person
+		self::assertEquals('robohash', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=robohash/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('Blank'); //Mystery Person
-		self::assertEquals('blank', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('Blank'); //Mystery Person
+		self::assertEquals('blank', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=blank/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault('404'); //Mystery Person
-		self::assertEquals('404', $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle('404'); //Mystery Person
+		self::assertEquals('404', $this->obj->getDefaultImageStyle());
 		self::assertTrue(1 === preg_match('/d=404/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault(''); //nothing
-		self::assertNull($this->obj->getDefault());
+		$this->obj->setDefaultImageStyle(''); //nothing
+		self::assertEquals('', $this->obj->getDefaultImageStyle());
 		self::assertTrue(0 === preg_match('/d=/', $this->obj->getImageUrl()));
 		
-		$this->obj->setDefault(null); //nothing
-		self::assertNull($this->obj->getDefault());
+		$this->obj->setDefaultImageStyle(null); //nothing
+		self::assertEquals('', $this->obj->getDefaultImageStyle());
 		self::assertTrue(0 === preg_match('/d=/', $this->obj->getImageUrl()));
 		
 		try {
-			$this->obj->setDefault('incorrect'); //nothing
-			$this->fail('TGravatar Default should  have been raised on bad Default');
+			$this->obj->setDefaultImageStyle('incorrect'); //nothing
+			$this->fail('TGravatar DefaultImageStyle should have been raised on bad DefaultImageStyle');
 		} catch(Prado\Exceptions\TInvalidDataValueException $e) {
 		}
 		
 		$url = 'http://GitHub.com/#tag?value=1 2';
-		$this->obj->setDefault($url);
-		self::assertEquals($url, $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle($url);
+		self::assertEquals($url, $this->obj->getDefaultImageStyle());
 		$search = '/d=' . addslashes(rawurlencode($url)) . '/';
 		self::assertTrue(1 === preg_match($search, $this->obj->getImageUrl()));
 		
 		$url = 'https://GitHub.com/#tag?value=1 2';
-		$this->obj->setDefault($url);
-		self::assertEquals($url, $this->obj->getDefault());
+		$this->obj->setDefaultImageStyle($url);
+		self::assertEquals($url, $this->obj->getDefaultImageStyle());
 		$search = '/d=' . addslashes(rawurlencode($url)) . '/';
 		self::assertTrue(1 === preg_match('/d=' . addslashes(rawurlencode($url)) . '/', $this->obj->getImageUrl()));
 	}
 	
 	public function testSize()
 	{
-		self::assertNull($this->obj->getSize());
+		self::assertEquals('', $this->obj->getSize());
 		self::assertTrue(0 === preg_match('/s=/', $this->obj->getImageUrl()));
 		
 		$this->obj->setSize(1);
@@ -99,7 +100,11 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(1 === preg_match('/s=512/', $this->obj->getImageUrl()));
 		
 		$this->obj->setSize(null);
-		self::assertNull($this->obj->getSize());
+		self::assertEquals('', $this->obj->getSize());
+		self::assertTrue(0 === preg_match('/s=/', $this->obj->getImageUrl()));
+		
+		$this->obj->setSize('');
+		self::assertEquals('', $this->obj->getSize());
 		self::assertTrue(0 === preg_match('/s=/', $this->obj->getImageUrl()));
 		
 		try {
@@ -108,7 +113,7 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 		} catch(Prado\Exceptions\TInvalidDataValueException $e) {
 		}
 		try {
-			$this->obj->setDefault(513);
+			$this->obj->setSize(513);
 			$this->fail('TGravatar size did not throw TInvalidDataValueException when size is 513');
 		} catch(Prado\Exceptions\TInvalidDataValueException $e) {
 		}
@@ -116,7 +121,7 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 	
 	public function testRating()
 	{
-		self::assertNull($this->obj->getRating());
+		self::assertEquals('', $this->obj->getRating());
 		self::assertTrue(0 === preg_match('/r=/', $this->obj->getImageUrl()));
 		
 		$this->obj->setRating('G');
@@ -136,11 +141,11 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(1 === preg_match('/r=x/', $this->obj->getImageUrl()));
 		
 		$this->obj->setRating('');
-		self::assertNull($this->obj->getRating());
+		self::assertEquals('', $this->obj->getRating());
 		self::assertTrue(0 === preg_match('/r=/', $this->obj->getImageUrl()));
 		
 		$this->obj->setRating(null);
-		self::assertNull($this->obj->getRating());
+		self::assertEquals('', $this->obj->getRating());
 		self::assertTrue(0 === preg_match('/r=/', $this->obj->getImageUrl()));
 	}
 	
