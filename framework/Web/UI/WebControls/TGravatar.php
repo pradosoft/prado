@@ -54,9 +54,15 @@ class TGravatar extends TImage
 	public function getImageUrl()
 	{
 		$params = [];
-		$params['s'] = $this->getSize();
-		$params['r'] = $this->getRating();
-		$params['d'] = $this->getDefaultImageStyle();
+		if ($size = $this->getSize()) {
+			$params['s'] = $size;
+		}
+		if ($rating = $this->getRating()) {
+			$params['r'] = $rating;
+		}
+		if ($style = $this->getDefaultImageStyle()) {
+			$params['d'] = $style;
+		}
 		
 		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, null, '&', PHP_QUERY_RFC3986);
 	}
@@ -66,7 +72,7 @@ class TGravatar extends TImage
 	 */
 	public function getDefaultImageStyle()
 	{
-		return $this->getViewState('default');
+		return $this->getViewState('default', '');
 	}
 	
 	/**
@@ -82,10 +88,7 @@ class TGravatar extends TImage
 		if (!$valid && !preg_match('/^https?:\/\//i', $default)) {
 			throw new TInvalidDataValueException('gravatar_bad_default', $default);
 		}
-		if ($default === '') {
-			$default = null;
-		}
-		$this->setViewState('default', $default);
+		$this->setViewState('default', $default, '');
 	}
 	
 	/**
@@ -93,7 +96,7 @@ class TGravatar extends TImage
 	 */
 	public function getSize()
 	{
-		return $this->getViewState('size');
+		return $this->getViewState('size', '');
 	}
 	
 	/**
@@ -102,11 +105,11 @@ class TGravatar extends TImage
 	public function setSize($size)
 	{
 		$_size = TPropertyValue::ensureInteger($size);
-		if (($_size > 512 || $_size < 1) && $size !== null) {
+		if (($_size > 512 || $_size < 1) && $size !== null && $size !== '') {
 			throw new TInvalidDataValueException('gravatar_bad_size', $size);
 		}
-		$_size = ($size === null) ? null : $_size;
-		$this->setViewState('size', $_size, null);
+		$_size = ($size === null || $size === '') ? '' : $_size;
+		$this->setViewState('size', $_size, '');
 	}
 	
 	/**
@@ -114,7 +117,7 @@ class TGravatar extends TImage
 	 */
 	public function getRating()
 	{
-		return $this->getViewState('rating');
+		return $this->getViewState('rating', '');
 	}
 	
 	/**
@@ -127,7 +130,7 @@ class TGravatar extends TImage
 		if (!$rating) {
 			$rating = null;
 		}
-		$this->setViewState('rating', $rating, null);
+		$this->setViewState('rating', $rating, '');
 	}
 	
 	/**
@@ -143,7 +146,7 @@ class TGravatar extends TImage
 	 */
 	public function setEmail($email)
 	{
-		$this->setViewState('email', TPropertyValue::ensureString($email));
+		$this->setViewState('email', TPropertyValue::ensureString($email), '');
 	}
 	
 	/**
