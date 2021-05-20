@@ -22,7 +22,23 @@ use Prado\TPropertyValue;
  * <code>
  *		<com:TDataSize Size="475837458" UseMarketingSize="true" Abbreviate="true"/>
  * </code>
- * will output "476 MB"
+ * will output "476 MB".
+ *
+ * The TDataSize output depends on {@link getAbbreviate Abbreviate} and
+ * {@link getUseMarketingSize UseMarketingSize}.
+ *
+ * {@link getUseMarketingSize UseMarketingSize} will change the size of a
+ * kilobyte to be 1000 rather the technical 1024.  This changes the output
+ * between bytes, kilobytes, megabytes, gigabytes, terabytes, petabytes,
+ * exabytes, zettabytes, and yottabytes for UseMarketingSize="True" (1000 per) and
+ * the technical bytes, kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
+ * exbibytes, zebibytes, and yobibytes for UseMarketingSize="False" (1024 per).
+ * The singular and plural of these these outputted words are localized.
+ *
+ * For {@link getAbbreviate Abbreviate} that is true, with UseMarketingSize="True"
+ * then B, KB, MB, GB, TB, PB, EB, ZB, YB is outputted. Otherwise with
+ * UseMarketingSize="False" then'B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB is
+ * outputted.  These outputted abbreviations are localized.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Web\UI\WebControls
@@ -85,7 +101,7 @@ class TDataSize extends TLabel
 		$abbr = $this->getAbbreviate();
 		$marketingSize = $this->getUseMarketingSize();
 		if ($abbr && $marketingSize) {
-			$decimal = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+			$decimal = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 			$t = $s . ' ' . Prado::localize($decimal[$index]);
 		} elseif (!$abbr && $marketingSize) {
 			$decimalname = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
