@@ -64,7 +64,7 @@ class TGravatar extends TImage
 			$params['d'] = $style;
 		}
 		
-		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, null, '&', PHP_QUERY_RFC3986);
+		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
 	}
 	
 	/**
@@ -92,7 +92,7 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @return int the pixel size of the gravatar, 1..512, default 80
+	 * @return int|string the pixel size of the gravatar, 1..512, default 80
 	 */
 	public function getSize()
 	{

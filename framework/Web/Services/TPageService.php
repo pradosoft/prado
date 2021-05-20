@@ -483,7 +483,7 @@ class TPageService extends \Prado\TService
 
 		if (!$hasTemplateFile && !$hasClassFile) {
 			$paths = $this->onAdditionalPagePaths($pagePath);
-			$applicationPath = Prado::getPathOfAlias('Application');
+			$applicationPath = Prado::getPathOfAlias('Application') ?? '';
 			$throwException = true;
 			foreach ($paths as $path) {
 				if (stripos($path, $applicationPath) !== 0) {
