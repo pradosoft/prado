@@ -22,6 +22,3 @@ vendor/*
 
 sauce_connect.log
 tests/unit/Data/SqlMap/sqlite/tests.db
-check_php_cs_fixer.sh
-check_phpstan.sh
-check_unittests.sh
