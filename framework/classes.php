@@ -530,6 +530,7 @@ return [
 'TFileUploadItem' => 'Prado\Web\UI\WebControls\TFileUploadItem',
 'TFlushOutput' => 'Prado\Web\UI\WebControls\TFlushOutput',
 'TFont' => 'Prado\Web\UI\WebControls\TFont',
+'TGravatar' => 'Prado\Web\UI\WebControls\TGravatar',
 'THead' => 'Prado\Web\UI\WebControls\THead',
 'THeader1' => 'Prado\Web\UI\WebControls\THeader1',
 'THeader2' => 'Prado\Web\UI\WebControls\THeader2',

@@ -51,7 +51,7 @@ class TActiveRecordGenAllAction extends TShellAction
 
 			$manager = TActiveRecordManager::getInstance();
 			$con = $manager->getDbConnection();
-			$con->Active = true;
+			$con->setActive(true);
 			$command = null;
 
 			switch ($con->getDriverName()) {
