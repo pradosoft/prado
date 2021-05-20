@@ -54,29 +54,24 @@ class TGravatar extends TImage
 	public function getImageUrl()
 	{
 		$params = [];
-		if ($size = $this->getSize()) {
-			$params['s'] = $size;
-		}
-		if ($rating = $this->getRating()) {
-			$params['r'] = $rating;
-		}
-		if ($style = $this->getDefaultImageStyle()) {
-			$params['d'] = $style;
-		}
+		$params['s'] = $this->getSize();
+		$params['r'] = $this->getRating();
+		$params['d'] = $this->getDefaultImageStyle();
 		
 		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
 	}
 	
 	/**
-	 * @return string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
+	 * @return null|string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_;
+	 * this defaults to null
 	 */
 	public function getDefaultImageStyle()
 	{
-		return $this->getViewState('default', '');
+		return $this->getViewState('default');
 	}
 	
 	/**
-	 * @param $default string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
+	 * @param null|string $default one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
 	 */
 	public function setDefaultImageStyle($default)
 	{
@@ -88,19 +83,24 @@ class TGravatar extends TImage
 		if (!$valid && !preg_match('/^https?:\/\//i', $default)) {
 			throw new TInvalidDataValueException('gravatar_bad_default', $default);
 		}
-		$this->setViewState('default', $default, '');
+		if (!$default) {
+			$default = null;
+		}
+		$this->setViewState('default', $default);
 	}
 	
 	/**
-	 * @return int|string the pixel size of the gravatar, 1..512, default 80
+	 * When the Size is not set or is null, the default size of a gravatar
+	 * from the gravatar website is 80.
+	 * @return null|int the pixel size of the gravatar, [1..512], default null (results in 80)
 	 */
 	public function getSize()
 	{
-		return $this->getViewState('size', '');
+		return $this->getViewState('size');
 	}
 	
 	/**
-	 * @param $size int the pixel size of the gravatar, 1..512
+	 * @param null|int $size the pixel size of the gravatar, [1..512]
 	 */
 	public function setSize($size)
 	{
@@ -108,20 +108,22 @@ class TGravatar extends TImage
 		if (($_size > 512 || $_size < 1) && $size !== null && $size !== '') {
 			throw new TInvalidDataValueException('gravatar_bad_size', $size);
 		}
-		$_size = ($size === null || $size === '') ? '' : $_size;
-		$this->setViewState('size', $_size, '');
+		if (!$size) {
+			$_size = null;
+		}
+		$this->setViewState('size', $_size);
 	}
 	
 	/**
-	 * @return string the rating of the icon ['g', 'pg', 'r', 'x', ''], default ''
+	 * @return null|string the rating of the icon ['g', 'pg', 'r', 'x', ''], default null
 	 */
 	public function getRating()
 	{
-		return $this->getViewState('rating', '');
+		return $this->getViewState('rating');
 	}
 	
 	/**
-	 * @param $rating string the rating of the icon ['g', 'pg', 'r', 'x', '']
+	 * @param null|string $rating the rating of the icon ['g', 'pg', 'r', 'x', '']
 	 */
 	public function setRating($rating)
 	{
@@ -130,7 +132,7 @@ class TGravatar extends TImage
 		if (!$rating) {
 			$rating = null;
 		}
-		$this->setViewState('rating', $rating, '');
+		$this->setViewState('rating', $rating);
 	}
 	
 	/**
