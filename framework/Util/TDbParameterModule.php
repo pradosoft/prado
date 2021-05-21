@@ -114,17 +114,17 @@ class TDbParameterModule extends TModule
 	private $_autoLoadField = 'autoload';
 	
 	/**
-	 * @var string autoload True value. default sql "true"
+	 * @var string autoload True value. default sql "1"
 	 */
 	private $_autoLoadValue = '1';
 	
 	/**
-	 * @var string autoload False value. default sql "false"
+	 * @var string autoload False value. default sql "0"
 	 */
 	private $_autoLoadValueFalse = '0';
 	
 	/**
-	 * @var bool whether the log DB table should be created automatically
+	 * @var bool whether the parameter DB table should be created automatically
 	 */
 	private $_autoCreate = true;
 	
@@ -210,17 +210,19 @@ class TDbParameterModule extends TModule
 	}
 	
 	/**
-	 * This attaches the TMapRouteBehavior on the Parameters .
+	 * This attaches the TMapRouteBehavior on the Parameters.
+	 * @param object $sender
+	 * @param null|mixed $param
 	 * @throws TDbException if the Fields and table is not correct
 	 */
-	public function attachParameterStorage()
+	public function attachParameterStorage($sender, $param)
 	{
 		$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_SET_BEHAVIOR, new TMapRouteBehavior(null, [$this, 'setFromBehavior']));
 	}
 
 	/**
 	 * Creates the DB table for storing log messages.
-	 * @todo create sequence for PostgreSQL
+	 * @todo create sequence for PostgreSQL, and other db
 	 */
 	protected function createDbTable()
 	{
@@ -271,6 +273,7 @@ class TDbParameterModule extends TModule
 	 * @param bool $setParameter should the method set the application parameters
 	 * @throws TInvalidOperationException if the $key is blank
 	 * @throws TDbException if the Fields and table is not correct
+	 * @return mixed the value of the key
 	 */
 	public function get($key, $checkParameter = true, $setParameter = true)
 	{
@@ -317,6 +320,7 @@ class TDbParameterModule extends TModule
 	 * @param string $key key to get the value
 	 * @throws TInvalidOperationException if the $key is blank
 	 * @throws TDbException if the Fields and table is not correct
+	 * @return mixed the value
 	 */
 	public function getFromBehavior($key)
 	{
@@ -395,6 +399,7 @@ class TDbParameterModule extends TModule
 	 * exists checks for a parameter in the database
 	 * @param $key string parameter to check in the database
 	 * @throws TDbException if the Fields and table is not correct
+	 * @return bool whether the key exists in the database table
 	 * @return mixed the value of the parameter, one last time
 	 */
 	public function exists($key)
@@ -412,6 +417,7 @@ class TDbParameterModule extends TModule
 	 * remove removes a parameter from the database
 	 * @param $key string parameter to remove from the database
 	 * @throws TDbException if the Fields and table is not correct
+	 * @return mixed the value of the key removed
 	 * @return mixed the value of the parameter, one last time
 	 */
 	public function remove($key)
