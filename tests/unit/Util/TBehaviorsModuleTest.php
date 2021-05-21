@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Util\TBehaviorsModule;
 use Prado\Util\TBehavior;
 use Prado\Web\UI\TPage;
@@ -175,6 +176,12 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		//null is still zero array
 		$this->obj->setAdditionalBehaviors(null);
 		$this->assertEquals([], $this->obj->getAdditionalBehaviors());
+		
+		//invalid has an error
+		try {
+			$this->obj->setAdditionalBehaviors(99);
+			self::fail('TInvalidDataTypeException not raised when setting an invalid value');
+		} catch(TInvalidDataTypeException $e) {}
 		
 		// zero array is a zero array
 		$this->obj->setAdditionalBehaviors([]);

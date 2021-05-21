@@ -11,6 +11,7 @@
 namespace Prado\Util;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\TApplication;
 use Prado\TComponent;
 use Prado\Xml\TXmlDocument;
@@ -203,6 +204,9 @@ class TBehaviorsModule extends \Prado\TModule
 		}
 		if (is_array($behaviors) && isset($behaviors['class'])) {
 			$behaviors = [$behaviors];
+		}
+		if (!is_array($behaviors) && !($behaviors instanceof TXmlDocument) && $behaviors !== null) {
+			throw new TInvalidDataTypeException('behaviormodule_additional_behaviors_invalid', $behaviors);
 		}
 		$this->_additionalBehaviors = $behaviors ?? [];
 	}

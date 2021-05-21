@@ -141,6 +141,7 @@ behaviormodule_behaviorclass_required	= <behavior> must contain a 'class' attrib
 behaviormodule_attachto_class_required	= <behavior> must have an 'attachto' or 'attachtoclass' attribute.
 behaviormodule_attachto_and_class_only_one	= <behavior> must have either 'attachto' or 'attachtoclass' attribute, not both.
 behaviormodule_behaviorowner_required	= <behavior> attachto '{0}' object is not found.
+behaviormodule_additional_behaviors_invalid = TBehaviorModule.AdditionalBehaviors cannot set to invalid type '{0}'
 
 behaviorparameterloader_no_behavior_name= TBehaviorParameterLoader must have a Behavior Name.
 behaviorparameterloader_no_behavior_class = TBehaviorParameterLoader must have a Behavior Class.
