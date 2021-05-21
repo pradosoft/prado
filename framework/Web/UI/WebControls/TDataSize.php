@@ -30,14 +30,14 @@ use Prado\TPropertyValue;
  * {@link getUseMarketingSize UseMarketingSize} will change the size of a
  * kilobyte to be 1000 rather the technical 1024.  This changes the output
  * between bytes, kilobytes, megabytes, gigabytes, terabytes, petabytes,
- * exabytes, zettabytes, and yottabytes for UseMarketingSize="True" (1000 per) and
+ * exabytes, zettabytes, and yottabytes for UseMarketingSize="True" (base 1000) and
  * the technical bytes, kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
- * exbibytes, zebibytes, and yobibytes for UseMarketingSize="False" (1024 per).
+ * exbibytes, zebibytes, and yobibytes for UseMarketingSize="False" (base 1024).
  * The singular and plural of these these outputted words are localized.
  *
  * For {@link getAbbreviate Abbreviate} that is true, with UseMarketingSize="True"
  * then B, KB, MB, GB, TB, PB, EB, ZB, YB is outputted. Otherwise with
- * UseMarketingSize="False" then'B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB is
+ * UseMarketingSize="False" then B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB is
  * outputted.  These outputted abbreviations are localized.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -72,23 +72,23 @@ class TDataSize extends TLabel
 	public function renderContents($writer)
 	{
 		$s = $this->_size;
+		$abbr = $this->_abbreviate;
+		$marketingSize = $this->_usemarketingsize;
+		
 		$d = 1024;
 		
-		if ($this->_usemarketingsize) {
+		if ($marketingSize) {
 			$d = 1000;
 		}
 		
-		$number = [1, $d, pow($d, 2), pow($d, 3), pow($d, 4), pow($d, 5), pow($d, 6), pow($d, 7), pow($d, 8)];
-		
-		$index = 0;
-		foreach ($number as $k => $size) {
-			if (abs($s) < $size) {
+		$size = $d;
+		for ($i = 1; $i <= 8; $i++, $size *= $d) {
+			if ($s < $size) {
 				break;
-			} else {
-				$index = $k;
 			}
 		}
-		$size = $number[$index];
+		$i--; //go to the previous index and size that worked.
+		$size /= $d;
 		
 		$s /= $size;
 		
@@ -97,29 +97,25 @@ class TDataSize extends TLabel
 			$sf = 3;
 		}
 			
-		$s = round($s, (int) ceil($sf - log10(abs($s))));
-		$abbr = $this->getAbbreviate();
-		$marketingSize = $this->getUseMarketingSize();
+		$s = round($s, (int) ceil($sf - log10($s)));
+		
 		if ($abbr && $marketingSize) {
 			$decimal = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-			$t = $s . ' ' . Prado::localize($decimal[$index]);
-		} elseif (!$abbr && $marketingSize) {
-			$decimalname = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
-			$appendix = '';
-			if ($s != 1) {
-				$appendix = 's';
-			}
-			$t = $s . ' ' . Prado::localize($decimalname[$index] . $appendix);
+			$t = $s . ' ' . Prado::localize($decimal[$i]);
 		} elseif ($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-			$t = $s . ' ' . Prado::localize($binary[$index]);
+			$t = $s . ' ' . Prado::localize($binary[$i]);
 		} else {
-			$binaryname = ['byte', 'kibibyte', 'mebibyte', 'gibibyte', 'tebibyte', 'pebibyte', 'exbibyte', 'zebibyte', 'yobibyte'];
+			if ($marketingSize) {
+				$names = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
+			} else {
+				$names = ['byte', 'kibibyte', 'mebibyte', 'gibibyte', 'tebibyte', 'pebibyte', 'exbibyte', 'zebibyte', 'yobibyte'];
+			}
 			$appendix = '';
 			if ($s != 1) {
 				$appendix = 's';
 			}
-			$t = $s . ' ' . Prado::localize($binaryname[$index] . $appendix);
+			$t = $s . ' ' . Prado::localize($names[$i] . $appendix);
 		}
 		$writer->write($t);
 	}

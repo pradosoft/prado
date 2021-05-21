@@ -125,6 +125,11 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 			$this->obj->renderContents($writer);
 			self::assertEquals(1, preg_match('/1[^\d\.]/', $output = $writer->flush()));
 			self::assertEquals(1, preg_match('/[^a-zA-Z]YB/i', $output));
+			
+			$this->obj->setSize(pow(1000, 9));
+			$this->obj->renderContents($writer);
+			self::assertEquals(1, preg_match('/1000[^\d\.]/', $output = $writer->flush()));
+			self::assertEquals(1, preg_match('/[^a-zA-Z]YB/i', $output));
 		}
 		{
 			$this->obj->setAbbreviate(true);
@@ -183,6 +188,11 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 			$this->obj->setSize(pow(1024, 8));
 			$this->obj->renderContents($writer);
 			self::assertEquals(1, preg_match('/1[^\d\.]/', $output = $writer->flush()));
+			self::assertEquals(1, preg_match('/[^a-zA-Z]YiB/i', $output));
+			
+			$this->obj->setSize(pow(1024, 9));
+			$this->obj->renderContents($writer);
+			self::assertEquals(1, preg_match('/1024[^\d\.]/', $output = $writer->flush()));
 			self::assertEquals(1, preg_match('/[^a-zA-Z]YiB/i', $output));
 		}
 		
@@ -285,7 +295,10 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match('/1.1[^\d]/', $output = $writer->flush()));
 			self::assertEquals(1, preg_match('/[^a-zA-Z]yottabytes/i', $output));
 			
-			$decimalname = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', ];
+			$this->obj->setSize(pow(1000, 9));
+			$this->obj->renderContents($writer);
+			self::assertEquals(1, preg_match('/1000[^\d]/', $output = $writer->flush()));
+			self::assertEquals(1, preg_match('/[^a-zA-Z]yottabytes/i', $output));
 		}
 		{
 			$this->obj->setAbbreviate(false);
@@ -390,6 +403,11 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 			$this->obj->renderContents($writer);
 			self::assertEquals(1, preg_match('/1.1[^\d]/', $output = $writer->flush()));
 			self::assertEquals(1, preg_match('/[^a-zA-Z]yobibytes/i', $output));
+			
+			$this->obj->setSize(pow(1024, 9));
+			$this->obj->renderContents($writer);
+			self::assertEquals(1, preg_match('/1024[^\d\.]/', $output = $writer->flush()));
+			self::assertEquals(1, preg_match('/[^a-zA-Z]yobibyte[^a-zA-Z]*/i', $output));
 		}
 	}
 }

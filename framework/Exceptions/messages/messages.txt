@@ -118,7 +118,6 @@ errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' i
 pageservice_page_unknown				= Page '{0}' Not Found
 pageservice_pageclass_unknown			= Page class '{0}' is unknown.
 pageservice_basepath_invalid			= TPageService.BasePath '{0}' is not a valid directory.
-
 pageservice_security_violation			= TPageService cannot access additional directory '{0}'.
 pageservice_page_required				= Page Name Required
 pageservice_defaultpage_unchangeable	= TPageService.DefaultPage cannot be modified after the service is initialized.
