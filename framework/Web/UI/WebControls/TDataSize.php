@@ -48,18 +48,19 @@ class TDataSize extends TLabel
 {
 	/**
 	 * @var int size of the data
+	 * @param mixed $writer
 	 */
-	private $_size = 0;
+	//private $_size = 0;
 	
 	/**
 	 * @var bool whether to use marketing sizes (base 1000) or technical sizes (base 1024).
 	 */
-	private $_usemarketingsize = false;
+	//private $_usemarketingsize = false;
 	
 	/**
 	 * @var bool whether to use abbreviations.
 	 */
-	private $_abbreviate = true;
+	//private $_abbreviate = true;
 	
 	/**
 	 * renders the size in the closes base, bytes, kilobytes, megabytes,
@@ -71,9 +72,9 @@ class TDataSize extends TLabel
 	 */
 	public function renderContents($writer)
 	{
-		$s = $this->_size;
-		$abbr = $this->_abbreviate;
-		$marketingSize = $this->_usemarketingsize;
+		$s = $this->getSize();
+		$abbr = $this->getAbbreviate();
+		$marketingSize = $this->getUseMarketingSize();
 		
 		$d = 1024;
 		
@@ -81,16 +82,8 @@ class TDataSize extends TLabel
 			$d = 1000;
 		}
 		
-		$size = $d;
-		for ($i = 1; $i <= 8; $i++, $size *= $d) {
-			if ($s < $size) {
-				break;
-			}
-		}
-		$i--; //go to the previous index and size that worked.
-		$size /= $d;
-		
-		$s /= $size;
+		$index = min(max(floor(log($s, $d)), 0), 8);
+		$s /= pow($d, $index);
 		
 		$sf = 2;
 		if ($s >= 1000) {
@@ -101,10 +94,10 @@ class TDataSize extends TLabel
 		
 		if ($abbr && $marketingSize) {
 			$decimal = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-			$t = $s . ' ' . Prado::localize($decimal[$i]);
+			$t = $s . ' ' . Prado::localize($decimal[$index]);
 		} elseif ($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-			$t = $s . ' ' . Prado::localize($binary[$i]);
+			$t = $s . ' ' . Prado::localize($binary[$index]);
 		} else {
 			if ($marketingSize) {
 				$names = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte', 'petabyte', 'exabyte', 'zettabyte', 'yottabyte'];
@@ -115,7 +108,7 @@ class TDataSize extends TLabel
 			if ($s != 1) {
 				$appendix = 's';
 			}
-			$t = $s . ' ' . Prado::localize($names[$i] . $appendix);
+			$t = $s . ' ' . Prado::localize($names[$index] . $appendix);
 		}
 		$writer->write($t);
 	}
@@ -125,7 +118,7 @@ class TDataSize extends TLabel
 	 */
 	public function getSize()
 	{
-		return $this->_size;
+		return $this->getViewState('Size', 0);
 	}
 	
 	/**
@@ -133,26 +126,27 @@ class TDataSize extends TLabel
 	 */
 	public function setSize($size)
 	{
-		$this->_size = TPropertyValue::ensureFloat($size);
-		if ($this->_size < 0) {
-			throw new TInvalidDataValueException('datasize_no_negative_size', $this->_size);
+		$size = TPropertyValue::ensureFloat($size);
+		if ($size < 0) {
+			throw new TInvalidDataValueException('datasize_no_negative_size', $size);
 		}
+		$this->setViewState('Size', $size, 0);
 	}
 	
 	/**
-	 * @return bool using marketing sizes (base 1000) or not (base 1024)
+	 * @return bool using marketing sizes (base 1000) or not (technical sizes, base 1024)
 	 */
 	public function getUseMarketingSize()
 	{
-		return $this->_usemarketingsize;
+		return $this->getViewState('UseMarketingSize', true);
 	}
 	
 	/**
-	 * @param bool $marketing using marketing sizes (base 1000) or not (base 1024)
+	 * @param bool $marketing using marketing sizes (base 1000) or not (technical sizes, base 1024)
 	 */
 	public function setUseMarketingSize($marketing)
 	{
-		$this->_usemarketingsize = TPropertyValue::ensureBoolean($marketing);
+		$this->setViewState('UseMarketingSize', TPropertyValue::ensureBoolean($marketing), true);
 	}
 	
 	/**
@@ -160,7 +154,7 @@ class TDataSize extends TLabel
 	 */
 	public function getAbbreviate()
 	{
-		return $this->_abbreviate;
+		return $this->getViewState('Abbreviate', true);
 	}
 	
 	/**
@@ -168,6 +162,6 @@ class TDataSize extends TLabel
 	 */
 	public function setAbbreviate($abbr)
 	{
-		$this->_abbreviate = TPropertyValue::ensureBoolean($abbr);
+		$this->setViewState('Abbreviate', TPropertyValue::ensureBoolean($abbr), true);
 	}
 }

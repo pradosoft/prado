@@ -42,25 +42,27 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 	}
 	
 	public function testUseMarketingSize()
-	{
-		self::assertFalse($this->obj->getUseMarketingSize());
-		
+	{	
 		$this->obj->setUseMarketingSize(true);
 		self::assertTrue($this->obj->getUseMarketingSize());
 		
 		$this->obj->setUseMarketingSize(false);
 		self::assertFalse($this->obj->getUseMarketingSize());
+		
+		$this->obj->setUseMarketingSize(true);
+		self::assertTrue($this->obj->getUseMarketingSize());
 	}
 	
 	public function testAbbreviate()
-	{
-		self::assertTrue($this->obj->getAbbreviate());
-		
+	{	
 		$this->obj->setAbbreviate(false);
 		self::assertFalse($this->obj->getAbbreviate());
 		
 		$this->obj->setAbbreviate(true);
 		self::assertTrue($this->obj->getAbbreviate());
+		
+		$this->obj->setAbbreviate(false);
+		self::assertFalse($this->obj->getAbbreviate());
 	}
 	
 	public function testRenderContents()
