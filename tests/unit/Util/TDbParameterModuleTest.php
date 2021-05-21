@@ -107,7 +107,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertNull($this->obj->get($key, false));
 		
 		self::assertNull($params->asa(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR));
-		$this->obj->attachParameterStorage();
+		$this->obj->attachParameterStorage(null, null);
 		self::assertInstanceOf('Prado\\Util\\Behaviors\\TMapRouteBehavior', $params->asa(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR));
 		
 		$params[$key] = $value;
@@ -155,7 +155,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($this->obj->exists($key2));
 		self::assertEquals($value2, $params[$key2]);
 		
-		$this->obj->attachParameterStorage();
+		$this->obj->attachParameterStorage(null, null);
 		
 		$params[$key2] = null;
 		self::assertFalse($this->obj->exists($key2));
