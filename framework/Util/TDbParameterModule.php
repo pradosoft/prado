@@ -204,7 +204,7 @@ class TDbParameterModule extends TModule
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
+		if ($service->hasEvent('onPreRunPage')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}
@@ -229,7 +229,6 @@ class TDbParameterModule extends TModule
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
-		$postIndices = '';
 		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
 		if ($driver === 'mysql') {
