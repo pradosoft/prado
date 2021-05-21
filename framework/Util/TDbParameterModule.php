@@ -265,14 +265,14 @@ class TDbParameterModule extends TModule
 	
 	
 	/**
-	 * Loads parameters into application.
+	 * Gets a specific parameter parameters into application.
 	 * @param string $key key to get the value
 	 * @param bool $checkParameter checks the Application Parameters first
-	 * @param bool $setParams should the method set the application parameters
+	 * @param bool $setParameter should the method set the application parameters
 	 * @throws TInvalidOperationException if the $key is blank
 	 * @throws TDbException if the Fields and table is not correct
 	 */
-	public function get($key, $checkParameter = true, $setParams = true)
+	public function get($key, $checkParameter = true, $setParameter = true)
 	{
 		if ($key == '') {
 			throw new TInvalidOperationException('dbparametermodule_getparameter_blank_key');
@@ -303,7 +303,7 @@ class TDbParameterModule extends TModule
 			} elseif ($serializer && ($avalue = call_user_func($serializer, $value, false)) !== null) {
 				$value = $avalue;
 			}
-			if ($setParams) {
+			if ($setParameter) {
 				$appParams = $this->getApplication()->getParameters();
 				$appParams[$key] = $value;
 			}
