@@ -14,13 +14,13 @@ use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\TModule;
 use Prado\TPropertyValue;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Util\Behaviors\TMapRouteBehavior;
-use Prado\Exceptions\TInvalidOperationException;
-use Prado\Exceptions\TConfigurationException;
-use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TDbParameterModule class
