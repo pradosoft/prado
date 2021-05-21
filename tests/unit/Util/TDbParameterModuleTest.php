@@ -38,11 +38,6 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj = null;
 	}
 
-	public function testConstruct()
-	{
-		self::assertInstanceOf('\\Prado\\Util\\TDbParameterModule', $this->obj);
-	}
-
 	public function testInit()
 	{
 		$key = 'testparam';
@@ -178,6 +173,11 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		unset($params[$key]);
 		$this->obj->remove($key2);
 		unset($params[$key2]);
+	}
+
+	public function testConstruct()
+	{
+		self::assertInstanceOf('\\Prado\\Util\\TDbParameterModule', $this->obj);
 	}
 	
 	public function testGet()
