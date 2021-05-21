@@ -68,7 +68,7 @@ class TDataSize extends TLabel
 		$s = round($s, (int) ceil($sf - log10($s)));
 		
 		if ($abbr && $marketingSize) {
-			$decimal = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+			$decimal = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 			$t = $s . ' ' . Prado::localize($decimal[$index]);
 		} elseif ($abbr && !$marketingSize) {
 			$binary = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
