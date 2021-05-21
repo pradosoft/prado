@@ -204,7 +204,7 @@ class TDbParameterModule extends TModule
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
+		if ($service->hasEvent('onPreRunPage')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}
