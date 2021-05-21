@@ -47,22 +47,6 @@ use Prado\TPropertyValue;
 class TDataSize extends TLabel
 {
 	/**
-	 * @var int size of the data
-	 * @param mixed $writer
-	 */
-	//private $_size = 0;
-	
-	/**
-	 * @var bool whether to use marketing sizes (base 1000) or technical sizes (base 1024).
-	 */
-	//private $_usemarketingsize = false;
-	
-	/**
-	 * @var bool whether to use abbreviations.
-	 */
-	//private $_abbreviate = true;
-	
-	/**
 	 * renders the size in the closes base, bytes, kilobytes, megabytes,
 	 * gigabytes, terabytes, petabytes, exabytes, zettabytes, and yottabytes
 	 * for marketing terms, and bytes, kibibytes, mebibytes gibibytes,
@@ -76,20 +60,11 @@ class TDataSize extends TLabel
 		$abbr = $this->getAbbreviate();
 		$marketingSize = $this->getUseMarketingSize();
 		
-		$d = 1024;
-		
-		if ($marketingSize) {
-			$d = 1000;
-		}
-		
+		$d = $marketingSize ? 1000 : 1024;
 		$index = min(max(floor(log($s, $d)), 0), 8);
 		$s /= pow($d, $index);
 		
-		$sf = 2;
-		if ($s >= 1000) {
-			$sf = 3;
-		}
-			
+		$sf = ($s >= 1000) ? 3 : 2;
 		$s = round($s, (int) ceil($sf - log10($s)));
 		
 		if ($abbr && $marketingSize) {
