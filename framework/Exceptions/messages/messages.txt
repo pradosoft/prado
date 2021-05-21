@@ -517,10 +517,11 @@ db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cache
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table '{0}' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
-dbparametermodule_connectionid_unchangeable = TDbParameterModule.ConnectionId cannot change after initialization.
+dbparametermodule_property_unchangeable = TDbParameterModule.{0} cannot change after initialization.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
-dbparametermodule_keyfield_unchangeable	= TDbParameterModule.KeyField cannot change after initialization.
-dbparametermodule_valuefield_unchangeable	= TDbParameterModule ValueField cannot change after initialization.
+dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
+
+datasize_no_negative_size				= TDataSize.Size cannot be negative.
 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
