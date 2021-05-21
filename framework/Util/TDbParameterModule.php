@@ -258,7 +258,7 @@ class TDbParameterModule extends TModule
 			if ($this->_autoCreate) {
 				$this->createDbTable();
 			} else {
-				throw new TConfigurationException('db_paramtable_nonexistent', $this->_tableName);
+				throw new TConfigurationException('dbparametermodule_table_nonexistent', $this->_tableName);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ class TDbParameterModule extends TModule
 	public function get($key, $checkParameter = true, $setParameter = true)
 	{
 		if ($key == '') {
-			throw new TInvalidOperationException('dbparametermodule_getparameter_blank_key');
+			throw new TInvalidOperationException('dbparametermodule_get_no_blank_key');
 		}
 		
 		if ($checkParameter) {
@@ -335,7 +335,7 @@ class TDbParameterModule extends TModule
 	public function set($key, $value, $autoLoad = true, $setParameter = true)
 	{
 		if (empty($key)) {
-			throw new TInvalidOperationException('dbparametermodule_setparameter_blank_key');
+			throw new TInvalidOperationException('dbparametermodule_set_no_blank_key');
 		}
 			
 		if (($serializer = $this->getSerializer()) && (is_array($value) || is_object($value))) {
@@ -447,7 +447,7 @@ class TDbParameterModule extends TModule
 	public function setConnectionID($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_connectionid_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'ConnectionID');
 		}
 		$this->_connID = $value;
 	}
@@ -506,7 +506,7 @@ class TDbParameterModule extends TModule
 	public function setKeyField($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_keyfield_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'KeyField');
 		}
 		$this->_keyField = TPropertyValue::ensureString($value);
 	}
@@ -526,7 +526,7 @@ class TDbParameterModule extends TModule
 	public function setValueField($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_valuefield_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'ValueField');
 		}
 		$this->_valueField = TPropertyValue::ensureString($value);
 	}
@@ -546,7 +546,7 @@ class TDbParameterModule extends TModule
 	public function setTableName($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_tablename_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'TableName');
 		}
 		$this->_tableName = TPropertyValue::ensureString($value);
 	}
@@ -566,7 +566,7 @@ class TDbParameterModule extends TModule
 	public function setAutoLoadField($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_autoloadfield_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadField');
 		}
 		$this->_autoLoadField = TPropertyValue::ensureString($value);
 	}
@@ -586,7 +586,7 @@ class TDbParameterModule extends TModule
 	public function setAutoLoadValue($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_autoloadvalue_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadValue');
 		}
 		$this->_autoLoadValue = TPropertyValue::ensureString($value);
 	}
@@ -606,7 +606,7 @@ class TDbParameterModule extends TModule
 	public function setAutoLoadValueFalse($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_autoloadvaluefalse_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadValueFalse');
 		}
 		$this->_autoLoadValueFalse = TPropertyValue::ensureString($value);
 	}
@@ -649,7 +649,7 @@ class TDbParameterModule extends TModule
 	public function setSerializer($value)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_serializer_unchangeable');
+			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'Serializer');
 		}
 		if ($value !== self::SERIALIZE_PHP && $value !== self::SERIALIZE_JSON && !is_callable($value)) {
 			throw new TInvalidDataTypeException('dbparametermodule_serializer_not_callable');
