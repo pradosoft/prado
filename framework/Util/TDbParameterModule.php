@@ -137,6 +137,9 @@ class TDbParameterModule extends TModule
 	 * @var bool automatically capture changes to Parameters after Application Initialize
 	 */
 	private $_autoCapture = true;
+	
+	/** @var TMapRouteBehavior captures all the changes to the parameters to the db */
+	private $_setBehavior;
 
 	
 	/**
@@ -217,7 +220,8 @@ class TDbParameterModule extends TModule
 	 */
 	public function attachParameterStorage($sender, $param)
 	{
-		$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_SET_BEHAVIOR, new TMapRouteBehavior(null, [$this, 'setFromBehavior']));
+		$this->_setBehavior = new TMapRouteBehavior(null, [$this, 'setFromBehavior']);
+		$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_SET_BEHAVIOR, $this->_setBehavior);
 	}
 
 	/**
@@ -323,7 +327,7 @@ class TDbParameterModule extends TModule
 	 */
 	public function getFromBehavior($key)
 	{
-		return $this->get($key, false, true);
+		return $this->get($key, false, $this->_setBehavior === null);
 	}
 	
 	/**
