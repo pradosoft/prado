@@ -10,6 +10,7 @@
 
 namespace Prado\Util\Cron;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
 
 /**
@@ -65,6 +66,15 @@ use Prado\TPropertyValue;
 		
  		return method_exists($module, $method);
  	}
+ 	public function getModule()
+ 	{
+ 		$module = parent::getModule();
+ 		if ($module === null) {
+ 			throw new TConfigurationException('cronmodule_no_module', $this->getModuleId());
+ 		}
+ 		return $module;
+ 	}
+	 
 	
  	public function getMethod()
  	{

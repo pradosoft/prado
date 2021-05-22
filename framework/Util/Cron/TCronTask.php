@@ -48,6 +48,7 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var int the last time this task was run */
 	private $_lastexectime;
 	
+	private $_isConfigTask = true;
 	
 	/**
 	 * This is the abstract method for running tasks
@@ -109,7 +110,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 * @return string the utility module for the task
+	 * @return null|string the utility module for the task
 	 */
 	public function getModuleId()
 	{
@@ -122,19 +123,17 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function setModuleId($moduleId)
 	{
-		$this->_moduleId = TPropertyValue::ensureString($moduleId);
+		$this->_moduleId = ($moduleId !== null) ? TPropertyValue::ensureString($moduleId) : null;
 	}
 	
 	/**
-	 * @return Prado\TModule returns the module from ModuleId
+	 * @return null|Prado\IModule returns the module from ModuleId
 	 */
 	public function getModule()
 	{
 		$app = $this->getApplication();
-		
 		$module = $app->getModule($this->_moduleId);
-		
-		if ($module === null) {
+		if ($module === null && $this->_moduleId !== null) {
 			throw new TConfigurationException('cronmodule_no_module', $this->_moduleId);
 		}
 		return $module;

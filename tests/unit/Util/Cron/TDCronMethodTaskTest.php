@@ -26,6 +26,11 @@ class TDCronMethodTaskTest extends TCronTaskTest
 	{
 		return 'Prado\\Util\\Cron\\TCronMethodTask';
 	}
+	
+	public function hasNullModuleId()
+	{
+		return false;
+	}
 
 	public function testConstruct()
 	{

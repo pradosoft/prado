@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\Util\Cron\TCronTask;
@@ -90,6 +91,23 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 		}
 		
 		self::assertEquals($module, $this->obj->getModule());
+		
+		try {	// module id nonexistant
+			$this->obj->setModuleId($value.'2');
+			$this->obj->getModule($value.'2');
+			self::fail('failed to throw TConfigurationException on ModuleId that does not exist');
+		} catch(TConfigurationException $e) {}
+		
+		//null module id means null module
+		if ($this->hasNullModuleId()) {
+			$this->obj->setModuleId(null);
+			self::assertNull($this->obj->getModule());
+		}
+	}
+	
+	public function hasNullModuleId()
+	{
+		return true;
 	}
 	
 	public function testProcessCount()
