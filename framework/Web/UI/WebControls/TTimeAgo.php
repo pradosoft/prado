@@ -16,13 +16,12 @@ use Prado\Web\Javascripts\TJavaScript;
 /**
  * TTimeAgo class
  *
- * TimeAgo is shows time and date in a label as '# (seconds|minutes|etc) ago'.  This
- * embeds javascript to keep the time ago up to date.  As time updates,
- * the moments ago are kept up to date.  The resolution depends on how far ago
+ * TimeAgo is shows time and date in a label as '(# seconds|minutes|hours|etc) ago'.  This
+ * embeds javascript to keep the TTimeAgo up to date.  As time changes,
+ * the TTimeAgo is kept up to date.  The resolution depends on how far ago
  * the moment is.
  *
- * Future time delimiters are also handled.  When clicking on a time ago label,
- * the entry turns into the date and time stamp for specifics.
+ * When clicking on a time ago label, the entry turns into the date and time stamp for specifics.
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Web\UI
  * @since 4.2.0
@@ -123,7 +122,7 @@ class TTimeAgo extends TLabel
 	 *	getClickSeeDateTime returns whether or not to allow clicking to change the label to
 	 * the the exact time and date. Clicking a second time changes the time ago back to it's
 	 * continuous function.
-	 * @param mixed $v
+	 * @param bool $v
 	 */
 	public function setClickSeeDateTime($v)
 	{
