@@ -4,6 +4,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TModule;
 use Prado\Util\Cron\TCronMethodTask;
+use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
 
 class TCMeTTModule extends TModule
@@ -49,6 +50,13 @@ class TDCronMethodTaskTest extends TCronTaskTest
 		self::assertEquals('method', $this->obj->getMethod());
 	}
 	
+	public function testGetTask()
+	{
+		$this->obj->setModuleId('mymodule'); 
+		$this->obj->setMethod('mymethod(\'abc\')'); 
+		$this->assertEquals($this->obj->getModuleId() . TCronModule::METHOD_SEPARATOR . $this->obj->getMethod(), $this->obj->getTask());
+	}
+	
 	public function testTask()
 	{
 		$app = Prado::getApplication();
@@ -57,12 +65,12 @@ class TDCronMethodTaskTest extends TCronTaskTest
 		$this->obj->setModuleId('TCMeTTModuleTask');
 		
 		$this->obj->setMethod('simpleMethod');
-		$this->obj->task(null, null);
+		$this->obj->execute(null, null);
 		
 		self::assertEquals('simpleMethod', $module->property);
 		
 		$this->obj->setMethod('paramMethod(\'paramData\')');
-		$this->obj->task(null, null);
+		$this->obj->execute(null, null);
 		
 		self::assertEquals('paramData', $module->property);
 	}

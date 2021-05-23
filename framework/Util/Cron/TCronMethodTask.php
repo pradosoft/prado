@@ -45,9 +45,17 @@ use Prado\TPropertyValue;
  			$this->setMethod($method);
  		}
  	}
+     
+     /**
+      * @return string the user id executing the Task
+      */
+     public function getTask()
+     {
+         return $this->getModuleId() . TCronModule::METHOD_SEPARATOR . $this->getMethod();
+     }
 	
  	/** implements task to get the module from $_moduleId, then run $_method on it */
- 	public function task($sender, $param)
+ 	public function execute($sender, $param)
  	{
  		$method = $this->_method;
  		if (strpos($method, '(') === false) {

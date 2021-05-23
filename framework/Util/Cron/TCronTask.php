@@ -55,7 +55,7 @@ abstract class TCronTask extends TApplicationComponent
 	 * @param Prado\Util\Cron\TCronModule $cronModule the module calling the task
 	 * @param bool $isSystemTask specifies if there is some text output
 	 */
-	abstract public function task($cronModule, $isSystemTask);
+	abstract public function execute($cronModule, $isSystemTask);
 	
 	/**
 	 * @return string the unique name of the Task
@@ -91,6 +91,14 @@ abstract class TCronTask extends TApplicationComponent
 		if ($this->_scheduler) {
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
+	}
+	
+	/**
+	 * @return string the user id executing the Task
+	 */
+	public function getTask()
+	{
+		return get_class($this);
 	}
 	
 	/**

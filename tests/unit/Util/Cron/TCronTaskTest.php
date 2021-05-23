@@ -7,7 +7,7 @@ use Prado\Util\Cron\TCronTask;
 
 class TTestCronTask extends TCronTask 
 {
-	public function task($cron, $isSystemCron)
+	public function execute($cron, $isSystemCron)
 	{
 	}
 }
@@ -45,6 +45,11 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 		$value = 'myTaskName';
 		$this->obj->setName($value);
 		self::assertEquals($value, $this->obj->getName());
+	}
+	
+	public function testGetTask()
+	{
+		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TCronTask', $this->obj);
 	}
 	
 	public function testSchedule()
