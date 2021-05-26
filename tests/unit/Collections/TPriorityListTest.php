@@ -423,6 +423,17 @@ class TPriorityListTest extends TListTest
 		
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, true);
 		$this->assertEquals([$this->pfirst], $plist->toArray());
+		
+		//test when the flattened array is empty, but an array, then add
+		$plist = new $this->_baseClass();
+		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
+		$this->assertEquals([$this->pfirst], $plist->toArray());
+
+		$plist->remove($this->pfirst, false);
+		$this->assertEquals([], $plist->toArray());
+		
+		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
+		$this->assertEquals([$this->pfirst], $plist->toArray());
 	}
 	
 

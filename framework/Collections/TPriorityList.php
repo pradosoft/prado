@@ -369,7 +369,7 @@ class TPriorityList extends TList
 				$this->_o = false;
 				$this->_d[$priority] = [$item];
 			}
-			if ($this->_fd && is_array($this->_fd) && count($this->_d) == 1) {
+			if ($this->_fd !== null && is_array($this->_fd) && count($this->_d) == 1) {
 				array_splice($this->_fd, $cc, 0, [$item]);
 			} else {
 				$this->_fd = null;
