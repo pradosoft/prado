@@ -353,10 +353,8 @@ class TPriorityList extends TList
 				$this->_d[$priority] = [$item];
 			}
 
-			if ($this->_fd && is_array($this->_fd)) { // if there is a flattened array cache
+			if ($this->_fd !== null && is_array($this->_fd)) { // if there is a flattened array cache
 				array_splice($this->_fd, $c, 0, [$item]);
-			} else {
-				$this->_fd = null;
 			}
 		} else {
 			$c = null;
