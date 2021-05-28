@@ -330,30 +330,27 @@ class TPriorityList extends TList
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 
 		if ($preserveCache) {
-			$this->sortPriorities();
-			$cc = 0;
-			foreach ($this->_d as $prioritykey => $items) {
-				if ($prioritykey >= $priority) {
-					break;
-				} else {
-					$cc += count($items);
-				}
-			}
-
 			if ($index === false && isset($this->_d[$priority])) {
 				$c = count($this->_d[$priority]);
-				$c += $cc;
 				$this->_d[$priority][] = $item;
 			} elseif (isset($this->_d[$priority])) {
-				$c = $index + $cc;
+				$c = $index;
 				array_splice($this->_d[$priority], $index, 0, [$item]);
 			} else {
-				$c = $cc;
+				$c = 0;
 				$this->_o = false;
 				$this->_d[$priority] = [$item];
 			}
 
-			if ($this->_fd !== null && is_array($this->_fd)) { // if there is a flattened array cache
+			if ($this->_fd !== null) { // if there is a flattened array cache
+				$this->sortPriorities();
+				foreach ($this->_d as $prioritykey => $items) {
+					if ($prioritykey >= $priority) {
+						break;
+					} else {
+						$c += count($items);
+					}
+				}
 				array_splice($this->_fd, $c, 0, [$item]);
 			}
 		} else {
@@ -369,7 +366,7 @@ class TPriorityList extends TList
 				$this->_o = false;
 				$this->_d[$priority] = [$item];
 			}
-			if ($this->_fd !== null && is_array($this->_fd) && count($this->_d) == 1) {
+			if ($this->_fd !== null && count($this->_d) == 1) {
 				array_splice($this->_fd, $cc, 0, [$item]);
 			} else {
 				$this->_fd = null;
