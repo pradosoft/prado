@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
@@ -88,6 +89,46 @@ class TTimeAgo extends TLabel
 		$options['ClickToChange'] = $this->getClickSeeDateTime();
 		$options['UseRawTime'] = $this->getUseRawTime();
 		
+		$lang = [
+			'second' => Prado::localize('{0} second ago'),
+			'seconds' => Prado::localize('{0} seconds ago'),
+			
+			'minute' => Prado::localize('{0} minute ago'),
+			'minutesecond' => Prado::localize('{0} minute {1} second ago'),
+			'minuteseconds' => Prado::localize('{0} minute {1} seconds ago'),
+			'minutes' => Prado::localize('{0} minutes ago'),
+			'minutessecond' => Prado::localize('{0} minutes {1} second ago'),
+			'minutesseconds' => Prado::localize('{0} minutes {1} seconds ago'),
+			
+			'hour' => Prado::localize('{0} hour ago'),
+			'hourminute' => Prado::localize('{0} hour {1} minute ago'),
+			'hourminutes' => Prado::localize('{0} hour {1} minutes ago'),
+			'hours' => Prado::localize('{0} hours ago'),
+			'hoursminute' => Prado::localize('{0} hours {1} minute ago'),
+			'hoursminutes' => Prado::localize('{0} hours {1} minutes ago'),
+			
+			'day' => Prado::localize('{0} day ago'),
+			'dayhour' => Prado::localize('{0} day {1} hour ago'),
+			'dayhours' => Prado::localize('{0} day {1} hours ago'),
+			'days' => Prado::localize('{0} days ago'),
+			'dayshour' => Prado::localize('{0} days {1} hour ago'),
+			'dayshours' => Prado::localize('{0} days {1} hours ago'),
+			
+			'week' => Prado::localize('{0} week ago'),
+			'weekday' => Prado::localize('{0} week {1} day ago'),
+			'weekdays' => Prado::localize('{0} week {1} days ago'),
+			'weeks' => Prado::localize('{0} weeks ago'),
+			'weeksday' => Prado::localize('{0} weeks {1} day ago'),
+			'weeksdays' => Prado::localize('{0} weeks {1} days ago'),
+			
+			'month' => Prado::localize('{0} month ago'),
+			'monthweek' => Prado::localize('{0} month {1} week ago'),
+			'monthweeks' => Prado::localize('{0} month {1} weeks ago'),
+			'months' => Prado::localize('{0} months ago'),
+			'monthsweek' => Prado::localize('{0} months {1} week ago'),
+			'monthsweeks' => Prado::localize('{0} months {1} weeks ago')
+		];
+		$options['Localize'] = $lang;
 		return $options;
 	}
 	

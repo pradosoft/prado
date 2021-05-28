@@ -82,7 +82,7 @@ Prado.WebUI.TTimeAgo = jQuery.klass(Prado.WebUI.Control,
 			tunit = Math.floor(delta/(60*60*24*30))
 			wait = (60*60*24*30) - (delta % (60*60*24*30));
 			if(tunit <= 2) {
-				wait = (60*60*24*7) - (delta % (60*60*24*7));
+				wait = (60*60*24*7) - ((delta % (60*60*24*30)) % (60*60*24*7));
 			}
 		} else {
 			wait = 3600;
@@ -113,11 +113,11 @@ Prado.WebUI.TTimeAgo = jQuery.klass(Prado.WebUI.Control,
 		{0} second ago
 		{0} seconds ago
 		{0} minute ago
-		{0} min {1} sec ago
-		{0} min {1} secs ago
-		{0} mins {1} sec ago
-		{0} mins {1} secs ago
 		{0} minutes ago
+		{0} minute {1} second ago
+		{0} minute {1} seconds ago
+		{0} minutes {1} second ago
+		{0} minutes {1} seconds ago
 		{0} hour ago
 		{0} hour {1} min ago
 		{0} hour {1} mins ago
@@ -142,64 +142,51 @@ Prado.WebUI.TTimeAgo = jQuery.klass(Prado.WebUI.Control,
 		{0} months {1} week ago
 		{0} months {1} weeks ago
 		{0} months ago
-		date format- short month year: {mon} {year}
-		date format- long year, month, day, hour, minute, secod
 		*/
 		if(delta < 60) {
-			tunit = Math.floor(delta) ;
-			str = preText + tunit + " second" + (tunit != 1?'s':'') + postText;
+			seconds = Math.floor(delta);
+			str = this.options. Localize['second' + (seconds != 1 ? 's' : '')];
+			str = str.replace('{0}', seconds);
 		} else if(delta < 60*60) {
-			tunit = Math.floor(delta/60);
-			if(tunit <= 3) {
-				minute = "min";
-				dosec = true;
-			} else {
-				minute = "minute";
-				dosec = false;
+			minutes = Math.floor(delta/60);
+			seconds = Math.floor(delta - minutes * 60);
+			str = this.options. Localize['minute' + (minutes != 1 ? 's' : '') + (minutes <= 3 && seconds != 0 ? ('second' + (seconds != 1 ? 's' : '')) : '')];
+			str = str.replace('{0}', minutes);
+			if (minutes <= 3) {
+				str = str.replace('{1}', seconds);
 			}
-			str = tunit + " "+minute + (tunit != 1?'s':'');
-			if(dosec) {
-				tunit = Math.floor(delta - tunit * 60) ;
-				if(tunit)
-					str += ' ' + tunit + " sec" + (tunit != 1?'s':'') ;
-			}
-			str = preText + str + postText;
 		} else if(delta < 60*60*24) {
-			tunit = Math.floor(delta/(60*60)) ;
-			str = tunit + " hour" + (tunit != 1?'s':'');
-			if(tunit <= 2) {
-				tunit = Math.floor(delta/60 - tunit * 60) ;
-				if(tunit)
-					str += ' ' + tunit + " min" + (tunit != 1?'s':'') ;
+			hours = Math.floor(delta/(60*60));
+			minutes = Math.floor(delta/60 - hours * 60);
+			str = this.options. Localize['hour' + (hours != 1 ? 's' : '') + (hours <= 2 && minutes != 0 ? ('minute' + (minutes != 1 ? 's' : '')) : '')];
+			str = str.replace('{0}', hours);
+			if (hours <= 2) {
+				str = str.replace('{1}', minutes);
 			}
-			str = preText + str + postText;
 		} else if(delta < 60*60*24*7) {
-			tunit = Math.floor(delta/(60*60*24));
-			str = tunit + " day" + (tunit != 1?'s':'');
-			if(tunit <= 2) {
-				tunit = Math.floor(delta/(60*60) - tunit * 24) ;
-				if(tunit)
-					str += ' ' + tunit + " hour" + (tunit != 1?'s':'') ;
+			days = Math.floor(delta/(60*60*24));
+			hours = Math.floor(delta/(60*60) - days * 24);
+			str = this.options. Localize['day' + (days != 1 ? 's' : '') + (days <= 2 && hours != 0 ? ('hour' + (hours != 1 ? 's' : '')) : '')];
+			str = str.replace('{0}', days);
+			if (days <= 2) {
+				str = str.replace('{1}', hours);
 			}
-			str = preText + str + postText;
 		} else if(delta < 60*60*24*30) {
-			tunit = Math.floor(delta/(60*60*24*7));
-			str = tunit + " week" + (tunit != 1?'s':'');
-			if(tunit <= 2) {
-				tunit = Math.floor(delta/(60*60*24) - tunit * 7) ;
-				if(tunit)
-					str += ' ' + tunit + " day" + (tunit != 1?'s':'') ;
+			weeks = Math.floor(delta/(60*60*24*7));
+			days = Math.floor(delta/(60*60*24) - weeks * 7);
+			str = this.options. Localize['week' + (weeks != 1 ? 's' : '') + (weeks <= 2 && days != 0 ? ('day' + (days != 1 ? 's' : '')) : '')];
+			str = str.replace('{0}', weeks);
+			if (weeks <= 2) {
+				str = str.replace('{1}', days);
 			}
-			str = preText + str + postText;
 		} else if(delta < 60*60*24*365) {
-			tunit = Math.floor(delta/(60*60*24*30))
-			str = tunit + " month" + (tunit != 1?'s':'');
-			if(tunit <= 2) {
-				tunit = Math.floor((delta/(60*60*24) - tunit * 30) / 7) ;
-				if(tunit)
-					str += ' ' + tunit + " week" + (tunit != 1?'s':'') ;
+			months = Math.floor(delta/(60*60*24*30));
+			weeks = Math.floor((delta/(60*60*24) - months * 30) / 7);
+			str = this.options. Localize['month' + (months != 1 ? 's' : '') + (months <= 2 && weeks != 0 ? ('week' + (weeks != 1 ? 's' : '')) : '')];
+			str = str.replace('{0}', months);
+			if (months <= 2) {
+				str = str.replace('{1}', weeks);
 			}
-			str = preText + str + postText;
 		} else {
 			date = new Date();
 			date.setTime(this.options.OriginTime * 1000);
@@ -228,158 +215,3 @@ Prado.WebUI.TTimeAgo = jQuery.klass(Prado.WebUI.Control,
 		this.element.innerHTML = str;
 	}
 });
-
-
-
-/**
- *
- * @param server_now   time() of generation of control
- * @param server_origin   origin time
- * @param client_start   time of first run on the client side
- * @param id   which control to run the time on
- * @param canClickToChange   option to click the time to change to the actual date/time rather than the time ago
- */
-function CountDown(server_now, server_origin, client_start, id, canClickToChange, rawtime) {
-	if(!$(id)) return;
-	if(typeof canClickToChange == 'undefined')
-		canClickToChange = true;
-	
-	if(typeof rawtime == 'undefined')
-		rawtime = false;
-	
-	var current = (new Date()).getTime()/1000;
-	if(!client_start) {
-		timeAgo[id] = server_origin;
-		client_start = current;
-		timeAgoType[id] = false;
-		
-		if(canClickToChange) {
-			$(id).observe('click', function() {
-					timeAgoType[id] = !timeAgoType[id];
-					CountDown(server_now, server_origin, client_start, id, canClickToChange, rawtime);
-				});
-			$(id).setStyle({cursor: 'pointer'});
-		}
-	}
-	showDT = timeAgoType[id];
-	
-	//This is in case a new timer is set on the same object (actively changing html)
-	//	stop the prior one because the time ago for that control is expired
-	if(timeAgo[id] != server_origin)
-		return;
-	
-	// too much delay in page starting for this to be accurate within seconds
-	if(!rawtime)
-		delta = server_now - server_origin + current - client_start;
-	else
-		delta = current - server_origin;
-	//			alert(server_now+ ' ' + server_origin + "     " + current + " " +client_start);
-	
-	if(delta < 60) {
-		tunit = Math.floor(delta) ;
-		str = tunit + " second" + (tunit != 1?'s':'') + " " + postText;
-		wait = 1;
-	} else if(delta < 60*60) {
-		tunit = Math.floor(delta/60);
-		if(tunit <= 3) {
-			minute = "min";
-			dosec = true;
-		} else {
-			minute = "minute";
-			dosec = false;
-		}
-		str = tunit + " "+minute + (tunit != 1?'s':'');
-		wait = 60 - (delta % 60);
-		if(dosec) {
-			tunit = Math.floor(delta - tunit * 60) ;
-			if(tunit)
-				str += ' ' + tunit + " sec" + (tunit != 1?'s':'') ;
-			wait = 1;
-		}
-		str += " " + postText;
-	} else if(delta < 60*60*24) {
-		tunit = Math.floor(delta/(60*60)) ;
-		str = tunit + " hour" + (tunit != 1?'s':'');
-		wait = (60*60) - (delta % (60*60));
-		if(tunit <= 2) {
-			tunit = Math.floor(delta/60 - tunit * 60) ;
-			if(tunit)
-				str += ' ' + tunit + " min" + (tunit != 1?'s':'') ;
-			wait = (60) - (delta % (60));
-		}
-		str += " " + postText;
-	} else if(delta < 60*60*24*7) {
-		tunit = Math.floor(delta/(60*60*24));
-		str = tunit + " day" + (tunit != 1?'s':'');
-		wait = (60*60*24) - (delta % (60*60*24));
-		if(tunit <= 2) {
-			tunit = Math.floor(delta/(60*60) - tunit * 24) ;
-			if(tunit)
-				str += ' ' + tunit + " hour" + (tunit != 1?'s':'') ;
-			wait = (60*60) - (delta % (60*60));
-		}
-		str += " " + postText;
-	} else if(delta < 60*60*24*30) {
-		tunit = Math.floor(delta/(60*60*24*7));
-		str = tunit + " week" + (tunit != 1?'s':'');
-		wait = (60*60*24*7) - (delta % (60*60*24*7));
-		if(tunit <= 2) {
-			tunit = Math.floor(delta/(60*60*24) - tunit * 7) ;
-			if(tunit)
-				str += ' ' + tunit + " day" + (tunit != 1?'s':'') ;
-			wait = (60*60*24) - (delta % (60*60*24));
-		}
-		str += " " + postText;
-	} else if(delta < 60*60*24*365) {
-		tunit = Math.floor(delta/(60*60*24*30))
-		str = tunit + " month" + (tunit != 1?'s':'');
-		wait = (60*60*24*30) - (delta % (60*60*24*30));
-		if(tunit <= 2) {
-			tunit = Math.floor((delta/(60*60*24) - tunit * 30) / 7) ;
-			if(tunit)
-				str += ' ' + tunit + " week" + (tunit != 1?'s':'') ;
-			wait = (60*60*24*7) - (delta % (60*60*24*7));
-		}
-		str += " " + postText;
-	} else {
-		date = new Date();
-		date.setTime(server_origin * 1000);
-		mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Ocr", "Nov", "Dec"];
-		str = mo[date.getMonth()] + " " + date.getFullYear();
-		wait = 1;
-	}
-	if(isFuture) {
-		var estr = '';
-		date = new Date();
-		date.setTime((server_origin) * 1000);
-		
-		var h = date.getHours();
-		if(h < 12)
-			ampm = 'a.m.';
-		else {
-			ampm = 'p.m.';
-			h -= 12;
-		}
-		if(h == 0)
-			h += 12;
-		
-		
-		day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-		mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Ocr", "Nov", "Dec"];
-		str += " on " + day[date.getDay()] + ' ' + mo[date.getMonth()] + ' ' + 
-			date.getDate() + ' ' + date.getFullYear() + ' at '  +
-			h + ':' + twoDigit(date.getMinutes()) + ' ' + ampm;
-	}
-	if(showDT) {
-		date = new Date();
-		date.setTime((server_origin) * 1000);
-		str = date.getFullYear() + '/' + (date.getMonth()+1) + '/' + date.getDate() + ' ' + 
-				date.getHours() + ':' + twoDigit(date.getMinutes()) + ':' + twoDigit(date.getSeconds());
-	}
-	if($(id)) {
-		$(id).innerHTML = str;
-		setTimeout(function() {
-				CountDown(server_now, server_origin, client_start, id, canClickToChange, rawtime);
-			}, wait*1000);
-	}
-}
