@@ -236,12 +236,18 @@ class TDbParameterModule extends TModule
 		$autotype = 'INTEGER';
 		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
-		if ($driver === 'mysql') {
-			$autoidAttributes = 'AUTO_INCREMENT';
-		} elseif ($driver === 'sqlite') {
-			$autoidAttributes = ' AUTOINCREMENT';
-		} elseif ($driver === 'postgresql') {
-			$autotype = 'SERIAL';
+		
+		switch ($driver) {
+			case 'sqlite':
+				$autoidAttributes = ' AUTOINCREMENT';
+				break;
+			case 'postgresql':
+				$autotype = 'SERIAL';
+				break;
+			default:	// mysql
+				$autoidAttributes = ' AUTO_INCREMENT';
+				break;
+			
 		}
 
 		$sql = 'CREATE TABLE ' . $this->_tableName . ' (

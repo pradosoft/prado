@@ -11,8 +11,8 @@ class TPageLoadTimeTest extends PHPUnit\Framework\TestCase
 	public function testSecondAppendix()
 	{
 		$pageloadtime = new TPageLoadTime();
-		$pageloadtime->setSecondAppendix('t');
-		self::assertEquals('t', $pageloadtime->getSecondAppendix());
+		$pageloadtime->setSecondSuffix('t');
+		self::assertEquals('t', $pageloadtime->getSecondSuffix());
 	}
 	
 	public function testRenderContents()
@@ -20,7 +20,7 @@ class TPageLoadTimeTest extends PHPUnit\Framework\TestCase
 		$writer = new TTextWriter;
 		$pageloadtime = new TPageLoadTime();
 		
-		$pageloadtime->setSecondAppendix('test');
+		$pageloadtime->setSecondSuffix('test');
 		$_SERVER["REQUEST_TIME_FLOAT"] = microtime(true) - 1.0;
 		$pageloadtime->renderContents($writer);
 		
