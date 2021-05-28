@@ -10,15 +10,16 @@
 
 namespace Prado\Web\UI;
 
+use Prado\TPropertyValue;
+
 /**
  * TEventContent class
  *
  * TEventContent loads child controls by raising the {@link getBroadcastEvent BroadcastEvent}
- * 'fx' event.  The handlers then add their own controls to the
- * child control list in $param.
+ * 'fx' event.  The handlers then add their own controls to the child control list in $param.
  *
  * The event {@link getBroadcastEvent} is raised with this control
- * as the $sender and the Control List as $param.
+ * as the $sender and the {@link getControls Control} List as $param.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Web\UI
@@ -28,7 +29,7 @@ namespace Prado\Web\UI;
 class TEventContent extends TCompositeControl
 {
 	/**
-	 * creates child controls from a raised 'fx' event BroadcastEvent
+	 * creates child controls by raising the 'fx' event BroadcastEvent
 	 * for handlers to then add their own controls.
 	 */
 	public function createChildControls()
@@ -39,7 +40,7 @@ class TEventContent extends TCompositeControl
 	}
 
 	/**
-	 * @return string the the event to be raised for creatiChildControls
+	 * @return string the the event to be raised for createChildControls
 	 */
 	public function getBroadcastEvent()
 	{
@@ -47,10 +48,10 @@ class TEventContent extends TCompositeControl
 	}
 
 	/**
-	 * @param mixed $value the the event to be raised for creatiChildControls
+	 * @param string $value the the event to be raised for createChildControls
 	 */
 	public function setBroadcastEvent($value)
 	{
-		$this->setControlState('BroadcastEvent', $value, '');
+		$this->setControlState('BroadcastEvent', TPropertyValue::ensureString($value), '');
 	}
 }

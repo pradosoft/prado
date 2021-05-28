@@ -11,13 +11,15 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
  * TPageLoadTime class.
  *
  * Writes the amount of time taken from Request start to rendering the contents of this control.
- * This is the longest possible time to wait
+ * This is the longest possible time to wait.  Localize the appendix "s" with
+ * {@link setSecondAppendix}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Web\UI\WebControls
@@ -25,15 +27,13 @@ use Prado\TPropertyValue;
  */
 class TPageLoadTime extends TLabel
 {
-	private $_secondAppendix = 's';
-	
 	/**
 	 * writes the difference in time that the request started to the moment of this method call.
 	 * @param mixed $writer
 	 */
 	public function renderContents($writer)
 	{
-		$writer->write((round((microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]) * 100000) / 100000) . $this->_secondAppendix);
+		$writer->write(round(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"], 5) . Prado::localize($this->getSecondAppendix()));
 	}
 	
 	/**
@@ -41,14 +41,14 @@ class TPageLoadTime extends TLabel
 	 */
 	public function getSecondAppendix()
 	{
-		return $this->_secondAppendix;
+		return $this->getViewState('Appendix', 's');
 	}
 	
 	/**
-	 * @param mixed $appendix the string that is appended to the time.  default 's' for seconds
+	 * @param string $appendix the string that is appended to the time.  default 's' for seconds
 	 */
 	public function setSecondAppendix($appendix)
 	{
-		$this->_secondAppendix = TPropertyValue::ensureString($appendix);
+		$this->setViewState('Appendix', TPropertyValue::ensureString($appendix), 's');
 	}
 }
