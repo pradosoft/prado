@@ -252,9 +252,9 @@ class TDbParameterModule extends TModule
 
 		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
 			param_id ' . $autotype . ' PRIMARY KEY ' . $autoidAttributes . ', ' .
-			$this->_keyField . ' VARCHAR(128),' .
+			$this->_keyField . ' VARCHAR(128) NOT NULL,' .
 			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN DEFAULT 1' : '') .
+			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}
