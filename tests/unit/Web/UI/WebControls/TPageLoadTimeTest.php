@@ -8,7 +8,7 @@ use Prado\Web\UI\WebControls\TPageLoadTime;
 
 class TPageLoadTimeTest extends PHPUnit\Framework\TestCase
 {
-	public function testSecondAppendix()
+	public function testSecondSuffix()
 	{
 		$pageloadtime = new TPageLoadTime();
 		$pageloadtime->setSecondSuffix('t');
