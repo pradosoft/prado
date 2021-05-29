@@ -233,17 +233,27 @@ class TDbParameterModule extends TModule
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
 		$autoidAttributes = '';
+		$autotype = 'INTEGER';
 		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
-		if ($driver === 'mysql') {
-			$autoidAttributes = 'AUTO_INCREMENT';
+		
+		switch ($driver) {
+			case 'sqlite':
+				$autoidAttributes = ' AUTOINCREMENT';
+				break;
+			case 'postgresql':
+				$autotype = 'SERIAL';
+				break;
+			default:	// mysql
+				$autoidAttributes = ' AUTO_INCREMENT';
+				break;
 		}
 
 		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
-			param_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ', ' .
-			$this->_keyField . ' VARCHAR(128),' .
+			param_id ' . $autotype . ' PRIMARY KEY ' . $autoidAttributes . ', ' .
+			$this->_keyField . ' VARCHAR(128) NOT NULL,' .
 			$this->_valueField . ' MEDIUMTEXT' .
-			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN DEFAULT 1' : '') .
+			($this->_autoLoadField ? ', ' . $this->_autoLoadField . ' BOOLEAN NOT NULL DEFAULT 1' : '') .
 			')' . $postIndices;
 		$db->createCommand($sql)->execute();
 	}

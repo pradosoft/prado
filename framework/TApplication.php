@@ -717,12 +717,12 @@ class TApplication extends \Prado\TComponent
 	{
 		$m = [];
 		foreach ($this->_modules as $id => $module) {
-			if ($module === null) {
+			if ($module === null && isset($this->_lazyModules[$id])) {
 				[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
 				if ($strict ? ($moduleClass === $type) : ($moduleClass instanceof $type)) {
 					$m[$id] = null;
 				}
-			} elseif ($strict ? (get_class($module) === $type) : $module->isa($type)) {
+			} elseif ($module !== null && ($strict ? (get_class($module) === $type) : $module->isa($type))) {
 				$m[$id] = $module;
 			}
 		}
