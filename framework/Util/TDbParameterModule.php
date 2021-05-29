@@ -247,7 +247,6 @@ class TDbParameterModule extends TModule
 			default:	// mysql
 				$autoidAttributes = ' AUTO_INCREMENT';
 				break;
-			
 		}
 
 		$sql = 'CREATE TABLE ' . $this->_tableName . ' (
