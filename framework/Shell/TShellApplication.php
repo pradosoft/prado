@@ -29,6 +29,7 @@ namespace Prado\Shell;
  * accessibility to resources as the PRADO Web applications.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Shell
  * @since 3.1.0
  */
@@ -46,11 +47,22 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function run()
 	{
+		if (isset($_SERVER['LANG'])) {
+			$lang = $_SERVER['LANG'];
+			$pos = strpos($lang, '.');
+			if ($pos !== false) {
+				$_SERVER['HTTP_ACCEPT_CHARSET'] = substr($lang, $pos + 1);
+				$lang = substr($lang, 0, $pos);
+			}
+			$_SERVER['HTTP_ACCEPT_LANGUAGE'] = $lang;
+		}
+		
 		$this->initApplication();
 	}
 	
 	/**
-	 * @param $v string a CLI Action class to add to the list of what the app is capable
+	 * @param string $v a CLI Action class to add to the list of what the application is capable
+	 * @since 4.2.0
 	 */
 	public function addShellActionClass($v)
 	{
@@ -58,7 +70,8 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @@return array the CLI Action classes that the application has registered
+	 * @@return string[] the CLI Action classes that the application has registered
+	 * @since 4.2.0
 	 */
 	public function getShellActionClasses()
 	{
