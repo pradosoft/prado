@@ -48,14 +48,11 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var int the last time this task was run */
 	private $_lastexectime;
 	
-	private $_isConfigTask = true;
-	
 	/**
 	 * This is the abstract method for running tasks
 	 * @param Prado\Util\Cron\TCronModule $cronModule the module calling the task
-	 * @param bool $isSystemTask specifies if there is some text output
 	 */
-	abstract public function execute($cronModule, $isSystemTask);
+	abstract public function execute($cronModule);
 	
 	/**
 	 * @return string the unique name of the Task
@@ -173,12 +170,13 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 *
+	 * sometimes floats don't output correctly to 6 significant figures (microtime).
 	 * @param numeric $v the time of running this cron task
 	 */
 	public function setLastExecTime($v)
 	{
-		$this->_lastexectime = TPropertyValue::ensureFloat($v);
+		$this->_lastexectime = TPropertyValue::ensureInteger($v);
+		//$this->_lastexectime = rtrim(rtrim(number_format($v, 6,'.',''), '0'), '.');
 	}
 	
 	/**
@@ -230,18 +228,18 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		parent::_getZappableSleepProps($exprops);
 		
-		$exprops[] = "\0*\0_scheduler";
+		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_scheduler";
 		if ($this->_userId === null) {
-			$exprops[] = "\0*\0_userId";
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_userId";
 		}
 		if ($this->_moduleId === null) {
-			$exprops[] = "\0*\0_moduleId";
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_moduleId";
 		}
-		if ($this->_processCount === 0) {
-			$exprops[] = "\0*\0_processCount";
+		if ($this->_processCount == 0) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_processCount";
 		}
-		if ($this->_lastexectime === null) {
-			$exprops[] = "\0*\0_lastexectime";
+		if ($this->_lastexectime == null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_lastexectime";
 		}
 	}
 }
