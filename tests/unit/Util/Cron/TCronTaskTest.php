@@ -7,7 +7,7 @@ use Prado\Util\Cron\TCronTask;
 
 class TTestCronTask extends TCronTask 
 {
-	public function execute($cron, $isSystemCron)
+	public function execute($cron)
 	{
 	}
 }
@@ -124,9 +124,21 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 	
 	public function testLastExecTime()
 	{
+		// integer value
 		$value = time() - 120;
 		$this->obj->setLastExecTime($value);
 		self::assertEquals($value, $this->obj->getLastExecTime());
+		
+		// double value
+		$value = microtime(true) - 120;
+		$this->obj->setLastExecTime($value);
+		self::assertEquals(floor($value), $this->obj->getLastExecTime());
+		
+		// double value
+		$value = $this->obj->getLastExecTime() - 0.5;
+		$this->obj->setLastExecTime($value);
+		self::assertEquals(floor($value), $this->obj->getLastExecTime());
+		
 	}
 	
 	public function testIsPending()
