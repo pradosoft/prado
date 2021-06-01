@@ -293,6 +293,8 @@ return [
 'TUtf8Converter' => 'Prado\Util\TUtf8Converter',
 'TVarDumper' => 'Prado\Util\TVarDumper',
 'TXmlRpcClient' => 'Prado\Util\TXmlRpcClient',
+'XTPluginManager' => 'Prado\Util\XTPluginManager',
+'XTPluginModule' => 'Prado\Util\XTPluginModule',
 'TJavaScript' => 'Prado\Web\Javascripts\TJavaScript',
 'TJavaScriptAsset' => 'Prado\Web\Javascripts\TJavaScriptAsset',
 'TJavaScriptLiteral' => 'Prado\Web\Javascripts\TJavaScriptLiteral',
