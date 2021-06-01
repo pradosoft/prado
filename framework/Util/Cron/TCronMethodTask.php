@@ -54,8 +54,11 @@ use Prado\TPropertyValue;
  		return $this->getModuleId() . TCronModule::METHOD_SEPARATOR . $this->getMethod();
  	}
 	
- 	/** implements task to get the module from $_moduleId, then run $_method on it */
- 	public function execute($sender, $param)
+ 	/**
+ 	 * implements task to get the module from $_moduleId, then run $_method on it
+ 	 * @param TCronModule $cron the module calling the task
+ 	 */
+ 	public function execute($cron)
  	{
  		$method = $this->_method;
  		if (strpos($method, '(') === false) {
@@ -64,6 +67,9 @@ use Prado\TPropertyValue;
  		$this->evaluateExpression('$this->getModule()->' . $method);
  	}
 	
+ 	/**
+ 	 * Validates the method exists on the module
+ 	 */
  	public function validateTask()
  	{
  		$module = $this->getModule();
@@ -74,6 +80,10 @@ use Prado\TPropertyValue;
 		
  		return method_exists($module, $method);
  	}
+	 
+ 	/**
+ 	 * @return IModule returns the module from the application of ModuleId
+ 	 */
  	public function getModule()
  	{
  		$module = parent::getModule();
@@ -83,12 +93,17 @@ use Prado\TPropertyValue;
  		return $module;
  	}
 	 
-	
+ 	/**
+ 	 * @return string the method of the module to call
+ 	 */
  	public function getMethod()
  	{
  		return $this->_method;
  	}
-	
+	  
+ 	/**
+ 	 * @param string $method the method of the module to call
+ 	 */
  	public function setMethod($method)
  	{
  		$this->_method = TPropertyValue::ensureString($method);
