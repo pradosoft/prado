@@ -701,6 +701,8 @@ class TTimeScheduler extends \Prado\TComponent
 		if ($priortime === null || $this->_schedule === null) {
 			return null;
 		}
+		$restoreZone = date_default_timezone_get();
+		date_default_timezone_set("UTC");
 		if ($priortime === false) {
 			$priortime = time();
 		}
@@ -818,6 +820,7 @@ class TTimeScheduler extends \Prado\TComponent
 						$month = 1;
 						$year++;
 						if ($year > self::YEAR_MAX) {
+							date_default_timezone_set($restoreZone);
 							return null;
 						}
 					}
@@ -843,8 +846,11 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 		}
 		if ($nyear === null) {
-			return null;
+			$time = null;
+		} else {
+			$time = strtotime("$nyear-$nmonth-$nday $nhour:$nmin:00");
 		}
-		return strtotime("$nyear-$nmonth-$nday $nhour:$nmin:00");
+		date_default_timezone_set($restoreZone);
+		return $time;
 	}
 }
