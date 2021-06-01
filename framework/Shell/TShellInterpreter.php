@@ -10,6 +10,7 @@
 
 namespace Prado\Shell;
 
+use Prado\IO\TOutputWriter;
 use Prado\Prado;
 
 /**
@@ -29,6 +30,8 @@ class TShellInterpreter
 	protected $_actions = [];
 	
 	protected $_helpPrinted = false;
+	
+	protected $_outWriter;
 
 	/**
 	 * @param string $class action class name
@@ -60,7 +63,9 @@ class TShellInterpreter
 	public function printGreeting()
 	{
 		if (!$this->_helpPrinted) {
-			echo "Command line tools for Prado " . Prado::getVersion() . ".\n";
+			$this->_outWriter->write("Command line tools for Prado " . Prado::getVersion() . ".", TShellWriter::DARK_GRAY);
+			$this->_outWriter->writeLine();
+			$this->_outWriter->flush();
 			$this->_helpPrinted = true;
 		}
 	}
@@ -74,10 +79,12 @@ class TShellInterpreter
 		if (count($args) > 1) {
 			array_shift($args);
 		}
+		$outWriter = $this->_outWriter = new TShellWriter(new TOutputWriter());
 		$valid = false;
 		$_actions = $this->_actions;
 		foreach ($_actions as $class => $action) {
 			if ($action->isValidAction($args)) {
+				$action->setWriter($outWriter);
 				$valid |= $action->performAction($args);
 				break;
 			} else {
@@ -85,24 +92,30 @@ class TShellInterpreter
 			}
 		}
 		if (!$valid) {
-			$this->printHelp();
+			$this->printHelp($outWriter);
 		}
+		$outWriter->flush();
 	}
 
 	/**
 	 * Print command line help, default action.
+	 * @param mixed $outWriter
 	 */
-	public function printHelp()
+	public function printHelp($outWriter)
 	{
-		TShellInterpreter::getInstance()->printGreeting();
-
-		echo "usage: php prado-cli.php action <parameter> [optional]\n";
-		echo "example: php prado-cli.php flushcaches /prado_app_directory\n\n";
-		echo "example: php prado-cli.php app /prado_app_directory help\n\n";
-		echo "example: php prado-cli.php app /prado_app_directory cron tasks\n\n";
-		echo "actions:\n";
+		TShellInterpreter::getInstance()->printGreeting($outWriter);
+		
+		$outWriter->write("usage: ");
+		$outWriter->writeLine("php prado-cli.php action <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$outWriter->writeLine();
+		$outWriter->writeLine("example: php prado-cli.php flushcaches /prado_app_directory");
+		$outWriter->writeLine("example: php prado-cli.php app /prado_app_directory help");
+		$outWriter->writeLine("example: php prado-cli.php app /prado_app_directory cron tasks");
+		$outWriter->writeLine();
+		$outWriter->writeLine("The following commands are available:");
 		foreach ($this->_actions as $action) {
-			echo $action->renderHelp();
+			$action->setWriter($outWriter);
+			$outWriter->writeLine($action->renderHelp());
 		}
 	}
 }

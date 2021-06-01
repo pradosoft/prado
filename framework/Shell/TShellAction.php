@@ -10,6 +10,7 @@
 
 namespace Prado\Shell;
 
+use Prado\IO\ITextWriter;
 use Prado\Prado;
 
 /**
@@ -25,6 +26,27 @@ abstract class TShellAction extends \Prado\TComponent
 	protected $parameters;
 	protected $optional;
 	protected $description;
+	
+	protected $_outWriter;
+	
+	/**
+	 * @return ITextWriter the writer for the class
+	 */
+	public function getWriter(): ITextWriter
+	{
+		return $this->_outWriter;
+	}
+	
+	/**
+	 * @@param ITextWriter $writer the writer for the class
+	 */
+	public function setWriter(ITextWriter $writer)
+	{
+		$this->_outWriter = $writer;
+	}
+	
+	
+	
 	/**
 	 * Execute the action.
 	 * @param array $args command line parameters
@@ -41,7 +63,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		if (!is_dir($dir)) {
 			mkdir($dir);
-			echo "creating $dir\n";
+			$this->_outWriter->writeLine("creating $dir");
 		}
 		if (is_dir($dir)) {
 			chmod($dir, $mask);
@@ -57,7 +79,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		if (!is_file($filename)) {
 			file_put_contents($filename, $content);
-			echo "creating $filename\n";
+			$this->_outWriter->writeLine("creating $filename");
 		}
 	}
 
@@ -87,14 +109,16 @@ abstract class TShellAction extends \Prado\TComponent
 			$options[] = '[' . $v . ']';
 		}
 		$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
-		$description = '';
-		foreach (explode("\n", wordwrap($this->description, 65)) as $line) {
-			$description .= '    ' . $line . "\n";
-		}
+		
+		$description = $this->getWriter()->wrapText($this->description, 5);
+		
+		$action = $this->getWriter()->format($this->action, [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$parameters = $this->getWriter()->format($parameters, [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$optional = $this->getWriter()->format($optional, [TShellWriter::BLUE]);
+		$description = $this->getWriter()->format($description, TShellWriter::DARK_GRAY);
 		return <<<EOD
-  {$this->action} {$parameters}{$optional}
-{$description}
-
+ - {$action} {$parameters}{$optional}
+     {$description}
 EOD;
 	}
 
@@ -113,15 +137,15 @@ EOD;
 				$app->run();
 				$dir = substr(str_replace(realpath('./'), '', $app_dir), 1);
 				TShellInterpreter::getInstance()->printGreeting();
-				echo '** Loaded PRADO appplication in directory "' . $dir . "\".\n";
+				$this->_outWriter->writeLine('** Loaded PRADO appplication in directory "' . $dir . "\".");
 			}
 
 			return Prado::getApplication();
 		} else {
 			TShellInterpreter::getInstance()->printGreeting();
-			echo '+' . str_repeat('-', 77) . "+\n";
-			echo '** Unable to load PRADO application in directory "' . $directory . "\".\n";
-			echo '+' . str_repeat('-', 77) . "+\n";
+			$this->_outWriter->writeLine('+' . str_repeat('-', 77) . "+");
+			$this->_outWriter->writeLine('** Unable to load PRADO application in directory "' . $directory . "\".");
+			$this->_outWriter->writeLine('+' . str_repeat('-', 77) . "+");
 		}
 		return false;
 	}
@@ -144,7 +168,7 @@ EOD;
 		if (false !== ($php = realpath($app_dir . '/protected/application.php')) && is_file($php)) {
 			return $php;
 		}
-		echo '** Unable to find application.xml or application.php in ' . $app_dir . "\n";
+		$this->_outWriter->writeLine('** Unable to find application.xml or application.php in ' . $app_dir . ".");
 		return false;
 	}
 }

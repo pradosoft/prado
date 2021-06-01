@@ -47,6 +47,17 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function run()
 	{
+		$this->detectShellLanguageCharset();
+		$this->initApplication();
+	}
+	
+	/**
+	 * This takes the shell LANG and sets the HTTP_ACCEPT_LANGUAGE/HTTP_ACCEPT_CHARSET
+	 * for the application to do I18N.
+	 * @since 4.2.0
+	 */
+	private function detectShellLanguageCharset()
+	{
 		if (isset($_SERVER['LANG'])) {
 			$lang = $_SERVER['LANG'];
 			$pos = strpos($lang, '.');
@@ -56,8 +67,6 @@ class TShellApplication extends \Prado\TApplication
 			}
 			$_SERVER['HTTP_ACCEPT_LANGUAGE'] = $lang;
 		}
-		
-		$this->initApplication();
 	}
 	
 	/**
