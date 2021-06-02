@@ -185,6 +185,16 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	
 		return function_exists('posix_isatty') && @posix_isatty(STDOUT) && strpos(getenv('TERM'), '256color') !== false;
 	}
+	
+	/**
+	 * Moves the terminal cursor up by sending ANSI control code CUU to the terminal.
+	 * If the cursor is already at the edge of the screen, this has no effect.
+	 * @param int $rows number of rows the cursor should be moved up
+	 */
+	public function moveCursorUp($rows = 1)
+	{
+		$this->_writer->write("\033[" . (int) $rows . 'A');
+	}
 
 	/**
 	 * Moves the terminal cursor down by sending ANSI control code CUD to the terminal.
