@@ -44,7 +44,7 @@ class TActiveRecordGenAction extends TShellAction
 			$config = $this->getActiveRecordConfig($app_dir);
 			$output = $this->getOutputFile($app_dir, $args[2]);
 			if (is_file($output) && !$this->_overwrite) {
-				echo "** File $output already exists, skipping. \n";
+				$this->_outWriter->writeLine("** File $output already exists, skipping. ");
 			} elseif ($config !== false && $output !== false) {
 				$this->generateActiveRecord($config, $args[1], $output);
 			}
@@ -64,7 +64,7 @@ class TActiveRecordGenAction extends TShellAction
 		if (false !== ($app_dir = realpath($dir . '/protected/')) && is_dir($app_dir)) {
 			return $app_dir;
 		}
-		echo '** Unable to find directory "' . $dir . "\".\n";
+		$this->_outWriter->writeLine('** Unable to find directory "' . $dir . "\".");
 		return false;
 	}
 
@@ -83,7 +83,7 @@ class TActiveRecordGenAction extends TShellAction
 					return $module;
 				}
 			}
-			echo '** Unable to find TActiveRecordConfig module in ' . $xml . "\n";
+			$this->_outWriter->writeLine('** Unable to find TActiveRecordConfig module in ' . $xml . "");
 		}
 		return false;
 	}
@@ -104,7 +104,7 @@ class TActiveRecordGenAction extends TShellAction
 				return $file;
 			}
 		}
-		echo '** Output file ' . $file . ' must be within directory ' . $app_dir . "\n";
+		$this->_outWriter->writeLine('** Output file ' . $file . ' must be within directory ' . $app_dir . "");
 		return false;
 	}
 
@@ -121,7 +121,7 @@ class TActiveRecordGenAction extends TShellAction
 			$gateway = $manager->getRecordGateway();
 			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
 			if (count($tableInfo->getColumns()) === 0) {
-				echo '** Unable to find table or view "' . $tablename . '" in "' . $manager->getDbConnection()->getConnectionString() . "\".\n";
+				$this->_outWriter->writeLine('** Unable to find table or view "' . $tablename . '" in "' . $manager->getDbConnection()->getConnectionString() . "\".");
 				return false;
 			} else {
 				$properties = [];
@@ -132,10 +132,10 @@ class TActiveRecordGenAction extends TShellAction
 
 			$classname = basename($output, '.php');
 			$class = $this->generateClass($properties, $tablename, $classname);
-			echo "  Writing class $classname to file $output\n";
+			$this->_outWriter->writeLine("  Writing class $classname to file $output");
 			file_put_contents($output, $class);
 		} else {
-			echo '** Unable to connect to database with ConnectionID=\'' . $config->getConnectionID() . "'. Please check your settings in application.xml and ensure your database connection is set up first.\n";
+			$this->_outWriter->writeLine('** Unable to connect to database with ConnectionID=\'' . $config->getConnectionID() . "'. Please check your settings in application.xml and ensure your database connection is set up first.");
 		}
 	}
 

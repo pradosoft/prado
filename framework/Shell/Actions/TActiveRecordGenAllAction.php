@@ -70,7 +70,7 @@ class TActiveRecordGenAllAction extends TShellAction
 				case 'oci':
 //				case 'ibm':
 				default:
-					echo "\n    Sorry, generateAll is not implemented for " . $con->getDriverName() . "\n";
+					$this->_outWriter->writeLine("\n    Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
 
 			   }
 
@@ -112,7 +112,7 @@ class TActiveRecordGenAllAction extends TShellAction
 			$cmd = new TActiveRecordGenAction;
 			$cmd->performAction($args);
 		} else {
-			echo "\n    Usage: generate table_name Application.pages.RecordClassName\n";
+			$this->_outWriter->writeLine("\n    Usage: generate table_name Application.pages.RecordClassName");
 		}
 	}
 
@@ -128,7 +128,7 @@ class TActiveRecordGenAllAction extends TShellAction
 		if (false !== ($app_dir = realpath($dir . '/protected/')) && is_dir($app_dir)) {
 			return $app_dir;
 		}
-		echo '** Unable to find directory "' . $dir . "\".\n";
+		$this->_outWriter->writeLine('** Unable to find directory "' . $dir . "\".");
 		return false;
 	}
 
@@ -147,7 +147,7 @@ class TActiveRecordGenAllAction extends TShellAction
 					return $module;
 				}
 			}
-			echo '** Unable to find TActiveRecordConfig module in ' . $xml . "\n";
+			$this->_outWriter->writeLine('** Unable to find TActiveRecordConfig module in ' . $xml . "");
 		}
 		return false;
 	}
@@ -168,7 +168,7 @@ class TActiveRecordGenAllAction extends TShellAction
 				return $file;
 			}
 		}
-		echo '** Output file ' . $file . ' must be within directory ' . $app_dir . "\n";
+		$this->_outWriter->writeLine('** Output file ' . $file . ' must be within directory ' . $app_dir . "");
 		return false;
 	}
 }
