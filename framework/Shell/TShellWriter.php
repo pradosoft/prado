@@ -79,6 +79,9 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	protected $_writer;
 	
+	/** @var bool is color supported on tty */
+	protected $_color;
+	
 	/**
 	 * Constructor.
 	 * @param ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
@@ -86,6 +89,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public function __construct($writer)
 	{
 		$this->_writer = $writer;
+		$this->_color = $this->isColorSupported();
 		parent::__construct();
 	}
 	
@@ -122,14 +126,14 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function write($str, $attr = null)
 	{
-		if ($attr) {
+		if ($this->_color && $attr) {
 			if (!is_array($attr)) {
 				$attr = [$attr];
 			}
 			$this->_writer->write("\033[" . implode(';', $attr) . 'm');
 		}
 		$this->_writer->write($str);
-		if ($attr) {
+		if ($this->_color && $attr) {
 			$this->_writer->write("\033[0m");
 		}
 	}
@@ -141,26 +145,28 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function writeLine($str = '', $attr = null)
 	{
-		if ($attr) {
+		if ($this->_color && $attr) {
 			if (!is_array($attr)) {
 				$attr = [$attr];
 			}
 			$this->_writer->write("\033[" . implode(';', $attr) . 'm');
 		}
 		$this->_writer->write($str . "\n");
-		if ($attr) {
+		if ($this->_color && $attr) {
 			$this->_writer->write("\033[0m");
 		}
 	}
 	
 	/**
 	 * @param string $str the string to ANSI format.
-	 * @param string|string[] the attributes to format.
-	 * @param mixed $attr
+	 * @param string|string[] $attr the attributes to format.
 	 * @return string $str in the format of $attr.
 	 */
 	public function format($str, $attr)
 	{
+		if(!$this->_color) {
+			return $str;
+		}
 		if (!is_array($attr)) {
 			$attr = [$attr];
 		}
@@ -171,31 +177,13 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 * is color TTY supported
 	 * @return bool color is supported
 	 */
-	public function isSupported()
+	public function isColorSupported()
 	{
-		if (DIRECTORY_SEPARATOR === '\\') {
+		if (static::isRunningOnWindows()) {
 			return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
 		}
 	
-		return function_exists('posix_isatty') && @posix_isatty(STDOUT);
-	}
-	
-	/**
-	 * @return bool
-	 */
-	public function are256ColorsSupported()
-	{
-		return DIRECTORY_SEPARATOR === '/' && strpos(getenv('TERM'), '256color') !== false;
-	}
-	
-	/**
-	 * Moves the terminal cursor up by sending ANSI control code CUU to the terminal.
-	 * If the cursor is already at the edge of the screen, this has no effect.
-	 * @param int $rows number of rows the cursor should be moved up
-	 */
-	public function moveCursorUp($rows = 1)
-	{
-		$this->_writer->write("\033[" . (int) $rows . 'A');
+		return function_exists('posix_isatty') && @posix_isatty(STDOUT) && strpos(getenv('TERM'), '256color') !== false;
 	}
 
 	/**
@@ -282,7 +270,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * Saves the current cursor position by sending ANSI control code SCP to the terminal.
-	 * Position can then be restored with [[restoreCursorPosition()]].
+	 * Position can then be restored with {@link restoreCursorPosition}.
 	 */
 	public function saveCursorPosition()
 	{
@@ -290,7 +278,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Restores the cursor position saved with [[saveCursorPosition()]] by sending ANSI control code RCP to the terminal.
+	 * Restores the cursor position saved with {@link saveCursorPosition} by sending ANSI control code RCP to the terminal.
 	 */
 	public function restoreCursorPosition()
 	{
@@ -299,7 +287,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * Hides the cursor by sending ANSI DECTCEM code ?25l to the terminal.
-	 * Use [[showCursor()]] to bring it back.
+	 * Use {@link showCursor} to bring it back.
 	 * Do not forget to show cursor when your application exits. Cursor might stay hidden in terminal after exit.
 	 */
 	public function hideCursor()
@@ -308,7 +296,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Will show a cursor again when it has been hidden by [[hideCursor()]]  by sending ANSI DECTCEM code ?25h to the terminal.
+	 * Will show a cursor again when it has been hidden by {@link hideCursor}  by sending ANSI DECTCEM code ?25h to the terminal.
 	 */
 	public function showCursor()
 	{
@@ -376,9 +364,9 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 *
 	 * Usage:
 	 *
-	 * ```php
+	 * <code>
 	 * [$width, $height] = TShellWriter::getScreenSize();
-	 * ```
+	 * </code>
 	 *
 	 * @param bool $refresh whether to force checking and not re-use cached size value.
 	 * This is useful to detect changing window size while the application is running but may
@@ -437,16 +425,16 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 * The first line will **not** be indented, so `TShellWriter::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
 	 * following output, given the screen width is 16 characters:
 	 *
-	 * ```
+	 * <code>
 	 * Lorem ipsum
 	 *     dolor sit
 	 *     amet.
-	 * ```
+	 * </code>
 	 *
 	 * @param string $text the text to be wrapped
 	 * @param int $indent number of spaces to use for indentation.
 	 * @param bool $refresh whether to force refresh of screen size.
-	 * This will be passed to [[getScreenSize()]].
+	 * This will be passed to {@link getScreenSize}.
 	 * @return string the wrapped text.
 	 */
 	public function wrapText($text, $indent = 0, $refresh = false)
@@ -478,40 +466,3 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		return DIRECTORY_SEPARATOR === '\\';
 	}
 }
-
-/*
-
-private static $availableForegroundColors = array(
-	'black' => array('set' => 30, 'unset' => 39),
-	'red' => array('set' => 31, 'unset' => 39),
-	'green' => array('set' => 32, 'unset' => 39),
-	'yellow' => array('set' => 33, 'unset' => 39),
-	'blue' => array('set' => 34, 'unset' => 39),
-	'magenta' => array('set' => 35, 'unset' => 39),
-	'cyan' => array('set' => 36, 'unset' => 39),
-	'white' => array('set' => 37, 'unset' => 39),
-	'default' => array('set' => 39, 'unset' => 39),
-);
-private static $availableBackgroundColors = array(
-	'black' => array('set' => 40, 'unset' => 49),
-	'red' => array('set' => 41, 'unset' => 49),
-	'green' => array('set' => 42, 'unset' => 49),
-	'yellow' => array('set' => 43, 'unset' => 49),
-	'blue' => array('set' => 44, 'unset' => 49),
-	'magenta' => array('set' => 45, 'unset' => 49),
-	'cyan' => array('set' => 46, 'unset' => 49),
-	'white' => array('set' => 47, 'unset' => 49),
-	'default' => array('set' => 49, 'unset' => 49),
-);
-private static $availableOptions = array(
-	'bold' => array('set' => 1, 'unset' => 22),
-	'underscore' => array('set' => 4, 'unset' => 24),
-	'blink' => array('set' => 5, 'unset' => 25),
-	'reverse' => array('set' => 7, 'unset' => 27), //swap
-	'conceal' => array('set' => 8, 'unset' => 28),
-	'crossed' => array('set' => 9, 'unset' => 29),
-	'framed' => array('set' => 51, 'unset' => 54),
-	'encircled' => array('set' => 52, 'unset' => 54),
-	'overlined' => array('set' => 53, 'unset' => 55),
-);
-*/
