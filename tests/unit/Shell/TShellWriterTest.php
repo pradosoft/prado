@@ -61,9 +61,15 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 	
 	public function testFormat()
 	{
-		self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', 43));
-		self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', [43]));
-		self::assertEquals("\033[34;1mtext\033[0m", $this->obj->format('text', [34, 1]));
+		if ($this->obj->isColorSupported()) {
+			self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', 43));
+			self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', [43]));
+			self::assertEquals("\033[34;1mtext\033[0m", $this->obj->format('text', [34, 1]));
+		} else {
+			self::assertEquals("text", $this->obj->format('text', 43));
+			self::assertEquals("text", $this->obj->format('text', [43]));
+			self::assertEquals("text", $this->obj->format('text', [34, 1]));
+		}
 	}
 	
 	public function testMoveCursorUp()
