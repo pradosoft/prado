@@ -164,7 +164,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function format($str, $attr)
 	{
-		if(!$this->_color) {
+		if (!$this->_color) {
 			return $str;
 		}
 		if (!is_array($attr)) {
