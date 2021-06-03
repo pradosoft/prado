@@ -88,7 +88,7 @@ use Prado\TPropertyValue;
  	{
  		$module = parent::getModule();
  		if ($module === null) {
- 			throw new TConfigurationException('cronmodule_no_module', $this->getModuleId());
+ 			throw new TConfigurationException('cronmethodtask_no_module', $this->getModuleId());
  		}
  		return $module;
  	}

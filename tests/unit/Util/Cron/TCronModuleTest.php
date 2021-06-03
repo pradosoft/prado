@@ -398,7 +398,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0, $tasks['testTask4']->getProcessCount());
 		self::assertEquals(0, $tasks['testTask4']->getLastExecTime());
 		
-		//updateTaskInfo - test persistent data
+		//check updateTaskInfo - test persistent data
 		self::assertEquals(4, $this->obj->processPendingTasks());
 		
 		self::assertEquals(1, $tasks['testTask1']->getProcessCount());
@@ -408,7 +408,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, $tasks['testTask3']->getProcessCount());
 		self::assertTrue(microtime(true) - $tasks['testTask3']->getLastExecTime() < 2);
 		self::assertEquals(1, $tasks['testTask4']->getProcessCount());
-		self::assertTrue(microtime(true) - $tasks['testTask3']->getLastExecTime() < 2);
+		self::assertTrue(microtime(true) - $tasks['testTask4']->getLastExecTime() < 2);
 		
 		// check 
 		$this->checkPersistentData();

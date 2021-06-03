@@ -128,10 +128,10 @@ class TCronModule extends \Prado\TModule
 		//Get the IUserManager module from the string
 		if (is_string($this->_userManager)) {
 			if (($users = $app->getModule($this->_userManager)) === null) {
-				throw new TConfigurationException('cronmodule_usermanager_nonexistent', $this->_userManager);
+				throw new TConfigurationException('cron_usermanager_nonexistent', $this->_userManager);
 			}
 			if (!($users instanceof IUserManager)) {
-				throw new TConfigurationException('cronmodule_usermanager_invalid', $this->_userManager);
+				throw new TConfigurationException('cron_usermanager_invalid', $this->_userManager);
 			}
 			$this->_userManager = $users;
 		}
@@ -186,7 +186,7 @@ class TCronModule extends \Prado\TModule
 				$properties = array_change_key_case($properties->getAttributes()->toArray());
 			} else {
 				if (!is_array($properties)) {
-					throw new TConfigurationException('cronmodule_task_as_array_required');
+					throw new TConfigurationException('cron_task_as_array_required');
 				}
 			}
 			if (!($properties[self::NAME_KEY] ?? null)) {
@@ -197,7 +197,7 @@ class TCronModule extends \Prado\TModule
 				$name = $properties[self::NAME_KEY];
 			}
 			if (isset($this->_tasks[$name])) {
-				throw new TConfigurationException('cronmodule_duplicate_task_name');
+				throw new TConfigurationException('cron_duplicate_task_name');
 			}
 			$this->validateTask($properties);
 			$this->_tasks[$name] = $properties;
@@ -213,19 +213,18 @@ class TCronModule extends \Prado\TModule
 		$schedule = $properties[self::SCHEDULE_KEY] ?? null;
 		$task = $properties[self::TASK_KEY] ?? null;
 		if ($schedule == null) {
-			throw new TConfigurationException('cronmodule_schedule_required');
+			throw new TConfigurationException('cron_schedule_required');
 		}
 		if ($task == null) {
-			throw new TConfigurationException('cronmodule_task_required');
+			throw new TConfigurationException('cron_task_required');
 		}
 	}
 	
 	/**
-	 * This lazy loads the tasks from configuration array to instance.
-	 * This calls {@link setPersistentData} to set the tasks' persistent data.
-	 * @return Prado\Util\Cron\TCronTask[] currently active cron tasks
+	 * makes the tasks from the configuration array into task objects.
+	 * @return Prado\Util\Cron\TCronTask[]
 	 */
-	public function getTasks()
+	protected function ensureTasks()
 	{
 		if (!$this->_tasksInstanced) {
 			foreach ($this->_tasks as $properties) {
@@ -245,6 +244,17 @@ class TCronModule extends \Prado\TModule
 			}
 			$this->_tasksInstanced = true;
 		}
+		return $this->_tasks;
+	}
+	
+	/**
+	 * This lazy loads the tasks from configuration array to instance.
+	 * This calls {@link setPersistentData} to set the tasks' persistent data.
+	 * @return Prado\Util\Cron\TCronTask[] currently active cron tasks
+	 */
+	public function getTasks()
+	{
+		$this->ensureTasks();
 		return $this->_tasks;
 	}
 	
@@ -278,12 +288,12 @@ class TCronModule extends \Prado\TModule
 	{
 		if (($pos = strpos($taskExec, self::METHOD_SEPARATOR)) !== false) {
 			$module = substr($taskExec, 0, $pos);
-			$method = substr($taskExec, $pos + 2); //Length of self::METHOD_SEPARATOR
+			$method = substr($taskExec, $pos + 2); //String Length of self::METHOD_SEPARATOR
 			$task = new TCronMethodTask($module, $method);
 		} else {
 			$task = Prado::createComponent($taskExec);
 			if (!$task->isa('Prado\\Util\\Cron\\TCronTask')) {
-				throw new TInvalidDataTypeException("cronmodule_not_a_crontask", $taskExec);
+				throw new TInvalidDataTypeException("cron_not_a_crontask", $taskExec);
 			}
 		}
 		return $task;
@@ -381,7 +391,7 @@ class TCronModule extends \Prado\TModule
 	 * {@link getDefaultUserId}.
 	 * @param Prado\Util\Cron\TCronTask $task the task to run.
 	 */
-	protected function runTask($task)
+	public function runTask($task)
 	{
 		$app = $this->getApplication();
 		$users = $this->getUserManager();
@@ -422,7 +432,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * Lots the cron task being run with the system log and output on cli
-	 * @param TCronTask $task
+	 * @param Prado\Util\Cron\TCronTask $task
 	 * @param string $username the user the task is running under.
 	 */
 	protected function logCronTask($task, $username)
@@ -434,7 +444,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * sets the lastExecTime to now and increments the processCount.  This saves
 	 * the new data to the global state.
-	 * @param TCronTask $task
+	 * @param Prado\Util\Cron\TCronTask $task
 	 */
 	protected function updateTaskInfo($task)
 	{
@@ -494,7 +504,7 @@ class TCronModule extends \Prado\TModule
 	public function setDefaultUserId($id)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cronmodule_property_unchangeable', 'DefaultUserId');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'DefaultUserId');
 		}
 		$this->_defaultUserId = TPropertyValue::ensureString($id);
 	}
@@ -515,10 +525,10 @@ class TCronModule extends \Prado\TModule
 	public function setUserManager($provider)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cronmodule_property_unchangeable', 'UserManager');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'UserManager');
 		}
 		if (!is_string($provider) && !($provider instanceof IUserManager) && $provider !== null) {
-			throw new TConfigurationException('authmanager_usermanager_invalid', is_object($provider) ? get_class($provider) : $provider);
+			throw new TConfigurationException('cron_usermanager_invalid', is_object($provider) ? get_class($provider) : $provider);
 		}
 		$this->_userManager = $provider;
 	}
@@ -538,7 +548,7 @@ class TCronModule extends \Prado\TModule
 	public function setEnableRequestCron($allow)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cronmodule_property_unchangeable', 'EnableRequestCron');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'EnableRequestCron');
 		}
 		$this->_enableRequestCron = TPropertyValue::ensureBoolean($allow);
 	}
@@ -558,7 +568,7 @@ class TCronModule extends \Prado\TModule
 	public function setRequestCronProbability($probability)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cronmodule_property_unchangeable', 'RequestCronProbability');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'RequestCronProbability');
 		}
 		$this->_requestCronProbability = TPropertyValue::ensureFloat($probability);
 	}
@@ -582,7 +592,7 @@ class TCronModule extends \Prado\TModule
 	public function setAdditionalCronTasks($tasks)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cronmodule_property_unchangeable', 'AdditionalCronTasks');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'AdditionalCronTasks');
 		}
 		if (is_string($tasks)) {
 			if (($t = @unserialize($tasks)) !== false) {
@@ -599,7 +609,7 @@ class TCronModule extends \Prado\TModule
 			$tasks = [$tasks];
 		}
 		if (!is_array($tasks) && !($tasks instanceof TXmlDocument) && $tasks !== null) {
-			throw new TInvalidDataTypeException('cronmodule_additional_tasks_invalid', $tasks);
+			throw new TInvalidDataTypeException('cron_additional_tasks_invalid', $tasks);
 		}
 		$this->_additionalCronTasks = $tasks;
 	}
