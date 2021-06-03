@@ -104,6 +104,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		$this->obj->unlisten();
 		$this->obj = null;
 		
 		Prado::getApplication()->setGlobalState(TCronModule::LAST_CRON_TIME, null);

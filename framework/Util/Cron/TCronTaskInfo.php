@@ -60,7 +60,7 @@ class TCronTaskInfo extends \Prado\TComponent
 		if ($title !== null) {
 			$this->setTitle($title);
 		}
-		if ($description) {
+		if ($description !== null) {
 			$this->setDescription($description);
 		}
 		parent::__construct();
