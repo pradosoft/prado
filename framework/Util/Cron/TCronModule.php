@@ -62,6 +62,8 @@ use Prado\Xml\TXmlDocument;
 
 class TCronModule extends \Prado\TModule
 {
+	public const SHELL_LOG_BEHAVIOR = 'shellLog';
+	
 	public const TASK_KEY = 'task';
 	public const SCHEDULE_KEY = 'schedule';
 	public const NAME_KEY = 'name';
