@@ -173,6 +173,11 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		return "\033[" . implode(';', $attr) . 'm' . $str . "\033[0m";
 	}
 	
+	public function unformat($str)
+	{
+		return preg_replace("/\033\[[\?\d;:]*[usmA-HJKSTlh]/", '', $str);
+	}
+	
 	/**
 	 * is color TTY supported
 	 * @return bool color is supported
