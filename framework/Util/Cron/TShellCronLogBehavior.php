@@ -12,6 +12,7 @@ namespace Prado\Util\Cron;
 use Prado\Prado;
 use Prado\Shell\TShellAppAction;
 use Prado\Util\TBehavior;
+use Prado\Util\TCallChain;
 
 /**
  * TShellCronLogBehavior class.
@@ -52,6 +53,57 @@ class TShellCronLogBehavior extends TBehavior
 	}
 	
 	/**
+	 * writes, with attributes, to the OutputWriter
+	 * @param string $str
+	 * @param array|int|Prado\Util\TCallChain|string $p1
+	 * @param null|Prado\Util\TCallChain $p2
+	 */
+	public function dyWrite($str, $p1, $p2 = null)
+	{
+		if ($p1 instanceof TCallChain) {
+			$attr = null;
+			$callchain = $p1;
+		} else {
+			$attr = $p1;
+			$callchain = $p2;
+		}
+		$this->_outWriter->write($str, $attr);
+		return $callchain->dyWrite($str, $p1, $p2);
+	}
+	
+	/**
+	 * writes Line, with attributes, to the OutputWriter
+	 * @param string $str
+	 * @param array|int|Prado\Util\TCallChain|string $p1
+	 * @param null|Prado\Util\TCallChain $p2
+	 */
+	public function dyWriteLine($str, $p1, $p2 = null)
+	{
+		if ($p1 instanceof TCallChain) {
+			$attr = null;
+			$callchain = $p1;
+		} else {
+			$attr = $p1;
+			$callchain = $p2;
+		}
+		$this->_outWriter->writeLine($str, $attr);
+		return $callchain->dyWriteLine($str, $p1, $p2);
+	}
+	
+	
+	/**
+	 * flushes the OutputWriter
+	 * @param mixed $callchain
+	 * @return string the accumulated text in the buffer
+	 */
+	public function dyFlush($callchain)
+	{
+		$result = $this->_outWriter->flush();
+		return $result . $callchain->dyFlush();
+	}
+	
+	/**
+	 * Logs a when cron is run in the shell.
 	 * @param int $numtasks number of tasks to run
 	 * @param TCallChain $callchain the chain of methods
 	 */
@@ -64,6 +116,7 @@ class TShellCronLogBehavior extends TBehavior
 	}
 	
 	/**
+	 * Logs a single cron task when run in the shell.
 	 * @param TCronTask $task the task to log
 	 * @param string $username the user name running the task
 	 * @param TCallChain $callchain the chain of methods
@@ -77,6 +130,7 @@ class TShellCronLogBehavior extends TBehavior
 	}
 	
 	/**
+	 * Logs the end of a single cron task when run in the shell.
 	 * @param TCronTask $task the tasks that was run
 	 * @param TCallChain $callchain the chain of methods
 	 */
