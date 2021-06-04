@@ -13,6 +13,7 @@ namespace Prado\Util\Cron;
 use Prado\Prado;
 use Prado\Shell\TShellAppAction;
 use Prado\Shell\TShellWriter;
+use Prado\Util\Cron\TCronModule;
 
 /**
  * TCLICronAction class.
@@ -36,6 +37,10 @@ class TShellCronAction extends TShellAppAction
 		return 'Prado\\Util\\Cron\\TCronModule';
 	}
 	
+	/**
+	 * @param string[] $args the arguments to the command line action
+	 * @return bool was the action handled
+	 */
 	public function performAction($args)
 	{
 		$app = Prado::getApplication();
@@ -48,10 +53,12 @@ class TShellCronAction extends TShellAppAction
 			}
 		}
 		if (!$module) {
-			$this->_outWriter->writeLine("A {$moduleClass} is not found");
-			return;
+			$this->_outWriter->writeLine("A {$moduleClass} is not found", [TShellWriter::RED, TShellWriter::BOLD]);
+			return true;
 		}
-		$module->attachBehavior('shellLog', new TShellCronLogBehavior($this->getWriter()));
+		if (!$module->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$module->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
+		}
 		
 		$cmd = $args[3] ?? null;
 		if ($cmd === null) {
@@ -92,41 +99,78 @@ class TShellCronAction extends TShellAppAction
 			$this->_outWriter->writeLine("     **  There are no pending Cron Tasks.  **\n");
 			return;
 		}
-		
-		$this->_outWriter->write($this->pad('name', 12));
-		$this->_outWriter->write($this->pad('Class', 50));
-		$this->_outWriter->write($this->pad('Last Run', 22));
-		//$this->_outWriter->write($this->pad('Prev Run', 22));
-		$this->_outWriter->write($this->pad('Next Run', 22));
-		$this->_outWriter->write($this->pad('User', 15));
-		$this->_outWriter->write($this->pad('Run Count', 10));
-		$this->_outWriter->writeLine("");
-			
+		$lengths = ['name' => 5, 'schedule' => 9, 'task' => 5, 'lastrun' => 9, 'nextrun' => 9, 'user' => 5, 'run' => 6];
 		foreach ($tasks as $task) {
-			if (($name = $task->getName()) == null) {
-				$name = '(anonymous)';
+			if (($len = (strlen($task->getName()) + 1)) > $lengths['name']) {
+				$lengths['name'] = $len;
 			}
-			$this->_outWriter->write($this->pad($name, 12));
-			$this->_outWriter->write($this->pad($task->getTask(), 50));
+			if (($len = (strlen($task->getSchedule()) + 1)) > $lengths['schedule']) {
+				$lengths['schedule'] = $len;
+			}
+			if (($len = (strlen($task->getTask()) + 1)) > $lengths['task']) {
+				$lengths['task'] = $len;
+			}
 			$f = 'H:i:s';
 			if (time() - $task->getLastExecTime() > 86400) {
 				$f = 'Y-m-d H:i:s';
 			}
-			$this->_outWriter->write($this->pad(date($f, $task->getLastExecTime()), 22));
-			//$f = 'H:i:s';
-			//if (time() - $task->getPreviousTriggerTime() < 86400) {
-			//	$f = 'Y-m-d H:i:s';
-			//}
-			//$this->_outWriter->write($this->pad(date($f, $task->getPreviousTriggerTime()), 22));
+			if (($len = (strlen(date($f, $task->getLastExecTime())) + 1)) > $lengths['lastrun']) {
+				$lengths['lastrun'] = $len;
+			}
 			$f = 'H:i:s';
 			$trigger = $task->getNextTriggerTime();
 			if ($trigger - time() > 86400) {
 				$f = 'Y-m-d H:i:s';
 			}
-			$this->_outWriter->write($this->pad(date($f, $trigger) . ($task->getIsPending() ? '*' : ' '), 22));
-			$this->_outWriter->write($this->pad($task->getUserId(), 15));
-			$this->_outWriter->write($this->pad($task->getProcessCount(), 10));
-			$this->_outWriter->writeLine("");
+			if (($len = (strlen(date($f, $trigger)) + 2)) > $lengths['nextrun']) {
+				$lengths['nextrun'] = $len;
+			}
+			if (($len = (strlen($task->getUserId()) + 1)) > $lengths['user']) {
+				$lengths['user'] = $len;
+			}
+			if ($task->getUserId() === null) {
+				$lengths['user'] = 10;
+			}
+			if (($len = (strlen($task->getProcessCount()) + 1)) > $lengths['run']) {
+				$lengths['run'] = $len;
+			}
+		}
+		
+		$this->_outWriter->write($this->pad('Name', $lengths['name']));
+		$this->_outWriter->write($this->pad('Schedule', $lengths['schedule']));
+		$this->_outWriter->write($this->pad('Task', $lengths['task']));
+		$this->_outWriter->write($this->pad('Last Run', $lengths['lastrun']));
+		//$this->_outWriter->write($this->pad('Prev Run', 22));
+		$this->_outWriter->write($this->pad('Next Run', $lengths['nextrun']));
+		$this->_outWriter->write($this->pad('User', $lengths['user']));
+		$this->_outWriter->write($this->pad('Run #', $lengths['run']));
+		$this->_outWriter->writeLine("");
+		
+		foreach ($tasks as $task) {
+			$this->_outWriter->write($this->pad($task->getName(), $lengths['name']), [TShellWriter::BLUE, TShellWriter::BOLD]);
+			$this->_outWriter->write($this->pad($task->getSchedule(), $lengths['schedule']));
+			$this->_outWriter->write($this->pad($task->getTask(), $lengths['task']));
+			$f = 'H:i:s';
+			if (time() - $task->getLastExecTime() > 86400) {
+				$f = 'Y-m-d H:i:s';
+			}
+			$this->_outWriter->write($this->pad(date($f, $task->getLastExecTime()), $lengths['lastrun']));
+			
+			$f = 'H:i:s';
+			$trigger = $task->getNextTriggerTime();
+			if ($trigger - time() > 86400) {
+				$f = 'Y-m-d H:i:s';
+			}
+			$this->_outWriter->write($this->pad(
+				date($f, $trigger) . ($task->getIsPending() ? '*' : ' '),
+				$lengths['nextrun']
+			), $task->getIsPending() ? [TShellWriter::GREEN, TShellWriter::BOLD] : null);
+			if (($user = $task->getUserId()) == null) {
+				$user = '(default)';
+			}
+			$this->_outWriter->write($this->pad($user, $lengths['user']));
+			$this->_outWriter->write($this->pad($task->getProcessCount(), $lengths['run']));
+			$this->_outWriter->writeLine();
 		}
 		$this->_outWriter->writeLine("\nAny 'next run' with a * means it is Pending\n");
 		
@@ -146,26 +190,27 @@ class TShellCronAction extends TShellAppAction
 			$this->_outWriter->writeLine("		(** No registered application tasks **)");
 		}
 		foreach ($infos as $taskinfo) {
-			$this->_outWriter->write($this->pad($taskinfo->getName(), 22));
+			$this->_outWriter->write($this->pad($taskinfo->getName(), 22), [TShellWriter::BLUE, TShellWriter::BOLD]);
 			$this->_outWriter->write($this->pad($taskinfo->getTask(), 50));
 			$this->_outWriter->write($this->pad($taskinfo->getModuleId(), 16));
 			$this->_outWriter->write($this->pad($taskinfo->getTitle(), 30));
-			$this->_outWriter->writeLine("");
-			$this->_outWriter->write($this->pad('  ' . $taskinfo->getDescription(), 112));
-			$this->_outWriter->writeLine("");
+			$this->_outWriter->writeLine();
+			$this->_outWriter->write($this->pad('      ' . $taskinfo->getDescription(), 112), TShellWriter::DARK_GRAY);
+			$this->_outWriter->writeLine();
 		}
-		$this->_outWriter->writeLine("");
+		$this->_outWriter->writeLine();
 	}
 	
 	protected function pad($s, $n, $c = ' ')
 	{
-		$l = strlen($s);
+		$s = $this->_outWriter->unformat($s);
+		$l = mb_strlen($s);
 		if ($l > $n) {
-			return substr($s, 0, $n - 1) . '*';
+			return mb_substr($s, 0, $n - 1) . '*';
 		}
 		if ($l < $n) {
 			$m = $n - $l;
-			$lc = strlen($c);
+			$lc = mb_strlen($c);
 			for ($i = 0; $i < $m; $i += $lc) {
 				$s .= $c;
 			}
@@ -177,10 +222,10 @@ class TShellCronAction extends TShellAppAction
 	{
 		if ($helpcmd == 'tasks') {
 			$this->_outWriter->writeLine("help for the tasks command");
-			$this->_outWriter->writeLine("there are no parameters for the 'tasks' command.");
+			$this->_outWriter->writeLine("there are no parameters for the 'tasks' command.  This shows the tasks registered with cron.");
 		} elseif ($helpcmd == 'info') {
 			$this->_outWriter->writeLine("help for the info command");
-			$this->_outWriter->writeLine("there are no parameters for the 'info' command.");
+			$this->_outWriter->writeLine("there are no parameters for the 'info' command. This shows the tasks registered with the application for use by cron.");
 		} elseif ($helpcmd == 'help') {
 			$this->_outWriter->writeLine("help for the help command");
 			$this->_outWriter->writeLine("You have summoned the help for the help.");
