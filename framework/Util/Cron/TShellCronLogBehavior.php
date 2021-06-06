@@ -93,7 +93,7 @@ class TShellCronLogBehavior extends TBehavior
 	
 	/**
 	 * flushes the OutputWriter
-	 * @param mixed $callchain
+	 * @param TCallChain $callchain
 	 * @return string the accumulated text in the buffer
 	 */
 	public function dyFlush($callchain)
@@ -110,7 +110,6 @@ class TShellCronLogBehavior extends TBehavior
 	public function dyLogCron($numtasks, $callchain)
 	{
 		$this->_outWriter->writeLine(" Running {$numtasks} Cron Tasks @ " . date('Y-m-d H:i:s') . " \n");
-		$this->_outWriter->flush();
 		
 		return $callchain->dyLogCron($numtasks);
 	}
@@ -137,7 +136,6 @@ class TShellCronLogBehavior extends TBehavior
 	public function dyUpdateTaskInfo($task, $callchain)
 	{
 		$this->_outWriter->writeLine("Ending Task {$task->getName()}\n");
-		$this->_outWriter->flush();
 		
 		return $callchain->dyUpdateTaskInfo($task);
 	}
