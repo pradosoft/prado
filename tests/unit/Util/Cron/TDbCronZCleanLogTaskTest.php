@@ -41,6 +41,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		
 		//module is not TDbCronModule, output has red
 		$cron->getOutputWriter()->setColorSupported(true);
+		$dbcron->getOutputWriter()->setColorSupported(true);
 		$this->obj->setModuleId(null);
 		$this->obj->execute($cron);
 		$str = $cron->getOutputWriter()->flush();
