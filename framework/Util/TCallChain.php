@@ -116,7 +116,7 @@ class TCallChain extends TList implements IDynamicMethods
 				$result = call_user_func_array($handler[0], $handler[1]);
 			} while ($this->_iterator->valid());
 		} else {
-			$result = $args[0];
+			$result = $args[0] ?? null;
 		}
 		return $result;
 	}

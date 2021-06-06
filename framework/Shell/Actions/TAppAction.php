@@ -38,10 +38,11 @@ class TAppAction extends TShellAction
 			$args[1] = '.';
 		}
 		if (false === ($xml = $this->getAppConfigFile($args[1]))) {
-			echo "** Application '$args[1]' was not found. \n";
+			$this->_outWriter->writeLine("** Application '$args[1]' was not found.");
 			return false;
 		}
 		$app = $this->initializePradoApplication($args[1]);
+		$this->_outWriter->flush();
 		TShellInterpreter::getInstance()->clearActionClass();
 		TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TAppHelpAction');
 		foreach ($app->getShellActionClasses() as $actions) {

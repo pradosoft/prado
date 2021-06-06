@@ -45,14 +45,16 @@ abstract class TShellAppAction extends TShellAction
 			$options[] = '[' . $v . ']';
 		}
 		$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
-		$description = '';
-		foreach (explode("\n", wordwrap($this->description, 65)) as $line) {
-			$description .= '    ' . $line . "\n";
-		}
+		
+		$description = $this->getWriter()->wrapText($this->description, 5);
+		
+		$action = $this->getWriter()->format(" app <directory> " . $this->action, [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$parameters = $this->getWriter()->format($parameters, [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$optional = $this->getWriter()->format($optional, [TShellWriter::BLUE]);
+		$description = $this->getWriter()->format($description, TShellWriter::DARK_GRAY);
 		return <<<EOD
- app <directory> {$this->action} {$parameters}{$optional}
-{$description}
-
+{$action} {$parameters}{$optional}
+     {$description}
 EOD;
 	}
 }
