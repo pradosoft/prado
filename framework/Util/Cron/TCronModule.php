@@ -481,7 +481,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * Objects should handle fxGetCronTasks($sender, $param)
-	 * @param mixed $forceupdate
+	 * @param bool $forceupdate if true, ignores the caching
 	 * @return Prado\Util\Cron\TCronTaskInfo[]
 	 */
 	public function getTaskInfos($forceupdate = false)

@@ -266,7 +266,7 @@ class TDbCache extends TCache
 	 */
 	public function fxGetCronTaskInfos($sender, $param)
 	{
-		return new TCronTaskInfo('dbcacheflushexpired', $this->getId() . '.flushCacheExpired(true)', $this, Prado::localize('DbCache Flush Expired Keys'), Prado::localize('This manually clears out the expired keys of TDbCache.'));
+		return new TCronTaskInfo('dbcacheflushexpired', $this->getId() . '->flushCacheExpired(true)', $this, Prado::localize('DbCache Flush Expired Keys'), Prado::localize('This manually clears out the expired keys of TDbCache.'));
 	}
 
 	/**
