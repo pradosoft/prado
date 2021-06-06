@@ -481,11 +481,12 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * Objects should handle fxGetCronTasks($sender, $param)
+	 * @param mixed $forceupdate
 	 * @return Prado\Util\Cron\TCronTaskInfo[]
 	 */
-	public function getTaskInfos()
+	public function getTaskInfos($forceupdate = false)
 	{
-		if (!$this->_tasksInfo) {
+		if (!$this->_tasksInfo || $forceupdate) {
 			$this->_tasksInfo = $this->raiseEvent('fxGetCronTaskInfos', $this, null);
 		}
 		return $this->_tasksInfo;

@@ -185,7 +185,7 @@ class TShellCronAction extends TShellAppAction
 		$this->_outWriter->write($this->pad('Module ID', 16));
 		$this->_outWriter->write($this->pad('Title', 30));
 		$this->_outWriter->writeLine("");
-		$infos = $module->getTaskInfos();
+		$infos = $module->getTaskInfos(true);
 		if (!count($infos)) {
 			$this->_outWriter->writeLine("		(** No registered application tasks **)");
 		}
