@@ -31,6 +31,18 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('\\Prado\\Shell\\TShellWriter', $this->obj);
 	}
 	
+	public function testColorSupported()
+	{
+		$this->obj->setColorSupported(true);
+		self::assertTrue($this->obj->getColorSupported());
+		$this->obj->setColorSupported(false);
+		self::assertFalse($this->obj->getColorSupported());
+		$this->obj->setColorSupported('true');
+		self::assertTrue($this->obj->getColorSupported());
+		$this->obj->setColorSupported('false');
+		self::assertFalse($this->obj->getColorSupported());
+	}
+	
 	public function testWriter()
 	{
 		self::assertEquals($this->writer, $this->obj->getWriter());
@@ -61,15 +73,15 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 	
 	public function testFormat()
 	{
-		if ($this->obj->isColorSupported()) {
-			self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', 43));
-			self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', [43]));
-			self::assertEquals("\033[34;1mtext\033[0m", $this->obj->format('text', [34, 1]));
-		} else {
-			self::assertEquals("text", $this->obj->format('text', 43));
-			self::assertEquals("text", $this->obj->format('text', [43]));
-			self::assertEquals("text", $this->obj->format('text', [34, 1]));
-		}
+		$this->obj->setColorSupported(true);
+		self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', 43));
+		self::assertEquals("\033[43mtext\033[0m", $this->obj->format('text', [43]));
+		self::assertEquals("\033[34;1mtext\033[0m", $this->obj->format('text', [34, 1]));
+		
+		$this->obj->setColorSupported(false);
+		self::assertEquals("text", $this->obj->format('text', 43));
+		self::assertEquals("text", $this->obj->format('text', [43]));
+		self::assertEquals("text", $this->obj->format('text', [34, 1]));
 	}
 	
 	public function testMoveCursorUp()

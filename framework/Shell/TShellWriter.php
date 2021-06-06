@@ -10,6 +10,8 @@
 
 namespace Prado\Shell;
 
+use Prado\TPropertyValue;
+
 /**
  * TShellWriter class.
  *
@@ -94,6 +96,22 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 	
 	/**
+	 * @return bool is color supported
+	 */
+	public function getColorSupported()
+	{
+		return $this->_color;
+	}
+	
+	/**
+	 * @param bool $color is color supported
+	 */
+	public function setColorSupported($color)
+	{
+		$this->_color = TPropertyValue::ensureBoolean($color);
+	}
+	
+	/**
 	 * @return ITextWriter the writer output to this class
 	 */
 	public function getWriter()
@@ -151,10 +169,11 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			}
 			$this->_writer->write("\033[" . implode(';', $attr) . 'm');
 		}
-		$this->_writer->write($str . "\n");
+		$this->_writer->write($str);
 		if ($this->_color && $attr) {
 			$this->_writer->write("\033[0m");
 		}
+		$this->_writer->write("\n");
 	}
 	
 	/**
@@ -173,11 +192,16 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		return "\033[" . implode(';', $attr) . 'm' . $str . "\033[0m";
 	}
 	
+	public function unformat($str)
+	{
+		return preg_replace("/\033\[[\?\d;:]*[usmA-HJKSTlh]/", '', $str);
+	}
+	
 	/**
 	 * is color TTY supported
 	 * @return bool color is supported
 	 */
-	public function isColorSupported()
+	protected function isColorSupported()
 	{
 		if (static::isRunningOnWindows()) {
 			return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
