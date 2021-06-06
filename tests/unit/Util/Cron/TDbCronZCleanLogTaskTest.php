@@ -40,6 +40,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 		} catch(TInvalidDataValueException $e) {}
 		
 		//module is not TDbCronModule, output has red
+		$cron->getOutputWriter()->setColorSupported(true);
 		$this->obj->setModuleId(null);
 		$this->obj->execute($cron);
 		$str = $cron->getOutputWriter()->flush();
