@@ -82,10 +82,10 @@ use Prado\TPropertyValue;
  	}
 	 
  	/**
-     * Gets the module for the task based upon the {@link getModuleId}.
-     * This verifies that the module does exist.
+ 	 * Gets the module for the task based upon the {@link getModuleId}.
+ 	 * This verifies that the module does exist.
+ 	 * @throws TConfigurationException when no module is found
  	 * @return IModule returns the module (from the application) of ModuleId
-     * @throws TConfigurationException when no module is found
  	 */
  	public function getModule()
  	{

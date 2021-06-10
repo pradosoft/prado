@@ -14,10 +14,10 @@ if (!isset($_SERVER['argv']) || php_sapi_name() !== 'cli') {
 
 // Locate composer's autoloader
 if (file_exists($autoloader = realpath(__DIR__ . '/../../../autoload.php'))) {
-    // if we are running from inside an application's vendor/ directory, get out of pradosoft/prado/bin/
+	// if we are running from inside an application's vendor/ directory, get out of pradosoft/prado/bin/
 	include($autoloader);
 } elseif (file_exists($autoloader = realpath(__DIR__ . '/../vendor/autoload.php'))) {
-    // if we are running inside a prado repo checkout, get out of bin/
+	// if we are running inside a prado repo checkout, get out of bin/
 	include($autoloader);
 }
 

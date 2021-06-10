@@ -20,7 +20,7 @@ use Prado\Util\Cron\TCronModule;
  *
  * Runs the TCronModule from the command line.   This will run all pending
  * tasks when the "cron" command is run.  Other sub-commands are "info" and
- * "tasks"; where "info" reports the possible cron tasks registered in the 
+ * "tasks"; where "info" reports the possible cron tasks registered in the
  * application, and "tasks" reports the installed tasks being managed.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -84,6 +84,9 @@ class TShellCronAction extends TShellAppAction
 	
 	/**
 	 * handles any additional commands; for extension by the TShellDbCronAction
+	 * @param Prado\Util\Cron\TCronModule $module the module servicing the action
+	 * @param string $cmd the command being executed
+	 * @param array $args the arguments to the shell command
 	 * @return bool returns false for no processed commands
 	 */
 	public function cronCommand($module, $cmd, $args)
@@ -197,7 +200,7 @@ class TShellCronAction extends TShellAppAction
 	
 	/**
 	 * shows the registered tasks from the application for possible configuration
-	 * or addition to TDbCronModule. 
+	 * or addition to TDbCronModule.
 	 * @param TCronModule $module the module servicing the action
 	 */
 	public function listTaskInfos($module)

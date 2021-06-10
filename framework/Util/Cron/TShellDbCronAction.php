@@ -20,7 +20,7 @@ use Prado\Shell\TShellWriter;
  * TShellDbCronAction class.
  *
  * TShellDbCronAction extends {@link TShellCronAction} to implement
- * additional commands {@link addTask add}, {@link updateTask update}, 
+ * additional commands {@link addTask add}, {@link updateTask update},
  * and {@link removeTask}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -71,6 +71,9 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * Overrides parent cronCommand to handle "add", "update", and "remove" actions.
+	 * @param Prado\Util\Cron\TCronModule $module the module servicing the action
+	 * @param string $cmd the command being executed
+	 * @param array $args the arguments to the shell command
 	 * @return string the DbCron Class to find
 	 */
 	public function cronCommand($module, $cmd, $args)

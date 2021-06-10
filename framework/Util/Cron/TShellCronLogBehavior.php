@@ -17,7 +17,7 @@ use Prado\Util\TCallChain;
 /**
  * TShellCronLogBehavior class.
  *
- * Enables cron logging to the shell.  It also encapsulates the TShellWriter 
+ * Enables cron logging to the shell.  It also encapsulates the TShellWriter
  * and basic dyWrite, dyWriteLine, and dyFlush functionality.
  *
  * @author Brad Anderson <belisoful@icloud.com>

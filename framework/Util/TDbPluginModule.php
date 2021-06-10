@@ -18,8 +18,8 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * TDbPluginModule class.
  *
- * TDbPluginModule adds database connectivity to the plugin modules. This standardizes 
- * the Database Connectivity for Plugins. Also TParameterizeBehavior can be used to set 
+ * TDbPluginModule adds database connectivity to the plugin modules. This standardizes
+ * the Database Connectivity for Plugins. Also TParameterizeBehavior can be used to set
  * all TDbPluginModule::ConnectionID with one setting.
  *
  * @author Brad Anderson <belisoful@icloud.com>

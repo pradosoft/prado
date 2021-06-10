@@ -269,7 +269,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 		$listDeps = $dependencies->getDependencies();
 		$plugins = [];
 		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
-			echo($vendorDir."\n");
+			echo($vendorDir . "\n");
 			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
 			$manifests = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
 			

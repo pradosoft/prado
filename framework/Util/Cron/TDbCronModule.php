@@ -25,7 +25,7 @@ use Prado\Util\TLogger;
  * TDbCronModule does everything that TCronModule does but stores the tasks and
  * persistent data in its own database table.
  *
- * The TDbCronModule allows for adding, updating, and removing tasks from the 
+ * The TDbCronModule allows for adding, updating, and removing tasks from the
  * application and shell.  It can log executing tasks to the table as well.
  *
  * There are log maintenance methods and {@link TDbCronCleanLogTask} for cleaning
@@ -441,8 +441,8 @@ class TDbCronModule extends TCronModule
 		
 		
 		$cmd = $this->getDbConnection()->createCommand(
-				"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
-			);
+			"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
+		);
 		$cmd->bindValue(":name", $taskName, PDO::PARAM_STR);
 		
 		$result = $cmd->queryRow();
@@ -557,7 +557,7 @@ class TDbCronModule extends TCronModule
 	 *
 	 * This cannot remove tasks that are current configuration tasks.  Only tasks
 	 * that exist can be removed.
-	 * @param string|Prado\Util\Cron\TCronTask $untask the task to remove from the DB
+	 * @param Prado\Util\Cron\TCronTask|string $untask the task to remove from the DB
 	 * @return bool was the task removed
 	 */
 	public function removeTask($untask)
@@ -667,7 +667,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * Gets the cron log table of specific named or all tasks.  
+	 * Gets the cron log table of specific named or all tasks.
 	 * @param null|string $name name of the tasks to get from the log, or null for all
 	 * @param int $pageSize
 	 * @param int $offset
