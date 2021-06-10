@@ -18,6 +18,8 @@ use Prado\TPropertyValue;
 /**
  * TCronTask class.
  *
+ * TCronTask is the base class for all cron tasks.  Subclasses need to implement the 
+ * abstract method {@link execute} to run tasks.
  * If a task is not run at the schedule time, it is run at the next available task sweep.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -49,7 +51,7 @@ abstract class TCronTask extends TApplicationComponent
 	private $_lastexectime;
 	
 	/**
-	 * This is the abstract method for running tasks
+	 * This is the abstract method for running a task.
 	 * @param Prado\Util\Cron\TCronModule $cronModule the module calling the task
 	 */
 	abstract public function execute($cronModule);
@@ -71,7 +73,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 * @return string the cron style schedule
+	 * @return string the cron style schedule of the task
 	 */
 	public function getSchedule()
 	{
@@ -80,7 +82,7 @@ abstract class TCronTask extends TApplicationComponent
 	
 	/**
 	 *
-	 * @param string $schedule the cron style schedule
+	 * @param string $schedule the cron style schedule of the task
 	 */
 	public function setSchedule($schedule)
 	{
@@ -91,7 +93,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 * @return string the user id executing the Task
+	 * @return string the task being executed
 	 */
 	public function getTask()
 	{
@@ -219,8 +221,8 @@ abstract class TCronTask extends TApplicationComponent
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
-	 * because their value is the default one or useless to be cached for the next page loads.
-	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * because their value is the default one or useless to be cached for the next load.
+	 * Reimplement in derived classes to add new variables, but remember to also to call the parent
 	 * implementation first.
 	 * @param array $exprops by reference
 	 */

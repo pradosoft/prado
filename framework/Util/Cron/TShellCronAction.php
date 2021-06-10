@@ -18,7 +18,10 @@ use Prado\Util\Cron\TCronModule;
 /**
  * TCLICronAction class.
  *
- * Runs the TCronModule from the command line
+ * Runs the TCronModule from the command line.   This will run all pending
+ * tasks when the "cron" command is run.  Other sub-commands are "info" and
+ * "tasks"; where "info" reports the possible cron tasks registered in the 
+ * application, and "tasks" reports the installed tasks being managed.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
@@ -30,8 +33,11 @@ class TShellCronAction extends TShellAppAction
 	protected $parameters = [];
 	protected $optional = ['command'];
 	protected $description = 'Runs the Application internal TCronModule Pending Tasks.
-		commands are: tasks, list, help';
+		commands are: tasks, info, help';
 	
+	/**
+	 * @return string the Cron Class to find
+	 */
 	public function getModuleClass()
 	{
 		return 'Prado\\Util\\Cron\\TCronModule';
@@ -76,19 +82,31 @@ class TShellCronAction extends TShellAppAction
 		return true;
 	}
 	
+	/**
+	 * handles any additional commands; for extension by the TShellDbCronAction
+	 * @return bool returns false for no processed commands
+	 */
 	public function cronCommand($module, $cmd, $args)
 	{
 		return false;
 	}
 	
+	/**
+	 * Processes any pending tasks
+	 * @param TCronModule $module the module servicing the action
+	 */
 	public function processPendingTasks($module)
 	{
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("\nLast Task time was " . date('Y-m-d H:i:s', $module->getLastCronTime()) . '');
-		//$this->_outWriter->writeLine("Running Cron Module Tasks...");
 		$module->processPendingTasks(true);
 	}
 	
+	/**
+	 * Shows configured tasks and their run status.  For TDbCronModule, this also shows the
+	 * database tasks as well.
+	 * @param TCronModule $module the module servicing the action
+	 */
 	public function showTasks($module)
 	{
 		$this->_outWriter->writeLine("\nLast cron run was " . date('Y-m-d H:i:s', $module->getLastCronTime()) . "\n");
@@ -136,40 +154,40 @@ class TShellCronAction extends TShellAppAction
 			}
 		}
 		
-		$this->_outWriter->write($this->pad('Name', $lengths['name']));
-		$this->_outWriter->write($this->pad('Schedule', $lengths['schedule']));
-		$this->_outWriter->write($this->pad('Task', $lengths['task']));
-		$this->_outWriter->write($this->pad('Last Run', $lengths['lastrun']));
-		//$this->_outWriter->write($this->pad('Prev Run', 22));
-		$this->_outWriter->write($this->pad('Next Run', $lengths['nextrun']));
-		$this->_outWriter->write($this->pad('User', $lengths['user']));
-		$this->_outWriter->write($this->pad('Run #', $lengths['run']));
+		$this->_outWriter->write(str_pad('Name', $lengths['name']));
+		$this->_outWriter->write(str_pad('Schedule', $lengths['schedule']));
+		$this->_outWriter->write(str_pad('Task', $lengths['task']));
+		$this->_outWriter->write(str_pad('Last Run', $lengths['lastrun']));
+		//$this->_outWriter->write(str_pad('Prev Run', 22));
+		$this->_outWriter->write(str_pad('Next Run', $lengths['nextrun']));
+		$this->_outWriter->write(str_pad('User', $lengths['user']));
+		$this->_outWriter->write(str_pad('Run #', $lengths['run']));
 		$this->_outWriter->writeLine("");
 		
 		foreach ($tasks as $task) {
-			$this->_outWriter->write($this->pad($task->getName(), $lengths['name']), [TShellWriter::BLUE, TShellWriter::BOLD]);
-			$this->_outWriter->write($this->pad($task->getSchedule(), $lengths['schedule']));
-			$this->_outWriter->write($this->pad($task->getTask(), $lengths['task']));
+			$this->_outWriter->write(str_pad($task->getName(), $lengths['name']), [TShellWriter::BLUE, TShellWriter::BOLD]);
+			$this->_outWriter->write(str_pad($task->getSchedule(), $lengths['schedule']));
+			$this->_outWriter->write(str_pad($task->getTask(), $lengths['task']));
 			$f = 'H:i:s';
 			if (time() - $task->getLastExecTime() > 86400) {
 				$f = 'Y-m-d H:i:s';
 			}
-			$this->_outWriter->write($this->pad(date($f, $task->getLastExecTime()), $lengths['lastrun']));
+			$this->_outWriter->write(str_pad(date($f, $task->getLastExecTime()), $lengths['lastrun']));
 			
 			$f = 'H:i:s';
 			$trigger = $task->getNextTriggerTime();
 			if ($trigger - time() > 86400) {
 				$f = 'Y-m-d H:i:s';
 			}
-			$this->_outWriter->write($this->pad(
+			$this->_outWriter->write(str_pad(
 				date($f, $trigger) . ($task->getIsPending() ? '*' : ' '),
 				$lengths['nextrun']
 			), $task->getIsPending() ? [TShellWriter::GREEN, TShellWriter::BOLD] : null);
 			if (($user = $task->getUserId()) == null) {
-				$user = '(default)';
+				$user = $module->getDefaultUserId();
 			}
-			$this->_outWriter->write($this->pad($user, $lengths['user']));
-			$this->_outWriter->write($this->pad($task->getProcessCount(), $lengths['run']));
+			$this->_outWriter->write(str_pad($user, $lengths['user']));
+			$this->_outWriter->write(str_pad($task->getProcessCount(), $lengths['run']));
 			$this->_outWriter->writeLine();
 		}
 		$this->_outWriter->writeLine("\nAny 'next run' with a * means it is Pending\n");
@@ -177,47 +195,55 @@ class TShellCronAction extends TShellAppAction
 		return true;
 	}
 	
+	/**
+	 * shows the registered tasks from the application for possible configuration
+	 * or addition to TDbCronModule. 
+	 * @param TCronModule $module the module servicing the action
+	 */
 	public function listTaskInfos($module)
 	{
-		$this->_outWriter->writeLine("");
-		$this->_outWriter->write($this->pad('Task ID', 22));
-		$this->_outWriter->write($this->pad('Task', 50));
-		$this->_outWriter->write($this->pad('Module ID', 16));
-		$this->_outWriter->write($this->pad('Title', 30));
-		$this->_outWriter->writeLine("");
 		$infos = $module->getTaskInfos(true);
+		$lengths = ['name' => 8, 'task' => 5, 'moduleid' => 10, 'title' => 6];
+		foreach ($infos as $taskinfo) {
+			if (($len = (strlen($taskinfo->getName()) + 1)) > $lengths['name']) {
+				$lengths['name'] = $len;
+			}
+			if (($len = (strlen($taskinfo->getTask()) + 1)) > $lengths['task']) {
+				$lengths['task'] = $len;
+			}
+			if (($len = (strlen($taskinfo->getModuleId()) + 1)) > $lengths['moduleid']) {
+				$lengths['moduleid'] = $len;
+			}
+			if (($len = (strlen($taskinfo->getTitle()) + 1)) > $lengths['title']) {
+				$lengths['title'] = $len;
+			}
+		}
+		$this->_outWriter->writeLine("");
+		$this->_outWriter->write(str_pad('Task ID', $lengths['name']));
+		$this->_outWriter->write(str_pad('Task', $lengths['task']));
+		$this->_outWriter->write(str_pad('Module ID', $lengths['moduleid']));
+		$this->_outWriter->write(str_pad('Title', $lengths['title']));
+		$this->_outWriter->writeLine("");
 		if (!count($infos)) {
 			$this->_outWriter->writeLine("		(** No registered application tasks **)");
 		}
 		foreach ($infos as $taskinfo) {
-			$this->_outWriter->write($this->pad($taskinfo->getName(), 22), [TShellWriter::BLUE, TShellWriter::BOLD]);
-			$this->_outWriter->write($this->pad($taskinfo->getTask(), 50));
-			$this->_outWriter->write($this->pad($taskinfo->getModuleId(), 16));
-			$this->_outWriter->write($this->pad($taskinfo->getTitle(), 30));
+			$this->_outWriter->write(str_pad($taskinfo->getName(), $lengths['name']), [TShellWriter::BLUE, TShellWriter::BOLD]);
+			$this->_outWriter->write(str_pad($taskinfo->getTask(), $lengths['task']));
+			$this->_outWriter->write(str_pad($taskinfo->getModuleId(), $lengths['moduleid']));
+			$this->_outWriter->write(str_pad($taskinfo->getTitle(), $lengths['title']));
 			$this->_outWriter->writeLine();
-			$this->_outWriter->write($this->pad('      ' . $taskinfo->getDescription(), 112), TShellWriter::DARK_GRAY);
+			$this->_outWriter->write('      ' . $taskinfo->getDescription(), TShellWriter::DARK_GRAY);
 			$this->_outWriter->writeLine();
 		}
 		$this->_outWriter->writeLine();
 	}
 	
-	protected function pad($s, $n, $c = ' ')
-	{
-		$s = $this->_outWriter->unformat($s);
-		$l = mb_strlen($s);
-		if ($l > $n) {
-			return mb_substr($s, 0, $n - 1) . '*';
-		}
-		if ($l < $n) {
-			$m = $n - $l;
-			$lc = mb_strlen($c);
-			for ($i = 0; $i < $m; $i += $lc) {
-				$s .= $c;
-			}
-		}
-		return $s;
-	}
 	
+	/**
+	 * Displays the help for specific tasks, or in general
+	 * @param string $helpcmd the module servicing the action
+	 */
 	public function cronHelp($helpcmd)
 	{
 		if ($helpcmd == 'tasks') {

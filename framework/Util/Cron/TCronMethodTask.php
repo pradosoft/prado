@@ -16,10 +16,10 @@ use Prado\TPropertyValue;
 /**
  * TCronMethodTask class.
  *
- * This class will evaluate a specific method and parameters when
- * running the task.
+ * This class will evaluate a specific method with parameters when
+ * running the task the specified module.
  * <code>
- *		<task schedule="* * * * *" task="dbcache.flushCacheExpired(true)" / >
+ *		<job schedule="* * * * *" task="dbcache->flushCacheExpired(true)" / >
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -29,7 +29,7 @@ use Prado\TPropertyValue;
  
  class TCronMethodTask extends TCronTask
  {
- 	/** @var string the method to call on the module */
+ 	/** @var string the method and parameters to call on the module */
  	private $_method;
 	
  	/**
@@ -68,7 +68,7 @@ use Prado\TPropertyValue;
  	}
 	
  	/**
- 	 * Validates the method exists on the module
+ 	 * Validates the method exists on the module, for manual task installation.
  	 */
  	public function validateTask()
  	{
@@ -82,7 +82,10 @@ use Prado\TPropertyValue;
  	}
 	 
  	/**
- 	 * @return IModule returns the module from the application of ModuleId
+     * Gets the module for the task based upon the {@link getModuleId}.
+     * This verifies that the module does exist.
+ 	 * @return IModule returns the module (from the application) of ModuleId
+     * @throws TConfigurationException when no module is found
  	 */
  	public function getModule()
  	{

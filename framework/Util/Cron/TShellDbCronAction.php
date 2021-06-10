@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TDbCLICronAction class file.
+ * TShellDbCronAction class file.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -17,9 +17,11 @@ use Prado\Shell\TShellAppAction;
 use Prado\Shell\TShellWriter;
 
 /**
- * TDbCLICronAction class.
+ * TShellDbCronAction class.
  *
- * Runs the TDBCronModule from the command line
+ * TShellDbCronAction extends {@link TShellCronAction} to implement
+ * additional commands {@link addTask add}, {@link updateTask update}, 
+ * and {@link removeTask}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
@@ -30,11 +32,19 @@ class TShellDbCronAction extends TShellCronAction
 	protected $description = 'Runs the Application internal TDbCronModule Pending Tasks.
 		commands are: tasks, list, help, add, update, remove';
 	
+	/**
+	 * Overrides parent getModuleClass to return the TDbCronModule class.
+	 * @return string the DbCron Class to find
+	 */
 	public function getModuleClass()
 	{
 		return 'Prado\\Util\\Cron\\TDbCronModule';
 	}
 	
+	/**
+	 * Displays the help for specific tasks, or in general
+	 * @param string $helpcmd the module servicing the action
+	 */
 	public function cronHelp($helpcmd)
 	{
 		if ($helpcmd == 'add') {
@@ -59,6 +69,10 @@ class TShellDbCronAction extends TShellCronAction
 		}
 	}
 	
+	/**
+	 * Overrides parent cronCommand to handle "add", "update", and "remove" actions.
+	 * @return string the DbCron Class to find
+	 */
 	public function cronCommand($module, $cmd, $args)
 	{
 		$handled = false;
@@ -77,6 +91,11 @@ class TShellDbCronAction extends TShellCronAction
 		return $handled;
 	}
 	
+	/**
+	 * adds a task to the database with its name, task id, schedule, and other properties.
+	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param array $args command arguments
+	 */
 	public function addTask($module, $args)
 	{
 		$taskName = $args[4] ?? null;
@@ -141,6 +160,11 @@ class TShellDbCronAction extends TShellCronAction
 		$this->_outWriter->writeLine("Task '{$taskName}' was added to the database\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 	}
 	
+	/**
+	 * updates a task in the database by its name for its schedule, userid, moduleid, and other properties.
+	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param array $args command arguments
+	 */
 	public function updateTask($module, $args)
 	{
 		$taskName = $args[4] ?? null;
@@ -184,6 +208,11 @@ class TShellDbCronAction extends TShellCronAction
 		$this->_outWriter->writeLine("Task '{$taskName}' was updated in the database\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 	}
 	
+	/**
+	 * rumoves a task in the database by its name.
+	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param array $args command arguments
+	 */
 	public function removeTask($module, $args)
 	{
 		if (!($taskName = $args[4] ?? null)) {

@@ -26,15 +26,15 @@ use Prado\Xml\TXmlDocument;
  * TCronModule class.
  *
  * TCronModule runs time based services for the application.
- * This can run a task at a given time.  A task can be a task class
+ * This will run a task at a given time.  A task can be a task class
  * or a module Id followed by '->' followed by a method with or
  * without parameters. eg.
  *
  * <code>
  * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserId="admin">
- *		<task Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TCronCleanLogTask" UserId="cron" />
- *		<task Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
- *		<task Name="taskname" Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
+ *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TCronCleanLogTask" UserId="cron" />
+ *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
+ *		<job Name="taskname" Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
  * </code>
  *
@@ -62,34 +62,33 @@ use Prado\Xml\TXmlDocument;
 
 class TCronModule extends \Prado\TModule
 {
+	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
 	
 	public const TASK_KEY = 'task';
+	
 	public const SCHEDULE_KEY = 'schedule';
+	
 	public const NAME_KEY = 'name';
+	
 	public const USERID_KEY = 'userid';
 	
-	/**
-	 * Key to global state of the last time SystemCron was run
-	 */
+	/** Key to global state of the last time SystemCron was run */
 	public const LAST_CRON_TIME = 'prado:cron:lastcron';
-	/**
-	 * Key to global state of each task, lastExecTime and ProcessCount
-	 */
+	
+	/** Key to global state of each task, lastExecTime and ProcessCount */
 	public const TASKS_INFO = 'prado:cron:tasksinfo';
 	
 	/** The name of the cron user */
-	public const CRON_USER = 'cron';
+	public const DEFAULT_CRON_USER = 'cron';
 	
+	/** The separator for TCronMethodTask */
 	public const METHOD_SEPARATOR = '->';
 	
-	/**
-	 * @var bool if the module has been initialized
-	 */
+	/** @var bool if the module has been initialized */
 	private $_initialized = false;
-	/**
-	 * @var IUserManager user manager instance
-	 */
+	
+	/** @var IUserManager user manager instance */
 	private $_userManager;
 	
 	/** @var TCronTaskInfo[] The info for tasks in the system. */
@@ -102,10 +101,7 @@ class TCronModule extends \Prado\TModule
 	private $_tasks = [];
 	
 	/** @var string The user Id of the tasks without users */
-	private $_defaultUserId = self::CRON_USER;
-	
-	/** @var string The TAuthManager for changing users doing the task(s) */
-	private $_authId;
+	private $_defaultUserId = self::DEFAULT_CRON_USER;
 	
 	/** @var bool enable cron on requests, default false */
 	private $_enableRequestCron = false;
@@ -113,14 +109,15 @@ class TCronModule extends \Prado\TModule
 	/** @var numeric probability that a request cron will trigger [0.0 to 100.0], default 1.0 (for 1%) */
 	private $_requestCronProbability = 1.0;
 	
-	/** @var string the cli class to instance for CLI command line actions */
+	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
 	protected $_shellClass = 'Prado\\Util\\Cron\\TShellCronAction';
 	
 	/** @var array[] any additional tasks to install from properties */
 	private $_additionalCronTasks;
 	
 	/**
-	 * Initializes the module.
+	 * Initializes the module.  Read the configuration, installs Shell Actions,
+	 * should Request cron be activated.
 	 * @param array|Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
@@ -199,7 +196,7 @@ class TCronModule extends \Prado\TModule
 				$name = $properties[self::NAME_KEY];
 			}
 			if (isset($this->_tasks[$name])) {
-				throw new TConfigurationException('cron_duplicate_task_name');
+				throw new TConfigurationException('cron_duplicate_task_name', $name);
 			}
 			$this->validateTask($properties);
 			$this->_tasks[$name] = $properties;
@@ -207,7 +204,8 @@ class TCronModule extends \Prado\TModule
 	}
 	
 	/**
-	 * subclasses overload this method to add their own validation.
+	 * Validates that schedule and task are present.
+	 * Subclasses overload this method to add their own validation.
 	 * @param array $properties the task as an array of properties
 	 */
 	public function validateTask($properties)
@@ -251,7 +249,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * This lazy loads the tasks from configuration array to instance.
-	 * This calls {@link setPersistentData} to set the tasks' persistent data.
+	 * This calls {@link ensureTasks} to get the tasks and their persistent data.
 	 * @return Prado\Util\Cron\TCronTask[] currently active cron tasks
 	 */
 	public function getTasks()
@@ -261,7 +259,8 @@ class TCronModule extends \Prado\TModule
 	}
 	
 	/**
-	 * These are the tasks specified in the configuration and getAdditionalCronTasks.
+	 * These are the tasks specified in the configuration and getAdditionalCronTasks
+	 * until {@link ensureTasks} is called.
 	 * @return array[]|Prado\Util\Cron\TCronTask[] currently active cron tasks
 	 */
 	public function getRawTasks()
@@ -303,8 +302,9 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * when instancing and then loading the tasks, this sets the persisting data of the task
-	 * @param string $name name of the task
-	 * @param Prado\Util\Cron\TCronTasks $task the task object
+	 * @param string $name name of the task.
+	 * @param Prado\Util\Cron\TCronTasks $task the task object.
+	 * @return bool updated the taskInfo with persistent data.
 	 */
 	protected function setPersistentData($name, $task)
 	{
@@ -433,7 +433,7 @@ class TCronModule extends \Prado\TModule
 	}
 	
 	/**
-	 * Lots the cron task being run with the system log and output on cli
+	 * Logs the cron task being run with the system log and output on cli
 	 * @param Prado\Util\Cron\TCronTask $task
 	 * @param string $username the user the task is running under.
 	 */
@@ -585,8 +585,8 @@ class TCronModule extends \Prado\TModule
 	}
 	 
 	/**
-	 * this will take a string that is an array of tasks that has been
-	 * through serialize(), or json_encode, or is an xml file of tasks.
+	 * This will take a string that is an array of tasks that has been
+	 * through serialize(), or json_encode, or is an xml file of additional tasks.
 	 * If one task is set, then it is automatically placed into an array.
 	 * @param null|array|string $tasks additional tasks in an array [0..n],  or
 	 * a single task.

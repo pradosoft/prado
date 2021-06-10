@@ -25,13 +25,17 @@ use Prado\Util\TLogger;
  * TDbCronModule does everything that TCronModule does but stores the tasks and
  * persistent data in its own database table.
  *
- * The TDbCronModule allows for adding, updating, and removing tasks.  It can log
- * executing tasks to the table as well.
+ * The TDbCronModule allows for adding, updating, and removing tasks from the 
+ * application and shell.  It can log executing tasks to the table as well.
  *
  * There are log maintenance methods and {@link TDbCronCleanLogTask} for cleaning
  * the cron logs.
  *
- * Tasks can be added for execution onEndRequest.
+ * Runtime Tasks can be added for execution onEndRequest.  Singleton tasks can
+ * be added to TDbCronModule, and scheduled to execute during Runtime at
+ * onEndRequest.  Then if it does not execute onEndRequest, then the next
+ * shell cron will execute the task.  This could occur if the user presses stop
+ * before the page completes.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
@@ -40,6 +44,7 @@ use Prado\Util\TLogger;
 
 class TDbCronModule extends TCronModule
 {
+	/** Name Regular Expression, no spaces, single or double quotes, less than or greater than and cannot start with star */
 	public const NAME_VALIDATOR_REGEX = '/^[^\s`\'\"\\*<>][^\s`\'\"<>]*$/i';
 	
 	/** @var string name of the db table for cron tasks, default 'crontabs' */
@@ -66,14 +71,10 @@ class TDbCronModule extends TCronModule
 	/** @var array[] the row data from the database */
 	private $_taskRows;
 	
-	/**
-	 * @var string the ID of TDataSourceConfig module
-	 */
+	/** @var string the ID of TDataSourceConfig module  */
 	private $_connID = '';
 	
-	/**
-	 * @var TDbConnection the DB connection instance
-	 */
+	/**  @var TDbConnection the DB connection instance  */
 	private $_conn;
 	
 	/** @var Prado\Util\Cron\TCronTask[] */
@@ -88,7 +89,7 @@ class TDbCronModule extends TCronModule
 		parent::__construct();
 	}
 	/**
-	 * Initializes the module. Keeps track of the configured tasks rather than db tasks.
+	 * Initializes the module. Keeps track of the configured tasks different than db tasks.
 	 * @param array|Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
@@ -100,8 +101,8 @@ class TDbCronModule extends TCronModule
 	
 	/**
 	 * the global event handling requests for cron task info
-	 * @param mixed $cron
-	 * @param mixed $param
+	 * @param TDbCronModule $cron
+	 * @param null $param
 	 */
 	public function fxGetCronTaskInfos($cron, $param)
 	{
@@ -109,7 +110,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * This checks for "name".  The name cannot by '*' or have spaces, `, ', or " characters.
+	 * This checks for "name".  The name cannot by '*' or have spaces, `, ', ", <, or >t characters.
 	 * @param array $properties the task as an array of properties
 	 */
 	public function validateTask($properties)
@@ -122,9 +123,9 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * @param string $name
+	 * @param string $name name of the task to get Persistent Data from
 	 * @param object $task
-	 * @return bool
+	 * @return bool is the persistent data set or not
 	 */
 	protected function setPersistentData($name, $task)
 	{
@@ -181,7 +182,6 @@ class TDbCronModule extends TCronModule
 	public function getTasks()
 	{
 		$this->ensureTasks();
-		//$this->_configTasks = parent::getTasks();
 		if ($colliding = array_intersect_key($this->_tasks, $this->_configTasks)) {
 			throw new TConfigurationException('dbcron_conflicting_task_names', implode(', ', array_keys($colliding)));
 		}
@@ -254,7 +254,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 *
+	 * logCronTask adds a task log to the table.
 	 * @param Prado\Util\Cron\TCronTask $task
 	 * @param mixed $user
 	 * @param mixed $username
@@ -289,7 +289,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 *
+	 * This updates the LastExecTime and ProcessCount in the database
 	 * @param Prado\Util\Cron\TCronTask $task
 	 */
 	protected function updateTaskInfo($task)
@@ -311,7 +311,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * this removes any stale database rows from any changing configTasks
+	 * this removes any stale database rows from changing configTasks
 	 */
 	protected function filterStaleTasks()
 	{
@@ -338,8 +338,8 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * This executes the run time Tasks, this method is automatically added
-	 * to TApplication::onEndRequest when there are RuntimeTasks.
+	 * This executes the Run Time Tasks, this method is automatically added
+	 * to TApplication::onEndRequest when there are RuntimeTasks via {@link addRuntimeTask}.
 	 * @param null|Prado\TApplication $sender
 	 * @param null|mixed $param
 	 * @return int number of tasks run
@@ -383,7 +383,8 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * Removes a task from being run time
+	 * Removes a task from being run time.  If there are no runtime tasks left
+	 * then it removes {@link executeRuntimeTasks} from TApplication::onEndRequest.
 	 * @param Prado\Util\Cron\TCronTask $untask
 	 */
 	public function removeRuntimeTask($untask)
@@ -400,7 +401,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * Removes a task from being run time
+	 * Clears all tasks from being run time, and removes the handler from onEndRequest.
 	 * @param Prado\Util\Cron\TCronTask $untask
 	 */
 	public function clearRuntimeTasks()
@@ -416,7 +417,7 @@ class TDbCronModule extends TCronModule
 	 *
 	 * @param string $taskName
 	 * @param bool $checkExisting
-	 * @param bool $asObject
+	 * @param bool $asObject returns the database row if false.
 	 */
 	public function getTask($taskName, $checkExisting = true, $asObject = true)
 	{
@@ -424,7 +425,6 @@ class TDbCronModule extends TCronModule
 		
 		if ($checkExisting) {
 			$this->ensureTasks();
-			//$this->_configTasks = parent::getTasks();
 			if ($asObject) {
 				if (isset($this->_tasks[$taskName])) {
 					return $this->_tasks[$taskName];
@@ -441,8 +441,8 @@ class TDbCronModule extends TCronModule
 		
 		
 		$cmd = $this->getDbConnection()->createCommand(
-			"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
-		);
+				"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
+			);
 		$cmd->bindValue(":name", $taskName, PDO::PARAM_STR);
 		
 		$result = $cmd->queryRow();
@@ -452,17 +452,18 @@ class TDbCronModule extends TCronModule
 		}
 		
 		if ($asObject) {
-			$task = @unserialize($result['options']);
-			return $task;
+			return @unserialize($result['options']);
 		}
 		
 		return $result;
 	}
 	
 	/**
-	 *
+	 * Adds a task to the database.  Validates the name and cannot add a task with an existing name.
+	 * This updates the table row data as well.
 	 * @param Prado\Util\Cron\TCronTask $task
-	 * @param bool $runtime
+	 * @param bool $runtime should the task be added to the Run Time Task after being added
+	 * @return bool was the task added
 	 */
 	public function addTask($task, $runtime = false)
 	{
@@ -512,8 +513,9 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 *
+	 * Updates a task from its unique name.  If the Task is not in the DB it returns false
 	 * @param Prado\Util\Cron\TCronTask $task
+	 * @return bool was the task updated
 	 */
 	public function updateTask($task)
 	{
@@ -555,7 +557,8 @@ class TDbCronModule extends TCronModule
 	 *
 	 * This cannot remove tasks that are current configuration tasks.  Only tasks
 	 * that exist can be removed.
-	 * @param Prado\Util\Cron\TCronTask $untask
+	 * @param string|Prado\Util\Cron\TCronTask $untask the task to remove from the DB
+	 * @return bool was the task removed
 	 */
 	public function removeTask($untask)
 	{
@@ -641,6 +644,10 @@ class TDbCronModule extends TCronModule
 		$cmd->execute();
 	}
 	
+	/**
+	 * @param null|string $name name of the logs to look for, or null for all
+	 * @return int the number of log items of all or of $name
+	 */
 	public function getCronLogCount($name = null)
 	{
 		$this->ensureTable();
@@ -660,11 +667,11 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * gets the cron log table
-	 * @param mixed $name
-	 * @param mixed $pageSize
-	 * @param mixed $offset
-	 * @param null|mixed $sortingDesc
+	 * Gets the cron log table of specific named or all tasks.  
+	 * @param null|string $name name of the tasks to get from the log, or null for all
+	 * @param int $pageSize
+	 * @param int $offset
+	 * @param null|bool $sortingDesc sort by descending execution time.
 	 */
 	public function getCronLog($name, $pageSize, $offset, $sortingDesc = null)
 	{
@@ -706,7 +713,8 @@ class TDbCronModule extends TCronModule
 	}
 
 	/**
-	 * Creates the DB connection.
+	 * Creates the DB connection. If no ConnectionId is provided, then this
+	 * creates a sqlite database in runtime named 'cron.jobs'.
 	 * @throws TConfigurationException if module ID is invalid or empty
 	 * @return \Prado\Data\TDbConnection the created DB connection
 	 */
@@ -741,7 +749,7 @@ class TDbCronModule extends TCronModule
 	}
 
 	/**
-	 * @return string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return null|string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID()
 	{
@@ -759,7 +767,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * @return bool should tasks that run be logged
+	 * @return bool should tasks that run be logged, default true
 	 */
 	public function getLogCronTasks()
 	{
@@ -767,8 +775,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * @param mixed $log
-	 * @return bool should tasks that run be logged
+	 * @param bool $log should tasks that run be logged
 	 */
 	public function setLogCronTasks($log)
 	{
@@ -776,7 +783,7 @@ class TDbCronModule extends TCronModule
 	}
 	
 	/**
-	 * @return string table in the database for cron tasks and logs
+	 * @return string table in the database for cron tasks and logs. Defaults to 'crontabs'
 	 */
 	public function getTableName()
 	{

@@ -18,7 +18,8 @@ use Prado\Util\Cron\TCronModule;
 /**
  * TDbCronCleanLogTask class.
  *
- * TDbCronCleanLogTask Cleans the cron log of old entries
+ * TDbCronCleanLogTask Cleans the cron log of old entries older than the
+ * age of {@link getTimePeriod} seconds.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
@@ -56,7 +57,7 @@ class TDbCronCleanLogTask extends TCronTask
 	}
 	
 	/**
-	 * @return int number of seconds, before which are to be deleted
+	 * @return int number of seconds, before which cron logs are to be deleted
 	 */
 	public function getTimePeriod()
 	{
@@ -65,7 +66,7 @@ class TDbCronCleanLogTask extends TCronTask
 	
 	/**
 	 *
-	 * @param int $timeperiod number of seconds, before which are to be deleted
+	 * @param int $timeperiod number of seconds, before which cron logs are to be deleted
 	 */
 	public function setTimePeriod($timeperiod)
 	{
