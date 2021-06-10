@@ -256,6 +256,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * Directory composer file 'installed.json' (accumulated extensions composer.json) for the project.
 	 * The ['extra']['bootstrap'] field is read for each extension, if it's there.
 	 * @return array<string, string> the extension name and bootstrap class.
+	 * @since 4.2.0
 	 */
 	protected function getComposerExtensionBootStraps()
 	{
@@ -294,6 +295,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * {@link TModule} class.
 	 * @param string $name the name of the Composer Extension.
 	 * @return null|string the bootstrap class of the Composer Extension.
+	 * @since 4.2.0
 	 */
 	public function getComposerExtensionClass($name)
 	{

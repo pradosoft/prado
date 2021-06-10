@@ -30,8 +30,13 @@ use ReflectionClass;
  * </code>
  * The 'PluginContentId' application parameter is what all plugin pages should implement as
  * the page TContent ID.  This way all plugin pages can be changed to the page MasterClass
- * layout TContentPlaceHolder for the application and layout.
- *
+ * layout TContentPlaceHolder for the application and layout. For example in the application
+ * configuration file:
+ * <code>
+ *	<parameters>
+ *	 <parameter id="PluginContentId" value="Main" />
+ *  </parameters>
+ * </code>
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado
  * @since 4.2.0
