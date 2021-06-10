@@ -47,6 +47,7 @@ appconfig_alias_redefined				= Application configuration <alias id="{0}"> cannot
 appconfig_using_invalid					= Application configuration <using> element must have a "namespace" attribute.
 appconfig_moduleid_required				= Application configuration <module> element must have an "id" attribute.
 appconfig_moduletype_required			= Application configuration <module id="{0}"> must have a "class" attribute.
+appconfig_moduletype_inapplicable		= Application configuration <module id="{0}"> cannot have the "class" attribute.
 appconfig_serviceid_required			= Application configuration <service> element must have an "id" attribute.
 appconfig_servicetype_required			= Application configuration <service id="{0}"> must have a "class" attribute.
 appconfig_parameterid_required			= Application configuration <parameter> element must have an "id" attribute.

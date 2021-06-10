@@ -17,6 +17,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Collections\TAttributeCollection;
+use ReflectionClass;
 
 /**
  * TControl class
@@ -141,6 +142,10 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * @var TPage page that the control resides in
 	 */
 	private $_page;
+	/**
+	 * @var TPluginModule that the controls share in their path
+	 */
+	private $_pluginmodule;
 	/**
 	 * @var \Prado\Web\UI\TControl naming container of the control
 	 */
@@ -344,6 +349,31 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			}
 		}
 		return $this->getPage();
+	}
+
+	/**
+	 * Returns the module associated with the class path of the control.  This is for Composer
+	 * extensions adding their own Controls to access their associated Module.
+	 * @return null|Prado\Util\IPluginModule the module and namespace associated with this class
+	 */
+	public function getPluginModule()
+	{
+		if ($this->_pluginmodule === false) {
+			$this->_pluginmodule = null;
+			foreach ($this->getApplication()->getModulesByType('Prado\\Util\\IPluginModule') as $id => $module) {
+				if (!$module) {
+					continue;
+				}
+				$reflect = new ReflectionClass(get_class($this));
+				$folder = $reflect->getFileName();
+				
+				if (stripos($folder, $module->getPluginPath()) !== false) {
+					$this->_pluginmodule = $module;
+					break;
+				}
+			}
+		}
+		return $this->_pluginmodule;
 	}
 
 	/**
