@@ -42,7 +42,7 @@ use Prado\Util\TLogger;
  * @since 4.2.0
  */
 
-class TDbCronModule extends TCronModule
+class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 {
 	/** Name Regular Expression, no spaces, single or double quotes, less than or greater than and cannot start with star */
 	public const NAME_VALIDATOR_REGEX = '/^[^\s`\'\"\\*<>][^\s`\'\"<>]*$/i';

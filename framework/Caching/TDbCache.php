@@ -90,7 +90,7 @@ use Prado\Util\Cron\TCronTaskInfo;
  * @package Prado\Caching
  * @since 3.1.0
  */
-class TDbCache extends TCache
+class TDbCache extends TCache implements \Prado\Util\IDbModule
 {
 	/**
 	 * @var string the ID of TDataSourceConfig module

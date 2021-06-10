@@ -62,7 +62,7 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * @package Prado\Util
  * @since 4.2.0
  */
-class TDbParameterModule extends TModule
+class TDbParameterModule extends TModule implements IDbModule
 {
 	public const SERIALIZE_PHP = 'php';
 	

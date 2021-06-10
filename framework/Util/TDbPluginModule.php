@@ -27,7 +27,7 @@ use Prado\Exceptions\TConfigurationException;
  * @since 4.2.0
  */
 
-class TDbPluginModule extends TPluginModule
+class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 {
 	/**
 	 * @var string the ID of TDataSourceConfig module
