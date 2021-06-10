@@ -14,13 +14,13 @@ namespace Prado\Util;
 /**
  * IPluginModule interface.
  *
- * This interface must be implemented by plugin modules.
+ * This interface should be implemented by plugin modules.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado
  * @since 4.2.0
  */
-interface IPluginModule
+interface IPluginModule extends \Prado\IModule
 {
 	/**
 	 * @return string the path of the plugin
