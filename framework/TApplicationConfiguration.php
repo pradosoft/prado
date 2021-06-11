@@ -270,7 +270,6 @@ class TApplicationConfiguration extends \Prado\TComponent
 		$listDeps = $dependencies->getDependencies();
 		$plugins = [];
 		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
-			echo($vendorDir . "\n");
 			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
 			$manifests = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
 			
@@ -279,7 +278,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$name = $package['name'];
 				if (isset($package['extra']) && isset($package['extra'][self::COMPOSER_EXTRA_CLASS])) {
 					$plugins[$name] = $package['extra'][self::COMPOSER_EXTRA_CLASS];
-					//$path =  realpath($vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . $package['install-path']);
+					//$packagepath =  realpath($vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . $package['install-path']);
 				}
 			}
 			$listDeps[] = new TFileCacheDependency($file);

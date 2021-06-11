@@ -11,7 +11,6 @@
 	
 namespace Prado\Util;
 
-use Prado\Util\XTPluginModule;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
