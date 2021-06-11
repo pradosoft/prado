@@ -71,10 +71,12 @@ class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * Creates the DB connection.  Override this method to create a sqlite
-	 * database when no connection ID is available.
+	 * Creates the DB connection.  If no ConnectionId is available, this
+	 * will try to start a sqlite database if the subclass has a name via
+	 * {@link getSqliteDatabaseName}.
 	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws TConfigurationException if module ID is invalid or empty
+	 * without a Sqlite database.
 	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
