@@ -13,6 +13,7 @@ namespace Prado\Util;
 
 use Prado\Util\XTPluginModule;
 use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -83,10 +84,26 @@ class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 			if ($conn instanceof TDataSourceConfig) {
 				return $conn->getDbConnection();
 			} else {
-				throw new TConfigurationException('dbusermanager_connectionid_invalid', $connectionID);
+				throw new TConfigurationException('dbpluginmodule_connectionid_invalid', $connectionID);
 			}
 		} else {
-			throw new TConfigurationException('dbusermanager_connectionid_required');
+			if ($file = $this->getSqliteDatabaseName()) {
+				$db = new TDbConnection;
+				// default to SQLite3 database
+				$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . $file;
+				$db->setConnectionString('sqlite:' . $dbFile);
+				return $db;
+			} else {
+				throw new TConfigurationException('dbpluginmodule_connectionid_required');
+			}
 		}
+	}
+	
+	/**
+	 * @return null|string if the sub-class wants a sqlite db then return the name.
+	 */
+	protected function getSqliteDatabaseName()
+	{
+		return null;
 	}
 }
