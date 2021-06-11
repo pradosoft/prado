@@ -255,7 +255,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 							} else {
 								$properties['skinid'] = $component->evaluateExpression($properties['skinid'][1]);
 							}
-						} 
+						}
 						$component->setSkinID($properties['skinid']);
 						unset($properties['skinid']);
 					}
