@@ -730,7 +730,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		} else {
 			$db = new TDbConnection;
 			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . '/cron.jobs';
+			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'cron.jobs';
 			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}
