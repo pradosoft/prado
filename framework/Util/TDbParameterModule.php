@@ -504,7 +504,7 @@ class TDbParameterModule extends TModule implements IDbModule
 		} else {
 			$db = new TDbConnection;
 			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . '/app.params';
+			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'app.params';
 			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}

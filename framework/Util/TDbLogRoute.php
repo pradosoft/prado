@@ -154,7 +154,7 @@ class TDbLogRoute extends TLogRoute
 		} else {
 			$db = new TDbConnection;
 			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . '/sqlite3.log';
+			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'sqlite3.log';
 			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}
