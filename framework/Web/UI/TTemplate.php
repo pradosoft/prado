@@ -240,16 +240,23 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$component->setTemplateControl($tplControl);
 					if (isset($properties['id'])) {
 						if (is_array($properties['id'])) {
-							$properties['id'] = $component->evaluateExpression($properties['id'][1]);
+							if ($properties['id'][0] === self::CONFIG_PARAMETER) {
+								$properties['id'] = $this->getApplication()->getParameters()->itemAt($properties['id'][1]);
+							} else {
+								$properties['id'] = $component->evaluateExpression($properties['id'][1]);
+							}
 						}
 						$tplControl->registerObject($properties['id'], $component);
 					}
 					if (isset($properties['skinid'])) {
 						if (is_array($properties['skinid'])) {
-							$component->setSkinID($component->evaluateExpression($properties['skinid'][1]));
-						} else {
-							$component->setSkinID($properties['skinid']);
+							if ($properties['skinid'][0] === self::CONFIG_PARAMETER) {
+								$properties['skinid'] = $this->getApplication()->getParameters()->itemAt($properties['skinid'][1]);
+							} else {
+								$properties['skinid'] = $component->evaluateExpression($properties['skinid'][1]);
+							}
 						}
+						$component->setSkinID($properties['skinid']);
 						unset($properties['skinid']);
 					}
 
@@ -843,7 +850,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 						} else {
 							throw new TConfigurationException('template_property_unknown', $type, $name);
 						}
-					} elseif (is_array($att) && $att[0] !== self::CONFIG_EXPRESSION) {
+					} elseif (is_array($att) && $att[0] !== self::CONFIG_EXPRESSION && $att[0] !== self::CONFIG_PARAMETER) {
 						if (strcasecmp($name, 'id') === 0) {
 							throw new TConfigurationException('template_controlid_invalid', $type);
 						} elseif (strcasecmp($name, 'skinid') === 0) {
@@ -866,7 +873,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				} elseif (strncasecmp($name, 'on', 2) === 0) {
 					throw new TConfigurationException('template_event_forbidden', $type, $name);
 				} else {
-					// id is still alowed for TComponent, even if id property doesn't exist
+					// id is still allowed for TComponent, even if id property doesn't exist
 					if (strcasecmp($name, 'id') !== 0 && !($class->hasMethod('set' . $name) || $this->isClassBehaviorMethod($class, 'set' . $name))) {
 						if ($class->hasMethod('get' . $name)) {
 							throw new TConfigurationException('template_property_readonly', $type, $name);
