@@ -20,11 +20,11 @@ use ReflectionClass;
  * TPluginModule class.
  *
  * TPluginModule is for extending PRADO through Composer packages.  This installs
- * its own Pages, where available, and its own error message file.
+ * its own Pages, where available, and its own error message file for the module.
  *
  * Plugin pages should implement their *.page with the following page code:
  * <code>
- *	<com:TContent ID=<%= Prado::getApplication()->getParameters()->itemAt('PluginContentId') %>>
+ *	<com:TContent ID=<%$ PluginContentId %>>
  *		...  your page content ...
  * 	</com:TContent>
  * </code>
