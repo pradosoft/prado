@@ -361,13 +361,14 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	{
 		if ($this->_pluginmodule === false) {
 			$this->_pluginmodule = null;
+			
+			$reflect = new ReflectionClass(get_class($this));
+			$folder = $reflect->getFileName();
+			
 			foreach ($this->getApplication()->getModulesByType('Prado\\Util\\IPluginModule') as $id => $module) {
 				if (!$module) {
 					continue;
 				}
-				$reflect = new ReflectionClass(get_class($this));
-				$folder = $reflect->getFileName();
-				
 				if (stripos($folder, $module->getPluginPath()) !== false) {
 					$this->_pluginmodule = $module;
 					break;
