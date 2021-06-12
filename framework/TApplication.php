@@ -34,10 +34,15 @@ use Prado\Util\TLogger;
  * of multiple modules. A module is an instance of class implementing
  * {@link IModule} interface. Each module accomplishes certain functionalities
  * that are shared by all Prado components in an application.
- * There are default modules and user-defined modules. The latter offers extreme
- * flexibility of extending TApplication in a plug-and-play fashion.
+ * There are default modules, composer modules, and user-defined modules. The latter
+ * offers extreme flexibility of extending TApplication in a plug-and-play fashion.
  * Modules cooperate with each other to serve a user request by following
  * a sequence of lifecycles predefined in TApplication.
+ *
+ * TApplicationConfiguration loads the composer.json for each installed composer extension
+ * and checks the extra field for a "bootstrap" class for the package.
+ * Packages can be specified as a configuration module (without a class) to load the
+ * composer extension module.  The ID of the module is the name of the package.
  *
  * TApplication has four modes that can be changed by setting {@link setMode Mode}
  * property (in the application configuration file).

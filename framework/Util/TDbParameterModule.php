@@ -62,7 +62,7 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * @package Prado\Util
  * @since 4.2.0
  */
-class TDbParameterModule extends TModule
+class TDbParameterModule extends TModule implements IDbModule
 {
 	public const SERIALIZE_PHP = 'php';
 	
@@ -504,7 +504,7 @@ class TDbParameterModule extends TModule
 		} else {
 			$db = new TDbConnection;
 			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . '/app.params';
+			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'app.params';
 			$db->setConnectionString('sqlite:' . $dbFile);
 			return $db;
 		}

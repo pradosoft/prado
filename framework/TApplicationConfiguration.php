@@ -10,7 +10,11 @@
 
 namespace Prado;
 
+use Composer\Autoload\ClassLoader;
+use Prado\Caching\TChainedCacheDependency;
+use Prado\Caching\TFileCacheDependency;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -25,6 +29,14 @@ use Prado\Xml\TXmlDocument;
  */
 class TApplicationConfiguration extends \Prado\TComponent
 {
+	/**
+	 * The cache name for installed Prado composer packages
+	 */
+	public const COMPOSER_INSTALLED_CACHE = 'prado:composer:installedcache';
+	/**
+	 * Name of the Extra field to look for Prado Extension Class
+	 */
+	public const COMPOSER_EXTRA_CLASS = 'bootstrap';
 	/**
 	 * @var array list of application initial property values, indexed by property names
 	 */
@@ -57,6 +69,10 @@ class TApplicationConfiguration extends \Prado\TComponent
 	 * @var bool whether this configuration contains actual stuff
 	 */
 	private $_empty = true;
+	/**
+	 * @var array<string, string> name/id of the composer extension and class for extension
+	 */
+	private static $_composerPlugins;
 
 	/**
 	 * Parses the application configuration file.
@@ -234,6 +250,59 @@ class TApplicationConfiguration extends \Prado\TComponent
 			}
 		}
 	}
+	
+	/**
+	 * Reads the Composer static RegisteredLoaders for their Vendor Directory. Reads the Vendor
+	 * Directory composer file 'installed.json' (accumulated extensions composer.json) for the project.
+	 * The ['extra']['bootstrap'] field is read for each extension, if it's there.
+	 * @return array<string, string> the extension name and bootstrap class.
+	 * @since 4.2.0
+	 */
+	protected function getComposerExtensionBootStraps()
+	{
+		if ($cache = Prado::getApplication()->getCache()) {
+			$plugins = $cache->get(self::COMPOSER_INSTALLED_CACHE);
+			if ($plugins !== null) {
+				return $plugins;
+			}
+		}
+		$dependencies = new TChainedCacheDependency();
+		$listDeps = $dependencies->getDependencies();
+		$plugins = [];
+		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
+			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
+			$manifests = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+			
+			// Loop through the installed packages
+			foreach ($manifests['packages'] as $package) {
+				$name = $package['name'];
+				if (isset($package['extra']) && isset($package['extra'][self::COMPOSER_EXTRA_CLASS])) {
+					$plugins[$name] = $package['extra'][self::COMPOSER_EXTRA_CLASS];
+					//$packagepath =  realpath($vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . $package['install-path']);
+				}
+			}
+			$listDeps[] = new TFileCacheDependency($file);
+		}
+		if ($cache) {
+			$cache->set(self::COMPOSER_INSTALLED_CACHE, $plugins, null, $dependencies);
+		}
+		return $plugins;
+	}
+	
+	/**
+	 * Given a module id as a composer package name, returns the extension bootstrap
+	 * {@link TModule} class.
+	 * @param string $name the name of the Composer Extension.
+	 * @return null|string the bootstrap class of the Composer Extension.
+	 * @since 4.2.0
+	 */
+	public function getComposerExtensionClass($name)
+	{
+		if (self::$_composerPlugins === null) {
+			self::$_composerPlugins = $this->getComposerExtensionBootStraps();
+		}
+		return self::$_composerPlugins[$name] ?? null;
+	}
 
 	/**
 	 * Loads the modules PHP array.
@@ -243,6 +312,12 @@ class TApplicationConfiguration extends \Prado\TComponent
 	protected function loadModulesPhp($modulesNode, $configPath)
 	{
 		foreach ($modulesNode as $id => $module) {
+			if (strpos($id, '/') !== false && ($class = $this->getComposerExtensionClass($id))) {
+				if (isset($module['class'])) {
+					throw new TConfigurationException('appconfig_moduletype_inapplicable', $id);
+				}
+				$module['class'] = $class;
+			}
 			if (!isset($module['class'])) {
 				throw new TConfigurationException('appconfig_moduletype_required', $id);
 			}
@@ -271,6 +346,12 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$properties = $element->getAttributes();
 				$id = $properties->itemAt('id');
 				$type = $properties->remove('class');
+				if (strpos($id, '/') !== false && ($class = $this->getComposerExtensionClass($id))) {
+					if ($type) {
+						throw new TConfigurationException('appconfig_moduletype_inapplicable', $id);
+					}
+					$type = $class;
+				}
 				if ($type === null) {
 					throw new TConfigurationException('appconfig_moduletype_required', $id);
 				}
