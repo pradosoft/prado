@@ -42,7 +42,7 @@ class TDbCronCleanLogTask extends TCronTask
 		if ($mid = $this->getModuleId()) {
 			$cron = $this->getApplication()->getModule($mid);
 			if ($cron === null) {
-				throw new TInvalidDataValueException('dbcronmodule_moduleid_is_null');
+				throw new TInvalidDataValueException('dbcronclean_moduleid_is_null', $mid);
 			}
 		}
 		if (is_object($cron) && $cron->isa('Prado\\Util\\Cron\\TDbCronModule')) {

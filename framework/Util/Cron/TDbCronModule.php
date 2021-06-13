@@ -112,6 +112,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * This checks for "name".  The name cannot by '*' or have spaces, `, ', ", <, or >t characters.
 	 * @param array $properties the task as an array of properties
+	 * @throws TConfigurationException when the name is invalid.
 	 */
 	public function validateTask($properties)
 	{
@@ -177,7 +178,8 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 	
 	/**
-	 *
+	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
+	 * @return array[TCronTask] combines the active configuration and db cron tasks
 	 */
 	public function getTasks()
 	{
@@ -471,7 +473,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$this->ensureTasks(false);
 		$name = $task->getName();
 		if (!preg_match(TDbCronModule::NAME_VALIDATOR_REGEX, $name)) {
-			throw new TConfigurationException('dbcron_invalid_name', $name);
+			return false;
 		}
 		if (isset($this->_tasks[$name])) {
 			return false;
@@ -760,9 +762,13 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cron module.
 	 * @param string $value ID of the {@link TDataSourceConfig} module
+	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
 	 */
 	public function setConnectionID($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('dbcron_property_unchangeable', 'ConnectionID');
+		}
 		$this->_connID = $value;
 	}
 	
@@ -792,9 +798,13 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * @param string $table table in the database for cron tasks and logs
+	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
 	 */
 	public function setTableName($table)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('dbcron_property_unchangeable', 'TableName');
+		}
 		$this->_tableName = TPropertyValue::ensureString($table);
 	}
 
@@ -809,10 +819,14 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * @param bool $value whether the cron DB table should be automatically created if not exists.
+	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
 	 * @see setTableName
 	 */
 	public function setAutoCreateCronTable($value)
 	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('dbcron_property_unchangeable', 'AutoCreateCronTable');
+		}
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 }

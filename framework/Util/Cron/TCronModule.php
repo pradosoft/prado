@@ -12,7 +12,6 @@ namespace Prado\Util\Cron;
 
 use Exception;
 use Prado\Exceptions\TConfigurationException;
-use Prado\Exceptions\TException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -86,7 +85,7 @@ class TCronModule extends \Prado\TModule
 	public const METHOD_SEPARATOR = '->';
 	
 	/** @var bool if the module has been initialized */
-	private $_initialized = false;
+	protected $_initialized = false;
 	
 	/** @var IUserManager user manager instance */
 	private $_userManager;
@@ -119,6 +118,7 @@ class TCronModule extends \Prado\TModule
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * should Request cron be activated.
 	 * @param array|Prado\Xml\TXmlElement $config
+	 * @throws TConfigurationException when the user manage doesn't exist or is invalid
 	 */
 	public function init($config)
 	{
@@ -167,6 +167,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * This reads the configuration and stores the specified tasks, for lazy loading, until needed.
 	 * @param array|Prado\Xml\TXmlElement $config the settings for cron
+	 * @throws TConfigurationException when a PHP configuration is not an array or two jobs have the same name.
 	 */
 	protected function readConfiguration($config)
 	{
@@ -207,15 +208,16 @@ class TCronModule extends \Prado\TModule
 	 * Validates that schedule and task are present.
 	 * Subclasses overload this method to add their own validation.
 	 * @param array $properties the task as an array of properties
+	 * @throws TConfigurationException when the schedule or task doesn't exist
 	 */
 	public function validateTask($properties)
 	{
 		$schedule = $properties[self::SCHEDULE_KEY] ?? null;
 		$task = $properties[self::TASK_KEY] ?? null;
-		if ($schedule == null) {
+		if (!$schedule) {
 			throw new TConfigurationException('cron_schedule_required');
 		}
-		if ($task == null) {
+		if (!$task) {
 			throw new TConfigurationException('cron_task_required');
 		}
 	}

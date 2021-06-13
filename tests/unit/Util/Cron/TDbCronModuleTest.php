@@ -1,6 +1,7 @@
 <?php
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\Cron\TDbCronModule;
 use Prado\Util\Cron\TCronMethodTask;
 
@@ -125,6 +126,18 @@ class TDbCronModuleTest extends TCronModuleTest
 		
 		$this->obj = new $this->baseClass();
 		$this->obj->init($jobs);
+		try {
+			$this->obj->setConnectionId('anotherModule');
+			self::fail("failed to throw TInvalidOperationException when changing ConnectionId after initialization");
+		} catch (TInvalidOperationException $e) {}
+		try {
+			$this->obj->setTableName('newTableName');
+			self::fail("failed to throw TInvalidOperationException when changing TableName after initialization");
+		} catch (TInvalidOperationException $e) {}
+		try {
+			$this->obj->setAutoCreateCronTable(false);
+			self::fail("failed to throw TInvalidOperationException when changing AutoCreateCronTable after initialization");
+		} catch (TInvalidOperationException $e) {}
 		$this->obj->processPendingTasks(); //remove stale
 		
 		self::assertTrue($this->obj->taskExists('testTask1'));
@@ -470,12 +483,8 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertFalse($this->obj->taskExists('crudTask'));
 		
 		$task = new TTestCronModuleTask();
-		$task->setName('*');
-		
-		try {
-			$this->obj->addTask($task);
-			self::fail('failed to throw TConfigurationException on invalid name');
-		} catch (TConfigurationException $e) {}
+		$task->setName('*'); // Invalid name, does not add
+		self::assertFalse($this->obj->addTask($task));
 		
 		$count = rand();
 		$time = microtime(true);
@@ -489,7 +498,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$task->setLastExecTime($time);
 		$task->setPropertyA('myCrudValue');
 		
-		$this->obj->addTask($task);
+		self::assertTrue($this->obj->addTask($task));
 		
 		self::assertNotNull($this->obj->getTasks()['crudTask']);
 		
@@ -520,7 +529,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$task->setName('crudTask');
 		$task->setSchedule('* * * * *');
 		
-		$this->obj->addTask($task);
+		self::assertTrue($this->obj->addTask($task));
 		
 		$task->setSchedule('1 * * * *');
 		$task->setModuleId('crudModule');

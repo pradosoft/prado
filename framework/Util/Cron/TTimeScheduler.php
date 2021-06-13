@@ -209,7 +209,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::MINUTE][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 			
@@ -228,7 +228,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::HOUR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 		
@@ -246,7 +246,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::DAY_OF_MONTH][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 			
@@ -265,7 +265,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::MONTH_OF_YEAR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 			
@@ -287,7 +287,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::DAY_OF_WEEK][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 			
@@ -308,7 +308,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 				$this->_attr[self::YEAR][] = $data;
 			} else {
-				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
+				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
 	}

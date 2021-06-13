@@ -141,7 +141,7 @@ abstract class TCronTask extends TApplicationComponent
 		$app = $this->getApplication();
 		$module = $app->getModule($this->_moduleId);
 		if ($module === null && $this->_moduleId !== null) {
-			throw new TConfigurationException('cronmodule_no_module', $this->_moduleId);
+			throw new TConfigurationException('crontask_no_module', $this->_moduleId);
 		}
 		return $module;
 	}
