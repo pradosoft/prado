@@ -481,7 +481,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		try {
 			$task->getScheduler();
-		} catch(TInvalidDataValueException $e) {
+		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
 		
@@ -535,7 +535,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		try {
 			$task->getScheduler();
-		} catch(TInvalidDataValueException $e) {
+		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
 		

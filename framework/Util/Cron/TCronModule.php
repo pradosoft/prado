@@ -37,7 +37,7 @@ use Prado\Xml\TXmlDocument;
  * </code>
  *
  * The schedule is formatted like a linux crontob schedule expression.
- * {@link TTimeSchedule} parses the schedule and supports 8 different 
+ * {@link TTimeSchedule} parses the schedule and supports 8 different
  * languages.
  *
  * This module is designed to be run as a system Crontab prado-cli every
@@ -50,7 +50,7 @@ use Prado\Xml\TXmlDocument;
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
  * </code>
  *
- * The default cron user can be set with {@link set$DefaultUserId} with its 
+ * The default cron user can be set with {@link set$DefaultUserId} with its
  * default being 'cron' user.  The default user is used when no task specific
  * user is specifiedThe 'cron' user should exist in the TUserManager to
  * switched the application user properly.
