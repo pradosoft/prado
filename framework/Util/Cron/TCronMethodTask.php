@@ -20,7 +20,11 @@ use Prado\TPropertyValue;
  * running the task the specified module.
  * <code>
  *		<job schedule="* * * * *" task="dbcache->flushCacheExpired(true)" / >
+ *		<job schedule="* * * * *" task="dbcache->flushCacheExpired" / >
+ *		<job schedule="* * * * *" task="amodule->taskmethod($this->getModule()->getProperty())" / >
  * </code>
+ *
+ * The parenthesis may be omitted, or parameters may be functions themselves.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
