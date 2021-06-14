@@ -38,7 +38,7 @@ use Prado\Xml\TXmlDocument;
  *
  * The schedule is formatted like a linux crontob schedule expression.
  * {@link TTimeSchedule} parses the schedule and supports 8 different
- * languages.
+ * languages.  Advanced options, like @daily, and @hourly, are supported.
  *
  * This module is designed to be run as a system Crontab prado-cli every
  * minute.  The application then decides what tasks to execute, or not, and
