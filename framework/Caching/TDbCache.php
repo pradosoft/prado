@@ -15,6 +15,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
+use Prado\Util\Cron\TCronTaskInfo;
 
 /**
  * TDbCache class
@@ -89,7 +90,7 @@ use Prado\TPropertyValue;
  * @package Prado\Caching
  * @since 3.1.0
  */
-class TDbCache extends TCache
+class TDbCache extends TCache implements \Prado\Util\IDbModule
 {
 	/**
 	 * @var string the ID of TDataSourceConfig module
@@ -256,6 +257,16 @@ class TDbCache extends TCache
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this->getApplication()->setGlobalState($key, $now);
 		}
+	}
+	
+	/**
+	 * @param object $sender the object raising fxGetCronTaskInfos.
+	 * @param mixed $param the parameter
+	 * @since 4.2.0
+	 */
+	public function fxGetCronTaskInfos($sender, $param)
+	{
+		return new TCronTaskInfo('dbcacheflushexpired', $this->getId() . '->flushCacheExpired(true)', $this, Prado::localize('DbCache Flush Expired Keys'), Prado::localize('This manually clears out the expired keys of TDbCache.'));
 	}
 
 	/**
