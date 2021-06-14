@@ -491,13 +491,15 @@ class TDbCronModuleTest extends TCronModuleTest
 		
 		$task = new TTestCronModuleTask();
 		$task->setName('crudTask');
-		$task->setSchedule('* * * * *');
+		$task->setSchedule('test * * * *');
 		$task->setModuleId('crudModule');
 		$task->setUserId('cronCrudUser');
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 		$task->setPropertyA('myCrudValue');
 		
+		self::assertFalse($this->obj->addTask($task));
+		$task->setSchedule('* * * * *');
 		self::assertTrue($this->obj->addTask($task));
 		
 		self::assertNotNull($this->obj->getTasks()['crudTask']);
@@ -531,13 +533,18 @@ class TDbCronModuleTest extends TCronModuleTest
 		
 		self::assertTrue($this->obj->addTask($task));
 		
-		$task->setSchedule('1 * * * *');
+		$task = new TTestCronModuleTask();
+		$task->setName('crudTask');
+		$task->setSchedule('test * * * *');
 		$task->setModuleId('crudModule');
 		$task->setUserId('cronCrudUser');
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 		
-		$this->obj->updateTask($task);
+		self::assertFalse($this->obj->updateTask($task));
+		
+		$task->setSchedule('1 * * * *');
+		self::assertTrue($this->obj->updateTask($task));
 		
 		// was the row updated
 		$taskInfo = $this->obj->getTask('crudTask', true, false);

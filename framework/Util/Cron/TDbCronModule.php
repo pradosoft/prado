@@ -14,6 +14,7 @@ use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -478,6 +479,11 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		if (isset($this->_tasks[$name])) {
 			return false;
 		}
+		try {
+			$task->getScheduler();
+		} catch(TInvalidDataValueException $e) {
+			return false;
+		}
 		
 		$cmd = $this->getDbConnection()->createCommand(
 			"INSERT INTO {$this->_tableName} " .
@@ -525,6 +531,11 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$this->ensureTasks(false);
 		$name = $task->getName();
 		if (!$this->taskExists($name)) {
+			return false;
+		}
+		try {
+			$task->getScheduler();
+		} catch(TInvalidDataValueException $e) {
 			return false;
 		}
 		

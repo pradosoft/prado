@@ -101,7 +101,7 @@ class TTimeScheduler extends \Prado\TComponent
 					0 => '(?:sunday|sonntag|sun|son|su|so|domingo|do|d|dimanche|dim|domenica|dom|Воскресенье|Вск|Вс|रविवार|रवि)',
 					1 => '(?:monday|montag|mon|mo|lune|lu|l|lundi|lun|lunedì|Понедельник|Пнд|Пн|सोमवार|सोम)',
 					2 => '(?:tuesday|dienstag|die|tue|tu|di|martes|ma|m|k|mardi|mar|martedì|Вторник|Втр|Вт|मंगलवार|मंगल)',
-					3 => '(?:wednesdays|mittwoch|mit|wed|we|mi|miércoles|x|mercredi|mer|mercoledì|me|Среда|Сре|Ср|बुधवार|बुध)',
+					3 => '(?:wednesday|mittwoch|mit|wed|we|mi|miércoles|x|mercredi|mer|mercoledì|me|Среда|Сре|Ср|बुधवार|बुध)',
 					4 => '(?:thursday|donnerstag|don|thu|th|do|jueves|ju|j|jeudi|jeu|giovedì|gio|gi|Четверг|Чтв|Чт|गुरुवार|गुरु)',
 					5 => '(?:friday|freitag|fre|fri|fr|viernes|vi|v|vendredi|ven|venerdì|ve|Пятница|Птн|Пт|शुक्रवार|शुक्र)',
 					6 => '(?:saturday|samstag|sam|sat|sa|sábado|s|samedi|sabato|sab|Суббота|Сбт|Сб|शनिवार|शनि)'
