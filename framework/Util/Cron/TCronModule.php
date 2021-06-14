@@ -24,22 +24,25 @@ use Prado\Xml\TXmlDocument;
 /**
  * TCronModule class.
  *
- * TCronModule runs time based services for the application.
- * This will run a task at a given time.  A task can be a task class
- * or a module Id followed by '->' followed by a method with or
- * without parameters. eg.
+ * TCronModule runs time based services for the application. This will run a
+ * task at a given time.  A task can be a task class or a module Id followed by
+ * '->' followed by a method with or without parameters. eg.
  *
  * <code>
  * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserId="admin">
  *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TCronCleanLogTask" UserId="cron" />
  *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
- *		<job Name="taskname" Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
+ *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
  * </code>
  *
+ * The schedule is formatted like a linux crontob schedule expression.
+ * {@link TTimeSchedule} parses the schedule and supports 8 different 
+ * languages.
+ *
  * This module is designed to be run as a system Crontab prado-cli every
- * minute.  The application then decides what tasks to execute, or
- * not, and when.
+ * minute.  The application then decides what tasks to execute, or not, and
+ * when.
  *
  * The following is an example for your system cron tab to run the PRADO
  * application cron.
@@ -47,9 +50,10 @@ use Prado\Xml\TXmlDocument;
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
  * </code>
  *
- * The cron user can be set with {@link set$DefaultUserId} with its default
- * being 'cron' user.  The cron user should exist in the TUserManager to be
- * set properly.
+ * The default cron user can be set with {@link set$DefaultUserId} with its 
+ * default being 'cron' user.  The default user is used when no task specific
+ * user is specifiedThe 'cron' user should exist in the TUserManager to
+ * switched the application user properly.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
@@ -57,6 +61,7 @@ use Prado\Xml\TXmlDocument;
  * @method void dyLogCron($numtasks);
  * @method void dyLogCronTask($task, $username);
  * @method void dyUpdateTaskInfo($task);
+ * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
 
 class TCronModule extends \Prado\TModule
