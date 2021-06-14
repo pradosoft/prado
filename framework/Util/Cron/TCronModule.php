@@ -30,13 +30,13 @@ use Prado\Xml\TXmlDocument;
  *
  * <code>
  * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserId="admin">
- *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TCronCleanLogTask" UserId="cron" />
+ *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserId="cron" />
  *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
  *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
  * </code>
  *
- * The schedule is formatted like a linux crontob schedule expression.
+ * The schedule is formatted like a linux crontab schedule expression.
  * {@link TTimeSchedule} parses the schedule and supports 8 different
  * languages.  Advanced options, like @daily, and @hourly, are supported.
  *
