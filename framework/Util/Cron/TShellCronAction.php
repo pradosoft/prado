@@ -59,7 +59,7 @@ class TShellCronAction extends TShellAppAction
 			}
 		}
 		if (!$module) {
-			$this->_outWriter->writeLine("A {$moduleClass} is not found", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("A {$moduleClass} is not found");
 			return true;
 		}
 		if (!$module->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {

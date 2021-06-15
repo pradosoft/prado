@@ -38,7 +38,7 @@ class TAppAction extends TShellAction
 			$args[1] = '.';
 		}
 		if (false === ($xml = $this->getAppConfigFile($args[1]))) {
-			$this->_outWriter->writeLine("** Application '$args[1]' was not found.");
+			$this->_outWriter->writeError("Application '$args[1]' was not found.");
 			return false;
 		}
 		$app = $this->initializePradoApplication($args[1]);

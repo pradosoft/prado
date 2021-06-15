@@ -106,21 +106,21 @@ class TShellDbCronAction extends TShellCronAction
 		$schedule = $args[6] ?? null;
 		
 		if (!$taskName) {
-			$this->_outWriter->writeLine("Cannot add a task without a name\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Cannot add a task without a name");
 			return;
 		}
 		if (!$id) {
-			$this->_outWriter->writeLine("Cannot add a task without a task id\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Cannot add a task without a task id");
 			return;
 		}
 		if (!$schedule) {
-			$this->_outWriter->writeLine("Cannot add a task without a schedule\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Cannot add a task without a schedule");
 			return;
 		}
 		
 		$exists = $module->taskExists($taskName);
 		if ($exists) {
-			$this->_outWriter->writeLine("'{$taskName}' already exists in the database\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("'{$taskName}' already exists in the database");
 			return;
 		}
 		$infos = $module->getTaskInfos();
@@ -132,14 +132,14 @@ class TShellDbCronAction extends TShellCronAction
 			}
 		}
 		if (!$info) {
-			$this->_outWriter->writeLine("Task ID '{$id}' could not be found\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Task ID '{$id}' could not be found");
 			return;
 		}
 		$s = new TTimeScheduler();
 		try {
 			$s->setSchedule($schedule);
 		} catch (TInvalidDataValueException $e) {
-			$this->_outWriter->writeLine("Schedule '{$schedule}' is not a valid schedule\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Schedule '{$schedule}' is not a valid schedule");
 			return;
 		}
 		
@@ -154,7 +154,7 @@ class TShellDbCronAction extends TShellCronAction
 				$property = 'set' . $property;
 				$task->$property(trim($parts[1]));
 			} else {
-				$this->_outWriter->writeLine("Task Property '{$parts[0]}' is not found\n", [TShellWriter::RED, TShellWriter::BOLD]);
+				$this->_outWriter->writeError("Task Property '{$parts[0]}' is not found");
 				return;
 			}
 		}
@@ -173,17 +173,17 @@ class TShellDbCronAction extends TShellCronAction
 		$taskName = $args[4] ?? null;
 		
 		if (!$taskName) {
-			$this->_outWriter->writeLine("Cannot update a task without a name\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Cannot update a task without a name");
 			return;
 		}
 		
 		$task = $module->getTask($taskName);
 		if (!$task) {
-			$this->_outWriter->writeLine("Task '{$taskName}' is not found\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Task '{$taskName}' is not found");
 			return;
 		}
 		if (count($args) <= 5) {
-			$this->_outWriter->writeLine("No given properties to change\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("No given properties to change");
 			return;
 		}
 		for ($i = 5; $i < count($args); $i++) {
@@ -196,14 +196,14 @@ class TShellDbCronAction extends TShellCronAction
 					try {
 						$s->setSchedule($parts[1]);
 					} catch (TInvalidDataValueException $e) {
-						$this->_outWriter->writeLine("Schedule '{$parts[1]}' is not a valid schedule\n", [TShellWriter::RED, TShellWriter::BOLD]);
+						$this->_outWriter->writeError("Schedule '{$parts[1]}' is not a valid schedule");
 						return;
 					}
 				}
 				$property = 'set' . $property;
 				$task->$property(trim($parts[1]));
 			} else {
-				$this->_outWriter->writeLine("Task Property '{$parts[0]}' is not found\n", [TShellWriter::RED, TShellWriter::BOLD]);
+				$this->_outWriter->writeError("Task Property '{$parts[0]}' is not found");
 				return;
 			}
 		}
@@ -219,12 +219,12 @@ class TShellDbCronAction extends TShellCronAction
 	public function removeTask($module, $args)
 	{
 		if (!($taskName = $args[4] ?? null)) {
-			$this->_outWriter->writeLine("Cannot remove a task without a name\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("Cannot remove a task without a name");
 			return;
 		}
 		$exists = $module->taskExists($taskName);
 		if (!$exists) {
-			$this->_outWriter->writeLine("'{$taskName}' does not exist in the database and could not be removed\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("'{$taskName}' does not exist in the database");
 			return;
 		}
 		$result = $module->removeTask($taskName);
@@ -232,7 +232,7 @@ class TShellDbCronAction extends TShellCronAction
 		if ($result) {
 			$this->_outWriter->writeLine("'{$taskName}' was successfully removed.\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 		} else {
-			$this->_outWriter->writeLine("'{$taskName}' could not be removed.\n", [TShellWriter::RED, TShellWriter::BOLD]);
+			$this->_outWriter->writeError("'{$taskName}' could not be removed.\n");
 		}
 	}
 }
