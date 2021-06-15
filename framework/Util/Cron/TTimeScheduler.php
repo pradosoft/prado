@@ -366,7 +366,7 @@ class TTimeScheduler extends \Prado\TComponent
 	 * and the value contains true or false whether the hour meets the cron
 	 * time stamp
 	 */
-	protected function geHoursArray()
+	protected function getHoursArray()
 	{
 		$ha = array_pad([], 24, null);
 		foreach ($this->_attr[self::HOUR] as $h) {
@@ -534,162 +534,6 @@ class TTimeScheduler extends \Prado\TComponent
 		return $ya;
 	}
 	
-	
-	/**
-	 * This calculates the next trigger time for the schedule based on the parameter
-	 * time.  If no parameter time is given, the current system time is used.
-	 * @param mixed $priortime
-	 * @return numeric the unix time of the next trigger event.
-	 */
-	/*public function getPreviousTriggerTime($priortime = false)
-	{
-		if ($priortime === null || $this->_schedule === null) {
-			return null;
-		}
-		if ($priortime === false) {
-			$priortime = time();
-		}
-		if (!is_numeric($priortime)) {
-			$priortime = strtotime($priortime);
-		}
-		$lastdata = getdate($priortime);
-
-		$oyear = $year = $lastdata['year'];
-		$omonth = $month = $lastdata['mon'];
-
-		$minutes = $this->getMinutesArray();
-		$hours = $this->geHoursArray();
-		$days = $this->getDaysArray($month, $year);
-		$months = $this->getMonthsArray();
-		$years = $this->getYearsArray();
-
-		// Do Minutes
-		$z = -1;
-		$s = (!$hours[$lastdata['hours']] || !$days[$lastdata['mday']] || !$months[$month] || !$years[$year]) ? 0 : $lastdata['minutes'] + 1;
-		for ($i = $s, $hextra = 0; $i != $s + $z; $i++) {
-			if ($i > 59) {
-				$hextra = 1;
-				$i = 0;
-			}
-			if ($minutes[$i]) {
-				$nmin = $i;
-				break;
-			}
-			$z = 0;
-		}
-
-		// Do Hours
-		$z = -1;
-		$s = (!$days[$lastdata['mday']] || !$months[$lastdata['mon']] || !$years[$year]) ? 0 : $lastdata['hours'];
-		for ($i = $s + $hextra, $dextra = 0; $i != $s + $hextra + $z ; $i++) {
-			if ($i > 23) {
-				$dextra = 1;
-				$i = 0;
-			}
-			if ($hours[$i]) {
-				$nhour = $i;
-				break;
-			}
-			$z = 0;
-		}
-
-		// Adjust Month/year for extra day
-		$nday = '01';
-		if ($dextra) {
-			$lastdata = getdate($priortime + $dextra * 86400);
-			if ($lastdata['mon'] != $month) {
-				$year = $lastdata['year'];
-				$month = $lastdata['mon'];
-				$days = $this->getDaysArray($month, $year);
-			}
-		}
-
-		// Do the Day of Month
-		$dim = $this->days_in_month($month, $year);
-		$zeroIndex = !$months[$lastdata['mon']] || !$years[$year];
-		$s = ($zeroIndex) ? 1 : $lastdata['mday'];
-		for ($i = $s; $i != $s - 1; $i++) {
-			if ($i > $dim) {
-				$month++;
-				if ($month > 12) {
-					$month = 1;
-					$year++;
-					if ($year > self::YEAR_MAX) {
-						return null;
-					}
-				}
-				$lastdata = getdate(strtotime("$year-$month-01"));
-				$dim = $this->days_in_month($month, $year);
-				$i = 1;
-				$days = $this->getDaysArray($month, $year);
-				$s = ($zeroIndex) ? 1 : $lastdata['mday'];
-			}
-			if ($days[$i]) {
-				$nday = $i;
-				break;
-			}
-		}
-
-		// Do the Month of the Year
-		$z = -1;
-		$s = (!$years[$year]) ? 1 : $lastdata['mon'];
-		for ($i = $s, $yextra = 0; $i != $s + $z; $i++) {
-			if ($i > 12) {
-				$yextra = 1;
-				$year++;
-				$i = 1;
-			}
-			if ($months[$i]) {
-				$nmonth = $i;
-				break;
-			}
-			$z = 0;
-		}
-
-		// If month or year different, recompute day of month for that month/year
-		if ($yextra || $nmonth != $omonth) {
-			$month = $nmonth;
-			$dim = $this->days_in_month($month, $year);
-			$days = $this->getDaysArray($month, $year);
-			$zeroIndex = !$months[$omonth] || !$years[$oyear];
-			$s = ($zeroIndex) ? 1 : $lastdata['mday'];
-			for ($i = $s; $i != $s - 1; $i++) {
-				if ($i > $dim) {
-					$month++;
-					if ($month > 12) {
-						$month = 1;
-						$year++;
-						if ($year > self::YEAR_MAX) {
-							return null;
-						}
-					}
-					$lastdata = getdate(strtotime("$year-$month-02"));
-					$dim = $this->days_in_month($month, $year);
-					$i = 1;
-					$days = $this->getDaysArray($month, $year);
-					$s = ($zeroIndex) ? 1 : $lastdata['mday'];
-				}
-				if ($days[$i]) {
-					$nday = $i;
-					break;
-				}
-			}
-		}
-
-		// Do Year
-		$nyear = null;
-		for ($i = $lastdata['year'] + $yextra; $i <= self::YEAR_MAX; $i++) {
-			if ($years[$i]) {
-				$nyear = $i;
-				break;
-			}
-		}
-		if ($nyear === null) {
-			return null;
-		}
-		return strtotime("$nyear-$nmonth-$nday $nhour:$nmin:00");
-	}*/
-	
 	/**
 	 * This calculates the next trigger time for the schedule based on the $priortime
 	 * If no parameter time is given, the current system time is used.
@@ -715,7 +559,7 @@ class TTimeScheduler extends \Prado\TComponent
 		$omonth = $month = $lastdata['mon'];
 		
 		$minutes = $this->getMinutesArray();
-		$hours = $this->geHoursArray();
+		$hours = $this->getHoursArray();
 		$days = $this->getDaysArray($month, $year);
 		$months = $this->getMonthsArray();
 		$years = $this->getYearsArray();

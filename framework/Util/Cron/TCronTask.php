@@ -178,7 +178,6 @@ abstract class TCronTask extends TApplicationComponent
 	public function setLastExecTime($v)
 	{
 		$this->_lastexectime = TPropertyValue::ensureInteger($v);
-		//$this->_lastexectime = rtrim(rtrim(number_format($v, 6,'.',''), '0'), '.');
 	}
 	
 	/**
@@ -189,15 +188,6 @@ abstract class TCronTask extends TApplicationComponent
 		$s = $this->getScheduler();
 		return $s->getNextTriggerTime($this->_lastexectime);
 	}
-	
-	/**
-	 *
-	 */
-	/*public function getPreviousTriggerTime()
-	{
-		$s = $this->getScheduler();
-		return $s->getPreviousTriggerTime($this->_lastexectime);
-	}*/
 	
 	/**
 	 * @return bool is the current time after the NextTriggerTime
