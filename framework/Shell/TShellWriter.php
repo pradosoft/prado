@@ -178,7 +178,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	
 	/**
 	 * Writes an error block to the writer with color
-	 * @param string $text 
+	 * @param string $text
 	 */
 	public function writeError($text)
 	{
@@ -186,7 +186,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		$lines = explode("\n", wordwrap($text, $len - 4, "\n"));
 		$this->writeLine("\n*" . str_repeat('-', $len) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
 		foreach ($lines as $i => $line) {
-			$this->writeLine('*  ' . str_pad($line, $len-4, ' ', STR_PAD_BOTH) . '  *', [self::BG_RED, self::WHITE, self::BOLD]);
+			$this->writeLine('*  ' . str_pad($line, $len - 4, ' ', STR_PAD_BOTH) . '  *', [self::BG_RED, self::WHITE, self::BOLD]);
 		}
 		$this->writeLine('*' . str_repeat('_', $len) . "*\n", [self::BG_RED, self::WHITE, self::BOLD]);
 	}
@@ -209,6 +209,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	
 	/**
 	 * removes ANSI formatting
+	 * @param mixed $str
 	 */
 	public function unformat($str)
 	{
