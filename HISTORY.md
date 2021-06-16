@@ -16,7 +16,7 @@ BUG: Issue #742 - TSecurityManager::setHashAlgorithm uses hash_algos() rather th
 ENH: Issue #741 - TBehaviorsModule and TBehaviorParameterLoader for instancing behaviors in an application; added various behaviors like TParameterizeBehavior that gives new defaults and data from the parameters to any prado object property. (belisoful)
 ENH: Issue #740 - Behaviors can instances from an array with class and properties, important for #741 (belisoful)
 BUG: Issue #739 - TApplicationConfiguration::loadParametersPhp variable unset but called (belisoful)
-CHG: AutoGlobalListen is true for TApplicationComponents, and select TComponents, their 'fx' events will automatically listen and unlisten on construct and destruct.
+CHG: AutoGlobalListen is true for TApplicationComponents (but not TWebControls), and select TComponent children, their 'fx' events will automatically listen and unlisten to fx events on construct and destruct.
 ENH: Issue #738 - Added TAuthManager::onLogin, onLogout, and onLoginFailed events (belisoful)
 ENH: Issue #737 - Added TSkinTemplate that doesn't do class/attribute validation so skins are more portable between apps (belisoful)
 ENH: Issue #735 - Added TPageService::onPreRunPage so modules can access Page events (belisoful)
