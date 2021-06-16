@@ -526,6 +526,26 @@ dbparametermodule_property_unchangeable = TDbParameterModule.{0} cannot change a
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
+cronmethodtask_no_module				= TCronMethodTask could not find module '{0}'.
+cron_usermanager_nonexistent			= TCronModule could not find the UserManager of the name '{0}'.
+cron_usermanager_invalid				= The TCronModule UserManager '{0}' is not a TUserManager.
+cron_task_as_array_required				= TCronModule configuration task job was not an array.
+cron_duplicate_task_name				= TCronModule must have task jobs that hare of unique names.
+cron_schedule_required					= Cron Task must have a schedule.
+cron_task_required						= Cron Task must have a task.
+cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
+cron_property_unchangeable				= TCronModule.{0} is already initialized and cannot be changed.
+cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
+crontask_no_module						= TCronTask could not find module '{0}'.
+dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
+dbcron_invalid_name						= TDbCronModule the task name '{0}' is invalid .
+dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.
+dbcron_table_nonexistent				= TDbCronModule database table does not exist.
+dbcron_connectionid_invalid				= TDbCronModule.ConnectionID '{0}' is not a TDataSourceConfig.
+dbcron_property_unchangeable			= TDbCronModule.{0} is already initialized and cannot be changed.
+
+timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
+
 datasize_no_negative_size				= TDataSize.Size cannot be negative.
 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.

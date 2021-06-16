@@ -55,7 +55,7 @@ class TFlushCachesAction extends TShellAction
 		if (!count($cachesFlushed)) {
 			$cachesFlushed[] = 'no caches (none were found)';
 		}
-		$this->_outWriter->writeLine("** Application flushed " . implode(', ', $cachesFlushed) . ".");
+		$this->_outWriter->writeLine("    Application flushed " . implode(', ', $cachesFlushed) . ".");
 		$this->_outWriter->writeLine();
 		return true;
 	}
