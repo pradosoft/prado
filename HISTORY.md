@@ -1,5 +1,6 @@
 ## Version 4.2.0 - in development
 
+ENH: Issue #761 - TCronModule and TDbCronModule with supporting classes, scheduled like linux cron schedule expression, 8 languages.
 ENH: Issue #743 - Integrate Composer extensions for PRADO, module ids can be the composer package names and the class will be ['extra']['bootstrap'] (from the composer.json file). TPluginModule/TDbPluginModule for additional functionality as the parent class for extensions.  Composer "type" : "prado4-extension" (belisoful)
 BUG: Issue #784 - Prado-CLI corrected I18N by translating the shell "LANG" into "HTTP_ACCEPT_LANGUAGE" (belisoful)
 ENH: Issue #778 - Added TEventContent for filling in the control content from handlers of a global event (belisoful)
@@ -15,6 +16,7 @@ BUG: Issue #742 - TSecurityManager::setHashAlgorithm uses hash_algos() rather th
 ENH: Issue #741 - TBehaviorsModule and TBehaviorParameterLoader for instancing behaviors in an application; added various behaviors like TParameterizeBehavior that gives new defaults and data from the parameters to any prado object property. (belisoful)
 ENH: Issue #740 - Behaviors can instances from an array with class and properties, important for #741 (belisoful)
 BUG: Issue #739 - TApplicationConfiguration::loadParametersPhp variable unset but called (belisoful)
+CHG: AutoGlobalListen is true for TApplicationComponents (but not TWebControls), and select TComponent children, their 'fx' events will automatically listen and unlisten to fx events on construct and destruct.
 ENH: Issue #738 - Added TAuthManager::onLogin, onLogout, and onLoginFailed events (belisoful)
 ENH: Issue #737 - Added TSkinTemplate that doesn't do class/attribute validation so skins are more portable between apps (belisoful)
 ENH: Issue #735 - Added TPageService::onPreRunPage so modules can access Page events (belisoful)
