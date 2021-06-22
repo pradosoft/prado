@@ -95,22 +95,86 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
+	public function testReturnUrlVarName()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setReturnUrlVarName('test');
+		self::assertEquals('test', $authManager->getReturnUrlVarName());
+		$authManager->setReturnUrlVarName('variable');
+		self::assertEquals('variable', $authManager->getReturnUrlVarName());
+	}
+
 	public function testReturnUrl()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setReturnUrl('test');
+		self::assertEquals('test', $authManager->getReturnUrl());
+		$authManager->setReturnUrl('variable');
+		self::assertEquals('variable', $authManager->getReturnUrl());
+	}
+
+	public function testAllowAutoLogin()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setAllowAutoLogin(true);
+		self::assertEquals(true, $authManager->getAllowAutoLogin());
+		$authManager->setAllowAutoLogin(false);
+		self::assertEquals(false, $authManager->getAllowAutoLogin());
+		$authManager->setAllowAutoLogin(1);
+		self::assertEquals(true, $authManager->getAllowAutoLogin());
+		$authManager->setAllowAutoLogin(0);
+		self::assertEquals(false, $authManager->getAllowAutoLogin());
+		$authManager->setAllowAutoLogin('true');
+		self::assertEquals(true, $authManager->getAllowAutoLogin());
+		$authManager->setAllowAutoLogin('false');
+		self::assertEquals(false, $authManager->getAllowAutoLogin());
+	}
+
+	public function testAuthExpire()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->setAuthExpire(86400);
+		self::assertEquals(86400, $authManager->getAuthExpire());
+		$authManager->setAuthExpire(0);
+		self::assertEquals(0, $authManager->getAuthExpire());
 	}
 
 	public function testOnAuthenticate()
 	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
-
+	public function testOnAuthExpire()
+	{
+		throw new PHPUnit\Framework\IncompleteTestError();
+	}
 	public function testOnAuthorize()
 	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
 
+	public function testUserKey()
+	{
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$md5 = md5($authManager->getApplication()->getUniqueID() . 'prado:user');
+		self::assertEquals($md5, $authManager->getUserKey());
+	}
+
 	public function testUpdateSessionUser()
+	{
+		throw new PHPUnit\Framework\IncompleteTestError();
+	}
+
+	public function testSwitchUser()
 	{
 		throw new PHPUnit\Framework\IncompleteTestError();
 	}
@@ -123,5 +187,42 @@ class TAuthManagerTest extends PHPUnit\Framework\TestCase
 	public function testLogout()
 	{
 		throw new PHPUnit\Framework\IncompleteTestError();
+	}
+	
+	protected $_handled = 0;
+	public function myhandler()
+	{
+		$this->_handled++;
+	}
+	
+	public function testOnLogin()
+	{
+		$this->_handled = 0;
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->onLogin[] = [$this, 'myhandler'];
+		$authManager->onLogin($this, null);
+		self::assertEquals(1, $this->_handled);
+	}
+	public function testOnLoginFailed()
+	{
+		$this->_handled = 0;
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->onLoginFailed[] = [$this, 'myhandler'];
+		$authManager->onLoginFailed($this, null);
+		self::assertEquals(1, $this->_handled);
+	}
+	public function testOnLogout()
+	{
+		$this->_handled = 0;
+		$authManager = new TAuthManager();
+		$authManager->setUserManager('users');
+		$authManager->init(null);
+		$authManager->onLogout[] = [$this, 'myhandler'];
+		$authManager->onLogout($this, null);
+		self::assertEquals(1, $this->_handled);
 	}
 }
