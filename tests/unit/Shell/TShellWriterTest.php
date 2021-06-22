@@ -71,6 +71,36 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 		self::assertEquals("some text\n", $this->obj->flush());
 	}
 	
+	public function testWriteError()
+	{
+		$this->obj->writeError('my error text');
+		$text = $this->obj->flush();
+		self::assertTrue(str_contains($text, "Error"));
+		self::assertTrue(str_contains($text, "my error text"));
+	}
+	
+	public function testPad()
+	{
+		self::assertEquals('text ', $this->obj->pad('text', 5));
+		self::assertEquals('text-', $this->obj->pad('text', 5, '-'));
+		self::assertEquals(' text', $this->obj->pad('text', 5, ' ', STR_PAD_LEFT));
+		self::assertEquals('text ', $this->obj->pad('text', 5, ' ', STR_PAD_RIGHT));
+		self::assertEquals(' text ', $this->obj->pad('text', 6, ' ', STR_PAD_BOTH));
+		self::assertEquals('-text', $this->obj->pad('text', 5, '-', STR_PAD_LEFT));
+		self::assertEquals('text-', $this->obj->pad('text', 5, '-', STR_PAD_RIGHT));
+		self::assertEquals('-text-', $this->obj->pad('text', 6, '-', STR_PAD_BOTH));
+		
+		self::assertEquals('  text', $this->obj->pad('text', 6, ' ', STR_PAD_LEFT));
+		self::assertEquals('text  ', $this->obj->pad('text', 6, ' ', STR_PAD_RIGHT));
+		self::assertEquals('  text  ', $this->obj->pad('text', 8, ' ', STR_PAD_BOTH));
+	}
+	
+	public function testTableWidget()
+	{
+		$str = $this->obj->tableWidget(['headers' => ['title 1', 'title 2', 'count'], 'rows' => [['aa', 'bb', 'cc'], ['dd', 'ee', 'ff']]]);
+		self::assertEquals(1, preg_match('/title 1(?:.*)title 2(?:.*)count(?:.*)aa(?:.*)bb(?:.*)cc(?:.*)dd(?:.*)ee(?:.*)ff/ms', $str));
+	}
+	
 	public function testFormat()
 	{
 		$this->obj->setColorSupported(true);

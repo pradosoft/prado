@@ -16,6 +16,7 @@ use Prado\Prado;
 /**
  * Base class for command line actions.
  *
+ * @author Brad Anderson <belisoful[at]icloud[dot]com> shell refactor
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Shell
  * @since 3.0.5
@@ -23,6 +24,8 @@ use Prado\Prado;
 abstract class TShellAction extends \Prado\TComponent
 {
 	protected $action;
+	protected $defaultMethod = 0;
+	protected $methods;
 	protected $parameters;
 	protected $optional;
 	protected $description;
@@ -45,14 +48,22 @@ abstract class TShellAction extends \Prado\TComponent
 		$this->_outWriter = $writer;
 	}
 	
-	
+	/**
+	 * @return string the command action for the class
+	 */
+	public function getAction(): string
+	{
+		return $this->action;
+	}
 	
 	/**
-	 * Execute the action.
-	 * @param array $args command line parameters
-	 * @return bool true if action was handled
+	 * @@param string $writer the command action for the class
+	 * @param string $action
 	 */
-	abstract public function performAction($args);
+	public function setAction(string $action)
+	{
+		$this->action = $action;
+	}
 
 	/**
 	 * Creates a directory and sets its mode
@@ -90,83 +101,85 @@ abstract class TShellAction extends \Prado\TComponent
 	 */
 	public function isValidAction($args)
 	{
-		return 0 == strcasecmp($args[0], $this->action) &&
-			count($args) - 1 >= count($this->parameters);
+		if (preg_match("/^{$this->action}(?:\\/([-\w\d]*))?$/", $args[0], $match)) {
+			if (isset($match[1]) && $match[1]) {
+				$i = array_flip($this->methods)[$match[1]] ?? null;
+				if ($i === null) {
+					return null;
+				}
+			} else {
+				$i = $this->defaultMethod;
+				$match[1] = $this->methods[$i];
+			}
+			
+			$params = ($this->parameters[$i] === null) ? [] : $this->parameters[$i];
+			$params = is_array($params) ? $params : [$this->parameters[$i]];
+			if (count($args) - 1 < count($params)) {
+				return null;
+			}
+			return $match[1];
+		}
+		return null;
 	}
-
+	
+	/**
+	 * @param string $cmd
+	 * @return string
+	 */
+	public function renderHelpCommand($cmd)
+	{
+		$this->_outWriter->write("\nusage: ");
+		$this->_outWriter->writeLine("php prado-cli.php {$this->action}/<action>", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$this->_outWriter->writeLine("\nexample: php prado-cli.php {$this->action}/{$this->methods[0]}\n");
+		$this->_outWriter->writeLine("The following actions are available:");
+		$this->_outWriter->writeLine();
+		foreach ($this->methods as $i => $method) {
+			$params = [];
+			if ($this->parameters[$i]) {
+				$parameters = is_array($this->parameters[$i]) ? $this->parameters[$i] : [$this->parameters[$i]];
+				foreach ($parameters as $v) {
+					$params[] = '<' . $v . '>';
+				}
+			}
+			$parameters = implode(' ', $params);
+			$options = [];
+			if ($this->optional[$i]) {
+				$optional = is_array($this->optional[$i]) ? $this->optional[$i] : [$this->optional[$i]];
+				foreach ($optional as $v) {
+					$options[] = '[' . $v . ']';
+				}
+			}
+			$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
+			
+			$description = $this->getWriter()->wrapText($this->description[$i + 1], 10);
+			$parameters = $this->getWriter()->format($parameters, [TShellWriter::BLUE, TShellWriter::BOLD]);
+			$optional = $this->getWriter()->format($optional, [TShellWriter::BLUE]);
+			$description = $this->getWriter()->format($description, TShellWriter::DARK_GRAY);
+			
+			$this->_outWriter->write('  ');
+			$this->_outWriter->writeLine($this->action . '/' . $method . ' ' . $parameters . $optional, [TShellWriter::BLUE, TShellWriter::BOLD]);
+			$this->_outWriter->writeLine('         ' . $description);
+			$this->_outWriter->writeLine();
+		}
+	}
+	
 	/**
 	 * @return string
 	 */
 	public function renderHelp()
 	{
-		$params = [];
-		foreach ($this->parameters as $v) {
-			$params[] = '<' . $v . '>';
-		}
-		$parameters = implode(' ', $params);
-		$options = [];
-		foreach ($this->optional as $v) {
-			$options[] = '[' . $v . ']';
-		}
-		$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
-		
-		$description = $this->getWriter()->wrapText($this->description, 5);
-		
 		$action = $this->getWriter()->format($this->action, [TShellWriter::BLUE, TShellWriter::BOLD]);
-		$parameters = $this->getWriter()->format($parameters, [TShellWriter::BLUE, TShellWriter::BOLD]);
-		$optional = $this->getWriter()->format($optional, [TShellWriter::BLUE]);
-		$description = $this->getWriter()->format($description, TShellWriter::DARK_GRAY);
-		return <<<EOD
- - {$action} {$parameters}{$optional}
-     {$description}
-EOD;
-	}
-
-	/**
-	 * Initalize a Prado application inside the specified directory
-	 * @param string $directory directory name
-	 * @return false|TApplication
-	 */
-	protected function initializePradoApplication($directory)
-	{
-		$_SERVER['SCRIPT_FILENAME'] = $directory . '/index.php';
-		$app_dir = realpath($directory . '/protected/');
-		if ($app_dir !== false && is_dir($app_dir)) {
-			if (Prado::getApplication() === null) {
-				$app = new TShellApplication($app_dir);
-				$app->run();
-				$dir = substr(str_replace(realpath('./'), '', $app_dir), 1);
-				TShellInterpreter::getInstance()->printGreeting();
-				$this->_outWriter->writeLine('** Loaded PRADO appplication in directory "' . $dir . "\".");
-			}
-
-			return Prado::getApplication();
-		} else {
-			TShellInterpreter::getInstance()->printGreeting();
-			$this->_outWriter->writeError('Unable to load PRADO application in directory "' . $directory . "\".");
+	
+		$str = '';
+		$length = 31;
+		$str .= $this->getWriter()->pad(" - {$action}", $length);
+		$description = $this->getWriter()->wrapText($this->description[0], $length);
+		$str .= $description . PHP_EOL;
+		foreach ($this->methods as $i => $method) {
+			$str .= $this->getWriter()->pad("     {$this->action}/$method", $length);
+			$description = $this->getWriter()->wrapText($this->description[$i + 1], $length);
+			$str .= $this->getWriter()->format($description, TShellWriter::DARK_GRAY) . PHP_EOL;
 		}
-		return false;
-	}
-
-	/**
-	 * @param string $app_dir application directory
-	 * @return false|string
-	 */
-	protected function getAppConfigFile($app_dir)
-	{
-		if (false !== ($xml = realpath($app_dir . '/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		if (false !== ($xml = realpath($app_dir . '/protected/application.xml')) && is_file($xml)) {
-			return $xml;
-		}
-		if (false !== ($php = realpath($app_dir . '/application.php')) && is_file($php)) {
-			return $php;
-		}
-		if (false !== ($php = realpath($app_dir . '/protected/application.php')) && is_file($php)) {
-			return $php;
-		}
-		$this->_outWriter->writeError('Unable to find application.xml or application.php in ' . $app_dir . ".");
-		return false;
+		return $str;
 	}
 }

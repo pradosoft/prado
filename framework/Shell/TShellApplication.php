@@ -10,6 +10,15 @@
 
 namespace Prado\Shell;
 
+use Prado\Prado;
+use Prado\Shell\Actions\TActiveRecordAction;
+use Prado\Shell\Actions\THelpAction;
+use Prado\Shell\Actions\TFlushCachesAction;
+use Prado\Shell\Actions\TPhpShellAction;
+
+use Prado\IO\TOutputWriter;
+use Prado\Shell\TShellWriter;
+
 /**
  * TShellApplication class.
  *
@@ -29,7 +38,7 @@ namespace Prado\Shell;
  * accessibility to resources as the PRADO Web applications.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <belisoful@icloud.com>
+ * @author Brad Anderson <belisoful@icloud.com> shell refactor
  * @package Prado\Shell
  * @since 3.1.0
  */
@@ -38,7 +47,14 @@ class TShellApplication extends \Prado\TApplication
 	/**
 	 * @var cli shell Application commands. Modules can add their own command
 	 */
-	private $_actionClasses = [];
+	private $_actions = [];
+	
+	/**
+	 * @var TShellWriter output writer.
+	 */
+	protected $_outWriter;
+	
+	protected $_helpPrinted = false;
 	
 	/**
 	 * Runs the application.
@@ -48,7 +64,21 @@ class TShellApplication extends \Prado\TApplication
 	public function run()
 	{
 		$this->detectShellLanguageCharset();
+		
+		$this->addShellActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
+		$this->addShellActionClass('Prado\\Shell\\Actions\\THelpAction');
+		$this->addShellActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
+		$this->addShellActionClass('Prado\\Shell\\Actions\\TActiveRecordAction');
+		
 		$this->initApplication();
+		
+		$this->onLoadState();
+		$this->onLoadStateComplete();
+		
+		$this->runCommand($_SERVER['argv']);
+		
+		$this->onSaveState();
+		$this->onSaveStateComplete();
 	}
 	
 	/**
@@ -70,20 +100,100 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @param string $v a CLI Action class to add to the list of what the application is capable
+	 * This processes the command entered into the cli
+	 * @param mixed $args
 	 * @since 4.2.0
 	 */
-	public function addShellActionClass($v)
+	public function runCommand($args)
 	{
-		$this->_actionClasses[] = $v;
+		if (count($args) > 1) {
+			array_shift($args);
+		}
+		$outWriter = $this->_outWriter = new TShellWriter(new TOutputWriter());
+		$valid = false;
+		
+		$this->printGreeting($outWriter);
+		foreach ($this->_actions as $class => $action) {
+			if (($method = $action->isValidAction($args)) !== null) {
+				$action->setWriter($outWriter);
+				$m = 'action' . str_replace('-', '', $method);
+				if (method_exists($action, $m)) {
+					$valid |= call_user_func([$action, $m], $args);
+				} else {
+					$outWriter->writeError("$method is not an available command");
+					$valid = true;
+				}
+				break;
+			}
+		}
+		if (!$valid) {
+			$this->printHelp($outWriter);
+		}
+		$outWriter->flush();
+	}
+
+	/**
+	 * @param string $class action class name
+	 * @since 4.2.0
+	 */
+	public function addShellActionClass($class)
+	{
+		$this->_actions[$class] = new $class;
+	}
+
+	/**
+	 * @@return Prado\Shell\TShellAction[] the shell actions for the application
+	 * @since 4.2.0
+	 */
+	public function getShellActions()
+	{
+		return $this->_actions;
 	}
 	
+
 	/**
-	 * @@return string[] the CLI Action classes that the application has registered
+	 * @param string $class action class name
+	 * @param mixed $outWriter
 	 * @since 4.2.0
 	 */
-	public function getShellActionClasses()
+	public function printGreeting($outWriter)
 	{
-		return $this->_actionClasses;
+		if (!$this->_helpPrinted) {
+			$outWriter->write("  Command line tools for Prado " . Prado::getVersion() . ".", TShellWriter::DARK_GRAY);
+			$outWriter->writeLine();
+			$outWriter->flush();
+			$this->_helpPrinted = true;
+		}
+	}
+
+
+	/**
+	 * Print command line help, default action.
+	 * @param mixed $outWriter
+	 * @since 4.2.0
+	 */
+	public function printHelp($outWriter)
+	{
+		$this->printGreeting($outWriter);
+		
+		$outWriter->write("usage: ");
+		$outWriter->writeLine("php prado-cli.php command[/action] <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
+		$outWriter->writeLine();
+		$outWriter->writeLine("example: php prado-cli.php cache/flush-all");
+		$outWriter->writeLine("example: prado-cli help");
+		$outWriter->writeLine("example: prado-cli cron/tasks");
+		$outWriter->writeLine();
+		$outWriter->writeLine("The following options are available:");
+		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . "Loads the configuration.xml/php from <folder>");
+		$outWriter->writeLine();
+		$outWriter->writeLine("The following commands are available:");
+		foreach ($this->_actions as $action) {
+			$action->setWriter($outWriter);
+			$outWriter->writeLine($action->renderHelp());
+		}
+		$outWriter->writeLine("To see the help of each command, enter:");
+		$outWriter->writeLine();
+		$outWriter->writeLine("  prado-cli help <command-name>");
+		$outWriter->writeLine();
 	}
 }

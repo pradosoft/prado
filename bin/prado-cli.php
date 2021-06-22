@@ -4,6 +4,7 @@
  * Prado command line developer tools.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
+ * @author Brad Anderson <belisoful@icloud.com> shell refactor
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -21,22 +22,29 @@ if (file_exists($autoloader = realpath(__DIR__ . '/../../../autoload.php'))) {
 	include($autoloader);
 }
 
-use Prado\Shell\TShellInterpreter;
-
-use Prado\Shell\Actions\TActiveRecordGenAction;
-use Prado\Shell\Actions\TActiveRecordGenAllAction;
-use Prado\Shell\Actions\TAppAction;
-use Prado\Shell\Actions\TFlushCachesAction;
-use Prado\Shell\Actions\TPhpShellAction;
-
 restore_exception_handler();
 
-//register action classes
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TAppAction');
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TActiveRecordGenAction');
-TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TActiveRecordGenAllAction');
+use Prado\Shell\TShellApplication;
 
-//run it;
-TShellInterpreter::getInstance()->run($_SERVER['argv']);
+$app_dir = dirname(__DIR__, 4);
+
+foreach ($_SERVER['argv'] as $i => $arg) {
+	if (strncasecmp($arg, '-d', 2) === 0) {
+		$app_dir = substr($arg, 2);
+		unset($_SERVER['argv'][$i]);
+		if (!$app_dir) {
+			$app_dir = $_SERVER['argv'][$i + 1] ?? null;
+			unset($_SERVER['argv'][$i + 1]);
+		} else {
+			if ($app_dir[0] === '=') {
+				$app_dir = substr($app_dir, 1);
+			}
+		}
+		$_SERVER['argv'] = array_values($_SERVER['argv']);
+		break;
+	}
+}
+
+$_SERVER['SCRIPT_FILENAME'] = dirname($app_dir) . DIRECTORY_SEPARATOR . 'index.php';
+$app = new TShellApplication($app_dir);
+$app->run();

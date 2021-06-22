@@ -1,5 +1,6 @@
 ## Version 4.2.0 - in development
 
+CHG: Issue #783 - Refactor the Shell system with Composer in mind; shell routes and actions, updated the help system.
 ENH: Issue #761 - TCronModule and TDbCronModule with supporting classes, scheduled like linux cron schedule expression, 8 languages.
 ENH: Issue #743 - Integrate Composer extensions for PRADO, module ids can be the composer package names and the class will be ['extra']['bootstrap'] (from the composer.json file). TPluginModule/TDbPluginModule for additional functionality as the parent class for extensions.  Composer "type" : "prado4-extension" (belisoful)
 BUG: Issue #784 - Prado-CLI corrected I18N by translating the shell "LANG" into "HTTP_ACCEPT_LANGUAGE" (belisoful)

@@ -44,7 +44,7 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 		$app = Prado::getApplication();
 		
 		//  no TCronModule in application, failed 
-		self::assertTrue($this->obj->performAction(['prado-cli', 'app', '.', 'cron']));
+		self::assertTrue($this->obj->actionRun(['cron']));
 		self::assertEquals(1, preg_match("/TCronModule/", $text = $this->writer->flush()));
 		
 		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ?', 'task' => 'TTestCronModuleTask', 'userid' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
@@ -56,13 +56,13 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 		{	//cron pending tasks
 			$task = $cron->getTask('testTaskA');
 			self::assertEquals(0, $task->getProcessCount());
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron']));
+			self::assertTrue($this->obj->actionRun(['cron/run']));
 			self::assertEquals(1, $task->getProcessCount());
 			$this->writer->flush();
 		}
 		self::assertTrue(is_object($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)));
 		{	//cron tasks
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'tasks']));
+			self::assertTrue($this->obj->actionTasks(['cron/tasks']));
 			$text = $this->writer->flush();
 			
 			self::assertEquals(1, preg_match("/Name/", $text));
@@ -79,14 +79,14 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match("/admin123/", $text));
 			self::assertEquals(0, preg_match("/(1969|1970)/", $text));
 		}
-		{	//cron info	
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'info']));
+		{	//cron index	
+			self::assertTrue($this->obj->actionIndex(['cron/index']));
 			$text = $this->writer->flush();
 			self::assertEquals(1, preg_match("/No registered application tasks/", $text));
 			
 			//Register & call again
 			$fxtest = new TTestCronFXTest();
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'info']));
+			self::assertTrue($this->obj->actionIndex(['cron/index']));
 			$text = $this->writer->flush();
 			self::assertEquals(1, preg_match("/Task ID/", $text));
 			self::assertEquals(1, preg_match("/Task/", $text));
@@ -99,33 +99,6 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match("/text title/", $text));
 			self::assertEquals(1, preg_match("/text description/", $text));
 			$fxtest->unlisten();
-		}
-		{	//cron help	
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'help']));
-			$text = $this->writer->flush();
-			self::assertEquals(1, preg_match("/usage/", $text));
-			self::assertEquals(1, preg_match("/prado-cli/", $text));
-			self::assertEquals(1, preg_match("/example/", $text));
-			self::assertEquals(1, preg_match("/tasks/", $text));
-			self::assertEquals(1, preg_match("/info/", $text));
-			self::assertEquals(1, preg_match("/help/", $text));
-		}
-		{	//cron help	tasks
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'help', 'tasks']));
-			$text = $this->writer->flush();
-			self::assertEquals(1, preg_match("/help/", $text));
-			self::assertEquals(1, preg_match("/tasks command/", $text));
-		}
-		{	//cron help	info
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'help', 'info']));
-			$text = $this->writer->flush();
-			self::assertEquals(1, preg_match("/help/", $text));
-			self::assertEquals(1, preg_match("/info command/", $text));
-		}
-		{	//cron help	info
-			self::assertTrue($this->obj->performAction(['app', '.', 'cron', 'help', 'help']));
-			$text = $this->writer->flush();
-			self::assertEquals(1, preg_match("/help command/", $text));
 		}
 		
 		//$app->setModule('ShellCron', null);
