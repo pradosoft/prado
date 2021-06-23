@@ -64,6 +64,7 @@ class TShellApplication extends \Prado\TApplication
 	 * Runs the application.
 	 * This method overrides the parent implementation by initializing
 	 * application with configurations specified when it is created.
+	 * @param null|array<string> $args
 	 */
 	public function run($args = null)
 	{
@@ -126,7 +127,7 @@ class TShellApplication extends \Prado\TApplication
 					if (isset($value[0]) && $value[0] === '=') {
 						$value = substr($value, 1);
 					}
-					if($option === '-q') {
+					if ($option === '-q') {
 						$this->_quietMode = max(1, (int) $value);
 					}
 					break;

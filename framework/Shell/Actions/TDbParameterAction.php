@@ -46,7 +46,7 @@ class TDbParameterAction extends TShellAction
 		$len = 0;
 		foreach ($params as $key => $value) {
 			$_len = strlen($key);
-			if($len < $_len) {
+			if ($len < $_len) {
 				$len = $_len;
 			}
 		}
@@ -56,10 +56,10 @@ class TDbParameterAction extends TShellAction
 		$writer->writeLine('Parameter Key', TShellWriter::UNDERLINE);
 		foreach ($params as $key => $value) {
 			$writer->write($writer->pad($key, $len + 1));
-			if(is_object($value)) {
+			if (is_object($value)) {
 				$value = '(object)';
 			}
-			if(is_array($value)) {
+			if (is_array($value)) {
 				$value = '(array)';
 			}
 			$writer->writeLine($writer->wrapText($value, $len + 1));
@@ -77,8 +77,7 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 		
-		if(!($key = ($args[1] ?? null)))
-		{
+		if (!($key = ($args[1] ?? null))) {
 			$writer->writeError('Get Parameter needs a key');
 			return true;
 		}
@@ -101,13 +100,11 @@ class TDbParameterAction extends TShellAction
 		$writer = $this->getWriter();
 		$writer->writeLine();
 		
-		if(!($key = ($args[1] ?? null)))
-		{
+		if (!($key = ($args[1] ?? null))) {
 			$this->getWriter()->writeError('Get Parameter needs a key');
 			return true;
 		}
-		if(!($value = ($args[2] ?? null)))
-		{
+		if (!($value = ($args[2] ?? null))) {
 			$this->getWriter()->writeError('Set Parameter needs a key and Value');
 			return true;
 		}
@@ -118,7 +115,7 @@ class TDbParameterAction extends TShellAction
 				break;
 			}
 		}
-		if(!$module) {
+		if (!$module) {
 			$writer->writeError('No TDbParameterModule found to set parameters');
 		}
 		$module->set($key, $value, $autoload, false);
