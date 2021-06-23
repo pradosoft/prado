@@ -281,7 +281,11 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					$controls[$key] = $component;
 					if (isset($properties['id'])) {
 						if (is_array($properties['id'])) {
-							$properties['id'] = $component->evaluateExpression($properties['id'][1]);
+							if ($properties['id'][0] === self::CONFIG_PARAMETER) {
+								$properties['id'] = $this->getApplication()->getParameters()->itemAt($properties['id'][1]);
+							} else {
+								$properties['id'] = $component->evaluateExpression($properties['id'][1]);
+							}
 						}
 						$tplControl->registerObject($properties['id'], $component);
 						if (!$component->hasProperty('id')) {
