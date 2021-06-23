@@ -157,6 +157,9 @@ class TDbParameterModule extends TModule implements IDbModule
 		if ($this->_autoCapture) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
+		if (($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+			$app->addShellActionClass('Prado\\Shell\\Actions\\TDbParameterAction');
+		}
 		parent::init($config);
 	}
 	

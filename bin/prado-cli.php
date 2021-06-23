@@ -28,23 +28,24 @@ use Prado\Shell\TShellApplication;
 
 $app_dir = dirname(__DIR__, 4);
 
+$args = $_SERVER['argv'];
 foreach ($_SERVER['argv'] as $i => $arg) {
 	if (strncasecmp($arg, '-d', 2) === 0) {
 		$app_dir = substr($arg, 2);
-		unset($_SERVER['argv'][$i]);
+		unset($args[$i]);
 		if (!$app_dir) {
 			$app_dir = $_SERVER['argv'][$i + 1] ?? null;
-			unset($_SERVER['argv'][$i + 1]);
+			unset($args[$i + 1]);
 		} else {
 			if ($app_dir[0] === '=') {
 				$app_dir = substr($app_dir, 1);
 			}
 		}
-		$_SERVER['argv'] = array_values($_SERVER['argv']);
+		$args = array_values($args);
 		break;
 	}
 }
 
 $_SERVER['SCRIPT_FILENAME'] = dirname($app_dir) . DIRECTORY_SEPARATOR . 'index.php';
 $app = new TShellApplication($app_dir);
-$app->run();
+$app->run($args);

@@ -16,6 +16,7 @@ use Prado\Shell\Actions\THelpAction;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\TPhpShellAction;
 
+use Prado\IO\ITextWriter;
 use Prado\IO\TOutputWriter;
 use Prado\Shell\TShellWriter;
 
@@ -44,6 +45,9 @@ use Prado\Shell\TShellWriter;
  */
 class TShellApplication extends \Prado\TApplication
 {
+	/** @var bool  tells the application to be in quiet mode, levels [0..1], default 0, */
+	private $_quietMode = 0;
+	
 	/**
 	 * @var cli shell Application commands. Modules can add their own command
 	 */
@@ -61,24 +65,30 @@ class TShellApplication extends \Prado\TApplication
 	 * This method overrides the parent implementation by initializing
 	 * application with configurations specified when it is created.
 	 */
-	public function run()
+	public function run($args = null)
 	{
 		$this->detectShellLanguageCharset();
+		$this->processArguments($args);
 		
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\THelpAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TActiveRecordAction');
 		
+		$this->_outWriter = new TShellWriter(new TOutputWriter());
+		
 		$this->initApplication();
 		
 		$this->onLoadState();
 		$this->onLoadStateComplete();
 		
-		$this->runCommand($_SERVER['argv']);
+		$this->runCommand($args);
 		
 		$this->onSaveState();
 		$this->onSaveStateComplete();
+		$this->onPreFlushOutput();
+		$this->flushOutput();
+		$this->onEndRequest();
 	}
 	
 	/**
@@ -100,8 +110,34 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
+	 * This processes the arguments entered into the cli
+	 * @param array $args
+	 * @since 4.2.0
+	 */
+	public function processArguments($args)
+	{
+		$options = ['-q'];
+		$skip = false;
+		foreach ($args as $i => $arg) {
+			foreach ($options as $option) {
+				$len = strlen($option);
+				if (strncasecmp($arg, $option, $len) === 0) {
+					$value = substr($arg, $len);
+					if (isset($value[0]) && $value[0] === '=') {
+						$value = substr($value, 1);
+					}
+					if($option === '-q') {
+						$this->_quietMode = max(1, (int) $value);
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
 	 * This processes the command entered into the cli
-	 * @param mixed $args
+	 * @param array $args
 	 * @since 4.2.0
 	 */
 	public function runCommand($args)
@@ -109,7 +145,7 @@ class TShellApplication extends \Prado\TApplication
 		if (count($args) > 1) {
 			array_shift($args);
 		}
-		$outWriter = $this->_outWriter = new TShellWriter(new TOutputWriter());
+		$outWriter = $this->_outWriter;
 		$valid = false;
 		
 		$this->printGreeting($outWriter);
@@ -129,7 +165,6 @@ class TShellApplication extends \Prado\TApplication
 		if (!$valid) {
 			$this->printHelp($outWriter);
 		}
-		$outWriter->flush();
 	}
 
 	/**
@@ -152,13 +187,58 @@ class TShellApplication extends \Prado\TApplication
 	
 
 	/**
+	 * Flushes output to shell.
+	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
+	 */
+	public function flushOutput($continueBuffering = true)
+	{
+		$this->_outWriter->flush();
+		if (!$continueBuffering) {
+			$this->_outWriter = null;
+		}
+	}
+	
+	/**
+	 * @return ITextWriter the writer for the class
+	 */
+	public function getWriter(): ITextWriter
+	{
+		return $this->_outWriter;
+	}
+	
+	/**
+	 * @@param ITextWriter $writer the writer for the class
+	 */
+	public function setWriter(ITextWriter $writer)
+	{
+		$this->_outWriter = $writer;
+	}
+	
+	/**
+	 * @return int the writer for the class
+	 */
+	public function getQuietMode(): int
+	{
+		return $this->_quietMode;
+	}
+	
+	/**
+	 * @@param int $quietMode the writer for the class
+	 */
+	public function setQuietMode(int $quietMode)
+	{
+		$this->_quietMode = $quietMode;
+	}
+	
+
+	/**
 	 * @param string $class action class name
 	 * @param mixed $outWriter
 	 * @since 4.2.0
 	 */
 	public function printGreeting($outWriter)
 	{
-		if (!$this->_helpPrinted) {
+		if (!$this->_helpPrinted && $this->_quietMode === 0) {
 			$outWriter->write("  Command line tools for Prado " . Prado::getVersion() . ".", TShellWriter::DARK_GRAY);
 			$outWriter->writeLine();
 			$outWriter->flush();
