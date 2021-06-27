@@ -391,7 +391,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function updateSessionUser($user)
 	{
-		if (!$user->getIsGuest()) {
+		if (php_sapi_name() !== 'cli' && !$user->getIsGuest()) {
 			if (($session = $this->getSession()) === null) {
 				throw new TConfigurationException('authmanager_session_required');
 			} else {
@@ -412,9 +412,7 @@ class TAuthManager extends \Prado\TModule
 		if (($user = $this->_userManager->getUser($username)) === null) {
 			return false;
 		}
-		if (php_sapi_name() !== 'cli') {
-			$this->updateSessionUser($user);
-		}
+		$this->updateSessionUser($user);
 		$this->getApplication()->setUser($user);
 		return true;
 	}
