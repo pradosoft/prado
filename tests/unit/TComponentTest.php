@@ -2075,7 +2075,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		//Check that the behavior is working as it should
 		$this->assertTrue($this->component->isa('TDynamicBehavior'));
-		$this->assertNull($this->component->getLastBehaviorDynamicMethodCalled());
+		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
 		$this->assertEquals(42, $this->component->TestBehaviorMethod(6, 7));
@@ -2110,7 +2110,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		//Check that the behavior is working as it should
 		$this->assertTrue($this->component->isa('TDynamicClassBehavior'));
-		$this->assertNull($this->component->getLastBehaviorDynamicMethodCalled());
+		$this->assertEquals('dyAttachBehavior', $this->component->getLastBehaviorDynamicMethodCalled());
 
 		// call basic behavior implemented method from object (containing behavior)
 		$this->assertEquals(42, $this->component->TestBehaviorMethod(6, 7));
@@ -2257,7 +2257,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	{
 		$this->component->attachBehavior('IntraEvents', new IntraObjectExtenderBehavior);
 
-		$this->assertNull($this->component->IntraEvents->LastCall);
+		$this->assertEquals(11, $this->component->IntraEvents->LastCall);
 
 		//unlisten first, this object listens upon instantiation.
 		$this->component->unlisten();
