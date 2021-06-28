@@ -116,8 +116,8 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		
 		$this->assertTrue($this->map->remove('unknown key') === null);
 		
-		$this->assertNull($b->method);
-		$this->assertNull($b->args);
+		$this->assertEquals('dyAttachBehavior', $b->method);
+		$this->assertEquals($b, $b->args[1]);
 		
 		$this->assertEquals($this->item1, $this->map->remove('key1'));
 		
@@ -181,8 +181,8 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->map['key1'] === $this->item1);
 		$this->assertTrue($this->map['key2'] === $this->item2);
 		
-		$this->assertNull($b->method);
-		$this->assertNull($b->args);
+		$this->assertEquals('dyAttachBehavior', $b->method);
+		$this->assertEquals($b, $b->args[1]);
 		
 		$this->assertEquals(null, $this->map['key3']);
 		
