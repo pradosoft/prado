@@ -138,8 +138,15 @@ class TDbParameterModule extends TModule implements IDbModule
 	 */
 	private $_autoCapture = true;
 	
-	/** @var TMapRouteBehavior captures all the changes to the parameters to the db */
+	/**
+	 * @var TMapRouteBehavior captures all the changes to the parameters to the db
+	 */
 	private $_setBehavior;
+	
+	/**
+	 * @var bool whether or not to have shell access enabled.  Default false.
+	 */
+	private $_shellAccess = false;
 
 	
 	/**
@@ -157,7 +164,7 @@ class TDbParameterModule extends TModule implements IDbModule
 		if ($this->_autoCapture) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
-		if (($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if ($this->_shellAccess && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
 			$app->addShellActionClass('Prado\\Shell\\Actions\\TDbParameterAction');
 		}
 		parent::init($config);
@@ -680,7 +687,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	}
 
 	/**
-	 * @return bool whether the paramter DB table should be automatically created if not exists. Defaults to true.
+	 * @return bool whether the parameter DB table should be automatically created if not exists. Defaults to true.
 	 */
 	public function getCaptureParameterChanges()
 	{
@@ -693,5 +700,21 @@ class TDbParameterModule extends TModule implements IDbModule
 	public function setCaptureParameterChanges($value)
 	{
 		$this->_autoCapture = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * @return bool should the DbParameter module have shell access. Defaults to false.
+	 */
+	public function getShellAccess()
+	{
+		return $this->_shellAccess;
+	}
+
+	/**
+	 * @param bool $value should the DbParameter module have shell access.
+	 */
+	public function setShellAccess($value)
+	{
+		$this->_shellAccess = TPropertyValue::ensureBoolean($value);
 	}
 }
