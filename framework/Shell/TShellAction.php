@@ -64,6 +64,26 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		$this->action = $action;
 	}
+	
+	/**
+	 * Properties for the action set by parameter
+	 * @param string $actionID the action being executed
+	 * @return array properties for the $actionID
+	 */
+	public function options($actionID)
+	{
+		return [];
+	}
+	
+	/**
+	 * Aliases for the properties to be set by parameter
+	 * @param string $actionID the action being executed
+	 * @return array<alias, property> properties for the $actionID
+	 */
+	public function optionAliases()
+	{
+		return [];
+	}
 
 	/**
 	 * Creates a directory and sets its mode

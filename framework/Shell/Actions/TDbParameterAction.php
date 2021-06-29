@@ -36,12 +36,59 @@ class TDbParameterAction extends TShellAction
 		'Gets a specific parameter by <param-key>.',
 		'Sets a specific parameter <param-key> to <param-value>.'];
 	
+	private $_allParams = false;
+	
+	/**
+	 *
+	 */
+	public function getAll()
+	{
+		return $this->_allParams;
+	}
+	
+	/**
+	 * @param bool $value If this is called, set the property to true
+	 */
+	public function setAll($value)
+	{
+		$this->_allParams = !TPropertyValue::ensureBoolean($value === '' ? true : $value);
+	}
+	
+	/**
+	 * Properties for the action set by parameter
+	 * @param string $actionID the action being executed
+	 * @return array properties for the $actionID
+	 */
+	public function options($actionID)
+	{
+		if ($actionID === 'index') {
+			return ['all'];
+		}
+		return [];
+	}
+	
+	/**
+	 * Aliases for the properties to be set by parameter
+	 * @param string $actionID the action being executed
+	 * @return array<alias, property> properties for the $actionID
+	 */
+	public function optionAliases()
+	{
+		return ['a' => 'all'];
+	}
+	
 	/**
 	 * @param array $args parameters
 	 * @return bool
 	 */
 	public function actionIndex($args)
 	{
+		$writer = $this->getWriter();
+		if (!($module = $this->getDbParameterModule())) {
+			$writer->writeError('No TDbParameterModule found to set parameters');
+			return;
+		}
+		
 		$params = Prado::getApplication()->getParameters();
 		$len = 0;
 		foreach ($params as $key => $value) {
@@ -50,11 +97,13 @@ class TDbParameterAction extends TShellAction
 				$len = $_len;
 			}
 		}
-		$writer = $this->getWriter();
 		$writer->writeLine();
 		$writer->write($writer->pad($writer->format('Parameter Key', TShellWriter::UNDERLINE), $len + 1));
 		$writer->writeLine('Parameter Key', TShellWriter::UNDERLINE);
 		foreach ($params as $key => $value) {
+			if (!$this->getAll() && !$module->exists($key)) {
+				continue;
+			}
 			$writer->write($writer->pad($key, $len + 1));
 			if (is_object($value)) {
 				$value = '(object)';
@@ -64,7 +113,7 @@ class TDbParameterAction extends TShellAction
 			}
 			$writer->writeLine($writer->wrapText($value, $len + 1));
 		}
-		
+		$writer->writeLine();
 		return true;
 	}
 	
@@ -109,15 +158,12 @@ class TDbParameterAction extends TShellAction
 			return true;
 		}
 		$autoload = TPropertyValue::ensureBoolean($args[3] ?? true);
-		$module = null;
-		foreach (Prado::getApplication()->getModulesByType('Prado\\Util\\TDbParameterModule') as $module) {
-			if ($module) {
-				break;
-			}
-		}
-		if (!$module) {
+		
+		if (!($module = $this->getDbParameterModule())) {
 			$writer->writeError('No TDbParameterModule found to set parameters');
+			return true;
 		}
+		
 		$module->set($key, $value, $autoload, false);
 		
 		$writer->write('Set Parameter ');
@@ -126,5 +172,19 @@ class TDbParameterAction extends TShellAction
 		$writer->writeLine(Prado::varDump($value));
 		$writer->writeLine();
 		return true;
+	}
+	
+	/**
+	 * @return Prado\Util\TDBParameterModule
+	 */
+	public function getDbParameterModule()
+	{
+		$module = null;
+		foreach (Prado::getApplication()->getModulesByType('Prado\\Util\\TDbParameterModule') as $module) {
+			if ($module) {
+				break;
+			}
+		}
+		return $module;
 	}
 }

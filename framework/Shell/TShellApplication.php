@@ -58,7 +58,25 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	protected $_outWriter;
 	
+	/**
+	 * @var array<string, callable> application command options and property set callable
+	 */
+	protected $_options = [];
+	
+	/**
+	 * @var array<string, string> application command optionAliases of the short letter(s) and option name
+	 */
+	protected $_optionAliases = [];
+	
+	/**
+	 * @var bool is the application help printed
+	 */
 	protected $_helpPrinted = false;
+	
+	/**
+	 * @var string[] arguments to the application
+	 */
+	private $_arguments;
 	
 	/**
 	 * Runs the application.
@@ -68,8 +86,9 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function run($args = null)
 	{
+		array_shift($args);
+		$this->_arguments = $args;
 		$this->detectShellLanguageCharset();
-		$this->processArguments($args);
 		
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\THelpAction');
@@ -78,18 +97,9 @@ class TShellApplication extends \Prado\TApplication
 		
 		$this->_outWriter = new TShellWriter(new TOutputWriter());
 		
-		$this->initApplication();
+		$this->attachEventHandler('onInitComplete', [$this, 'processArguments']);
 		
-		$this->onLoadState();
-		$this->onLoadStateComplete();
-		
-		$this->runCommand($args);
-		
-		$this->onSaveState();
-		$this->onSaveStateComplete();
-		$this->onPreFlushOutput();
-		$this->flushOutput();
-		$this->onEndRequest();
+		parent::run();
 	}
 	
 	/**
@@ -111,41 +121,50 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * This processes the arguments entered into the cli
-	 * @param array $args
+	 * This processes the arguments entered into the cli.  This is processed after
+	 * the application is initialized and modules can
+	 * @param object $sender
+	 * @param mixed $param
 	 * @since 4.2.0
 	 */
-	public function processArguments($args)
+	public function processArguments($sender, $param)
 	{
-		$options = ['-q'];
+		$options = array_merge(['quiet' => [$this, 'setQuietMode']], $this->_options);
+		$aliases = array_merge(['q' => 'quiet'], $this->_optionAliases);
 		$skip = false;
-		foreach ($args as $i => $arg) {
-			foreach ($options as $option) {
-				$len = strlen($option);
-				if (strncasecmp($arg, $option, $len) === 0) {
-					$value = substr($arg, $len);
-					if (isset($value[0]) && $value[0] === '=') {
-						$value = substr($value, 1);
-					}
-					if ($option === '-q') {
-						$this->_quietMode = max(1, (int) $value);
-					}
+		foreach ($this->_arguments as $i => $arg) {
+			$arg = explode('=', $arg);
+			$processed = false;
+			foreach ($options as $option => $setMethod) {
+				$option = '--' . $option;
+				if ($arg[0] === $option) {
+					call_user_func($setMethod, $arg[1] ?? '');
+					unset($this->_arguments[$i]);
 					break;
 				}
 			}
+			if (!$processed) {
+				foreach ($aliases as $alias => $_option) {
+					$alias = '-' . $alias;
+					if (isset($options[$_option]) && $arg[0] === $alias) {
+						call_user_func($options[$_option], $arg[1] ?? '');
+						unset($this->_arguments[$i]);
+						break;
+					}
+				}
+			}
 		}
+		$this->_arguments = array_values($this->_arguments);
 	}
-	
+
 	/**
-	 * This processes the command entered into the cli
-	 * @param array $args
+	 * Runs the requested service.
 	 * @since 4.2.0
 	 */
-	public function runCommand($args)
+	public function runService()
 	{
-		if (count($args) > 1) {
-			array_shift($args);
-		}
+		$args = $this->_arguments;
+		
 		$outWriter = $this->_outWriter;
 		$valid = false;
 		
@@ -153,6 +172,7 @@ class TShellApplication extends \Prado\TApplication
 		foreach ($this->_actions as $class => $action) {
 			if (($method = $action->isValidAction($args)) !== null) {
 				$action->setWriter($outWriter);
+				$this->processActionArguments($args, $action, $method);
 				$m = 'action' . str_replace('-', '', $method);
 				if (method_exists($action, $m)) {
 					$valid |= call_user_func([$action, $m], $args);
@@ -163,8 +183,64 @@ class TShellApplication extends \Prado\TApplication
 				break;
 			}
 		}
-		if (!$valid) {
+		if (!$valid && $this->_quietMode === 0) {
 			$this->printHelp($outWriter);
+		}
+	}
+	
+	/**
+	 * This processes the arguments entered into the cli
+	 * @param array $args
+	 * @param string $action
+	 * @param string $method
+	 * @since 4.2.0
+	 */
+	public function processActionArguments(&$args, $action, $method)
+	{
+		$options = $action->options($method);
+		$aliases = $action->optionAliases();
+		$skip = false;
+		if (!$options) {
+			return;
+		}
+		$keys = array_flip($options);
+		foreach ($args as $i => $arg) {
+			$arg = explode('=', $arg);
+			$processed = false;
+			foreach ($options as $_option) {
+				$option = '--' . $_option;
+				if ($arg[0] === $option) {
+					$action->$_option = $arg[1] ?? '';
+					$processed = true;
+					unset($args[$i]);
+					break;
+				}
+			}
+			if (!$processed) {
+				foreach ($aliases as $alias => $_option) {
+					$alias = '-' . $alias;
+					if (isset($keys[$_option]) && $arg[0] === $alias) {
+						$action->$_option = $arg[1] ?? '';
+						unset($args[$i]);
+						break;
+					}
+				}
+			}
+		}
+		$args = array_values($args);
+	}
+	
+
+	/**
+	 * Flushes output to shell.
+	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
+	 * @since 4.2.0
+	 */
+	public function flushOutput($continueBuffering = true)
+	{
+		$this->_outWriter->flush();
+		if (!$continueBuffering) {
+			$this->_outWriter = null;
 		}
 	}
 
@@ -178,7 +254,7 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * @@return Prado\Shell\TShellAction[] the shell actions for the application
+	 * @return Prado\Shell\TShellAction[] the shell actions for the application
 	 * @since 4.2.0
 	 */
 	public function getShellActions()
@@ -188,19 +264,29 @@ class TShellApplication extends \Prado\TApplication
 	
 
 	/**
-	 * Flushes output to shell.
-	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
+	 * @param string $name name of the option at the command line
+	 * @param callable $setCallback the callback to set the property
+	 * @since 4.2.0
 	 */
-	public function flushOutput($continueBuffering = true)
+	public function registerOption($name, $setCallback)
 	{
-		$this->_outWriter->flush();
-		if (!$continueBuffering) {
-			$this->_outWriter = null;
-		}
+		$this->_options[$name] = $setCallback;
+	}
+	
+
+	/**
+	 * @param string $alias the short command
+	 * @param string $name the command name
+	 * @since 4.2.0
+	 */
+	public function registerOptionAlias($alias, $name)
+	{
+		$this->_optionAliases[$alias] = $name;
 	}
 	
 	/**
 	 * @return ITextWriter the writer for the class
+	 * @since 4.2.0
 	 */
 	public function getWriter(): ITextWriter
 	{
@@ -209,6 +295,7 @@ class TShellApplication extends \Prado\TApplication
 	
 	/**
 	 * @@param ITextWriter $writer the writer for the class
+	 * @since 4.2.0
 	 */
 	public function setWriter(ITextWriter $writer)
 	{
@@ -216,7 +303,8 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @return int the writer for the class
+	 * @return int the writer for the class, default 0
+	 * @since 4.2.0
 	 */
 	public function getQuietMode(): int
 	{
@@ -224,11 +312,12 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @@param int $quietMode the writer for the class
+	 * @@param int $quietMode the writer for the class, [0..3]
+	 * @since 4.2.0
 	 */
-	public function setQuietMode(int $quietMode)
+	public function setQuietMode($quietMode)
 	{
-		$this->_quietMode = $quietMode;
+		$this->_quietMode = ($quietMode === '' ? 1 : min(max((int) $quietMode, 0), 3));
 	}
 	
 
@@ -266,6 +355,7 @@ class TShellApplication extends \Prado\TApplication
 		$outWriter->writeLine();
 		$outWriter->writeLine("The following options are available:");
 		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . "Loads the configuration.xml/php from <folder>");
+		$outWriter->writeLine(str_pad("  -q=<level>", 20) . "Quiets the output to <level> [1..3]");
 		$outWriter->writeLine();
 		$outWriter->writeLine("The following commands are available:");
 		foreach ($this->_actions as $action) {

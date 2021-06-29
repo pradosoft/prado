@@ -230,6 +230,7 @@ return [
 'TPphShellAction' => 'Prado\Shell\Actions\TPphShellAction',
 'TShellAction' => 'Prado\Shell\TShellAction',
 'TShellApplication' => 'Prado\Shell\TShellApplication',
+'TShellLoginBehavior' => 'Prado\Shell\TShellLoginBehavior',
 'TShellWriter' => 'Prado\Shell\TShellWriter',
 'TApplication' => 'Prado\TApplication',
 'TApplicationComponent' => 'Prado\TApplicationComponent',

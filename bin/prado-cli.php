@@ -24,28 +24,19 @@ if (file_exists($autoloader = realpath(__DIR__ . '/../../../autoload.php'))) {
 
 restore_exception_handler();
 
-use Prado\Shell\TShellApplication;
-
 $app_dir = dirname(__DIR__, 4);
 
 $args = $_SERVER['argv'];
 foreach ($_SERVER['argv'] as $i => $arg) {
-	if (strncasecmp($arg, '-d', 2) === 0) {
-		$app_dir = substr($arg, 2);
+	$arg = explode('=', $arg);
+	if ($arg[0] === '-d' || $arg[0] === '--directory') {
+		$app_dir = $arg[1] ?? '';
 		unset($args[$i]);
-		if (!$app_dir) {
-			$app_dir = $_SERVER['argv'][$i + 1] ?? null;
-			unset($args[$i + 1]);
-		} else {
-			if ($app_dir[0] === '=') {
-				$app_dir = substr($app_dir, 1);
-			}
-		}
 		$args = array_values($args);
 		break;
 	}
 }
 
 $_SERVER['SCRIPT_FILENAME'] = dirname($app_dir) . DIRECTORY_SEPARATOR . 'index.php';
-$app = new TShellApplication($app_dir);
+$app = new Prado\Shell\TShellApplication($app_dir);
 $app->run($args);
