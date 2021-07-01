@@ -43,6 +43,7 @@ use Prado\Xml\TXmlDocument;
  *       'users' => array(
  *          array('name'=>'Joe','password'=>'demo'),
  *          array('name'=>'John','password'=>'demo'),
+ *          array('name'=>'Jerry','password'=>'demo','roles'=>'Administrator,Writer'),
  *       ),
  *       'roles' => array(
  *          array('name'=>'Administrator','users'=>'John'),
