@@ -186,7 +186,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
-	public function getState($key, $defaultValue = null)
+	protected function getState($key, $defaultValue = null)
 	{
 		return $this->_state[$key] ?? $defaultValue;
 	}
