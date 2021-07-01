@@ -26,6 +26,8 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Security
  * @since 3.0
+ * @method string[] dyDefaultRoles($defaultRoles)
+ * @method bool dyIsInRole($returnValue, $role)
  */
 class TUser extends \Prado\TComponent implements IUser
 {
@@ -113,7 +115,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return $this->getState('Roles', []);
+		return array_merge($this->getState('Roles', []), $this->dyDefaultRoles([]));
 	}
 
 	/**
@@ -121,17 +123,17 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setRoles($value)
 	{
-		if (is_array($value)) {
-			$this->setState('Roles', $value, []);
-		} else {
+		if (!is_array($value)) {
 			$roles = [];
 			foreach (explode(',', $value) as $role) {
 				if (($role = trim($role)) !== '') {
 					$roles[] = $role;
 				}
 			}
-			$this->setState('Roles', $roles, []);
+			$value = $roles;
 		}
+		$value = array_diff($value, $this->dyDefaultRoles([]));
+		$this->setState('Roles', $value, []);
 	}
 
 	/**
@@ -145,7 +147,7 @@ class TUser extends \Prado\TComponent implements IUser
 				return true;
 			}
 		}
-		return false;
+		return $this->dyIsInRole(false, $role);
 	}
 
 	/**
@@ -184,7 +186,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @return mixed the value of the variable. If it doesn't exist, the provided default value will be returned
 	 * @see setState
 	 */
-	protected function getState($key, $defaultValue = null)
+	public function getState($key, $defaultValue = null)
 	{
 		return $this->_state[$key] ?? $defaultValue;
 	}
