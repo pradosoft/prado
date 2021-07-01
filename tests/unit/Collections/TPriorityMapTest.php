@@ -1,6 +1,6 @@
 <?php
 
-use Prado\Collections\TList;
+use Prado\Collections\IPriorityitem;
 use Prado\Collections\TPriorityMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -11,6 +11,17 @@ class TPriorityMapTest_MapItem
 {
 	public $data = 'data';
 }
+
+class AutoPriorityMapItem extends TPriorityMapTest_MapItem implements IPriorityitem
+{
+	public $priority;
+	
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+}
+
 class TPriorityMapTestBehavior extends TBehavior implements IDynamicMethods
 {
 	public $method;
@@ -95,7 +106,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	{
 		$map = new TPriorityMap(null, true);
 		self::assertEquals(true, $map->getReadOnly(), 'List is not read-only');
-		$map = new TList(null, false);
+		$map = new TPriorityMap(null, false);
 		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
 	}
 
@@ -313,6 +324,17 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $this->map->priorityAt('key5'));
 		$this->assertEquals(false, $this->map->priorityAt(null));
 		$this->assertEquals(false, $this->map->priorityAt('foo'));
+		
+		$autoItem = new AutoPriorityMapItem();
+		
+		$this->map->add('keyA', $autoItem);
+		$this->assertEquals(10, $this->map->priorityAt('keyA'));
+		
+		$autoItem->priority = 4;
+		$this->map->add('keyB', $autoItem);
+		$this->assertEquals(4, $this->map->priorityAt('keyB'));
+		$this->assertEquals(4, $this->map->priorityOf($autoItem));
+		
 	}
 
 	public function testRemoveWithPriorityAndItemsAtWithPriority()

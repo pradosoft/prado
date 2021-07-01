@@ -332,7 +332,10 @@ class TPriorityMap extends TMap
 	public function add($key, $value, $priority = null)
 	{
 		if ($priority === null) {
-			$priority = $this->getDefaultPriority();
+			if ($value instanceof IPriorityItem) {
+				$priority = $value->getPriority();
+			}
+			$priority = ($priority === null || !is_numeric($priority)) ? $this->getDefaultPriority() : $priority;
 		}
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 

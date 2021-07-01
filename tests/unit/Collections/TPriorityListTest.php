@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Collections\IPriorityItem;
 use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -11,6 +12,20 @@ class PriorityListItem
 	public function __construct($d)
 	{
 		$this->data = $d;
+	}
+}
+
+class AutoPriorityListItem extends PriorityListItem implements IPriorityitem
+{
+	public $priority;
+	
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+	
+	public function __invoke()
+	{
 	}
 }
 
@@ -434,6 +449,43 @@ class TPriorityListTest extends TListTest
 		
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
 		$this->assertEquals([$this->pfirst], $plist->toArray());
+		
+		// Test IPriorityItem
+		$aplistitem = new AutoPriorityListItem("my Data");
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(null));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(null));
+		
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		
+		$aplistitem->priority = 5;
+		$this->assertEquals(5, $aplistitem->getPriority());
+		$this->assertEquals(true, $aplistitem instanceof IPriorityItem);
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(5));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(5));
+		
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		
+		
+		$aplistitem->priority = 'string';
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(10));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(10));
 	}
 	
 
