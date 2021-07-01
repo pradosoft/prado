@@ -25,6 +25,9 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 			$rule = new TAuthorizationRule('test', '*', '*');
 			self::fail('TInvalidDataValueException not thrown when action is invalid');
 		} catch(TInvalidDataValueException $e) {}
+		
+		$rule->setAction('allow');
+		self::assertEquals('allow', $rule->getAction());
 	}
 
 	public function testUsers()
@@ -70,6 +73,12 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($rule->getGuestApplied());
 		self::assertFalse($rule->getEveryoneApplied());
 		self::assertTrue($rule->getAuthenticatedApplied());
+		
+		$rule->setUsers('root2, admin2, user2');
+		self::assertEquals(['root2', 'admin2', 'user2'], $rule->getUsers());
+		self::assertFalse($rule->getGuestApplied());
+		self::assertFalse($rule->getEveryoneApplied());
+		self::assertFalse($rule->getAuthenticatedApplied());
 	}
 
 	public function testRoles()
@@ -82,6 +91,9 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 		
 		$rule = new TAuthorizationRule('allow', '', 'admin, writer, contributor');
 		self::assertEquals(['admin', 'writer', 'contributor'], $rule->getRoles());
+		
+		$rule->setRoles('adm, psy, contrib, write');
+		self::assertEquals(['adm', 'psy', 'contrib', 'write'], $rule->getRoles());
 	}
 
 	public function testVerb()
@@ -102,6 +114,9 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 			$rule = new TAuthorizationRule('test', '*', '*', 'test');
 			self::fail('TInvalidDataValueException not thrown when action is invalid');
 		} catch(TInvalidDataValueException $e) {}
+		
+		$rule->setVerb('*');
+		self::assertEquals('*', $rule->getVerb());
 	}
 
 	public function testIPRules()
@@ -114,6 +129,9 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 		
 		$rule = new TAuthorizationRule('allow', '', '', '', '192.168.*.*, 10.0.0.*');
 		self::assertEquals(['192.168.*.*','10.0.0.*'], $rule->getIPRules());
+		
+		$rule->setIPRules('10.0.0.*');
+		self::assertEquals(['10.0.0.*'], $rule->getIPRules());
 	}
 
 	public function testIsUserAllowed()

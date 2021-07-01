@@ -31,7 +31,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthorizationRule extends \Prado\TComponent
+class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections\IPriorityItem
 {
 	/**
 	 * @var string action, either 'allow' or 'deny'
@@ -54,6 +54,10 @@ class TAuthorizationRule extends \Prado\TComponent
 	 */
 	private $_ipRules;
 	/**
+	 * @var numeric priority of the rule
+	 */
+	private $_priority;
+	/**
 	 * @var bool if this rule applies to everyone
 	 */
 	private $_everyone;
@@ -73,8 +77,35 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param string $roles a comma separated role list
 	 * @param string $verb verb, can be empty, 'get', or 'post'
 	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
+	 * @param null|mixed $priority
 	 */
-	public function __construct($action, $users, $roles, $verb = '', $ipRules = '')
+	public function __construct($action = '', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = '')
+	{
+		$this->setAction($action);
+		$this->setUsers($users);
+		$this->setRoles($roles);
+		$this->setVerb($verb);
+		$this->setIPRules($ipRules);
+		$this->setPriority($priority);
+
+		parent::__construct();
+	}
+
+	/**
+	 * @return string action, either 'allow' or 'deny'
+	 */
+	public function getAction()
+	{
+		return $this->_action;
+	}
+
+	/**
+	 * @param string action, either 'allow' or 'deny'
+	 * @param mixed $action
+	 * @throws Prado\Exceptions\TInvalidDataValueException when the $action is not 'allow' or 'deny'
+	 * @since 4.2.0
+	 */
+	public function setAction($action)
 	{
 		$action = strtolower(trim($action));
 		if ($action === 'allow' || $action === 'deny') {
@@ -82,13 +113,27 @@ class TAuthorizationRule extends \Prado\TComponent
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_action_invalid', $action);
 		}
+	}
+
+	/**
+	 * @return array list of user IDs
+	 */
+	public function getUsers()
+	{
+		return $this->_users;
+	}
+
+	/**
+	 * @since 4.2.0
+	 * @param mixed $users
+	 * @return array list of user IDs
+	 */
+	public function setUsers($users)
+	{
 		$this->_users = [];
-		$this->_roles = [];
-		$this->_ipRules = [];
 		$this->_everyone = false;
 		$this->_guest = false;
 		$this->_authenticated = false;
-
 		if (trim($users) === '') {
 			$users = '*';
 		}
@@ -106,50 +151,6 @@ class TAuthorizationRule extends \Prado\TComponent
 				}
 			}
 		}
-
-		if (trim($roles) === '') {
-			$roles = '*';
-		}
-		foreach (explode(',', $roles) as $role) {
-			if (($role = trim(strtolower($role))) !== '') {
-				$this->_roles[] = $role;
-			}
-		}
-
-		if (($verb = trim(strtolower($verb))) === '') {
-			$verb = '*';
-		}
-		if ($verb === '*' || $verb === 'get' || $verb === 'post') {
-			$this->_verb = $verb;
-		} else {
-			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
-		}
-
-		if (trim($ipRules) === '') {
-			$ipRules = '*';
-		}
-		foreach (explode(',', $ipRules) as $ipRule) {
-			if (($ipRule = trim($ipRule)) !== '') {
-				$this->_ipRules[] = $ipRule;
-			}
-		}
-		parent::__construct();
-	}
-
-	/**
-	 * @return string action, either 'allow' or 'deny'
-	 */
-	public function getAction()
-	{
-		return $this->_action;
-	}
-
-	/**
-	 * @return array list of user IDs
-	 */
-	public function getUsers()
-	{
-		return $this->_users;
 	}
 
 	/**
@@ -161,11 +162,45 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string verb, may be empty, 'get', or 'post'.
+	 * @param string|string[] $roles list of roles
+	 * @since 4.2.0
+	 */
+	public function setRoles($roles)
+	{
+		$this->_roles = [];
+		if (trim($roles) === '') {
+			$roles = '*';
+		}
+		foreach (explode(',', $roles) as $role) {
+			if (($role = trim(strtolower($role))) !== '') {
+				$this->_roles[] = $role;
+			}
+		}
+	}
+
+	/**
+	 * @return string verb, may be '*', 'get', or 'post'.
 	 */
 	public function getVerb()
 	{
 		return $this->_verb;
+	}
+
+	/**
+	 * @param string $verb verb, may be empty, '*', 'get', or 'post'.
+	 * @throws Prado\Exceptions\TInvalidDataValueException when not '*', 'get', or 'post'.
+	 * @since 4.2.0
+	 */
+	public function setVerb($verb)
+	{
+		if (($verb = trim(strtolower($verb))) === '') {
+			$verb = '*';
+		}
+		if ($verb === '*' || $verb === 'get' || $verb === 'post') {
+			$this->_verb = $verb;
+		} else {
+			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
+		}
 	}
 
 	/**
@@ -175,6 +210,41 @@ class TAuthorizationRule extends \Prado\TComponent
 	public function getIPRules()
 	{
 		return $this->_ipRules;
+	}
+
+	/**
+	 * @param array $ipRules list of IP rules.
+	 * @since 4.2.0
+	 */
+	public function setIPRules($ipRules)
+	{
+		$this->_ipRules = [];
+		if (trim($ipRules) === '') {
+			$ipRules = '*';
+		}
+		foreach (explode(',', $ipRules) as $ipRule) {
+			if (($ipRule = trim($ipRule)) !== '') {
+				$this->_ipRules[] = $ipRule;
+			}
+		}
+	}
+
+	/**
+	 * @return numeric priority of the rule.
+	 * @since 4.2.0
+	 */
+	public function getPriority()
+	{
+		return $this->_priority;
+	}
+
+	/**
+	 * @param numeric|string $priority
+	 * @since 4.2.0
+	 */
+	public function setPriority($priority)
+	{
+		$this->_priority = ($priority !== '' && $priority !== null) ? (float) $priority : null;
 	}
 
 	/**
@@ -205,9 +275,10 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param IUser $user the user object
 	 * @param string $verb the request verb (GET, PUT)
 	 * @param string $ip the request IP address
+	 * @param null|mixed $extra
 	 * @return int 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
-	public function isUserAllowed(IUser $user, $verb, $ip)
+	public function isUserAllowed(IUser $user, $verb, $ip, $extra = null)
 	{
 		if ($this->isVerbMatched($verb) && $this->isIpMatched($ip) && $this->isUserMatched($user) && $this->isRoleMatched($user)) {
 			return ($this->_action === 'allow') ? 1 : -1;
