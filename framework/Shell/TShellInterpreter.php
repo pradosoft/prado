@@ -103,7 +103,7 @@ class TShellInterpreter
 	 */
 	public function printHelp($outWriter)
 	{
-		TShellInterpreter::getInstance()->printGreeting($outWriter);
+		TShellInterpreter::getInstance()->printGreeting();
 		
 		$outWriter->write("usage: ");
 		$outWriter->writeLine("php prado-cli.php action <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
