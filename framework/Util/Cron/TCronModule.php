@@ -421,7 +421,7 @@ class TCronModule extends \Prado\TModule
 				$app->setUser($user);
 			} elseif ($restore_user) {
 				$user = clone $restore_user;
-				$users->switchToGuest($user);
+				$user->setIsGuest(true);
 				$app->setUser($user);
 			}
 		}
@@ -434,7 +434,7 @@ class TCronModule extends \Prado\TModule
 			if ($restore_user) {
 				$app->setUser($restore_user);
 			} else {
-				$users->switchToGuest($user);
+				$user->setIsGuest(true);
 			}
 		}
 	}
