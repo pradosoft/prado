@@ -42,7 +42,7 @@ class TAppAction extends TShellAction
 			return false;
 		}
 		$app = $this->initializePradoApplication($args[1]);
-		if($app === false) {
+		if ($app === false) {
 			return false;
 		}
 		$this->_outWriter->flush();

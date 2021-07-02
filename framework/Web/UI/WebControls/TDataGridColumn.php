@@ -496,7 +496,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 				$control->setItemIndex($item->getItemIndex());
 				$control->setItemType($item->getItemType());
 			}
-			if($data !== null) {
+			if ($data !== null) {
 				$control->setData($data);
 			}
 		}

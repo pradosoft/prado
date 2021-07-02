@@ -568,7 +568,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 *
 	 * This cannot remove tasks that are current configuration tasks.  Only tasks
 	 * that exist can be removed.
-	 * @param TCronTask|string $untask the task to remove from the DB
+	 * @param string|TCronTask $untask the task to remove from the DB
 	 * @return bool was the task removed
 	 */
 	public function removeTask($untask)

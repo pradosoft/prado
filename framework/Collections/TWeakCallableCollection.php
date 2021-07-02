@@ -207,7 +207,7 @@ class TWeakCallableCollection extends TPriorityList
 	/**
 	 * Inserts an item at the specified index within a priority.  This is needed to filter the input.
 	 * @param mixed $item item to add within the list.
-	 * @param int|false $index index within the priority to add the item, defaults to false which appends the item at the priority
+	 * @param false|int $index index within the priority to add the item, defaults to false which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it to the default priority
 	 * @param bool $preserveCache preserveCache specifies if this is a special quick function or not. This defaults to false.
 	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the bound
