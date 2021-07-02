@@ -418,18 +418,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text = $this->getHeaderText();
-
 		if (($classPath = $this->getHeaderRenderer()) !== '') {
-			$control = Prado::createComponent($classPath);
-			$cell->getControls()->add($control);
-			if ($control instanceof \Prado\IDataRenderer) {
-				if ($control instanceof IItemDataRenderer) {
-					$item = $cell->getParent();
-					$control->setItemIndex($item->getItemIndex());
-					$control->setItemType($item->getItemType());
-				}
-				$control->setData($text);
-			}
+			$this->initializeCellRendererControl($cell, $classPath, $text);
 		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
 			if (($url = $this->getHeaderImageUrl()) !== '') {
@@ -482,21 +472,35 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	{
 		$text = $this->getFooterText();
 		if (($classPath = $this->getFooterRenderer()) !== '') {
-			$control = Prado::createComponent($classPath);
-			$cell->getControls()->add($control);
-			if ($control instanceof \Prado\IDataRenderer) {
-				if ($control instanceof IItemDataRenderer) {
-					$item = $cell->getParent();
-					$control->setItemIndex($item->getItemIndex());
-					$control->setItemType($item->getItemType());
-				}
-				$control->setData($text);
-			}
+			$this->initializeCellRendererControl($cell, $classPath, $text);
 		} elseif ($text !== '') {
 			$cell->setText($text);
 		} else {
 			$cell->setText('&nbsp;');
 		}
+	}
+
+	/**
+	 * Initializes a cell creating a renderer control.
+	 *
+	 * @param TTableCell $cell the cell to be initialized
+	 * @param string $classPath the rendered class that will be instanciated.
+	 * @param mixed $data used to initialize the control
+	 */
+	protected function initializeCellRendererControl($cell, $classPath, $data = null)
+	{
+		$control = Prado::createComponent($classPath);
+		$cell->getControls()->add($control);
+		if ($control instanceof \Prado\IDataRenderer) {
+			if ($control instanceof IItemDataRenderer && ($item = $cell->getParent()) instanceof IItemDataRenderer) {
+				$control->setItemIndex($item->getItemIndex());
+				$control->setItemType($item->getItemType());
+			}
+			if($data !== null) {
+				$control->setData($data);
+			}
+		}
+		return $control;
 	}
 
 	/**
