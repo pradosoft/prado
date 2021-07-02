@@ -156,7 +156,7 @@ class TCronModule extends \Prado\TModule
 		//Read additional Config from Property
 		$this->readConfiguration($this->_additionalCronTasks);
 		
-		if (($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if (($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->addShellActionClass($this->_shellClass);
 		}
 		
