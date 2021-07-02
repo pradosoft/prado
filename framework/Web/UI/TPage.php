@@ -411,15 +411,6 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * Set a new callback client handler.
-	 * @param TCallbackClientScript $client new callback client script handler.
-	 */
-	public function setCallbackClient($client)
-	{
-		$this->getAdapter()->setCallbackClientHandler($client);
-	}
-
-	/**
 	 * @return \Prado\Web\UI\TControl the control responsible for the current callback event,
 	 * null if nonexistent
 	 */
