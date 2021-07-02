@@ -51,7 +51,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

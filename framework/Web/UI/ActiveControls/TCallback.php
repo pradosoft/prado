@@ -68,7 +68,7 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

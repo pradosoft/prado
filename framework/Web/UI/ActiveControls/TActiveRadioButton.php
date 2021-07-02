@@ -59,7 +59,7 @@ class TActiveRadioButton extends TRadioButton implements IActiveControl, ICallba
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

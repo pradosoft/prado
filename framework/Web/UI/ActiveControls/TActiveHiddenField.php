@@ -50,7 +50,7 @@ class TActiveHiddenField extends THiddenField implements IActiveControl
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

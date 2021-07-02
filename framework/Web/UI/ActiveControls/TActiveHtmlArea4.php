@@ -55,7 +55,7 @@ class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IAct
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

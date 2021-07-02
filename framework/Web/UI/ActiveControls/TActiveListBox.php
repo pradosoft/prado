@@ -54,7 +54,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

@@ -53,7 +53,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

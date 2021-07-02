@@ -74,7 +74,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

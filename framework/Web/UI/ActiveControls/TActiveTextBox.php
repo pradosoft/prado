@@ -56,7 +56,7 @@ class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveC
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

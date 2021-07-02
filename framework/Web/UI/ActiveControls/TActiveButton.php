@@ -57,7 +57,7 @@ class TActiveButton extends TButton implements ICallbackEventHandler, IActiveCon
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

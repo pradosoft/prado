@@ -59,7 +59,7 @@ class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiv
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

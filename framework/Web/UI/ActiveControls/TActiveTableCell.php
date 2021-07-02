@@ -80,7 +80,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**
