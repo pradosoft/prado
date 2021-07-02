@@ -89,7 +89,7 @@ class TBehaviorParameterLoader extends TComponent
 		} else {
 			if (strtolower($this->_attachto) == "page") {
 				if (!count(self::$_pageBehaviors)) {
-					Prado::getApplication()->onBeginRequest[] = [$this, 'attachTPageServiceHandler'];
+					Prado::getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 				}
 				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
 				return;
