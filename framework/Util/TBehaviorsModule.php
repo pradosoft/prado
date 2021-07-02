@@ -20,7 +20,7 @@ use Prado\Xml\TXmlElement;
 /**
  * TBehaviorsModule class.
  *
- * TBehaviorsModule loads and attaches {@link TBehaviors}.  This attaches
+ * TBehaviorsModule loads and attaches {@link TBehavior}.  This attaches
  * Behaviors to classes and to application components like the TApplication,
  * individual modules, and TPage of the TPageService.
  *
@@ -56,7 +56,7 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var Tbehavior[] behaviors attaching to the TPage
+	 * @var TBehavior[] behaviors attaching to the TPage
 	 */
 	private $_pageBehaviors = [];
 	
@@ -100,7 +100,7 @@ class TBehaviorsModule extends \Prado\TModule
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
-	 * @param TPage $page the page being initialized
+	 * @param \Prado\Web\UI\TPage $page the page being initialized
 	 */
 	public function attachTPageBehaviors($sender, $page)
 	{
@@ -116,7 +116,7 @@ class TBehaviorsModule extends \Prado\TModule
 	 * Loads behaviors and attach to the proper object. behaviors for pages are
 	 * attached separately if and when the TPage is loaded on TPageSerivce::onPreRunPage
 	 * @param mixed $config XML of PHP representation of the behaviors
-	 * @throws prado\Exceptions\TConfigurationException if the parameter file format is invalid
+	 * @throws \Prado\Exceptions\TConfigurationException if the parameter file format is invalid
 	 */
 	protected function loadBehaviors($config)
 	{

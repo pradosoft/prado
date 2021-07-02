@@ -31,6 +31,7 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.3
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IActiveControl
 {

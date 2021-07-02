@@ -22,6 +22,7 @@ use Prado\Web\UI\WebControls\THiddenField;
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveHiddenField extends THiddenField implements IActiveControl
 {

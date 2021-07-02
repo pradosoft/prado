@@ -57,6 +57,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallbackEventHandler, INamingContainer
 {

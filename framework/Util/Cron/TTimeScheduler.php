@@ -383,8 +383,8 @@ class TTimeScheduler extends \Prado\TComponent
 	/**
 	 * Returns the number of days in a given month and year, taking into account leap years.
 	 *
-	 * @param $month: numeric month (integers 1-12)
-	 * @param $year: numeric year (any integer)
+	 * @param numeric $month: month (integers 1-12)
+	 * @param numeric $year: year (any integer)
 	 */
 	public function days_in_month($month, $year)
 	{
@@ -516,7 +516,7 @@ class TTimeScheduler extends \Prado\TComponent
 	 * an array of valid years.  Each year is available as the key to the array
 	 * and the value contains true or false whether the year meets the cron
 	 * time stamp.  Only the previos 2 years and next 33 years are available
-	 * @param null|mixed $baseyear
+	 * @return array
 	 */
 	protected function getYearsArray()
 	{
@@ -537,7 +537,7 @@ class TTimeScheduler extends \Prado\TComponent
 	/**
 	 * This calculates the next trigger time for the schedule based on the $priortime
 	 * If no parameter time is given, the current system time is used.
-	 * @param numeric|string $priortime the time or date/time from which to compute the next Trigger Time
+	 * @param false|numeric|string $priortime the time or date/time from which to compute the next Trigger Time
 	 * @return numeric the unix time of the next trigger event.
 	 */
 	public function getNextTriggerTime($priortime = false)

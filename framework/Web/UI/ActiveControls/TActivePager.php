@@ -32,6 +32,7 @@ use Prado\Web\UI\WebControls\TWebControl;
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.2
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActivePager extends TPager implements IActiveControl, ICallbackEventHandler
 {

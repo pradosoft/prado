@@ -36,7 +36,7 @@ namespace Prado\Shell;
 class TShellApplication extends \Prado\TApplication
 {
 	/**
-	 * @var cli shell Application commands. Modules can add their own command
+	 * @var array cli shell Application commands. Modules can add their own command
 	 */
 	private $_actionClasses = [];
 	

@@ -1101,7 +1101,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	/**
 	 * @param TListItemType $itemType item type
 	 * @param int $index item index
-	 * @return \Prado\Web\UI\TControl data list item with the specified item type and index
+	 * @return TDataListItem data list item with the specified item type and index
 	 */
 	private function getItem($itemType, $index)
 	{

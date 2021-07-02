@@ -1395,9 +1395,9 @@ class TComponent
 	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
 	 * 		$b = $this->instanceBehavior(new MyBehavior);
 	 * </code>
-	 * @param array|class|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
+	 * @param array|IBaseBehavior|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
-	 * @return {@link IBaseBehavior} an instance of $behavior or $behavior itself
+	 * @return TComponent&IBaseBehavior an instance of $behavior or $behavior itself
 	 * @since 4.2.0
 	 */
 	protected static function instanceBehavior($behavior)
@@ -1426,7 +1426,7 @@ class TComponent
 	 * This is done so class behaviors are added last first.
 	 * @param string $name name the key of the class behavior
 	 * @param object|string $behavior class behavior or name of the object behavior per instance
-	 * @param null|class|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param null|IBaseBehavior|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
@@ -1624,7 +1624,7 @@ class TComponent
 	 * dyAttachBehavior.
 	 *
 	 * @param string $name the behavior's name. It should uniquely identify this behavior.
-	 * @param array|class|string $behavior the behavior configuration. This is the name of the Behavior Class
+	 * @param array|IBaseBehavior|string $behavior the behavior configuration. This is the name of the Behavior Class
 	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
 	 * with values.

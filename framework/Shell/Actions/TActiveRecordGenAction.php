@@ -70,7 +70,7 @@ class TActiveRecordGenAction extends TShellAction
 
 	/**
 	 * @param string $app_dir application directory
-	 * @return false|string
+	 * @return false|TActiveRecordConfig
 	 */
 	protected function getActiveRecordConfig($app_dir)
 	{
@@ -109,10 +109,9 @@ class TActiveRecordGenAction extends TShellAction
 	}
 
 	/**
-	 * @param string $config database configuration
+	 * @param TActiveRecordConfig $config database configuration
 	 * @param string $tablename table name
 	 * @param string $output output file name
-	 * @return bool
 	 */
 	protected function generateActiveRecord($config, $tablename, $output)
 	{
@@ -122,7 +121,7 @@ class TActiveRecordGenAction extends TShellAction
 			$tableInfo = $gateway->getTableInfo($manager->getDbConnection(), $tablename);
 			if (count($tableInfo->getColumns()) === 0) {
 				$this->_outWriter->writeError('Unable to find table or view "' . $tablename . '" in "' . $manager->getDbConnection()->getConnectionString() . "\".");
-				return false;
+				return;
 			} else {
 				$properties = [];
 				foreach ($tableInfo->getColumns() as $field => $column) {
@@ -141,7 +140,7 @@ class TActiveRecordGenAction extends TShellAction
 
 	/**
 	 * @param string $field php variable name
-	 * @param string $column database column name
+	 * @param \Prado\Data\Common\TDbTableColumn $column database column name
 	 * @return string
 	 */
 	protected function generateProperty($field, $column)

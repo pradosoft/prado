@@ -1140,7 +1140,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Initializes a datagrid item and cells inside it
-	 * @param TDataGrid $item datagrid item to be initialized
+	 * @param TDataGridItem $item datagrid item to be initialized
 	 * @param TDataGridColumnCollection $columns datagrid columns to be used to initialize the cells in the item
 	 */
 	protected function initializeItem($item, $columns)

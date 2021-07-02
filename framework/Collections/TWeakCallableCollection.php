@@ -42,7 +42,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities
-	 * @throws TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
@@ -207,11 +207,11 @@ class TWeakCallableCollection extends TPriorityList
 	/**
 	 * Inserts an item at the specified index within a priority.  This is needed to filter the input.
 	 * @param mixed $item item to add within the list.
-	 * @param int $index index within the priority to add the item, defaults to false which appends the item at the priority
+	 * @param int|false $index index within the priority to add the item, defaults to false which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it to the default priority
 	 * @param bool $preserveCache preserveCache specifies if this is a special quick function or not. This defaults to false.
-	 * @throws TInvalidDataValueException If the index specified exceeds the bound
-	 * @throws TInvalidOperationException if the list is read-only
+	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the bound
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 */
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{

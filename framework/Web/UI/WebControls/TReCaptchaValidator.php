@@ -97,6 +97,7 @@ class TReCaptchaValidator extends TBaseValidator
 
 		// update validator display
 		if ($control = $this->getValidationTarget()) {
+			/** @var TReCaptcha $control */
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			// check if we need to request a new captcha too

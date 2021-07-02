@@ -31,6 +31,8 @@ use Prado\Web\UI\WebControls\THead;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method TActivePageAdapter getAdapter()
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TPage extends TTemplateControl
 {

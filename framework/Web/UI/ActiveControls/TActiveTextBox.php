@@ -28,6 +28,7 @@ use Prado\Web\UI\WebControls\TTextBox;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveTextBox extends TTextBox implements ICallbackEventHandler, IActiveControl
 {

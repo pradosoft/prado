@@ -28,6 +28,7 @@ use Prado\Web\UI\WebControls\TMultiView;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.6
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveMultiView extends TMultiView implements IActiveControl
 {

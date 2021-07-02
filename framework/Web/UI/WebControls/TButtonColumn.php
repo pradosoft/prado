@@ -248,7 +248,7 @@ class TButtonColumn extends TDataGridColumn
 	 * Databinds a cell in the column.
 	 * This method is invoked when datagrid performs databinding.
 	 * It populates the content of the cell with the relevant data from data source.
-	 * @param mixed $sender
+	 * @param TWebControl $sender
 	 * @param mixed $param
 	 */
 	public function dataBindColumn($sender, $param)

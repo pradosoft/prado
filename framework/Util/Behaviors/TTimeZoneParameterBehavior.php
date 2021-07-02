@@ -64,7 +64,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	/**
 	 * This sets the date_default_timezone_set with the value of the TimeZoneParameter
 	 * in the application parameters.  It attaches the Application Parameter handler behavior.
-	 * @param $owner object the object that this behavior is attached to.
+	 * @param object $owner the object that this behavior is attached to.
 	 */
 	public function attach($owner)
 	{
@@ -82,7 +82,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	
 	/**
 	 * This removes the Application Parameter handler behavior
-	 * @param $owner object the object that this behavior is attached to.
+	 * @param object $owner the object that this behavior is attached to.
 	 */
 	public function detach($owner)
 	{
@@ -101,7 +101,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	}
 	
 	/**
-	 * @param $value string Application parameter key to set the php TimeZone.
+	 * @param string $value Application parameter key to set the php TimeZone.
 	 */
 	public function setTimeZoneParameter($value)
 	{
@@ -120,7 +120,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	}
 	
 	/**
-	 * @param $value string passthrough to date_default_timezone_set
+	 * @param string $value passthrough to date_default_timezone_set
 	 */
 	public function setTimeZone($value)
 	{

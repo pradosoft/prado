@@ -25,6 +25,7 @@ use Prado\Web\UI\WebControls\TImageButton;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveImageButton extends TImageButton implements IActiveControl, ICallbackEventHandler
 {

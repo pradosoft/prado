@@ -122,7 +122,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * should Request cron be activated.
-	 * @param array|Prado\Xml\TXmlElement $config
+	 * @param array|\Prado\Xml\TXmlElement $config
 	 * @throws TConfigurationException when the user manage doesn't exist or is invalid
 	 */
 	public function init($config)
@@ -171,7 +171,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * This reads the configuration and stores the specified tasks, for lazy loading, until needed.
-	 * @param array|Prado\Xml\TXmlElement $config the settings for cron
+	 * @param array|\Prado\Xml\TXmlElement $config the settings for cron
 	 * @throws TConfigurationException when a PHP configuration is not an array or two jobs have the same name.
 	 */
 	protected function readConfiguration($config)
@@ -180,7 +180,7 @@ class TCronModule extends \Prado\TModule
 		if (!$config || empty($config)) {
 			return;
 		}
-		if ($config instanceof TXmlElement) {
+		if ($config instanceof \Prado\Xml\TXmlElement) {
 			$isXml = true;
 			$config = $config->getElementsByTagName('job');
 		} elseif (is_array($config) && isset($config['jobs'])) {
@@ -229,7 +229,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * makes the tasks from the configuration array into task objects.
-	 * @return Prado\Util\Cron\TCronTask[]
+	 * @return \Prado\Util\Cron\TCronTask[]
 	 */
 	protected function ensureTasks()
 	{
@@ -257,7 +257,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * This lazy loads the tasks from configuration array to instance.
 	 * This calls {@link ensureTasks} to get the tasks and their persistent data.
-	 * @return Prado\Util\Cron\TCronTask[] currently active cron tasks
+	 * @return \Prado\Util\Cron\TCronTask[] currently active cron tasks
 	 */
 	public function getTasks()
 	{
@@ -268,7 +268,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * These are the tasks specified in the configuration and getAdditionalCronTasks
 	 * until {@link ensureTasks} is called.
-	 * @return array[]|Prado\Util\Cron\TCronTask[] currently active cron tasks
+	 * @return array[]|TCronTask[] currently active cron tasks
 	 */
 	public function getRawTasks()
 	{
@@ -278,7 +278,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * This lazy loads the tasks.
 	 * @param string $name
-	 * @return Prado\Util\Cron\TCronTask cron tasks with a specific name
+	 * @return TCronTask cron tasks with a specific name
 	 */
 	public function getTask($name)
 	{
@@ -290,7 +290,7 @@ class TCronModule extends \Prado\TModule
 	 * .
 	 * @param string $taskExec the class name or "module->method('param1')" to place
 	 * into a {@link TCronMethodTask}.
-	 * @return Prado\Util\Cron\TCronTask the instance of $taskExec
+	 * @return TCronTask the instance of $taskExec
 	 */
 	public function instanceTask($taskExec)
 	{
@@ -310,7 +310,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * when instancing and then loading the tasks, this sets the persisting data of the task
 	 * @param string $name name of the task.
-	 * @param Prado\Util\Cron\TCronTasks $task the task object.
+	 * @param TCronTask $task the task object.
 	 * @return bool updated the taskInfo with persistent data.
 	 */
 	protected function setPersistentData($name, $task)
@@ -325,7 +325,7 @@ class TCronModule extends \Prado\TModule
 	}
 	
 	/**
-	 * @return Prado\Util\Cron\TCronTasks[] the tasks that are pending.
+	 * @return TCronTask[] the tasks that are pending.
 	 */
 	public function getPendingTasks()
 	{
@@ -341,7 +341,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * Filters the Tasks for a specific class.
 	 * @param string $type
-	 * @return Prado\Util\Cron\TCronTasks[] the tasks of $type
+	 * @return TCronTask[] the tasks of $type
 	 */
 	public function getTasksByType($type)
 	{
@@ -398,7 +398,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * Runs a specific task. Sets the user to the Task user or the cron module
 	 * {@link getDefaultUserId}.
-	 * @param Prado\Util\Cron\TCronTask $task the task to run.
+	 * @param TCronTask $task the task to run.
 	 */
 	public function runTask($task)
 	{
@@ -441,7 +441,7 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * Logs the cron task being run with the system log and output on cli
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 * @param string $username the user the task is running under.
 	 */
 	protected function logCronTask($task, $username)
@@ -453,7 +453,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * sets the lastExecTime to now and increments the processCount.  This saves
 	 * the new data to the global state.
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 */
 	protected function updateTaskInfo($task)
 	{
@@ -489,7 +489,7 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * Objects should handle fxGetCronTasks($sender, $param)
 	 * @param bool $forceupdate if true, ignores the caching
-	 * @return Prado\Util\Cron\TCronTaskInfo[]
+	 * @return \Prado\Util\Cron\TCronTaskInfo[]
 	 */
 	public function getTaskInfos($forceupdate = false)
 	{
@@ -520,7 +520,7 @@ class TCronModule extends \Prado\TModule
 	}
 
 	/**
-	 * @return null|IUserManager|string user manager instance
+	 * @return null|IUserManager user manager instance
 	 */
 	public function getUserManager()
 	{

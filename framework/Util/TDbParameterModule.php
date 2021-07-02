@@ -162,7 +162,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	
 	/**
 	 * Loads parameters from the database into the application.
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 */
 	protected function loadDbParameters()
 	{
@@ -216,7 +216,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * This attaches the TMapRouteBehavior on the Parameters.
 	 * @param object $sender
 	 * @param null|mixed $param
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 */
 	public function attachParameterStorage($sender, $param)
 	{
@@ -260,7 +260,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * checks for the table, and if not there and autoCreate, then creates the table else throw error.
-	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
+	 * @throws \Prado\Exceptions\TConfigurationException if the table does not exist and cannot autoCreate
 	 */
 	protected function ensureTable()
 	{
@@ -284,8 +284,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * @param string $key key to get the value
 	 * @param bool $checkParameter checks the Application Parameters first
 	 * @param bool $setParameter should the method set the application parameters
-	 * @throws TInvalidOperationException if the $key is blank
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return mixed the value of the key
 	 */
 	public function get($key, $checkParameter = true, $setParameter = true)
@@ -331,8 +331,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	/**
 	 * Loads parameters into application.
 	 * @param string $key key to get the value
-	 * @throws TInvalidOperationException if the $key is blank
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return mixed the value
 	 */
 	public function getFromBehavior($key)
@@ -346,8 +346,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * @param mixed $value the key of the parameter
 	 * @param bool $autoLoad should the key be autoloaded at init
 	 * @param mixed $setParameter
-	 * @throws TInvalidOperationException if the $key is blank
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 */
 	public function set($key, $value, $autoLoad = true, $setParameter = true)
 	{
@@ -396,8 +396,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * from changes to the Parameter through a TMapRouteBehavior.
 	 * @param string $key the key of the parameter
 	 * @param mixed $value the key of the parameter
-	 * @throws TInvalidOperationException if the $key is blank
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the $key is blank
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 */
 	public function setFromBehavior($key, $value)
 	{
@@ -410,8 +410,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	
 	/**
 	 * exists checks for a parameter in the database
-	 * @param $key string parameter to check in the database
-	 * @throws TDbException if the Fields and table is not correct
+	 * @param string $key parameter to check in the database
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return bool whether the key exists in the database table
 	 * @return mixed the value of the parameter, one last time
 	 */
@@ -428,8 +428,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	
 	/**
 	 * remove removes a parameter from the database
-	 * @param $key string parameter to remove from the database
-	 * @throws TDbException if the Fields and table is not correct
+	 * @param string $key parameter to remove from the database
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return mixed the value of the key removed
 	 * @return mixed the value of the parameter, one last time
 	 */
@@ -461,7 +461,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * The datasource module will be used to establish the DB connection
 	 * that will be used by the user manager.
 	 * @param string $value module ID.
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setConnectionID($value)
 	{
@@ -489,7 +489,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * {@link getAutoLoadField} is not set, the default, then the autoLoadField
 	 * is set to "autoload" to enable the feature by default.
 	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws TConfigurationException if module ID is invalid or empty
+	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
 	 * @return TDbConnection the created DB connection
 	 */
 	protected function createDbConnection($connectionID)
@@ -520,7 +520,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * @param string $value database parameter key field
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setKeyField($value)
 	{
@@ -540,7 +540,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * @param string $value database parameter key value
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setValueField($value)
 	{
@@ -560,7 +560,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * @param string $value database parameter key value
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setTableName($value)
 	{
@@ -579,8 +579,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	}
 
 	/**
-	 * @param $value string database parameter key value
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @param string $value database parameter key value
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setAutoLoadField($value)
 	{
@@ -600,7 +600,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * @param string $value database parameter key value
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setAutoLoadValue($value)
 	{
@@ -620,7 +620,7 @@ class TDbParameterModule extends TModule implements IDbModule
 
 	/**
 	 * @param string $value database parameter key value
-	 * @throws TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
 	 */
 	public function setAutoLoadValueFalse($value)
 	{
@@ -662,8 +662,8 @@ class TDbParameterModule extends TModule implements IDbModule
 	 * json_encode and json_decade. or you can provide your own callable to serialized
 	 * and unserialize objects and arrays.
 	 * @param callable|string $value the type of un/serialization.
-	 * @throws TInvalidOperationException if the module is initialized
-	 * @throws TInvalidDataTypeException if the $value is not 'php', 'json', or a callable
+	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is initialized
+	 * @throws \Prado\Exceptions\TInvalidDataTypeException if the $value is not 'php', 'json', or a callable
 	 */
 	public function setSerializer($value)
 	{

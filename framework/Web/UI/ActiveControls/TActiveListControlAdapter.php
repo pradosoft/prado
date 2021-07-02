@@ -19,12 +19,13 @@ use Prado\Web\UI\WebControls\IListControlAdapter;
 /**
  * TActiveListControlAdapter class.
  *
- * Adapte the list controls to allows the selections on the client-side to be altered
+ * Adapts the list controls to allows the selections on the client-side to be altered
  * during callback response.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method \Prado\Web\UI\WebControls\TListControl&IActiveControl getControl()
  */
 class TActiveListControlAdapter extends TActiveControlAdapter implements IListControlAdapter
 {
