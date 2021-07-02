@@ -48,10 +48,11 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	/**
 	 * This method is invoked when the response flushes the content and headers.
 	 * Default implementation calls the attached response flushContent method.
+	 * @param bool $continueBuffering
 	 */
-	public function flushContent()
+	public function flushContent($continueBuffering = true)
 	{
-		$this->_response->flushContent();
+		$this->_response->flushContent($continueBuffering);
 	}
 
 	/**
