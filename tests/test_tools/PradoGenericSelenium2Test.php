@@ -192,7 +192,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 
 		$element->value($txt);
 		// trigger onblur() event
-		$this->byCssSelector('body')->click();
+		$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::TAB);
 	}
 
 	protected function select($id, $value)
