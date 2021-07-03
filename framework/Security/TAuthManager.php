@@ -134,7 +134,7 @@ class TAuthManager extends \Prado\TModule
 			throw new TInvalidOperationException('authmanager_usermanager_unchangeable');
 		}
 		if (!is_string($provider) && !($provider instanceof IUserManager)) {
-			throw new TConfigurationException('authmanager_usermanager_invalid', $this->_userManager);
+			throw new TConfigurationException('authmanager_usermanager_invalid', $provider);
 		}
 		$this->_userManager = $provider;
 	}

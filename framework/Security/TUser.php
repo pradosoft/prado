@@ -124,13 +124,7 @@ class TUser extends \Prado\TComponent implements IUser
 	public function setRoles($value)
 	{
 		if (!is_array($value)) {
-			$roles = [];
-			foreach (explode(',', $value) as $role) {
-				if (($role = trim($role)) !== '') {
-					$roles[] = $role;
-				}
-			}
-			$value = $roles;
+			$value = array_filter(array_map('trim', explode(',', $value)));
 		}
 		$value = array_diff($value, $this->dyDefaultRoles([]));
 		$this->setState('Roles', $value, []);

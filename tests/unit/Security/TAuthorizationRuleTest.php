@@ -13,6 +13,13 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 	{
 	}
 
+	public function testConstruct()
+	{
+		$rule = new TAuthorizationRule();
+		self::assertEquals('allow', $rule->getAction());
+	}
+	
+
 	public function testAction()
 	{
 		$rule = new TAuthorizationRule(' ALloW', '*', '*');
