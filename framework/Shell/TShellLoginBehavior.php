@@ -23,9 +23,9 @@ use Prado\Prado;
  * <code>
  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth" />
  * </code>
- * or, attach to all TAuthManager 
+ * or, attach to all TAuthManager
  * <code>
-  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachToClass="Prado\Security\TAuthManager" />
+ *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachToClass="Prado\Security\TAuthManager" />
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
