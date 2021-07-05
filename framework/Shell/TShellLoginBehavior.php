@@ -15,12 +15,17 @@ use Prado\Prado;
 /**
  * TShellLoginBehavior class.
  *
- * TShellLoginBehavior forces shell command to first have an application user
- * before executing any actions.  This Behavior is attached to TAuthManager
+ * TShellLoginBehavior implements user login with password into the application.
+ * It forces shell command to have an application user before executing any
+ * actions.  TShellLoginBehavior is attached to TAuthManager.
  *
  * For example in a TBehaviorsModule where the TAuthManager module id is 'auth':
  * <code>
  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth" />
+ * </code>
+ * or, attach to all TAuthManager 
+ * <code>
+  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachToClass="Prado\Security\TAuthManager" />
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
