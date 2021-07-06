@@ -47,7 +47,7 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($this->obj->actionRun(['cron']));
 		self::assertEquals(1, preg_match("/TCronModule/", $text = $this->writer->flush()));
 		
-		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ?', 'task' => 'TTestCronModuleTask', 'userid' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
+		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ?', 'task' => 'TTestCronModuleTask', 'username' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->init($jobs);

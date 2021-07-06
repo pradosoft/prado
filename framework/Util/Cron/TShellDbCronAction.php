@@ -122,7 +122,7 @@ class TShellDbCronAction extends TShellCronAction
 	}
 	
 	/**
-	 * updates a task in the database by its name for its schedule, userid, moduleid, and other properties.
+	 * updates a task in the database by its name for its schedule, username, moduleid, and other properties.
 	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */

@@ -334,8 +334,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 	public function testGetTasks()
 	{
 		$jobs = [
-			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'userid' => 'admin', 'moduleid' => 'GT_module'],
-			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'userid' => 'admin1'],
+			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'username' => 'admin1'],
 			['name' => 'testTask3', 'schedule' => '3 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method2(true)'],
 			['name' => 'testTask4', 'schedule' => '4 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method3(86400)']
 		];
@@ -346,11 +346,11 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('1 * * * *', $tasks['testTask1']['schedule']);
 		self::assertEquals('TTestCronModuleTask', $tasks['testTask1']['task']);
 		self::assertEquals('value1', $tasks['testTask1']['propertya']);
-		self::assertEquals('admin', $tasks['testTask1']['userid']);
+		self::assertEquals('admin', $tasks['testTask1']['username']);
 		self::assertEquals('GT_module', $tasks['testTask1']['moduleid']);
 		self::assertEquals('2 * * * *', $tasks['testTask2']['schedule']);
 		self::assertEquals('CMT_UserManager3'.self::SEPARATOR.'method1', $tasks['testTask2']['task']);
-		self::assertEquals('admin1', $tasks['testTask2']['userid']);
+		self::assertEquals('admin1', $tasks['testTask2']['username']);
 		self::assertEquals('3 * * * *', $tasks['testTask3']['schedule']);
 		self::assertEquals('CMT_UserManager3'.self::SEPARATOR.'method2(true)', $tasks['testTask3']['task']);
 		self::assertEquals('4 * * * *', $tasks['testTask4']['schedule']);
@@ -364,7 +364,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask1']);
 		self::assertEquals('1 * * * *', $tasks['testTask1']->getSchedule());
 		self::assertEquals('testTask1', $tasks['testTask1']->getName());
-		self::assertEquals('admin', $tasks['testTask1']->getUserId());
+		self::assertEquals('admin', $tasks['testTask1']->getUserName());
 		self::assertEquals('GT_module', $tasks['testTask1']->getModuleId());
 		self::assertEquals('value1', $tasks['testTask1']->getPropertyA());
 		self::assertEquals('2 * * * *', $tasks['testTask2']->getSchedule());
@@ -433,8 +433,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 	public function testGetTask()
 	{
 		$jobs = [
-			['name' => 'testTask1', 'schedule' => '1 * * * ?', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'userid' => 'admin', 'moduleid' => 'GT_module'],
-			['name' => 'testTask2', 'schedule' => '2 * * * ?', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'userid' => 'admin1'],
+			['name' => 'testTask1', 'schedule' => '1 * * * ?', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask2', 'schedule' => '2 * * * ?', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'username' => 'admin1'],
 			['name' => 'testTask3', 'schedule' => '3 * * * ?', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method2(true)'],
 			['name' => 'testTask4', 'schedule' => '4 * * * ?', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method3(86400)']
 		];
@@ -450,7 +450,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask1']);
 		self::assertEquals('1 * * * ?', $tasks['testTask1']->getSchedule());
 		self::assertEquals('testTask1', $tasks['testTask1']->getName());
-		self::assertEquals('admin', $tasks['testTask1']->getUserId());
+		self::assertEquals('admin', $tasks['testTask1']->getUserName());
 		self::assertEquals('GT_module', $tasks['testTask1']->getModuleId());
 		self::assertEquals(0, $tasks['testTask1']->getProcessCount());
 		self::assertEquals(0, $tasks['testTask1']->getLastExecTime());
@@ -554,6 +554,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			$tasks = $this->obj->getTasks();
 			self::fail("did not throw TInvalidDataTypeException when task is not instance of TCronTask");
 		} catch(TInvalidDataTypeException $e) {}
+		
+		$this->obj = new $this->baseClass();
 	}
 	
 	protected $_countTasks = 0;
@@ -642,11 +644,11 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
 			$task = $this->obj->getTask('testTask1');
-			self::assertEquals($this->obj->getDefaultUserId(), $task->executingUser);
+			self::assertEquals($this->obj->getDefaultUserName(), $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
 		{	//task with user id
-			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'userid' => 'admin']];
+			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'username' => 'admin']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
@@ -657,21 +659,21 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		}
 		
 		{	//task with bad user id
-			$jobs = [['name' => 'testTask1', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'userid' => 'admin2']];
+			$jobs = [['name' => 'testTask1', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
 			$task = $this->obj->getTask('testTask1');
-			self::assertEquals($this->obj->getDefaultUserId(), $task->executingUser);
+			self::assertEquals($this->obj->getDefaultUserName(), $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
 		
 		{	//task with bad user id, and bad default user id
-			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'userid' => 'admin2']];
+			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 *', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
-			$this->obj->setDefaultUserId('cron2');
+			$this->obj->setDefaultUserName('cron2');
 			$this->obj->init($jobs);
 			$task = $this->obj->getTask('testTask2');
 			$task->executingUser = null;
@@ -712,15 +714,15 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('text description', $taskInfos->getDescription());
 	}
 	
-	public function testDefaultUserId()
+	public function testDefaultUserName()
 	{
 		$value = 'mytestuser';
-		$this->obj->setDefaultUserId($value);
-		self::assertEquals($value, $this->obj->getDefaultUserId());
+		$this->obj->setDefaultUserName($value);
+		self::assertEquals($value, $this->obj->getDefaultUserName());
 		
 		try {
 			$this->obj->init(null);
-			$this->obj->setDefaultUserId($value);
+			$this->obj->setDefaultUserName($value);
 			self::fail('failed to throw TInvalidOperationException when cannot set due to being initialized');
 		} catch(TInvalidOperationException $e) {}
 	}

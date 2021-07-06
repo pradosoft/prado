@@ -53,7 +53,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($this->obj->actionRun(['cron']));
 		self::assertEquals(1, preg_match("/TDbCronModule/", $text = $this->writer->flush()));
 		
-		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ?', 'task' => 'TTestCronModuleTask', 'userid' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
+		$jobs = [['name' => 'testTaskA', 'schedule' => '1 2 3 4 ?', 'task' => 'TTestCronModuleTask', 'username' => 'admin123', 'moduleid' => 'cronmodule99', 'propertya' => 'value1']];
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->setId('cronmodule88');
@@ -64,7 +64,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		$ttask->setSchedule('2 2 2 2 *');
 		$ttask->setModuleId('dbcronmodule100');
 		$ttask->setPropertyA('value2');
-		$ttask->setUserId('admin456');
+		$ttask->setUserName('admin456');
 		$cron->addTask($ttask);
 		$app->setModule('DbShellCron', $cron);
 		self::assertNull($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR));
@@ -166,7 +166,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			self::assertEquals(1, preg_match("/Task Property 'PropertyB' is not found/i", $text));
 			
 			//add task with proper propertyA, with extra space
-			self::assertTrue($this->obj->actionAdd(['cron/add', 'testTaskC', 'cronclean', '5 0 * * ?', ' TimePeriod = 864000 ', 'userid=cron007', 'moduleid=mycronModule']));
+			self::assertTrue($this->obj->actionAdd(['cron/add', 'testTaskC', 'cronclean', '5 0 * * ?', ' TimePeriod = 864000 ', 'username=cron007', 'moduleid=mycronModule']));
 			$text = $this->writer->flush();
 			self::assertEquals(1, preg_match("/Task 'testTaskC' was added to the database/i", $text));
 			
@@ -176,7 +176,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			
 			self::assertEquals('testTaskC', $task->getName());
 			self::assertEquals('5 0 * * ?', $task->getSchedule());
-			self::assertEquals('cron007', $task->getUserId());
+			self::assertEquals('cron007', $task->getUserName());
 			self::assertEquals('mycronModule', $task->getModuleId());
 			self::assertEquals('864000', $task->getTimePeriod());
 			self::assertEquals(0, $task->getProcessCount());
@@ -213,7 +213,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			
 			// property change, with extra spaces
 			$time = time();
-			self::assertTrue($this->obj->actionUpdate(['cron/update', 'testTaskC', 'schedule=10 1 * * ?', ' TimePeriod = 86400 ', 'userid=cron001', 'moduleid=mycronModule2', 'ProcessCount=100', 'LastExecTime='.$time]));
+			self::assertTrue($this->obj->actionUpdate(['cron/update', 'testTaskC', 'schedule=10 1 * * ?', ' TimePeriod = 86400 ', 'username=cron001', 'moduleid=mycronModule2', 'ProcessCount=100', 'LastExecTime='.$time]));
 			$text = $this->writer->flush();
 			self::assertEquals(1, preg_match("/Task 'testTaskC' was updated in the database/i", $text));
 			
@@ -222,7 +222,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			//check that it was changed.
 			self::assertEquals('testTaskC', $task->getName());
 			self::assertEquals('10 1 * * ?', $task->getSchedule());
-			self::assertEquals('cron001', $task->getUserId());
+			self::assertEquals('cron001', $task->getUserName());
 			self::assertEquals('mycronModule2', $task->getModuleId());
 			self::assertEquals('86400', $task->getTimePeriod());
 			self::assertEquals(100, $task->getProcessCount());
@@ -232,7 +232,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			$task = $cron->getTask('testTaskC', true, false);
 			self::assertEquals('testTaskC', $task['name']);
 			self::assertEquals('10 1 * * ?', $task['schedule']);
-			self::assertEquals('cron001', $task['userid']);
+			self::assertEquals('cron001', $task['username']);
 			self::assertEquals('mycronModule2', $task['moduleid']);
 			self::assertEquals(100, $task['processcount']);
 			self::assertEquals($time, $task['lastexectime']);
@@ -241,7 +241,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 			$task = $cron->getTask('testTaskC', false, false);
 			self::assertEquals('testTaskC', $task['name']);
 			self::assertEquals('10 1 * * ?', $task['schedule']);
-			self::assertEquals('cron001', $task['userid']);
+			self::assertEquals('cron001', $task['username']);
 			self::assertEquals('mycronModule2', $task['moduleid']);
 			self::assertEquals(100, $task['processcount']);
 			self::assertEquals($time, $task['lastexectime']);

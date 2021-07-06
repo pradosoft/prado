@@ -16,6 +16,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Security\IUserManager;
+use Prado\Security\Permissions\IPermissions;
+use Prado\Security\Permissions\TPermissionEvent;
 use Prado\TPropertyValue;
 use Prado\Util\TLogger;
 use Prado\Xml\TXmlElement;
@@ -29,8 +31,8 @@ use Prado\Xml\TXmlDocument;
  * '->' followed by a method with or without parameters. eg.
  *
  * <code>
- * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserId="admin">
- *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserId="cron" />
+ * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
+ *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
  *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
  *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
@@ -50,7 +52,7 @@ use Prado\Xml\TXmlDocument;
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
  * </code>
  *
- * The default cron user can be set with {@link set$DefaultUserId} with its
+ * The default cron user can be set with {@link set$DefaultUserName} with its
  * default being 'cron' user.  The default user is used when no task specific
  * user is specifiedThe 'cron' user should exist in the TUserManager to
  * switched the application user properly.
@@ -58,13 +60,14 @@ use Prado\Xml\TXmlDocument;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
  * @since 4.2.0
- * @method void dyLogCron($numtasks);
- * @method void dyLogCronTask($task, $username);
- * @method void dyUpdateTaskInfo($task);
+ * @method void dyLogCron($numtasks)
+ * @method void dyLogCronTask($task, $username)
+ * @method void dyUpdateTaskInfo($task)
+ * @method bool dyRegisterShellAction($returnValue)
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
 
-class TCronModule extends \Prado\TModule
+class TCronModule extends \Prado\TModule implements IPermissions
 {
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
@@ -75,7 +78,7 @@ class TCronModule extends \Prado\TModule
 	
 	public const NAME_KEY = 'name';
 	
-	public const USERID_KEY = 'userid';
+	public const USERNAME_KEY = 'username';
 	
 	/** Key to global state of the last time SystemCron was run */
 	public const LAST_CRON_TIME = 'prado:cron:lastcron';
@@ -88,6 +91,8 @@ class TCronModule extends \Prado\TModule
 	
 	/** The separator for TCronMethodTask */
 	public const METHOD_SEPARATOR = '->';
+	
+	public const PERM_CRON_SHELL = 'cron_shell';
 	
 	/** @var bool if the module has been initialized */
 	protected $_initialized = false;
@@ -105,7 +110,7 @@ class TCronModule extends \Prado\TModule
 	private $_tasks = [];
 	
 	/** @var string The user Id of the tasks without users */
-	private $_defaultUserId = self::DEFAULT_CRON_USER;
+	private $_defaultUserName = self::DEFAULT_CRON_USER;
 	
 	/** @var bool enable cron on requests, default false */
 	private $_enableRequestCron = false;
@@ -155,10 +160,7 @@ class TCronModule extends \Prado\TModule
 		
 		//Read additional Config from Property
 		$this->readConfiguration($this->_additionalCronTasks);
-		
-		if (($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
-			$app->addShellActionClass($this->_shellClass);
-		}
+		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		
 		if (php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
 			if (100.0 * ((float) (mt_rand()) / (float) (mt_getrandmax())) <= $this->getRequestCronProbability()) {
@@ -167,6 +169,17 @@ class TCronModule extends \Prado\TModule
 		}
 		$this->_initialized = true;
 		parent::init($config);
+	}
+	
+	/**
+	 * @param mixed $manager
+	 * @return array<Prado\Security\TPermissionRule>
+	 */
+	public function getPermissions($manager)
+	{
+		return [
+			new TPermissionEvent(static::PERM_CRON_SHELL, 'dyRegisterShellAction')
+		];
 	}
 	
 	/**
@@ -224,6 +237,13 @@ class TCronModule extends \Prado\TModule
 		}
 		if (!$task) {
 			throw new TConfigurationException('cron_task_required');
+		}
+	}
+	
+	public function registerShellAction($sender, $param)
+	{
+		if ($this->dyRegisterShellAction(false) && ($app = Prado::getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+			$app->addShellActionClass($this->_shellClass);
 		}
 	}
 	
@@ -397,19 +417,19 @@ class TCronModule extends \Prado\TModule
 	
 	/**
 	 * Runs a specific task. Sets the user to the Task user or the cron module
-	 * {@link getDefaultUserId}.
+	 * {@link getDefaultUserName}.
 	 * @param Prado\Util\Cron\TCronTask $task the task to run.
 	 */
 	public function runTask($task)
 	{
 		$app = $this->getApplication();
 		$users = $this->getUserManager();
-		$defaultUsername = $username = $this->getDefaultUserId();
+		$defaultUsername = $username = $this->getDefaultUserName();
 		$restore_user = $app->getUser();
 		$user = null;
 		
 		if ($users) {
-			if ($nusername = $task->getUserId()) {
+			if ($nusername = $task->getUserName()) {
 				$username = $nusername;
 			}
 			$user = $users->getUser($username);
@@ -502,21 +522,21 @@ class TCronModule extends \Prado\TModule
 	/**
 	 * @return string the default user id of Tasks without users ids
 	 */
-	public function getDefaultUserId()
+	public function getDefaultUserName()
 	{
-		return $this->_defaultUserId;
+		return $this->_defaultUserName;
 	}
 
 	/**
 	 * @param string $id the default user id of Tasks without users ids
 	 * @throws TInvalidOperationException if the module has been initialized
 	 */
-	public function setDefaultUserId($id)
+	public function setDefaultUserName($id)
 	{
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('cron_property_unchangeable', 'DefaultUserId');
+			throw new TInvalidOperationException('cron_property_unchangeable', 'DefaultUserName');
 		}
-		$this->_defaultUserId = TPropertyValue::ensureString($id);
+		$this->_defaultUserName = TPropertyValue::ensureString($id);
 	}
 
 	/**

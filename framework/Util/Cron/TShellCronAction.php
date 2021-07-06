@@ -118,8 +118,8 @@ class TShellCronAction extends TShellAction
 				$f = 'Y-m-d H:i:s';
 			}
 			
-			if (($user = $task->getUserId()) == null) {
-				$user = $module->getDefaultUserId();
+			if (($user = $task->getUserName()) == null) {
+				$user = $module->getDefaultUserName();
 			}
 			$nextrun = date($f, $trigger) . ($task->getIsPending() ? '*' : '');
 			if ($task->getIsPending()) {

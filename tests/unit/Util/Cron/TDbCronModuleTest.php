@@ -120,8 +120,8 @@ class TDbCronModuleTest extends TCronModuleTest
 		parent::testGetTasks();
 		
 		$jobs = [
-			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'userid' => 'admin', 'moduleid' => 'GT_module'],
-			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'userid' => 'admin1']
+			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'username' => 'admin1']
 		];
 		
 		$this->obj = new $this->baseClass();
@@ -166,7 +166,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask1']);
 		self::assertEquals('1 * * * *', $tasks['testTask1']->getSchedule());
 		self::assertEquals('testTask1', $tasks['testTask1']->getName());
-		self::assertEquals('admin', $tasks['testTask1']->getUserId());
+		self::assertEquals('admin', $tasks['testTask1']->getUserName());
 		self::assertEquals('GT_module', $tasks['testTask1']->getModuleId());
 		self::assertEquals('value1', $tasks['testTask1']->getPropertyA());
 		self::assertEquals('2 * * * *', $tasks['testTask2']->getSchedule());
@@ -201,8 +201,8 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertTrue(microtime(true) - $tasks['testTask4']->getLastExecTime() < 2);
 		
 		$jobs2 = [
-			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'userid' => 'admin', 'moduleid' => 'GT_module'],
-			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'userid' => 'admin1'],
+			['name' => 'testTask1', 'schedule' => '1 * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1', 'username' => 'admin', 'moduleid' => 'GT_module'],
+			['name' => 'testTask2', 'schedule' => '2 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1', 'username' => 'admin1'],
 			['name' => 'testTask3', 'schedule' => '3 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method2(true)'],
 			['name' => 'testTask4', 'schedule' => '4 * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method3(86400)']
 		];
@@ -407,7 +407,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('TTestCronModuleTask', $tasks['testTask1']['task']);
 		self::assertEquals('1 * * * ?', $tasks['testTask1']['schedule']);
 		self::assertEquals('testTask1', $tasks['testTask1']['name']);
-		self::assertEquals('admin', $tasks['testTask1']['userid']);
+		self::assertEquals('admin', $tasks['testTask1']['username']);
 		self::assertEquals('GT_module', $tasks['testTask1']['moduleid']);
 		self::assertEquals(0, $tasks['testTask1']['processcount']);
 		self::assertEquals(0, $tasks['testTask1']['lastexectime']);
@@ -450,7 +450,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('testTaskAB', $task['name']);
 		self::assertEquals('4 * * * *', $task['schedule']);
 		self::assertEquals('CMT_UserManager3'.self::SEPARATOR.'method3(86400)', $task['task']);
-		self::assertNull($task['userid']);
+		self::assertNull($task['username']);
 		self::assertEquals(0, $task['processcount']);
 		self::assertNull($task['lastexectime']);
 		self::assertInstanceOf('\\Prado\\Util\\Cron\\TCronMethodTask', $this->obj->getTask('testTaskAB', true, true));
@@ -462,7 +462,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('testTask5', $task['name']);
 		self::assertEquals('5 * * * *', $task['schedule']);
 		self::assertEquals('TTestCronModuleTask', $task['task']);
-		self::assertNull($task['userid']);
+		self::assertNull($task['username']);
 		self::assertEquals(0, $task['processcount']);
 		self::assertNull($task['lastexectime']);
 		
@@ -471,7 +471,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('testTask5', $task->getName());
 		self::assertEquals('5 * * * *', $task->getSchedule());
 		self::assertEquals('TTestCronModuleTask', $task->getTask());
-		self::assertNull($task->getUserId());
+		self::assertNull($task->getUserName());
 		self::assertEquals(0, $task->getProcessCount());
 		self::assertNull($task->getLastExecTime());
 		
@@ -493,7 +493,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$task->setName('crudTask');
 		$task->setSchedule('test * * * *');
 		$task->setModuleId('crudModule');
-		$task->setUserId('cronCrudUser');
+		$task->setUserName('cronCrudUser');
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 		$task->setPropertyA('myCrudValue');
@@ -510,7 +510,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('crudTask', $taskInfo['name']);
 		self::assertEquals('* * * * *', $taskInfo['schedule']);
 		self::assertEquals('crudModule', $taskInfo['moduleid']);
-		self::assertEquals('cronCrudUser', $taskInfo['userid']);
+		self::assertEquals('cronCrudUser', $taskInfo['username']);
 		self::assertEquals('1', $taskInfo['active']);
 		self::assertEquals($count, $taskInfo['processcount']);
 		self::assertEquals(floor($time), $taskInfo['lastexectime']);
@@ -537,7 +537,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$task->setName('crudTask');
 		$task->setSchedule('test * * * *');
 		$task->setModuleId('crudModule');
-		$task->setUserId('cronCrudUser');
+		$task->setUserName('cronCrudUser');
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 		
@@ -551,7 +551,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('crudTask', $taskInfo['name']);
 		self::assertEquals('1 * * * *', $taskInfo['schedule']);
 		self::assertEquals('crudModule', $taskInfo['moduleid']);
-		self::assertEquals('cronCrudUser', $taskInfo['userid']);
+		self::assertEquals('cronCrudUser', $taskInfo['username']);
 		self::assertEquals('1', $taskInfo['active']);
 		self::assertEquals($count, $taskInfo['processcount']);
 		self::assertEquals(floor($time), $taskInfo['lastexectime']);
@@ -567,7 +567,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('crudTask', $taskInfo['name']);
 		self::assertEquals('1 * * * *', $taskInfo['schedule']);
 		self::assertEquals('crudModule', $taskInfo['moduleid']);
-		self::assertEquals('cronCrudUser', $taskInfo['userid']);
+		self::assertEquals('cronCrudUser', $taskInfo['username']);
 		self::assertEquals('1', $taskInfo['active']);
 		self::assertEquals($count, $taskInfo['processcount']);
 		self::assertEquals(floor($time), $taskInfo['lastexectime']);
@@ -614,7 +614,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$time = time();
 		$cmd = $db->createCommand(
 			"INSERT INTO {$this->obj->getTableName()} " .
-				"(name, schedule, task, moduleid, userid, processcount, lastexectime, active)" .
+				"(name, schedule, task, moduleid, username, processcount, lastexectime, active)" .
 				" VALUES ('testTask1', '* * * * *', 'TTestCronModuleTask', 'module1', 'cron', '3', " . ($time - 60) .  ", NULL)".
 				",('testTask2', '* * * * *', 'TTestCronModuleTask', 'module2', 'cron', '14', " . ($time - 60) .  ", NULL)".
 				",('testTask3', '* * * * *', 'CMT_UserManager3".self::SEPARATOR."method1', 'CMT_UserManager3', 'cron', '15', " . ($time - 60) .  ", NULL)".
@@ -679,7 +679,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$time = time();
 		$cmd = $db->createCommand(
 			"INSERT INTO {$this->obj->getTableName()} " .
-				"(name, schedule, task, moduleid, userid, processcount, lastexectime, active)" .
+				"(name, schedule, task, moduleid, username, processcount, lastexectime, active)" .
 				" VALUES ('testTask1', '* * * * *', 'TTestCronModuleTask', 'module1', 'cron', '3', " . ($time - 60) .  ", NULL)".
 				",('testTask2', '* * * * *', 'TTestCronModuleTask', 'module2', 'cron', '14', " . ($time - 60) .  ", NULL)".
 				",('testTask3', '* * * * *', 'CMT_UserManager3".self::SEPARATOR."method1', 'CMT_UserManager3', 'cron', '15', " . ($time - 60) .  ", NULL)".
@@ -701,7 +701,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('CMT_UserManager3'.self::SEPARATOR.'method3(86400)', $log[0]['task']);
 		self::assertEquals('CMT_UserManager3', $log[0]['moduleid']);
 		self::assertEquals($time - 60, $log[0]['lastexectime']);
-		self::assertEquals('cron', $log[0]['userid']);
+		self::assertEquals('cron', $log[0]['username']);
 		self::assertEquals(null, $log[0]['active']);
 		self::assertEquals('testTask4', $log[1]['name']);
 		self::assertEquals('testTask3', $log[2]['name']);
