@@ -36,14 +36,14 @@ class TPhpShellAction extends TShellAction
 		if (count($args) > 1) {
 			$loaded = $this->initializePradoApplication($args[1]);
 			$this->getWriter()->flush();
-			if($loaded === false) {
+			if ($loaded === false) {
 				return true;
 			}
 		}
 
- 		$shell = new \Psy\Shell();
- 		$shell->setBoundObject($this);
-        $shell->run();
+		$shell = new \Psy\Shell();
+		$shell->setBoundObject($this);
+		$shell->run();
 		return true;
 	}
 }

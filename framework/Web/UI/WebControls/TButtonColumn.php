@@ -255,12 +255,16 @@ class TButtonColumn extends TDataGridColumn
 	{
 		if ($sender instanceof \Prado\Web\UI\IButtonControl) {
 			if (($field = $this->getDataTextField()) !== '') {
-				$value = $this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
+				/** @var \Prado\IDataRenderer|\Prado\Web\UI\TControl $nc */
+				$nc = $sender->getNamingContainer();
+				$value = $this->getDataFieldValue($nc->getData(), $field);
 				$text = $this->formatDataValue($this->getDataTextFormatString(), $value);
 				$sender->setText($text);
 			}
 			if (($sender instanceof TImageButton) && ($field = $this->getDataImageUrlField()) !== '') {
-				$value = $this->getDataFieldValue($sender->getNamingContainer()->getData(), $field);
+				/** @var \Prado\IDataRenderer|\Prado\Web\UI\TControl $nc */
+				$nc = $sender->getNamingContainer();
+				$value = $this->getDataFieldValue($nc->getData(), $field);
 				$url = $this->formatDataValue($this->getDataImageUrlFormatString(), $value);
 				$sender->setImageUrl($url);
 			}

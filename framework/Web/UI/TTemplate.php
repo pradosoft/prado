@@ -49,6 +49,7 @@ use Prado\Exceptions\TTemplateException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 {
@@ -108,9 +109,22 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * @var string hash code of the template
 	 */
 	private $_hashCode = '';
+
+	/**
+	 * @var \Prado\Web\UI\TControl
+	 */
 	private $_tplControl;
+	/**
+	 * @var array<string>
+	 */
 	private $_includedFiles = [];
+	/**
+	 * @var array<int>
+	 */
 	private $_includeAtLine = [];
+	/**
+	 * @var array<int>
+	 */
 	private $_includeLines = [];
 
 
@@ -382,7 +396,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a simple property for a component.
-	 * @param \Prado\TComponent $component component to be configured
+	 * @param \Prado\Web\UI\TControl $component component to be configured
 	 * @param string $name property name
 	 * @param mixed $value property initial value
 	 */
@@ -435,7 +449,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 
 	/**
 	 * Configures a subproperty for a component.
-	 * @param \Prado\TComponent $component component to be configured
+	 * @param \Prado\Web\UI\TControl $component component to be configured
 	 * @param string $name subproperty name
 	 * @param mixed $value subproperty initial value
 	 */

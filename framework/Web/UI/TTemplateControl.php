@@ -31,6 +31,7 @@ use Prado\Data\ActiveRecord\TActiveRecord;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TTemplateControl extends TCompositeControl
 {
@@ -66,7 +67,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Returns the template object associated with this control object.
-	 * @return null|ITemplate the parsed template, null if none
+	 * @return null|TTemplate the parsed template, null if none
 	 */
 	public function getTemplate()
 	{

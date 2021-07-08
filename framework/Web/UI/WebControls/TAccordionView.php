@@ -25,6 +25,7 @@ use Prado\TPropertyValue;
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @package Prado\Web\UI\WebControls
  * @since 3.2
+ * @method TAccordion getParent()
  */
 class TAccordionView extends \Prado\Web\UI\WebControls\TWebControl
 {
