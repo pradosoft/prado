@@ -34,10 +34,16 @@ class TPhpShellAction extends TShellAction
 	public function performAction($args)
 	{
 		if (count($args) > 1) {
-			$this->initializePradoApplication($args[1]);
+			$loaded = $this->initializePradoApplication($args[1]);
+			$this->getWriter()->flush();
+			if($loaded === false) {
+				return true;
+			}
 		}
 
-		\Psy\debug([], Prado::getApplication());
+ 		$shell = new \Psy\Shell();
+ 		$shell->setBoundObject($this);
+        $shell->run();
 		return true;
 	}
 }
