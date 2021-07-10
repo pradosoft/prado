@@ -36,23 +36,23 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	/**
 	 * @var string action, either 'allow' or 'deny'
 	 */
-	private $_action;
+	private $_action = 'allow';
 	/**
 	 * @var array list of user IDs
 	 */
-	private $_users;
+	private $_users = [];
 	/**
 	 * @var array list of roles
 	 */
-	private $_roles;
+	private $_roles = ['*'];
 	/**
 	 * @var string verb, may be empty, 'get', or 'post'.
 	 */
-	private $_verb;
+	private $_verb = '*';
 	/**
 	 * @var string IP patterns
 	 */
-	private $_ipRules;
+	private $_ipRules = ['*'];
 	/**
 	 * @var numeric priority of the rule
 	 */
@@ -60,15 +60,15 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	/**
 	 * @var bool if this rule applies to everyone
 	 */
-	private $_everyone;
+	private $_everyone = true;
 	/**
 	 * @var bool if this rule applies to guest user
 	 */
-	private $_guest;
+	private $_guest = false;
 	/**
 	 * @var bool if this rule applies to authenticated users
 	 */
-	private $_authenticated;
+	private $_authenticated = false;
 
 	/**
 	 * Constructor.
@@ -239,12 +239,12 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @param numeric|string $priority
+	 * @param null|numeric|string $priority
 	 * @since 4.2.0
 	 */
 	public function setPriority($priority)
 	{
-		$this->_priority = ($priority !== '' && $priority !== null) ? (float) $priority : null;
+		$this->_priority = is_numeric($priority) ? $priority : null;
 	}
 
 	/**
@@ -318,5 +318,45 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	private function isVerbMatched($verb)
 	{
 		return ($this->_verb === '*' || strcasecmp($verb, $this->_verb) === 0);
+	}
+	
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next load.
+	 * Reimplement in derived classes to add new variables, but remember to also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		
+		if ($this->_action === 'allow') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_action";
+		}
+		if ($this->_users === []) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_users";
+		}
+		if (count($this->_roles) === 1 && $this->_roles[0] === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_roles";
+		}
+		if ($this->_verb === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_verb";
+		}
+		if (count($this->_ipRules) === 1 && $this->_ipRules[0] === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_ipRules";
+		}
+		if ($this->_everyone == true) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_everyone";
+		}
+		if ($this->_guest == false) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_guest";
+		}
+		if ($this->_authenticated == false) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_authenticated";
+		}
+		if ($this->_priority === null) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_priority";
+		}
 	}
 }
