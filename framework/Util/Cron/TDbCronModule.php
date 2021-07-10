@@ -43,13 +43,13 @@ use Prado\Util\TLogger;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
  * @since 4.2.0
- * @method bool dyClearCronLog(false, $seconds)
- * @method bool dyGetCronLog(false, $name, $pageSize, $offset, $sortingDesc)
- * @method bool dyGetCronLogCount(false, $name)
- * @method bool dyRemoveCronLogItem(false, $taskUID)
- * @method bool dyAddTask(false, $task, $runtime)
- * @method bool dyUpdateTask(false, $task, $extraData)
- * @method bool dyRemoveTask(false, $untask, $extraData)
+ * @method bool dyClearCronLog(bool $return, int $seconds)
+ * @method bool dyGetCronLog(bool $return, string $name, int $pageSize, int $offset, string $sortingDesc)
+ * @method bool dyGetCronLogCount(bool $return, string $name)
+ * @method bool dyRemoveCronLogItem(bool $return, int $taskUID)
+ * @method bool dyAddTask(bool $return,\Prado\Util\Cron\TCronTask $task, bool $runtime)
+ * @method bool dyUpdateTask(bool $return, \Prado\Util\Cron\TCronTask $task, array $extraData)
+ * @method bool dyRemoveTask(bool $return, \Prado\Util\Cron\TCronTask|string $untask, array $extraData)
  */
 
 class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
@@ -142,7 +142,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			new TPermissionEvent(static::PERM_CRON_ADD_TASK, ['dyAddTask']),
 			new TPermissionEvent(static::PERM_CRON_UPDATE_TASK, ['dyUpdateTask'], $userIsOwnerAllowedRule),
 			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, ['dyRemoveTask'], $userIsOwnerAllowedRule)
-		], parent::permissions());
+		], parent::getPermissions($manager));
 	}
 	
 	/**
@@ -577,7 +577,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 */
 	public function updateTask($task)
 	{
-		if ($this->dyUpdateTask(false, $task, ['extra' => ['user' => $task->getUserName()]])) {
+		if ($this->dyUpdateTask(false, $task, ['extra' => ['username' => $task->getUserName()]])) {
 			return false;
 		}
 		return $this->updateTaskInternal($task);
@@ -645,7 +645,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 				return false;
 			}
 		}
-		if ($this->dyRemoveTask(false, $untask, ['extra' => ['user' => ($task ?? $untask)->getUserName()]])) {
+		if ($this->dyRemoveTask(false, $untask, ['extra' => ['username' => ($task ?? $untask)->getUserName()]])) {
 			return false;
 		}
 		return $this->removeTaskInternal($untask);
