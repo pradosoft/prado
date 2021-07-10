@@ -722,7 +722,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		// test TInvalidOperationException when placing a behavior on TComponent
 		try {
-			$this->component->attachClassBehavior('FooBarBehavior', 'FooBarBehavior', 'TComponent');
+			$this->component->attachClassBehavior('FooBarBehavior', 'FooBarBehavior', 'Prado\\TComponent');
 			$this->fail('TInvalidOperationException not raised when trying to place a behavior on the root object TComponent');
 		} catch (TInvalidOperationException $e) {
 		}
@@ -799,9 +799,9 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	public function testGetClassHierarchy()
 	{
 		$component = new DynamicCatchingComponent;
-		$this->assertEquals(['DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy());
-		$this->assertEquals(['DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy(false));
-		$this->assertEquals(['dynamiccatchingcomponent', 'newcomponentnolisten', 'newcomponent', 'prado\tcomponent'], $component->getClassHierarchy(true));
+		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy());
+		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy(false));
+		$this->assertEquals(['prado\\util\\idynamicmethods', 'dynamiccatchingcomponent', 'newcomponentnolisten', 'newcomponent', 'prado\tcomponent'], $component->getClassHierarchy(true));
 	}
 
 

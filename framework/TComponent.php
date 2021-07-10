@@ -434,7 +434,8 @@ class TComponent
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
-		$classes = [$class];
+		$classes = array_values(class_implements($class));
+		array_push($classes, $class);
 		while ($class = get_parent_class($class)) {
 			array_push($classes, $class);
 		}
@@ -1443,7 +1444,7 @@ class TComponent
 			$name = get_class($name);
 		}
 		$class = strtolower($class);
-		if ($class === 'tcomponent') {
+		if ($class === 'prado\\tcomponent') {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
 		}
 		if (empty(self::$_um[$class])) {
