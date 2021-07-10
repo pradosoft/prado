@@ -364,14 +364,15 @@ class TDbParameterModule extends TModule implements IDbModule
 		if (empty($key)) {
 			throw new TInvalidOperationException('dbparametermodule_set_no_blank_key');
 		}
-			
+		
+		$_value = $value;
 		if (($serializer = $this->getSerializer()) && (is_array($value) || is_object($value))) {
 			if ($serializer == self::SERIALIZE_PHP) {
-				$value = @serialize($value);
+				$_value = @serialize($value);
 			} elseif ($serializer == self::SERIALIZE_JSON) {
-				$value = json_encode($value, JSON_UNESCAPED_UNICODE);
+				$_value = json_encode($value, JSON_UNESCAPED_UNICODE);
 			} else {
-				$value = call_user_func($serializer, $value, true);
+				$_value = call_user_func($serializer, $value, true);
 			}
 		}
 		$db = $this->getDbConnection();
@@ -388,7 +389,7 @@ class TDbParameterModule extends TModule implements IDbModule
 		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
-		$cmd->bindParameter(":value", $value, PDO::PARAM_STR);
+		$cmd->bindParameter(":value", $_value, PDO::PARAM_STR);
 		if ($this->_autoLoadField) {
 			$alv = $autoLoad ? $this->_autoLoadValue : $this->_autoLoadValueFalse;
 			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
