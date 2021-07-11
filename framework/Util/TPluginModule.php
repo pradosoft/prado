@@ -123,8 +123,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	}
 	
 	/**
-	 * @param mixed $path
-	 * @return string path of the plugin
+	 * @param string $path
 	 */
 	public function setPluginPath($path)
 	{

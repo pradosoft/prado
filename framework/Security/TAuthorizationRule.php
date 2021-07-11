@@ -100,8 +100,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @param string action, either 'allow' or 'deny'
-	 * @param mixed $action
+	 * @param string $action, either 'allow' or 'deny'
 	 * @throws Prado\Exceptions\TInvalidDataValueException when the $action is not 'allow' or 'deny'
 	 * @since 4.2.0
 	 */
@@ -116,7 +115,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @return array list of user IDs
+	 * @return string[] list of user IDs
 	 */
 	public function getUsers()
 	{
@@ -125,8 +124,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 
 	/**
 	 * @since 4.2.0
-	 * @param mixed $users
-	 * @return array list of user IDs
+	 * @param string $users comma separated list of users
 	 */
 	public function setUsers($users)
 	{
@@ -154,7 +152,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @return array list of roles
+	 * @return string[] list of roles
 	 */
 	public function getRoles()
 	{
@@ -162,7 +160,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @param string|string[] $roles list of roles
+	 * @param string $roles comma separated list of roles
 	 * @since 4.2.0
 	 */
 	public function setRoles($roles)

@@ -144,7 +144,6 @@ abstract class TShellAction extends \Prado\TComponent
 	
 	/**
 	 * @param string $cmd
-	 * @return string
 	 */
 	public function renderHelpCommand($cmd)
 	{

@@ -155,6 +155,7 @@ class TActiveRecordAction extends TShellAction
 				return $module;
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -206,6 +207,7 @@ class TActiveRecordAction extends TShellAction
 		} else {
 			$this->_outWriter->writeError('Unable to connect to database with ConnectionID=\'' . $config->getConnectionID() . "'. Please check your settings in application.xml and ensure your database connection is set up first.");
 		}
+		return true;
 	}
 
 	/**

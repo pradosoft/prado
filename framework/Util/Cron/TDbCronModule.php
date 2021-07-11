@@ -188,6 +188,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 * reads in all the tasks from the db, instances them if they are active db tasks.
 	 * otherwise the rows are kept for persistent data.
 	 * @param bool $initConfigTasks initialize the configuration
+	 * @return Prado\Util\Cron\TCronTask[]
 	 */
 	protected function ensureTasks($initConfigTasks = true)
 	{
@@ -211,6 +212,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		if ($initConfigTasks) {
 			$this->_configTasks = parent::ensureTasks();
 		}
+		return null;
 	}
 	
 	/**
