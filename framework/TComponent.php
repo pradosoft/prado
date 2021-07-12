@@ -434,7 +434,8 @@ class TComponent
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
-		$classes = [$class];
+		$classes = array_values(class_implements($class));
+		array_push($classes, $class);
 		while ($class = get_parent_class($class)) {
 			array_push($classes, $class);
 		}
@@ -1366,7 +1367,7 @@ class TComponent
 	 */
 	public function fxAttachClassBehavior($sender, $param)
 	{
-		if (in_array($param->getClass(), $this->getClassHierarchy(true))) {
+		if ($this->isa($param->getClass())) {
 			return $this->attachBehavior($param->getName(), $param->getBehavior(), $param->getPriority());
 		}
 	}
@@ -1382,7 +1383,7 @@ class TComponent
 	 */
 	public function fxDetachClassBehavior($sender, $param)
 	{
-		if (in_array($param->getClass(), $this->getClassHierarchy(true))) {
+		if ($this->isa($param->getClass())) {
 			return $this->detachBehavior($param->getName(), $param->getPriority());
 		}
 	}
@@ -1402,15 +1403,8 @@ class TComponent
 	 */
 	protected static function instanceBehavior($behavior)
 	{
-		if (is_string($behavior)) {
+		if (is_string($behavior) || (is_array($behavior) && isset($behavior['class']))) {
 			$behavior = Prado::createComponent($behavior);
-		} elseif (is_array($behavior) && isset($behavior['class'])) {
-			$b = Prado::createComponent($behavior['class']);
-			unset($behavior['class']);
-			foreach ($behavior as $property => $value) {
-				$b->setSubProperty($property, $value);
-			}
-			$behavior = $b;
 		}
 		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
@@ -1450,7 +1444,7 @@ class TComponent
 			$name = get_class($name);
 		}
 		$class = strtolower($class);
-		if ($class === 'tcomponent') {
+		if ($class === 'prado\\tcomponent') {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
 		}
 		if (empty(self::$_um[$class])) {
@@ -1641,9 +1635,9 @@ class TComponent
 		if ($this->_m === null) {
 			$this->_m = new TPriorityMap;
 		}
+		$this->_m->add($name, $behavior, $priority);
 		$behavior->attach($this);
 		$this->dyAttachBehavior($name, $behavior);
-		$this->_m->add($name, $behavior, $priority);
 		return $behavior;
 	}
 
