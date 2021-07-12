@@ -679,7 +679,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			self::assertEquals('Guest',$task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
-		$users->switchToGuest($user);
+		$user->setIsGuest(true);
 		$app->setUser($user);
 		
 	}

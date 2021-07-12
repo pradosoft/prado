@@ -69,7 +69,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	private $_paramBehavior;
 	
 	/**
-	 * @var the name of the installed behavior.
+	 * @var string the name of the installed behavior.
 	 */
 	protected $_routeBehaviorName;
 	
@@ -80,7 +80,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
 	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
 	 * the Application Parameter on the key so any changes are also routed to the Property.
-	 * @param $owner object the object to which this behavior is being attached
+	 * @param object $owner the object to which this behavior is being attached
 	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set
 	 */
 	public function attach($owner)
@@ -130,7 +130,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	
 	/**
 	 * This removes the Application Parameter handler behavior
-	 * @param $owner object the object that this behavior is attached to.
+	 * @param object $owner the object that this behavior is attached to.
 	 */
 	public function detach($owner)
 	{

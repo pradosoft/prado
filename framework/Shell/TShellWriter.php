@@ -77,7 +77,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const BG_WHITE = 107;
 	
 	/**
-	 * @var ITextWriter writer
+	 * @var \Prado\IO\ITextWriter writer
 	 */
 	protected $_writer;
 	
@@ -86,7 +86,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	
 	/**
 	 * Constructor.
-	 * @param ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
+	 * @param \Prado\IO\ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
 	 */
 	public function __construct($writer)
 	{
@@ -112,7 +112,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 	
 	/**
-	 * @return ITextWriter the writer output to this class
+	 * @return \Prado\IO\ITextWriter the writer output to this class
 	 */
 	public function getWriter()
 	{
@@ -120,7 +120,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 	
 	/**
-	 * @param ITextWriter $writer the writer output to this class
+	 * @param \Prado\IO\ITextWriter $writer the writer output to this class
 	 */
 	public function setWriter($writer)
 	{

@@ -55,7 +55,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	 * invoke the page's {@link TPage::validate validate} method first.
 	 * It will raise {@link onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
-	 * @param \Prado\TEventParameter $param the event parameter
+	 * @param mixed $param the event parameter
 	 */
 	public function raisePostBackEvent($param)
 	{

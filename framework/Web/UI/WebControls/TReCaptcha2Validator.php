@@ -73,6 +73,7 @@ class TReCaptcha2Validator extends TBaseValidator
 		}
 		return ($this->_isvalid == true);
 	}
+
 	public function onPreRender($param)
 	{
 		parent::onPreRender($param);
@@ -86,6 +87,7 @@ class TReCaptcha2Validator extends TBaseValidator
 
 		// update validator display
 		if ($control = $this->getValidationTarget()) {
+			/** @var TReCaptcha2 $control */
 			$fn = 'captchaUpdateValidatorStatus_' . $this->getClientID();
 
 			$cs->registerEndScript($this->getClientID() . '::validate', implode(' ', [

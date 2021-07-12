@@ -33,20 +33,20 @@ class TCronTaskInfo extends \Prado\TComponent
 	/** @var string class name or module/method of the task to instance */
 	protected $_task;
 	
-	/** @var module servicing the task */
+	/** @var string module servicing the task */
 	protected $_moduleid;
 	
-	/** @var title of the task */
+	/** @var string title of the task */
 	protected $_title;
 	
-	/** @var a short description of the task */
+	/** @var string a short description of the task */
 	protected $_description;
 	
 	/**
 	 * This sets the main properties in the class
 	 * @param string $name the short reference name of the task
 	 * @param callable|string $task the class to instance for the task
-	 * @param null|Prado\IModule|string $moduleid the module sericing the task
+	 * @param null|\Prado\IModule|string $moduleid the module sericing the task
 	 * @param null|string $title the title of the task
 	 * @param null|string $description a short description of the task
 	 */
@@ -93,8 +93,7 @@ class TCronTaskInfo extends \Prado\TComponent
 
 	/**
 	 * Sets the Task Class of the Task
-	 * @param string $taskClass the Task Class of the Task
-	 * @param mixed $task
+	 * @param string $task Class the Task Class of the Task
 	 */
 	public function setTask($task)
 	{
@@ -122,7 +121,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	}
 	
 	/**
-	 * @return Prado\TModule gets the module from the module id for the task
+	 * @return \Prado\TModule gets the module from the module id for the task
 	 */
 	public function getModule()
 	{

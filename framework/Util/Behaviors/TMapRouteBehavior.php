@@ -49,8 +49,8 @@ class TMapRouteBehavior extends TBehavior
 	private $_handler;
 	
 	/**
-	 * @param $parameter string  the name of the map key parameter to hook
-	 * @param $handler callable the handler for setting the parameter
+	 * @param string $parameter the name of the map key parameter to hook
+	 * @param callable $handler the handler for setting the parameter
 	 */
 	public function __construct($parameter, $handler)
 	{
@@ -67,9 +67,9 @@ class TMapRouteBehavior extends TBehavior
 	 * When there is a parameter, when the key is equal to the parameter,
 	 * this calls handler($value).
 	 * When parameter is null, this calls handler($key, $value).
-	 * @param $key string the key of the item being added
-	 * @param $value mixed the value of the item being added
-	 * @param $callchain TCallChain of event handlers
+	 * @param string $key the key of the item being added
+	 * @param mixed$value the value of the item being added
+	 * @param \Prado\Util\TCallChain $callchain of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	public function dyAddItem($key, $value, $callchain)
@@ -88,9 +88,9 @@ class TMapRouteBehavior extends TBehavior
 	 * When there is a parameter, when the key is equal to the parameter,
 	 * this calls handler(null).
 	 * When parameter is null, this calls handler($key, null).
-	 * @param $key string the key of the item being added
-	 * @param $value mixed the value of the item being added
-	 * @param $callchain TCallChain of event handlers
+	 * @param string $key the key of the item being added
+	 * @param mixed $value the value of the item being added
+	 * @param \Prado\Util\TCallChain $callchain of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	public function dyRemoveItem($key, $value, $callchain)

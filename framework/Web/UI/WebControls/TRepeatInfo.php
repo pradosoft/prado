@@ -140,7 +140,7 @@ class TRepeatInfo extends \Prado\TComponent
 	/**
 	 * Renders the repeated items.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
-	 * @param IRepeatInfoUser $user repeat information user
+	 * @param TListControl&IRepeatInfoUser $user repeat information user
 	 */
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{

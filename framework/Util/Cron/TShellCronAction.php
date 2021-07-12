@@ -51,7 +51,7 @@ class TShellCronAction extends TShellAppAction
 	{
 		$app = Prado::getApplication();
 		$moduleClass = $this->getModuleClass();
-		$modules = $app->getModulesByType($moduleClass, false, true);
+		$modules = $app->getModulesByType($moduleClass, false);
 		$module = null;
 		foreach ($modules as $id => $m) {
 			if ($module = $app->getModule($id)) {
@@ -84,7 +84,7 @@ class TShellCronAction extends TShellAppAction
 	
 	/**
 	 * handles any additional commands; for extension by the TShellDbCronAction
-	 * @param Prado\Util\Cron\TCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TCronModule $module the module servicing the action
 	 * @param string $cmd the command being executed
 	 * @param array $args the arguments to the shell command
 	 * @return bool returns false for no processed commands
@@ -96,13 +96,13 @@ class TShellCronAction extends TShellAppAction
 	
 	/**
 	 * Processes any pending tasks
-	 * @param TCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TCronModule $module the module servicing the action
 	 */
 	public function processPendingTasks($module)
 	{
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("\nLast Task time was " . date('Y-m-d H:i:s', $module->getLastCronTime()) . '');
-		$module->processPendingTasks(true);
+		$module->processPendingTasks();
 	}
 	
 	/**

@@ -75,7 +75,6 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	
 	/**
 	 * Called onBeginRequest
-	 * @param array $config this is the manifest for the plugin module
 	 * @param mixed $sender
 	 * @param mixed $param
 	 */
@@ -89,14 +88,13 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	
 	/**
 	 * additionalPagePaths returns possible alternative paths for the $pagePath
-	 * @param Prado\Wob\Services\TPageService $service
+	 * @param \Prado\Wob\Services\TPageService $service
 	 * @param string $pagePath
 	 */
 	public function additionalPagePaths($service, $pagePath)
 	{
 		return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
 	}
-	
 	
 	/**
 	 * @return null|string the path of the error file for the plugin module

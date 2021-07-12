@@ -33,6 +33,7 @@ use Prado\TPropertyValue;
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI\WebControls
  * @since 3.1.1
+ * @method TTabPanel getParent()
  */
 class TTabView extends \Prado\Web\UI\WebControls\TWebControl
 {

@@ -32,6 +32,7 @@ use Prado\Web\UI\WebControls\TCustomValidator;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveCustomValidator extends TCustomValidator implements ICallbackEventHandler, IActiveControl
 {
@@ -73,7 +74,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

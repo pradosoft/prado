@@ -137,13 +137,4 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 		self::assertFalse($user->getIsGuest());
 		self::assertNull($userManager->getUser('badUser'));
 	}
-
-	public function testSwitchToGuest()
-	{
-		$userManager = new TUserManager();
-		$userManager->init(self::$config);
-		$user = $userManager->getUser('joe');
-		$userManager->switchToGuest($user);
-		self::assertTrue($user->getIsGuest());
-	}
 }

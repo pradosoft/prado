@@ -144,7 +144,7 @@ class TGravatar extends TImage
 	}
 	
 	/**
-	 * @param $email string the email address associated with the gravatar icon
+	 * @param string $email the email address associated with the gravatar icon
 	 */
 	public function setEmail($email)
 	{

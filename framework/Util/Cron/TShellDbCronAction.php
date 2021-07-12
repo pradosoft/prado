@@ -71,7 +71,7 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * Overrides parent cronCommand to handle "add", "update", and "remove" actions.
-	 * @param Prado\Util\Cron\TCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TCronModule $module the module servicing the action
 	 * @param string $cmd the command being executed
 	 * @param array $args the arguments to the shell command
 	 * @return string the DbCron Class to find
@@ -96,7 +96,7 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * adds a task to the database with its name, task id, schedule, and other properties.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function addTask($module, $args)
@@ -165,7 +165,7 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * updates a task in the database by its name for its schedule, userid, moduleid, and other properties.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function updateTask($module, $args)
@@ -213,7 +213,7 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * rumoves a task in the database by its name.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
+	 * @param \Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function removeTask($module, $args)

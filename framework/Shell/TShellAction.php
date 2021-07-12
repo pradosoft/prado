@@ -10,7 +10,6 @@
 
 namespace Prado\Shell;
 
-use Prado\IO\ITextWriter;
 use Prado\Prado;
 
 /**
@@ -30,23 +29,21 @@ abstract class TShellAction extends \Prado\TComponent
 	protected $_outWriter;
 	
 	/**
-	 * @return ITextWriter the writer for the class
+	 * @return TShellWriter the writer for the class
 	 */
-	public function getWriter(): ITextWriter
+	public function getWriter(): TShellWriter
 	{
 		return $this->_outWriter;
 	}
 	
 	/**
-	 * @@param ITextWriter $writer the writer for the class
+	 * @param TShellWriter $writer the writer for the class
 	 */
-	public function setWriter(ITextWriter $writer)
+	public function setWriter(TShellWriter $writer)
 	{
 		$this->_outWriter = $writer;
 	}
-	
-	
-	
+
 	/**
 	 * Execute the action.
 	 * @param array $args command line parameters
@@ -125,7 +122,7 @@ EOD;
 	/**
 	 * Initalize a Prado application inside the specified directory
 	 * @param string $directory directory name
-	 * @return false|TApplication
+	 * @return false|\Prado\Shell\TShellApplication
 	 */
 	protected function initializePradoApplication($directory)
 	{

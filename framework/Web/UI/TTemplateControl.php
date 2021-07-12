@@ -31,6 +31,7 @@ use Prado\Data\ActiveRecord\TActiveRecord;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TTemplateControl extends TCompositeControl
 {
@@ -66,7 +67,7 @@ class TTemplateControl extends TCompositeControl
 
 	/**
 	 * Returns the template object associated with this control object.
-	 * @return null|ITemplate the parsed template, null if none
+	 * @return null|TTemplate the parsed template, null if none
 	 */
 	public function getTemplate()
 	{
@@ -267,11 +268,11 @@ class TTemplateControl extends TCompositeControl
 				if ($key != "RELATIONS") {
 					$control = $this->{$key};
 					if ($control instanceof TTextBox) {
-						$control->Text = $arObj->{$key};
+						$control->setText($arObj->{$key});
 					} elseif ($control instanceof TCheckBox) {
-						$control->Checked = (boolean) $arObj->{$key};
+						$control->setChecked((boolean) $arObj->{$key});
 					} elseif ($control instanceof TDatePicker) {
-						$control->Date = $arObj->{$key};
+						$control->setDate($arObj->{$key});
 					}
 				} else {
 					foreach ($objAttrs["RELATIONS"] as $relKey => $relValues) {
@@ -279,11 +280,11 @@ class TTemplateControl extends TCompositeControl
 						switch ($relValues[0]) {
 							case TActiveRecord::BELONGS_TO:
 							case TActiveRecord::HAS_ONE:
-								$relControl->Text = $arObj->{$relKey};
+								$relControl->setText($arObj->{$relKey});
 								break;
 							case TActiveRecord::HAS_MANY:
 								if ($relControl instanceof TListControl) {
-									$relControl->DataSource = $arObj->{$relKey};
+									$relControl->setDataSource($arObj->{$relKey});
 									$relControl->dataBind();
 								}
 								break;
@@ -315,11 +316,11 @@ class TTemplateControl extends TCompositeControl
 				}
 				$control = $this->{$key};
 				if ($control instanceof TTextBox) {
-					$arObj->{$key} = $control->Text;
+					$arObj->{$key} = $control->getText();
 				} elseif ($control instanceof TCheckBox) {
-					$arObj->{$key} = $control->Checked;
+					$arObj->{$key} = $control->getChecked();
 				} elseif ($control instanceof TDatePicker) {
-					$arObj->{$key} = $control->Date;
+					$arObj->{$key} = $control->getDate();
 				}
 			} catch (\Exception $ex) {
 				if ($throwExceptions) {

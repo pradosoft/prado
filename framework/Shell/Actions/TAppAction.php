@@ -42,6 +42,9 @@ class TAppAction extends TShellAction
 			return false;
 		}
 		$app = $this->initializePradoApplication($args[1]);
+		if ($app === false) {
+			return false;
+		}
 		$this->_outWriter->flush();
 		TShellInterpreter::getInstance()->clearActionClass();
 		TShellInterpreter::getInstance()->addActionClass('Prado\\Shell\\Actions\\TAppHelpAction');

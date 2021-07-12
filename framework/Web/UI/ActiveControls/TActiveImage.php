@@ -22,6 +22,7 @@ use Prado\Web\UI\WebControls\TImage;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveImage extends TImage implements IActiveControl
 {

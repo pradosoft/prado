@@ -41,8 +41,8 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 	
 	/**
 	 * This method places no-cache meta in the head.
-	 * @param $page object raising the event
-	 * @param $param mixed the parameter of the raised event
+	 * @param object $page object raising the event
+	 * @param mixed $param the parameter of the raised event
 	 */
 	public function addCharsetMeta($page, $param)
 	{

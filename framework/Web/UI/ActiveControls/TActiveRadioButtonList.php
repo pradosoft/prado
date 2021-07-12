@@ -33,6 +33,7 @@ use Prado\Web\UI\WebControls\TRadioButtonList;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl, ICallbackEventHandler
 {
@@ -61,7 +62,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

@@ -25,6 +25,7 @@ use Prado\Web\UI\WebControls\TListBox;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventHandler
 {
@@ -53,7 +54,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

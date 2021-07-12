@@ -34,6 +34,7 @@ use Prado\Web\UI\WebControls\TDropDownList;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler, IActiveControl
 {
@@ -62,7 +63,7 @@ class TActiveDropDownList extends TDropDownList implements ICallbackEventHandler
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

@@ -34,6 +34,7 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  * @author David Otto <ottodavid[at]gmx[dot]net>
  * @package Prado\Web\UI\JuiControls
  * @since 3.3
+ * @method TActiveControlAdapter getAdapter()
  */
 class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiveControl
 {

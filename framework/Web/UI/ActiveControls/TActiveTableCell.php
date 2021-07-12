@@ -48,6 +48,7 @@ use Prado\Web\UI\WebControls\TTableRow;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IActiveControl
 {
@@ -79,7 +80,7 @@ class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IAct
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

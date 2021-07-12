@@ -478,7 +478,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Flush the response contents and headers.
-	 * @param mixed $continueBuffering
+	 * @param bool $continueBuffering
 	 */
 	public function flush($continueBuffering = true)
 	{

@@ -29,6 +29,7 @@ use Prado\Web\UI\WebControls\TCheckBoxList;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICallbackEventHandler
 {
@@ -57,7 +58,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

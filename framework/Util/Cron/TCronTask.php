@@ -41,7 +41,7 @@ abstract class TCronTask extends TApplicationComponent
 	/** @var string The module Id */
 	private $_moduleId;
 	
-	/** @var Prado\Util\Cron\TTimeScheduler The time scheduler */
+	/** @var TTimeScheduler The time scheduler */
 	private $_scheduler;
 	
 	/** @var int The number of times which the cron task has run since the counter has been cleared */
@@ -52,7 +52,7 @@ abstract class TCronTask extends TApplicationComponent
 	
 	/**
 	 * This is the abstract method for running a task.
-	 * @param Prado\Util\Cron\TCronModule $cronModule the module calling the task
+	 * @param TCronModule $cronModule the module calling the task
 	 */
 	abstract public function execute($cronModule);
 	
@@ -134,7 +134,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 * @return null|Prado\IModule returns the module from ModuleId
+	 * @return null|\Prado\IModule returns the module from ModuleId
 	 */
 	public function getModule()
 	{
@@ -198,7 +198,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 	
 	/**
-	 * @return Prado\Util\Cron\TTimeScheduler the time scheduler for processing the schedule
+	 * @return \Prado\Util\Cron\TTimeScheduler the time scheduler for processing the schedule
 	 */
 	public function getScheduler()
 	{

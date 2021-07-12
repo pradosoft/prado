@@ -60,13 +60,13 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/** @var bool log the cron tasks, in the table, as they run, default true  */
 	private $_logCronTasks = true;
 	
-	/** @var array[]|Prado\Util\Cron\TCronTask[] the tasks created from the (parent) application configuration */
+	/** @var array[]|TCronTask[] the tasks created from the (parent) application configuration */
 	private $_configTasks;
 	
 	/** @var bool are the tasks Initialized */
 	private $_tasksInitialized = false;
 	
-	/** @var array[]|Prado\Util\Cron\TCronTask[] the tasks manually added to the database */
+	/** @var array[]|TCronTask[] the tasks manually added to the database */
 	private $_tasks = [];
 	
 	/** @var array[] the row data from the database */
@@ -78,7 +78,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**  @var TDbConnection the DB connection instance  */
 	private $_conn;
 	
-	/** @var Prado\Util\Cron\TCronTask[] */
+	/** @var TCronTask[] */
 	private $_runtimeTasks;
 	
 	/**
@@ -91,7 +91,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 	/**
 	 * Initializes the module. Keeps track of the configured tasks different than db tasks.
-	 * @param array|Prado\Xml\TXmlElement $config
+	 * @param array|\Prado\Xml\TXmlElement $config
 	 */
 	public function init($config)
 	{
@@ -258,9 +258,8 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * logCronTask adds a task log to the table.
-	 * @param Prado\Util\Cron\TCronTask $task
-	 * @param mixed $user
-	 * @param mixed $username
+	 * @param TCronTask $task
+	 * @param string $username
 	 */
 	protected function logCronTask($task, $username)
 	{
@@ -293,7 +292,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * This updates the LastExecTime and ProcessCount in the database
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 */
 	protected function updateTaskInfo($task)
 	{
@@ -343,7 +342,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * This executes the Run Time Tasks, this method is automatically added
 	 * to TApplication::onEndRequest when there are RuntimeTasks via {@link addRuntimeTask}.
-	 * @param null|Prado\TApplication $sender
+	 * @param null|\Prado\TApplication $sender
 	 * @param null|mixed $param
 	 * @return int number of tasks run
 	 */
@@ -365,12 +364,12 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Adds a task to being run time.  If this is the first runtime task this
 	 * method adds {@link executeRuntimeTasks} to TApplication::onEndRequest.
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 */
 	public function addRuntimeTask($task)
 	{
 		if ($this->_runtimeTasks === null) {
-			Prado::getApplication()->onEndRequest[] = [$this, 'executeRuntimeTasks'];
+			Prado::getApplication()->attachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 			$this->_runtimeTasks = [];
 		}
 		$this->_runtimeTasks[$task->getName()] = $task;
@@ -378,7 +377,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * Gets the runtime tasks.
-	 * @return Prado\Util\Cron\TCronTask the tasks to run on {@link executeRuntimeTasks}
+	 * @return \Prado\Util\Cron\TCronTask the tasks to run on {@link executeRuntimeTasks}
 	 */
 	public function getRuntimeTasks()
 	{
@@ -388,7 +387,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Removes a task from being run time.  If there are no runtime tasks left
 	 * then it removes {@link executeRuntimeTasks} from TApplication::onEndRequest.
-	 * @param Prado\Util\Cron\TCronTask $untask
+	 * @param TCronTask $untask
 	 */
 	public function removeRuntimeTask($untask)
 	{
@@ -405,7 +404,6 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * Clears all tasks from being run time, and removes the handler from onEndRequest.
-	 * @param Prado\Util\Cron\TCronTask $untask
 	 */
 	public function clearRuntimeTasks()
 	{
@@ -464,7 +462,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Adds a task to the database.  Validates the name and cannot add a task with an existing name.
 	 * This updates the table row data as well.
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 * @param bool $runtime should the task be added to the Run Time Task after being added
 	 * @return bool was the task added
 	 */
@@ -522,7 +520,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * Updates a task from its unique name.  If the Task is not in the DB it returns false
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param TCronTask $task
 	 * @return bool was the task updated
 	 */
 	public function updateTask($task)
@@ -570,7 +568,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 *
 	 * This cannot remove tasks that are current configuration tasks.  Only tasks
 	 * that exist can be removed.
-	 * @param Prado\Util\Cron\TCronTask|string $untask the task to remove from the DB
+	 * @param string|TCronTask $untask the task to remove from the DB
 	 * @return bool was the task removed
 	 */
 	public function removeTask($untask)
@@ -602,7 +600,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * taskExists checks for a task or task name in the database
 	 * @param string $name task to check in the database
-	 * @throws TDbException if the Fields and table is not correct
+	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return bool whether the task name exists in the database table
 	 */
 	public function taskExists($name)

@@ -22,6 +22,7 @@ use Prado\Web\UI\WebControls\TRatingList;
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveRatingList extends TRatingList implements IActiveControl, ICallbackEventHandler
 {
@@ -50,7 +51,7 @@ class TActiveRatingList extends TRatingList implements IActiveControl, ICallback
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

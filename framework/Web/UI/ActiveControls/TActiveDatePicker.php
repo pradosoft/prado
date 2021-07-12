@@ -31,6 +31,7 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.3
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IActiveControl
 {
@@ -109,7 +110,7 @@ class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IA
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id = $this->getClientID();
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
-				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', $dt->format('n') - 1, 'select');
+				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'month', 'Value', (int) ($dt->format('n')) - 1, 'select');
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'year', 'Value', $dt->format('Y'), 'select');
 			}
 		}

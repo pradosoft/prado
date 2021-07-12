@@ -154,7 +154,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 *  - <b>Clear</b>, clears or selections or checks in the list
 	 *  - <b>All</b>, select all
 	 *  - <b>Invert</b>, invert the selection.
-	 * @param \Prado\Web\UI\TControl $control list control
+	 * @param \Prado\Web\UI\WebControls\TListControl $control list control
 	 * @param string $method selection method
 	 * @param null|int|string $value the value or index to select/check.
 	 * @param null|string $type selection control type, either 'check' or 'select'
