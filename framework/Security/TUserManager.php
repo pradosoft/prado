@@ -26,6 +26,7 @@ use Prado\Xml\TXmlDocument;
  * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
  *   <user name="Joe" password="demo" />
  *   <user name="John" password="demo" />
+ *   <user name="Jerry" password="demo" roles="Writer,Administrator" />
  *   <role name="Administrator" users="John" />
  *   <role name="Writer" users="Joe,John" />
  * </module>
@@ -42,6 +43,7 @@ use Prado\Xml\TXmlDocument;
  *       'users' => array(
  *          array('name'=>'Joe','password'=>'demo'),
  *          array('name'=>'John','password'=>'demo'),
+ *          array('name'=>'Jerry','password'=>'demo','roles'=>'Administrator,Writer'),
  *       ),
  *       'roles' => array(
  *          array('name'=>'Administrator','users'=>'John'),
@@ -71,11 +73,6 @@ use Prado\Xml\TXmlDocument;
  */
 class TUserManager extends \Prado\TModule implements IUserManager
 {
-	/**
-	 * extension name to the user file
-	 */
-	public const USER_FILE_EXT = '.xml';
-
 	/**
 	 * @var array list of users managed by this module
 	 */
@@ -239,7 +236,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	{
 		if ($this->_initialized) {
 			throw new TInvalidOperationException('usermanager_userfile_unchangeable');
-		} elseif (($this->_userFile = Prado::getPathOfNamespace($value, self::USER_FILE_EXT)) === null || !is_file($this->_userFile)) {
+		} elseif (($this->_userFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($this->_userFile)) {
 			throw new TConfigurationException('usermanager_userfile_invalid', $value);
 		}
 	}
