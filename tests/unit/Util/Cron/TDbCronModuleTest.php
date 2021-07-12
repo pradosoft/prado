@@ -223,12 +223,13 @@ class TDbCronModuleTest extends TCronModuleTest
 	
 	public function testLogCronTask()
 	{
+		$this->obj->init(null);
 		$jobs = [
-			['name' => 'testTaskA', 'schedule' => '* * * * *', 'task' => 'TTestCronModuleTask'],
-			['name' => 'testTaskB', 'schedule' => '* * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1'],
-			['name' => 'testTaskC', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1'],
-			['name' => 'testTaskD', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method2(true)'],
-			['name' => 'testTaskE', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method3(86400)']
+			['name' => 'testTaskAA', 'schedule' => '* * * * *', 'task' => 'TTestCronModuleTask'],
+			['name' => 'testTaskBB', 'schedule' => '* * * * *', 'task' => 'TTestCronModuleTask', 'propertya' => 'value1'],
+			['name' => 'testTaskCC', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method1'],
+			['name' => 'testTaskDD', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method2(true)'],
+			['name' => 'testTaskEE', 'schedule' => '* * * * *', 'task' => 'CMT_UserManager3'.self::SEPARATOR.'method3(86400)']
 		];
 		
 		$this->obj->setLogCronTasks(true);
@@ -242,32 +243,32 @@ class TDbCronModuleTest extends TCronModuleTest
 		$log = $this->obj->getCronLog(null, false, false, true);
 		self::assertEquals(5, count($log));
 		
-		self::assertEquals('testTaskA', $log[0]['name']);
-		$task = $this->obj->getTask('testTaskA');
+		self::assertEquals('testTaskAA', $log[0]['name']);
+		$task = $this->obj->getTask('testTaskAA');
 		$task->setProcessCount(0);
 		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[0]['options']);
 		
-		self::assertEquals('testTaskB', $log[1]['name']);
-		$task = $this->obj->getTask('testTaskB');
+		self::assertEquals('testTaskBB', $log[1]['name']);
+		$task = $this->obj->getTask('testTaskBB');
 		$task->setProcessCount(0);
 		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[1]['options']);
 		
-		self::assertEquals('testTaskC', $log[2]['name']);
-		$task = $this->obj->getTask('testTaskC');
+		self::assertEquals('testTaskCC', $log[2]['name']);
+		$task = $this->obj->getTask('testTaskCC');
 		$task->setProcessCount(0);
 		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[2]['options']);
 		
-		self::assertEquals('testTaskD', $log[3]['name']);
-		$task = $this->obj->getTask('testTaskD');
+		self::assertEquals('testTaskDD', $log[3]['name']);
+		$task = $this->obj->getTask('testTaskDD');
 		$task->setProcessCount(0);
 		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[3]['options']);
 		
-		self::assertEquals('testTaskE', $log[4]['name']);
-		$task = $this->obj->getTask('testTaskE');
+		self::assertEquals('testTaskEE', $log[4]['name']);
+		$task = $this->obj->getTask('testTaskEE');
 		$task->setProcessCount(0);
 		$task->setLastExecTime(null);
 		self::assertEquals(serialize($task), $log[4]['options']);
