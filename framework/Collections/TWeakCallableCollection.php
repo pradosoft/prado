@@ -84,6 +84,9 @@ class TWeakCallableCollection extends TPriorityList
 		if (!self::$_weak) {
 			return $items;
 		}
+		if (!is_array($items)) {
+			return $items;
+		}
 		$result = [];
 		foreach ($items as $i => $handler) {
 			if (is_array($handler) && is_object($handler[0]) && is_a($handler[0], '\WeakReference')) {
@@ -215,6 +218,12 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{
+		if ($priority === null) {
+			if ($item instanceof IPriorityItem) {
+				$priority = $item->getPriority();
+				$priority = is_numeric($priority) ? $priority : null;
+			}
+		}
 		return parent::insertAtIndexInPriority($this->filterItemForInput($item, true), $index, $priority, $preserveCache);
 	}
 
