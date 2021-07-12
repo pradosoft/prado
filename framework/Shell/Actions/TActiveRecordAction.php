@@ -94,7 +94,7 @@ class TActiveRecordAction extends TShellAction
 			while ($dataReader->read() !== false) {
 				$tables[] = $table;
 			}
-			$con->Active = false;
+			$con->setActive(false);
 			foreach ($tables as $key => $table) {
 				$output = $args[1] . "." . $this->_prefix . ucfirst($table) . $this->_postfix;
 				if ($config !== false && $output !== false) {
@@ -146,7 +146,7 @@ class TActiveRecordAction extends TShellAction
 	}
 
 	/**
-	 * @return false|object
+	 * @return false|TActiveRecordConfig
 	 */
 	protected function getActiveRecordConfig()
 	{
@@ -179,7 +179,7 @@ class TActiveRecordAction extends TShellAction
 	}
 
 	/**
-	 * @param string $config database configuration
+	 * @param TActiveRecordConfig $config database configuration
 	 * @param string $tablename table name
 	 * @param string $output output file name
 	 * @return bool
@@ -212,7 +212,7 @@ class TActiveRecordAction extends TShellAction
 
 	/**
 	 * @param string $field php variable name
-	 * @param string $column database column name
+	 * @param \Prado\Data\Common\TDbTableColumn $column database column name
 	 * @return string
 	 */
 	protected function generateProperty($field, $column)
