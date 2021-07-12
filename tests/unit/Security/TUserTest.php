@@ -4,7 +4,21 @@ use Prado\Prado;
 use Prado\Security\TUser;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
+use Prado\Util\TBehavior;
 use Prado\Xml\TXmlDocument;
+
+class TUserBehavior extends TBehavior {
+	public function dyDefaultRoles($defaultRoles, $callchain){
+		$defaultRoles[] = "DefaultRole";
+		return $callchain->dyDefaultRoles($defaultRoles);
+	}
+	public function dyIsInRole($returnValue, $defaultRoles, $callchain)
+	{
+		if (in_array($defaultRoles, ['role1', 'role2']))
+			$returnValue = true;
+		return $callchain->dyIsInRole($returnValue, $defaultRoles);
+	}
+}
 
 class TUserTest extends PHPUnit\Framework\TestCase
 {
@@ -69,6 +83,13 @@ class TUserTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['Administrator', 'Writer'], $user->getRoles());
 		$user->setRoles('Reader,User');
 		self::assertEquals(['Reader', 'User'], $user->getRoles());
+		
+		$user->attachBehavior('standardRoles', new TUserBehavior());
+		self::assertEquals(['Reader', 'User', 'DefaultRole'], $user->getRoles());
+		
+		$user->setRoles(['Administrator', 'Writer', 'DefaultRole']);
+		$user->detachBehavior('standardRoles');
+		self::assertEquals(['Administrator', 'Writer'], $user->getRoles());
 	}
 
 	public function testIsInRole()
@@ -79,6 +100,15 @@ class TUserTest extends PHPUnit\Framework\TestCase
 		self::assertTrue($user->IsInRole('writer'));
 		self::assertTrue($user->IsInRole('Writer'));
 		self::assertFalse($user->isInRole('Reader'));
+		
+		self::assertFalse($user->isInRole('role1'));
+		self::assertFalse($user->isInRole('role2'));
+		self::assertFalse($user->isInRole('DefaultRole'));
+		$user->attachBehavior('hierarchyRoles', new TUserBehavior());
+		self::assertTrue($user->isInRole('role1'));
+		self::assertTrue($user->isInRole('role2'));
+		self::assertTrue($user->isInRole('DefaultRole'));
+		
 	}
 
 	public function testSaveToString()

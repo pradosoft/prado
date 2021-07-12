@@ -26,6 +26,8 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Security
  * @since 3.0
+ * @method string[] dyDefaultRoles($defaultRoles)
+ * @method bool dyIsInRole($returnValue, $role)
  */
 class TUser extends \Prado\TComponent implements IUser
 {
@@ -113,7 +115,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function getRoles()
 	{
-		return $this->getState('Roles', []);
+		return array_merge($this->getState('Roles', []), $this->dyDefaultRoles([]));
 	}
 
 	/**
@@ -121,17 +123,11 @@ class TUser extends \Prado\TComponent implements IUser
 	 */
 	public function setRoles($value)
 	{
-		if (is_array($value)) {
-			$this->setState('Roles', $value, []);
-		} else {
-			$roles = [];
-			foreach (explode(',', $value) as $role) {
-				if (($role = trim($role)) !== '') {
-					$roles[] = $role;
-				}
-			}
-			$this->setState('Roles', $roles, []);
+		if (!is_array($value)) {
+			$value = array_filter(array_map('trim', explode(',', $value)));
 		}
+		$value = array_diff($value, $this->dyDefaultRoles([]));
+		$this->setState('Roles', $value, []);
 	}
 
 	/**
@@ -145,7 +141,7 @@ class TUser extends \Prado\TComponent implements IUser
 				return true;
 			}
 		}
-		return false;
+		return $this->dyIsInRole(false, $role);
 	}
 
 	/**
