@@ -29,6 +29,9 @@ use Prado\Xml\TXmlDocument;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\Services
  * @since 3.0
+ * @method void dyLoadPageConfigurationFromPhp($config, $configPath, $configPagePath)
+ * @method void dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath)
+ * @method void dyApplyConfiguration()
  */
 class TPageConfiguration extends \Prado\TComponent
 {
@@ -156,6 +159,7 @@ class TPageConfiguration extends \Prado\TComponent
 	{
 		$this->loadApplicationConfigurationFromPhp($config, $configPath);
 		$this->loadPageConfigurationFromPhp($config, $configPath, $configPagePath);
+		$this->dyLoadPageConfigurationFromPhp($config, $configPath, $configPagePath);
 	}
 
 	/**
@@ -170,6 +174,7 @@ class TPageConfiguration extends \Prado\TComponent
 	{
 		$this->loadApplicationConfigurationFromXml($dom, $configPath);
 		$this->loadPageConfigurationFromXml($dom, $configPath, $configPagePath);
+		$this->dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath);
 	}
 
 	public function loadApplicationConfigurationFromPhp($config, $configPath)
@@ -191,6 +196,12 @@ class TPageConfiguration extends \Prado\TComponent
 		$this->_appConfigs[] = $appConfig;
 	}
 
+	/**
+	 * Loads the configuration specific for page service.
+	 * @param array $config config xml element
+	 * @param string $configPath base path corresponding to this xml element
+	 * @param string $configPagePath the page path that the config XML is associated with. The page path doesn't include the page name.
+	 */
 	public function loadPageConfigurationFromPhp($config, $configPath, $configPagePath)
 	{
 		// authorization
@@ -227,7 +238,8 @@ class TPageConfiguration extends \Prado\TComponent
 					$roles = $authorization['roles'] ?? '';
 					$verb = $authorization['verb'] ?? '';
 					$ips = $authorization['ips'] ?? '';
-					$rules[] = new TAuthorizationRule($action, $users, $roles, $verb, $ips);
+					$priority = $authorization['priority'] ?? '';
+					$rules[] = new TAuthorizationRule($action, $users, $roles, $verb, $ips, $priority);
 				}
 			}
 			$this->_rules = array_merge($rules, $this->_rules);
@@ -311,7 +323,7 @@ class TPageConfiguration extends \Prado\TComponent
 					}
 				}
 				if ($ruleApplies) {
-					$rules[] = new TAuthorizationRule($node->getTagName(), $node->getAttribute('users'), $node->getAttribute('roles'), $node->getAttribute('verb'), $node->getAttribute('ips'));
+					$rules[] = new TAuthorizationRule($node->getTagName(), $node->getAttribute('users'), $node->getAttribute('roles'), $node->getAttribute('verb'), $node->getAttribute('ips'), $node->getAttribute('priority'));
 				}
 			}
 			$this->_rules = array_merge($rules, $this->_rules);
