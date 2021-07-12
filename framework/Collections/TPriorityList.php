@@ -325,7 +325,10 @@ class TPriorityList extends TList
 		}
 
 		if ($priority === null) {
-			$priority = $this->getDefaultPriority();
+			if ($item instanceof IPriorityItem) {
+				$priority = $item->getPriority();
+			}
+			$priority = is_numeric($priority) ? $priority : $this->getDefaultPriority();
 		}
 		$priority = (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
 

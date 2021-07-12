@@ -293,6 +293,12 @@ class Prado
 	 */
 	public static function createComponent($requestedType, ...$params)
 	{
+		$properties = null;
+		if (is_array($requestedType)) {
+			$properties = $requestedType;
+			$requestedType = $properties['class'];
+			unset($properties['class']);
+		}
 		$type = static::prado3NamespaceToPhpNamespace($requestedType);
 		if (!isset(self::$classExists[$type])) {
 			self::$classExists[$type] = class_exists($type, false);
@@ -315,10 +321,16 @@ class Prado
 		}
 
 		if (count($params) > 0) {
-			return new $type(...$params);
+			$object = new $type(...$params);
 		} else {
-			return new $type;
+			$object = new $type;
 		}
+		if ($properties) {
+			foreach ($properties as $property => $value) {
+				$object->setSubProperty($property, $value);
+			}
+		}
+		return $object;
 	}
 
 	/**

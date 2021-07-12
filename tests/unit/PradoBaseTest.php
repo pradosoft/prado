@@ -35,4 +35,11 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf(self::CLASS_FQN, Prado::createComponent(self::CLASS_PRADO_FULLNAME));
 	}
+	
+
+	public function testCreateComponentWithArray()
+	{
+		$this->assertInstanceOf(self::CLASS_FQN, $obj = Prado::createComponent(['class' =>self::CLASS_FQN, 'text' => 'my Title...']));
+		$this->assertEquals('my Title...', $obj->getText());
+	}
 }

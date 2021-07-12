@@ -176,6 +176,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		if ($initConfigTasks) {
 			$this->_configTasks = parent::ensureTasks();
 		}
+		return array_merge($this->_tasks, $this->_configTasks ?? []);
 	}
 	
 	/**
