@@ -32,6 +32,7 @@ use Prado\Web\UI\WebControls\TWebControl;
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.2
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActivePager extends TPager implements IActiveControl, ICallbackEventHandler
 {
@@ -59,7 +60,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**
@@ -135,9 +136,9 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 			$button = new TActiveImageButton;
 			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
 			if ($enabled) {
-				$button->Visible = true;
+				$button->setVisible(true);
 			} else {
-				$button->Visible = false;
+				$button->setVisible(false);
 			}
 		} else {
 			$button = new TActiveButton;
@@ -147,7 +148,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		}
 
 		if ($buttonType === TPagerButtonType::ImageButton) {
-			$button->ImageUrl = $text;
+			$button->setImageUrl($text);
 		}
 
 		$button->setText($text);

@@ -41,7 +41,7 @@ class TJavaScript
 
 	/**
 	 * Renders a javascript file
-	 * @param Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
+	 * @param \Prado\Web\Javascripts\TJavaScriptAsset|string $asset URL to the javascript file or TJavaScriptAsset
 	 * @return string rendering result
 	 */
 	public static function renderScriptFile($asset)

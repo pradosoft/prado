@@ -28,6 +28,7 @@ use Prado\Web\UI\WebControls\TRepeater;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 {

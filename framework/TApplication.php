@@ -644,7 +644,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return IService the currently requested service
+	 * @return TService the currently requested service
 	 */
 	public function getService()
 	{
@@ -676,7 +676,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param mixed $id
-	 * @return IModule the module with the specified ID, null if not found
+	 * @return TModule the module with the specified ID, null if not found
 	 */
 	public function getModule($id)
 	{
@@ -1105,7 +1105,7 @@ class TApplication extends \Prado\TComponent
 		if (isset($this->_services[$serviceID])) {
 			[$serviceClass, $initProperties, $configElement] = $this->_services[$serviceID];
 			$service = Prado::createComponent($serviceClass);
-			if (!($service instanceof IService)) {
+			if (!($service instanceof TService)) {
 				throw new THttpException(500, 'application_service_invalid', $serviceClass);
 			}
 			if (!$service->getEnabled()) {

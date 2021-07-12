@@ -30,7 +30,7 @@ class TShellCronLogBehavior extends TBehavior
 	
 	/**
 	 * creates the TShellCronLogBehavior with a writer
-	 * @param ITextWriter $writer where to write cron task info to
+	 * @param \Prado\IO\ITextWriter $writer where to write cron task info to
 	 */
 	public function __construct($writer = null)
 	{
@@ -38,7 +38,7 @@ class TShellCronLogBehavior extends TBehavior
 	}
 	
 	/**
-	 * @return ITextWriter the output writer from the shell
+	 * @return \Prado\IO\ITextWriter the output writer from the shell
 	 */
 	public function getOutputWriter()
 	{
@@ -46,7 +46,7 @@ class TShellCronLogBehavior extends TBehavior
 	}
 	
 	/**
-	 * @param ITextWriter $writer the output writer from the shell
+	 * @param \Prado\IO\ITextWriter $writer the output writer from the shell
 	 */
 	public function setOutputWriter($writer)
 	{
@@ -56,8 +56,8 @@ class TShellCronLogBehavior extends TBehavior
 	/**
 	 * writes, with attributes, to the OutputWriter
 	 * @param string $str
-	 * @param array|int|Prado\Util\TCallChain|string $p1
-	 * @param null|Prado\Util\TCallChain $p2
+	 * @param array|int|\Prado\Util\TCallChain|string $p1
+	 * @param null|\Prado\Util\TCallChain $p2
 	 */
 	public function dyWrite($str, $p1, $p2 = null)
 	{
@@ -75,8 +75,8 @@ class TShellCronLogBehavior extends TBehavior
 	/**
 	 * writes Line, with attributes, to the OutputWriter
 	 * @param string $str
-	 * @param array|int|Prado\Util\TCallChain|string $p1
-	 * @param null|Prado\Util\TCallChain $p2
+	 * @param array|int|\Prado\Util\TCallChain|string $p1
+	 * @param null|\Prado\Util\TCallChain $p2
 	 */
 	public function dyWriteLine($str, $p1, $p2 = null)
 	{
@@ -94,7 +94,7 @@ class TShellCronLogBehavior extends TBehavior
 	
 	/**
 	 * flushes the OutputWriter
-	 * @param TCallChain $callchain
+	 * @param \Prado\Util\TCallChain $callchain
 	 * @return string the accumulated text in the buffer
 	 */
 	public function dyFlush($callchain)
@@ -106,7 +106,7 @@ class TShellCronLogBehavior extends TBehavior
 	/**
 	 * Logs a when cron is run in the shell.
 	 * @param int $numtasks number of tasks to run
-	 * @param TCallChain $callchain the chain of methods
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
 	 */
 	public function dyLogCron($numtasks, $callchain)
 	{
@@ -117,9 +117,9 @@ class TShellCronLogBehavior extends TBehavior
 	
 	/**
 	 * Logs a single cron task when run in the shell.
-	 * @param TCronTask $task the task to log
+	 * @param \Prado\Util\Cron\TCronTask $task the task to log
 	 * @param string $username the user name running the task
-	 * @param TCallChain $callchain the chain of methods
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
 	 */
 	public function dyLogCronTask($task, $username, $callchain)
 	{
@@ -131,8 +131,8 @@ class TShellCronLogBehavior extends TBehavior
 	
 	/**
 	 * Logs the end of a single cron task when run in the shell.
-	 * @param TCronTask $task the tasks that was run
-	 * @param TCallChain $callchain the chain of methods
+	 * @param \Prado\Util\Cron\TCronTask $task the tasks that was run
+	 * @param \Prado\Util\TCallChain $callchain the chain of methods
 	 */
 	public function dyUpdateTaskInfo($task, $callchain)
 	{

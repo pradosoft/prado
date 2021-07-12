@@ -35,7 +35,7 @@ class TDbCronCleanLogTask extends TCronTask
 	/**
 	 * This clears the log of the TDBCronModule specified by the ModuleId,
 	 * or if none specified, then the cron executing this task.
-	 * @param Prado\Util\Cron\TDbCronModule $cron
+	 * @param TDbCronModule $cron
 	 */
 	public function execute($cron)
 	{

@@ -55,13 +55,14 @@ class TCallbackResponseAdapter extends THttpResponseAdapter
 
 	/**
 	 * Flushes the contents in the writers.
+	 * @param bool $continueBuffering
 	 */
-	public function flushContent()
+	public function flushContent($continueBuffering = true)
 	{
 		foreach ($this->_writers as $writer) {
 			echo $writer->flush();
 		}
-		parent::flushContent();
+		parent::flushContent($continueBuffering);
 	}
 
 	/**

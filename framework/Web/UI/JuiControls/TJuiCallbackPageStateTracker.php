@@ -25,9 +25,9 @@ use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 {
 
-  /**
-   * Add the {@link TJuiControlOptions} to the states to track.
-   */
+	/**
+	 * Add the {@link TJuiControlOptions} to the states to track.
+	 */
 	protected function addStatesToTrack()
 	{
 		parent::addStatesToTrack();
@@ -41,10 +41,12 @@ class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 	 */
 	protected function updateJuiOptions($options)
 	{
+		/** @var IJuiOptions|\Prado\Web\UI\TControl $control */
+		$control = $this->_control;
 		foreach ($options as $key => $value) {
 			$options[$key] = $key . ': ' . (is_string($value) ? "'{$value}'" : TPropertyValue::ensureString($value));
 		}
-		$code = "jQuery('#{$this->_control->getWidgetID()}').{$this->_control->getWidget()}('option', { " . implode(', ', $options) . " });";
-		$this->_control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);
+		$code = "jQuery('#{$control->getWidgetID()}').{$control->getWidget()}('option', { " . implode(', ', $options) . " });";
+		$control->getPage()->getClientScript()->registerEndScript(sprintf('%08X', crc32($code)), $code);
 	}
 }

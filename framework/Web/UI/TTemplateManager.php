@@ -32,6 +32,7 @@ use Prado\TApplicationMode;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TTemplateManager extends \Prado\TModule
 {
@@ -59,7 +60,7 @@ class TTemplateManager extends \Prado\TModule
 	/**
 	 * Loads the template corresponding to the specified class name.
 	 * @param mixed $className
-	 * @return \Prado\Web\UI\ITemplate template for the class name, null if template doesn't exist.
+	 * @return \Prado\Web\UI\TTemplate template for the class name, null if template doesn't exist.
 	 */
 	public function getTemplateByClassName($className)
 	{
@@ -71,7 +72,7 @@ class TTemplateManager extends \Prado\TModule
 	/**
 	 * Loads the template from the specified file.
 	 * @param mixed $fileName
-	 * @return \Prado\Web\UI\ITemplate template parsed from the specified file, null if the file doesn't exist.
+	 * @return \Prado\Web\UI\TTemplate template parsed from the specified file, null if the file doesn't exist.
 	 */
 	public function getTemplateByFileName($fileName)
 	{

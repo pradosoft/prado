@@ -351,14 +351,4 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$cookie->setValue(serialize($data));
 		}
 	}
-
-	/**
-	 * Sets a user as a guest.
-	 * User name is changed as guest name, and roles are emptied.
-	 * @param TUser $user the user to be changed to a guest.
-	 */
-	public function switchToGuest($user)
-	{
-		$user->setIsGuest(true);
-	}
 }

@@ -20,7 +20,7 @@ namespace Prado\Web\UI\ActiveControls;
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
-interface ICallbackEventHandler
+interface ICallbackEventHandler extends IActiveControl
 {
 	/**
 	 * Raises callback event. The implementation of this function should raise

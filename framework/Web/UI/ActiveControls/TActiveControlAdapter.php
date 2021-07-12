@@ -33,6 +33,7 @@ use Prado\TPropertyValue;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method \Prado\Web\UI\TControl&IActiveControl getControl()
  */
 class TActiveControlAdapter extends TControlAdapter
 {

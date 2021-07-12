@@ -49,7 +49,7 @@ class TShellApplication extends \Prado\TApplication
 	private $_quietMode = 0;
 	
 	/**
-	 * @var cli shell Application commands. Modules can add their own command
+	 * @var array cli shell Application commands. Modules can add their own command
 	 */
 	private $_actions = [];
 	

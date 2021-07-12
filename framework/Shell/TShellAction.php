@@ -10,7 +10,6 @@
 
 namespace Prado\Shell;
 
-use Prado\IO\ITextWriter;
 use Prado\Prado;
 
 /**
@@ -33,17 +32,17 @@ abstract class TShellAction extends \Prado\TComponent
 	protected $_outWriter;
 	
 	/**
-	 * @return ITextWriter the writer for the class
+	 * @return TShellWriter the writer for the class
 	 */
-	public function getWriter(): ITextWriter
+	public function getWriter(): TShellWriter
 	{
 		return $this->_outWriter;
 	}
 	
 	/**
-	 * @@param ITextWriter $writer the writer for the class
+	 * @param TShellWriter $writer the writer for the class
 	 */
-	public function setWriter(ITextWriter $writer)
+	public function setWriter(TShellWriter $writer)
 	{
 		$this->_outWriter = $writer;
 	}

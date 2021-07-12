@@ -37,7 +37,7 @@ use Prado\TPropertyValue;
  	private $_method;
 	
  	/**
- 	 * @param null|Prado\IModule|string $moduleId the module or id of the module to call
+ 	 * @param null|\Prado\IModule|string $moduleId the module or id of the module to call
  	 * @param string $method the method and parameters on the
  	 */
  	public function __construct($moduleId = null, $method = null)
@@ -89,7 +89,7 @@ use Prado\TPropertyValue;
  	 * Gets the module for the task based upon the {@link getModuleId}.
  	 * This verifies that the module does exist.
  	 * @throws TConfigurationException when no module is found
- 	 * @return IModule returns the module (from the application) of ModuleId
+ 	 * @return \Prado\IModule returns the module (from the application) of ModuleId
  	 */
  	public function getModule()
  	{

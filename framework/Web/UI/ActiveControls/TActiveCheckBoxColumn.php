@@ -63,18 +63,8 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	protected function initializeHeaderCell($cell, $columnIndex)
 	{
 		$text = $this->getHeaderText();
-
 		if (($classPath = $this->getHeaderRenderer()) !== '') {
-			$control = Prado::createComponent($classPath);
-			if ($control instanceof \Prado\IDataRenderer) {
-				if ($control instanceof IItemDataRenderer) {
-					$item = $cell->getParent();
-					$control->setItemIndex($item->getItemIndex());
-					$control->setItemType($item->getItemType());
-				}
-				$control->setData($text);
-			}
-			$cell->getControls()->add($control);
+			$this->initializeCellRendererControl($cell, $classPath, $text);
 		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
 			if (($url = $this->getHeaderImageUrl()) !== '') {

@@ -52,7 +52,6 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * adds a task to the database with its name, task id, schedule, and other properties.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function actionAdd($args)
@@ -123,7 +122,6 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * updates a task in the database by its name for its schedule, username, moduleid, and other properties.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function actionUpdate($args)
@@ -171,7 +169,6 @@ class TShellDbCronAction extends TShellCronAction
 	
 	/**
 	 * removes a task in the database by its name.
-	 * @param Prado\Util\Cron\TDbCronModule $module the module servicing the action
 	 * @param array $args command arguments
 	 */
 	public function actionRemove($args)

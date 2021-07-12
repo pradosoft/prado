@@ -54,7 +54,7 @@ class TShellCronAction extends TShellAction
 	{
 		$app = Prado::getApplication();
 		$moduleClass = $this->getModuleClass();
-		$modules = $app->getModulesByType($moduleClass, false, true);
+		$modules = $app->getModulesByType($moduleClass, false);
 		$module = null;
 		foreach ($modules as $id => $m) {
 			if ($module = $app->getModule($id)) {

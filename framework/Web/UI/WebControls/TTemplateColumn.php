@@ -207,11 +207,12 @@ class TTemplateColumn extends TDataGridColumn
 			if ($classPath !== '') {
 				$control = Prado::createComponent($classPath);
 				$cell->getControls()->add($control);
-				if ($control instanceof IItemDataRenderer) {
-					$control->setItemIndex($cell->getParent()->getItemIndex());
+				if ($control instanceof IItemDataRenderer && ($item = $cell->getParent()) instanceof IItemDataRenderer) {
+					$control->setItemIndex($item->getItemIndex());
 					$control->setItemType($itemType);
 				}
 				if ($control instanceof \Prado\IDataRenderer) {
+					/** @var \Prado\TComponent $control */
 					$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				}
 			} elseif ($template !== null) {

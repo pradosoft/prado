@@ -58,10 +58,10 @@ class TBehaviorParameterLoader extends TComponent
 	/** @var array<string, string> additional properties to feed the behavior */
 	private $_properties = [];
 	
-	/** @var array<string, array<properties>> the list of behaviors to attach to the page */
+	/** @var array<string, array<string, string>> the list of behaviors to attach to the page */
 	private static $_pageBehaviors = [];
 	
-	/** @var array<string, array<behaviors> the list of behaviors to attach to the page */
+	/** @var array<string, array<object>> the list of behaviors to attach to the page */
 	private static $_moduleBehaviors = [];
 	
 	/**
@@ -89,7 +89,7 @@ class TBehaviorParameterLoader extends TComponent
 		} else {
 			if (strtolower($this->_attachto) == "page") {
 				if (!count(self::$_pageBehaviors)) {
-					Prado::getApplication()->onBeginRequest[] = [$this, 'attachTPageServiceHandler'];
+					Prado::getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 				}
 				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
 				return;
@@ -136,7 +136,7 @@ class TBehaviorParameterLoader extends TComponent
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
-	 * @param Prado\Web\UI\TPage $page the page being initialized
+	 * @param \Prado\Web\UI\TPage $page the page being initialized
 	 */
 	public function attachModuleBehaviors($sender, $page)
 	{
@@ -157,7 +157,7 @@ class TBehaviorParameterLoader extends TComponent
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
-	 * @param Prado\Web\UI\TPage $page the page being initialized
+	 * @param \Prado\Web\UI\TPage $page the page being initialized
 	 */
 	public function attachTPageBehaviors($sender, $page)
 	{

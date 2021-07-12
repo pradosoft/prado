@@ -168,12 +168,7 @@ class TBoundColumn extends TDataGridColumn
 			case TListItemType::AlternatingItem:
 			case TListItemType::SelectedItem:
 				if (($classPath = $this->getItemRenderer()) !== '') {
-					$control = Prado::createComponent($classPath);
-					if ($control instanceof IItemDataRenderer) {
-						$control->setItemIndex($item->getItemIndex());
-						$control->setItemType($item->getItemType());
-					}
-					$cell->getControls()->add($control);
+					$control = $this->initializeCellRendererControl($cell, $classPath);
 				} else {
 					$control = $cell;
 				}
@@ -182,12 +177,7 @@ class TBoundColumn extends TDataGridColumn
 			case TListItemType::EditItem:
 				if (!$this->getReadOnly()) {
 					if (($classPath = $this->getEditItemRenderer()) !== '') {
-						$control = Prado::createComponent($classPath);
-						if ($control instanceof IItemDataRenderer) {
-							$control->setItemIndex($item->getItemIndex());
-							$control->setItemType($item->getItemType());
-						}
-						$cell->getControls()->add($control);
+						$control = $this->initializeCellRendererControl($cell, $classPath);
 						$cell->registerObject('EditControl', $control);
 					} else {
 						$control = new TTextBox;
@@ -196,12 +186,7 @@ class TBoundColumn extends TDataGridColumn
 					}
 				} else {
 					if (($classPath = $this->getItemRenderer()) !== '') {
-						$control = Prado::createComponent($classPath);
-						if ($control instanceof IItemDataRenderer) {
-							$control->setItemIndex($item->getItemIndex());
-							$control->setItemType($item->getItemType());
-						}
-						$cell->getControls()->add($control);
+						$control = $this->initializeCellRendererControl($cell, $classPath);
 					} else {
 						$control = $cell;
 					}

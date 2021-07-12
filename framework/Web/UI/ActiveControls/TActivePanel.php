@@ -35,6 +35,7 @@ use Prado\Web\UI\WebControls\TPanel;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActivePanel extends TPanel implements IActiveControl
 {

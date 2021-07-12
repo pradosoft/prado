@@ -31,6 +31,8 @@ use Prado\Web\UI\WebControls\THead;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\UI
  * @since 3.0
+ * @method TActivePageAdapter getAdapter()
+ * @method \Prado\Web\Services\TPageService getService()
  */
 class TPage extends TTemplateControl
 {
@@ -406,15 +408,6 @@ class TPage extends TTemplateControl
 		} else {
 			return new TCallbackClientScript();
 		}
-	}
-
-	/**
-	 * Set a new callback client handler.
-	 * @param TCallbackClientScript $client new callback client script handler.
-	 */
-	public function setCallbackClient($client)
-	{
-		$this->getAdapter()->setCallbackClientHandler($client);
 	}
 
 	/**

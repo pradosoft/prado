@@ -25,6 +25,7 @@ use Prado\Web\UI\WebControls\TDataList;
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
  * @package Prado\Web\UI\ActiveControls
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDataList extends TDataList implements IActiveControl
 {

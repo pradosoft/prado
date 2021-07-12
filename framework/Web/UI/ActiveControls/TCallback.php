@@ -40,6 +40,7 @@ use Prado\Web\UI\TControl;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @package Prado\Web\UI\ActiveControls
  * @since 3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 class TCallback extends TControl implements ICallbackEventHandler, IActiveControl
 {
@@ -67,7 +68,7 @@ class TCallback extends TControl implements ICallbackEventHandler, IActiveContro
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

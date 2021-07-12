@@ -27,6 +27,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @package Prado\Web\UI\ActiveControls
  * @since 4.0
+ * @method TActiveControlAdapter getAdapter()
  */
 class TActiveHtmlArea extends THtmlArea implements ICallbackEventHandler, IActiveControl
 {
@@ -54,7 +55,7 @@ class TActiveHtmlArea extends THtmlArea implements ICallbackEventHandler, IActiv
 	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
 
 	/**

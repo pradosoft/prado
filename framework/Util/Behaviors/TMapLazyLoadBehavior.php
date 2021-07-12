@@ -37,7 +37,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	private $_handler;
 	
 	/**
-	 * @param $handler callable the handler for setting the parameter
+	 * @param callable $handler the handler for setting the parameter
 	 */
 	public function __construct($handler)
 	{
@@ -51,9 +51,9 @@ class TMapLazyLoadBehavior extends TBehavior
 	/**
 	 * This is the dynamic event for handling TMap dyAddItem.
 	 * This calls handler($key).
-	 * @param $value mixed the value of the item being added
-	 * @param $key string the key of the item being added
-	 * @param $callchain {@link TCallChain} of event handlers
+	 * @param mixed $value the value of the item being added
+	 * @param string $key the key of the item being added
+	 * @param \Prado\Util\TCallChain $callchain {@link TCallChain} of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	public function dyNoItem($value, $key, $callchain)

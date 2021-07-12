@@ -43,6 +43,7 @@ class TTemplateControlInheritable extends TTemplateControl
 	{
 		if (null === ($_template = $this->getTemplate())) {
 			$this->doCreateChildControlsFor(get_class($this));
+			return;
 		}
 
 		foreach ($_template->getDirective() as $_name => $_value) {

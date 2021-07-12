@@ -56,6 +56,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * @author Cristian Camilo Naranjo Valencia
  * @package Prado\Web\UI\WebControls
  * @since 3.3.1
+ * @method TActiveControlAdapter getAdapter()
  */
 
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
@@ -63,27 +64,43 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	public const ChallengeFieldName = 'g-recaptcha-response';
 	private $_isValid = true;
 
+	/**
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter. If you override this class, be sure to set the
+	 * adapter appropriately by, for example, by calling this constructor.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
 	}
+
+	/**
+	 * @return \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl standard callback control options.
+	 */
 	public function getActiveControl()
 	{
 		return $this->getAdapter()->getBaseActiveControl();
 	}
+
+	/**
+	 * @return \Prado\Web\UI\ActiveControls\TCallbackClientSide client side request options.
+	 */
 	public function getClientSide()
 	{
-		return $this->getAdapter()->getBaseActiveControl()->getClientSide();
+		return $this->getActiveControl()->getClientSide();
 	}
+
 	public function getClientClassName()
 	{
 		return 'Prado.WebUI.TReCaptcha2';
 	}
+
 	public function getTagName()
 	{
 		return 'div';
 	}
+
 	/**
 	 * Returns true if this control validated successfully.
 	 * Defaults to true.
@@ -93,6 +110,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->_isValid;
 	}
+
 	/**
 	 * @param bool $value wether this control is valid.
 	 */
@@ -100,10 +118,12 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->_isValid = TPropertyValue::ensureBoolean($value);
 	}
+
 	public function getValidationPropertyValue()
 	{
 		return $this->getRequest()->itemAt($this->getResponseFieldName());
 	}
+
 	public function getResponseFieldName()
 	{
 		$captchas = $this->getPage()->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
@@ -117,6 +137,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		}
 		return $responseFieldName;
 	}
+
 	/**
 	 * Returns your site key.
 	 * @return string site key
@@ -125,6 +146,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('SiteKey');
 	}
+
 	/**
 	 * @param string $value your site key.
 	 */
@@ -132,6 +154,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('SiteKey', TPropertyValue::ensureString($value));
 	}
+
 	/**
 	 * Returns your secret key.
 	 * @return string secret key
@@ -140,6 +163,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('SecretKey');
 	}
+
 	/**
 	 * @param string $value your secret key.
 	 */
@@ -147,6 +171,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('SecretKey', TPropertyValue::ensureString($value));
 	}
+
 	/**
 	 * Returns your language.
 	 * @return string language
@@ -155,6 +180,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('Language', 'en');
 	}
+
 	/**
 	 * @param string $value your language.
 	 */
@@ -162,6 +188,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('Language', TPropertyValue::ensureString($value), 'en');
 	}
+
 	/**
 	 * Returns the color theme of the widget.
 	 * @return string theme name
@@ -170,6 +197,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('Theme', 'light');
 	}
+
 	/**
 	 * The color theme of the widget.
 	 * Default: light
@@ -179,6 +207,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('Theme', TPropertyValue::ensureString($value), 'light');
 	}
+
 	/**
 	 * Returns the type of CAPTCHA to serve.
 	 * @return string captcha type
@@ -187,6 +216,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('Type', 'image');
 	}
+
 	/**
 	 * The type of CAPTCHA to serve.
 	 * Default: image
@@ -196,6 +226,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('Type', TPropertyValue::ensureString($value), 'image');
 	}
+
 	/**
 	 * Returns the size of the widget.
 	 * @return string widget size
@@ -204,6 +235,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('Size', 'normal');
 	}
+
 	/**
 	 * The size of the widget.
 	 * Default: normal
@@ -213,6 +245,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('Size', TPropertyValue::ensureString($value), 'normal');
 	}
+
 	/**
 	 * Returns the tabindex of the widget and challenge.
 	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
@@ -222,6 +255,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('TabIndex', 0);
 	}
+
 	/**
 	 * The tabindex of the widget and challenge.
 	 * If other elements in your page use tabindex, it should be set to make user navigation easier.
@@ -232,6 +266,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->setViewState('TabIndex', TPropertyValue::ensureInteger($value), 0);
 	}
+
 	/**
 	 * Resets the reCAPTCHA widget.
 	 * Optional widget ID, defaults to the first widget created if unspecified.
@@ -240,6 +275,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		$this->getPage()->getCallbackClient()->callClientFunction('grecaptcha.reset', [[$this->getWidgetId()]]);
 	}
+
 	/**
 	 * Gets the response for the reCAPTCHA widget.
 	 */
@@ -247,18 +283,22 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 	{
 		return $this->getViewState('Response', '');
 	}
+
 	public function setResponse($value)
 	{
 		$this->setViewState('Response', TPropertyValue::ensureString($value), '');
 	}
+
 	public function getWidgetId()
 	{
 		return $this->getViewState('WidgetId', 0);
 	}
+
 	public function setWidgetId($value)
 	{
 		$this->setViewState('WidgetId', TPropertyValue::ensureInteger($value), 0);
 	}
+
 	protected function getClientOptions()
 	{
 		$options['ID'] = $this->getClientID();
@@ -282,6 +322,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 
 		return $options;
 	}
+
 	protected function registerClientScript()
 	{
 		$id = $this->getClientID();
@@ -293,6 +334,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$cs->registerPradoScript('ajax');
 		$cs->registerEndScript("grecaptcha:$id", $code);
 	}
+
 	public function validate()
 	{
 		$value = $this->getValidationPropertyValue();
@@ -302,6 +344,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 
 		return true;
 	}
+
 	/**
 	 * Checks for API keys
 	 * @param mixed $param event parameter
@@ -321,11 +364,13 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 		$this->getPage()->registerRequiresPostData($this->getResponseFieldName());
 		$this->getPage()->getClientScript()->registerHeadScriptFile('grecaptcha2', 'https://www.google.com/recaptcha/api.js?onload=TReCaptcha2_onloadCallback&render=explicit&hl=' . $this->getLanguage());
 	}
+
 	protected function addAttributesToRender($writer)
 	{
 		$writer->addAttribute('id', $this->getClientID());
 		parent::addAttributesToRender($writer);
 	}
+
 	public function raiseCallbackEvent($param)
 	{
 		$params = $param->getCallbackParameter();
