@@ -14,6 +14,7 @@ use Prado\Data\TDataSourceConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Prado;
+use Prado\Util\IDbModule;
 
 /**
  * TDbUserManager class
@@ -45,7 +46,7 @@ use Prado\Prado;
  * @package Prado\Security
  * @since 3.1.0
  */
-class TDbUserManager extends \Prado\TModule implements IUserManager
+class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 {
 	private $_connID = '';
 	private $_conn;
@@ -54,9 +55,8 @@ class TDbUserManager extends \Prado\TModule implements IUserManager
 	private $_userFactory;
 
 	/**
-	 * Initializes the module.
-	 * This method is required by IModule and is invoked by application.
-	 * @param \Prado\Xml\TXmlElement $config module configuration
+	 * Initializes.
+	 * @param array|\Prado\Xml\TXmlElement $config module configuration
 	 */
 	public function init($config)
 	{
