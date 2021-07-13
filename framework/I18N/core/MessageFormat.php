@@ -26,7 +26,7 @@ use Prado\Util\TUtf8Converter;
  * Format a message, that is, for a particular message find the
  * translated message.
  * Create a new message format instance and echo "Hello"
- * in simplified Chinese. This assumes that the world "Hello"
+ * in simplified Chinese. This assumes that the word "Hello"
  * is translated in the database.
  *
  * <code>
