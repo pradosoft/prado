@@ -77,7 +77,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	 * @param string $roles a comma separated role list
 	 * @param string $verb verb, can be empty, 'get', or 'post'
 	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
-	 * @param null|mixed $priority
+	 * @param null|numeric $priority
 	 */
 	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = '')
 	{
