@@ -81,53 +81,13 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	 */
 	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = '')
 	{
-		$this->setAction($action);
-		$this->setUsers($users);
-		$this->setRoles($roles);
-		$this->setVerb($verb);
-		$this->setIPRules($ipRules);
-		$this->setPriority($priority);
-
-		parent::__construct();
-	}
-
-	/**
-	 * @return string action, either 'allow' or 'deny'
-	 */
-	public function getAction()
-	{
-		return $this->_action;
-	}
-
-	/**
-	 * @param string $action, either 'allow' or 'deny'
-	 * @throws Prado\Exceptions\TInvalidDataValueException when the $action is not 'allow' or 'deny'
-	 * @since 4.2.0
-	 */
-	public function setAction($action)
-	{
 		$action = strtolower(trim($action));
 		if ($action === 'allow' || $action === 'deny') {
 			$this->_action = $action;
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_action_invalid', $action);
 		}
-	}
-
-	/**
-	 * @return string[] list of user IDs
-	 */
-	public function getUsers()
-	{
-		return $this->_users;
-	}
-
-	/**
-	 * @since 4.2.0
-	 * @param string $users comma separated list of users
-	 */
-	public function setUsers($users)
-	{
+		
 		$this->_users = [];
 		$this->_everyone = false;
 		$this->_guest = false;
@@ -149,6 +109,55 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 				}
 			}
 		}
+		
+		$this->_roles = [];
+		if (trim($roles) === '') {
+			$roles = '*';
+		}
+		foreach (explode(',', $roles) as $role) {
+			if (($role = trim(strtolower($role))) !== '') {
+				$this->_roles[] = $role;
+			}
+		}
+		
+		if (($verb = trim(strtolower($verb))) === '') {
+			$verb = '*';
+		}
+		if ($verb === '*' || $verb === 'get' || $verb === 'post') {
+			$this->_verb = $verb;
+		} else {
+			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
+		}
+		
+		$this->_ipRules = [];
+		if (trim($ipRules) === '') {
+			$ipRules = '*';
+		}
+		foreach (explode(',', $ipRules) as $ipRule) {
+			if (($ipRule = trim($ipRule)) !== '') {
+				$this->_ipRules[] = $ipRule;
+			}
+		}
+		
+		$this->_priority = is_numeric($priority) ? $priority : null;
+
+		parent::__construct();
+	}
+
+	/**
+	 * @return string action, either 'allow' or 'deny'
+	 */
+	public function getAction()
+	{
+		return $this->_action;
+	}
+
+	/**
+	 * @return string[] list of user IDs
+	 */
+	public function getUsers()
+	{
+		return $this->_users;
 	}
 
 	/**
@@ -160,45 +169,11 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @param string $roles comma separated list of roles
-	 * @since 4.2.0
-	 */
-	public function setRoles($roles)
-	{
-		$this->_roles = [];
-		if (trim($roles) === '') {
-			$roles = '*';
-		}
-		foreach (explode(',', $roles) as $role) {
-			if (($role = trim(strtolower($role))) !== '') {
-				$this->_roles[] = $role;
-			}
-		}
-	}
-
-	/**
 	 * @return string verb, may be '*', 'get', or 'post'.
 	 */
 	public function getVerb()
 	{
 		return $this->_verb;
-	}
-
-	/**
-	 * @param string $verb verb, may be empty, '*', 'get', or 'post'.
-	 * @throws Prado\Exceptions\TInvalidDataValueException when not '*', 'get', or 'post'.
-	 * @since 4.2.0
-	 */
-	public function setVerb($verb)
-	{
-		if (($verb = trim(strtolower($verb))) === '') {
-			$verb = '*';
-		}
-		if ($verb === '*' || $verb === 'get' || $verb === 'post') {
-			$this->_verb = $verb;
-		} else {
-			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
-		}
 	}
 
 	/**
@@ -211,38 +186,12 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	}
 
 	/**
-	 * @param array $ipRules list of IP rules.
-	 * @since 4.2.0
-	 */
-	public function setIPRules($ipRules)
-	{
-		$this->_ipRules = [];
-		if (trim($ipRules) === '') {
-			$ipRules = '*';
-		}
-		foreach (explode(',', $ipRules) as $ipRule) {
-			if (($ipRule = trim($ipRule)) !== '') {
-				$this->_ipRules[] = $ipRule;
-			}
-		}
-	}
-
-	/**
 	 * @return numeric priority of the rule.
 	 * @since 4.2.0
 	 */
 	public function getPriority()
 	{
 		return $this->_priority;
-	}
-
-	/**
-	 * @param null|numeric|string $priority
-	 * @since 4.2.0
-	 */
-	public function setPriority($priority)
-	{
-		$this->_priority = is_numeric($priority) ? $priority : null;
 	}
 
 	/**
