@@ -21,20 +21,21 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthorizationRuleCollection extends \Prado\Collections\TList
+class TAuthorizationRuleCollection extends \Prado\Collections\TPriorityList
 {
 	/**
 	 * @param IUser $user the user to be authorized
 	 * @param string $verb verb, can be empty, 'post' or 'get'.
 	 * @param string $ip the request IP address
+	 * @param null|array $extra
 	 * @return bool whether the user is allowed
 	 */
-	public function isUserAllowed($user, $verb, $ip)
+	public function isUserAllowed($user, $verb, $ip, $extra = null)
 	{
 		if ($user instanceof IUser) {
 			$verb = strtolower(trim($verb));
 			foreach ($this as $rule) {
-				if (($decision = $rule->isUserAllowed($user, $verb, $ip)) !== 0) {
+				if (($decision = $rule->isUserAllowed($user, $verb, $ip, $extra)) !== 0) {
 					return ($decision > 0);
 				}
 			}

@@ -206,6 +206,7 @@ class TPageService extends \Prado\TService
 				$this->applyConfiguration($c);
 			}
 		}
+		$config->dyApplyConfiguration();
 	}
 
 	/**

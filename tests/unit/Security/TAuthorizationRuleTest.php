@@ -13,6 +13,12 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 	{
 	}
 
+	public function testConstruct()
+	{
+		$rule = new TAuthorizationRule();
+		self::assertEquals('allow', $rule->getAction());
+	}
+	
 	public function testAction()
 	{
 		$rule = new TAuthorizationRule(' ALloW', '*', '*');
@@ -222,5 +228,28 @@ class TAuthorizationRuleTest extends PHPUnit\Framework\TestCase
 		$rule = new TAuthorizationRule('allow', '', '', 'post');
 		self::assertEquals(0, $rule->isUserAllowed($user, 'get', '192.168.0.10'));
 		self::assertEquals(1, $rule->isUserAllowed($user, 'post', '192.168.0.10'));
+	}
+
+	public function testZappableSleepProps()
+	{
+		$rule = new TAuthorizationRule();
+		$_rule = unserialize(serialize($rule));
+		
+		self::assertEquals($_rule->getAction(), $rule->getAction());
+		self::assertEquals($_rule->getUsers(), $rule->getUsers());
+		self::assertEquals($_rule->getRoles(), $rule->getRoles());
+		self::assertEquals($_rule->getVerb(), $rule->getVerb());
+		self::assertEquals($_rule->getIpRules(), $rule->getIpRules());
+		self::assertEquals($_rule->getPriority(), $rule->getPriority());
+		
+		$rule = new TAuthorizationRule('deny', 'user1, user2', 'default, subscriber', 'get', '192.168.*', 2);
+		$_rule = unserialize(serialize($rule));
+		
+		self::assertEquals($_rule->getAction(), $rule->getAction());
+		self::assertEquals($_rule->getUsers(), $rule->getUsers());
+		self::assertEquals($_rule->getRoles(), $rule->getRoles());
+		self::assertEquals($_rule->getVerb(), $rule->getVerb());
+		self::assertEquals($_rule->getIpRules(), $rule->getIpRules());
+		self::assertEquals($_rule->getPriority(), $rule->getPriority());
 	}
 }
