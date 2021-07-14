@@ -31,40 +31,44 @@ use Prado\Exceptions\TInvalidDataValueException;
  * @package Prado\Security
  * @since 3.0
  */
-class TAuthorizationRule extends \Prado\TComponent
+class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections\IPriorityItem
 {
 	/**
 	 * @var string action, either 'allow' or 'deny'
 	 */
-	private $_action;
+	private $_action = 'allow';
 	/**
 	 * @var array list of user IDs
 	 */
-	private $_users;
+	private $_users = [];
 	/**
 	 * @var array list of roles
 	 */
-	private $_roles;
+	private $_roles = ['*'];
 	/**
 	 * @var string verb, may be empty, 'get', or 'post'.
 	 */
-	private $_verb;
+	private $_verb = '*';
 	/**
 	 * @var string IP patterns
 	 */
-	private $_ipRules;
+	private $_ipRules = ['*'];
+	/**
+	 * @var numeric priority of the rule
+	 */
+	private $_priority;
 	/**
 	 * @var bool if this rule applies to everyone
 	 */
-	private $_everyone;
+	private $_everyone = true;
 	/**
 	 * @var bool if this rule applies to guest user
 	 */
-	private $_guest;
+	private $_guest = false;
 	/**
 	 * @var bool if this rule applies to authenticated users
 	 */
-	private $_authenticated;
+	private $_authenticated = false;
 
 	/**
 	 * Constructor.
@@ -73,8 +77,9 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param string $roles a comma separated role list
 	 * @param string $verb verb, can be empty, 'get', or 'post'
 	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
+	 * @param null|numeric $priority
 	 */
-	public function __construct($action, $users, $roles, $verb = '', $ipRules = '')
+	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = '')
 	{
 		$action = strtolower(trim($action));
 		if ($action === 'allow' || $action === 'deny') {
@@ -82,13 +87,11 @@ class TAuthorizationRule extends \Prado\TComponent
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_action_invalid', $action);
 		}
+		
 		$this->_users = [];
-		$this->_roles = [];
-		$this->_ipRules = [];
 		$this->_everyone = false;
 		$this->_guest = false;
 		$this->_authenticated = false;
-
 		if (trim($users) === '') {
 			$users = '*';
 		}
@@ -106,7 +109,8 @@ class TAuthorizationRule extends \Prado\TComponent
 				}
 			}
 		}
-
+		
+		$this->_roles = [];
 		if (trim($roles) === '') {
 			$roles = '*';
 		}
@@ -115,7 +119,7 @@ class TAuthorizationRule extends \Prado\TComponent
 				$this->_roles[] = $role;
 			}
 		}
-
+		
 		if (($verb = trim(strtolower($verb))) === '') {
 			$verb = '*';
 		}
@@ -124,7 +128,8 @@ class TAuthorizationRule extends \Prado\TComponent
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
 		}
-
+		
+		$this->_ipRules = [];
 		if (trim($ipRules) === '') {
 			$ipRules = '*';
 		}
@@ -133,6 +138,9 @@ class TAuthorizationRule extends \Prado\TComponent
 				$this->_ipRules[] = $ipRule;
 			}
 		}
+		
+		$this->_priority = is_numeric($priority) ? $priority : null;
+
 		parent::__construct();
 	}
 
@@ -145,7 +153,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return array list of user IDs
+	 * @return string[] list of user IDs
 	 */
 	public function getUsers()
 	{
@@ -153,7 +161,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return array list of roles
+	 * @return string[] list of roles
 	 */
 	public function getRoles()
 	{
@@ -161,7 +169,7 @@ class TAuthorizationRule extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string verb, may be empty, 'get', or 'post'.
+	 * @return string verb, may be '*', 'get', or 'post'.
 	 */
 	public function getVerb()
 	{
@@ -175,6 +183,15 @@ class TAuthorizationRule extends \Prado\TComponent
 	public function getIPRules()
 	{
 		return $this->_ipRules;
+	}
+
+	/**
+	 * @return numeric priority of the rule.
+	 * @since 4.2.0
+	 */
+	public function getPriority()
+	{
+		return $this->_priority;
 	}
 
 	/**
@@ -205,9 +222,10 @@ class TAuthorizationRule extends \Prado\TComponent
 	 * @param IUser $user the user object
 	 * @param string $verb the request verb (GET, PUT)
 	 * @param string $ip the request IP address
+	 * @param null|mixed $extra
 	 * @return int 1 if the user is allowed, -1 if the user is denied, 0 if the rule does not apply to the user
 	 */
-	public function isUserAllowed(IUser $user, $verb, $ip)
+	public function isUserAllowed(IUser $user, $verb, $ip, $extra = null)
 	{
 		if ($this->isVerbMatched($verb) && $this->isIpMatched($ip) && $this->isUserMatched($user) && $this->isRoleMatched($user)) {
 			return ($this->_action === 'allow') ? 1 : -1;
@@ -247,5 +265,45 @@ class TAuthorizationRule extends \Prado\TComponent
 	private function isVerbMatched($verb)
 	{
 		return ($this->_verb === '*' || strcasecmp($verb, $this->_verb) === 0);
+	}
+	
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next load.
+	 * Reimplement in derived classes to add new variables, but remember to also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		
+		if ($this->_action === 'allow') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_action";
+		}
+		if ($this->_users === []) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_users";
+		}
+		if (count($this->_roles) === 1 && $this->_roles[0] === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_roles";
+		}
+		if ($this->_verb === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_verb";
+		}
+		if (count($this->_ipRules) === 1 && $this->_ipRules[0] === '*') {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_ipRules";
+		}
+		if ($this->_everyone == true) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_everyone";
+		}
+		if ($this->_guest == false) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_guest";
+		}
+		if ($this->_authenticated == false) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_authenticated";
+		}
+		if ($this->_priority === null) {
+			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_priority";
+		}
 	}
 }
