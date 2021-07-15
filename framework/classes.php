@@ -214,6 +214,8 @@ return [
 'PradoBase' => 'Prado\PradoBase',
 'IUser' => 'Prado\Security\IUser',
 'IUserManager' => 'Prado\Security\IUserManager',
+'IPermissions' => 'Prado\Security\Permissions\IPermissions',
+'TPermissionEvent' => 'Prado\Security\Permissions\TPermissionEvent',
 'TAuthManager' => 'Prado\Security\TAuthManager',
 'TAuthorizationRule' => 'Prado\Security\TAuthorizationRule',
 'TAuthorizationRuleCollection' => 'Prado\Security\TAuthorizationRuleCollection',
