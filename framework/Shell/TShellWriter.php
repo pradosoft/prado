@@ -184,13 +184,100 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		$len = 78;
 		$lines = explode("\n", wordwrap($text, $len - 4, "\n"));
-		$this->writeLine("\n*" . str_repeat('-', $len) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
+		$this->writeLine("\n*" . str_pad(' Error ', $len, '-', STR_PAD_BOTH) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
 		foreach ($lines as $i => $line) {
 			$this->writeLine('*  ' . str_pad($line, $len - 4, ' ', STR_PAD_BOTH) . '  *', [self::BG_RED, self::WHITE, self::BOLD]);
 		}
 		$this->writeLine('*' . str_repeat('_', $len) . "*\n", [self::BG_RED, self::WHITE, self::BOLD]);
 	}
 	
+	/**
+	 * @param string $str the string to ANSI format.
+	 * @param string|string[] $attr the attributes to format.
+	 * @param mixed $len
+	 * @param mixed $pad
+	 * @param mixed $place
+	 * @return string $str in the format of $attr.
+	 */
+	public function pad($str, $len, $pad = ' ', $place = STR_PAD_RIGHT)
+	{
+		$len -= strlen($this->unformat($str));
+		$pad = $pad[0];
+		if ($place === STR_PAD_RIGHT) {
+			while ($len-- > 0) {
+				$str .= $pad;
+			}
+		} elseif ($place === STR_PAD_LEFT) {
+			while ($len-- > 0) {
+				$str = $pad . $str;
+			}
+		} elseif ($place === STR_PAD_BOTH) {
+			while ($len-- > 0) {
+				if ($len % 2) {
+					$str .= $pad;
+				} else {
+					$str = $pad . $str;
+				}
+			}
+		}
+		return $str;
+	}
+	
+	/**
+	 * renders a table widget.
+	 * <code>
+	 *  $writer->tableWidget(
+	 *		'headers' => ['title 1', 'title 2', 'count'],
+	 *		'rows' => [['a', 'b', 1], ['s', 't', 2], ['c', 'd', 3], ['e', 'f', 10],
+	 *			['span' => 'text spanning all columns']]
+	 * );
+	 * </code>
+	 *
+	 * @param array $table
+	 */
+	public function tableWidget($table)
+	{
+		$lengths = [];
+		
+		foreach ($table['headers'] ?? $table['rows'][0] as $i => $header) {
+			$lengths[$i] = strlen($this->unformat($header)) + 1;
+			foreach ($table['rows'] as $row => $data) {
+				if (isset($data['span'])) {
+					continue;
+				}
+				$len = strlen($this->unformat($data[$i])) + 1;
+				if ($lengths[$i] < $len) {
+					$lengths[$i] = $len;
+				}
+			}
+		}
+		$str = '';
+		
+		if (isset($table['headers'])) {
+			foreach ($table['headers'] as $i => $header) {
+				$str .= $this->pad($this->format($header, [TShellWriter::UNDERLINE]), $lengths[$i], ' ', STR_PAD_RIGHT);
+			}
+			$str .= PHP_EOL;
+		}
+		$last = count($table['headers'] ?? $table['rows'][0]) - 1;
+		$lastcolumn = 0;
+		foreach ($table['rows'] as $row => $data) {
+			if (isset($data['span'])) {
+				$str .= $data['span'];
+			} else {
+				foreach ($data as $i => $value) {
+					if ($last == $i) {
+						$str .= $this->wrapText($value, $lastcolumn);
+					} else {
+						$lastcolumn += $lengths[$i];
+						$str .= $this->pad($value, $lengths[$i]);
+					}
+				}
+			}
+			$str .= PHP_EOL;
+		}
+		return $str;
+	}
 	/**
 	 * @param string $str the string to ANSI format.
 	 * @param string|string[] $attr the attributes to format.
