@@ -125,6 +125,7 @@ class TMemCache extends TCache
 			// Quit() is available only for memcached >= 2
 			// $this->_cache->quit();
 		}
+		parent::__destruct();
 	}
 
 	/**

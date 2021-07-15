@@ -133,6 +133,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		if ($this->_db !== null) {
 			$this->_db->setActive(false);
 		}
+		parent::__destruct();
 	}
 
 	/**

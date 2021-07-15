@@ -117,6 +117,7 @@ class TRedisCache extends TCache
 		if ($this->_cache instanceof \Redis) {
 			$this->_cache->close();
 		}
+		parent::__destruct();
 	}
 
 	/**

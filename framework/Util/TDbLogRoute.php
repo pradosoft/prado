@@ -69,6 +69,7 @@ class TDbLogRoute extends TLogRoute
 		if ($this->_db !== null) {
 			$this->_db->setActive(false);
 		}
+		parent::__destruct();
 	}
 
 	/**

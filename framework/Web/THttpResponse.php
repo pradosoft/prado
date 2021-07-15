@@ -132,6 +132,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		//if($this->_bufferOutput)
 		//	@ob_end_flush();
+		parent::__destruct();
 	}
 
 	/**
