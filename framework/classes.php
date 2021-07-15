@@ -227,6 +227,7 @@ return [
 'TUserManager' => 'Prado\Security\TUserManager',
 'TUserManagerPasswordMode' => 'Prado\Security\TUserManagerPasswordMode',
 'TActiveRecordAction' => 'Prado\Shell\Actions\TActiveRecordAction',
+'TDbParameterAction' => 'Prado\Shell\Actions\TDbParameterAction',
 'TFlushCachesAction' => 'Prado\Shell\Actions\TFlushCachesAction',
 'THelpAction' => 'Prado\Shell\Actions\THelpAction',
 'TPphShellAction' => 'Prado\Shell\Actions\TPphShellAction',
