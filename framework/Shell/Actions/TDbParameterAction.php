@@ -51,7 +51,7 @@ class TDbParameterAction extends TShellAction
 	 */
 	public function setAll($value)
 	{
-		$this->_allParams = !TPropertyValue::ensureBoolean($value === '' ? true : $value);
+		$this->_allParams = TPropertyValue::ensureBoolean($value === '' ? true : $value);
 	}
 	
 	/**
@@ -179,16 +179,15 @@ class TDbParameterAction extends TShellAction
 	
 	/**
 	 * get the TDBParameterModule from the Application
-	 * @return Prado\Util\TDBParameterModule
+	 * @return null|Prado\Util\TDBParameterModule
 	 */
 	public function getDbParameterModule()
 	{
-		$module = null;
 		foreach (Prado::getApplication()->getModulesByType('Prado\\Util\\TDbParameterModule') as $module) {
 			if ($module) {
-				break;
+				return $module;
 			}
 		}
-		return $module;
+		return null;
 	}
 }

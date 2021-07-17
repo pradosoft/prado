@@ -184,11 +184,13 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		$len = 78;
 		$lines = explode("\n", wordwrap($text, $len - 4, "\n"));
-		$this->writeLine("\n*" . str_pad(' Error ', $len, '-', STR_PAD_BOTH) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
+		$this->writeLine();
+		$this->writeLine("*" . str_pad(' Error ', $len, '-', STR_PAD_BOTH) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
 		foreach ($lines as $i => $line) {
 			$this->writeLine('*  ' . str_pad($line, $len - 4, ' ', STR_PAD_BOTH) . '  *', [self::BG_RED, self::WHITE, self::BOLD]);
 		}
-		$this->writeLine('*' . str_repeat('_', $len) . "*\n", [self::BG_RED, self::WHITE, self::BOLD]);
+		$this->writeLine('*' . str_repeat('-', $len) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
+		$this->writeLine();
 	}
 	
 	/**
