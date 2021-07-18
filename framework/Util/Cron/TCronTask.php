@@ -36,7 +36,7 @@ abstract class TCronTask extends TApplicationComponent
 	private $_schedule;
 	
 	/** @var string The user Id of the task */
-	private $_userId;
+	private $_userName;
 	
 	/** @var string The module Id */
 	private $_moduleId;
@@ -103,17 +103,17 @@ abstract class TCronTask extends TApplicationComponent
 	/**
 	 * @return string the user id executing the Task
 	 */
-	public function getUserId()
+	public function getUserName()
 	{
-		return $this->_userId;
+		return $this->_userName;
 	}
 
 	/**
-	 * @param string $userid the user id executing the Task
+	 * @param string $username the user id executing the Task
 	 */
-	public function setUserId($userid)
+	public function setUserName($username)
 	{
-		$this->_userId = TPropertyValue::ensureString($userid);
+		$this->_userName = TPropertyValue::ensureString($username);
 	}
 	
 	/**
@@ -221,8 +221,8 @@ abstract class TCronTask extends TApplicationComponent
 		parent::_getZappableSleepProps($exprops);
 		
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_scheduler";
-		if ($this->_userId === null) {
-			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_userId";
+		if ($this->_userName === null) {
+			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_userName";
 		}
 		if ($this->_moduleId === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_moduleId";

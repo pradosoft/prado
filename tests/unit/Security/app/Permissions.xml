@@ -1,0 +1,4 @@
+<configuration>
+	<role name="fileRole" children="Cron, Manager" />
+	<permissionrule name="permissions_manage_roles" action="allow" roles="cron" />
+</configuration>

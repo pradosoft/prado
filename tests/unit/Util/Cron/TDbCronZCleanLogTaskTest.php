@@ -54,7 +54,7 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 			$time = time();
 			$cmd = $db->createCommand(
 				"INSERT INTO {$dbcron->getTableName()} " .
-					"(name, schedule, task, moduleid, userid, processcount, lastexectime, active)" .
+					"(name, schedule, task, moduleid, username, processcount, lastexectime, active)" .
 					" VALUES ('testTask1', '* * * * *', 'TTestCronModuleTask', 'module1', 'cron', '3', " . ($time - 60) .  ", NULL)".
 					",('testTask2', '* * * * *', 'TTestCronModuleTask', 'module2', 'cron', '14', " . ($time - 60) .  ", NULL)".
 					",('testTask3', '* * * * *', 'CMT_UserManager3".TCronModule::METHOD_SEPARATOR."method1', 'CMT_UserManager3', 'cron', '15', " . ($time - 60) .  ", NULL)".

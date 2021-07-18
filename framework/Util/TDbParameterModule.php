@@ -19,6 +19,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TModule;
 use Prado\TPropertyValue;
+use Prado\Security\Permissions\IPermissions;
+use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Util\Behaviors\TMapRouteBehavior;
 
@@ -61,12 +63,17 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util
  * @since 4.2.0
+ * @method bool dyRegisterShellAction($returnValue)
  */
-class TDbParameterModule extends TModule implements IDbModule
+class TDbParameterModule extends TModule implements IDbModule, IPermissions
 {
 	public const SERIALIZE_PHP = 'php';
 	
 	public const SERIALIZE_JSON = 'json';
+	
+	/** The permission for the cron shell */
+	public const PERM_PARAM_SHELL = 'param_shell';
+	
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
@@ -138,10 +145,11 @@ class TDbParameterModule extends TModule implements IDbModule
 	 */
 	private $_autoCapture = true;
 	
-	/** @var TMapRouteBehavior captures all the changes to the parameters to the db */
+	/**
+	 * @var TMapRouteBehavior captures all the changes to the parameters to the db
+	 */
 	private $_setBehavior;
 
-	
 	/**
 	 * Initializes the module by loading parameters.
 	 * @param mixed $config content enclosed within the module tag
@@ -157,7 +165,20 @@ class TDbParameterModule extends TModule implements IDbModule
 		if ($this->_autoCapture) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
+		$app = $this->getApplication();
+		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
+	}
+	
+	/**
+	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
+	 * @return \Prado\Security\Permissions\TPermissionEvent[]
+	 */
+	public function getPermissions($manager)
+	{
+		return [
+			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction')
+		];
 	}
 	
 	/**
@@ -209,6 +230,17 @@ class TDbParameterModule extends TModule implements IDbModule
 		$service = $this->getService();
 		if ($service->hasEvent('onPreRunPage')) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
+		}
+	}
+	
+	/**
+	 * @param object $sender sender of this event handler
+	 * @param null|mixed $param parameter for the event
+	 */
+	public function registerShellAction($sender, $param)
+	{
+		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+			$app->addShellActionClass('Prado\\Shell\\Actions\\TDbParameterAction');
 		}
 	}
 	
@@ -354,14 +386,15 @@ class TDbParameterModule extends TModule implements IDbModule
 		if (empty($key)) {
 			throw new TInvalidOperationException('dbparametermodule_set_no_blank_key');
 		}
-			
+		
+		$_value = $value;
 		if (($serializer = $this->getSerializer()) && (is_array($value) || is_object($value))) {
 			if ($serializer == self::SERIALIZE_PHP) {
-				$value = @serialize($value);
+				$_value = @serialize($value);
 			} elseif ($serializer == self::SERIALIZE_JSON) {
-				$value = json_encode($value, JSON_UNESCAPED_UNICODE);
+				$_value = json_encode($value, JSON_UNESCAPED_UNICODE);
 			} else {
-				$value = call_user_func($serializer, $value, true);
+				$_value = call_user_func($serializer, $value, true);
 			}
 		}
 		$db = $this->getDbConnection();
@@ -378,7 +411,7 @@ class TDbParameterModule extends TModule implements IDbModule
 		$cmd = $db->createCommand("INSERT INTO {$this->_tableName} ({$this->_keyField}, {$this->_valueField}{$field}) " .
 					"VALUES (:key, :value{$values})" . $appendix);
 		$cmd->bindParameter(":key", $key, PDO::PARAM_STR);
-		$cmd->bindParameter(":value", $value, PDO::PARAM_STR);
+		$cmd->bindParameter(":value", $_value, PDO::PARAM_STR);
 		if ($this->_autoLoadField) {
 			$alv = $autoLoad ? $this->_autoLoadValue : $this->_autoLoadValueFalse;
 			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
@@ -677,7 +710,7 @@ class TDbParameterModule extends TModule implements IDbModule
 	}
 
 	/**
-	 * @return bool whether the paramter DB table should be automatically created if not exists. Defaults to true.
+	 * @return bool whether the parameter DB table should be automatically created if not exists. Defaults to true.
 	 */
 	public function getCaptureParameterChanges()
 	{

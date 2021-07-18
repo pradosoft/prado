@@ -66,15 +66,15 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($value, $scheduler->getSchedule());
 	}
 	
-	public function testUserId()
+	public function testUserName()
 	{
 		$value = 'admin';
-		$this->obj->setUserId($value);
-		self::assertEquals($value, $this->obj->getUserId());
+		$this->obj->setUserName($value);
+		self::assertEquals($value, $this->obj->getUserName());
 		
 		$value = 'cron';
-		$this->obj->setUserId($value);
-		self::assertEquals($value, $this->obj->getUserId());
+		$this->obj->setUserName($value);
+		self::assertEquals($value, $this->obj->getUserName());
 	}
 	
 	public function testModuleId()

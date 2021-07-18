@@ -1,6 +1,13 @@
 ## Version 4.2.0 - in development
 
-ENH: Issue #761 - TCronModule and TDbCronModule with supporting classes, scheduled like linux cron schedule expression, 8 languages.
+ENH: Prado::createComponent can take an array with "class" and object properties to set on the new object (belisoful)
+ENH: TAuthorizationRule adds Priority for proper ordering of Authorization Rules, eg. Deny All can be and stay the final rule using priorities. (belisoful)
+ENH: TPageConfiguration is extendable with dynamic events for loading xml & php and then applying (belisoful)
+ENH: TUser adds dynamic events dyDefaultRoles and dyIsInRole for default roles and checking the user in a role. (belisoful)
+BUG: Issue #791 - TUserManager loads PHP user file configurations properly (belisoful)
+ENH: Adds IPriorityItem for auto-prioritizing items in TPriorityList and TPriorityMap (belisoful)
+CHG: Issue #783 - Refactor the Shell system with Composer in mind; shell routes and actions, updated the help system. (belisoful)
+ENH: Issue #761 - TCronModule and TDbCronModule with supporting classes, scheduled like linux cron schedule expression, 8 languages. (belisoful)
 ENH: Issue #743 - Integrate Composer extensions for PRADO, module ids can be the composer package names and the class will be ['extra']['bootstrap'] (from the composer.json file). TPluginModule/TDbPluginModule for additional functionality as the parent class for extensions.  Composer "type" : "prado4-extension" (belisoful)
 BUG: Issue #784 - Prado-CLI corrected I18N by translating the shell "LANG" into "HTTP_ACCEPT_LANGUAGE" (belisoful)
 ENH: Issue #778 - Added TEventContent for filling in the control content from handlers of a global event (belisoful)
