@@ -120,7 +120,7 @@ abstract class TShellAction extends \Prado\TComponent
 	 */
 	public function isValidAction($args)
 	{
-		if (preg_match("/^{$this->action}(?:\\/([-\w\d]*))?$/", $args[0], $match)) {
+		if (preg_match("/^{$this->action}(?:\\/([-\w\d]*))?$/", $args[0] ?? '', $match)) {
 			if (isset($match[1]) && $match[1]) {
 				$i = array_flip($this->methods)[$match[1]] ?? null;
 				if ($i === null) {

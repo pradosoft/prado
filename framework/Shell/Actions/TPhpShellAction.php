@@ -39,9 +39,10 @@ class TPhpShellAction extends TShellAction
 	public function actionIndex($args)
 	{
 		$this->getWriter()->flush();
+		$app = Prado::getApplication();
 		
 		$shell = new \Psy\Shell();
-		$shell->setBoundObject($this);
+		$shell->setBoundObject($app);
 		$shell->run();
 		
 		return true;
