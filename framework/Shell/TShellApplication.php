@@ -250,7 +250,7 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function addShellActionClass($class)
 	{
-		$this->_actions[$class] = new $class;
+		$this->_actions[is_array($class) ? $class['class'] : $class] = Prado::createComponent($class);
 	}
 
 	/**

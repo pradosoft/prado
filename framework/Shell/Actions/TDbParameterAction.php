@@ -38,6 +38,8 @@ class TDbParameterAction extends TShellAction
 	
 	private $_allParams = false;
 	
+	private $_dbparam = false;
+	
 	/**
 	 *
 	 */
@@ -183,11 +185,24 @@ class TDbParameterAction extends TShellAction
 	 */
 	public function getDbParameterModule()
 	{
-		foreach (Prado::getApplication()->getModulesByType('Prado\\Util\\TDbParameterModule') as $module) {
-			if ($module) {
-				return $module;
+		if ($this->_dbparam === false) {
+			$this->_dbparam = null;
+			$app = Prado::getApplication();
+			foreach ($app->getModulesByType('Prado\\Util\\TDbParameterModule') as $id => $module) {
+				if ($this->_dbparam = $app->getModule($id)) {
+					break;
+				}
 			}
 		}
-		return null;
+		return $this->_dbparam;
+	}
+	
+	/**
+	 * get the TPermissionsManager from the Application
+	 * @param Prado\Util\TDbParameterModule $dbparam
+	 */
+	public function setDbParameterModule($dbparam)
+	{
+		$this->_dbparam = $dbparam;
 	}
 }

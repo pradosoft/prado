@@ -248,7 +248,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	public function registerShellAction($sender, $param)
 	{
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
-			$app->addShellActionClass($this->_shellClass);
+			$app->addShellActionClass(['class' => $this->_shellClass, 'CronModule' => $this]);
 		}
 	}
 	

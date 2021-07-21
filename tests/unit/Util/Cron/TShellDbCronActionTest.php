@@ -45,7 +45,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellDbCronAction', $this->obj);
 	}
 	
-	public function testPerformAction()
+	public function testActionRun()
 	{
 		$app = Prado::getApplication();
 		
@@ -66,7 +66,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 		$ttask->setPropertyA('value2');
 		$ttask->setUserName('admin456');
 		$cron->addTask($ttask);
-		$app->setModule('DbShellCron', $cron);
+		$this->obj->setCronModule($cron);
 		self::assertNull($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR));
 		{	//cron pending tasks
 			$task = $cron->getTask('testTaskA');

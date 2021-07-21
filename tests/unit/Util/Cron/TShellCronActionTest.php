@@ -3,6 +3,7 @@
 use Prado\IO\TTextWriter;
 use Prado\Shell\TShellWriter;
 use Prado\Prado;
+use Prado\TComponent;
 use Prado\Util\Cron\TShellCronAction;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TDbCronModule;
@@ -10,7 +11,7 @@ use Prado\Util\Cron\TDbCronModule;
 
 class TShellCronActionTest extends PHPUnit\Framework\TestCase
 {
-	protected $obj;
+	protected $obj, $writer;
 	
 	protected function getTestClass()
 	{
@@ -38,10 +39,15 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 	{
 		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellCronAction', $this->obj);
 	}
+
+	public function testCronModule()
+	{	
+		$this->obj->setCronModule($v = new TComponent());
+		$this->assertEquals($v, $this->obj->getCronModule());
+	}
 	
 	public function testPerformAction()
 	{
-		$app = Prado::getApplication();
 		
 		//  no TCronModule in application, failed 
 		self::assertTrue($this->obj->actionRun(['cron']));
@@ -51,14 +57,14 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 		$cronClass = $this->getTestCronClass();
 		$cron = new $cronClass();
 		$cron->init($jobs);
-		$app->setModule('ShellCron', $cron);
+		$this->obj->setCronModule($cron);
 		self::assertNull($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR));
 		{	//cron pending tasks
 			$task = $cron->getTask('testTaskA');
 			self::assertEquals(0, $task->getProcessCount());
 			self::assertTrue($this->obj->actionRun(['cron/run']));
+			$text = $this->writer->flush();
 			self::assertEquals(1, $task->getProcessCount());
-			$this->writer->flush();
 		}
 		self::assertTrue(is_object($cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)));
 		{	//cron tasks
@@ -101,7 +107,6 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 			$fxtest->unlisten();
 		}
 		
-		//$app->setModule('ShellCron', null);
 		$cron->unlisten();
 	}
 	
