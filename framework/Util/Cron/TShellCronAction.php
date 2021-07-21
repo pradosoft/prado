@@ -39,6 +39,8 @@ class TShellCronAction extends TShellAction
 		'Displays the registered Cron tasks information.'
 	];
 	
+	private $_cron = false;
+	
 	/**
 	 * @return string the Cron Class to find
 	 */
@@ -48,27 +50,37 @@ class TShellCronAction extends TShellAction
 	}
 	
 	/**
-	 * @retutrn null|Prado\Util\Cron\TCronModule returns the Cron Module of the applications
+	 * @return null|Prado\Util\Cron\TCronModule returns the Cron Module of the applications
 	 */
 	public function getCronModule()
 	{
-		$app = Prado::getApplication();
-		$moduleClass = $this->getModuleClass();
-		$modules = $app->getModulesByType($moduleClass, false);
-		$module = null;
-		foreach ($modules as $id => $m) {
-			if ($module = $app->getModule($id)) {
-				break;
+		if ($this->_cron === false) {
+			$app = Prado::getApplication();
+			$moduleClass = $this->getModuleClass();
+			$modules = $app->getModulesByType($moduleClass, false);
+			$this->_cron = null;
+			foreach ($modules as $id => $m) {
+				if ($this->_cron = $app->getModule($id)) {
+					break;
+				}
+			}
+			if (!$this->_cron) {
+				$this->_outWriter->writeError("A {$moduleClass} is not found");
+				return null;
 			}
 		}
-		if (!$module) {
-			$this->_outWriter->writeError("A {$moduleClass} is not found");
-			return null;
+		if (!$this->_cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			$this->_cron->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
 		}
-		if (!$module->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
-			$module->attachBehavior(TCronModule::SHELL_LOG_BEHAVIOR, new TShellCronLogBehavior($this->getWriter()));
-		}
-		return $module;
+		return $this->_cron;
+	}
+	
+	/**
+	 * @param null|Prado\Util\Cron\TCronModule $cron sets the Cron Module
+	 */
+	public function setCronModule($cron)
+	{
+		$this->_cron = $cron;
 	}
 	
 	/**
