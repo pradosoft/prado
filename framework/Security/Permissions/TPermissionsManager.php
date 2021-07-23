@@ -232,7 +232,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		}
 		
 		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_init_once', $this->_dbParameter);
+			throw new TInvalidOperationException('permissions_init_once');
 		}
 		$this->_initialized = true;
 		
@@ -286,7 +286,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (!isset($this->_permissionRules[$permission])) {
 			$this->_permissionRules[$permission] = new TAuthorizationRuleCollection();
 		} else {
-			throw new TInvalidOperationException('permissions_duplicate_permission');
+			throw new TInvalidOperationException('permissions_duplicate_permission', $permissionName);
 		}
 		if ($this->_autoAllowWithPermission) {
 			$this->_permissionRules[$permission]->add(new TAuthorizationRule('allow', '*', $permission, '*', '*', $this->_autoRulePriority));
@@ -351,7 +351,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 					$children = array_map('trim', explode(',', $children));
 				}
 				if (!is_array($children)) {
-					throw new TConfigurationException('permissions_role_children_invalid');
+					throw new TConfigurationException('permissions_role_children_invalid', $role, is_object($children) ? get_class($children) : $children);
 				}
 			}
 			
@@ -365,7 +365,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				$properties = array_change_key_case($properties->getAttributes()->toArray());
 			} else {
 				if (!is_array($properties)) {
-					throw new TConfigurationException('permissions_permissions_invalid');
+					throw new TConfigurationException('permissions_rule_invalid', $name);
 				}
 			}
 			if (is_numeric($name) && (!isset($properties[0]) || !$properties[0] instanceof TAuthorizationRule)) {
@@ -551,7 +551,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permission_children_invalid', $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));
@@ -581,7 +581,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permission_children_invalid', $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));

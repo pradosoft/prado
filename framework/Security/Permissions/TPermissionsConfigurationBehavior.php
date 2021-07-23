@@ -10,7 +10,6 @@
 
 namespace Prado\Security\Permissions;
 
-use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TBehavior;
 
 /**

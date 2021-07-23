@@ -10,7 +10,6 @@
 
 namespace Prado\Security\Permissions;
 
-use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Security\IUser;
 use Prado\Security\TAuthorizationRule;
 
