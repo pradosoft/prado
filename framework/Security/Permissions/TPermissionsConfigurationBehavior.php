@@ -22,7 +22,7 @@ use Prado\Util\TBehavior;
  * <code>
  * 		<permissions>
  *			<role name="pageRole" children="otherRole, permission_name" />
- *			<permissionRule name="permission_name" action="allow" roles="manager"/>
+ *			<permissionrule name="permission_name" action="allow" roles="manager"/>
  *		</permissions>
  * </code>
  *
