@@ -1,5 +1,6 @@
 ## Version 4.2.0 - in development
 
+ENH: Issue #790 TPermissionsManager implements Role Based Access Control and Authorization Rules for each permission (belisoful)
 ENH: Prado::createComponent can take an array with "class" and object properties to set on the new object (belisoful)
 ENH: TAuthorizationRule adds Priority for proper ordering of Authorization Rules, eg. Deny All can be and stay the final rule using priorities. (belisoful)
 ENH: TPageConfiguration is extendable with dynamic events for loading xml & php and then applying (belisoful)

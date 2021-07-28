@@ -205,6 +205,19 @@ authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refe
 authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
 authmanager_session_required			= TAuthManager requires a session application module.
 
+permissions_events_invalid				= TPermissionEvent.Event cannot set an invalid value '{0}'.
+permissions_rules_invalid				= TPermissionEvent.Rules cannot set an invalid value '{0}'.
+permissions_dbparameter_nonexistent		= TPermissionsManager.DbParameter '{0}' does not refer to an ID of application module.
+permissions_dbparameter_invalid			= TPermissionsManager.DbParameter '{0}' does not refer to a valid TDbParameterModule application module.
+permissions_init_once					= TPermissionsManager.init can only be initialized once.
+permissions_duplicate_permission		= TPermissionsManager permission '{0}' is already registered.
+permissions_role_children_invalid		= TPermissionsManager configuration role '{0}' has invalid children '{1}'.
+permissions_rule_invalid				= TPermissionsManager configuration permission rule '{0}' has properties that is not an array.
+permissions_rules_require_name			= TPermissionsManager rules must have a permission "name" property.
+permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
+permissions_property_unchangeable		= TPermissionsManager.{0} cannot be set because it is already initialized.
+permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
+
 thememanager_service_unavailable		= TThemeManager requires TPageService to be available. This error often occurs when you configure TThemeManager outside of the page service configuration.
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
