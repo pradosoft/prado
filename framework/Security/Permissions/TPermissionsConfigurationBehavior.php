@@ -91,8 +91,9 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	 */
 	public function dyApplyConfiguration($callchain)
 	{
+		$manager = $this->getManager();
 		foreach ($this->_permissions as $permission) {
-			$this->getManager()->loadPermissionsData($permission);
+			$manager->loadPermissionsData($permission);
 		}
 		return $callchain->dyApplyConfiguration();
 	}
