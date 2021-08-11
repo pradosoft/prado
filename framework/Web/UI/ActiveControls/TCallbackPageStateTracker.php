@@ -187,7 +187,7 @@ class TCallbackPageStateTracker
 	 */
 	protected function updateStyle($style)
 	{
-		if ($style['CssClass'] !== null) {
+		if ($style['CssClass'] !== null && is_string($style['CssClass'])) {
 			$this->client()->setAttribute($this->_control, 'class', $style['CssClass']);
 		}
 		if (is_array($style['Style']) && count($style['Style']) > 0) {
