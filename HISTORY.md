@@ -1,8 +1,10 @@
-## Version 4.1.2 - to be released
+## Version 4.1.2 - Aug 28, 2021
 
 BUG: Issue #706 - TOutputcache: don't serialize controls state (jcass77, ctrlaltca)
 BUG: Issue #715 - Problem saving files on TActiveFileUpload when Multiple=true (ctrlaltca)
+BUG: Issue #718 - Fix clientside exception logging in debug mode (jmartens, ctrlaltca)
 BUG: Issue #722 - Problem with TactiveButton Text property (ctrlaltca)
+BUG: Issue #720 - TSecurityManager: use correct private property (qysp)
 BUG: Fix bug in TStyleDiff that didn't render CssClass and Style correctly on callback (ctrlaltca)
 BUG: Issue #727 - Php compatibility bug in TMysqlMetaData.php (PixelHomie)
 ENH: Issue #724 - Ajax queue improvement (ganiuszka)
