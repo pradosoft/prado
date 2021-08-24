@@ -7,17 +7,20 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v4.1.1
+Upgrading from v4.1.2
 ---------------------
 - Wsat has been moved into its own repo; if you use it, you may want to add to your composer.json: "pradosoft/prado-wsat": "*"
 - the prado-cli command used to create a new project has been removed. Use "composer create-project pradosoft/prado-app <directory>" instead.
-- The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
 - TEACache has been removed. The eAccelerator project has been abandoned and doesn't work with PHP > 5.4.
 - TXCache has been removed. The XCache project has been abandoned and doesn't work with PHP > 5.6.
 - TFastSqlMapApplicationCache has been removed. It depended to an unavailable external DxUtil library.
 - Previously the Prado class was an empty subclass of PradoBase, so that the Prado class could be overloaded.
   Since the introduction of namespaces this is not doable anymore, so the PradoBase class has been removed and all the methods have been moved to the Prado class.
 - TUserManager::switchToGuest($user) has been removed. Instead, call $user->setIsGuest(true);
+
+Upgrading from v4.1.1
+---------------------
+- The return value for getSelectedValue() method on list controls (eg. TDropDownList::getSelectedValue()) has changed. Previously, when no item was selected it would always return an empty string. Now it will return the PromptValue; note that PromptValue still defaults to an empty string.
 
 Upgrading from v4.1.0
 ---------------------

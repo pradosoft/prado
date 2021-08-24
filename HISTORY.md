@@ -29,14 +29,19 @@ ENH: Issue #738 - Added TAuthManager::onLogin, onLogout, and onLoginFailed event
 ENH: Issue #737 - Added TSkinTemplate that doesn't do class/attribute validation so skins are more portable between apps (belisoful)
 ENH: Issue #735 - Added TPageService::onPreRunPage so modules can access Page events (belisoful)
 BUG: Issue #728 - TWeakCallableCollection makes use of 7.4 WeakReference so fx events do not stop garbage collection (belisoful)
+CHG: Split Wsat into its own repo pradosoft/prado-wsat (ctrlaltca)
+
+## Version 4.1.2 - Aug 28, 2021
+
 BUG: Issue #706 - TOutputcache: don't serialize controls state (jcass77, ctrlaltca)
 BUG: Issue #715 - Problem saving files on TActiveFileUpload when Multiple=true (ctrlaltca)
+BUG: Issue #718 - Fix clientside exception logging in debug mode (jmartens, ctrlaltca)
 BUG: Issue #722 - Problem with TactiveButton Text property (ctrlaltca)
+BUG: Issue #720 - TSecurityManager: use correct private property (qysp)
 BUG: Fix bug in TStyleDiff that didn't render CssClass and Style correctly on callback (ctrlaltca)
 BUG: Issue #727 - Php compatibility bug in TMysqlMetaData.php (PixelHomie)
 ENH: Issue #724 - Ajax queue improvement (ganiuszka)
 ENH: Add support for SameSite property on cookies (ctrlaltca)
-CHG: Split Wsat into its own repo pradosoft/prado-wsat (ctrlaltca)
 
 ## Version 4.1.1 - Mar 27, 2020
 
