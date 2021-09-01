@@ -67,7 +67,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	/**
 	 * @var mixed safe text parser
 	 */
-	private static $_safeTextParser = null;
+	private static $_safeTextParser;
 	/**
 	 * @var string safe textbox content with javascript stripped off
 	 */

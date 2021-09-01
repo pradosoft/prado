@@ -31,7 +31,7 @@ class TWeakCallableCollection extends TPriorityList
 	/**
 	 * @var bool wether or not WeakReference is available
 	 */
-	private static $_weak = null;
+	private static $_weak;
 	
 
 	/**
