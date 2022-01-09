@@ -40,7 +40,7 @@ class TOracleCommandBuilder extends TDbCommandBuilder
 				$columns[] = $field;
 			}
 		}
-		return parent :: getSearchExpression($columns, $keywords);
+		return parent::getSearchExpression($columns, $keywords);
 	}
 	/**
 	 *
