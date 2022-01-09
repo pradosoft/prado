@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d317d7dece79c883e04c3d195667a917",
+    "content-hash": "7ee83b9b215a2d31e0e060be306ba076",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -412,9 +412,6 @@
                 "url": "https://api.github.com/repos/pradosoft/prado-tinymce3/zipball/1b069e2252be9eb546256e9271d87886530942f4",
                 "reference": "1b069e2252be9eb546256e9271d87886530942f4",
                 "shasum": ""
-            },
-            "provide": {
-                "pradosoft/prado-tinymce3": "3.5.12.2"
             },
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
@@ -1717,9 +1714,6 @@
             },
             "require": {
                 "php": "^7.1 || ^8.0"
-            },
-            "replace": {
-                "myclabs/deep-copy": "self.version"
             },
             "require-dev": {
                 "doctrine/collections": "^1.0",
@@ -4627,5 +4621,5 @@
     "platform-overrides": {
         "php": "7.2"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.2.0"
 }

@@ -62,9 +62,6 @@
 		"pradosoft/apigen": "4.2.x-dev",
 		"pradosoft/prado-apigen-theme" : "*"
 	},
-	"provide" : {
-		"pradosoft/prado" : "4.2.0"
-	},
 	"suggest" : {
 		"ext-apcu" : "Enables the use of TAPCCache as a cache handler",
 		"ext-hash" : "Enables use of hash functions other than md5 and sha1",
