@@ -170,7 +170,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function setManager($manager)
 	{
-		if ($manager instanceof \WeakReference) {
+		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;

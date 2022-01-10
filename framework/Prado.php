@@ -555,7 +555,7 @@ class Prado
 				}
 				arsort($languages);
 				$languages = array_keys($languages);
-				if (empty($languages)) {
+				if (count($languages) == 0) {
 					$languages[0] = 'en';
 				}
 			}

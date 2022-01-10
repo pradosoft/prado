@@ -59,7 +59,7 @@ jobs:
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
       - name: Validate code using phpstan
-        run: phpstan analyse --error-format=checkstyle --level=1 framework | cs2pr
+        run: phpstan analyse --error-format=checkstyle | cs2pr
 
       - name: Setup mysql service
         run: |

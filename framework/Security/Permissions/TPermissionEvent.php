@@ -101,7 +101,7 @@ class TPermissionEvent extends \Prado\TComponent
 	/**
 	 * this will take an array of string dynamic events, or a ',' comma separated
 	 * list of dynamic events
-	 * @param string|string[] $events the dynamic events tied to the permission
+	 * @param null|string|string[] $events the dynamic events tied to the permission
 	 */
 	public function setEvents($events)
 	{

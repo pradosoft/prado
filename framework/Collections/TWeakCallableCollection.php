@@ -11,7 +11,6 @@
 namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidDataValueException;
-use WeakReference;
 
 /**
  * TWeakCallableCollection class
@@ -32,7 +31,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @var bool wether or not WeakReference is available
 	 */
 	private static $_weak;
-	
+
 
 	/**
 	 * Constructor.
@@ -47,7 +46,7 @@ class TWeakCallableCollection extends TPriorityList
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
 		if (self::$_weak === null) {
-			self::$_weak = class_exists('\WeakReference');
+			self::$_weak = class_exists('\WeakReference', false);
 		}
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
 	}

@@ -94,7 +94,7 @@ class TUserPermissionsBehavior extends TBehavior
 	 */
 	public function setManager($manager)
 	{
-		if ($manager instanceof \WeakReference) {
+		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;

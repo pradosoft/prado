@@ -236,7 +236,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		}
 		$this->_initialized = true;
 		
-		$manager = class_exists('\WeakReference') ? \WeakReference::create($this) : $this;
+		$manager = class_exists('\WeakReference', false) ? \WeakReference::create($this) : $this;
 		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsBehavior', 'manager' => $manager], 'Prado\\Security\\Permissions\\IPermissions', -10);
 		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TUserPermissionsBehavior', 'manager' => $manager], 'Prado\\Security\\IUser', -10);
 		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', 'manager' => $manager], 'Prado\\Web\\Services\\TPageConfiguration', -10);
@@ -328,7 +328,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	public function loadPermissionsData($config)
 	{
 		$isXml = false;
-		if (!$config || empty($config)) {
+		if (!$config || count($config) == 0) {
 			return;
 		}
 		$permissions = $roles = [];
