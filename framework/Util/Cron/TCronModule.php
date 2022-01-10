@@ -191,7 +191,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	protected function readConfiguration($config)
 	{
 		$isXml = false;
-		if (!$config || count($config) == 0) {
+		if (!$config) {
 			return;
 		}
 		if ($config instanceof \Prado\Xml\TXmlElement) {

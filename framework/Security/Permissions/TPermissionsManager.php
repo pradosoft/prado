@@ -328,7 +328,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	public function loadPermissionsData($config)
 	{
 		$isXml = false;
-		if (!$config || count($config) == 0) {
+		if (!$config) {
 			return;
 		}
 		$permissions = $roles = [];
