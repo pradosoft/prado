@@ -176,7 +176,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @throws TDbException if this method is invoked twice
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		if ($this->_index < 0) {
 			$this->_row = $this->_statement->fetch();

@@ -508,6 +508,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return TSessionIterator an iterator for traversing the session variables.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new TSessionIterator;
@@ -526,7 +527,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the session.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -609,7 +610,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param mixed $offset the offset to check on
 	 * @return bool
 	 */
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return isset($_SESSION[$offset]);
 	}
@@ -629,7 +630,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
-	public function offsetSet($offset, $item)
+	public function offsetSet($offset, $item): void
 	{
 		$_SESSION[$offset] = $item;
 	}
@@ -638,7 +639,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to unset element
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		unset($_SESSION[$offset]);
 	}

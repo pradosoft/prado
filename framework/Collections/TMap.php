@@ -116,7 +116,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the map.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -290,7 +290,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to unset element
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		$this->remove($offset);
 	}

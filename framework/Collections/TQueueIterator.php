@@ -52,7 +52,7 @@ class TQueueIterator implements \Iterator
 	 * Rewinds internal array pointer.
 	 * This method is required by the interface Iterator.
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->_i = 0;
 	}
@@ -81,7 +81,7 @@ class TQueueIterator implements \Iterator
 	 * Moves the internal pointer to the next array item.
 	 * This method is required by the interface Iterator.
 	 */
-	public function next()
+	public function next(): void
 	{
 		$this->_i++;
 	}
@@ -91,7 +91,7 @@ class TQueueIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return bool
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->_i < $this->_c;
 	}

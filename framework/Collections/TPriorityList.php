@@ -103,7 +103,7 @@ class TPriorityList extends TList
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the list.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -174,6 +174,7 @@ class TPriorityList extends TList
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->flattenPriorities());
@@ -728,7 +729,7 @@ class TPriorityList extends TList
 	 * @param mixed $offset the offset to check on
 	 * @return bool
 	 */
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return ($offset >= 0 && $offset < $this->getCount());
 	}
@@ -756,10 +757,11 @@ class TPriorityList extends TList
 	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
-	public function offsetSet($offset, $item)
+	public function offsetSet($offset, $item): void
 	{
 		if ($offset === null) {
-			return $this->add($item);
+			$this->add($item);
+			return;
 		}
 		if ($offset === $this->getCount()) {
 			$priority = $this->priorityAt($offset - 1, true);
@@ -776,7 +778,7 @@ class TPriorityList extends TList
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to unset element
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		$this->removeAt($offset);
 	}

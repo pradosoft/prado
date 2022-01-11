@@ -55,17 +55,17 @@ class TEnumerable implements \Iterator
 		return key($this->_enums);
 	}
 
-	public function next()
+	public function next(): void
 	{
-		return next($this->_enums);
+		next($this->_enums);
 	}
 
-	public function rewind()
+	public function rewind(): void
 	{
 		reset($this->_enums);
 	}
 
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->current() !== false;
 	}

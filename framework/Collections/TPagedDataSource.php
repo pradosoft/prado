@@ -196,7 +196,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the current page.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -270,6 +270,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * @return \Iterator iterator
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		if ($this->_dataSource instanceof TList) {

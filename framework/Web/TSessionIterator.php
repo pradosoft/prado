@@ -45,7 +45,7 @@ class TSessionIterator implements \Iterator
 	 * Rewinds internal array pointer.
 	 * This method is required by the interface Iterator.
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->_key = reset($this->_keys);
 	}
@@ -74,7 +74,7 @@ class TSessionIterator implements \Iterator
 	 * Moves the internal pointer to the next array element.
 	 * This method is required by the interface Iterator.
 	 */
-	public function next()
+	public function next(): void
 	{
 		do {
 			$this->_key = next($this->_keys);
@@ -86,7 +86,7 @@ class TSessionIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return bool
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->_key !== false;
 	}

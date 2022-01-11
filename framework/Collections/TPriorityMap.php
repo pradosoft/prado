@@ -144,6 +144,7 @@ class TPriorityMap extends TMap
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the map.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->flattenPriorities());
