@@ -201,6 +201,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return mixed the current row.
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->_row;

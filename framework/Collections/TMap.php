@@ -105,6 +105,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_d);
