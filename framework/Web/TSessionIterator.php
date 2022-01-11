@@ -55,6 +55,7 @@ class TSessionIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return mixed the key of the current array element
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_key;

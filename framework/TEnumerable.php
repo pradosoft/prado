@@ -51,6 +51,7 @@ class TEnumerable implements \Iterator
 		return current($this->_enums);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return key($this->_enums);

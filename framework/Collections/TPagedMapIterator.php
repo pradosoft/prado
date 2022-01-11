@@ -67,6 +67,7 @@ class TPagedMapIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return int the key of the current array item
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_iterator->key();
