@@ -280,7 +280,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
-	public function offsetSet($offset, $item)
+	public function offsetSet($offset, $item): void
 	{
 		$this->add($offset, $item);
 	}

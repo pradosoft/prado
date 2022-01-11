@@ -223,7 +223,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return bool whether there is a row of data at current position.
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->_row !== false;
 	}
