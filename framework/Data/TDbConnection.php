@@ -194,6 +194,9 @@ class TDbConnection extends \Prado\TComponent
 				// This attribute is only useful for PDO::MySql driver.
 				// Ignore the warning if a driver doesn't understand this.
 				@$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+				// This attribute is only useful for PDO::MySql driver since PHP 8.1
+				// This ensures integers are returned as strings (needed eg. for ZEROFILL columns)
+				@$this->_pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active = true;
 				$this->setConnectionCharset();
