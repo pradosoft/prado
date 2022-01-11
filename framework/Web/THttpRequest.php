@@ -819,6 +819,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_items);
@@ -837,7 +838,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the request.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -922,7 +923,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param mixed $offset the offset to check on
 	 * @return bool
 	 */
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return $this->contains($offset);
 	}
@@ -933,6 +934,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return $this->itemAt($offset);
@@ -944,7 +946,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
 	 */
-	public function offsetSet($offset, $item)
+	public function offsetSet($offset, $item): void
 	{
 		$this->add($offset, $item);
 	}
@@ -954,7 +956,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to unset element
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		$this->remove($offset);
 	}

@@ -176,7 +176,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @throws TDbException if this method is invoked twice
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		if ($this->_index < 0) {
 			$this->_row = $this->_statement->fetch();
@@ -191,6 +191,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return int the index of the current row.
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_index;
@@ -211,7 +212,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * Moves the internal pointer to the next row.
 	 * This method is required by the interface Iterator.
 	 */
-	public function next()
+	public function next(): void
 	{
 		$this->_row = $this->_statement->fetch();
 		$this->_index++;
@@ -222,7 +223,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return bool whether there is a row of data at current position.
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->_row !== false;
 	}

@@ -250,7 +250,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id a key identifying the cached value
 	 * @return bool
 	 */
-	public function offsetExists($id)
+	public function offsetExists($id): bool
 	{
 		return $this->get($id) !== false;
 	}
@@ -261,6 +261,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id a key identifying the cached value
 	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($id)
 	{
 		return $this->get($id);
@@ -274,7 +275,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id the key identifying the value to be cached
 	 * @param mixed $value the value to be cached
 	 */
-	public function offsetSet($id, $value)
+	public function offsetSet($id, $value): void
 	{
 		$this->set($id, $value);
 	}
@@ -283,10 +284,9 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Deletes the value with the specified key from cache
 	 * This method is required by the interface \ArrayAccess.
 	 * @param string $id the key of the value to be deleted
-	 * @return bool if no error happens during deletion
 	 */
-	public function offsetUnset($id)
+	public function offsetUnset($id): void
 	{
-		return $this->delete($id);
+		$this->delete($id);
 	}
 }

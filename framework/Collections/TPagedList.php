@@ -291,6 +291,7 @@ class TPagedList extends TList
 	/**
 	 * @return \Iterator iterator
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		if ($this->_customPaging) {
@@ -338,7 +339,7 @@ class TPagedList extends TList
 	 * @param int $offset the offset to check on
 	 * @return bool
 	 */
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return ($offset >= 0 && $offset < $this->getCount());
 	}
@@ -350,6 +351,7 @@ class TPagedList extends TList
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return $this->itemAt($offset);

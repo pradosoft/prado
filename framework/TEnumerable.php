@@ -45,27 +45,29 @@ class TEnumerable implements \Iterator
 		$this->_enums = $reflection->getConstants();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return current($this->_enums);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return key($this->_enums);
 	}
 
-	public function next()
+	public function next(): void
 	{
-		return next($this->_enums);
+		next($this->_enums);
 	}
 
-	public function rewind()
+	public function rewind(): void
 	{
 		reset($this->_enums);
 	}
 
-	public function valid()
+	public function valid(): bool
 	{
 		return $this->current() !== false;
 	}

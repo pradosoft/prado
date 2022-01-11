@@ -94,6 +94,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_d);
@@ -104,7 +105,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the list.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
@@ -352,7 +353,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param int $offset the offset to check on
 	 * @return bool
 	 */
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return ($offset >= 0 && $offset < $this->_c);
 	}
@@ -364,6 +365,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return $this->itemAt($offset);
@@ -375,7 +377,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param int $offset the offset to set item
 	 * @param mixed $item the item value
 	 */
-	public function offsetSet($offset, $item)
+	public function offsetSet($offset, $item): void
 	{
 		if ($offset === null || $offset === $this->_c) {
 			$this->insertAt($this->_c, $item);
@@ -390,7 +392,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * This method is required by the interface \ArrayAccess.
 	 * @param int $offset the offset to unset item
 	 */
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		$this->removeAt($offset);
 	}

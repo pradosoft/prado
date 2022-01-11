@@ -150,6 +150,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the stack.
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_d);
@@ -168,7 +169,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 	 * This method is required by \Countable interface.
 	 * @return int number of items in the stack.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}

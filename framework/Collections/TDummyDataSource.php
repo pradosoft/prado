@@ -50,6 +50,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	/**
 	 * @return \Iterator iterator
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new TDummyDataSourceIterator($this->_count);
@@ -60,7 +61,7 @@ class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	 * This method is required by \Countable interface.
 	 * @return int number of (virtual) items in the data source.
 	 */
-	public function count()
+	public function count(): int
 	{
 		return $this->getCount();
 	}
