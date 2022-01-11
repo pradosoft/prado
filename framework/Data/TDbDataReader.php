@@ -211,7 +211,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * Moves the internal pointer to the next row.
 	 * This method is required by the interface Iterator.
 	 */
-	public function next()
+	public function next(): void
 	{
 		$this->_row = $this->_statement->fetch();
 		$this->_index++;
