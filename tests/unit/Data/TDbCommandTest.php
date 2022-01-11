@@ -165,14 +165,16 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$row = $this->_connection->createCommand($sql)->queryRow();
-		$this->assertTrue($row['id'] === '1' && $row['name'] === 'my name');
+		$this->assertSame('1', $row['id']);
+		$this->assertSame('my name', $row['name']);
 
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryRow();
-		$this->assertTrue($row['id'] === '1' && $row['name'] === 'my name');
+		$this->assertSame('1', $row['id']);
+		$this->assertSame('my name', $row['name']);
 
 		// test exception raising
 		try {
@@ -188,14 +190,14 @@ class TDbCommandTest extends PHPUnit\Framework\TestCase
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$id = $this->_connection->createCommand($sql)->queryScalar();
-		$this->assertTrue($id === '1');
+		$this->assertSame('1', $id);
 
 		// test unprepared SQL query
 		$sql = 'SELECT * FROM foo';
 		$command = $this->_connection->createCommand($sql);
 		$command->prepare();
 		$row = $command->queryScalar();
-		$this->assertTrue($id === '1');
+		$this->assertSame('1', $id);
 
 		// test exception raising
 		try {
