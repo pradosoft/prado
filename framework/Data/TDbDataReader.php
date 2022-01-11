@@ -191,6 +191,7 @@ class TDbDataReader extends \Prado\TComponent implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return int the index of the current row.
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_index;
