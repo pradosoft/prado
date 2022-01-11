@@ -261,6 +261,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * @param string $id a key identifying the cached value
 	 * @return false|mixed the value stored in cache, false if the value is not in the cache or expired.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($id)
 	{
 		return $this->get($id);

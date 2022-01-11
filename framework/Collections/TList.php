@@ -365,6 +365,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return $this->itemAt($offset);

@@ -65,6 +65,7 @@ class TSessionIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return mixed the current array element
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $_SESSION[$this->_key] ?? null;

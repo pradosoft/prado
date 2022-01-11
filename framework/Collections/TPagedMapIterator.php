@@ -77,6 +77,7 @@ class TPagedMapIterator implements \Iterator
 	 * This method is required by the interface Iterator.
 	 * @return mixed the current array item
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->_iterator->current();

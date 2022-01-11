@@ -45,6 +45,7 @@ class TEnumerable implements \Iterator
 		$this->_enums = $reflection->getConstants();
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return current($this->_enums);

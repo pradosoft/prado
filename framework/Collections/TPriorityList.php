@@ -740,6 +740,7 @@ class TPriorityList extends TList
 	 * @param int $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return $this->itemAt($offset);
