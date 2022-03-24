@@ -515,7 +515,7 @@ class TPriorityList extends TList
 	 * @param mixed $item the item to look for within the list
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @return false|array|numeric the priority of the item in the list, false if not found.
+	 * @return array|false|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */
@@ -542,7 +542,7 @@ class TPriorityList extends TList
 	 * @param int $index index of the item within the list
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @return false|array|numeric the priority of the item in the list, false if not found.
+	 * @return array|false|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */

@@ -322,7 +322,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Returns javascript statement that create a new callback request object.
-	 * @param \Prado\Web\UI\TControl&ICallbackEventHandler $callbackHandler callback response handler
+	 * @param ICallbackEventHandler&\Prado\Web\UI\TControl $callbackHandler callback response handler
 	 * @param null|array $options additional callback options
 	 * @return string javascript statement that creates a new callback request.
 	 */
@@ -390,7 +390,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 		if (is_string($button)) {
 			$buttonID = $button;
-		} elseif($button instanceof \Prado\Web\UI\IButtonControl) {
+		} elseif ($button instanceof \Prado\Web\UI\IButtonControl) {
 			$button->setIsDefaultButton(true);
 			$buttonID = $button->getUniqueID();
 		} else {

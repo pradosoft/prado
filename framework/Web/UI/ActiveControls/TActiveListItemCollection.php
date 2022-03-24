@@ -30,7 +30,7 @@ use Prado\Collections\TListItemCollection;
 class TActiveListItemCollection extends TListItemCollection
 {
 	/**
-	 * @var \Prado\Web\UI\WebControls\TListControl&IActiveControl control instance.
+	 * @var IActiveControl&\Prado\Web\UI\WebControls\TListControl control instance.
 	 */
 	private $_control;
 	/**
@@ -49,7 +49,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @param \Prado\Web\UI\WebControls\TListControl&IActiveControl $control a active list control.
+	 * @param IActiveControl&\Prado\Web\UI\WebControls\TListControl $control a active list control.
 	 */
 	public function setControl(IActiveControl $control)
 	{
@@ -57,7 +57,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @return \Prado\Web\UI\WebControls\TListControl&IActiveControl active control using the collection.
+	 * @return IActiveControl&\Prado\Web\UI\WebControls\TListControl active control using the collection.
 	 */
 	public function getControl()
 	{

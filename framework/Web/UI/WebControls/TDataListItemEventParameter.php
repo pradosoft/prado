@@ -27,13 +27,13 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 {
 	/**
 	 * The datalist item control responsible for the event.
-	 * @var \Prado\Web\UI\TControl&IItemDataRenderer
+	 * @var IItemDataRenderer&\Prado\Web\UI\TControl
 	 */
 	private $_item;
 
 	/**
 	 * Constructor.
-	 * @param \Prado\Web\UI\TControl&IItemDataRenderer $item DataList item related with the corresponding event
+	 * @param IItemDataRenderer&\Prado\Web\UI\TControl $item DataList item related with the corresponding event
 	 */
 	public function __construct($item)
 	{
@@ -41,7 +41,7 @@ class TDataListItemEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl&IItemDataRenderer datalist item related with the corresponding event
+	 * @return IItemDataRenderer&\Prado\Web\UI\TControl datalist item related with the corresponding event
 	 */
 	public function getItem()
 	{

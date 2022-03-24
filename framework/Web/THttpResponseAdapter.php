@@ -78,6 +78,7 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	}
 
 	/**
+	 * @param mixed $data
 	 * @throws TInvalidOperationException
 	 */
 	public function setResponseData($data)

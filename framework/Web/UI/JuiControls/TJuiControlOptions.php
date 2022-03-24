@@ -40,7 +40,7 @@ class TJuiControlOptions
 	 */
 	protected $_options;
 	/**
-	 * @var \Prado\Web\UI\TControl&IJuiOptions parent control.
+	 * @var IJuiOptions&\Prado\Web\UI\TControl parent control.
 	 */
 	private $_control;
 

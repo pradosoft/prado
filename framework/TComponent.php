@@ -1398,7 +1398,7 @@ class TComponent
 	 * </code>
 	 * @param array|IBaseBehavior|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
-	 * @return TComponent&IBaseBehavior an instance of $behavior or $behavior itself
+	 * @return IBaseBehavior&TComponent an instance of $behavior or $behavior itself
 	 * @since 4.2.0
 	 */
 	protected static function instanceBehavior($behavior)
