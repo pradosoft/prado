@@ -81,8 +81,8 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	public function attachPageServiceBehavior($sender, $param)
 	{
 		$service = $this->getService();
-		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
-			$service->onAdditionalPagePaths[] = [$this, 'additionalPagePaths'];
+		if ($service instanceof \Prado\Web\Services\TPageService) {
+			$service->attachEventHandler('onAdditionalPagePaths', [$this, 'additionalPagePaths']);
 		}
 	}
 	

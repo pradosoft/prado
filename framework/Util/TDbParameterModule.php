@@ -244,7 +244,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function registerShellAction($sender, $param)
 	{
-		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->addShellActionClass(['class' => 'Prado\\Shell\\Actions\\TDbParameterAction', 'DbParameterModule' => $this]);
 		}
 	}

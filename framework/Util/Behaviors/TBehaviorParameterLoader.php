@@ -128,7 +128,7 @@ class TBehaviorParameterLoader extends TComponent
 	public function attachTPageServiceHandler($sender, $param)
 	{
 		$service = Prado::getApplication()->getService();
-		if ($service->isa('Prado\\Web\\Services\\TPageService')) {
+		if ($service instanceof \Prado\Web\Services\TPageService) {
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors'], -20);
 		}
 	}

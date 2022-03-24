@@ -113,7 +113,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	 */
 	public function setModuleId($moduleid)
 	{
-		if (is_object($moduleid) && $moduleid->isa('Prado\\IModule')) {
+		if (is_object($moduleid) && $moduleid instanceof \Prado\IModule) {
 			$this->_moduleid = $moduleid->getId();
 		} else {
 			$this->_moduleid = TPropertyValue::ensureString($moduleid);

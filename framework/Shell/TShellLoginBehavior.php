@@ -55,7 +55,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		if (($app = Prado::getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if (($app = Prado::getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->registerOption('user', [$this, 'setUsername']);
 			$app->registerOptionAlias('u', 'user');
 			$app->registerOption('password', [$this, 'setPassword']);
@@ -88,7 +88,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	public function shellApplicationLogin($sender, $param)
 	{
 		$app = Prado::getApplication();
-		if (php_sapi_name() !== 'cli' && !($app->isa('Prado\\Shell\\TShellApplication'))) {
+		if (php_sapi_name() !== 'cli' || !($app instanceof \Prado\Shell\TShellApplication)) {
 			return;
 		}
 		$writer = $app->getWriter();

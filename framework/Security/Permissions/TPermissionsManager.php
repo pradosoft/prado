@@ -471,7 +471,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function registerShellAction($sender, $param)
 	{
-		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->addShellActionClass(['class' => 'Prado\\Security\\Permissions\\TPermissionsAction', 'PermissionsManager' => $this]);
 		}
 	}

@@ -248,7 +248,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function registerShellAction($sender, $param)
 	{
-		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication())->isa('Prado\\Shell\\TShellApplication')) {
+		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
 			$app->addShellActionClass(['class' => $this->_shellClass, 'CronModule' => $this]);
 		}
 	}
@@ -326,7 +326,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$task = new TCronMethodTask($module, $method);
 		} else {
 			$task = Prado::createComponent($taskExec);
-			if (!$task->isa('Prado\\Util\\Cron\\TCronTask')) {
+			if (!$task instanceof \Prado\Util\Cron\TCronTask) {
 				throw new TInvalidDataTypeException("cron_not_a_crontask", $taskExec);
 			}
 		}
