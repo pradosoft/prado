@@ -390,9 +390,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 		if (is_string($button)) {
 			$buttonID = $button;
-		} else {
+		} elseif($button instanceof \Prado\Web\UI\IButtonControl) {
 			$button->setIsDefaultButton(true);
 			$buttonID = $button->getUniqueID();
+		} else {
+			return;
 		}
 		$options = TJavaScript::encode($this->getDefaultButtonOptions($panelID, $buttonID));
 		$code = "new Prado.WebUI.DefaultButton($options);";
