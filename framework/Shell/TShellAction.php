@@ -30,7 +30,15 @@ abstract class TShellAction extends \Prado\TComponent
 	protected $description;
 	
 	protected $_outWriter;
-	
+
+	/**
+	 * @return TShellApplication current application instance
+	 */
+	public function getApplication()
+	{
+		return Prado::getApplication();
+	}
+
 	/**
 	 * @return TShellWriter the writer for the class
 	 */

@@ -40,7 +40,7 @@ class THelpAction extends TShellAction
 	public function actionIndex($args)
 	{
 		if (isset($args[1])) {
-			foreach (Prado::getApplication()->getShellActions() as $action) {
+			foreach ($this->getApplication()->getShellActions() as $action) {
 				$cmdname = $action->getAction();
 				if (0 === strncasecmp($cmdname, $args[1], strlen($cmdname))) {
 					$action->setWriter($this->getWriter());
@@ -49,7 +49,7 @@ class THelpAction extends TShellAction
 				}
 			}
 		} else {
-			$app = Prado::getApplication();
+			$app = $this->getApplication();
 			$app->printHelp($this->getWriter());
 			return true;
 		}
