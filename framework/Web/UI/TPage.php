@@ -329,7 +329,7 @@ class TPage extends TTemplateControl
 		$this->setAdapter(new TActivePageAdapter($this));
 
 		$callbackEventParameter = $this->getRequest()->itemAt(TPage::FIELD_CALLBACK_PARAMETER);
-		if (strlen($callbackEventParameter) > 0) {
+		if ($callbackEventParameter && strlen($callbackEventParameter) > 0) {
 			$this->_postData[TPage::FIELD_CALLBACK_PARAMETER] = TJavaScript::jsonDecode((string) $callbackEventParameter);
 		}
 
