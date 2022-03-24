@@ -236,7 +236,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		$this->obj->init($jobs);
 		
 		self::assertEquals(0, $this->obj->getCronLogCount());
-		self::assertEquals(5, $this->obj->processPendingTasks(false)); // 5 logs
+		self::assertEquals(5, $this->obj->processPendingTasks()); // 5 logs
 		
 		self::assertEquals(5, $this->obj->getCronLogCount());
 		
@@ -288,7 +288,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		
 		self::assertEquals(5, $this->obj->getCronLogCount());
 		
-		$this->obj->processPendingTasks(false);
+		$this->obj->processPendingTasks();
 		
 		self::assertEquals(5, $this->obj->getCronLogCount());
 		$log = $this->obj->getCronLog(null, false, false, true);

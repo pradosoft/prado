@@ -79,7 +79,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	 * @param string $ipRules IP rules (separated by comma, can contain wild card *)
 	 * @param null|numeric $priority
 	 */
-	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = '')
+	public function __construct($action = 'allow', $users = '', $roles = '', $verb = '', $ipRules = '', $priority = null)
 	{
 		$action = strtolower(trim($action));
 		if ($action === 'allow' || $action === 'deny') {

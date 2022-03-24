@@ -93,7 +93,7 @@ class TShellCronAction extends TShellAction
 			return true;
 		}
 		$this->_outWriter->writeLine("\nLast Task time was " . date('Y-m-d H:i:s', $module->getLastCronTime()) . '');
-		$module->processPendingTasks(true);
+		$module->processPendingTasks();
 		return true;
 	}
 	
