@@ -283,7 +283,7 @@ class TMemCache extends TCache
 	 */
 	public function setUseMemcached($value)
 	{
-		if ($this->_initialized || $value === false) {
+		if ($this->_initialized || TPropertyValue::ensureBoolean($value) === false) {
 			throw new TInvalidOperationException('memcache_host_unchangeable');
 		}
 	}
