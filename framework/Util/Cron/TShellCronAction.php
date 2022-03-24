@@ -50,7 +50,7 @@ class TShellCronAction extends TShellAction
 	}
 	
 	/**
-	 * @return null|Prado\Util\Cron\TCronModule returns the Cron Module of the applications
+	 * @return null|\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
 	 */
 	public function getCronModule()
 	{
@@ -76,7 +76,7 @@ class TShellCronAction extends TShellAction
 	}
 	
 	/**
-	 * @param null|Prado\Util\Cron\TCronModule $cron sets the Cron Module
+	 * @param null|\Prado\Util\Cron\TCronModule $cron sets the Cron Module
 	 */
 	public function setCronModule($cron)
 	{
@@ -100,7 +100,6 @@ class TShellCronAction extends TShellAction
 	/**
 	 * Shows configured tasks and their run status.  For TDbCronModule, this also shows the
 	 * database tasks as well.
-	 * @param TCronModule $module the module servicing the action
 	 * @param mixed $args
 	 */
 	public function actionTasks($args)
@@ -150,7 +149,6 @@ class TShellCronAction extends TShellAction
 	/**
 	 * shows the registered tasks from the application for possible configuration
 	 * or addition to TDbCronModule.
-	 * @param TCronModule $module the module servicing the action
 	 * @param mixed $args
 	 */
 	public function actionIndex($args)

@@ -88,7 +88,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	
 	/**
 	 * additionalPagePaths returns possible alternative paths for the $pagePath
-	 * @param \Prado\Wob\Services\TPageService $service
+	 * @param \Prado\Web\Services\TPageService $service
 	 * @param string $pagePath
 	 */
 	public function additionalPagePaths($service, $pagePath)

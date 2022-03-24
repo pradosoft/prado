@@ -676,7 +676,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * @param mixed $id
-	 * @return TModule the module with the specified ID, null if not found
+	 * @return null|TModule the module with the specified ID, null if not found
 	 */
 	public function getModule($id)
 	{
@@ -696,7 +696,7 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Returns a list of application modules indexed by module IDs.
 	 * Modules that have not been loaded yet are returned as null objects.
-	 * @return array list of loaded application modules, indexed by module IDs
+	 * @return array<TModule> list of loaded application modules, indexed by module IDs
 	 */
 	public function getModules()
 	{

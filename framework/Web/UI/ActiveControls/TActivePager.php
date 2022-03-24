@@ -48,7 +48,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return TBaseActiveCallbackControl standard active control options.
 	 */
 	public function getActiveControl()
 	{

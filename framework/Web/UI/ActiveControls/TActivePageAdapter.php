@@ -275,7 +275,7 @@ class TActivePageAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return \Prado\Web\UI\TControl the control responsible for the current callback event,
+	 * @return null|\Prado\Web\UI\TControl|\Prado\Web\UI\ActiveControls\IActiveControl the control responsible for the current callback event,
 	 * null if nonexistent
 	 */
 	public function getCallbackEventTarget()

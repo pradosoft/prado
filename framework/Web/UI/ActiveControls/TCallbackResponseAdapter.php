@@ -1,6 +1,6 @@
 <?php
 /**
- * TCallbackResponseAdapter and TCallbackResponseWriter class file.
+ * TCallbackResponseAdapter class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado

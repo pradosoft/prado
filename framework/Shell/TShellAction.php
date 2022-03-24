@@ -76,8 +76,7 @@ abstract class TShellAction extends \Prado\TComponent
 	
 	/**
 	 * Aliases for the properties to be set by parameter
-	 * @param string $actionID the action being executed
-	 * @return array<alias, property> properties for the $actionID
+	 * @return array<string, string> alias => property for the $actionID
 	 */
 	public function optionAliases(): array
 	{

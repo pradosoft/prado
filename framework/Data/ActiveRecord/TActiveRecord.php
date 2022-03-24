@@ -194,7 +194,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Defaults to 'null'
 	 *
-	 * @var TActiveRecordInvalidFinderResult
+	 * @var null|string|TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	protected $_invalidFinderResult; // use protected so that serialization is fine
@@ -555,7 +555,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * (You should use the "new" operator to create the AR instance in that case.)
 	 * @param string $type the AR class name
 	 * @param array $data initial data to be populated into the AR object.
-	 * @return TActiveRecord the initialized AR object. Null if the initial data is empty.
+	 * @return null|TActiveRecord the initialized AR object. Null if the initial data is empty.
 	 * @since 3.1.2
 	 */
 	public static function createRecord($type, $data)
@@ -621,7 +621,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * </code>
 	 *
 	 * @param mixed $keys primary keys
-	 * @return TActiveRecord. Null if no result is found.
+	 * @return null|TActiveRecord. Null if no result is found.
 	 */
 	public function findByPk($keys)
 	{
@@ -732,7 +732,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * value equal to the $property value.
 	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
 	 * @param array $args method call arguments.
-	 * @return \Prado\Data\ActiveRecord\Relations\TActiveRecordRelation, null if the context or the handler doesn't exist
+	 * @return null|\Prado\Data\ActiveRecord\Relations\TActiveRecordRelation, null if the context or the handler doesn't exist
 	 */
 	protected function getRelationHandler($name, $args = [])
 	{
@@ -749,7 +749,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * in $RELATIONS), returns null if invalid relationship. Keeps a null
 	 * reference to all invalid relations called.
 	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
-	 * @return TActiveRecordRelationContext object containing information on
+	 * @return null|TActiveRecordRelationContext object containing information on
 	 * the active record relationships for given property, null if invalid relationship
 	 * @since 3.1.2
 	 */

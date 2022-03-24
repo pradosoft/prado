@@ -188,7 +188,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 * reads in all the tasks from the db, instances them if they are active db tasks.
 	 * otherwise the rows are kept for persistent data.
 	 * @param bool $initConfigTasks initialize the configuration
-	 * @return Prado\Util\Cron\TCronTask[]
+	 * @return \Prado\Util\Cron\TCronTask[]
 	 */
 	protected function ensureTasks($initConfigTasks = true)
 	{
@@ -514,7 +514,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Adds a task to the database.  Validates the name and cannot add a task with an existing name.
 	 * This updates the table row data as well.
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param \Prado\Util\Cron\TCronTask $task
 	 * @param bool $runtime should the task be added to the Run Time Task after being added
 	 * @return bool was the task added
 	 */
@@ -585,7 +585,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	
 	/**
 	 * Updates a task from its unique name.  If the Task is not in the DB it returns false
-	 * @param Prado\Util\Cron\TCronTask $task
+	 * @param \Prado\Util\Cron\TCronTask $task
 	 * @return bool was the task updated
 	 */
 	protected function updateTaskInternal($task)
@@ -657,7 +657,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 *
 	 * This cannot remove tasks that are current configuration tasks.  Only tasks
 	 * that exist can be removed.
-	 * @param Prado\Util\Cron\TCronTask|string $untask the task to remove from the DB
+	 * @param \Prado\Util\Cron\TCronTask|string $untask the task to remove from the DB
 	 * @return bool was the task removed
 	 */
 	protected function removeTaskInternal($untask)

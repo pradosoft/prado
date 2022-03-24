@@ -22,6 +22,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @package Prado\Web\UI\JuiControls
  * @since 3.3
+ * @method \Prado\Web\UI\TControl&IJuiOptions getControl()
  */
 class TJuiControlAdapter extends TActiveControlAdapter
 {

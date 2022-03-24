@@ -74,8 +74,7 @@ class TPermissionsAction extends TShellAction
 	
 	/**
 	 * Aliases for the properties to be set by parameter
-	 * @param string $actionID the action being executed
-	 * @return array<alias, property> properties for the $actionID
+	 * @return array<string, string> aliaas => property for the $actionID
 	 */
 	public function optionAliases(): array
 	{
@@ -390,7 +389,7 @@ class TPermissionsAction extends TShellAction
 	
 	/**
 	 * get the TPermissionsManager
-	 * @return Prado\Security\Permissions\TPermissionsManager
+	 * @return \Prado\Security\Permissions\TPermissionsManager
 	 */
 	public function getPermissionsManager()
 	{
@@ -408,7 +407,7 @@ class TPermissionsAction extends TShellAction
 	
 	/**
 	 * get the TPermissionsManager from the Application
-	 * @param Prado\Security\Permissions\TPermissionsManager $manager
+	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
 	 */
 	public function setPermissionsManager($manager)
 	{

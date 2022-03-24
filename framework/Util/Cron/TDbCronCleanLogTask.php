@@ -52,6 +52,7 @@ class TDbCronCleanLogTask extends TCronTask
 				$cron->getOutputWriter()->writeLine("Cleared {$count} Cron Task Logs", TShellWriter::GREEN);
 			}
 		} elseif (is_object($cron) && $cron->asa(TCronModule::SHELL_LOG_BEHAVIOR)) {
+			/** @var TCronModule $cron */
 			$cron->getOutputWriter()->writeLine("No DB Cron Module to clean", TShellWriter::RED);
 		}
 	}

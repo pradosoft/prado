@@ -27,6 +27,7 @@ use Prado\Wsdl\WsdlGenerator;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @package Prado\Web\Services
  * @since 3.1
+ * @method TSoapService getService()
  */
 class TSoapServer extends \Prado\TApplicationComponent
 {

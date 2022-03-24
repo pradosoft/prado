@@ -89,7 +89,7 @@ class TApplicationComponent extends \Prado\TComponent
 	}
 
 	/**
-	 * @return \Prado\IService the current service
+	 * @return \Prado\TService the current service
 	 */
 	public function getService()
 	{

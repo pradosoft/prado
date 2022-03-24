@@ -126,31 +126,31 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_wizardSteps;
 	/**
-	 * @var TPanel container of the wizard header
+	 * @var null|TPanel container of the wizard header
 	 */
 	private $_header;
 	/**
-	 * @var TPanel container of the wizard step content
+	 * @var null|TPanel container of the wizard step content
 	 */
 	private $_stepContent;
 	/**
-	 * @var TPanel container of the wizard side bar
+	 * @var null|TPanel container of the wizard side bar
 	 */
 	private $_sideBar;
 	/**
-	 * @var TPanel navigation panel
+	 * @var null|TPanel navigation panel
 	 */
 	private $_navigation;
 	/**
-	 * @var TWizardNavigationContainer container of the start navigation
+	 * @var null|TWizardNavigationContainer container of the start navigation
 	 */
 	private $_startNavigation;
 	/**
-	 * @var TWizardNavigationContainer container of the step navigation
+	 * @var null|TWizardNavigationContainer container of the step navigation
 	 */
 	private $_stepNavigation;
 	/**
-	 * @var TWizardNavigationContainer container of the finish navigation
+	 * @var null|TWizardNavigationContainer container of the finish navigation
 	 */
 	private $_finishNavigation;
 	/**
@@ -158,7 +158,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	private $_activeStepIndexSet = false;
 	/**
-	 * @var TDataList side bar data list.
+	 * @var null|TDataList side bar data list.
 	 */
 	private $_sideBarDataList;
 	/**

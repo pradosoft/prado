@@ -195,7 +195,6 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	
 	/**
 	 * @param string $str the string to ANSI format.
-	 * @param string|string[] $attr the attributes to format.
 	 * @param mixed $len
 	 * @param mixed $pad
 	 * @param mixed $place

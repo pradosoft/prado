@@ -322,8 +322,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	
 	/**
 	 * Loads the roles, children, and permission rules.
-	 * @param array|Prado\Xml\TXMLElement configurations to parse
-	 * @param mixed $config
+	 * @param array|\Prado\Xml\TXmlElement $config configurations to parse
 	 */
 	public function loadPermissionsData($config)
 	{
@@ -481,7 +480,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 * checks if the $permission is in the $roles hierarchy.
 	 * @param string[] $roles the roles to check the permission
 	 * @param string $permission the permission-role being checked for in the hierarchy
-	 * @param &array<string, bool> $checked the roles already checked
+	 * @param array<string, bool> &$checked the roles already checked
 	 */
 	public function isInHierarchy($roles, $permission, &$checked = [])
 	{
@@ -864,7 +863,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @return Prado\Util\TDbParameterModule DbParameter instance
+	 * @return \Prado\Util\TDbParameterModule DbParameter instance
 	 */
 	public function getDbParameter()
 	{
@@ -872,7 +871,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * @param IUserManager|string $provider the user manager module ID or the DbParameter object
+	 * @param \Prado\Security\IUserManager|string $provider the user manager module ID or the DbParameter object
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the module is already initialized
 	 * @throws \Prado\Exceptions\TConfigurationException if the $provider is not a TDbParameterModule
 	 */

@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveListControlAdapter class file.
+ * TActiveListItemCollection class file.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -30,7 +30,7 @@ use Prado\Collections\TListItemCollection;
 class TActiveListItemCollection extends TListItemCollection
 {
 	/**
-	 * @var IActiveControl control instance.
+	 * @var \Prado\Web\UI\WebControls\TListControl&IActiveControl control instance.
 	 */
 	private $_control;
 	/**
@@ -49,7 +49,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @param IActiveControl $control a active list control.
+	 * @param \Prado\Web\UI\WebControls\TListControl&IActiveControl $control a active list control.
 	 */
 	public function setControl(IActiveControl $control)
 	{
@@ -57,7 +57,7 @@ class TActiveListItemCollection extends TListItemCollection
 	}
 
 	/**
-	 * @return IActiveControl active control using the collection.
+	 * @return \Prado\Web\UI\WebControls\TListControl&IActiveControl active control using the collection.
 	 */
 	public function getControl()
 	{

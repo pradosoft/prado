@@ -26,6 +26,7 @@ use Prado\Shell\TShellWriter;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Util\Cron
  * @since 4.2.0
+ * @method null|\Prado\Util\Cron\TDbCronModule getCronModule()
  */
 class TShellDbCronAction extends TShellCronAction
 {

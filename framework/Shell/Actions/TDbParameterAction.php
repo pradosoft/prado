@@ -71,8 +71,7 @@ class TDbParameterAction extends TShellAction
 	
 	/**
 	 * Aliases for the properties to be set by parameter
-	 * @param string $actionID the action being executed
-	 * @return array<alias, property> properties for the $actionID
+	 * @return array<string, string> alias => property for the $actionID
 	 */
 	public function optionAliases(): array
 	{
@@ -181,7 +180,7 @@ class TDbParameterAction extends TShellAction
 	
 	/**
 	 * get the TDBParameterModule from the Application
-	 * @return null|Prado\Util\TDBParameterModule
+	 * @return null|\Prado\Util\TDbParameterModule
 	 */
 	public function getDbParameterModule()
 	{
@@ -199,7 +198,7 @@ class TDbParameterAction extends TShellAction
 	
 	/**
 	 * get the TPermissionsManager from the Application
-	 * @param Prado\Util\TDbParameterModule $dbparam
+	 * @param \Prado\Util\TDbParameterModule $dbparam
 	 */
 	public function setDbParameterModule($dbparam)
 	{

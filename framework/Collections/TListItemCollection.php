@@ -118,7 +118,7 @@ class TListItemCollection extends TList
 	 * Finds the item whose value is the one being looked for.
 	 * @param string $value the value to be looked for
 	 * @param bool $includeDisabled whether to look for disabled items also
-	 * @return TListItem the item found, null if not found.
+	 * @return null|TListItem the item found, null if not found.
 	 */
 	public function findItemByValue($value, $includeDisabled = true)
 	{
@@ -133,7 +133,7 @@ class TListItemCollection extends TList
 	 * Finds the item whose text is the one being looked for.
 	 * @param string $text the text to be looked for
 	 * @param bool $includeDisabled whether to look for disabled items also
-	 * @return TListItem the item found, null if not found.
+	 * @return null|TListItem the item found, null if not found.
 	 */
 	public function findItemByText($text, $includeDisabled = true)
 	{

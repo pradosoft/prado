@@ -84,8 +84,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	private $_events;
 	
 	/**
-	 * @param TPermissionsManager
-	 * @param null|Prado\Security\Permissions\TPermissionsManager $manager
+	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
 	 */
 	public function __construct($manager = null)
 	{
@@ -96,7 +95,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	}
 	
 	/**
-	 * @param Prado\TComponent $owner the object being attached to
+	 * @param \Prado\TComponent $owner the object being attached to
 	 */
 	public function attach($owner)
 	{
@@ -130,6 +129,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		}
 		
 		$event = strtolower($method);
+		/** @var TUserPermissionsBehavior $user */
 		$user = Prado::getApplication()->getUser();
 		if (isset($this->_permissionEvents[$event]) && $user) {
 			$can = true;

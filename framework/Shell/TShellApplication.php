@@ -45,11 +45,11 @@ use Prado\Shell\TShellWriter;
  */
 class TShellApplication extends \Prado\TApplication
 {
-	/** @var bool  tells the application to be in quiet mode, levels [0..1], default 0, */
+	/** @var bool tells the application to be in quiet mode, levels [0..1], default 0, */
 	private $_quietMode = 0;
 	
 	/**
-	 * @var array cli shell Application commands. Modules can add their own command
+	 * @var array<\Prado\Shell\TShellAction> cli shell Application commands. Modules can add their own command
 	 */
 	private $_actions = [];
 	
@@ -191,7 +191,7 @@ class TShellApplication extends \Prado\TApplication
 	/**
 	 * This processes the arguments entered into the cli
 	 * @param array $args
-	 * @param string $action
+	 * @param TShellAction $action
 	 * @param string $method
 	 * @since 4.2.0
 	 */
@@ -254,7 +254,7 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
-	 * @return Prado\Shell\TShellAction[] the shell actions for the application
+	 * @return \Prado\Shell\TShellAction[] the shell actions for the application
 	 * @since 4.2.0
 	 */
 	public function getShellActions()
@@ -324,7 +324,6 @@ class TShellApplication extends \Prado\TApplication
 	
 
 	/**
-	 * @param string $class action class name
 	 * @param mixed $outWriter
 	 * @since 4.2.0
 	 */

@@ -128,7 +128,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @param string $name attribute name
-	 * @return string the attribute specified by the name, null if no such attribute
+	 * @return null|string the attribute specified by the name, null if no such attribute
 	 */
 	public function getAttribute($name)
 	{
@@ -172,7 +172,7 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * @param mixed $tagName
-	 * @return TXmlElement the first child element that has the specified tag-name, null if not found
+	 * @return null|TXmlElement the first child element that has the specified tag-name, null if not found
 	 */
 	public function getElementByTagName($tagName)
 	{

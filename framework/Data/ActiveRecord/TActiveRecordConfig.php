@@ -97,7 +97,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	/**
 	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'
 	 *
-	 * @var TActiveRecordInvalidFinderResult
+	 * @var string|TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
 	 */
 	private $_invalidFinderResult = TActiveRecordInvalidFinderResult::Null;

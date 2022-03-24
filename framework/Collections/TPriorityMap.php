@@ -69,7 +69,7 @@ class TPriorityMap extends TMap
 	 */
 	private $_o = false;
 	/**
-	 * @var array cached flattened internal data storage
+	 * @var null|array cached flattened internal data storage
 	 */
 	private $_fd;
 	/**
@@ -192,7 +192,7 @@ class TPriorityMap extends TMap
 	 * Gets the number of items at a priority within the map.
 	 * @param null|numeric $priority optional priority at which to count items.  if no parameter,
 	 * it will be set to the default {@link getDefaultPriority}
-	 * @return int the number of items in the map at the specified priority
+	 * @return false|int the number of items in the map at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
 	{
@@ -288,7 +288,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Returns the priority of a particular item within the map.  This searches the map for the item.
 	 * @param mixed $item item to look for within the map
-	 * @return numeric priority of the item in the map
+	 * @return false|numeric priority of the item in the map
 	 */
 	public function priorityOf($item)
 	{
@@ -304,7 +304,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Retutrns the priority of an item at a particular flattened index.
 	 * @param int $key index of the item within the map
-	 * @return numeric priority of the item in the map
+	 * @return false|numeric priority of the item in the map
 	 */
 	public function priorityAt($key)
 	{

@@ -31,6 +31,7 @@ use Prado\Prado;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Shell
  * @since 4.2.0
+ * @method \Prado\Security\TAuthManager getOwner()
  */
 
 class TShellLoginBehavior extends \Prado\Util\TBehavior
@@ -49,7 +50,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	}
 	
 	/**
-	 * @param Prado\TComponent $owner the class this behavior is being attached tos
+	 * @param \Prado\TComponent $owner the class this behavior is being attached tos
 	 */
 	public function attach($owner)
 	{

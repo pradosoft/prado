@@ -268,7 +268,7 @@ class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, 
 	}
 
 	/**
-	 * @return \Iterator iterator
+	 * @return null|\Iterator iterator
 	 */
 	#[\ReturnTypeWillChange]
 	public function getIterator()

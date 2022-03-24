@@ -64,6 +64,7 @@ use Prado\Xml\TXmlDocument;
  * @method void dyLogCronTask($task, $username)
  * @method void dyUpdateTaskInfo($task)
  * @method bool dyRegisterShellAction($returnValue)
+ * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
 

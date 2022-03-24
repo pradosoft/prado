@@ -37,7 +37,7 @@ use Prado\Web\UI\TTemplateControl;
 abstract class TScaffoldBase extends TTemplateControl
 {
 	/**
-	 * @var TActiveRecord record instance (may be new or retrieved from db)
+	 * @var null|TActiveRecord record instance (may be new or retrieved from db)
 	 */
 	private $_record;
 

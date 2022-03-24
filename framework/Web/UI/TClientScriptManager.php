@@ -322,7 +322,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 
 	/**
 	 * Returns javascript statement that create a new callback request object.
-	 * @param ICallbackEventHandler $callbackHandler callback response handler
+	 * @param \Prado\Web\UI\TControl&ICallbackEventHandler $callbackHandler callback response handler
 	 * @param null|array $options additional callback options
 	 * @return string javascript statement that creates a new callback request.
 	 */

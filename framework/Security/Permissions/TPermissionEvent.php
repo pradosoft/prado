@@ -48,7 +48,7 @@ class TPermissionEvent extends \Prado\TComponent
 	 * @param string $permissionName the permission name linked to the dynamic events.
 	 * @param string $description short description of the permission
 	 * @param string|string[] $events the events that the permission is linked.
-	 * @param null|Prado\Security\TAuthorizationRule[] $rules default rules from the module.
+	 * @param null|\Prado\Security\TAuthorizationRule[] $rules default rules from the module.
 	 */
 	public function __construct($permissionName = '', $description = '', $events = [], $rules = null)
 	{
@@ -124,7 +124,7 @@ class TPermissionEvent extends \Prado\TComponent
 	
 	/**
 	 * these are the preset rules for when registering the permission name.
-	 * @param null|Prado\Security\TAuthorizationRule|Prado\Security\TAuthorizationRule[] $rules the preset permission rules
+	 * @param null|\Prado\Security\TAuthorizationRule|\Prado\Security\TAuthorizationRule[] $rules the preset permission rules
 	 */
 	public function setRules($rules)
 	{

@@ -25,6 +25,7 @@ use Prado\Util\TBehavior;
  * @author Brad Anderson <belisoful@icloud.com>
  * @package Prado\Security\Permissions
  * @since 4.2.0
+ * @method \Prado\Security\TUser getOwner()
  */
 class TUserPermissionsBehavior extends TBehavior
 {
@@ -59,7 +60,7 @@ class TUserPermissionsBehavior extends TBehavior
 	
 	/**
 	 * @param string[] $roles The default roles of all users
-	 * @param Prado\Util\TCallChain $callchain
+	 * @param \Prado\Util\TCallChain $callchain
 	 * @return string[] the default roles of all users
 	 */
 	public function dyDefaultRoles($roles, $callchain)
@@ -73,7 +74,7 @@ class TUserPermissionsBehavior extends TBehavior
 	 * roles.  It checks the hierarchy of roles/permissions
 	 * @param bool $return the return value, initially false
 	 * @param string $role
-	 * @param Prado\Util\TCallChain $callchain
+	 * @param \Prado\Util\TCallChain $callchain
 	 */
 	public function dyIsInRole($return, $role, $callchain)
 	{
@@ -82,7 +83,7 @@ class TUserPermissionsBehavior extends TBehavior
 	}
 	
 	/**
-	 * @param TPerm\Prado\Security\Permissions\TPermissionsManagerissionsManager $manager manages application permissions
+	 * @return \Prado\Security\Permissions\TPermissionsManager application permissions manager
 	 */
 	public function getManager()
 	{

@@ -42,7 +42,7 @@ class TActiveControlAdapter extends TControlAdapter
 	 */
 	private $_activeControlType;
 	/**
-	 * @var TBaseActiveControl base active control instance.
+	 * @var TBaseActiveControl|TBaseActiveCallbackControl base active control instance.
 	 */
 	private $_baseActiveControl;
 	/**
@@ -105,7 +105,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @param TBaseActiveControl $control change base active control
+	 * @param TBaseActiveControl|TBaseActiveCallbackControl $control change base active control
 	 */
 	public function setBaseActiveControl($control)
 	{
@@ -113,7 +113,7 @@ class TActiveControlAdapter extends TControlAdapter
 	}
 
 	/**
-	 * @return TBaseActiveControl Common active control options.
+	 * @return TBaseActiveControl|TBaseActiveCallbackControl Common active control options.
 	 */
 	public function getBaseActiveControl()
 	{

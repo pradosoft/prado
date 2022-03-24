@@ -58,6 +58,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * @param string $str
 	 * @param array|int|\Prado\Util\TCallChain|string $p1
 	 * @param null|\Prado\Util\TCallChain $p2
+	 * @return mixed
 	 */
 	public function dyWrite($str, $p1, $p2 = null)
 	{
@@ -77,6 +78,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * @param string $str
 	 * @param array|int|\Prado\Util\TCallChain|string $p1
 	 * @param null|\Prado\Util\TCallChain $p2
+	 * @return mixed
 	 */
 	public function dyWriteLine($str, $p1, $p2 = null)
 	{
@@ -107,6 +109,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * Logs a when cron is run in the shell.
 	 * @param int $numtasks number of tasks to run
 	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
 	 */
 	public function dyLogCron($numtasks, $callchain)
 	{
@@ -120,6 +123,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * @param \Prado\Util\Cron\TCronTask $task the task to log
 	 * @param string $username the user name running the task
 	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
 	 */
 	public function dyLogCronTask($task, $username, $callchain)
 	{
@@ -133,6 +137,7 @@ class TShellCronLogBehavior extends TBehavior
 	 * Logs the end of a single cron task when run in the shell.
 	 * @param \Prado\Util\Cron\TCronTask $task the tasks that was run
 	 * @param \Prado\Util\TCallChain $callchain the chain of methods
+	 * @return mixed
 	 */
 	public function dyUpdateTaskInfo($task, $callchain)
 	{

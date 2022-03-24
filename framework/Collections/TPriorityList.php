@@ -62,7 +62,7 @@ class TPriorityList extends TList
 	 */
 	private $_o = false;
 	/**
-	 * @var array cached flattened internal data storage
+	 * @var null|array cached flattened internal data storage
 	 */
 	private $_fd;
 	/**
@@ -120,7 +120,7 @@ class TPriorityList extends TList
 	/**
 	 * Gets the number of items at a priority within the list
 	 * @param null|numeric $priority optional priority at which to count items.  if no parameter, it will be set to the default {@link getDefaultPriority}
-	 * @return int the number of items in the list at the specified priority
+	 * @return false|int the number of items in the list at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
 	{
@@ -515,7 +515,7 @@ class TPriorityList extends TList
 	 * @param mixed $item the item to look for within the list
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @return array|numeric the priority of the item in the list, false if not found.
+	 * @return false|array|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */
@@ -542,7 +542,7 @@ class TPriorityList extends TList
 	 * @param int $index index of the item within the list
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
-	 * @return array|numeric the priority of the item in the list, false if not found.
+	 * @return false|array|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex, 2 => flattenedIndex,
 	 * 'priority' => $priority, 'index' => $priorityIndex, 'absindex' => flattenedIndex]
 	 */

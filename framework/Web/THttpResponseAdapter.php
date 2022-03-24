@@ -10,6 +10,8 @@
 
 namespace Prado\Web;
 
+use Prado\Exceptions\TInvalidOperationException;
+
 /**
  * THttpResponseAdapter class.
  *

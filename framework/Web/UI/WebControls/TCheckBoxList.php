@@ -73,7 +73,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 * This method overrides the parent implementation so that it always returns
 	 * the checkbox list itself (because the checkbox list does not have child controls.)
 	 * @param string $id control ID
-	 * @param mixed $real
+	 * @param bool $real
 	 * @return \Prado\Web\UI\TControl control being found
 	 */
 	public function findControl($id, $real = false)
