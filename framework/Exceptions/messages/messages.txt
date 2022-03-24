@@ -73,6 +73,7 @@ httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept
 
 httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
+httpresponse_responsedata_method_unavailable = THttpResponse: method '{0}' cannot be used without a proper adapter implementing it.
 
 httpsession_sessionid_unchangeable		= THttpSession.SessionID cannot be modified after the session is started.
 httpsession_sessionname_unchangeable	= THttpSession.SessionName cannot be modified after the session is started.

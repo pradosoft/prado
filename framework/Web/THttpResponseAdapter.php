@@ -76,4 +76,20 @@ class THttpResponseAdapter extends \Prado\TApplicationComponent
 	{
 		return $this->_response->createNewHtmlWriter($type, $writer);
 	}
+
+	/**
+	 * @throws TInvalidOperationException
+	 */
+	public function setResponseData($data)
+	{
+		throw new TInvalidOperationException('httpresponse_responsedata_method_unavailable', __METHOD__);
+	}
+
+	/**
+	 * @throws TInvalidOperationException
+	 */
+	public function getResponseData()
+	{
+		throw new TInvalidOperationException('httpresponse_responsedata_method_unavailable', __METHOD__);
+	}
 }
