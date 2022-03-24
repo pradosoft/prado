@@ -59,7 +59,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return bool
 	 */
-	public static function ensureBoolean($value)
+	public static function ensureBoolean($value): bool
 	{
 		if (is_string($value)) {
 			return strcasecmp($value, 'true') == 0 || (is_numeric($value) && $value != 0);
@@ -75,7 +75,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return string
 	 */
-	public static function ensureString($value)
+	public static function ensureString($value): string
 	{
 		if (TJavaScript::isJsLiteral($value)) {
 			return $value;
@@ -92,7 +92,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return int
 	 */
-	public static function ensureInteger($value)
+	public static function ensureInteger($value): int
 	{
 		return (integer) $value;
 	}
@@ -102,7 +102,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return float
 	 */
-	public static function ensureFloat($value)
+	public static function ensureFloat($value): float
 	{
 		return (float) $value;
 	}
@@ -116,7 +116,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return array
 	 */
-	public static function ensureArray($value)
+	public static function ensureArray($value): array
 	{
 		if (is_string($value)) {
 			$value = trim($value);
@@ -136,7 +136,7 @@ class TPropertyValue
 	 * @param mixed $value the value to be converted.
 	 * @return object
 	 */
-	public static function ensureObject($value)
+	public static function ensureObject($value): object
 	{
 		return (object) $value;
 	}
@@ -157,7 +157,7 @@ class TPropertyValue
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
 	 * @return string the valid enumeration value
 	 */
-	public static function ensureEnum($value, $enums)
+	public static function ensureEnum($value, $enums): string
 	{
 		static $types = [];
 		if (func_num_args() === 2 && is_string($enums)) {
