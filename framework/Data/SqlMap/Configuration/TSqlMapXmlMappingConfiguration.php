@@ -134,7 +134,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$resultMap = $this->createResultMap($node);
 
 		//find extended result map.
-		if (strlen($extendMap = $resultMap->getExtends()) > 0) {
+		$extendMap = $resultMap->getExtends();
+		if ($extendMap !== null && strlen($extendMap) > 0) {
 			if (!$this->_manager->getResultMaps()->contains($extendMap)) {
 				$extendNode = $this->getElementByIdValue($this->_document, 'resultMap', $extendMap);
 				if ($extendNode !== null) {
@@ -216,8 +217,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function loadParameterMap($node)
 	{
 		$parameterMap = $this->createParameterMap($node);
-
-		if (strlen($extendMap = $parameterMap->getExtends()) > 0) {
+		$extendMap = $parameterMap->getExtends();
+		if ($extendMap !== null && strlen($extendMap) > 0) {
 			if (!$this->_manager->getParameterMaps()->contains($extendMap)) {
 				$extendNode = $this->getElementByIdValue($this->_document, 'parameterMap', $extendMap);
 				if ($extendNode !== null) {
@@ -281,7 +282,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function processSqlStatement($statement, $node)
 	{
 		$commandText = (string) $node;
-		if (strlen($extend = $statement->getExtends()) > 0) {
+		$extend = $statement->getExtends();
+		if ($extend !== null && strlen($extend) > 0) {
 			$superNode = $this->getElementByIdValue($this->_document, '*', $extend);
 			if ($superNode !== null) {
 				$commandText = (string) $superNode . $commandText;
@@ -364,7 +366,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$this->setObjectPropFromNode($select, $node);
 		$this->processSqlStatement($select, $node);
 		$mappedStatement = new TMappedStatement($this->_manager, $select);
-		if (strlen($select->getCacheModel()) > 0) {
+		$cacheModel = $select->getCacheModel();
+		if ($cacheModel !== null && strlen($cacheModel) > 0) {
 			$mappedStatement = new TCachingStatement($mappedStatement);
 		}
 

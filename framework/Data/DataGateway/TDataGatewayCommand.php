@@ -178,7 +178,8 @@ class TDataGatewayCommand extends \Prado\TComponent
 	public function findAllByIndex($criteria, $fields, $values)
 	{
 		$index = $this->getIndexKeyCondition($this->getTableInfo(), $fields, $values);
-		if (strlen($where = $criteria->getCondition()) > 0) {
+		$where = $criteria->getCondition();
+		if ($where !== null && strlen($where) > 0) {
 			$criteria->setCondition("({$index}) AND ({$where})");
 		} else {
 			$criteria->setCondition($index);

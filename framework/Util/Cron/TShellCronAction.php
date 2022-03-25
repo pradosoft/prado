@@ -106,7 +106,7 @@ class TShellCronAction extends TShellAction
 	{
 		$module = $this->getCronModule();
 		
-		$this->_outWriter->writeLine("\nLast cron run was " . date('Y-m-d H:i:s', $module->getLastCronTime()) . "");
+		$this->_outWriter->writeLine("\nLast cron run was " . date('Y-m-d H:i:s', (int) $module->getLastCronTime()) . "");
 		$this->_outWriter->writeLine("The system time is " . date('Y-m-d H:i:s') . "\n");
 		$tasks = $module->getTasks();
 		

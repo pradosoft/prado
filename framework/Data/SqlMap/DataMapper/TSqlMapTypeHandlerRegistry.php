@@ -67,7 +67,7 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function createInstanceOf($type = '')
 	{
-		if (strlen($type) > 0) {
+		if (strlen($type ?? '') > 0) {
 			switch (strtolower($type)) {
 				case 'string': return '';
 				case 'array': return [];
@@ -94,7 +94,7 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function convertToType($type, $value)
 	{
-		switch (strtolower($type)) {
+		switch (strtolower($type ?? '')) {
 			case 'integer': case 'int':
 				$type = 'integer'; break;
 			case 'float': case 'double': case 'decimal':

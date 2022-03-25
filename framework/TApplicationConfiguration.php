@@ -346,7 +346,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 				$properties = $element->getAttributes();
 				$id = $properties->itemAt('id');
 				$type = $properties->remove('class');
-				if (strpos($id, '/') !== false && ($class = $this->getComposerExtensionClass($id))) {
+				if (strpos($id ?? '', '/') !== false && ($class = $this->getComposerExtensionClass($id))) {
 					if ($type) {
 						throw new TConfigurationException('appconfig_moduletype_inapplicable', $id);
 					}

@@ -301,7 +301,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	public function unformat($str)
 	{
-		return preg_replace("/\033\[[\?\d;:]*[usmA-HJKSTlh]/", '', $str);
+		return preg_replace("/\033\[[\?\d;:]*[usmA-HJKSTlh]/", '', $str ?? '');
 	}
 	
 	/**

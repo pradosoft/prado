@@ -186,7 +186,7 @@ class TSecurityManager extends \Prado\TModule
 		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, null, $iv);
+			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, 0, $iv);
 		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
 		}
@@ -203,7 +203,7 @@ class TSecurityManager extends \Prado\TModule
 		if (extension_loaded('openssl')) {
 			$key = md5($this->getEncryptionKey());
 			$iv = $this->substr($data, 0, openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, null, $iv);
+			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, 0, $iv);
 		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
 		}

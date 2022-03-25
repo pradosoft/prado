@@ -392,7 +392,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	{
 		$options = $this->getOptions()->toArray();
 
-		if (strlen($separator = $this->getSeparator())) {
+		if (!empty($separator = $this->getSeparator())) {
 			$options['Separators'] = $separator;
 		}
 
@@ -400,7 +400,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 			$options = array_merge($options, parent::getPostBackOptions());
 			$options['AutoPostBack'] = true;
 		}
-		if (strlen($textCssClass = $this->getTextCssClass())) {
+		if (!empty($textCssClass = $this->getTextCssClass())) {
 			$options['textCssClass'] = $textCssClass;
 		}
 		$options['minLength'] = $this->getMinChars();

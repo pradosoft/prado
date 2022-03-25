@@ -143,7 +143,7 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 		foreach ($maps as $entry) {
 			foreach ($entry->getColumns() as $item) {
 				$resultMap = $item->getResultMapping();
-				if (strlen($resultMap) > 0) {
+				if ($resultMap !== null && strlen($resultMap) > 0) {
 					if ($maps->contains($resultMap)) {
 						$item->setNestedResultMap($maps[$resultMap]);
 					} else {
@@ -168,7 +168,8 @@ class TSqlMapXmlConfiguration extends TSqlMapXmlConfigBuilder
 	protected function attachCacheModels()
 	{
 		foreach ($this->_manager->getMappedStatements() as $mappedStatement) {
-			if (strlen($model = $mappedStatement->getStatement()->getCacheModel()) > 0) {
+			$model = $mappedStatement->getStatement()->getCacheModel();
+			if ($model !== null && strlen($model) > 0) {
 				$cache = $this->_manager->getCacheModel($model);
 				$mappedStatement->getStatement()->setCache($cache);
 			}

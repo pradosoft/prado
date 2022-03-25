@@ -177,7 +177,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		foreach ($xmlNode->getElementsByTagName('user') as $node) {
 			$name = trim(strtolower($node->getAttribute('name')));
 			$this->_users[$name] = $node->getAttribute('password');
-			if (($roles = trim($node->getAttribute('roles'))) !== '') {
+			if (($roles = trim($node->getAttribute('roles') ?? '')) !== '') {
 				foreach (explode(',', $roles) as $role) {
 					if (($role = trim($role)) !== '') {
 						$this->_roles[$name][] = $role;

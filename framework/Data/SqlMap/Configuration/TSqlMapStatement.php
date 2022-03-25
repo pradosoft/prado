@@ -251,10 +251,10 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function initialize($manager)
 	{
-		if (strlen($this->_resultMapName) > 0) {
+		if ($this->_resultMapName !== null && strlen($this->_resultMapName) > 0) {
 			$this->_resultMap = $manager->getResultMap($this->_resultMapName);
 		}
-		if (strlen($this->_parameterMapName) > 0) {
+		if ($this->_parameterMapName !== null && strlen($this->_parameterMapName) > 0) {
 			$this->_parameterMap = $manager->getParameterMap($this->_parameterMapName);
 		}
 	}
@@ -265,7 +265,8 @@ class TSqlMapStatement extends \Prado\TComponent
 	 */
 	public function createInstanceOfListClass($registry)
 	{
-		if (strlen($type = $this->getListClass()) > 0) {
+		$type = $this->getListClass();
+		if ($type !== null && strlen($type) > 0) {
 			return $this->createInstanceOf($registry, $type);
 		}
 		return [];
