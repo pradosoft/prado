@@ -296,7 +296,7 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @@param \Prado\Shell\TShellWriter $writer the writer for the class
+	 * @param \Prado\Shell\TShellWriter $writer the writer for the class
 	 * @since 4.2.0
 	 */
 	public function setWriter(TShellWriter $writer)
@@ -314,7 +314,7 @@ class TShellApplication extends \Prado\TApplication
 	}
 	
 	/**
-	 * @@param int $quietMode the writer for the class, [0..3]
+	 * @param int $quietMode the writer for the class, [0..3]
 	 * @since 4.2.0
 	 */
 	public function setQuietMode($quietMode)

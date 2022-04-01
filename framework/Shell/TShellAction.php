@@ -64,8 +64,7 @@ abstract class TShellAction extends \Prado\TComponent
 	}
 	
 	/**
-	 * @@param string $writer the command action for the class
-	 * @param string $action
+	 * @param string $action the command action for the class
 	 */
 	public function setAction(string $action)
 	{

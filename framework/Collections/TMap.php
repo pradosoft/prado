@@ -42,7 +42,7 @@ use Traversable;
 class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	/**
-	 * @var array<mixed, mixed> internal data storage
+	 * @var array<int|string, mixed> internal data storage
 	 */
 	protected $_d = [];
 	/**
@@ -130,7 +130,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return array<mixed> the key list
+	 * @return array<int|string> the key list
 	 */
 	public function getKeys()
 	{
@@ -207,7 +207,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
-	 * @return array<mixed, mixed> the list of items in array
+	 * @return array<int|string, mixed> the list of items in array
 	 */
 	public function toArray()
 	{
