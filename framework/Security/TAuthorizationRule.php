@@ -92,7 +92,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		$this->_everyone = false;
 		$this->_guest = false;
 		$this->_authenticated = false;
-		if (trim($users ?? '') === '') {
+		if ($users === null || trim($users) === '') {
 			$users = '*';
 		}
 		foreach (explode(',', $users) as $user) {
@@ -111,7 +111,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		}
 		
 		$this->_roles = [];
-		if (trim($roles ?? '') === '') {
+		if ($roles === null || trim($roles) === '') {
 			$roles = '*';
 		}
 		foreach (explode(',', $roles) as $role) {
@@ -120,7 +120,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 			}
 		}
 		
-		if (($verb = trim(strtolower($verb ?? ''))) === '') {
+		if ($verb === null || ($verb = trim(strtolower($verb))) === '') {
 			$verb = '*';
 		}
 		if ($verb === '*' || $verb === 'get' || $verb === 'post') {
@@ -130,11 +130,11 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		}
 		
 		$this->_ipRules = [];
-		if (trim($ipRules ?? '') === '') {
+		if ($ipRules === null || trim($ipRules) === '') {
 			$ipRules = '*';
 		}
 		foreach (explode(',', $ipRules) as $ipRule) {
-			if (($ipRule = trim($ipRule ?? '')) !== '') {
+			if ($ipRule !== null && ($ipRule = trim($ipRule)) !== '') {
 				$this->_ipRules[] = $ipRule;
 			}
 		}

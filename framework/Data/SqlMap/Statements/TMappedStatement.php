@@ -510,7 +510,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$obj = null;
 		if ($this->getManager()->getResultMaps()->contains($resultMapName)) {
 			$obj = $this->fillResultMap($resultMapName, $row, null, $resultObject);
-		} elseif (strlen($resultClass ?? '') > 0) {
+		} elseif ($resultClass !== null && strlen($resultClass) > 0) {
 			$obj = $this->fillResultClass($resultClass, $row, $resultObject);
 		} else {
 			$obj = $this->fillDefaultResultMap(null, $row, $resultObject);
@@ -763,7 +763,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$registry = $this->getManager()->getTypeHandlers();
 		if ($key === '') {
 			$resultObject = $property->getPropertyValue($registry, $row);
-		} elseif (strlen($select ?? '') == 0 && ($nested === null)) {
+		} elseif (($select === null || strlen($select) == 0) && ($nested === null)) {
 			$value = $property->getPropertyValue($registry, $row);
 
 			$this->_IsRowDataFound = $this->_IsRowDataFound || ($value != null);
