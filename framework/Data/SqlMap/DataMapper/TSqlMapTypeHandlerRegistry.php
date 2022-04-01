@@ -94,7 +94,7 @@ class TSqlMapTypeHandlerRegistry
 	 */
 	public function convertToType($type, $value)
 	{
-		if($type === null) {
+		if ($type === null) {
 			return $value;
 		}
 		switch (strtolower($type)) {
