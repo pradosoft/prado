@@ -2753,16 +2753,16 @@
         },
         {
             "name": "pradosoft/prado-phpdoc-template",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pradosoft/prado-phpdoc-template.git",
-                "reference": "9704a372a32d846ee539a502a12957ceae0ab2c8"
+                "reference": "2b0cdd37d3aeacffa8205d50e872cd738ff04947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pradosoft/prado-phpdoc-template/zipball/9704a372a32d846ee539a502a12957ceae0ab2c8",
-                "reference": "9704a372a32d846ee539a502a12957ceae0ab2c8",
+                "url": "https://api.github.com/repos/pradosoft/prado-phpdoc-template/zipball/2b0cdd37d3aeacffa8205d50e872cd738ff04947",
+                "reference": "2b0cdd37d3aeacffa8205d50e872cd738ff04947",
                 "shasum": ""
             },
             "type": "library",
@@ -2781,9 +2781,9 @@
             "homepage": "https://github.com/pradosoft/prado-phpdoc-template",
             "support": {
                 "issues": "https://github.com/pradosoft/prado-phpdoc-template/issues",
-                "source": "https://github.com/pradosoft/prado-phpdoc-template/tree/0.0.1"
+                "source": "https://github.com/pradosoft/prado-phpdoc-template/tree/0.0.2"
             },
-            "time": "2022-04-04T09:11:41+00:00"
+            "time": "2022-04-04T15:11:55+00:00"
         },
         {
             "name": "sebastian/cli-parser",
