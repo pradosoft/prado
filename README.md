@@ -1,6 +1,6 @@
 # Prado PHP Framework
 
-PRADO is a component-based and event-driven programming framework for developing Web applications in PHP 7.
+PRADO is a component-based and event-driven programming framework for developing Web applications in PHP.
 PRADO stands for PHP Rapid Application Development Object-oriented.
 
 [![Build Status](https://github.com/pradosoft/prado/actions/workflows/prado.yml/badge.svg)](https://github.com/pradosoft/prado/actions/workflows/prado.yml)
@@ -8,7 +8,6 @@ PRADO stands for PHP Rapid Application Development Object-oriented.
 [![Code Coverage](https://scrutinizer-ci.com/g/pradosoft/prado/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/pradosoft/prado/?branch=master)
 [![Total Downloads](https://poser.pugx.org/pradosoft/prado/downloads.png)](https://packagist.org/packages/pradosoft/prado)
 [![Latest Stable Version](https://poser.pugx.org/pradosoft/prado/v/stable.png)](https://packagist.org/packages/pradosoft/prado)
-[![Gitter](https://badges.gitter.im/pradosoft/prado.png)](https://gitter.im/pradosoft/prado?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 PRADO is best suitable for creating Web applications that are highly user-interactive. It can be used to develop systems as simple as a blog system to those as complex as a content management system (CMS) or a complete e-commerce solution. Because PRADO promotes object-oriented programming (OOP) through its component-based methodology, it fits extremely well for team work and enterprise development. Its event-driven programming pattern helps developers gain better focus on business logic rather than distracted by various tedious and repetitive low-level coding handling.
 
@@ -46,7 +45,7 @@ Just create a composer.json file for your project:
     }
   ],
     "require": {
-      "pradosoft/prado": "~4.1"
+      "pradosoft/prado": "^4"
   }
 }
 ```
@@ -117,7 +116,7 @@ For functional tests only, you need to manually download and run an app called [
 It's a java application, so you'll need to install a [JRE/JDK](https://java.com/) and then run it from a terminal:
 
 ```
-java -jar selenium-server-standalone-3.xxx.xx.jar 
+java -jar selenium-server-4.x.x.jar standalone
 ```
 Depending on the browser you want to use to do functional testing, you may need an [additional driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/).
 
@@ -131,8 +130,8 @@ Test results will be saved in in the `build/tests/` directory.
 
 ## Generatting the API documentation
 
-PRADO uses its own fork of ApiGen 4 (http://www.apigen.org) to generate its API documentation.
-An ApiGen configuration file is providen, to generate the documentation just execute
+PRADO uses phpDocumentor 3 (https://github.com/phpDocumentor/phpDocumentor) to generate its API documentation.
+A phpdoc.dist.xml configuration file is providen, to generate the documentation just execute
 
 ```sh
 composer gendoc
