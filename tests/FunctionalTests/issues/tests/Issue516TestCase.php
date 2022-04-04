@@ -27,7 +27,7 @@ class Issue516TestCase extends PradoGenericSelenium2Test
 		$this->byID("{$base}{$row2}ctl3")->click();
 		$this->pauseFairAmount();
 		$this->assertTrue($this->getElement("{$base}{$row2}TextBox") !== null);
-		// click "save" and ensure bvalidation has been successfull
+		// click "save" and ensure validation has been successfull
 		$this->byID("{$base}{$row2}ctl3")->click();
 		$this->pauseFairAmount();
 		$this->assertElementNotPresent("{$base}{$row2}ctl1");

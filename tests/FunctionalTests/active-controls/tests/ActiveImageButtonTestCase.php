@@ -11,6 +11,6 @@ class ActiveImageButtonTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}image1")->click();
 		$this->pauseFairAmount();
 		//unable to determine mouse position
-		$this->assertRegExp('/Image clicked at x=\d+, y=\d+/', $this->source());
+		$this->assertMatchesRegularExpression('/Image clicked at x=\d+, y=\d+/', $this->source());
 	}
 }

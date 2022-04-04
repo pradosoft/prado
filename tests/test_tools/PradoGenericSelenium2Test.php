@@ -47,24 +47,17 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 
 	public static $timeout = 5; //seconds
 
-	public function prepareSession()
-	{
-		$session = parent::prepareSession();
-		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/295
-		$this->url('dummy.html');
-
-		return $session;
-	}
-
 	protected function setUp(): void
 	{
-		// Workaroun for https://github.com/giorgiosironi/phpunit-selenium/issues/436
+
+		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/436
 		$this->setDesiredCapabilities([
 			'goog:chromeOptions' => [
-				'w3c' => false
-			]
+				'w3c' => false,
+				// 'args' => ['headless'],
+			],
 		]);
-//		self::shareSession(true);
+		self::shareSession(true);
 		$this->setBrowserUrl(static::$baseurl);
 		$this->setSeleniumServerRequestsTimeout(static::$timeout);
 	}
@@ -82,7 +75,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 		$value = $element->attribute($attr);
 
 		if (strpos($txt, 'regexp:') === 0) {
-			$this->assertRegExp('/' . substr($txt, 7) . '/', $value);
+			$this->assertMatchesRegularExpression('/' . substr($txt, 7) . '/', $value);
 		} else {
 			$this->assertEquals($txt, $value);
 		}
@@ -152,6 +145,9 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 			$el = $this->getElement($id);
 		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
 			$this->assertEquals(\PHPUnit\Extensions\Selenium2TestCase\WebDriverException::NoSuchElement, $e->getCode());
+			return;
+		} catch (\InvalidArgumentException $e) {
+			$this->assertEquals('Element not found.', $e->getMessage());
 			return;
 		}
 		$this->fail('The element ' . $id . ' shouldn\'t exist.');
