@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+>
+    <title>Prado 4.2.0 API Manual</title>
+    <paths>
+        <output>build/docs</output>
+        <cache>build/cache</cache>
+    </paths>
+    <version number="3.0.0">
+        <api>
+            <source dsn=".">
+                <path>framework</path>
+            </source>
+            <ignore hidden="true" symlinks="true">
+                <path>I18N/core</path>
+                <path>Web/Javascripts/source</path>
+                <path>Web/Javascripts/*packages.php</path>
+                <path>Web/UI/WebControls/assets</path>
+            </ignore>
+        </api>
+    </version>
+</phpdocumentor>
