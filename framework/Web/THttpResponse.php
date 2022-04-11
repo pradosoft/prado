@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -60,7 +59,6 @@ use Prado\TPropertyValue;
  * will force the browser to ask for a username and a password.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.0
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter

@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell
  */
 
 namespace Prado\Shell;
@@ -17,7 +16,6 @@ use Prado\Prado;
  *
  * @author Brad Anderson <belisoful[at]icloud[dot]com> shell refactor
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Shell
  * @since 3.0.5
  */
 abstract class TShellAction extends \Prado\TComponent

@@ -12,7 +12,6 @@ namespace Prado\Util;
 /**
  * TClassBehavior is a convenient base class for whole class behaviors.
  * @author Brad Anderson <javalizard@gmail.com>
- * @package Prado\Util
  * @since 3.2.3
  */
 class TClassBehavior extends \Prado\TComponent implements IClassBehavior

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -16,7 +15,6 @@ namespace Prado\Web\UI;
  * If a control wants to validate user input, it must implement this interface.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  */
 interface IValidator

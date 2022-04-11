@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security\Permissions
  */
 
 namespace Prado\Security\Permissions;
@@ -23,7 +22,6 @@ use Prado\Util\TBehavior;
  * This passes through dyDefaultRoles and dyIsInRole to the {@link TPermissionsManager}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Security\Permissions
  * @since 4.2.0
  * @method \Prado\Security\TUser getOwner()
  */

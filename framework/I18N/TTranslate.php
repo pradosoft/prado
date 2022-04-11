@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\I18N
  */
 
 namespace Prado\I18N;
@@ -59,7 +58,6 @@ use Prado\Web\UI\TControl;
  *   Default is to trim the contents.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N
  */
 class TTranslate extends TI18NControl
 {

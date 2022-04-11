@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -54,7 +53,6 @@ use Prado\Xml\TXmlElement;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @package Prado\Util
  * @since 3.0
  */
 class TParameterModule extends \Prado\TModule

@@ -6,7 +6,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -25,7 +24,6 @@ use Prado\Wsdl\WsdlGenerator;
  * It also manages the URI for the SOAP service and WSDL.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\Services
  * @since 3.1
  * @method TSoapService getService()
  */

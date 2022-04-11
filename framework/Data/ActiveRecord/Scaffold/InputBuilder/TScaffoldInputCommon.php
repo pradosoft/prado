@@ -4,7 +4,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
@@ -30,9 +29,7 @@ use Prado\Web\UI\WebControls\TValidatorDisplayStyle;
  * TScaffoldInputCommon class.
  *
  * @link https://github.com/pradosoft/prado
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
-
 class TScaffoldInputCommon extends TScaffoldInputBase
 {
 	protected function setDefaultProperty($container, $control, $column, $record)

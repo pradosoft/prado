@@ -4,7 +4,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -24,10 +23,8 @@ namespace Prado\Util;
  * </pre>
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @package Prado\Util
  * @since 3.2
  */
-
 class TJsonRpcClient extends TRpcClient
 {
 	// magics

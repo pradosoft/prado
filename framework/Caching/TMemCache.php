@@ -6,7 +6,6 @@
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -85,7 +84,6 @@ use Prado\Xml\TXmlElement;
  * All instances created with the same persistent_id will share the same connection.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Caching
  * @since 3.0
  */
 class TMemCache extends TCache

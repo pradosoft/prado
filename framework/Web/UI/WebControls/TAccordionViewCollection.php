@@ -5,7 +5,6 @@
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 
@@ -19,7 +18,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TAccordionViewCollection is a collection of {@link TAccordionView} to be used inside a {@link TAccordion}.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -22,7 +21,6 @@ namespace Prado\Collections;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Collections
  * @since 3.0
  */
 class TDummyDataSource extends \Prado\TComponent implements \IteratorAggregate, \Countable

@@ -5,7 +5,6 @@
  * @author  David Otto <ottodavid[at]gmx[dot]net>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -32,7 +31,6 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  * </code>
  *
  * @author David Otto <ottodavid[at]gmx[dot]net>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  * @method TActiveControlAdapter getAdapter()
  */

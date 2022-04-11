@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord
  */
 
 namespace Prado\Data\ActiveRecord;
@@ -144,7 +143,6 @@ use ReflectionClass;
  * </code>
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord
  * @since 3.1
  */
 abstract class TActiveRecord extends \Prado\TComponent

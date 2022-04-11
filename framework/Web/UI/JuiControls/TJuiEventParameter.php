@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -39,7 +38,6 @@ use Prado\Web\UI\TControl;
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 class TJuiEventParameter extends TCallbackEventParameter
 {

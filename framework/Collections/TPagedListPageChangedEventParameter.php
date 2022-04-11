@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -17,7 +16,6 @@ namespace Prado\Collections;
  * To obtain the page index before it was changed, use {@link getOldPageIndex OldPageIndex}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Collections
  * @since 3.0
  */
 class TPagedListPageChangedEventParameter extends \Prado\TEventParameter

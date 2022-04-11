@@ -33,7 +33,6 @@ use Prado\Exceptions\TInvalidOperationException;
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TParameterizeBehavior extends \Prado\Util\TBehavior

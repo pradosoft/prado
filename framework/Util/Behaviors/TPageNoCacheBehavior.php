@@ -23,7 +23,6 @@ use Prado\Web\UI\WebControls\TMetaTag;
  * getCheckMetaNoCache is turned off for performance.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TPageNoCacheBehavior extends \Prado\Util\TBehavior

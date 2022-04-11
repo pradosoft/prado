@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell\Actions
  */
 
 namespace Prado\Shell\Actions;
@@ -24,7 +23,6 @@ use Prado\Shell\TShellAction;
  * @author Matthias Endres <me[at]me23[dot]de> - Generate-All
  * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com> - Generate-All
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com> - Generate
- * @package Prado\Shell\Actions
  * @since 3.1
  */
 class TActiveRecordAction extends TShellAction

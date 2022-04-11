@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -50,7 +49,6 @@ use Prado\Xml\TXmlElement;
  * This allows TBehaviorsModule to load behaviors, dynamically, from parameters with the TParameterizeBehavior.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util
  * @since 4.2.0
  */
 class TBehaviorsModule extends \Prado\TModule

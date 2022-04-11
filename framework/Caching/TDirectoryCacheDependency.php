@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -29,7 +28,6 @@ use Prado\TPropertyValue;
  * to a certain depth of the subdirectories.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Caching
  * @since 3.1.0
  */
 class TDirectoryCacheDependency extends TCacheDependency

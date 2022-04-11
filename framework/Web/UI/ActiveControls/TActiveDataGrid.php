@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -43,15 +42,14 @@ use Prado\Web\UI\WebControls\TLabel;
  * Please refer to the original documentation of the regular counterparts for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 {
-  /**
-   * @var string the tag used to render the surrounding container
-   */
+	/**
+	 * @var string the tag used to render the surrounding container
+	 */
 	protected $_surroundingTag = 'div';
 
 	/**

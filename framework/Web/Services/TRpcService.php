@@ -4,7 +4,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -54,7 +53,6 @@ use Prado\Xml\TXmlElement;
  * the specified class will be instanciated in order to satisfy the request.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @package Prado\Web\Services
  * @since 3.2
  **/
 class TRpcService extends \Prado\TService

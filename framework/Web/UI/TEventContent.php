@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -22,10 +21,8 @@ use Prado\TPropertyValue;
  * as the $sender and the {@link getControls Control} List as $param.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Web\UI
  * @since 4.2.0
  */
-
 class TEventContent extends TCompositeControl
 {
 	/**

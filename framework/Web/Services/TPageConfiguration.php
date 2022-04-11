@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -27,7 +26,6 @@ use Prado\Xml\TXmlDocument;
  * Configurations along this path are merged together to be provided for the page.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\Services
  * @since 3.0
  * @method void dyLoadPageConfigurationFromPhp($config, $configPath, $configPagePath)
  * @method void dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath)

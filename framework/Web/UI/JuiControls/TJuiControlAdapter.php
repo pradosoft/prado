@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -20,7 +19,6 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * publish jQuery-UI javascript and css assets.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  * @method IJuiOptions&\Prado\Web\UI\TControl getControl()
  */

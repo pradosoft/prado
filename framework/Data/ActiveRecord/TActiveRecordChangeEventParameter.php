@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord
  */
 
 namespace Prado\Data\ActiveRecord;
@@ -22,7 +21,6 @@ use Prado\TPropertyValue;
  * be set to false to prevent the requested change event to be performed.
  *
  * @author Wei Zhuo<weizhuo@gmail.com>
- * @package Prado\Data\ActiveRecord
  * @since 3.1.2
  */
 class TActiveRecordChangeEventParameter extends \Prado\TEventParameter

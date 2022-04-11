@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -26,7 +25,6 @@ namespace Prado\Web;
  * with the ID of your URL manager module.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.0.6
  */
 class TUrlManager extends \Prado\TModule

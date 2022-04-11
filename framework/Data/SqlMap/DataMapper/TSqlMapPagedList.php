@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\DataMapper
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
@@ -27,7 +26,6 @@ use Prado\Prado;
  * The paged list does not need to know about the total number of records.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TSqlMapPagedList extends TPagedList

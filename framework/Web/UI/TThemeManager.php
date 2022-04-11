@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -38,7 +37,6 @@ use Prado\Web\Services\TPageService;
  * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  */
 class TThemeManager extends \Prado\TModule

@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -19,7 +18,6 @@ namespace Prado;
  * TEventParameter is the base class for all event parameter classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.0
  */
 class TEventParameter extends \Prado\TComponent

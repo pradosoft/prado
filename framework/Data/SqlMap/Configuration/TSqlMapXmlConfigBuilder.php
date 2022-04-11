@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Configuration
  */
 
 namespace Prado\Data\SqlMap\Configuration;
@@ -17,7 +16,6 @@ use Prado\Prado;
  * TSqlMapXmlConfig class file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Configuration
  */
 abstract class TSqlMapXmlConfigBuilder
 {
@@ -25,7 +23,7 @@ abstract class TSqlMapXmlConfigBuilder
 	 * Create an instance of an object give by the attribute named 'class' in the
 	 * node and set the properties on the object given by attribute names and values.
 	 * @param \SimpleXmlElement $node property node
-	 * @return Object new instance of class with class name given by 'class' attribute value.
+	 * @return object new instance of class with class name given by 'class' attribute value.
 	 */
 	protected function createObjectFromNode($node)
 	{

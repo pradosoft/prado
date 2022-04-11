@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\DataGateway
  */
 
 namespace Prado\Data\DataGateway;
@@ -15,7 +14,6 @@ namespace Prado\Data\DataGateway;
  * well as the criteria object.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\DataGateway
  * @since 3.1
  */
 class TDataGatewayEventParameter extends \Prado\TEventParameter

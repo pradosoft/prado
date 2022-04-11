@@ -6,7 +6,6 @@
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -26,7 +25,6 @@ use Prado\Web\THttpUtility;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @package Prado\Web\UI
  * @since 3.0
  */
 class TClientScriptManager extends \Prado\TApplicationComponent
@@ -895,7 +893,6 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 * @param mixed $initial
 	 */
-
 	protected function renderHiddenFieldsInt($writer, $initial)
 	{
 		if ($initial) {

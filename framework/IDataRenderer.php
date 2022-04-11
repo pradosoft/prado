@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -17,7 +16,6 @@ namespace Prado;
  * this interface must be implemented.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.1
  */
 interface IDataRenderer

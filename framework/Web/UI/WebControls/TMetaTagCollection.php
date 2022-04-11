@@ -5,7 +5,6 @@
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -19,7 +18,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * contained in a {@link THead} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TMetaTagCollection extends \Prado\Collections\TList

@@ -6,7 +6,6 @@
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -22,7 +21,6 @@ use Prado\Web\Javascripts\TJavaScript;
  * between ActiveControls and validators.
  *
  * @author <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI
  * @since 3.0
  */
 abstract class TClientSideOptions extends \Prado\TComponent

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -19,7 +18,6 @@ namespace Prado\Caching;
  * last modification time remains unchanged.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Caching
  * @since 3.1.0
  */
 class TFileCacheDependency extends TCacheDependency

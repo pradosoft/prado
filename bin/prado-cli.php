@@ -8,7 +8,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
-
 if (!isset($_SERVER['argv']) || php_sapi_name() !== 'cli') {
 	die('Must be run from the command line');
 }

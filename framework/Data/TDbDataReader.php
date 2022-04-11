@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data
  */
 
 namespace Prado\Data;
@@ -33,7 +32,6 @@ use Prado\Exceptions\TDbException;
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Data
  * @since 3.0
  */
 class TDbDataReader extends \Prado\TComponent implements \Iterator

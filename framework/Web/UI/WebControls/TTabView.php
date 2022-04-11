@@ -5,7 +5,6 @@
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -31,7 +30,6 @@ use Prado\TPropertyValue;
  * setting the {@link setActive Active} property.
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  * @method TTabPanel getParent()
  */

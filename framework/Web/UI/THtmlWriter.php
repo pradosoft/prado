@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -35,7 +34,6 @@ use Prado\Web\THttpUtility;
  * tags in HTML and XHTML.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  */
 class THtmlWriter extends \Prado\TApplicationComponent implements \Prado\IO\ITextWriter

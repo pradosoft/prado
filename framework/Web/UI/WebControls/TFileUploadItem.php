@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -19,7 +18,6 @@ namespace Prado\Web\UI\WebControls;
  * See {@link TFileUpload} documentation for more details.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\WebControls
  * @since 4.0
  */
 class TFileUploadItem extends \Prado\TComponent

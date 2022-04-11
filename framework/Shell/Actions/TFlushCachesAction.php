@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell\Actions
  */
 
 namespace Prado\Shell\Actions;
@@ -19,7 +18,6 @@ use Prado\Shell\TShellWriter;
  * This command clears all application modules implementing ICache.
  *
  * @author Brad Anderson <belisoful[at]icloud[dot]com>
- * @package Prado\Shell\Actions
  * @since 4.2.0
  */
 class TFlushCachesAction extends TShellAction

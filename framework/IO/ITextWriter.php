@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\IO
  */
 
 namespace Prado\IO;
@@ -16,7 +15,6 @@ namespace Prado\IO;
  * This interface must be implemented by writers.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\IO
  * @since 3.0
  */
 interface ITextWriter

@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -17,7 +16,6 @@ namespace Prado\Web\UI\JuiControls;
  * {@link TJuiControlOptions}.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 interface IJuiOptions

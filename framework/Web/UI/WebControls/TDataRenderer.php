@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.2
  */
 
@@ -24,7 +23,6 @@ use Prado\Web\UI\TTemplateControl;
  * - {@link getData Data}: data associated with this renderer.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.2
  */
 abstract class TDataRenderer extends TTemplateControl implements \Prado\IDataRenderer

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -16,7 +15,6 @@ use Prado\Web\UI\ITemplate;
  * TWizardSideBarTemplate class.
  * TWizardSideBarTemplate is the default template for wizard sidebar.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TWizardSideBarTemplate extends \Prado\TComponent implements ITemplate

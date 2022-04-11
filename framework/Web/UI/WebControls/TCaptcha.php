@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -58,7 +57,6 @@ use Prado\TPropertyValue;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TCaptcha extends TImage

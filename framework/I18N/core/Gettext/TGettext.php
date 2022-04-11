@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core\Gettext
  */
 
 namespace Prado\I18N\core\Gettext;
@@ -54,7 +53,6 @@ use Exception;
  *
  * @author      Michael Wallner <mike@php.net>
  * @access      public
- * @package Prado\I18N\core\Gettext
  */
 class TGettext
 {

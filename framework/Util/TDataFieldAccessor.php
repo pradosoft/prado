@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -29,7 +28,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  *   then field 'MyValue.MySubValue' will return that method call result.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Util
  * @since 3.0
  */
 class TDataFieldAccessor

@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -27,7 +26,6 @@ namespace Prado\I18N\core;
  * catalogue.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 interface IMessageSource
 {

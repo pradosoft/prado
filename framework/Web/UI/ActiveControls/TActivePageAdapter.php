@@ -6,7 +6,6 @@
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -27,7 +26,6 @@ use Prado\Web\UI\TPage;
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @author Gabor Berczi <gabor.berczi@devworx.hu> (lazyload additions & progressive rendering)
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 class TActivePageAdapter extends TControlAdapter

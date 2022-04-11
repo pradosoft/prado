@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -43,7 +42,6 @@ use Prado\Web\UI\ITemplate;
  * or {@link getFalseTemplate FalseTemplate}, but never both. And the condition is evaluated only once.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TConditional extends \Prado\Web\UI\TControl

@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -55,7 +54,6 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * </code>
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventHandler
@@ -215,7 +213,6 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
-
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);

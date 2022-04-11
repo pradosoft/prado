@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -19,7 +18,6 @@ namespace Prado\Util;
  * IDynamicMethods marks an object to receive undefined global or dynamic events.
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado\Util
  * @since 3.2.3
  */
 interface IDynamicMethods

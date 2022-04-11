@@ -5,7 +5,6 @@
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 
@@ -64,10 +63,8 @@ use Prado\Web\Javascripts\TJavaScript;
  * </code>
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
-
 class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler
 {
 	private $_dataChanged = false;

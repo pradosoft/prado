@@ -10,7 +10,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -23,7 +22,6 @@ namespace Prado\Web\UI\WebControls;
  * The {@link getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TDataGridPagerEventParameter extends \Prado\TEventParameter

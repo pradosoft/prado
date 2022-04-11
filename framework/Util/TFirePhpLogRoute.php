@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -21,7 +20,6 @@ use Prado\Prado;
  * {@link http://www.firephp.org/ FirePHP Website}
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @package Prado\Util
  * @since 3.1.5
  */
 class TFirePhpLogRoute extends TLogRoute

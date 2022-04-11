@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common\Mssql
  */
 
 namespace Prado\Data\Common\Mssql;
@@ -20,7 +19,6 @@ use Prado\Prado;
  * TMssqlTableInfo class provides additional table information for Mssql database.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common\Mssql
  * @since 3.1
  */
 class TMssqlTableInfo extends TDbTableInfo

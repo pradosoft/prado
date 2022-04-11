@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security\Permissions
  */
 
 namespace Prado\Security\Permissions;
@@ -133,7 +132,6 @@ use Prado\Xml\TXmlElement;
  * Recursive hierarchy is gracefully handled, in case of any loop structures.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Security\Permissions
  * @method bool dyRegisterShellAction($returnValue)
  * @method bool dyAddRoleChildren(bool $return, string $role, string[] $children)
  * @method bool dyRemoveRoleChildren(bool $return, string $role, string[] $children)

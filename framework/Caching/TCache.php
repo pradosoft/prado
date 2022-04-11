@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -44,7 +43,6 @@ use Prado\TPropertyValue;
  * the cache acts as an array.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Caching
  * @since 3.0
  */
 abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess

@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Javascripts
  */
 
 namespace Prado\Web\Javascripts;
@@ -32,7 +31,6 @@ namespace Prado\Web\Javascripts;
  * $raw=_js($js);
  * </code>
  *
- * @package Prado\Web\Javascripts
  * @since 3.2.0
  */
 class TJavaScriptLiteral

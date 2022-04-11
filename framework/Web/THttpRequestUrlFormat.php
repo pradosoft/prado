@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -21,7 +20,6 @@ namespace Prado\Web;
  * - HiddenPath: the URL format is like /path/to/name1,value1/name2,value2...
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.0.4
  */
 class THttpRequestUrlFormat extends \Prado\TEnumerable

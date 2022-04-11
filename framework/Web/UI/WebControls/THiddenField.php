@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.xisc.com/
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -22,7 +21,6 @@ use Prado\TPropertyValue;
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable, \Prado\IDataRenderer

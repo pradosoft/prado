@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -20,7 +19,6 @@ namespace Prado;
  * - Normal: the application is running in normal production mode.
  * - Performance: the application is running in performance mode.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.0.4
  */
 class TApplicationMode extends \Prado\TEnumerable

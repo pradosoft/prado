@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -43,7 +42,6 @@ use Prado\TApplicationMode;
  * To apply a theme to a particular control, call {@link applySkin}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  * @method void dyThemeConstruct(string $themePath, string $themeUrl)
  * @method bool dyProcessFile(bool $returnValue, string $file))

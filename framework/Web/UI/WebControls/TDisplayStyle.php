@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -21,7 +20,6 @@ namespace Prado\Web\UI\WebControls;
  * - Hidden: the control is not displayed and is included in the layout.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
 class TDisplayStyle extends \Prado\TEnumerable

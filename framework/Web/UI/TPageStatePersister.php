@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -24,7 +23,6 @@ use Prado\Exceptions\THttpException;
  * traffic for transmitting bulky page state.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  */
 class TPageStatePersister extends \Prado\TComponent implements IPageStatePersister

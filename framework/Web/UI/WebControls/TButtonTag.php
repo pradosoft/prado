@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -19,9 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * - Button: a button tag is rendered
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\WebControls
  */
-
 class TButtonTag extends \Prado\TEnumerable
 {
 	public const Input = 'Input';

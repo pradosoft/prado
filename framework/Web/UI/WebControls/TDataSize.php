@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -41,7 +40,6 @@ use Prado\TPropertyValue;
  * outputted.  These outputted abbreviations are localized.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Web\UI\WebControls
  * @since 4.2.0
  */
 class TDataSize extends TLabel

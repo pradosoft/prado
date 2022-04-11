@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common\Pgsql
  */
 
 namespace Prado\Data\Common\Pgsql;
@@ -20,7 +19,6 @@ use Prado\Prado;
  * Describes the column metadata of the schema for a PostgreSQL database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common\Pgsql
  * @since 3.1
  */
 class TPgsqlTableColumn extends TDbTableColumn

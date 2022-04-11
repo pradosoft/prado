@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -22,7 +21,6 @@ namespace Prado\Collections;
  * Newly fetched data should be saved in {@link setData Data} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Collections
  * @since 3.0
  */
 class TPagedListFetchDataEventParameter extends \Prado\TEventParameter

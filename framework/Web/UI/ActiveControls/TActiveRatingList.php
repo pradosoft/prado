@@ -6,7 +6,6 @@
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -20,7 +19,6 @@ use Prado\Web\UI\WebControls\TRatingList;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Bradley Booms <bradley[dot]booms[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  * @method TActiveControlAdapter getAdapter()
  */

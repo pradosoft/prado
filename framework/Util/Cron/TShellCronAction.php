@@ -24,7 +24,6 @@ use Prado\Util\Cron\TCronModule;
  * application, and "tasks" reports the installed tasks being managed.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  */
 class TShellCronAction extends TShellAction

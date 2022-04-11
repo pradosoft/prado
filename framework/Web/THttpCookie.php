@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -19,7 +18,6 @@ use Prado\TPropertyValue;
  * domain, path, expire, and secure.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.0
  */
 class THttpCookie extends \Prado\TComponent

@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -30,7 +29,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.0
  */
 class TComponentReflection extends \Prado\TComponent

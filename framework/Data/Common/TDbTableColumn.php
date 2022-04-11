@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common
  */
 
 namespace Prado\Data\Common;
@@ -16,7 +15,6 @@ use PDO;
  * TDbTableColumn class describes the column meta data of the schema for a database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common
  * @since 3.1
  */
 class TDbTableColumn extends \Prado\TComponent

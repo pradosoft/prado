@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold;
@@ -33,7 +32,6 @@ use Prado\Web\UI\WebControls\TButton;
  * the Active Record class to be displayed/edited/added.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.0
  */
 class TScaffoldView extends TScaffoldBase

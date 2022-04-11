@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -70,7 +69,6 @@ use Prado\TApplicationMode;
  * request module. It can be accessed via {@link TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.0
  */
 class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule

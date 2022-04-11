@@ -14,7 +14,6 @@
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -46,7 +45,6 @@ use Exception;
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 class CultureInfo
 {

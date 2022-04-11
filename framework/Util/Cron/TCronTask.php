@@ -23,10 +23,8 @@ use Prado\TPropertyValue;
  * If a task is not run at the schedule time, it is run at the next available task sweep.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  */
-
 abstract class TCronTask extends TApplicationComponent
 {
 	/** @var string The name of the task */

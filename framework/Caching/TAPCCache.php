@@ -5,7 +5,6 @@
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -40,7 +39,6 @@ use Prado\Exceptions\TConfigurationException;
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @package Prado\Caching
  * @since 3.0b
  */
 class TAPCCache extends TCache

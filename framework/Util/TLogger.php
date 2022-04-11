@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -20,7 +19,6 @@ use Prado\Web\UI\TControl;
  * log categories, and by control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Util
  * @since 3.0
  */
 class TLogger extends \Prado\TComponent

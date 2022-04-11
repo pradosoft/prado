@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -16,9 +15,7 @@ use Prado\Web\UI\WebControls\TRadioButton;
  * TActiveRadioButtonItem class.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
- * @package Prado\Web\UI\ActiveControls
  */
-
 class TActiveRadioButtonItem extends TActiveRadioButton
 {
 	/**

@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Relations
  */
 
 namespace Prado\Data\ActiveRecord\Relations;
@@ -79,7 +78,6 @@ use Prado\Prado;
  * arguments as other finder methods of TActiveRecord.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Relations
  * @since 3.1
  */
 class TActiveRecordHasManyAssociation extends TActiveRecordRelation

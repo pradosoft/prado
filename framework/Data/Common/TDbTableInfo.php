@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common
  */
 
 namespace Prado\Data\Common;
@@ -18,7 +17,6 @@ use Prado\Prado;
  * TDbTableInfo class describes the meta data of a database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common
  * @since 3.1
  */
 class TDbTableInfo extends \Prado\TComponent

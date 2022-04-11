@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -50,7 +49,6 @@ use Prado\Web\UI\IPostBackEventHandler;
  * TImageButton displays the {@link setText Text} property as the hint text to the displayed image.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler, IPostBackEventHandler, \Prado\Web\UI\IButtonControl

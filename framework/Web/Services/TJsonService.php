@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -53,7 +52,6 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @package Prado\Web\Services
  * @since 3.1
  */
 class TJsonService extends \Prado\TService

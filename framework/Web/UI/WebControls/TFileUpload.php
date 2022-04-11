@@ -6,7 +6,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -45,7 +44,6 @@ use Prado\TPropertyValue;
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable

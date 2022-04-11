@@ -11,7 +11,6 @@
  * The latest version of PRADO can be obtained from:
  * {@link http://prado.sourceforge.net/}
  *
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -28,7 +27,6 @@ use Prado\Prado;
  *
  * See the MessageSource::factory() method to instantiate this class.
  *
- * @package Prado\I18N\core
  */
 class MessageSource_Database extends MessageSource
 {

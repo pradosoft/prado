@@ -5,7 +5,6 @@
  * @author Brad Anderson <javalizard@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -18,10 +17,8 @@ namespace Prado\Web\UI\WebControls;
  * This is also useful for the {@link TWebControlDecorator} (used by themes).
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
-
 class THeader6 extends THtmlElement
 {
 	/**

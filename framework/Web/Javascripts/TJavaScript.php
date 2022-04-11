@@ -5,7 +5,6 @@
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Javascripts
  */
 
 namespace Prado\Web\Javascripts;
@@ -20,7 +19,6 @@ use Prado\Prado;
  * functions.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package Prado\Web\Javascripts
  * @since 3.0
  */
 class TJavaScript

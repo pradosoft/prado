@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -22,7 +21,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  * in __destruct. All data out has the callable objects converted back to the regular object reference in a callable.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Collections
  * @since 4.2.0
  */
 class TWeakCallableCollection extends TPriorityList

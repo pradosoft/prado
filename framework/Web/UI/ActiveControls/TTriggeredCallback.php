@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -21,7 +20,6 @@ use Prado\Web\UI\TControl;
  * property sets the control ID to observe the trigger.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 abstract class TTriggeredCallback extends TCallback

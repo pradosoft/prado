@@ -4,7 +4,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -39,7 +38,6 @@ namespace Prado\Web\Services;
  * as explained in {@link TRpcService}'s documentation.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @package Prado\Web\Services
  * @since 3.2
  */
 abstract class TRpcApiProvider extends \Prado\TModule

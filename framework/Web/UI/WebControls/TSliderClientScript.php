@@ -5,7 +5,6 @@
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -27,7 +26,6 @@ use Prado\Web\UI\TClientSideOptions;
  * The <tt>OnChange</tt> event is raised when the slider value is changed (or at the end of a move)
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TSliderClientScript extends TClientSideOptions

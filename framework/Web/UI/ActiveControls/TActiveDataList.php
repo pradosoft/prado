@@ -4,7 +4,6 @@
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -24,15 +23,14 @@ use Prado\Web\UI\WebControls\TDataList;
  * Please refer to the original documentation of the regular counterparts for usage.
  *
  * @author Marcos Aurelio Nobre <marconobre@gmail.com>
- * @package Prado\Web\UI\ActiveControls
  * @method TActiveControlAdapter getAdapter()
  */
 class TActiveDataList extends TDataList implements IActiveControl
 {
-  /**
-   * Creates a new callback control, sets the adapter to
-   * TActiveControlAdapter.
-   */
+	/**
+	 * Creates a new callback control, sets the adapter to
+	 * TActiveControlAdapter.
+	 */
 	public function __construct()
 	{
 		parent::__construct();

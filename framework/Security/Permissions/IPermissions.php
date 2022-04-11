@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security\Permissions;
@@ -26,7 +25,6 @@ namespace Prado\Security\Permissions;
  * $manager->{@link TPermissionsManager::registerPermissions}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Security\Permissions
  * @since 4.2.0
  */
 interface IPermissions

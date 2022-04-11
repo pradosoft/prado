@@ -5,7 +5,6 @@
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -21,7 +20,6 @@ namespace Prado\Web\UI\WebControls;
  * - Vertical : Vertical slider
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TSliderDirection extends \Prado\TEnumerable

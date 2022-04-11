@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security;
@@ -22,7 +21,6 @@ use Prado\Exceptions\TConfigurationException;
  * - {@link createUser()}: creates a new user instance given the username
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Security
  * @since 3.1.0
  */
 abstract class TDbUser extends TUser

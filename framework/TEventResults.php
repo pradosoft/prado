@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -18,7 +17,6 @@ namespace Prado;
  * TEventResults class
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado
  */
 class TEventResults extends \Prado\TEnumerable
 {

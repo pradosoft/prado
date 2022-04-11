@@ -5,7 +5,6 @@
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -19,7 +18,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TTabViewCollection is used to maintain a list of views belong to a {@link TTabPanel}.
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TTabViewCollection extends \Prado\Web\UI\TControlCollection

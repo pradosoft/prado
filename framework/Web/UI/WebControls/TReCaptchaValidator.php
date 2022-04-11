@@ -6,7 +6,6 @@
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @link http://www.devworx.hu/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -26,7 +25,6 @@ use Prado\Web\Javascripts\TJavaScript;
  * to be the ID path of the {@link TReCaptcha} control.
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 class TReCaptchaValidator extends TBaseValidator

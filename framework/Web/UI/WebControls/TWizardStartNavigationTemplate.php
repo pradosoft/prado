@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -15,7 +14,6 @@ namespace Prado\Web\UI\WebControls;
  * TWizardStartNavigationTemplate is the template used as default wizard start navigation panel.
  * It consists of two buttons, Next and Cancel.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TWizardStartNavigationTemplate extends TWizardNavigationTemplate

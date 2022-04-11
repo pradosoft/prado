@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -29,7 +28,6 @@ use Prado\TPropertyValue;
  * Make sure it does not contain dangerous characters that you want to avoid.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDataRenderer

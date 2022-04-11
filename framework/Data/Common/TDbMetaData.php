@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common
  */
 
 namespace Prado\Data\Common;
@@ -25,7 +24,6 @@ use Prado\Prado;
  * Use the {@link getTableInfo} method to retrieve a table information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common
  * @since 3.1
  */
 abstract class TDbMetaData extends \Prado\TComponent

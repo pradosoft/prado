@@ -5,7 +5,6 @@
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -32,7 +31,6 @@ use Prado\TPropertyValue;
  * {@link setContinueBuffering ContinueBuffering}.
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
- * @package Prado\Web\UI\WebControls
  * @since 3.1
  */
 class TFlushOutput extends \Prado\Web\UI\TControl

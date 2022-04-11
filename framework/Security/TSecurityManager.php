@@ -6,7 +6,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security;
@@ -44,7 +43,6 @@ use Prado\TPropertyValue;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Security
  * @since 3.0
  */
 class TSecurityManager extends \Prado\TModule

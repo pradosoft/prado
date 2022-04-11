@@ -6,7 +6,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado\Util;
@@ -23,10 +22,8 @@ use Prado\Exceptions\TConfigurationException;
  * all TDbPluginModule::ConnectionID with one setting.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado
  * @since 4.2.0
  */
-
 class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 {
 	/**

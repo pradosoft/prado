@@ -6,7 +6,6 @@
  * @author Marcos Nobre <marconobre[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common\Oracle
  */
 
 namespace Prado\Data\Common\Oracle;
@@ -19,7 +18,6 @@ use Prado\Prado;
  * TDbTableInfo class describes the meta data of a database table.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common\Oracle
  * @since 3.1
  */
 class TOracleTableInfo extends \Prado\TComponent

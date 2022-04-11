@@ -3,7 +3,6 @@
  * TActiveRepeater class file
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
 
@@ -26,15 +25,14 @@ use Prado\Web\UI\WebControls\TRepeater;
  * Please refer to the original documentation of the regular counterparts for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
 class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 {
-  /**
-   * @var string the tag used to render the surrounding container
-   */
+	/**
+	 * @var string the tag used to render the surrounding container
+	 */
 	protected $_surroundingTag = 'div';
 
 	/**

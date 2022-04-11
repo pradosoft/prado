@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Collections;
@@ -17,7 +16,6 @@ namespace Prado\Collections;
  * prioritize themselves in a TPriorityList or TPriorityMap
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Collections
  * @since 4.2.0
  */
 interface IPriorityItem

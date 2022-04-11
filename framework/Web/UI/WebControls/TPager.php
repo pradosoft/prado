@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -49,7 +48,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  * Multiple pagers can be associated with the same data-bound control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0.2
  */
 class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\INamingContainer

@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -61,7 +60,6 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * this module is loaded again.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
  */

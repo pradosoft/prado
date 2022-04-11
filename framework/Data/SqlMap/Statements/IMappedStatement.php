@@ -3,7 +3,6 @@
  * IMappedStatement interface file.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Statements
  */
 
 namespace Prado\Data\SqlMap\Statements;
@@ -12,7 +11,6 @@ namespace Prado\Data\SqlMap\Statements;
  * Interface for all mapping statements.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
 interface IMappedStatement

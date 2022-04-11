@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -29,7 +28,6 @@ use Prado\Web\UI\INamingContainer;
  * {@link TContent} and {@link TContentPlaceHolder} controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TContent extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INamingContainer

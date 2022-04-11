@@ -4,7 +4,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -21,7 +20,6 @@ use Prado\Web\THttpResponse;
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package Prado\Web\Services
  * @since 3.2
  */
 class TJsonRpcProtocol extends TRpcProtocol

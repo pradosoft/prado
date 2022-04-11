@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold;
@@ -32,7 +31,6 @@ use Prado\Web\UI\WebControls\TTextBox;
  * are database dependent).
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 class TScaffoldSearch extends TScaffoldBase

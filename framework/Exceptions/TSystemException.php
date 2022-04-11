@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Exceptions
  */
 
 namespace Prado\Exceptions;
@@ -16,7 +15,6 @@ namespace Prado\Exceptions;
  * TSystemException is the base class for all framework-level exceptions.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Exceptions
  * @since 3.0
  */
 class TSystemException extends TException

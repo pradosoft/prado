@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -35,7 +34,6 @@ use Prado\TPropertyValue;
  * in the collection storage.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Collections
  * @since 3.0
  */
 class TAttributeCollection extends TMap

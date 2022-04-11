@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Configuration
  */
 
 namespace Prado\Data\SqlMap\Configuration;
@@ -28,7 +27,6 @@ use Prado\Prado;
  * description
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
@@ -82,8 +80,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 
 		if ($bCacheDependencies) {
 			$this->_manager->getCacheDependencies()
-					->getDependencies()
-					->add(new TFileCacheDependency($filename));
+				->getDependencies()
+				->add(new TFileCacheDependency($filename));
 		}
 
 		foreach ($document->xpath('//resultMap') as $node) {

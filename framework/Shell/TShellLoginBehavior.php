@@ -29,11 +29,9 @@ use Prado\Prado;
  * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Shell
  * @since 4.2.0
  * @method \Prado\Security\TAuthManager getOwner()
  */
-
 class TShellLoginBehavior extends \Prado\Util\TBehavior
 {
 	/** @var string user name for login */

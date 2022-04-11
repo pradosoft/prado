@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util\Cron
  */
 
 namespace Prado\Util\Cron;
@@ -58,7 +57,6 @@ use Prado\Xml\TXmlDocument;
  * switched the application user properly.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  * @method void dyLogCron($numtasks)
  * @method void dyLogCronTask($task, $username)
@@ -67,7 +65,6 @@ use Prado\Xml\TXmlDocument;
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
-
 class TCronModule extends \Prado\TModule implements IPermissions
 {
 	/** The behavior name for the Shell Log behavior */

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -87,7 +86,6 @@ use Prado\Util\Cron\TCronTaskInfo;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Caching
  * @since 3.1.0
  */
 class TDbCache extends TCache implements \Prado\Util\IDbModule

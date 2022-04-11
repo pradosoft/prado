@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -49,14 +48,13 @@ use Prado\Exceptions\TConfigurationException;
  * </code>
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Caching
  * @since 4.0
  */
 class TEtcdCache extends TCache
 {
-  /**
-   * @var string the etcd host
-   */
+	/**
+	 * @var string the etcd host
+	 */
 	protected $_host = 'localhost';
 
 	/**

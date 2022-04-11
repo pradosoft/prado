@@ -5,7 +5,6 @@
  * @author Fabio Bas <fbio.bas@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -17,7 +16,6 @@ namespace Prado\Util;
  * strings from and to UTF-8.
  *
  * @author Fabio Bas <fbio.bas@gmail.com>
- * @package Prado\Util
  * @since 4.0.2
  */
 class TUtf8Converter

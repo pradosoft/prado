@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security;
@@ -21,7 +20,6 @@ namespace Prado\Security;
  * - SHA1: the password is recorded as the SHA1 hash value of the original password
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Security
  * @since 3.0.4
  */
 class TUserManagerPasswordMode extends \Prado\TEnumerable

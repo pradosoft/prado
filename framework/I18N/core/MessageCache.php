@@ -2,7 +2,6 @@
 /**
  * Translation table cache.
  * @author $Author: weizhuo $
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -17,7 +16,6 @@ require_once(__DIR__ . '/TCache_Lite.php');
 /**
  * Cache the translation table into the file system.
  * It can cache each cataloug+variant or just the whole section.
- * @package Prado\I18N\core
  * @author $Author: weizhuo $
  */
 class MessageCache

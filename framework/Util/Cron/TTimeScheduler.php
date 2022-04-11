@@ -38,7 +38,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  * Spanish, French, Italian, Russian, and Hindi and their abbreviations.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  *
  */

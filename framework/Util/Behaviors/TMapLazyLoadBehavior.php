@@ -26,7 +26,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * is not found in the TMap or TPriorityMap.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TMapLazyLoadBehavior extends TBehavior

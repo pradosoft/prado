@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -67,7 +66,6 @@ use Prado\Xml\TXmlElement;
  * in the GET variables.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web
  * @since 3.0.5
  */
 class TUrlMapping extends TUrlManager

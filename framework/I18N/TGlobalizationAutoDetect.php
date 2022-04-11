@@ -5,7 +5,6 @@
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\I18N
  */
 
 namespace Prado\I18N;
@@ -19,7 +18,6 @@ namespace Prado\I18N;
  * <module id="globalization" class="TGlobalizationAutoDetect" charset="UTF-8" DefaultCulture="it" TranslateDefaultCulture="false" AvailableLanguages="it, en">
  * </code>
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package Prado\I18N
  */
 class TGlobalizationAutoDetect extends TGlobalization
 {

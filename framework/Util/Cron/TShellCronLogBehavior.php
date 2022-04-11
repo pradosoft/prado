@@ -21,7 +21,6 @@ use Prado\Util\TCallChain;
  * and basic dyWrite, dyWriteLine, and dyFlush functionality.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  */
 class TShellCronLogBehavior extends TBehavior

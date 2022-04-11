@@ -6,7 +6,6 @@
  * @author Schlaue-Kids.net <info@schlaue-kids.net>
  * @link http://www.schlaue-kids.net/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -24,7 +23,6 @@ use Prado\Exceptions\TConfigurationException;
  *
  * @author Schlaue-Kids.net <info@schlaue-kids.net>
  * @author Kyle Caine
- * @package Prado\Web\UI
  * @since 3.1.8
  */
 class TTemplateControlInheritable extends TTemplateControl

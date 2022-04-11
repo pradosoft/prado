@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core\Gettext
  */
 
 namespace Prado\I18N\core\Gettext;
@@ -39,7 +38,6 @@ use Prado\Prado;
  * @author      Michael Wallner <mike@php.net>
  * @license     PHP License
  */
-
 require_once __DIR__ . '/TGettext.php';
 
 /**
@@ -49,7 +47,6 @@ require_once __DIR__ . '/TGettext.php';
  *
  * @author      Michael Wallner <mike@php.net>
  * @access      public
- * @package Prado\I18N\core\Gettext
  */
 class TGettext_MO extends TGettext
 {

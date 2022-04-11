@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -26,7 +25,6 @@ namespace Prado\Web\UI\WebControls;
  * http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TJavascriptLogger extends \Prado\Web\UI\WebControls\TWebControl

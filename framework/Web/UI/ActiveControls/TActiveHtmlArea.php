@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -25,7 +24,6 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * Please refer to the original documentation of {@see THtmlArea} for basic usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\ActiveControls
  * @since 4.0
  * @method TActiveControlAdapter getAdapter()
  */

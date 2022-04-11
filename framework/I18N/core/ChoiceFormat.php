@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -75,7 +74,6 @@ use Exception;
  * Additional round brackets can also be used to perform grouping.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 class ChoiceFormat
 {

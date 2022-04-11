@@ -6,7 +6,6 @@
  * @author LANDWEHR Computer und Software GmbH
  * @link https://github.com/pradosoft/prado4
  * @license https://github.com/pradosoft/prado4/blob/master/LICENSE
- * @package Prado\Caching
  */
 
 namespace Prado\Caching;
@@ -78,9 +77,7 @@ use Prado\Xml\TXmlElement;
  * @author Jens Klaer <kj.landwehr.software@gmail.com>
  * @author LANDWEHR Computer und Software GmbH
  * @since 4.0
- * @package Prado\Caching
  */
-
 class TRedisCache extends TCache
 {
 	/**

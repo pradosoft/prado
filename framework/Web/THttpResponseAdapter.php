@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -19,7 +18,6 @@ use Prado\Exceptions\TInvalidOperationException;
  * without change the class hierarchy.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web
  * @since 3.0
  */
 class THttpResponseAdapter extends \Prado\TApplicationComponent

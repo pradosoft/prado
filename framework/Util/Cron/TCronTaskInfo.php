@@ -21,10 +21,8 @@ use Prado\TPropertyValue;
  * or a module id with method and parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  */
-
 class TCronTaskInfo extends \Prado\TComponent
 {
 	/** @var string the short reference name of the task  */

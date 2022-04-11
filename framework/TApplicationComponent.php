@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -30,7 +29,6 @@ use Prado\TApplicationMode;
  * publishing private files: {@link publishAsset} and {@link publishFilePath}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.0
  */
 class TApplicationComponent extends \Prado\TComponent

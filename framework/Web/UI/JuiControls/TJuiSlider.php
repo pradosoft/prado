@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -42,7 +41,6 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * </code>
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\JuiControls
  * @since 4.0
  */
 class TJuiSlider extends TActivePanel implements IJuiOptions, ICallbackEventHandler

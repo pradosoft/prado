@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Javascripts
  */
 
 namespace Prado\Web\Javascripts;
@@ -22,7 +21,6 @@ use Prado\Web\THttpUtility;
  * This renders the html script tag (with or w/o async) via __toString.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Web\Javascripts
  * @since 4.2.0
  */
 class TJavaScriptAsset

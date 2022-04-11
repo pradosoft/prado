@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -19,7 +18,6 @@ use stdClass;
  * Tracking changes to the page state during callback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 class TCallbackPageStateTracker

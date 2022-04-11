@@ -13,7 +13,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -40,7 +39,6 @@ use Exception;
  * Memory Caching is from an original idea of
  * Mike BENOIT <ipso@snappymail.ca>
  *
- * @package Prado\I18N\core
  * @author Fabien MARTY <fab@php.net>
  * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
  * @link       http://pear.php.net/package/Cache_Lite

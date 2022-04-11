@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\I18N
  */
 
 namespace Prado\I18N;
@@ -44,7 +43,6 @@ use Prado\Util\TUtf8Converter;
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\I18N
  */
 class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {

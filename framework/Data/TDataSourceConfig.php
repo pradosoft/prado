@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data
  */
 
 namespace Prado\Data;
@@ -44,7 +43,6 @@ use Prado\TApplication;
  * that extends the TDbConnection class.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data
  * @since 3.1
  */
 class TDataSourceConfig extends \Prado\TModule

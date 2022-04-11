@@ -6,7 +6,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Configuration
  */
 
 namespace Prado\Data\SqlMap\Configuration;
@@ -17,7 +16,6 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
  * TSqlMapSelect corresponds to the <selectKey> element.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TSqlMapSelectKey extends TSqlMapStatement

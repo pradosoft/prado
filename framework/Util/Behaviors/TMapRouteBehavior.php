@@ -33,7 +33,6 @@ use Prado\Util\TBehavior;
  * changes in the Application Parameters.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TMapRouteBehavior extends TBehavior

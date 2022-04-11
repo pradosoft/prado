@@ -6,7 +6,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -90,7 +89,6 @@ use Prado\Xml\TXmlDocument;
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
- * @package Prado\Web\Services
  * @since 3.1
  */
 class TSoapService extends \Prado\TService

@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -31,7 +30,6 @@ use Prado\Util\TSimpleDateFormatter;
  * </code>
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOptions

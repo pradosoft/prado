@@ -16,7 +16,6 @@ use Prado\Collections\TList;
  * the {@link IDynamicMethods} class so that any 'dy' event calls can be caught
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
- * @package Prado\Util
  * @since 3.2.3
  * @method mixed dyLoadPageConfigurationFromPhp($config, $configPath, $configPagePath)
  * @method mixed dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath)

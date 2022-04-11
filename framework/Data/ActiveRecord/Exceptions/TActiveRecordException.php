@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Exceptions
  */
 
 namespace Prado\Data\ActiveRecord\Exceptions;
@@ -17,7 +16,6 @@ use Prado\Prado;
  * Base exception class for Active Records.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Exceptions
  * @since 3.1
  */
 class TActiveRecordException extends TDbException

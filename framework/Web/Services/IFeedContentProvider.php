@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -18,7 +17,6 @@ namespace Prado\Web\Services;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @package Prado\Web\Services
  * @since 3.1
  */
 interface IFeedContentProvider

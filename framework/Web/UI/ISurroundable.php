@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -17,7 +16,6 @@ namespace Prado\Web\UI;
  * tag can be obtained with {@link getSurroundingTagID}, the tag used to render the
  * surrounding container is obtained by {@link getSurroundingTag}.
  *
- * @package Prado\Web\UI
  * @since 3.1.2
  */
 interface ISurroundable

@@ -5,7 +5,6 @@
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -44,7 +43,6 @@ use Prado\TPropertyValue;
  * - ClientSide.onChange is called when the slider value has changed (at the end of a move).
  *
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IPostBackDataHandler, \Prado\IDataRenderer

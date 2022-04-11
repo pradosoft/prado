@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\IO
  */
 
 namespace Prado\IO;
@@ -17,7 +16,6 @@ namespace Prado\IO;
  * when {@link flush}ed.  This allows for testing of the Shell output.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\IO
  * @since 4.2.0
  */
 class TOutputWriter extends TTextWriter

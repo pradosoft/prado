@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -40,7 +39,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  * See {@link https://gravatar.com} for more information.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Web\UI\WebControls
  * @since 4.2.0
  */
 class TGravatar extends TImage

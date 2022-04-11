@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -21,7 +20,6 @@ namespace Prado\Web\UI\WebControls;
  * - LinkButton: the bulleted list items are displayed as link buttons that can cause postbacks
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
 class TBulletedListDisplayMode extends \Prado\TEnumerable

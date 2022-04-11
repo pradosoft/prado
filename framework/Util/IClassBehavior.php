@@ -9,7 +9,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -41,7 +40,6 @@ namespace Prado\Util;
  * </code>
  *
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado\Util
  * @since 3.2.3
  */
 interface IClassBehavior extends IBaseBehavior

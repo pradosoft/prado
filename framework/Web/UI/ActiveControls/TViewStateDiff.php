@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -14,7 +13,6 @@ namespace Prado\Web\UI\ActiveControls;
  * Calculates the viewstate changes during the request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 abstract class TViewStateDiff

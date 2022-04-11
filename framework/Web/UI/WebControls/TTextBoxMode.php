@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -38,7 +37,6 @@ namespace Prado\Web\UI\WebControls;
  * In order to use the new types introduced with html5, you need to declare a proper
  * html doctype and use a browser supporting the specific inut type.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0.4
  */
 class TTextBoxMode extends \Prado\TEnumerable

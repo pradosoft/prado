@@ -6,7 +6,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  * @since 3.1.1
  */
 
@@ -39,7 +38,6 @@ use Prado\Exceptions\TConfigurationException;
  *
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web
  * @since 3.1.1
  */
 class TCacheHttpSession extends THttpSession

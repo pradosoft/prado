@@ -12,7 +12,6 @@ namespace Prado\Util;
 /**
  * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Util
  * @since 3.2.3
  */
 class TBehavior extends \Prado\TComponent implements IBehavior

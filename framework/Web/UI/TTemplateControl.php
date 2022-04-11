@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -29,7 +28,6 @@ use Prado\Data\ActiveRecord\TActiveRecord;
  * different extension name. For template file, the extension name is ".tpl".
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI
  * @since 3.0
  * @method \Prado\Web\Services\TPageService getService()
  */
@@ -257,7 +255,7 @@ class TTemplateControl extends TCompositeControl
 	 * Function to update view controls with data in a given AR object.
 	 * View controls and AR object need to have the same name in IDs and Attrs respectively.
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
-	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
+	 * @param bool $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
 	public function tryToUpdateView($arObj, $throwExceptions = false)
@@ -303,7 +301,7 @@ class TTemplateControl extends TCompositeControl
 	/**
 	 * Function to try to update an AR object with data in view controls.
 	 * @param \Prado\Data\ActiveRecord\TActiveRecord $arObj
-	 * @param Boolean $throwExceptions Wheter or not to throw exceptions
+	 * @param bool $throwExceptions Wheter or not to throw exceptions
 	 * @author Daniel Sampedro <darthdaniel85@gmail.com>
 	 */
 	public function tryToUpdateAR($arObj, $throwExceptions = false)

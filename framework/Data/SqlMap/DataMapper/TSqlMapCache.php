@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\DataMapper
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
@@ -21,7 +20,6 @@ use Prado\TPropertyValue;
  * a least-recently-used cache implementation.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 abstract class TSqlMapCache implements ICache

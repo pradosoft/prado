@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security\Permissions
  */
 
 namespace Prado\Security\Permissions;
@@ -20,7 +19,6 @@ use Prado\Security\TAuthorizationRule;
  * has a user name that matches the parameter user name.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Security\Permissions
  * @since 4.2.0
  */
 class TUserOwnerRule extends TAuthorizationRule

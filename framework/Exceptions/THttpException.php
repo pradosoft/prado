@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Exceptions
  */
 
 namespace Prado\Exceptions;
@@ -20,7 +19,6 @@ use Prado\TPropertyValue;
  * It is used by {@link TErrorHandler} to provide different error output to users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Exceptions
  * @since 3.0
  */
 class THttpException extends TSystemException

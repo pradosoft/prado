@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell
  */
 
 namespace Prado\Shell;
@@ -40,7 +39,6 @@ use Prado\Shell\TShellWriter;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com> shell refactor
- * @package Prado\Shell
  * @since 3.1.0
  */
 class TShellApplication extends \Prado\TApplication

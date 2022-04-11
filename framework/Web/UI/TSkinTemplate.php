@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI
  */
 
 namespace Prado\Web\UI;
@@ -17,7 +16,6 @@ namespace Prado\Web\UI;
  * have class objects that are not implemented to be more portable.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Web\UI
  * @since 4.2.0
  */
 class TSkinTemplate extends TTemplate

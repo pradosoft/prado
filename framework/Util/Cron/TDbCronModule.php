@@ -41,7 +41,6 @@ use Prado\Util\TLogger;
  * before the page completes.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  * @method bool dyClearCronLog(bool $return, int $seconds)
  * @method bool dyGetCronLog(bool $return, string $name, int $pageSize, int $offset, string $sortingDesc)
@@ -51,7 +50,6 @@ use Prado\Util\TLogger;
  * @method bool dyUpdateTask(bool $return, \Prado\Util\Cron\TCronTask $task, array $extraData)
  * @method bool dyRemoveTask(bool $return, \Prado\Util\Cron\TCronTask|string $untask, array $extraData)
  */
-
 class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 {
 	/** Name Regular Expression, no spaces, single or double quotes, less than or greater than, no percent, and cannot start with star */

@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common\Pgsql
  */
 
 namespace Prado\Data\Common\Pgsql;
@@ -21,7 +20,6 @@ use Prado\Prado;
  * TPgsqlMetaData loads PostgreSQL database table and column information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common\Pgsql
  * @since 3.1
  */
 class TPgsqlMetaData extends TDbMetaData

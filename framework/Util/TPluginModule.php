@@ -6,7 +6,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado\Util;
@@ -38,10 +37,8 @@ use ReflectionClass;
  *  </parameters>
  * </code>
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado
  * @since 4.2.0
  */
-
 class TPluginModule extends \Prado\TModule implements IPluginModule
 {
 	/** Module pages directory for finding pages of a module	 */

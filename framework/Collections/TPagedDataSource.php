@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -28,7 +27,6 @@ use Prado\TPropertyValue;
  * within the specified page will be returned and traversed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Collections
  * @since 3.0
  */
 class TPagedDataSource extends \Prado\TComponent implements \IteratorAggregate, \Countable

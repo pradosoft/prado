@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\I18N
  */
 
 namespace Prado\I18N;
@@ -71,7 +70,6 @@ use Prado\Prado;
  * Additional round brackets can also be used to perform grouping.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N
  */
 class TChoiceFormat extends TTranslate
 {

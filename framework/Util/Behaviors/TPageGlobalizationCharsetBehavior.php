@@ -21,7 +21,6 @@ use Prado\Web\UI\WebControls\TMetaTag;
  * meta to the head from globalization.  If there is no globalization,
  * the default charset is used, 'utf-8'.
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -33,7 +32,6 @@ use Prado\Web\UI\ActiveControls\IActiveControl;
  * The alignment of the text besides each checkbox can be specified via {@link setTextAlign TextAlign}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  * @method TTableStyle getStyle()
  * @method TActiveControlAdapter getAdapter()

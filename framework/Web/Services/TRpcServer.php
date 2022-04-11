@@ -4,7 +4,6 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @since 3.2
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -21,7 +20,6 @@ namespace Prado\Web\Services;
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
- * @package Prado\Web\Services
  * @since 3.2
  **/
 class TRpcServer extends \Prado\TModule

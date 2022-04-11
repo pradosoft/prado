@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\Common\Mysql
  */
 
 namespace Prado\Data\Common\Mysql;
@@ -26,7 +25,6 @@ use Prado\Prado;
  * See http://netevil.org/node.php?nid=795&SC=1
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\Common\Mysql
  * @since 3.1
  */
 class TMysqlMetaData extends TDbMetaData

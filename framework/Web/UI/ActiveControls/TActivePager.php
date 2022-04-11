@@ -5,7 +5,6 @@
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -30,7 +29,6 @@ use Prado\Web\UI\WebControls\TWebControl;
  * and it is raise <b>after</b> the {@link onPageIndexChanged OnPageIndexChanged} event.
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1.2
  * @method TActiveControlAdapter getAdapter()
  */
@@ -69,7 +67,6 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
-
 	public function raiseCallbackEvent($param)
 	{
 		$this->onCallback($param);
@@ -82,7 +79,6 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 * handler can be invoked.
 	 * @param TCallbackEventParameter $param event parameter to be passed to the event handlers
 	 */
-
 	public function onCallback($param)
 	{
 		$this->raiseEvent('OnCallback', $this, $param);

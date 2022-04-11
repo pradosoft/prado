@@ -5,7 +5,6 @@
  * @author Marcus Nyeholt <tanus@users.sourceforge.net> and Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -20,7 +19,6 @@ namespace Prado\Web\UI\WebControls;
  * id, http-equiv, name, content, scheme and charset * attributes for a meta tag, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TMetaTag extends \Prado\TComponent

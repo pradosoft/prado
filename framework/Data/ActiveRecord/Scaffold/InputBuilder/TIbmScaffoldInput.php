@@ -5,7 +5,6 @@
  * @author Cesar Ramos <cramos[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
@@ -17,9 +16,7 @@ use Prado\Prado;
  *
  * @author Cesar Ramos <cramos[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
-
 class TIbmScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)

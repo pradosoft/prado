@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data
  */
 
 namespace Prado\Data;
@@ -38,7 +37,6 @@ use Prado\Prado;
  * You may also call {@link prepare} to explicitly prepare an SQL statement.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Data
  * @since 3.0
  */
 class TDbCommand extends \Prado\TComponent
@@ -198,7 +196,7 @@ class TDbCommand extends \Prado\TComponent
 	}
 
 	/**
-	 * @return String prepared SQL text for debugging purposes.
+	 * @return string prepared SQL text for debugging purposes.
 	 */
 	public function getDebugStatementText()
 	{

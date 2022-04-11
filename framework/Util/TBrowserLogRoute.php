@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -19,7 +18,6 @@ use Prado\Web\THttpUtility;
  * TBrowserLogRoute prints selected log messages in the response.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Util
  * @since 3.0
  */
 class TBrowserLogRoute extends TLogRoute

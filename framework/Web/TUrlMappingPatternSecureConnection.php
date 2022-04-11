@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -17,7 +16,6 @@ namespace Prado\Web;
  * URL prefix behavior that can be used by {@link TUrlMappingPattern::constructUrl()}.
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
- * @package Prado\Web
  * @since 3.2
  */
 class TUrlMappingPatternSecureConnection extends \Prado\TEnumerable

@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -17,7 +16,6 @@ use Prado\Web\UI\ITemplate;
  * TWizardNavigationTemplate class.
  * TWizardNavigationTemplate is the base class for various navigation templates.
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate

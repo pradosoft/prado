@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell\Actions
  */
 
 namespace Prado\Shell\Actions;
@@ -21,7 +20,6 @@ use Prado\TPropertyValue;
  * The indexes, gets, and sets the TDbParameterModule.
  *
  * @author Brad Anderson <belisoful[at]icloud[dot]com>
- * @package Prado\Shell\Actions
  * @since 4.2.0
  */
 class TDbParameterAction extends TShellAction

@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -24,7 +23,6 @@ use Prado\Exceptions\TException;
  * data.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 class TMessageSourceIOException extends TException
 {

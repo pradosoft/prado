@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Util
  */
 
 namespace Prado\Util;
@@ -22,7 +21,6 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  * {@link http://www.getfirebug.com/ FireBug Website}
  *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
- * @package Prado\Util
  * @since 3.1.2
  * @method \Prado\Web\Services\TPageService getService()
  */

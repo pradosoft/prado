@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Relations
  */
 
 namespace Prado\Data\ActiveRecord\Relations;
@@ -57,7 +56,6 @@ namespace Prado\Data\ActiveRecord\Relations;
  * arguments as other finder methods of TActiveRecord, e.g. <tt>with_players('age < ?', 35)</tt>.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Relations
  * @since 3.1
  */
 class TActiveRecordHasMany extends TActiveRecordRelation

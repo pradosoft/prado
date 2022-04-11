@@ -5,7 +5,6 @@
  * @author Sergey Morkovkin <sergeymorkovkin@mail.ru> and Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 
@@ -37,7 +36,6 @@ use Prado\Web\Javascripts\TJavaScript;
  * also be changed by specifying {@link setKeyboardCssClass KeyboardCssClass}.
  *
  * @author Sergey Morkovkin <sergeymorkovkin@mail.ru> and Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.1.1
  */
 class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl

@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord
  */
 
 namespace Prado\Data\ActiveRecord;
@@ -20,7 +19,6 @@ namespace Prado\Data\ActiveRecord;
  * - Exception: throws a TActiveRecordException
  *
  * @author Yves Berkholz <godzilla80@gmx.net>
- * @package Prado\Data\ActiveRecord
  * @see TActiveRecordManager::setInvalidFinderResult
  * @see TActiveRecordConfig::setInvalidFinderResult
  * @see TActiveRecord::setInvalidFinderResult

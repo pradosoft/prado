@@ -35,7 +35,6 @@ use Prado\Util\TBehavior;
  * to {@link setTimeZone}. The default TimeZoneParameter is 'prop:TimeZone'.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
 class TTimeZoneParameterBehavior extends TBehavior

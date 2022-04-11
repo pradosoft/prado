@@ -6,7 +6,6 @@
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -24,7 +23,6 @@ namespace Prado\Web\UI\ActiveControls;
  * as parameter to this event
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.2.1
  */
 class TActiveDatePickerClientScript extends TCallbackClientSide

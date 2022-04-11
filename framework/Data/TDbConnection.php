@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data
  */
 
 namespace Prado\Data;
@@ -81,7 +80,6 @@ use Prado\TPropertyValue;
  * of certain DBMS attributes, such as {@link getNullConversion NullConversion}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Data
  * @since 3.0
  */
 class TDbConnection extends \Prado\TComponent

@@ -4,7 +4,6 @@
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
@@ -15,9 +14,7 @@ use Prado\Prado;
  * TMssqlScaffoldInput class.
  *
  * @link https://github.com/pradosoft/prado
- * @package Prado\Data\ActiveRecord\Scaffold\InputBuilder
  */
-
 class TMssqlScaffoldInput extends TScaffoldInputCommon
 {
 	protected function createControl($container, $column, $record)

@@ -6,7 +6,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Configuration
  */
 
 namespace Prado\Data\SqlMap\Configuration;
@@ -28,7 +27,6 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry;
  * statement can return a database-generated key.)
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Configuration
  * @since 3.1
  */
 class TSqlMapStatement extends \Prado\TComponent

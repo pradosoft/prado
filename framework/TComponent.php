@@ -10,7 +10,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -294,7 +293,6 @@ use Prado\Collections\TPriorityMap;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@mac.com>
- * @package Prado
  * @since 3.0
  * @method void dyListen(array $globalEvents)
  * @method void dyUnlisten(array $globalEvents)

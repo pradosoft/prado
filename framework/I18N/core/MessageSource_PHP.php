@@ -12,7 +12,6 @@
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.0
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -33,7 +32,6 @@ use Prado\Prado;
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.0
- * @package Prado\I18N\core
  */
 class MessageSource_PHP extends MessageSource
 {

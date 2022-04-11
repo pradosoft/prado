@@ -3,7 +3,6 @@
  * TTarFileExtractor class file
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @package Prado\IO
  */
 
 namespace Prado\IO;
@@ -33,7 +32,6 @@ use Prado\Prado;
  * TTarFileExtractor class
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @package Prado\IO
  * @since 3.0
  */
 class TTarFileExtractor

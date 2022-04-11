@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -18,7 +17,6 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TTableCellCollection is used to maintain a list of cells belong to a table row.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 class TTableCellCollection extends \Prado\Web\UI\TControlCollection

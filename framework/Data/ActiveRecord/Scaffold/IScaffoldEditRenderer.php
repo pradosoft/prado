@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\ActiveRecord\Scaffold
  */
 
 namespace Prado\Data\ActiveRecord\Scaffold;
@@ -19,7 +18,6 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  * that is called before the save() method is called on the TActiveRecord.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\ActiveRecord\Scaffold
  * @since 3.1
  */
 interface IScaffoldEditRenderer extends \Prado\IDataRenderer

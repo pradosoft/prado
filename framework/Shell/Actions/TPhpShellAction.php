@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell\Actions
  */
 
 namespace Prado\Shell\Actions;
@@ -18,7 +17,6 @@ use Prado\Shell\TShellAction;
  *
  * @author Brad Anderson <belisoful[at]icloud[dot]com> shell refactor
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Shell\Actions
  * @since 3.0.5
  */
 class TPhpShellAction extends TShellAction

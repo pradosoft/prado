@@ -8,7 +8,6 @@ namespace Prado\Data\SqlMap\DataMapper;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\DataMapper
  */
 
 /**
@@ -16,7 +15,6 @@ namespace Prado\Data\SqlMap\DataMapper;
  * object that was first added when the cache is full.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TSqlMapFifoCache extends TSqlMapCache

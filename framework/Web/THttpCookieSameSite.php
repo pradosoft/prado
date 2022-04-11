@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -27,7 +26,6 @@ namespace Prado\Web;
  * Please note that this feature requires PHP 7.3.0
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
- * @package Prado\Web
  * @since 4.1.2
  */
 class THttpCookieSameSite extends \Prado\TEnumerable

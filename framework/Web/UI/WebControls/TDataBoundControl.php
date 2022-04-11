@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -43,7 +42,6 @@ use Prado\Collections\TMap;
  * custom paging, set {@link setAllowCustomPaging AllowCustomPaging} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Web\UI\WebControls
  * @since 3.0
  */
 abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl

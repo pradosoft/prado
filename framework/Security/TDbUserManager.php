@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security;
@@ -43,7 +42,6 @@ use Prado\Util\IDbModule;
  * which specifies how to establish database connection to retrieve user information.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Security
  * @since 3.1.0
  */
 class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule

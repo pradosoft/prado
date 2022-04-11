@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\DataMapper
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
@@ -39,7 +38,6 @@ use Prado\Exceptions\TInvalidDataValueException;
  * </code>
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 class TPropertyAccess

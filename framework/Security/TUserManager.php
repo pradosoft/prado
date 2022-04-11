@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Security
  */
 
 namespace Prado\Security;
@@ -68,7 +67,6 @@ use Prado\Xml\TXmlDocument;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl Mathisen <carl@kamikazemedia.no>
- * @package Prado\Security
  * @since 3.0
  */
 class TUserManager extends \Prado\TModule implements IUserManager

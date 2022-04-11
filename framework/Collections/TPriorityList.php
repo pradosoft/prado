@@ -5,7 +5,6 @@
  * @author Brad Anderson <javalizard@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -48,7 +47,6 @@ use Prado\TPropertyValue;
  * override {@link insertAtIndexInPriority()} and {@link removeAtIndexInPriority()} and then call the parent.
  *
  * @author Brad Anderson <javalizard@gmail.com>
- * @package Prado\Collections
  * @since 3.2a
  */
 class TPriorityList extends TList

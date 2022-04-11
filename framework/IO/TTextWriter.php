@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\IO
  */
 
 namespace Prado\IO;
@@ -18,7 +17,6 @@ namespace Prado\IO;
  * and can be obtained by calling {@link flush()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\IO
  * @since 3.0
  */
 class TTextWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter

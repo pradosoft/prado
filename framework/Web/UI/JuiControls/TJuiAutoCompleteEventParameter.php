@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -20,7 +19,6 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * suggestion selected by the user, -1 if not suggestion is selected.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\JuiControls
  * @since 3.1
  */
 class TJuiAutoCompleteEventParameter extends TCallbackEventParameter

@@ -5,7 +5,6 @@
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Shell
  */
 
 namespace Prado\Shell;
@@ -19,7 +18,6 @@ use Prado\TPropertyValue;
  * with color, and processes other commands to the terminal to another ITextWriter.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Shell
  * @since 4.2.0
  */
 class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter

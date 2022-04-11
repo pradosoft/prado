@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\DataMapper
  */
 
 namespace Prado\Data\SqlMap\DataMapper;
@@ -24,7 +23,6 @@ namespace Prado\Data\SqlMap\DataMapper;
  * booleans using "Y" and "N" instead of the more typical 0/1.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\DataMapper
  * @since 3.1
  */
 abstract class TSqlMapTypeHandler extends \Prado\TComponent

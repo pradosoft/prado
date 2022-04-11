@@ -6,7 +6,6 @@
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @link http://www.devworx.hu/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -52,7 +51,6 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  * </code>
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
- * @package Prado\Web\UI\WebControls
  * @since 3.2
  */
 class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web\UI\IValidatable

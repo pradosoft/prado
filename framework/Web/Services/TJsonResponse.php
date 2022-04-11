@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\Services
  */
 
 namespace Prado\Web\Services;
@@ -20,7 +19,6 @@ namespace Prado\Web\Services;
  * will be empty if the returned content is null.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\Services
  * @since 3.1
  */
 abstract class TJsonResponse extends \Prado\TApplicationComponent

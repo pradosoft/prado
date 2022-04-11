@@ -5,7 +5,6 @@
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\JuiControls
  */
 
 namespace Prado\Web\UI\JuiControls;
@@ -30,7 +29,6 @@ use Prado\Web\UI\TControl;
  * for any event for which an handler is defined in the control.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package Prado\Web\UI\JuiControls
  * @since 3.3
  */
 class TJuiControlOptions
@@ -134,7 +132,7 @@ class TJuiControlOptions
 	}
 
 	/**
-	 * @return Array of active control options
+	 * @return array of active control options
 	 */
 	public function toArray()
 	{

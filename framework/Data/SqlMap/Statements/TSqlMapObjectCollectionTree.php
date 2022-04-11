@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Statements
  */
 
 namespace Prado\Data\SqlMap\Statements;
@@ -22,7 +21,6 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
  * build using the {@link collect} method.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
 class TSqlMapObjectCollectionTree extends \Prado\TComponent

@@ -34,10 +34,8 @@ use Prado\TPropertyValue;
  * folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Behaviors
  * @since 4.2.0
  */
-
 class TBehaviorParameterLoader extends TComponent
 {
 	/** @var string name of the behavior attaching to the owner */

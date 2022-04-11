@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -16,7 +15,6 @@ namespace Prado\Web\UI\ActiveControls;
  * Calculate the changes to a scalar value.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1
  */
 class TScalarDiff extends TViewStateDiff

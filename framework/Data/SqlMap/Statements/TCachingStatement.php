@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Data\SqlMap\Statements
  */
 
 namespace Prado\Data\SqlMap\Statements;
@@ -17,7 +16,6 @@ use Prado\Data\SqlMap\Configuration\TSqlMapStatement;
  * TCacheingStatement class.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Data\SqlMap\Statements
  * @since 3.1
  */
 class TCachingStatement extends \Prado\TComponent implements IMappedStatement

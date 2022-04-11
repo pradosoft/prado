@@ -5,7 +5,6 @@
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link http://www.landwehr-software.de/
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\ActiveControls
  */
 
 namespace Prado\Web\UI\ActiveControls;
@@ -34,7 +33,6 @@ use Prado\Web\UI\WebControls\TLiteralColumn;
  * Please refer to the original documentation of the {@link TLiteralColumn} for usage.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @package Prado\Web\UI\ActiveControls
  * @since 3.1.9
  */
 class TActiveLiteralColumn extends TLiteralColumn

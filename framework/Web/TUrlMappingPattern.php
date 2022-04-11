@@ -5,7 +5,6 @@
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web
  */
 
 namespace Prado\Web;
@@ -112,7 +111,6 @@ use Prado\TPropertyValue;
  * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\Web
  * @since 3.0.5
  */
 class TUrlMappingPattern extends \Prado\TComponent

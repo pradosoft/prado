@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Collections
  */
 
 namespace Prado\Collections;
@@ -31,7 +30,6 @@ use Prado\Exceptions\TInvalidOperationException;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
- * @package Prado\Collections
  * @since 3.1
  */
 class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable

@@ -6,7 +6,6 @@
  * @author Cristian Camilo Naranjo Valencia
  * @link http://icolectiva.co
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Web\UI\WebControls
  */
 
 namespace Prado\Web\UI\WebControls;
@@ -54,11 +53,9 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * </code>
  *
  * @author Cristian Camilo Naranjo Valencia
- * @package Prado\Web\UI\WebControls
  * @since 3.3.1
  * @method TActiveControlAdapter getAdapter()
  */
-
 class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\ICallbackEventHandler, \Prado\Web\UI\IValidatable
 {
 	public const ChallengeFieldName = 'g-recaptcha-response';

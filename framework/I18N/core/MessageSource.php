@@ -12,7 +12,6 @@
  * {@link http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 
 namespace Prado\I18N\core;
@@ -68,7 +67,6 @@ require_once(__DIR__ . '/MessageCache.php');
  * </code>
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @package Prado\I18N\core
  */
 abstract class MessageSource implements IMessageSource
 {

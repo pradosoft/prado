@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado\Xml
  */
 
 namespace Prado\Xml;
@@ -58,7 +57,6 @@ use Prado\Exceptions\TIOException;
  * </code>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado\Xml
  * @since 3.0
  */
 class TXmlDocument extends TXmlElement

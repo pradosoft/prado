@@ -22,7 +22,6 @@ use Prado\Util\Cron\TCronModule;
  * age of {@link getTimePeriod} seconds.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @package Prado\Util\Cron
  * @since 4.2.0
  */
 class TDbCronCleanLogTask extends TCronTask

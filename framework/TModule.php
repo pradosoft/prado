@@ -5,7 +5,6 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
- * @package Prado
  */
 
 namespace Prado;
@@ -20,7 +19,6 @@ namespace Prado;
  * init.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @package Prado
  * @since 3.0
  * @method void dyPreInit(mixed $config)
  * @method void dyInit(mixed $config)
