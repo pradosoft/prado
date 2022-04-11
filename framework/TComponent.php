@@ -444,10 +444,10 @@ class TComponent
 		}
 		$_classhierarchy[$class] = $_classhierarchy[$class] ?? [];
 		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
-		
+
 		return $classes;
 	}
-	
+
 	/**
 	 * This caches the 'fx' events for classes.
 	 * @param object $class
@@ -672,14 +672,14 @@ class TComponent
 			// getting an event (handler list)
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TWeakCallableCollection;
+				$this->_e[$name] = new TWeakCallableCollection();
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			// getting a global event (handler list)
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TWeakCallableCollection;
+				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_behaviorsenabled) {
@@ -988,13 +988,13 @@ class TComponent
 		if (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$name = strtolower($name);
 			if (!isset($this->_e[$name])) {
-				$this->_e[$name] = new TWeakCallableCollection;
+				$this->_e[$name] = new TWeakCallableCollection();
 			}
 			return $this->_e[$name];
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$name = strtolower($name);
 			if (!isset(self::$_ue[$name])) {
-				self::$_ue[$name] = new TWeakCallableCollection;
+				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
 		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
@@ -1387,7 +1387,7 @@ class TComponent
 			return $this->detachBehavior($param->getName(), $param->getPriority());
 		}
 	}
-	
+
 	/**
 	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of
 	 * ['class' => 'MyBehavior', 'property1' => 'Value1'...] and creates a Behavior in return. eg.
@@ -1633,7 +1633,7 @@ class TComponent
 			$behavior->setEnabled(true);
 		}
 		if ($this->_m === null) {
-			$this->_m = new TPriorityMap;
+			$this->_m = new TPriorityMap();
 		}
 		$this->_m->add($name, $behavior, $priority);
 		$behavior->attach($this);

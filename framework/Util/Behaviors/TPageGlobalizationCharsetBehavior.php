@@ -28,7 +28,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 {
 	/** @var bool check the existing meta tags for the charset before adding it */
 	private $_checkMetaCharset = false;
-	
+
 	/**
 	 * This handles the TPage.OnInitComplete event to place no-cache
 	 * meta in the head.
@@ -38,7 +38,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 	{
 		return ['OnInitComplete' => 'addCharsetMeta'];
 	}
-	
+
 	/**
 	 * This method places no-cache meta in the head.
 	 * @param object $page object raising the event
@@ -67,7 +67,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 			}
 		}
 	}
-	
+
 	/**
 	 * @return bool checks existing meta tags for no cache
 	 */
@@ -75,7 +75,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_checkMetaCharset;
 	}
-	
+
 	/**
 	 * @param bool $value checks existing meta tags for no cache
 	 */

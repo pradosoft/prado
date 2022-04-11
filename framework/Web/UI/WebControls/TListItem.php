@@ -164,7 +164,7 @@ class TListItem extends \Prado\TComponent
 	public function getAttributes()
 	{
 		if (!$this->_attributes) {
-			$this->_attributes = new TAttributeCollection;
+			$this->_attributes = new TAttributeCollection();
 		}
 		return $this->_attributes;
 	}

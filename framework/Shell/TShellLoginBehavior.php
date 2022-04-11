@@ -38,9 +38,9 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 {
 	/** @var string user name for login */
 	private $_username = '';
-	
+
 	private $_password = '';
-	
+
 	/**
 	 * @return array<string, string> array of owner 'events' => behavior 'methods'
 	 */
@@ -48,7 +48,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	{
 		return ['OnAuthenticate' => 'shellApplicationLogin'];
 	}
-	
+
 	/**
 	 * @param \Prado\TComponent $owner the class this behavior is being attached tos
 	 */
@@ -62,7 +62,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 			$app->registerOptionAlias('p', 'password');
 		}
 	}
-	
+
 	/**
 	 * utility function to read a password without displaying text while reading.
 	 * @param bool $hide should the texing being read be hidden, default true
@@ -79,7 +79,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 		}
 		return trim($input, "\n\r");
 	}
-	
+
 	/**
 	 * This authenticates a Shell user for using shell commands
 	 * @param object $sender
@@ -92,7 +92,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 			return;
 		}
 		$writer = $app->getWriter();
-		
+
 		if (!$this->_username || !$this->_password) {
 			$writer->writeLine('  -- Login --', [TShellWriter::BOLD]);
 			$writer->write("Login Username: ");
@@ -118,7 +118,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 			exit();
 		}
 	}
-	
+
 	/**
 	 * @return string username of the login from the command line
 	 */
@@ -126,7 +126,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_username;
 	}
-	
+
 	/**
 	 * @param string $name username of the login from the command line
 	 */
@@ -134,7 +134,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	{
 		$this->_username = $name;
 	}
-	
+
 	/**
 	 * @param string $password password of the login from the command line
 	 */

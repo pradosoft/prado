@@ -314,7 +314,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	public function getParameters()
 	{
 		if (!$this->_parameters) {
-			$this->_parameters = new TAttributeCollection;
+			$this->_parameters = new TAttributeCollection();
 			$this->_parameters->setCaseSensitive(true);
 		}
 		return $this->_parameters;
@@ -335,7 +335,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	public function getConstants()
 	{
 		if (!$this->_constants) {
-			$this->_constants = new TAttributeCollection;
+			$this->_constants = new TAttributeCollection();
 			$this->_constants->setCaseSensitive(true);
 		}
 		return $this->_constants;

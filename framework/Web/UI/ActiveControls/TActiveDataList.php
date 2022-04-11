@@ -29,7 +29,6 @@ use Prado\Web\UI\WebControls\TDataList;
  */
 class TActiveDataList extends TDataList implements IActiveControl
 {
-
   /**
    * Creates a new callback control, sets the adapter to
    * TActiveControlAdapter.

@@ -39,7 +39,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$button = new TActiveImageButton;
+				$button = new TActiveImageButton();
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -49,7 +49,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			} elseif ($text !== '') {
-				$button = new TActiveLinkButton;
+				$button = new TActiveLinkButton();
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -60,7 +60,7 @@ class TActiveDropDownListColumn extends TDropDownListColumn
 			}
 		} else {
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$image = new TActiveImage;
+				$image = new TActiveImage();
 				$image->setImageUrl($url);
 				if ($text !== '') {
 					$image->setAlternateText($text);

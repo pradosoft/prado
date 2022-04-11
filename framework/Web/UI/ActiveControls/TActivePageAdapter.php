@@ -133,7 +133,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function trapCallbackErrorsExceptions()
 	{
-		$this->getApplication()->setErrorHandler(new TCallbackErrorHandler);
+		$this->getApplication()->setErrorHandler(new TCallbackErrorHandler());
 	}
 
 	/**
@@ -327,7 +327,7 @@ class TActivePageAdapter extends TControlAdapter
 	public function getCallbackClientHandler()
 	{
 		if ($this->_callbackClient === null) {
-			$this->_callbackClient = new TCallbackClientScript;
+			$this->_callbackClient = new TCallbackClientScript();
 		}
 		return $this->_callbackClient;
 	}

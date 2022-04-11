@@ -300,7 +300,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 */
 	protected function createStyle()
 	{
-		return new TStyle;
+		return new TStyle();
 	}
 
 	/**

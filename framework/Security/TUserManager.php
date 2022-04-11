@@ -112,7 +112,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 				$userFile = include $this->_userFile;
 				$this->loadUserDataFromPhp($userFile);
 			} else {
-				$dom = new TXmlDocument;
+				$dom = new TXmlDocument();
 				$dom->loadFromFile($this->_userFile);
 				$this->loadUserDataFromXml($dom);
 			}

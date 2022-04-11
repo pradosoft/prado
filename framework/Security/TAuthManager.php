@@ -470,7 +470,7 @@ class TAuthManager extends \Prado\TModule
 			$this->getResponse()->getCookies()->add($cookie);
 		}
 	}
-	
+
 	/**
 	 * onLogin event is raised when a user logs in
 	 * @param TUser $user user being logged in
@@ -480,7 +480,7 @@ class TAuthManager extends \Prado\TModule
 	{
 		$this->raiseEvent('onLogin', $this, $user);
 	}
-	
+
 	/**
 	 * onLoginFailed event is raised when a user login fails
 	 * @param string $username username trying to log in
@@ -490,7 +490,7 @@ class TAuthManager extends \Prado\TModule
 	{
 		$this->raiseEvent('onLoginFailed', $this, $username);
 	}
-	
+
 	/**
 	 * onLogout event is raised when a user logs out.
 	 * @param TUser $user user being logged out

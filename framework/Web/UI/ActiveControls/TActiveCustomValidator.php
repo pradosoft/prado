@@ -58,7 +58,7 @@ class TActiveCustomValidator extends TCustomValidator implements ICallbackEventH
 	{
 		parent::__construct();
 		$this->setAdapter(new TActiveControlAdapter($this));
-		$this->getActiveControl()->setClientSide(new TActiveCustomValidatorClientSide);
+		$this->getActiveControl()->setClientSide(new TActiveCustomValidatorClientSide());
 	}
 
 	/**

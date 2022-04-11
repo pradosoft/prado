@@ -30,12 +30,12 @@ use Prado\TPropertyValue;
  * @package Prado\Util\Cron
  * @since 4.2.0
  */
- 
+
  class TCronMethodTask extends TCronTask
  {
  	/** @var string the method and parameters to call on the module */
  	private $_method;
-	
+
  	/**
  	 * @param null|\Prado\IModule|string $moduleId the module or id of the module to call
  	 * @param string $method the method and parameters on the
@@ -49,7 +49,7 @@ use Prado\TPropertyValue;
  			$this->setMethod($method);
  		}
  	}
-	 
+
  	/**
  	 * @return string the user id executing the Task
  	 */
@@ -57,7 +57,7 @@ use Prado\TPropertyValue;
  	{
  		return $this->getModuleId() . TCronModule::METHOD_SEPARATOR . $this->getMethod();
  	}
-	
+
  	/**
  	 * implements task to get the module from $_moduleId, then run $_method on it
  	 * @param TCronModule $cron the module calling the task
@@ -70,7 +70,7 @@ use Prado\TPropertyValue;
  		}
  		$this->evaluateExpression('$this->getModule()->' . $method);
  	}
-	
+
  	/**
  	 * Validates the method exists on the module, for manual task installation.
  	 */
@@ -81,10 +81,10 @@ use Prado\TPropertyValue;
  		if (($pos = strpos($method, '(')) !== false) {
  			$method = substr($method, 0, $pos);
  		}
-		
+
  		return method_exists($module, $method);
  	}
-	 
+
  	/**
  	 * Gets the module for the task based upon the {@link getModuleId}.
  	 * This verifies that the module does exist.
@@ -99,7 +99,7 @@ use Prado\TPropertyValue;
  		}
  		return $module;
  	}
-	 
+
  	/**
  	 * @return string the method of the module to call
  	 */
@@ -107,7 +107,7 @@ use Prado\TPropertyValue;
  	{
  		return $this->_method;
  	}
-	  
+
  	/**
  	 * @param string $method the method of the module to call
  	 */

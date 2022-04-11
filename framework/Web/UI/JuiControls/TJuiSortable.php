@@ -300,7 +300,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	 */
 	protected function createRepeater()
 	{
-		$repeater = new TRepeater;
+		$repeater = new TRepeater();
 		$repeater->setHeaderTemplate(new TJuiSortableTemplate('<ul id="' . $this->getWidgetID() . '">'));
 		$repeater->setFooterTemplate(new TJuiSortableTemplate('</ul>'));
 		$repeater->setItemTemplate(new TTemplate('<li id="<%# $this->ItemIndex %>"><%# $this->Data %></li>', null));

@@ -265,7 +265,7 @@ class TGettext
 	public function toMO()
 	{
 		include_once __DIR__ . '/MO.php';
-		$MO = new TGettext_MO;
+		$MO = new TGettext_MO();
 		$MO->fromArray($this->toArray());
 		return $MO;
 	}
@@ -279,7 +279,7 @@ class TGettext
 	public function toPO()
 	{
 		include_once __DIR__ . '/PO.php';
-		$PO = new TGettext_PO;
+		$PO = new TGettext_PO();
 		$PO->fromArray($this->toArray());
 		return $PO;
 	}

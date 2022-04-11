@@ -199,7 +199,7 @@ class TPanelStyle extends TStyle
 	{
 		$this->_scrollBars = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TScrollBars');
 	}
-	
+
 	/**
 	 * @return string the box shadow of the panel
 	 * @since 4.2.0

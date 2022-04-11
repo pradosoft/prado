@@ -60,7 +60,7 @@ class TException extends \Exception
 		}
 		parent::__construct(strtr($errorMessage, $tokens));
 	}
-	
+
 	/**
 	 * Adds to the various files to read when rendering an error
 	 * @param string $file the extra message file

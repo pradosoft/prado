@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado
  */
- 
+
 namespace Prado\Util;
 
 /**

@@ -215,7 +215,7 @@ class THyperLinkColumn extends TDataGridColumn
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
-			$link = new THyperLink;
+			$link = new THyperLink();
 			if (($url = $this->getImageUrl()) !== '') {
 				$link->setImageUrl($url);
 				if (($width = $this->getImageWidth()) !== '') {

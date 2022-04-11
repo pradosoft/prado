@@ -68,88 +68,88 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
 class TDbParameterModule extends TModule implements IDbModule, IPermissions
 {
 	public const SERIALIZE_PHP = 'php';
-	
+
 	public const SERIALIZE_JSON = 'json';
-	
+
 	/** The permission for the cron shell */
 	public const PERM_PARAM_SHELL = 'param_shell';
-	
+
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
 	public const APP_PARAMETER_LAZY_BEHAVIOR = 'lazyTDbParameter';
-	
+
 	/**
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
 	public const APP_PARAMETER_SET_BEHAVIOR = 'setTDbParameter';
-	
+
 	/**
 	 * @var string the ID of TDataSourceConfig module
 	 */
 	private $_connID = '';
-	
+
 	/**
 	 * @var TDbConnection the DB connection instance
 	 */
 	private $_conn;
-	
+
 	/**
 	 * @var bool whether or not the database parameters have been loaded.
 	 * when true none of the variables can be changed
 	 */
 	private $_initialized = false;
-	
+
 	/**
 	 * @var string The key field for the parameter from the database
 	 */
 	private $_keyField = 'param_key';
-	
+
 	/**
 	 * @var string The value field for the parameter from the database
 	 */
 	private $_valueField = 'param_value';
-	
+
 	/**
 	 * @var string The table name for the parameters from the database
 	 */
 	private $_tableName = 'parameters';
-	
+
 	/**
 	 * @var string autoload Field. default "", meaning no autoload field
 	 */
 	private $_autoLoadField = 'autoload';
-	
+
 	/**
 	 * @var string autoload True value. default sql "1"
 	 */
 	private $_autoLoadValue = '1';
-	
+
 	/**
 	 * @var string autoload False value. default sql "0"
 	 */
 	private $_autoLoadValueFalse = '0';
-	
+
 	/**
 	 * @var bool whether the parameter DB table should be created automatically
 	 */
 	private $_autoCreate = true;
-	
+
 	/**
 	 * @var bool whether ensureTable was called
 	 */
 	private $_tableEnsured;
-		
+
 	/**
 	 * @var callable|string which serialize function to use,
 	 */
 	private $_serializer = self::SERIALIZE_PHP;
-	
+
 	/**
 	 * @var bool automatically capture changes to Parameters after Application Initialize
 	 */
 	private $_autoCapture = true;
-	
+
 	/**
 	 * @var TMapRouteBehavior captures all the changes to the parameters to the db
 	 */
@@ -163,7 +163,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	{
 		$this->loadDbParameters();
 		$this->_initialized = true;
-		
+
 		if ($this->_autoLoadField) {
 			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
 		}
@@ -174,7 +174,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
 	}
-	
+
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
 	 * @return \Prado\Security\Permissions\TPermissionEvent[]
@@ -185,7 +185,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction')
 		];
 	}
-	
+
 	/**
 	 * Loads parameters from the database into the application.
 	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
@@ -193,15 +193,15 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	protected function loadDbParameters()
 	{
 		$db = $this->getDbConnection();
-		
+
 		$this->ensureTable();
-		
+
 		$where = ($this->_autoLoadField ? " WHERE {$this->_autoLoadField}={$this->_autoLoadValue}" : '');
 		$cmd = $db->createCommand(
 			"SELECT {$this->_keyField} as keyField, {$this->_valueField}  as valueField FROM {$this->_tableName}{$where}"
 		);
 		$results = $cmd->query();
-		
+
 		$appParameters = $this->getApplication()->getParameters();
 		$serializer = $this->getSerializer();
 		foreach ($results->readAll() as $row) {
@@ -222,7 +222,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			$appParameters[$row['keyField']] = $value;
 		}
 	}
-	
+
 	/**
 	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
@@ -237,7 +237,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachParameterStorage'], 0);
 		}
 	}
-	
+
 	/**
 	 * @param object $sender sender of this event handler
 	 * @param null|mixed $param parameter for the event
@@ -248,7 +248,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			$app->addShellActionClass(['class' => 'Prado\\Shell\\Actions\\TDbParameterAction', 'DbParameterModule' => $this]);
 		}
 	}
-	
+
 	/**
 	 * This attaches the TMapRouteBehavior on the Parameters.
 	 * @param object $sender
@@ -273,7 +273,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		$autotype = 'INTEGER';
 		$postIndices = '; CREATE UNIQUE INDEX tkey ON ' . $this->_tableName . '(' . $this->_keyField . ');' .
 		($this->_autoLoadField ? ' CREATE INDEX tauto ON ' . $this->_tableName . '(' . $this->_autoLoadField . ');' : '');
-		
+
 		switch ($driver) {
 			case 'sqlite':
 				$autoidAttributes = ' AUTOINCREMENT';
@@ -318,8 +318,8 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets a specific parameter parameters into application.
 	 * @param string $key key to get the value
@@ -334,7 +334,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		if ($key == '') {
 			throw new TInvalidOperationException('dbparametermodule_get_no_blank_key');
 		}
-		
+
 		if ($checkParameter) {
 			$appParams = $this->getApplication()->getParameters();
 			if (isset($appParams[$key])) {
@@ -342,7 +342,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			}
 		}
 		$this->ensureTable();
-		
+
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
 			"SELECT {$this->_valueField} as valueField FROM {$this->_tableName} WHERE {$this->_keyField}=:key LIMIT 1"
@@ -370,7 +370,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Loads parameters into application.
 	 * @param string $key key to get the value
@@ -382,7 +382,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	{
 		return $this->get($key, false, $this->_setBehavior === null);
 	}
-	
+
 	/**
 	 * Sets a parameter in the database and the Application Parameter.
 	 * @param string $key the key of the parameter
@@ -397,7 +397,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		if (empty($key)) {
 			throw new TInvalidOperationException('dbparametermodule_set_no_blank_key');
 		}
-		
+
 		$_value = $value;
 		if (($serializer = $this->getSerializer()) && (is_array($value) || is_object($value))) {
 			if ($serializer == self::SERIALIZE_PHP) {
@@ -429,13 +429,13 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			$cmd->bindParameter(":auto", $alv, PDO::PARAM_STR);
 		}
 		$cmd->execute();
-		
+
 		if ($setParameter) {
 			$appParameters = $this->getApplication()->getParameters();
 			$appParameters[$key] = $value;
 		}
 	}
-	
+
 	/**
 	 * Sets a parameter in the database and the Application Parameter.
 	 * from changes to the Parameter through a TMapRouteBehavior.
@@ -452,7 +452,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 			$this->remove($key);
 		}
 	}
-	
+
 	/**
 	 * exists checks for a parameter in the database
 	 * @param string $key parameter to check in the database
@@ -463,7 +463,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function exists($key)
 	{
 		$this->ensureTable();
-		
+
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE {$this->_keyField}=:key"
@@ -472,7 +472,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		$result = $cmd->queryRow();
 		return $result['count'] > 0;
 	}
-	
+
 	/**
 	 * remove removes a parameter from the database
 	 * @param string $key parameter to remove from the database
@@ -483,7 +483,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function remove($key)
 	{
 		$value = $this->get($key, false, false);
-		
+
 		$this->ensureTable();
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
@@ -496,7 +496,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		$cmd->execute();
 		return $value;
 	}
-	
+
 	/**
 	 * @return string the ID of a TDataSourceConfig module. Defaults to empty string, meaning not set.
 	 */
@@ -551,7 +551,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 				throw new TConfigurationException('dbparametermodule_connectionid_invalid', $connectionID);
 			}
 		} else {
-			$db = new TDbConnection;
+			$db = new TDbConnection();
 			// default to SQLite3 database
 			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'app.params';
 			$db->setConnectionString('sqlite:' . $dbFile);
@@ -696,7 +696,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	{
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	/**
 	 * @return null|callable|string
 	 */

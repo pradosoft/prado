@@ -45,7 +45,7 @@ class TApplicationComponent extends \Prado\TComponent
 	{
 		return true;
 	}
-	
+
 	/**
 	 * This caches the 'fx' events for PRADO classes in the application cache
 	 * @param object $class
@@ -79,7 +79,7 @@ class TApplicationComponent extends \Prado\TComponent
 		}
 		return $fx;
 	}
-	
+
 	/**
 	 * @return \Prado\TApplication current application instance
 	 */

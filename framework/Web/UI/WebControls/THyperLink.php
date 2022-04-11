@@ -88,7 +88,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	 */
 	protected function createImage($imageUrl)
 	{
-		$image = new TImage;
+		$image = new TImage();
 		$image->setImageUrl($imageUrl);
 		if (($toolTip = $this->getToolTip()) !== '') {
 			$image->setToolTip($toolTip);
@@ -205,7 +205,7 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getImageStyle()
 	{
 		if (($style = $this->getViewState('ImageStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('ImageStyle', $style, null);
 		}
 		return $style;

@@ -120,7 +120,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 					$this->_cacheAvailable = true;
 					$data = $this->_cache->get($this->getCacheKey());
 					if (is_array($data)) {
-						$param = new TOutputCacheCheckDependencyEventParameter;
+						$param = new TOutputCacheCheckDependencyEventParameter();
 						$param->setCacheTime($data[3] ?? 0);
 						$this->onCheckDependency($param);
 						$this->_dataCached = $param->getIsValid();
@@ -287,7 +287,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 			}
 			$key .= serialize($params);
 		}
-		$param = new TOutputCacheCalculateKeyEventParameter;
+		$param = new TOutputCacheCalculateKeyEventParameter();
 		$this->onCalculateKey($param);
 		$key .= $param->getCacheKey();
 		return $key;

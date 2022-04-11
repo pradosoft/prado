@@ -30,7 +30,7 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 {
 	/** @var bool check the existing meta tags for the no cache before adding them */
 	private $_checkMetaNoCache = false;
-	
+
 	/**
 	 * This handles the TPage.OnInitComplete event to place no-cache
 	 * meta in the head.
@@ -40,7 +40,7 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 	{
 		return ['OnInitComplete' => 'addNoCacheMeta'];
 	}
-	
+
 	/**
 	 * This method places no-cache meta in the head.
 	 * @param object $page object raising the event
@@ -83,7 +83,7 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 			}
 		}
 	}
-	
+
 	/**
 	 * @return bool checks existing meta tags for no cache
 	 */
@@ -91,7 +91,7 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_checkMetaNoCache;
 	}
-	
+
 	/**
 	 * @param bool $value checks existing meta tags for no cache
 	 */

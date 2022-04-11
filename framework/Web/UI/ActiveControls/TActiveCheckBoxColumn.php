@@ -45,7 +45,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
-			$checkBox = new TActiveCheckBox;
+			$checkBox = new TActiveCheckBox();
 			if ($this->getReadOnly() || $itemType !== TListItemType::EditItem) {
 				$checkBox->setEnabled(false);
 			}
@@ -68,7 +68,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$button = new TActiveImageButton;
+				$button = new TActiveImageButton();
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -78,7 +78,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			} elseif ($text !== '') {
-				$button = new TActiveLinkButton;
+				$button = new TActiveLinkButton();
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -89,7 +89,7 @@ class TActiveCheckBoxColumn extends TCheckBoxColumn
 			}
 		} else {
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$image = new TActiveImage;
+				$image = new TActiveImage();
 				$image->setImageUrl($url);
 				if ($text !== '') {
 					$image->setAlternateText($text);

@@ -153,7 +153,7 @@ class TDbLogRoute extends TLogRoute
 				throw new TConfigurationException('dblogroute_connectionid_invalid', $this->_connID);
 			}
 		} else {
-			$db = new TDbConnection;
+			$db = new TDbConnection();
 			// default to SQLite3 database
 			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'sqlite3.log';
 			$db->setConnectionString('sqlite:' . $dbFile);

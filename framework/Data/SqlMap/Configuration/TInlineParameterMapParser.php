@@ -57,7 +57,7 @@ class TInlineParameterMapParser
 	 */
 	protected function parseMapping($token, $scope)
 	{
-		$mapping = new TParameterProperty;
+		$mapping = new TParameterProperty();
 		$properties = explode(',', $token);
 		$mapping->setProperty(trim(array_shift($properties)));
 		foreach ($properties as $property) {

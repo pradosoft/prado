@@ -187,7 +187,7 @@ class TSimpleDateFormatter
 	private function getDate($value)
 	{
 		if (is_numeric($value)) {
-			$date = new \DateTime;
+			$date = new \DateTime();
 			$date->setTimeStamp($value);
 		} else {
 			$date = new \DateTime($value);
@@ -346,7 +346,7 @@ class TSimpleDateFormatter
 			$day = $defaultToCurrentTime ? date('d') : 1;
 		}
 
-		$s = new \DateTime;
+		$s = new \DateTime();
 		$s->setDate($year, $month, $day);
 		$s->setTime(0, 0, 0);
 		return $s->getTimeStamp();

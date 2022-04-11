@@ -36,10 +36,10 @@ class TPermissionsConfigurationBehavior extends TBehavior
 {
 	/** @var \Prado\Security\Permissions\TPermissionsManager manager object for the behavior */
 	private $_manager;
-	
+
 	/** @var array|\Prado\Xml\TXmlElement permissions data to parse */
 	private $_permissions = [];
-	
+
 	/**
 	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
 	 */
@@ -84,7 +84,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 		}
 		return $callchain->dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath);
 	}
-	
+
 	/**
 	 * Applies the permissions hierarchy and permission rules
 	 * @param \Prado\Util\TCallChain $callchain
@@ -97,7 +97,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 		}
 		return $callchain->dyApplyConfiguration();
 	}
-	
+
 	/**
 	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
 	 */
@@ -105,7 +105,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	{
 		return $this->_manager;
 	}
-	
+
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
 	 */

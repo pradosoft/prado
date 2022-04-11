@@ -24,7 +24,6 @@ use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
  */
 class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 {
-
 	/**
 	 * Add the {@link TJuiControlOptions} to the states to track.
 	 */

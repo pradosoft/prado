@@ -35,7 +35,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	 * @var callable the parameter to check for when there are changes
 	 */
 	private $_handler;
-	
+
 	/**
 	 * @param callable $handler the handler for setting the parameter
 	 */
@@ -47,7 +47,7 @@ class TMapLazyLoadBehavior extends TBehavior
 		$this->_handler = $handler;
 		parent::__construct();
 	}
-	
+
 	/**
 	 * This is the dynamic event for handling TMap dyAddItem.
 	 * This calls handler($key).

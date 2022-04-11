@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado
  */
- 
+
 namespace Prado\Util;
 
 /**
@@ -26,12 +26,12 @@ interface IDbModule extends \Prado\IModule
 	 * @return \Prado\Data\TDbConnection the DB connection instance
 	 */
 	public function getDbConnection();
- 
+
 	/**
 	 * @return string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID();
-	 
+
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.

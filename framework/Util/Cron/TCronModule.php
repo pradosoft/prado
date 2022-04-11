@@ -72,60 +72,60 @@ class TCronModule extends \Prado\TModule implements IPermissions
 {
 	/** The behavior name for the Shell Log behavior */
 	public const SHELL_LOG_BEHAVIOR = 'shellLog';
-	
+
 	public const TASK_KEY = 'task';
-	
+
 	public const SCHEDULE_KEY = 'schedule';
-	
+
 	public const NAME_KEY = 'name';
-	
+
 	public const USERNAME_KEY = 'username';
-	
+
 	/** Key to global state of the last time SystemCron was run */
 	public const LAST_CRON_TIME = 'prado:cron:lastcron';
-	
+
 	/** Key to global state of each task, lastExecTime and ProcessCount */
 	public const TASKS_INFO = 'prado:cron:tasksinfo';
-	
+
 	/** The name of the cron user */
 	public const DEFAULT_CRON_USER = 'cron';
-	
+
 	/** The separator for TCronMethodTask */
 	public const METHOD_SEPARATOR = '->';
-	
+
 	/** The permission for the cron shell */
 	public const PERM_CRON_SHELL = 'cron_shell';
-	
+
 	/** @var bool if the module has been initialized */
 	protected $_initialized = false;
-	
+
 	/** @var IUserManager user manager instance */
 	private $_userManager;
-	
+
 	/** @var TCronTaskInfo[] The info for tasks in the system. */
 	private $_tasksInfo;
-	
+
 	/** @var bool whether or not the $_tasks is properties or TCronTask  */
 	private $_tasksInstanced = false;
-	
+
 	/** @var array[]|TCronTask[] the tasks */
 	private $_tasks = [];
-	
+
 	/** @var string The user Id of the tasks without users */
 	private $_defaultUserName = self::DEFAULT_CRON_USER;
-	
+
 	/** @var bool enable cron on requests, default false */
 	private $_enableRequestCron = false;
-	
+
 	/** @var numeric probability that a request cron will trigger [0.0 to 100.0], default 1.0 (for 1%) */
 	private $_requestCronProbability = 1.0;
-	
+
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
 	protected $_shellClass = 'Prado\\Util\\Cron\\TShellCronAction';
-	
+
 	/** @var array[] any additional tasks to install from properties */
 	private $_additionalCronTasks;
-	
+
 	/**
 	 * Initializes the module.  Read the configuration, installs Shell Actions,
 	 * should Request cron be activated.
@@ -135,7 +135,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	public function init($config)
 	{
 		$app = $this->getApplication();
-		
+
 		//Get the IUserManager module from the string
 		if (is_string($this->_userManager)) {
 			if (($users = $app->getModule($this->_userManager)) === null) {
@@ -146,7 +146,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			}
 			$this->_userManager = $users;
 		}
-		
+
 		// Otherwise manually look for the IUserManager
 		if ($this->_userManager === null) {
 			$users = $app->getModulesByType('Prado\\Security\\IUserManager');
@@ -156,14 +156,14 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			}
 		}
 		$this->_tasksInstanced = false;
-		
+
 		//read config tasks and schedule
 		$this->readConfiguration($config);
-		
+
 		//Read additional Config from Property
 		$this->readConfiguration($this->_additionalCronTasks);
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
-		
+
 		if (php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
 			if (100.0 * ((float) (mt_rand()) / (float) (mt_getrandmax())) <= $this->getRequestCronProbability()) {
 				$app->attachEventHandler('OnEndRequest', [$this, 'processPendingTasks'], 20);
@@ -172,7 +172,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$this->_initialized = true;
 		parent::init($config);
 	}
-	
+
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
 	 * @return \Prado\Security\Permissions\TPermissionEvent[]
@@ -183,7 +183,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			new TPermissionEvent(static::PERM_CRON_SHELL, 'Activates cron shell commands.', 'dyRegisterShellAction')
 		];
 	}
-	
+
 	/**
 	 * This reads the configuration and stores the specified tasks, for lazy loading, until needed.
 	 * @param array|\Prado\Xml\TXmlElement $config the settings for cron
@@ -223,7 +223,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$this->_tasks[$name] = $properties;
 		}
 	}
-	
+
 	/**
 	 * Validates that schedule and task are present.
 	 * Subclasses overload this method to add their own validation.
@@ -241,7 +241,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			throw new TConfigurationException('cron_task_required');
 		}
 	}
-	
+
 	/**
 	 * @param object $sender sender of this event handler
 	 * @param null|mixed $param parameter for the event
@@ -252,7 +252,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$app->addShellActionClass(['class' => $this->_shellClass, 'CronModule' => $this]);
 		}
 	}
-	
+
 	/**
 	 * makes the tasks from the configuration array into task objects.
 	 * @return \Prado\Util\Cron\TCronTask[]
@@ -265,9 +265,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 				$task = $properties[self::TASK_KEY];
 				unset($properties[self::NAME_KEY]);
 				unset($properties[self::TASK_KEY]);
-				
+
 				$task = $this->instanceTask($task);
-				
+
 				$task->setName($name);
 				foreach ($properties as $key => $value) {
 					$task->$key = $value;
@@ -279,7 +279,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return $this->_tasks;
 	}
-	
+
 	/**
 	 * This lazy loads the tasks from configuration array to instance.
 	 * This calls {@link ensureTasks} to get the tasks and their persistent data.
@@ -290,7 +290,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$this->ensureTasks();
 		return $this->_tasks;
 	}
-	
+
 	/**
 	 * These are the tasks specified in the configuration and getAdditionalCronTasks
 	 * until {@link ensureTasks} is called.
@@ -300,7 +300,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		return $this->_tasks;
 	}
-	
+
 	/**
 	 * This lazy loads the tasks.
 	 * @param string $name
@@ -311,7 +311,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$tasks = $this->getTasks();
 		return $tasks[$name] ?? null;
 	}
-	
+
 	/**
 	 * .
 	 * @param string $taskExec the class name or "module->method('param1')" to place
@@ -332,7 +332,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return $task;
 	}
-	
+
 	/**
 	 * when instancing and then loading the tasks, this sets the persisting data of the task
 	 * @param string $name name of the task.
@@ -349,7 +349,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @return TCronTask[] the tasks that are pending.
 	 */
@@ -363,7 +363,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return $pendingtasks;
 	}
-	
+
 	/**
 	 * Filters the Tasks for a specific class.
 	 * @param string $type
@@ -379,7 +379,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return $matches;
 	}
-	
+
 	/**
 	 * processPendingTasks executes pending tasks
 	 * @return int number of tasks run that were pending
@@ -388,7 +388,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
-		
+
 		$this->logCron($numtasks);
 		if ($numtasks) {
 			foreach ($pendingTasks as $key => $task) {
@@ -396,10 +396,10 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			}
 		}
 		$this->filterStaleTasks();
-		
+
 		return $numtasks;
 	}
-	
+
 	/**
 	 * @param int $numtasks number of tasks being processed
 	 */
@@ -409,7 +409,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$this->dyLogCron($numtasks);
 		$this->setLastCronTime(microtime(true));
 	}
-	
+
 	/**
 	 * This removes any stale tasks in the global state.
 	 */
@@ -420,7 +420,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$tasksInfo = array_intersect_key($tasksInfo, $this->_tasks);
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
 	}
-	
+
 	/**
 	 * Runs a specific task. Sets the user to the Task user or the cron module
 	 * {@link getDefaultUserName}.
@@ -433,7 +433,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$defaultUsername = $username = $this->getDefaultUserName();
 		$restore_user = $app->getUser();
 		$user = null;
-		
+
 		if ($users) {
 			if ($nusername = $task->getUserName()) {
 				$username = $nusername;
@@ -442,7 +442,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			if (!$user && $username !== $defaultUsername) {
 				$user = $users->getUser($username = $defaultUsername);
 			}
-			
+
 			if ($user) {
 				$app->setUser($user);
 			} elseif ($restore_user) {
@@ -451,11 +451,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 				$app->setUser($user);
 			}
 		}
-		
+
 		$this->logCronTask($task, $username);
 		$task->execute($this);
 		$this->updateTaskInfo($task);
-		
+
 		if ($user) {
 			if ($restore_user) {
 				$app->setUser($restore_user);
@@ -464,7 +464,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			}
 		}
 	}
-	
+
 	/**
 	 * Logs the cron task being run with the system log and output on cli
 	 * @param TCronTask $task
@@ -475,7 +475,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		Prado::log('Running cron task (' . $task->getName() . ', ' . $username . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
 		$this->dyLogCronTask($task, $username);
 	}
-	
+
 	/**
 	 * sets the lastExecTime to now and increments the processCount.  This saves
 	 * the new data to the global state.
@@ -489,13 +489,13 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$count = $tasksInfo[$name]['processCount'] = $task->getProcessCount() + 1;
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
-		
+
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
-		
+
 		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
 		$this->dyUpdateTaskInfo($task);
 	}
-	
+
 	/**
 	 * @return float time that cron last was last run
 	 */
@@ -503,7 +503,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		return $this->getApplication()->getGlobalState(self::LAST_CRON_TIME, 0);
 	}
-	
+
 	/**
 	 * @param float $time time that cron was last run
 	 */
@@ -511,7 +511,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$this->getApplication()->setGlobalState(self::LAST_CRON_TIME, TPropertyValue::ensureFloat($time), 0);
 	}
-	
+
 	/**
 	 * Objects should handle fxGetCronTasks($sender, $param)
 	 * @param bool $forceupdate if true, ignores the caching
@@ -524,7 +524,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		return $this->_tasksInfo;
 	}
-	
+
 	/**
 	 * @return string the default user id of Tasks without users ids
 	 */
@@ -568,7 +568,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		$this->_userManager = $provider;
 	}
-	
+
 	/**
 	 * @return bool allow request cron task processing, default false
 	 */
@@ -576,7 +576,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		return $this->_enableRequestCron;
 	}
-	
+
 	/**
 	 * @param mixed $allow request cron task processing
 	 * @throws TInvalidOperationException if the module has been initialized
@@ -588,7 +588,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		$this->_enableRequestCron = TPropertyValue::ensureBoolean($allow);
 	}
-	
+
 	/**
 	 * @return numeric the probability 0.0 .. 100.0 of a request triggering a cron, default 1.0 (out of 100.0).
 	 */
@@ -596,7 +596,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		return $this->_requestCronProbability;
 	}
-	
+
 	/**
 	 * @param numeric $probability the probability 0.0..100.0 of a request triggering a cron
 	 * @throws TInvalidOperationException if the module has been initialized
@@ -608,7 +608,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 		$this->_requestCronProbability = TPropertyValue::ensureFloat($probability);
 	}
-	
+
 	/**
 	 * @return array additional tasks in a list.
 	 */
@@ -616,7 +616,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		return $this->_additionalCronTasks ?? [];
 	}
-	 
+
 	/**
 	 * This will take a string that is an array of tasks that has been
 	 * through serialize(), or json_encode, or is an xml file of additional tasks.

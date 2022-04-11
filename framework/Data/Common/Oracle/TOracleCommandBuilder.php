@@ -24,7 +24,6 @@ use Prado\Prado;
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
 {
-
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.

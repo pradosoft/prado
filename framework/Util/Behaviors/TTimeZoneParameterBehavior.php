@@ -44,23 +44,23 @@ class TTimeZoneParameterBehavior extends TBehavior
 	 * Name of the Application Parameter Routing Behavior
 	 */
 	public const APP_PARAM_ROUTE_BEHAVIOR_NAME = 'TimeZoneParameter';
-	
+
 	/**
 	 * Default TimeZoneParameter
 	 */
 	public const TIMEZONE_PARAMETER_NAME = 'prop:TimeZone';
-	
+
 	/**
 	 * @var string the page theme is set to this parameter key
 	 */
 	private $_timeZoneParameter = self::TIMEZONE_PARAMETER_NAME;
-	
+
 	/**
 	 * @var object {@link TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setTimeZone.
 	 */
 	private $_paramBehavior;
-	
+
 	/**
 	 * This sets the date_default_timezone_set with the value of the TimeZoneParameter
 	 * in the application parameters.  It attaches the Application Parameter handler behavior.
@@ -79,7 +79,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 		$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
 		$appParams->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
 	}
-	
+
 	/**
 	 * This removes the Application Parameter handler behavior
 	 * @param object $owner the object that this behavior is attached to.
@@ -91,7 +91,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 		}
 		parent::detach($owner);
 	}
-	
+
 	/**
 	 * @return string Application parameter key to set the php TimeZone.
 	 */
@@ -99,7 +99,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	{
 		return $this->_timeZoneParameter;
 	}
-	
+
 	/**
 	 * @param string $value Application parameter key to set the php TimeZone.
 	 */
@@ -110,7 +110,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 		}
 		$this->_timeZoneParameter = $value;
 	}
-	
+
 	/**
 	 * @return string the timeZone from date_default_timezone_get.
 	 */
@@ -118,7 +118,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	{
 		return date_default_timezone_get();
 	}
-	
+
 	/**
 	 * @param string $value passthrough to date_default_timezone_set
 	 */

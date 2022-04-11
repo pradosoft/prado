@@ -38,11 +38,11 @@ class TActiveEditCommandColumn extends TEditCommandColumn
 	protected function createButton($commandName, $text, $causesValidation, $validationGroup)
 	{
 		if ($this->getButtonType() === TButtonColumnType::LinkButton) {
-			$button = new TActiveLinkButton;
+			$button = new TActiveLinkButton();
 		} elseif ($this->getButtonType() === TButtonColumnType::PushButton) {
-			$button = new TActiveButton;
+			$button = new TActiveButton();
 		} else {  // image buttons
-			$button = new TActiveImageButton;
+			$button = new TActiveImageButton();
 			$button->setToolTip($text);
 			if (strcasecmp($commandName, 'Update') === 0) {
 				$url = $this->getUpdateImageUrl();

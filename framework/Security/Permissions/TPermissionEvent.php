@@ -33,16 +33,16 @@ class TPermissionEvent extends \Prado\TComponent
 {
 	/** @var string permission */
 	private $_name;
-	
+
 	/** @var string short description of the permission */
 	private $_description;
-	
+
 	/** @var string[] dynamic events  */
 	private $_events;
-	
+
 	/** @var \Prado\Security\TAuthorizationRule[] the preset rules from the module  */
 	private $_rules;
-	
+
 	/**
 	 * Constructs the class. All permission names are made lower case.
 	 * @param string $permissionName the permission name linked to the dynamic events.
@@ -57,7 +57,7 @@ class TPermissionEvent extends \Prado\TComponent
 		$this->setEvents($events);
 		$this->setRules($rules);
 	}
-	
+
 	/**
 	 * @return string the permission name
 	 */
@@ -65,7 +65,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		return $this->_name;
 	}
-	
+
 	/**
 	 * @param string $permissionName the permission name
 	 */
@@ -73,7 +73,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		$this->_name = strtolower(TPropertyValue::ensureString($permissionName));
 	}
-	
+
 	/**
 	 * @return string the permission description
 	 */
@@ -81,7 +81,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		return $this->_description;
 	}
-	
+
 	/**
 	 * @param string $description the permission description
 	 */
@@ -89,7 +89,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		$this->_description = TPropertyValue::ensureString($description);
 	}
-	
+
 	/**
 	 * @return string[] the dynamic events tied to the permission
 	 */
@@ -97,7 +97,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		return $this->_events;
 	}
-	
+
 	/**
 	 * this will take an array of string dynamic events, or a ',' comma separated
 	 * list of dynamic events
@@ -112,7 +112,7 @@ class TPermissionEvent extends \Prado\TComponent
 		}
 		$this->_events = array_map('strtolower', array_filter($events ?? []));
 	}
-	
+
 	/**
 	 * these are the preset rules for when registering the permission name.
 	 * @return \Prado\Security\TAuthorizationRule[] the preset permission rules
@@ -121,7 +121,7 @@ class TPermissionEvent extends \Prado\TComponent
 	{
 		return $this->_rules;
 	}
-	
+
 	/**
 	 * these are the preset rules for when registering the permission name.
 	 * @param null|\Prado\Security\TAuthorizationRule|\Prado\Security\TAuthorizationRule[] $rules the preset permission rules

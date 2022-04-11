@@ -52,7 +52,6 @@ use Prado\Web\UI\WebControls\TTableRow;
  */
 class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IActiveControl
 {
-
 	/**
 	 * @var \Prado\Web\UI\WebControls\TTableRow parent row control containing the cell
 	 */

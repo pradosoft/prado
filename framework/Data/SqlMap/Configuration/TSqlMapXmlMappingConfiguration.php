@@ -197,7 +197,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 					$subMapNode
 				);
 			}
-			$subMap = new TSubMap;
+			$subMap = new TSubMap();
 			$this->setObjectPropFromNode($subMap, $subMapNode);
 			$discriminator->addSubMap($subMap);
 		}
@@ -316,7 +316,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		if ($statement->parameterMap() === null) {
 			// Build a Parametermap with the inline parameters.
 			// if they exist. Then delete inline infos from sqltext.
-			$parameterParser = new TInlineParameterMapParser;
+			$parameterParser = new TInlineParameterMapParser();
 			$sqlText = $parameterParser->parse($sqlStatement, $scope);
 			if (count($sqlText['parameters']) > 0) {
 				$map = new TParameterMap();
@@ -342,7 +342,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function prepareSql($statement, $sqlStatement, $node)
 	{
-		$simpleDynamic = new TSimpleDynamicParser;
+		$simpleDynamic = new TSimpleDynamicParser();
 		$sqlStatement = preg_replace(self::ESCAPED_SIMPLE_MARK_REGEXP, self::SIMPLE_PLACEHOLDER, $sqlStatement);
 		$dynamics = $simpleDynamic->parse($sqlStatement);
 		if (count($dynamics['parameters']) > 0) {
@@ -362,7 +362,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSelectTag($node)
 	{
-		$select = new TSqlMapSelect;
+		$select = new TSqlMapSelect();
 		$this->setObjectPropFromNode($select, $node);
 		$this->processSqlStatement($select, $node);
 		$mappedStatement = new TMappedStatement($this->_manager, $select);
@@ -393,7 +393,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function createInsertStatement($node)
 	{
-		$insert = new TSqlMapInsert;
+		$insert = new TSqlMapInsert();
 		$this->setObjectPropFromNode($insert, $node);
 		if (isset($node->selectKey)) {
 			$this->loadSelectKeyTag($insert, $node->selectKey);
@@ -408,7 +408,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadSelectKeyTag($insert, $node)
 	{
-		$selectKey = new TSqlMapSelectKey;
+		$selectKey = new TSqlMapSelectKey();
 		$this->setObjectPropFromNode($selectKey, $node);
 		$selectKey->setID($insert->getID());
 		$selectKey->setID($insert->getID() . '.SelectKey');
@@ -424,7 +424,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadUpdateTag($node)
 	{
-		$update = new TSqlMapUpdate;
+		$update = new TSqlMapUpdate();
 		$this->setObjectPropFromNode($update, $node);
 		$this->processSqlStatement($update, $node);
 		$mappedStatement = new TUpdateMappedStatement($this->_manager, $update);
@@ -437,7 +437,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadDeleteTag($node)
 	{
-		$delete = new TSqlMapDelete;
+		$delete = new TSqlMapDelete();
 		$this->setObjectPropFromNode($delete, $node);
 		$this->processSqlStatement($delete, $node);
 		$mappedStatement = new TDeleteMappedStatement($this->_manager, $delete);
@@ -460,7 +460,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	 */
 	protected function loadCacheModel($node)
 	{
-		$cacheModel = new TSqlMapCacheModel;
+		$cacheModel = new TSqlMapCacheModel();
 		$properties = ['id', 'implementation'];
 		foreach ($node->attributes() as $name => $value) {
 			if (in_array(strtolower($name), $properties)) {
@@ -512,19 +512,19 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		foreach ($flushInterval[0]->attributes() as $name => $value) {
 			switch (strToLower($name)) {
 				case 'seconds':
-					$duration += (integer) $value;
+					$duration += (int) $value;
 				break;
 				case 'minutes':
-					$duration += 60 * (integer) $value;
+					$duration += 60 * (int) $value;
 				break;
 				case 'hours':
-					$duration += 3600 * (integer) $value;
+					$duration += 3600 * (int) $value;
 				break;
 				case 'days':
-					$duration += 86400 * (integer) $value;
+					$duration += 86400 * (int) $value;
 				break;
 				case 'duration':
-					$duration = (integer) $value;
+					$duration = (int) $value;
 				break 2; // switch, foreach
 			}
 		}

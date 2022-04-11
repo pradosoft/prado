@@ -66,7 +66,7 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 	 */
 	protected function createListItemCollection()
 	{
-		$collection = new TActiveListItemCollection;
+		$collection = new TActiveListItemCollection();
 		$collection->setControl($this);
 		return $collection;
 	}

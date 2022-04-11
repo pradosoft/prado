@@ -42,12 +42,12 @@ class TMapRouteBehavior extends TBehavior
 	 * @var string the parameter to check for when there are changes.
 	 */
 	private $_parameter;
-	
+
 	/**
 	 * @var callable the parameter to check for when there are changes
 	 */
 	private $_handler;
-	
+
 	/**
 	 * @param string $parameter the name of the map key parameter to hook
 	 * @param callable $handler the handler for setting the parameter
@@ -61,7 +61,7 @@ class TMapRouteBehavior extends TBehavior
 		$this->_handler = $handler;
 		parent::__construct();
 	}
-	
+
 	/**
 	 * This is the dynamic event for handling TMap dyAddItem.
 	 * When there is a parameter, when the key is equal to the parameter,
@@ -81,8 +81,8 @@ class TMapRouteBehavior extends TBehavior
 		}
 		return $callchain->dyAddItem($key, $value);
 	}
-	
-	
+
+
 	/**
 	 * This is the dynamic event for handling TMap dyRemoveItem.
 	 * When there is a parameter, when the key is equal to the parameter,
@@ -102,7 +102,7 @@ class TMapRouteBehavior extends TBehavior
 		}
 		return $callchain->dyRemoveItem($key, $value);
 	}
-	
+
 	/**
 	 * @return string parameter
 	 */
@@ -110,7 +110,7 @@ class TMapRouteBehavior extends TBehavior
 	{
 		return $this->_parameter;
 	}
-	
+
 	/**
 	 *
 	 * @param mixed $param

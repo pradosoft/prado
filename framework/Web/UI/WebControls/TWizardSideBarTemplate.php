@@ -28,10 +28,10 @@ class TWizardSideBarTemplate extends \Prado\TComponent implements ITemplate
 	 */
 	public function instantiateIn($parent)
 	{
-		$dataList = new TDataList;
+		$dataList = new TDataList();
 		$dataList->setID(TWizard::ID_SIDEBAR_LIST);
 		$dataList->getSelectedItemStyle()->getFont()->setBold(true);
-		$dataList->setItemTemplate(new TWizardSideBarListItemTemplate);
+		$dataList->setItemTemplate(new TWizardSideBarListItemTemplate());
 		$parent->getControls()->add($dataList);
 	}
 }

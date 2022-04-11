@@ -425,7 +425,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	public function getItems()
 	{
 		if (!$this->_items) {
-			$this->_items = new TRepeaterItemCollection;
+			$this->_items = new TRepeaterItemCollection();
 		}
 		return $this->_items;
 	}
@@ -452,7 +452,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	public function getDataKeys()
 	{
 		if (($dataKeys = $this->getViewState('DataKeys', null)) === null) {
-			$dataKeys = new TList;
+			$dataKeys = new TList();
 			$this->setViewState('DataKeys', $dataKeys, null);
 		}
 		return $dataKeys;
@@ -545,7 +545,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 				$item->setItemType($itemType);
 			}
 		} elseif ($template !== null) {
-			$item = new TRepeaterItem;
+			$item = new TRepeaterItem();
 			$item->setItemIndex($itemIndex);
 			$item->setItemType($itemType);
 			$template->instantiateIn($item);

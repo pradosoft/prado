@@ -51,7 +51,7 @@ class TListItemCollection extends TList
 	 */
 	protected function createNewListItem($text = null)
 	{
-		$item = new TListItem;
+		$item = new TListItem();
 		if ($text !== null) {
 			$item->setText($text);
 		}

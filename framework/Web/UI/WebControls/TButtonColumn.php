@@ -222,11 +222,11 @@ class TButtonColumn extends TDataGridColumn
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			$buttonType = $this->getButtonType();
 			if ($buttonType === TButtonColumnType::LinkButton) {
-				$button = new TLinkButton;
+				$button = new TLinkButton();
 			} elseif ($buttonType === TButtonColumnType::PushButton) {
-				$button = new TButton;
+				$button = new TButton();
 			} else { // image button
-				$button = new TImageButton;
+				$button = new TImageButton();
 				$button->setImageUrl($this->getImageUrl());
 				$button->setToolTip($this->getText());
 			}

@@ -241,7 +241,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	protected function createClientSide()
 	{
-		return new TValidatorClientSide;
+		return new TValidatorClientSide();
 	}
 
 	/**

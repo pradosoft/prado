@@ -35,7 +35,6 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  */
 class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IActiveControl
 {
-
 	/**
 	 * @return bool a value indicating whether an automatic postback to the server
 	 * will occur whenever the user modifies the text in the TActiveDatePicker control and
@@ -106,7 +105,7 @@ class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IA
 			$cb = $this->getPage()->getCallbackClient();
 			$cb->setValue($this, $value);
 			if ($this->getInputMode() == TDatePickerInputMode::DropDownList) {
-				$dt = new \DateTime;
+				$dt = new \DateTime();
 				$dt->setTimeStamp($this->getTimeStampFromText());
 				$id = $this->getClientID();
 				$cb->select($id . TControl::CLIENT_ID_SEPARATOR . 'day', 'Value', $dt->format('j'), 'select');
@@ -168,6 +167,6 @@ class TActiveDatePicker extends TDatePicker implements ICallbackEventHandler, IA
 	 */
 	protected function createClientScript()
 	{
-		return new TActiveDatePickerClientScript;
+		return new TActiveDatePickerClientScript();
 	}
 }

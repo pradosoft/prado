@@ -65,7 +65,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	protected function createRepeatedControl()
 	{
-		return new TCheckBoxItem;
+		return new TCheckBoxItem();
 	}
 
 	/**
@@ -99,7 +99,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	protected function createStyle()
 	{
-		return new TTableStyle;
+		return new TTableStyle();
 	}
 
 	/**
@@ -125,7 +125,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	protected function getRepeatInfo()
 	{
 		if (($repeatInfo = $this->getViewState('RepeatInfo', null)) === null) {
-			$repeatInfo = new TRepeatInfo;
+			$repeatInfo = new TRepeatInfo();
 			$this->setViewState('RepeatInfo', $repeatInfo, null);
 		}
 		return $repeatInfo;

@@ -36,7 +36,7 @@ class TChainedCacheDependency extends TCacheDependency
 	public function getDependencies()
 	{
 		if ($this->_dependencies === null) {
-			$this->_dependencies = new TCacheDependencyList;
+			$this->_dependencies = new TCacheDependencyList();
 		}
 		return $this->_dependencies;
 	}

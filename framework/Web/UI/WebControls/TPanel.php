@@ -59,7 +59,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createStyle()
 	{
-		return new TPanelStyle;
+		return new TPanelStyle();
 	}
 
 	/**

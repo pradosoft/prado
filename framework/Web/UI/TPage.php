@@ -271,7 +271,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", 'Prado\Web\UI\TPage');
 		$this->onInitComplete(null);
 
-		$this->_restPostData = new TMap;
+		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", 'Prado\Web\UI\TPage');
 		$this->loadPageState();
 		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
@@ -350,7 +350,7 @@ class TPage extends TTemplateControl
 		Prado::trace("Page onInitComplete()", 'Prado\Web\UI\TPage');
 		$this->onInitComplete(null);
 
-		$this->_restPostData = new TMap;
+		$this->_restPostData = new TMap();
 		Prado::trace("Page loadPageState()", 'Prado\Web\UI\TPage');
 		$this->loadPageState();
 		Prado::trace("Page processPostData()", 'Prado\Web\UI\TPage');
@@ -477,12 +477,12 @@ class TPage extends TTemplateControl
 	public function getValidators($validationGroup = null)
 	{
 		if (!$this->_validators) {
-			$this->_validators = new TList;
+			$this->_validators = new TList();
 		}
 		if (empty($validationGroup) === true) {
 			return $this->_validators;
 		} else {
-			$list = new TList;
+			$list = new TList();
 			foreach ($this->_validators as $validator) {
 				if ($validator->getValidationGroup() === $validationGroup) {
 					$list->add($validator);
@@ -893,7 +893,7 @@ class TPage extends TTemplateControl
 	{
 		$this->_isLoadingPostData = true;
 		if ($beforeLoad) {
-			$this->_restPostData = new TMap;
+			$this->_restPostData = new TMap();
 		}
 		foreach ($postData as $key => $value) {
 			if ($this->isSystemPostField($key)) {
@@ -1255,7 +1255,7 @@ class TPage extends TTemplateControl
 	public function getCachingStack()
 	{
 		if (!$this->_cachingStack) {
-			$this->_cachingStack = new TStack;
+			$this->_cachingStack = new TStack();
 		}
 		return $this->_cachingStack;
 	}

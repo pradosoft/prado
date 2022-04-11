@@ -63,7 +63,7 @@ class TGlobalization extends \Prado\TModule
 	 * @var bool whether we should translate the default culture
 	 */
 	private $_translateDefaultCulture = true;
-	
+
 	/**
 	 * @var bool whether the current culture is Right to Left.
 	 */
@@ -311,7 +311,7 @@ class TGlobalization extends \Prado\TModule
 		$files[] = $file;
 		return $files;
 	}
-	
+
 	/**
 	 * This returns whether or not the current culture or the specified
 	 * culture is right to left orientation.  Default $culture is null, which
@@ -323,7 +323,7 @@ class TGlobalization extends \Prado\TModule
 	public function getIsCultureRTL($culture = null)
 	{
 		$currentCulture = $this->getCulture();
-		
+
 		if (($culture === null || $culture == $currentCulture) && $this->_cultureRTL !== null) {
 			return $this->_cultureRTL;
 		}
@@ -338,7 +338,7 @@ class TGlobalization extends \Prado\TModule
 		}
 		return $isRTL;
 	}
-	
+
 	/**
 	 * This hard sets the IsCultureRTL property to the value.
 	 * @param bool $rtl whether or not the culture is right to left

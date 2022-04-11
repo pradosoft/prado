@@ -87,7 +87,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_action_invalid', $action);
 		}
-		
+
 		$this->_users = [];
 		$this->_everyone = false;
 		$this->_guest = false;
@@ -109,7 +109,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 				}
 			}
 		}
-		
+
 		$this->_roles = [];
 		if ($roles === null || trim($roles) === '') {
 			$roles = '*';
@@ -119,7 +119,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 				$this->_roles[] = $role;
 			}
 		}
-		
+
 		if ($verb === null || ($verb = trim(strtolower($verb))) === '') {
 			$verb = '*';
 		}
@@ -128,7 +128,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 		} else {
 			throw new TInvalidDataValueException('authorizationrule_verb_invalid', $verb);
 		}
-		
+
 		$this->_ipRules = [];
 		if ($ipRules === null || trim($ipRules) === '') {
 			$ipRules = '*';
@@ -138,7 +138,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 				$this->_ipRules[] = $ipRule;
 			}
 		}
-		
+
 		$this->_priority = is_numeric($priority) ? $priority : null;
 
 		parent::__construct();
@@ -266,7 +266,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	{
 		return ($this->_verb === '*' || strcasecmp($verb, $this->_verb) === 0);
 	}
-	
+
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
 	 * because their value is the default one or useless to be cached for the next load.
@@ -277,7 +277,7 @@ class TAuthorizationRule extends \Prado\TComponent implements \Prado\Collections
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		
+
 		if ($this->_action === 'allow') {
 			$exprops[] = "\0Prado\Security\TAuthorizationRule\0_action";
 		}

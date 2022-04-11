@@ -312,7 +312,7 @@ class TApplication extends \Prado\TComponent
 
 		// generates unique ID by hashing the runtime path
 		$this->_uniqueID = md5($this->_runtimePath);
-		$this->_parameters = new \Prado\Collections\TMap;
+		$this->_parameters = new \Prado\Collections\TMap();
 		$this->_services = [$this->getPageServiceID() => ['TPageService', [], null]];
 
 		Prado::setPathOfAlias('Application', $this->_basePath);
@@ -751,7 +751,7 @@ class TApplication extends \Prado\TComponent
 	public function getRequest()
 	{
 		if (!$this->_request) {
-			$this->_request = new \Prado\Web\THttpRequest;
+			$this->_request = new \Prado\Web\THttpRequest();
 			$this->_request->init(null);
 		}
 		return $this->_request;
@@ -771,7 +771,7 @@ class TApplication extends \Prado\TComponent
 	public function getResponse()
 	{
 		if (!$this->_response) {
-			$this->_response = new THttpResponse;
+			$this->_response = new THttpResponse();
 			$this->_response->init(null);
 		}
 		return $this->_response;
@@ -791,7 +791,7 @@ class TApplication extends \Prado\TComponent
 	public function getSession()
 	{
 		if (!$this->_session) {
-			$this->_session = new THttpSession;
+			$this->_session = new THttpSession();
 			$this->_session->init(null);
 		}
 		return $this->_session;
@@ -811,7 +811,7 @@ class TApplication extends \Prado\TComponent
 	public function getErrorHandler()
 	{
 		if (!$this->_errorHandler) {
-			$this->_errorHandler = new TErrorHandler;
+			$this->_errorHandler = new TErrorHandler();
 			$this->_errorHandler->init(null);
 		}
 		return $this->_errorHandler;
@@ -831,7 +831,7 @@ class TApplication extends \Prado\TComponent
 	public function getSecurityManager()
 	{
 		if (!$this->_security) {
-			$this->_security = new TSecurityManager;
+			$this->_security = new TSecurityManager();
 			$this->_security->init(null);
 		}
 		return $this->_security;
@@ -851,7 +851,7 @@ class TApplication extends \Prado\TComponent
 	public function getAssetManager()
 	{
 		if (!$this->_assetManager) {
-			$this->_assetManager = new TAssetManager;
+			$this->_assetManager = new TAssetManager();
 			$this->_assetManager->init(null);
 		}
 		return $this->_assetManager;
@@ -871,7 +871,7 @@ class TApplication extends \Prado\TComponent
 	public function getApplicationStatePersister()
 	{
 		if (!$this->_statePersister) {
-			$this->_statePersister = new TApplicationStatePersister;
+			$this->_statePersister = new TApplicationStatePersister();
 			$this->_statePersister->init(null);
 		}
 		return $this->_statePersister;
@@ -924,7 +924,7 @@ class TApplication extends \Prado\TComponent
 	public function getGlobalization($createIfNotExists = true)
 	{
 		if ($this->_globalization === null && $createIfNotExists) {
-			$this->_globalization = new TGlobalization;
+			$this->_globalization = new TGlobalization();
 			$this->_globalization->init(null);
 		}
 		return $this->_globalization;
@@ -944,7 +944,7 @@ class TApplication extends \Prado\TComponent
 	public function getAuthorizationRules()
 	{
 		if ($this->_authRules === null) {
-			$this->_authRules = new \Prado\Security\TAuthorizationRuleCollection;
+			$this->_authRules = new \Prado\Security\TAuthorizationRuleCollection();
 		}
 		return $this->_authRules;
 	}
@@ -1052,7 +1052,7 @@ class TApplication extends \Prado\TComponent
 					throw new TConfigurationException('application_includefile_invalid', $filePath);
 				}
 				$cn = $this->getApplicationConfigurationClass();
-				$c = new $cn;
+				$c = new $cn();
 				$c->loadFromFile($path);
 				$this->applyConfiguration($c, $withinService);
 			}
@@ -1073,7 +1073,7 @@ class TApplication extends \Prado\TComponent
 
 		if ($this->_configFile !== null) {
 			if ($this->_cacheFile === null || @filemtime($this->_cacheFile) < filemtime($this->_configFile)) {
-				$config = new TApplicationConfiguration;
+				$config = new TApplicationConfiguration();
 				$config->loadFromFile($this->_configFile);
 				if ($this->_cacheFile !== null) {
 					file_put_contents($this->_cacheFile, serialize($config), LOCK_EX);
@@ -1119,7 +1119,7 @@ class TApplication extends \Prado\TComponent
 			}
 
 			if ($configElement !== null) {
-				$config = new TApplicationConfiguration;
+				$config = new TApplicationConfiguration();
 				if ($this->getConfigurationType() == self::CONFIG_TYPE_PHP) {
 					$config->loadFromPhp($configElement, $this->getBasePath());
 				} else {

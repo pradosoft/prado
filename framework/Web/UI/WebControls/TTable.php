@@ -93,7 +93,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createStyle()
 	{
-		return new TTableStyle;
+		return new TTableStyle();
 	}
 
 	/**

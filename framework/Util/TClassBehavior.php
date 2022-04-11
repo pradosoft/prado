@@ -17,7 +17,6 @@ namespace Prado\Util;
  */
 class TClassBehavior extends \Prado\TComponent implements IClassBehavior
 {
-
 	/**
 	 * Attaches the behavior object to the component.
 	 * @param \Prado\TComponent $component the component that this behavior is to be attached to.

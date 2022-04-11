@@ -22,7 +22,6 @@ namespace Prado\Util;
  */
 class TUtf8Converter
 {
-
 	/**
 	 * Convert strings to UTF-8 via iconv. NB, the result may not by UTF-8
 	 * if the conversion failed.

@@ -10,8 +10,8 @@
 
 namespace Prado\Exceptions;
 
-use \Prado\TApplicationMode;
-use \Prado\Prado;
+use Prado\TApplicationMode;
+use Prado\Prado;
 
 /**
  * TErrorHandler class

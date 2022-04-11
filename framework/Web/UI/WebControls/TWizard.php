@@ -417,7 +417,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getSideBarButtonStyle()
 	{
 		if (($style = $this->getViewState('SideBarButtonStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('SideBarButtonStyle', $style, null);
 		}
 		return $style;
@@ -429,7 +429,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getNavigationButtonStyle()
 	{
 		if (($style = $this->getViewState('NavigationButtonStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('NavigationButtonStyle', $style, null);
 		}
 		return $style;
@@ -441,7 +441,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getStartNextButtonStyle()
 	{
 		if (($style = $this->getViewState('StartNextButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Next');
 			$this->setViewState('StartNextButtonStyle', $style, null);
 		}
@@ -454,7 +454,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getStepNextButtonStyle()
 	{
 		if (($style = $this->getViewState('StepNextButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Next');
 			$this->setViewState('StepNextButtonStyle', $style, null);
 		}
@@ -467,7 +467,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getStepPreviousButtonStyle()
 	{
 		if (($style = $this->getViewState('StepPreviousButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Previous');
 			$this->setViewState('StepPreviousButtonStyle', $style, null);
 		}
@@ -480,7 +480,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getFinishCompleteButtonStyle()
 	{
 		if (($style = $this->getViewState('FinishCompleteButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Complete');
 			$this->setViewState('FinishCompleteButtonStyle', $style, null);
 		}
@@ -493,7 +493,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getFinishPreviousButtonStyle()
 	{
 		if (($style = $this->getViewState('FinishPreviousButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Previous');
 			$this->setViewState('FinishPreviousButtonStyle', $style, null);
 		}
@@ -506,7 +506,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getCancelButtonStyle()
 	{
 		if (($style = $this->getViewState('CancelButtonStyle', null)) === null) {
-			$style = new TWizardNavigationButtonStyle;
+			$style = new TWizardNavigationButtonStyle();
 			$style->setButtonText('Cancel');
 			$this->setViewState('CancelButtonStyle', $style, null);
 		}
@@ -519,7 +519,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getSideBarStyle()
 	{
 		if (($style = $this->getViewState('SideBarStyle', null)) === null) {
-			$style = new TPanelStyle;
+			$style = new TPanelStyle();
 			$this->setViewState('SideBarStyle', $style, null);
 		}
 		return $style;
@@ -531,7 +531,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getHeaderStyle()
 	{
 		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
-			$style = new TPanelStyle;
+			$style = new TPanelStyle();
 			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
@@ -543,7 +543,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getStepStyle()
 	{
 		if (($style = $this->getViewState('StepStyle', null)) === null) {
-			$style = new TPanelStyle;
+			$style = new TPanelStyle();
 			$this->setViewState('StepStyle', $style, null);
 		}
 		return $style;
@@ -555,7 +555,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getNavigationStyle()
 	{
 		if (($style = $this->getViewState('NavigationStyle', null)) === null) {
-			$style = new TPanelStyle;
+			$style = new TPanelStyle();
 			$this->setViewState('NavigationStyle', $style, null);
 		}
 		return $style;
@@ -706,7 +706,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	public function getMultiView()
 	{
 		if ($this->_multiView === null) {
-			$this->_multiView = new TMultiView;
+			$this->_multiView = new TMultiView();
 			$this->_multiView->setID('WizardMultiView');
 			$this->_multiView->attachEventHandler('OnActiveViewChanged', [$this, 'onActiveStepChanged']);
 			$this->_multiView->ignoreBubbleEvents();
@@ -990,7 +990,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	protected function getHistory()
 	{
 		if (($history = $this->getControlState('History', null)) === null) {
-			$history = new TStack;
+			$history = new TStack();
 			$this->setControlState('History', $history);
 		}
 		return $history;
@@ -1057,7 +1057,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createHeader()
 	{
-		$this->_header = new TPanel;
+		$this->_header = new TPanel();
 		if (($template = $this->getHeaderTemplate()) !== null) {
 			$template->instantiateIn($this->_header);
 		} else {
@@ -1073,9 +1073,9 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		if ($this->getShowSideBar()) {
 			if (($template = $this->getSideBarTemplate()) === null) {
-				$template = new TWizardSideBarTemplate;
+				$template = new TWizardSideBarTemplate();
 			}
-			$this->_sideBar = new TPanel;
+			$this->_sideBar = new TPanel();
 			$template->instantiateIn($this->_sideBar);
 			$this->getControls()->add($this->_sideBar);
 
@@ -1087,7 +1087,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 				$this->_sideBarDataList->dataBind();
 			}
 		} else {
-			$this->_sideBar = new TPanel;
+			$this->_sideBar = new TPanel();
 			$this->getControls()->add($this->_sideBar);
 		}
 	}
@@ -1168,7 +1168,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 			}
 		}
 		$multiView = $this->getMultiView();
-		$this->_stepContent = new TPanel;
+		$this->_stepContent = new TPanel();
 		$this->_stepContent->getControls()->add($multiView);
 		$this->getControls()->add($this->_stepContent);
 		if ($multiView->getViews()->getCount()) {
@@ -1181,7 +1181,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createNavigation()
 	{
-		$this->_navigation = new TPanel;
+		$this->_navigation = new TPanel();
 		$this->getControls()->add($this->_navigation);
 		$controls = $this->_navigation->getControls();
 		foreach ($this->getWizardSteps() as $step) {
@@ -1208,7 +1208,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if (($template = $this->getStartNavigationTemplate()) === null) {
 			$template = new TWizardStartNavigationTemplate($this);
 		}
-		$navigation = new TWizardNavigationContainer;
+		$navigation = new TWizardNavigationContainer();
 		$template->instantiateIn($navigation);
 		return $navigation;
 	}
@@ -1221,7 +1221,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if (($template = $this->getStepNavigationTemplate()) === null) {
 			$template = new TWizardStepNavigationTemplate($this);
 		}
-		$navigation = new TWizardNavigationContainer;
+		$navigation = new TWizardNavigationContainer();
 		$template->instantiateIn($navigation);
 		return $navigation;
 	}
@@ -1234,7 +1234,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		if (($template = $this->getFinishNavigationTemplate()) === null) {
 			$template = new TWizardFinishNavigationTemplate($this);
 		}
-		$navigation = new TWizardNavigationContainer;
+		$navigation = new TWizardNavigationContainer();
 		$template->instantiateIn($navigation);
 		return $navigation;
 	}

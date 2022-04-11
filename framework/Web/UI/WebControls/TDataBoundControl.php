@@ -314,7 +314,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createPagedDataSource()
 	{
-		$ds = new TPagedDataSource;
+		$ds = new TPagedDataSource();
 		$ds->setCurrentPageIndex($this->getCurrentPageIndex());
 		$ds->setPageSize($this->getPageSize());
 		$ds->setAllowPaging($this->getAllowPaging());
@@ -472,7 +472,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	protected function validateDataSource($value)
 	{
 		if (is_string($value)) {
-			$list = new TList;
+			$list = new TList();
 			foreach (TPropertyValue::ensureArray($value) as $key => $value) {
 				if (is_array($value)) {
 					$list->add($value);
@@ -506,7 +506,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	public function getSelectParameters()
 	{
 		if (!$this->_parameters) {
-			$this->_parameters = new TDataSourceSelectParameters;
+			$this->_parameters = new TDataSourceSelectParameters();
 		}
 		return $this->_parameters;
 	}

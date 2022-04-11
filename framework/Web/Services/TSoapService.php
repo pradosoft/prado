@@ -121,7 +121,7 @@ class TSoapService extends \Prado\TService
 	{
 		if ($this->_configFile !== null) {
 			if (is_file($this->_configFile)) {
-				$dom = new TXmlDocument;
+				$dom = new TXmlDocument();
 				$dom->loadFromFile($this->_configFile);
 				$this->loadConfig($dom);
 			} else {
@@ -253,7 +253,7 @@ class TSoapService extends \Prado\TService
 		if ($className !== self::DEFAULT_SOAP_SERVER && !is_subclass_of($className, self::DEFAULT_SOAP_SERVER)) {
 			throw new TConfigurationException('soapservice_server_invalid', $serverClass);
 		}
-		$server = new $className;
+		$server = new $className();
 		$server->setID($this->_serverID);
 		foreach ($properties as $name => $value) {
 			$server->setSubproperty($name, $value);

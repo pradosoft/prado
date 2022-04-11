@@ -13,7 +13,7 @@ $config
     ->setIndent("\t")
     ->setLineEnding("\n")
 	->setRules([
-		'@PSR2' => true,
+		'@PSR12' => true,
 		'align_multiline_comment' => true,
 		'array_syntax' => ['syntax' => 'short'],
 		'binary_operator_spaces' => true,

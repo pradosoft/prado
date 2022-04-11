@@ -87,7 +87,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	 */
 	protected function createRepeatedControl()
 	{
-		$control = new TActiveCheckBoxListItem;
+		$control = new TActiveCheckBoxListItem();
 		$control->getAdapter()->setBaseActiveControl($this->getActiveControl());
 		return $control;
 	}

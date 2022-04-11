@@ -78,7 +78,7 @@ class TActiveHyperLink extends THyperLink implements IActiveControl
 
 		parent::setImageUrl($value);
 		if ($this->getActiveControl()->canUpdateClientSide() && $value !== '') {
-			$textWriter = new TTextWriter;
+			$textWriter = new TTextWriter();
 			$renderer = Prado::createComponent($this->GetResponse()->getHtmlWriterType(), $textWriter);
 			$this->createImage($value)->renderControl($renderer);
 			$this->getPage()->getCallbackClient()->update($this, $textWriter->flush());

@@ -59,12 +59,12 @@ class TBehaviorsModule extends \Prado\TModule
 	 * @var TBehavior[] behaviors attaching to the TPage
 	 */
 	private $_pageBehaviors = [];
-	
+
 	/**
 	 * @var array[] additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
 	 */
 	private $_additionalBehaviors;
-	
+
 	/**
 	 * Initializes the module by loading behaviors.  If there are page behaviors, this
 	 * attaches behaviors to TPage through TApplication::onBeginRequest and then
@@ -75,13 +75,13 @@ class TBehaviorsModule extends \Prado\TModule
 	{
 		$this->loadBehaviors($config);
 		$this->loadBehaviors(['behaviors' => $this->getAdditionalBehaviors()]);
-		
+
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
 		parent::init($config);
 	}
-	
+
 	/**
 	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
@@ -96,7 +96,7 @@ class TBehaviorsModule extends \Prado\TModule
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors']);
 		}
 	}
-	
+
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
@@ -142,7 +142,7 @@ class TBehaviorsModule extends \Prado\TModule
 			if (!$name) {
 				throw new TConfigurationException('behaviormodule_behaviorname_required');
 			}
-			
+
 			$attachTo = $properties['attachto'] ?? null;
 			$attachToClass = $properties['attachtoclass'] ?? null;
 			unset($properties['attachto']);
@@ -174,7 +174,7 @@ class TBehaviorsModule extends \Prado\TModule
 			}
 		}
 	}
-	
+
 	/**
 	 * @return array additional behaviors in a list.
 	 */
@@ -182,7 +182,7 @@ class TBehaviorsModule extends \Prado\TModule
 	{
 		return $this->_additionalBehaviors ?? [];
 	}
-	 
+
 	/**
 	 * this will take a string that is an array of behaviors that has been
 	 * through serialize(), or json array of behaviors.  If one behavior is

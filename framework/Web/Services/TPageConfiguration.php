@@ -146,7 +146,7 @@ class TPageConfiguration extends \Prado\TComponent
 			$fcontent = include $fname;
 			$this->loadFromPhp($fcontent, dirname($fname), $configPagePath);
 		} else {
-			$dom = new TXmlDocument;
+			$dom = new TXmlDocument();
 			if ($dom->loadFromFile($fname)) {
 				$this->loadFromXml($dom, dirname($fname), $configPagePath);
 			} else {
@@ -179,7 +179,7 @@ class TPageConfiguration extends \Prado\TComponent
 
 	public function loadApplicationConfigurationFromPhp($config, $configPath)
 	{
-		$appConfig = new TApplicationConfiguration;
+		$appConfig = new TApplicationConfiguration();
 		$appConfig->loadFromPhp($config, $configPath);
 		$this->_appConfigs[] = $appConfig;
 	}
@@ -191,7 +191,7 @@ class TPageConfiguration extends \Prado\TComponent
 	 */
 	public function loadApplicationConfigurationFromXml($dom, $configPath)
 	{
-		$appConfig = new TApplicationConfiguration;
+		$appConfig = new TApplicationConfiguration();
 		$appConfig->loadFromXml($dom, $configPath);
 		$this->_appConfigs[] = $appConfig;
 	}

@@ -459,19 +459,19 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
 			if ($enabled) {
-				$button = new TLinkButton;
+				$button = new TLinkButton();
 			} else {
-				$button = new TLabel;
+				$button = new TLabel();
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
 		} else {
 			if ($buttonType === TPagerButtonType::ImageButton) {
-				$button = new TImageButton;
+				$button = new TImageButton();
 				$button->setImageUrl($this->getPageImageUrl($text, $commandName));
 			} else {
-				$button = new TButton;
+				$button = new TButton();
 			}
 			if (!$enabled) {
 				$button->setEnabled(false);
@@ -621,7 +621,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	protected function buildListPager()
 	{
-		$list = new TDropDownList;
+		$list = new TDropDownList();
 		$this->getControls()->add($list);
 		$list->setDataSource(range(1, $this->getPageCount()));
 		$list->dataBind();

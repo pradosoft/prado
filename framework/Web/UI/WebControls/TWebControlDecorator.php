@@ -61,7 +61,6 @@ use Prado\Web\UI\TTemplate;
 
 class TWebControlDecorator extends \Prado\TComponent
 {
-
 	/**
 	 * @var bool tells if there should only be decoration around the inner content
 	 */
@@ -351,13 +350,13 @@ class TWebControlDecorator extends \Prado\TComponent
 		$this->_addedTemplateDecoration = true;
 
 		if ($this->getPreContentsTemplate()) {
-			$precontents = new TCompositeControl;
+			$precontents = new TCompositeControl();
 			$this->getPreContentsTemplate()->instantiateIn($precontents);
 			$control->getControls()->insertAt(0, $precontents);
 		}
 
 		if ($this->getPostContentsTemplate()) {
-			$postcontents = new TCompositeControl;
+			$postcontents = new TCompositeControl();
 			$this->getPostContentsTemplate()->instantiateIn($postcontents);
 			$control->getControls()->add($postcontents);
 		}
@@ -368,13 +367,13 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 		if ($this->getPreTagTemplate()) {
-			$pretag = new TCompositeControl;
+			$pretag = new TCompositeControl();
 			$this->getPreTagTemplate()->instantiateIn($pretag);
 			$outercontrol->getParent()->getControls()->insertBefore($outercontrol, $pretag);
 		}
 
 		if ($this->getPostTagTemplate()) {
-			$posttag = new TCompositeControl;
+			$posttag = new TCompositeControl();
 			$this->getPostTagTemplate()->instantiateIn($posttag);
 			$outercontrol->getParent()->getControls()->insertAfter($outercontrol, $posttag);
 		}

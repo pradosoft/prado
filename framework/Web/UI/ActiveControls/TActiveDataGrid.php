@@ -49,7 +49,6 @@ use Prado\Web\UI\WebControls\TLabel;
  */
 class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 {
-
   /**
    * @var string the tag used to render the surrounding container
    */
@@ -142,14 +141,14 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	{
 		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
 			if ($enabled) {
-				$button = new TActiveLinkButton;
+				$button = new TActiveLinkButton();
 			} else {
-				$button = new TLabel;
+				$button = new TLabel();
 				$button->setText($text);
 				return $button;
 			}
 		} else {
-			$button = new TActiveButton;
+			$button = new TActiveButton();
 			if (!$enabled) {
 				$button->setEnabled(false);
 			}

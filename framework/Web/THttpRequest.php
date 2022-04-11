@@ -322,7 +322,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ($this->_urlManager === null) {
 			if (($this->_urlManager = $this->loadCachedUrlManager()) === null) {
 				if (empty($this->_urlManagerID)) {
-					$this->_urlManager = new TUrlManager;
+					$this->_urlManager = new TUrlManager();
 					$this->_urlManager->init(null);
 				} else {
 					$this->_urlManager = $this->getApplication()->getModule($this->_urlManagerID);
@@ -659,7 +659,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function getCookies()
 	{
 		if ($this->_cookies === null) {
-			$this->_cookies = new THttpCookieCollection;
+			$this->_cookies = new THttpCookieCollection();
 			if ($this->getEnableCookieValidation()) {
 				$sm = $this->getApplication()->getSecurityManager();
 				foreach ($_COOKIE as $key => $value) {

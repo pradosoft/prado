@@ -26,36 +26,36 @@ use Prado\TPropertyValue;
  * @package Prado\Util\Cron
  * @since 4.2.0
  */
- 
+
 abstract class TCronTask extends TApplicationComponent
 {
 	/** @var string The name of the task */
 	private $_name;
-	
+
 	/** @var string The schedule */
 	private $_schedule;
-	
+
 	/** @var string The user Id of the task */
 	private $_userName;
-	
+
 	/** @var string The module Id */
 	private $_moduleId;
-	
+
 	/** @var TTimeScheduler The time scheduler */
 	private $_scheduler;
-	
+
 	/** @var int The number of times which the cron task has run since the counter has been cleared */
 	private $_processCount = 0;
-	
+
 	/** @var int the last time this task was run */
 	private $_lastexectime;
-	
+
 	/**
 	 * This is the abstract method for running a task.
 	 * @param TCronModule $cronModule the module calling the task
 	 */
 	abstract public function execute($cronModule);
-	
+
 	/**
 	 * @return string the unique name of the Task
 	 */
@@ -71,7 +71,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		$this->_name = TPropertyValue::ensureString($name);
 	}
-	
+
 	/**
 	 * @return string the cron style schedule of the task
 	 */
@@ -79,7 +79,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return $this->_schedule;
 	}
-	
+
 	/**
 	 *
 	 * @param string $schedule the cron style schedule of the task
@@ -91,7 +91,7 @@ abstract class TCronTask extends TApplicationComponent
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
 	}
-	
+
 	/**
 	 * @return string the task being executed
 	 */
@@ -99,7 +99,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return get_class($this);
 	}
-	
+
 	/**
 	 * @return string the user id executing the Task
 	 */
@@ -115,7 +115,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		$this->_userName = TPropertyValue::ensureString($username);
 	}
-	
+
 	/**
 	 * @return null|string the utility module for the task
 	 */
@@ -123,7 +123,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return $this->_moduleId;
 	}
-	
+
 	/**
 	 *
 	 * @param string $moduleId the utility module for the task.
@@ -132,7 +132,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		$this->_moduleId = ($moduleId !== null) ? TPropertyValue::ensureString($moduleId) : null;
 	}
-	
+
 	/**
 	 * @return null|\Prado\IModule returns the module from ModuleId
 	 */
@@ -145,7 +145,7 @@ abstract class TCronTask extends TApplicationComponent
 		}
 		return $module;
 	}
-	
+
 	/**
 	 * @return int the number of times the task has run
 	 */
@@ -153,7 +153,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return $this->_processCount;
 	}
-	
+
 	/**
 	 *
 	 * @param int $count the number of times the task has run
@@ -162,7 +162,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return $this->_processCount = $count;
 	}
-	
+
 	/**
 	 * @return numeric the time of running this cron task
 	 */
@@ -170,7 +170,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return $this->_lastexectime;
 	}
-	
+
 	/**
 	 * sometimes floats don't output correctly to 6 significant figures (microtime).
 	 * @param numeric $v the time of running this cron task
@@ -179,7 +179,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		$this->_lastexectime = TPropertyValue::ensureInteger($v);
 	}
-	
+
 	/**
 	 * @return numeric time of the next trigger after the lastExecTime
 	 */
@@ -188,7 +188,7 @@ abstract class TCronTask extends TApplicationComponent
 		$s = $this->getScheduler();
 		return $s->getNextTriggerTime($this->_lastexectime);
 	}
-	
+
 	/**
 	 * @return bool is the current time after the NextTriggerTime
 	 */
@@ -196,7 +196,7 @@ abstract class TCronTask extends TApplicationComponent
 	{
 		return time() >= $this->getNextTriggerTime();
 	}
-	
+
 	/**
 	 * @return \Prado\Util\Cron\TTimeScheduler the time scheduler for processing the schedule
 	 */
@@ -219,7 +219,7 @@ abstract class TCronTask extends TApplicationComponent
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		
+
 		$exprops[] = "\0Prado\Util\Cron\TCronTask\0_scheduler";
 		if ($this->_userName === null) {
 			$exprops[] = "\0Prado\Util\Cron\TCronTask\0_userName";

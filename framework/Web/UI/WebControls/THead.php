@@ -131,7 +131,7 @@ class THead extends \Prado\Web\UI\TControl
 	public function getMetaTags()
 	{
 		if (($metaTags = $this->getViewState('MetaTags', null)) === null) {
-			$metaTags = new TMetaTagCollection;
+			$metaTags = new TMetaTagCollection();
 			$this->setViewState('MetaTags', $metaTags, null);
 		}
 		return $metaTags;

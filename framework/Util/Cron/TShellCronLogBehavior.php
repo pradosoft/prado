@@ -6,7 +6,7 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
- 
+
 namespace Prado\Util\Cron;
 
 use Prado\Prado;
@@ -27,7 +27,7 @@ use Prado\Util\TCallChain;
 class TShellCronLogBehavior extends TBehavior
 {
 	private $_outWriter;
-	
+
 	/**
 	 * creates the TShellCronLogBehavior with a writer
 	 * @param \Prado\IO\ITextWriter $writer where to write cron task info to
@@ -36,7 +36,7 @@ class TShellCronLogBehavior extends TBehavior
 	{
 		$this->_outWriter = $writer;
 	}
-	
+
 	/**
 	 * @return \Prado\IO\ITextWriter the output writer from the shell
 	 */
@@ -44,7 +44,7 @@ class TShellCronLogBehavior extends TBehavior
 	{
 		return $this->_outWriter;
 	}
-	
+
 	/**
 	 * @param \Prado\IO\ITextWriter $writer the output writer from the shell
 	 */
@@ -52,7 +52,7 @@ class TShellCronLogBehavior extends TBehavior
 	{
 		$this->_outWriter = $writer;
 	}
-	
+
 	/**
 	 * writes, with attributes, to the OutputWriter
 	 * @param string $str
@@ -72,7 +72,7 @@ class TShellCronLogBehavior extends TBehavior
 		$this->_outWriter->write($str, $attr);
 		return $callchain->dyWrite($str, $p1, $p2);
 	}
-	
+
 	/**
 	 * writes Line, with attributes, to the OutputWriter
 	 * @param string $str
@@ -92,8 +92,8 @@ class TShellCronLogBehavior extends TBehavior
 		$this->_outWriter->writeLine($str, $attr);
 		return $callchain->dyWriteLine($str, $p1, $p2);
 	}
-	
-	
+
+
 	/**
 	 * flushes the OutputWriter
 	 * @param \Prado\Util\TCallChain $callchain
@@ -104,7 +104,7 @@ class TShellCronLogBehavior extends TBehavior
 		$result = $this->_outWriter->flush();
 		return $result . $callchain->dyFlush();
 	}
-	
+
 	/**
 	 * Logs a when cron is run in the shell.
 	 * @param int $numtasks number of tasks to run
@@ -114,10 +114,10 @@ class TShellCronLogBehavior extends TBehavior
 	public function dyLogCron($numtasks, $callchain)
 	{
 		$this->_outWriter->writeLine(" Running {$numtasks} Cron Tasks @ " . date('Y-m-d H:i:s') . " \n");
-		
+
 		return $callchain->dyLogCron($numtasks);
 	}
-	
+
 	/**
 	 * Logs a single cron task when run in the shell.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to log
@@ -129,10 +129,10 @@ class TShellCronLogBehavior extends TBehavior
 	{
 		$this->_outWriter->writeLine("Running Task {$task->getName()} as {$username}");
 		$this->_outWriter->flush();
-		
+
 		return $callchain->dyLogCronTask($task, $username);
 	}
-	
+
 	/**
 	 * Logs the end of a single cron task when run in the shell.
 	 * @param \Prado\Util\Cron\TCronTask $task the tasks that was run
@@ -142,7 +142,7 @@ class TShellCronLogBehavior extends TBehavior
 	public function dyUpdateTaskInfo($task, $callchain)
 	{
 		$this->_outWriter->writeLine("Ending Task {$task->getName()}\n");
-		
+
 		return $callchain->dyUpdateTaskInfo($task);
 	}
 }

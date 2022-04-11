@@ -28,7 +28,7 @@ use Prado\Web\THttpUtility;
 class TJavaScriptAsset
 {
 	protected $_url;
-	
+
 	protected $_async;
 
 	public function __construct($url, $async = false)

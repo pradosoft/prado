@@ -68,7 +68,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 	 */
 	protected function createStyle()
 	{
-		return new TTableItemStyle;
+		return new TTableItemStyle();
 	}
 
 	/**

@@ -55,7 +55,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createStyle()
 	{
-		return new TTableItemStyle;
+		return new TTableItemStyle();
 	}
 
 	/**

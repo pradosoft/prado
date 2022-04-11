@@ -7,7 +7,7 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
- 
+
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TInvalidDataValueException;
@@ -45,33 +45,33 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TTimeScheduler extends \Prado\TComponent
 {
 	public const YEAR_MIN = 1970;
-	
+
 	public const YEAR_MAX = 2099;
-	
+
 	/** the minute attributes of the schedule */
 	protected const MINUTE = 0;
-	
+
 	/** the hour attributes of the schedule */
 	protected const HOUR = 1;
-	
+
 	/** the day of month attributes of the schedule */
 	protected const DAY_OF_MONTH = 2;
-	
+
 	/** the month of year attributes of the schedule */
 	protected const MONTH_OF_YEAR = 3;
-	
+
 	/** the day of week attributes of the schedule */
 	protected const DAY_OF_WEEK = 4;
-	
+
 	/** the year attributes of the schedule */
 	protected const YEAR = 5;
-	
+
 	/** The cron schedule */
 	private $_schedule;
-	
+
 	/** the parsed attributes of the schedule */
 	private $_attr = [];
-	
+
 	private static $_intervals = [
 		'@yearly' => '0 0 1 1 ?',
 		'@annually' => '0 0 1 1 ?',
@@ -107,7 +107,7 @@ class TTimeScheduler extends \Prado\TComponent
 					6 => '(?:saturday|samstag|sam|sat|sa|sábado|s|samedi|sabato|sab|Суббота|Сбт|Сб|शनिवार|शनि)'
 				]
 		];
-	
+
 	/**
 	 * @return string This returns the cron schedule
 	 */
@@ -115,7 +115,7 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		return $this->_schedule;
 	}
-	
+
 	/**
 	 * Parses a Cron Time Tag
 	 * @param mixed $schedule
@@ -179,7 +179,7 @@ class TTimeScheduler extends \Prado\TComponent
 				'((?:' . $yearStar . '|' . $yearRegex . ')(?:\,(?:' . $yearStar . '|' . $yearRegex . '))*)' .
 			')?' .
 		')$/i';
-		
+
 		$i = 0;
 		do {
 			if (!preg_match($regex, $schedule, $matches)) {
@@ -193,7 +193,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		} while ($matches[1]);
-		
+
 		$this->_attr[self::MINUTE] = [];
 		foreach (explode(',', $matches[2]) as $match) {
 			if (preg_match('/^(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?$/i', $match, $m2)) {
@@ -212,7 +212,7 @@ class TTimeScheduler extends \Prado\TComponent
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
-			
+
 		$this->_attr[self::HOUR] = [];
 		foreach (explode(',', $matches[3]) as $match) {
 			if (preg_match('/^(\*|' . $hour . ')(?:\-(' . $hour . '))?(?:\/(' . $hour . '))?$/i', $match, $m2)) {
@@ -231,7 +231,7 @@ class TTimeScheduler extends \Prado\TComponent
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
-		
+
 		$this->_attr[self::DAY_OF_MONTH] = [];
 		foreach (explode(',', $matches[4]) as $match) {
 			if (preg_match('/^(\*|\?|L|' . $domWOW . ')(W)?(?:\-(' . $domWOW . ')(W)?)?(?:\/(' . $domWOW . '))?$/i', $match, $m2)) {
@@ -249,7 +249,7 @@ class TTimeScheduler extends \Prado\TComponent
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
-			
+
 		$this->_attr[self::MONTH_OF_YEAR] = [];
 		foreach (explode(',', $matches[5]) as $match) {
 			if (preg_match('/^(\*|' . $month . ')(?:\-(' . $month . '))?(?:\/(' . $month . '))?$/i', $match, $m2)) {
@@ -268,7 +268,7 @@ class TTimeScheduler extends \Prado\TComponent
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
-			
+
 		$this->_attr[self::DAY_OF_WEEK] = [];
 		foreach (explode(',', $matches[6]) as $match) {
 			if (preg_match('/^(\*|\?|' . $dow . ')(L)?(?:\-(' . $dow . ')(L)?)?(?:\/(' . $dow . '))?(?:#([1-5]))?$/i', $match, $m2)) {
@@ -290,7 +290,7 @@ class TTimeScheduler extends \Prado\TComponent
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $match);
 			}
 		}
-			
+
 		$this->_attr[self::YEAR] = [];
 		$matches[7] = $matches[7] ?? '*';
 		foreach (explode(',', $matches[7]) as $match) {
@@ -312,7 +312,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 		}
 	}
-	
+
 	protected function translateMonthOfYear($v)
 	{
 		if (is_numeric($v)) {
@@ -325,7 +325,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $v;
 	}
-	
+
 	protected function translateDayOfWeek($v)
 	{
 		if (is_numeric($v)) {
@@ -338,8 +338,8 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $v;
 	}
-	
-	
+
+
 	/**
 	 * Given which minutes are valid for the parsed time stamp, this generates
 	 * an array of valid minutes.  Each minute is available as the key to the array
@@ -358,8 +358,8 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $ma;
 	}
-	
-	
+
+
 	/**
 	 * Given which hours are valid for the parsed time stamp, this generates
 	 * an array of valid hours.  Each hour is available as the key to the array
@@ -378,8 +378,8 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $ha;
 	}
-	
-	
+
+
 	/**
 	 * Returns the number of days in a given month and year, taking into account leap years.
 	 *
@@ -390,8 +390,8 @@ class TTimeScheduler extends \Prado\TComponent
 	{
 		return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
 	}
-	
-	
+
+
 	/**
 	 * Given which days are valid for the parsed time stamp, this generates
 	 * an array of valid days for the given month and year.  Each day is available
@@ -469,7 +469,7 @@ class TTimeScheduler extends \Prado\TComponent
 						$iii = $i + $ii;
 						$w = floor(($iii + 6) / 7);
 						$lw = floor(($daysinmonth - $iii) / 7);
-						
+
 						if (($iii >= 0) && ((!$d['week'] || $d['week'] == $w) && (!$d['lastDow'] || $lw == 0))) {
 							$dwa[$iii] = 1;
 						}
@@ -487,8 +487,8 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $da;
 	}
-	
-	
+
+
 	/**
 	 * Given which month are valid for the parsed time stamp, this generates
 	 * an array of valid months.  Each month is available as the key to the array
@@ -508,9 +508,9 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $ma;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Given which years are valid for the parsed time stamp, this generates
 	 * an array of valid years.  Each year is available as the key to the array
@@ -533,7 +533,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 		return $ya;
 	}
-	
+
 	/**
 	 * This calculates the next trigger time for the schedule based on the $priortime
 	 * If no parameter time is given, the current system time is used.
@@ -554,16 +554,16 @@ class TTimeScheduler extends \Prado\TComponent
 			$priortime = strtotime($priortime);
 		}
 		$lastdata = getdate($priortime);
-		
+
 		$oyear = $year = $lastdata['year'];
 		$omonth = $month = $lastdata['mon'];
-		
+
 		$minutes = $this->getMinutesArray();
 		$hours = $this->getHoursArray();
 		$days = $this->getDaysArray($month, $year);
 		$months = $this->getMonthsArray();
 		$years = $this->getYearsArray();
-		
+
 		// Do Minutes
 		$nmin = null;
 		$z = -1;
@@ -579,7 +579,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// Do Hours
 		$nhour = null;
 		$z = -1;
@@ -595,7 +595,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// Adjust Month/year for extra day
 		$nday = '01';
 		if ($dextra) {
@@ -606,7 +606,7 @@ class TTimeScheduler extends \Prado\TComponent
 				$days = $this->getDaysArray($month, $year);
 			}
 		}
-		
+
 		// Do the Day of Month
 		$dim = $this->days_in_month($month, $year);
 		$zeroIndex = !$months[$lastdata['mon']] || !$years[$year];
@@ -632,7 +632,7 @@ class TTimeScheduler extends \Prado\TComponent
 				break;
 			}
 		}
-		
+
 		// Do the Month of the Year
 		$nmonth = null;
 		$z = -1;
@@ -649,7 +649,7 @@ class TTimeScheduler extends \Prado\TComponent
 			}
 			$z = 0;
 		}
-		
+
 		// If month or year different, recompute day of month for that month/year
 		if ($yextra || $nmonth != $omonth) {
 			$month = $nmonth;
@@ -680,7 +680,7 @@ class TTimeScheduler extends \Prado\TComponent
 				}
 			}
 		}
-		
+
 		// Do Year
 		$nyear = null;
 		for ($i = $lastdata['year'] + $yextra; $i <= self::YEAR_MAX; $i++) {

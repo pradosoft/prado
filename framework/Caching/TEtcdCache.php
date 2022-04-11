@@ -54,7 +54,6 @@ use Prado\Exceptions\TConfigurationException;
  */
 class TEtcdCache extends TCache
 {
-
   /**
    * @var string the etcd host
    */

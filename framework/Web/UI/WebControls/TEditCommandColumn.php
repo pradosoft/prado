@@ -235,11 +235,11 @@ class TEditCommandColumn extends TDataGridColumn
 	protected function createButton($commandName, $text, $causesValidation, $validationGroup)
 	{
 		if ($this->getButtonType() === TButtonColumnType::LinkButton) {
-			$button = new TLinkButton;
+			$button = new TLinkButton();
 		} elseif ($this->getButtonType() === TButtonColumnType::PushButton) {
-			$button = new TButton;
+			$button = new TButton();
 		} else {	// image buttons
-			$button = new TImageButton;
+			$button = new TImageButton();
 			if (strcasecmp($commandName, 'Update') === 0) {
 				$url = $this->getUpdateImageUrl();
 			} elseif (strcasecmp($commandName, 'Cancel') === 0) {

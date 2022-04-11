@@ -36,11 +36,11 @@ class TActiveButtonColumn extends TButtonColumn
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			$buttonType = $this->getButtonType();
 			if ($buttonType === TButtonColumnType::LinkButton) {
-				$button = new TActiveLinkButton;
+				$button = new TActiveLinkButton();
 			} elseif ($buttonType === TButtonColumnType::PushButton) {
-				$button = new TActiveButton;
+				$button = new TActiveButton();
 			} else { // image button
-				$button = new TActiveImageButton;
+				$button = new TActiveImageButton();
 				$button->setImageUrl($this->getImageUrl());
 				$button->setToolTip($this->getText());
 			}

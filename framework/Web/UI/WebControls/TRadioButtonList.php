@@ -41,7 +41,7 @@ class TRadioButtonList extends TCheckBoxList
 	 */
 	protected function createRepeatedControl()
 	{
-		return new TRadioButtonItem;
+		return new TRadioButtonItem();
 	}
 
 	/**

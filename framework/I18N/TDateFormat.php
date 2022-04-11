@@ -222,7 +222,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 			$value = @strtotime($value);
 		}
 
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimestamp($value);
 
 		$culture = $this->getCulture();

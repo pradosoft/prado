@@ -53,7 +53,6 @@ use Prado\Web\UI\WebControls\TTableRow;
  */
 class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiveControl
 {
-
 	/**
 	 * @var TTable parent table control containing the row
 	 */

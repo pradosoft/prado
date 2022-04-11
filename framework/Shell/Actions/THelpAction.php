@@ -31,7 +31,7 @@ class THelpAction extends TShellAction
 	protected $description = [
 		'Provides help information about shell commands.',
 		'Displays available commands or detailed command information.'];
-	
+
 	/**
 	 * displays help for a specific command or the general help
 	 * @param array $args parameters

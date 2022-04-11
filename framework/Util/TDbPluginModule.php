@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado
  */
-	
+
 namespace Prado\Util;
 
 use Prado\Data\TDataSourceConfig;
@@ -89,7 +89,7 @@ class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 			}
 		} else {
 			if ($file = $this->getSqliteDatabaseName()) {
-				$db = new TDbConnection;
+				$db = new TDbConnection();
 				// default to SQLite3 database
 				$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . $file;
 				$db->setConnectionString('sqlite:' . $dbFile);
@@ -99,7 +99,7 @@ class TDbPluginModule extends TPluginModule implements \Prado\Util\IDbModule
 			}
 		}
 	}
-	
+
 	/**
 	 * @return null|string if the sub-class wants a sqlite db then return the name.
 	 */

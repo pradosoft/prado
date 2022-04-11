@@ -40,14 +40,14 @@ class TActiveRecordAction extends TShellAction
 	];
 	private $_soap = false;
 	private $_overwrite = false;
-	
+
 	private $_soapall = false;
 	private $_overwriteall = false;
 	private $_prefix = '';
 	private $_postfix = '';
-	
-	
-	
+
+
+
 	/**
 	 * This is the Shell Command for Generating all Action Record table skeletons
 	 * @param array $args parameters
@@ -126,8 +126,8 @@ class TActiveRecordAction extends TShellAction
 			$this->_outWriter->writeLine("\n    Usage: generate table_name Application.pages.RecordClassName");
 		}
 	}
-	
-	
+
+
 	/**
 	 * This is the Shell Command for Generating a specific Action Record table skeleton
 	 * @param array $args parameters

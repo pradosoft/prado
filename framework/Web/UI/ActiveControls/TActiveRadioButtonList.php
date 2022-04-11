@@ -80,7 +80,7 @@ class TActiveRadioButtonList extends TRadioButtonList implements IActiveControl,
 	 */
 	protected function createRepeatedControl()
 	{
-		$control = new TActiveRadioButtonItem;
+		$control = new TActiveRadioButtonItem();
 		$control->getAdapter()->setBaseActiveControl($this->getActiveControl());
 		return $control;
 	}

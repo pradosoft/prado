@@ -47,37 +47,37 @@ class TShellApplication extends \Prado\TApplication
 {
 	/** @var bool tells the application to be in quiet mode, levels [0..1], default 0, */
 	private $_quietMode = 0;
-	
+
 	/**
 	 * @var array<\Prado\Shell\TShellAction> cli shell Application commands. Modules can add their own command
 	 */
 	private $_actions = [];
-	
+
 	/**
 	 * @var TShellWriter output writer.
 	 */
 	protected $_outWriter;
-	
+
 	/**
 	 * @var array<string, callable> application command options and property set callable
 	 */
 	protected $_options = [];
-	
+
 	/**
 	 * @var array<string, string> application command optionAliases of the short letter(s) and option name
 	 */
 	protected $_optionAliases = [];
-	
+
 	/**
 	 * @var bool is the application help printed
 	 */
 	protected $_helpPrinted = false;
-	
+
 	/**
 	 * @var string[] arguments to the application
 	 */
 	private $_arguments;
-	
+
 	/**
 	 * Runs the application.
 	 * This method overrides the parent implementation by initializing
@@ -89,19 +89,19 @@ class TShellApplication extends \Prado\TApplication
 		array_shift($args);
 		$this->_arguments = $args;
 		$this->detectShellLanguageCharset();
-		
+
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\THelpAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
 		$this->addShellActionClass('Prado\\Shell\\Actions\\TActiveRecordAction');
-		
+
 		$this->_outWriter = new TShellWriter(new TOutputWriter());
-		
+
 		$this->attachEventHandler('onInitComplete', [$this, 'processArguments']);
-		
+
 		parent::run();
 	}
-	
+
 	/**
 	 * This takes the shell LANG and sets the HTTP_ACCEPT_LANGUAGE/HTTP_ACCEPT_CHARSET
 	 * for the application to do I18N.
@@ -119,7 +119,7 @@ class TShellApplication extends \Prado\TApplication
 			$_SERVER['HTTP_ACCEPT_LANGUAGE'] = $lang;
 		}
 	}
-	
+
 	/**
 	 * This processes the arguments entered into the cli.  This is processed after
 	 * the application is initialized and modules can
@@ -164,10 +164,10 @@ class TShellApplication extends \Prado\TApplication
 	public function runService()
 	{
 		$args = $this->_arguments;
-		
+
 		$outWriter = $this->_outWriter;
 		$valid = false;
-		
+
 		$this->printGreeting($outWriter);
 		foreach ($this->_actions as $class => $action) {
 			if (($method = $action->isValidAction($args)) !== null) {
@@ -187,7 +187,7 @@ class TShellApplication extends \Prado\TApplication
 			$this->printHelp($outWriter);
 		}
 	}
-	
+
 	/**
 	 * This processes the arguments entered into the cli
 	 * @param array $args
@@ -229,7 +229,7 @@ class TShellApplication extends \Prado\TApplication
 		}
 		$args = array_values($args);
 	}
-	
+
 
 	/**
 	 * Flushes output to shell.
@@ -261,7 +261,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		return $this->_actions;
 	}
-	
+
 
 	/**
 	 * This registers shell command line options and the setter callback
@@ -273,7 +273,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		$this->_options[$name] = $setCallback;
 	}
-	
+
 
 	/**
 	 * This registers shell command line option aliases and linked variable
@@ -285,7 +285,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		$this->_optionAliases[$alias] = $name;
 	}
-	
+
 	/**
 	 * @return \Prado\Shell\TShellWriter the writer for the class
 	 * @since 4.2.0
@@ -294,7 +294,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		return $this->_outWriter;
 	}
-	
+
 	/**
 	 * @param \Prado\Shell\TShellWriter $writer the writer for the class
 	 * @since 4.2.0
@@ -303,7 +303,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		$this->_outWriter = $writer;
 	}
-	
+
 	/**
 	 * @return int the writer for the class, default 0
 	 * @since 4.2.0
@@ -312,7 +312,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		return $this->_quietMode;
 	}
-	
+
 	/**
 	 * @param int $quietMode the writer for the class, [0..3]
 	 * @since 4.2.0
@@ -321,7 +321,7 @@ class TShellApplication extends \Prado\TApplication
 	{
 		$this->_quietMode = ($quietMode === '' ? 1 : min(max((int) $quietMode, 0), 3));
 	}
-	
+
 
 	/**
 	 * @param mixed $outWriter
@@ -346,7 +346,7 @@ class TShellApplication extends \Prado\TApplication
 	public function printHelp($outWriter)
 	{
 		$this->printGreeting($outWriter);
-		
+
 		$outWriter->write("usage: ");
 		$outWriter->writeLine("php prado-cli.php command[/action] <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
 		$outWriter->writeLine();

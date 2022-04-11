@@ -35,7 +35,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const FRAMED = 51;
 	public const ENCIRCLED = 52;
 	public const OVERLINED = 53;
-	
+
 	public const BLACK = 30;
 	public const RED = 31;
 	public const GREEN = 32;
@@ -46,7 +46,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const LIGHT_GRAY = 37;
 	// '256' => '38', //  38:2:<red>:<green>:<blue> or 38:5:<256-color>
 	public const DEFAULT = 39;
-	
+
 	public const DARK_GRAY = 90;
 	public const LIGHT_RED = 91;
 	public const LIGHT_GREEN = 92;
@@ -55,7 +55,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const LIGHT_MAGENTA = 95;
 	public const LIGHT_CYAN = 96;
 	public const WHITE = 97;
-	
+
 	public const BG_BLACK = 40;
 	public const BG_RED = 41;
 	public const BG_GREEN = 42;
@@ -66,7 +66,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const BG_LIGHT_GRAY = 47;
 	//'256' => '48', // 48:2:<red>:<green>:<blue>   48:5:<256-color>
 	public const BG_DEFAULT = 49;
-	
+
 	public const BG_DARK_GRAY = 100;
 	public const BG_LIGHT_RED = 101;
 	public const BG_LIGHT_GREEN = 102;
@@ -75,15 +75,15 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public const BG_LIGHT_MAGENTA = 105;
 	public const BG_LIGHT_CYAN = 106;
 	public const BG_WHITE = 107;
-	
+
 	/**
 	 * @var \Prado\IO\ITextWriter writer
 	 */
 	protected $_writer;
-	
+
 	/** @var bool is color supported on tty */
 	protected $_color;
-	
+
 	/**
 	 * Constructor.
 	 * @param \Prado\IO\ITextWriter $writer a writer that THtmlWriter will pass its rendering result to
@@ -94,7 +94,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		$this->_color = $this->isColorSupported();
 		parent::__construct();
 	}
-	
+
 	/**
 	 * @return bool is color supported
 	 */
@@ -102,7 +102,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		return $this->_color;
 	}
-	
+
 	/**
 	 * @param bool $color is color supported
 	 */
@@ -110,7 +110,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		$this->_color = TPropertyValue::ensureBoolean($color);
 	}
-	
+
 	/**
 	 * @return \Prado\IO\ITextWriter the writer output to this class
 	 */
@@ -118,7 +118,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		return $this->_writer;
 	}
-	
+
 	/**
 	 * @param \Prado\IO\ITextWriter $writer the writer output to this class
 	 */
@@ -175,7 +175,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 		$this->_writer->write("\n");
 	}
-	
+
 	/**
 	 * Writes an error block to the writer with color
 	 * @param string $text
@@ -192,7 +192,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		$this->writeLine('*' . str_repeat('-', $len) . "*", [self::BG_RED, self::WHITE, self::BOLD]);
 		$this->writeLine();
 	}
-	
+
 	/**
 	 * @param string $str the string to ANSI format.
 	 * @param mixed $len
@@ -223,7 +223,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 		return $str;
 	}
-	
+
 	/**
 	 * renders a table widget.
 	 * <code>
@@ -239,7 +239,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	public function tableWidget($table)
 	{
 		$lengths = [];
-		
+
 		foreach ($table['headers'] ?? $table['rows'][0] as $i => $header) {
 			$lengths[$i] = strlen($this->unformat($header)) + 1;
 			foreach ($table['rows'] as $row => $data) {
@@ -253,7 +253,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			}
 		}
 		$str = '';
-		
+
 		if (isset($table['headers'])) {
 			foreach ($table['headers'] as $i => $header) {
 				$str .= $this->pad($this->format($header, [TShellWriter::UNDERLINE]), $lengths[$i], ' ', STR_PAD_RIGHT);
@@ -294,7 +294,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 		return "\033[" . implode(';', $attr) . 'm' . $str . "\033[0m";
 	}
-	
+
 	/**
 	 * removes ANSI formatting
 	 * @param mixed $str
@@ -303,7 +303,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		return preg_replace("/\033\[[\?\d;:]*[usmA-HJKSTlh]/", '', $str ?? '');
 	}
-	
+
 	/**
 	 * is color TTY supported
 	 * @return bool color is supported
@@ -313,10 +313,10 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		if (static::isRunningOnWindows()) {
 			return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
 		}
-	
+
 		return function_exists('posix_isatty') && @posix_isatty(STDOUT) && strpos(getenv('TERM'), '256color') !== false;
 	}
-	
+
 	/**
 	 * Moves the terminal cursor up by sending ANSI control code CUU to the terminal.
 	 * If the cursor is already at the edge of the screen, this has no effect.
@@ -498,7 +498,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	{
 		$this->_writer->write("\033[0K");
 	}
-	
+
 
 	/**
 	 * Returns terminal screen size.

@@ -28,7 +28,7 @@ abstract class TShellAction extends \Prado\TComponent
 	protected $parameters;
 	protected $optional;
 	protected $description;
-	
+
 	protected $_outWriter;
 
 	/**
@@ -46,7 +46,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		return $this->_outWriter;
 	}
-	
+
 	/**
 	 * @param TShellWriter $writer the writer for the class
 	 */
@@ -54,7 +54,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		$this->_outWriter = $writer;
 	}
-	
+
 	/**
 	 * @return string the command action for the class
 	 */
@@ -62,7 +62,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		return $this->action;
 	}
-	
+
 	/**
 	 * @param string $action the command action for the class
 	 */
@@ -70,7 +70,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		$this->action = $action;
 	}
-	
+
 	/**
 	 * Properties for the action set by parameter
 	 * @param string $actionID the action being executed
@@ -80,7 +80,7 @@ abstract class TShellAction extends \Prado\TComponent
 	{
 		return [];
 	}
-	
+
 	/**
 	 * Aliases for the properties to be set by parameter
 	 * @return array<string, string> alias => property for the $actionID
@@ -136,7 +136,7 @@ abstract class TShellAction extends \Prado\TComponent
 				$i = $this->defaultMethod;
 				$match[1] = $this->methods[$i];
 			}
-			
+
 			$params = ($this->parameters[$i] === null) ? [] : $this->parameters[$i];
 			$params = is_array($params) ? $params : [$this->parameters[$i]];
 			if (count($args) - 1 < count($params)) {
@@ -146,7 +146,7 @@ abstract class TShellAction extends \Prado\TComponent
 		}
 		return null;
 	}
-	
+
 	/**
 	 * renders help for the command
 	 * @param string $cmd
@@ -175,19 +175,19 @@ abstract class TShellAction extends \Prado\TComponent
 				}
 			}
 			$optional = (strlen($parameters) ? ' ' : '') . implode(' ', $options);
-			
+
 			$description = $this->getWriter()->wrapText($this->description[$i + 1], 10);
 			$parameters = $this->getWriter()->format($parameters, [TShellWriter::BLUE, TShellWriter::BOLD]);
 			$optional = $this->getWriter()->format($optional, [TShellWriter::BLUE]);
 			$description = $this->getWriter()->format($description, TShellWriter::DARK_GRAY);
-			
+
 			$this->_outWriter->write('  ');
 			$this->_outWriter->writeLine($this->action . '/' . $method . ' ' . $parameters . $optional, [TShellWriter::BLUE, TShellWriter::BOLD]);
 			$this->_outWriter->writeLine('         ' . $description);
 			$this->_outWriter->writeLine();
 		}
 	}
-	
+
 	/**
 	 * Renders General Help for the command
 	 * @return string
@@ -195,7 +195,7 @@ abstract class TShellAction extends \Prado\TComponent
 	public function renderHelp()
 	{
 		$action = $this->getWriter()->format($this->action, [TShellWriter::BLUE, TShellWriter::BOLD]);
-	
+
 		$str = '';
 		$length = 31;
 		$str .= $this->getWriter()->pad(" - {$action}", $length);

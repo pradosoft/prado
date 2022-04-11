@@ -29,7 +29,6 @@ namespace Prado\Web\UI\ActiveControls;
  */
 class TActiveTableCellEventParameter extends TCallbackEventParameter
 {
-
 	/**
 	 * @var int the zero-based index of the cell.
 	 */

@@ -199,7 +199,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	{
 		return $this->_tpl;
 	}
-	
+
 	/**
 	 * @return bool whether or not validation of the template is active
 	 * @since 4.2.0

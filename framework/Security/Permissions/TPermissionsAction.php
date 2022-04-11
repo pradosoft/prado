@@ -38,11 +38,11 @@ class TPermissionsAction extends TShellAction
 		'Add and remove children from roles in the DB.',
 		'Add a rule to the DB for a specific permission.',
 		'Remove a rule from the DB for a specific permission.'];
-	
+
 	private $_allPerms = false;
-	
+
 	private $_manager = false;
-	
+
 	/**
 	 *
 	 */
@@ -50,7 +50,7 @@ class TPermissionsAction extends TShellAction
 	{
 		return $this->_allPerms;
 	}
-	
+
 	/**
 	 * @param bool $value If this is called, set the property to true
 	 */
@@ -58,7 +58,7 @@ class TPermissionsAction extends TShellAction
 	{
 		$this->_allPerms = TPropertyValue::ensureBoolean($value === '' ? true : $value);
 	}
-	
+
 	/**
 	 * Properties for the action set by parameter
 	 * @param string $actionID the action being executed
@@ -71,7 +71,7 @@ class TPermissionsAction extends TShellAction
 		}
 		return [];
 	}
-	
+
 	/**
 	 * Aliases for the properties to be set by parameter
 	 * @return array<string, string> aliaas => property for the $actionID
@@ -80,7 +80,7 @@ class TPermissionsAction extends TShellAction
 	{
 		return ['a' => 'all'];
 	}
-	
+
 	/**
 	 *
 	 * @param mixed $rule
@@ -102,7 +102,7 @@ class TPermissionsAction extends TShellAction
 				$users[] = '?';
 			}
 		}
-		
+
 		return ($writer->format($a = $rule->getAction(), [TShellWriter::BOLD, $a === 'allow' ? TShellWriter::GREEN : TShellWriter::RED]) . ': ') .
 			(get_class($rule) === 'Prado\\Security\\Permissions\\TUserOwnerRule' ? 'User Owner- ' : '') .
 			(($p = $rule->getPriority()) ? '∆' . $p . ' ' : '') .
@@ -111,7 +111,7 @@ class TPermissionsAction extends TShellAction
 			((($v = $rule->getVerb()) && $v !== '*') ? 'verb="' . $v . '" ' : '') .
 			((($ip = $rule->getIPRules()) && (count($ip) !== 1 || $ip[0] !== '*')) ? 'ip="' . implode(', ', $ip) . '"' : '');
 	}
-	
+
 	/**
 	 * display the database parameter key values.
 	 * @param array $args parameters
@@ -124,13 +124,13 @@ class TPermissionsAction extends TShellAction
 			$writer->writeError('No TPermissionsManager found to report');
 			return true;
 		}
-		
+
 		$writer->writeLine();
 		$writer->writeLine('Permissions Manager Information', TShellWriter::UNDERLINE);
 		$writer->writeLine();
 		$writer->writeLine('Super Roles: ' . implode(', ', $manager->getSuperRoles() ?? ['(none)']));
 		$writer->writeLine('Default Roles: ' . implode(', ', $manager->getDefaultRoles() ?? ['(none)']));
-		
+
 		$dbConfigRoles = $manager->getDbConfigRoles();
 		$dbConfigRules = $manager->getDbConfigPermissionRules();
 		$roles = $this->getAll() ? $manager->getHierarchyRoleChildren(null) : $dbConfigRoles;
@@ -148,7 +148,7 @@ class TPermissionsAction extends TShellAction
 			$writer->write($writer->pad($role, $len + 1));
 			$writer->writeLine($writer->wrapText(implode(', ', $children), $len + 1));
 		}
-		
+
 		$len = 0;
 		foreach ($rules as $permName => $permRules) {
 			if (($l = strlen($permName)) > $len) {
@@ -171,7 +171,7 @@ class TPermissionsAction extends TShellAction
 		$writer->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * get children of a role, and adds to and removes children from a db configuration.
 	 * @param array $args parameters
@@ -180,19 +180,19 @@ class TPermissionsAction extends TShellAction
 	public function actionRole($args)
 	{
 		$writer = $this->getWriter();
-		
+
 		if (!($manager = $this->getPermissionsManager())) {
 			$writer->writeError('No TPermissionsManager found to view and edit permissions');
 			return true;
 		}
-		
+
 		if (!$manager->getDbParameter()) {
 			$writer->writeError('TPermissionsManager has no DbParameter to store db permissions configurations');
 			return true;
 		}
-		
+
 		$writer->writeLine();
-		
+
 		if (!($role = ($args[1] ?? null))) {
 			$writer->writeError('Action requires <role-name> to view and edit');
 			return true;
@@ -226,7 +226,7 @@ class TPermissionsAction extends TShellAction
 		$roles = $manager->getDbConfigRoles();
 		$writer->write("    ");
 		$writer->writeLine('Current Db Role and Children', TShellWriter::UNDERLINE);
-		
+
 		$writer->write($role, [TShellWriter::BOLD, TShellWriter::BLUE]);
 		$writer->write(' ');
 		if (!($roles[$role] ?? null)) {
@@ -238,7 +238,7 @@ class TPermissionsAction extends TShellAction
 		$writer->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * adds a DB Configuration Permission Rule.  Here is the format of the function
 	 * arguments.
@@ -253,7 +253,7 @@ class TPermissionsAction extends TShellAction
 	public function actionAddRule($args)
 	{
 		$writer = $this->getWriter();
-		
+
 		if (!($manager = $this->getPermissionsManager())) {
 			$writer->writeError('No TPermissionsManager found to view and edit permissions');
 			return true;
@@ -262,7 +262,7 @@ class TPermissionsAction extends TShellAction
 			$writer->writeError('TPermissionsManager has no DbParameter to store db permissions configurations');
 			return true;
 		}
-		
+
 		if (!($name = ($args[1] ?? null))) {
 			$writer->writeError('Permissions needs a name to add a rule');
 			return true;
@@ -282,7 +282,7 @@ class TPermissionsAction extends TShellAction
 		$ips = $args[6] ?? null;
 		$priority = (!is_numeric($args[7] ?? null)) ? null : $args[7];
 		$class = $args[8] ?? 'Prado\\Security\\TAuthorizationRule';
-		
+
 		if (!$users) {
 			$users = '*';
 		}
@@ -299,18 +299,18 @@ class TPermissionsAction extends TShellAction
 		if (!$ips) {
 			$ips = '*';
 		}
-		
+
 		$rule = Prado::createComponent($class, $action, $users, $roles, $verb, $ips, $priority);
-		
+
 		if (!$manager->addPermissionRule($name, $rule)) {
 			$writer->writeError('Could not add permission rule');
 			return true;
 		}
 		$writer->writeLine();
 		$writer->writeLine("   Added Permission Rule Successful", [TShellWriter::GREEN, TShellWriter::BOLD]);
-		
+
 		$dbConfigRules = $manager->getDbConfigPermissionRules();
-		
+
 		$writer->writeLine();
 		$writer->write("    ");
 		$writer->writeLine("Permission Rules for '{$name}':", TShellWriter::UNDERLINE);
@@ -318,10 +318,10 @@ class TPermissionsAction extends TShellAction
 			$writer->writeLine($writer->wrapText('#' . ($key) . ' ' . $this->ruleToString($rule, $writer), 10));
 		}
 		$writer->writeLine();
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * removes a DB Configuration Permission Rule
 	 * @param array $args parameters
@@ -330,17 +330,17 @@ class TPermissionsAction extends TShellAction
 	public function actionRemoveRule($args)
 	{
 		$writer = $this->getWriter();
-		
+
 		if (!($manager = $this->getPermissionsManager())) {
 			$writer->writeError('No TPermissionsManager found to view and edit permissions');
 			return true;
 		}
-		
+
 		if (!$manager->getDbParameter()) {
 			$writer->writeError('TPermissionsManager has no DbParameter to store db permissions configurations');
 			return true;
 		}
-		
+
 		if (!($name = ($args[1] ?? null))) {
 			$writer->writeError('Permissions needs a name to remove a rule');
 			return true;
@@ -350,9 +350,9 @@ class TPermissionsAction extends TShellAction
 			$writer->writeError("Permission rule index '{$index}' is not valid");
 			return true;
 		}
-		
+
 		$dbConfigRules = $manager->getDbConfigPermissionRules();
-		
+
 		if (!isset($dbConfigRules[$name])) {
 			$writer->writeError('No rules for specified permission');
 			return true;
@@ -361,7 +361,7 @@ class TPermissionsAction extends TShellAction
 			$writer->writeError("No rule at index '{$index}' for specified permission '{$name}'");
 			return true;
 		}
-		
+
 		if (!$manager->removePermissionRule($name, $dbConfigRules[$name][$index])) {
 			$writer->writeError('Could not add permission rule');
 			return true;
@@ -370,7 +370,7 @@ class TPermissionsAction extends TShellAction
 		$writer->writeLine("Remove Permission Rule Successful", [TShellWriter::GREEN, TShellWriter::BOLD]);
 
 		$dbConfigRules = $manager->getDbConfigPermissionRules();
-		
+
 		$writer->writeLine();
 		$writer->write("    ");
 		$writer->writeLine("Permission Rules for '{$name}':", TShellWriter::UNDERLINE);
@@ -383,10 +383,10 @@ class TPermissionsAction extends TShellAction
 		}
 
 		$writer->writeLine();
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * get the TPermissionsManager
 	 * @return \Prado\Security\Permissions\TPermissionsManager
@@ -404,7 +404,7 @@ class TPermissionsAction extends TShellAction
 		}
 		return $this->_manager;
 	}
-	
+
 	/**
 	 * get the TPermissionsManager from the Application
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager

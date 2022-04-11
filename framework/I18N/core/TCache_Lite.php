@@ -47,7 +47,6 @@ use Exception;
  */
 class TCache_Lite
 {
-
 	// --- Private properties ---
 
 	/**

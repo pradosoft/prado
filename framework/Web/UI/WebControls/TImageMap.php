@@ -182,7 +182,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	public function getHotSpots()
 	{
 		if (($hotspots = $this->getViewState('HotSpots', null)) === null) {
-			$hotspots = new THotSpotCollection;
+			$hotspots = new THotSpotCollection();
 			$this->setViewState('HotSpots', $hotspots);
 		}
 		return $hotspots;

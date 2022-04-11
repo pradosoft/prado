@@ -30,7 +30,7 @@ class TPhpShellAction extends TShellAction
 	protected $description = [
 		'Provides PHP Interactive Shell Interpreter.',
 		'Runs a PHP interactive interpreter after Initializing the Prado application.'];
-	
+
 	/**
 	 * This runs the interactive PHP Shell
 	 * @param array $args parameters
@@ -40,11 +40,11 @@ class TPhpShellAction extends TShellAction
 	{
 		$this->getWriter()->flush();
 		$app = Prado::getApplication();
-		
+
 		$shell = new \Psy\Shell();
 		$shell->setBoundObject($app);
 		$shell->run();
-		
+
 		return true;
 	}
 }

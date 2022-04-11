@@ -78,7 +78,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 		$value = $this->getRecordPropertyValue($column, $record);
 		$time = parent::createDateTimeControl($container, $column, $record);
 		if (!empty($value) && preg_match('/timestamp/i', $column->getDbType())) {
-			$dt = new \DateTime;
+			$dt = new \DateTime();
 			$dt->setTimestamp((int) $value);
 			$time[1]->setSelectedValue($dt->format('G'));
 			$time[2]->setSelectedValue($dt->format('i'));
@@ -91,7 +91,7 @@ class TSqliteScaffoldInput extends TScaffoldInputCommon
 	{
 		if (preg_match('/timestamp/i', $column->getDbType())) {
 			$time = $container->findControl(self::DEFAULT_ID)->getTimestamp();
-			$dt = new \DateTime;
+			$dt = new \DateTime();
 			$dt->setTimestamp($time);
 			$hour = $container->findControl('scaffold_time_hour')->getSelectedValue();
 			$mins = $container->findControl('scaffold_time_min')->getSelectedValue();

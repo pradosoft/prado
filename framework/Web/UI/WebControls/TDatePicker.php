@@ -390,7 +390,7 @@ class TDatePicker extends TTextBox
 	 */
 	protected function createClientScript()
 	{
-		return new TDatePickerClientScript;
+		return new TDatePickerClientScript();
 	}
 
 	/**
@@ -514,7 +514,7 @@ class TDatePicker extends TTextBox
 			$year = $date['year'];
 		}
 
-		$s = new \DateTime;
+		$s = new \DateTime();
 		$s->setDate($year, $month, $day);
 		$s->setTime(0, 0, 0);
 		$date = $s->getTimeStamp();
@@ -623,7 +623,7 @@ class TDatePicker extends TTextBox
 		}
 		$writer->renderBeginTag('span');
 
-		$date = new \DateTime;
+		$date = new \DateTime();
 		$date->setTimeStamp($this->getTimeStampFromText());
 		$this->renderCalendarSelections($writer, $date);
 

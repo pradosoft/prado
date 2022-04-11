@@ -50,7 +50,7 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
 	}
-	
+
 
 	/**
 	 * TWeakCallableCollection cannot auto listen to global events or there will be a loop.
@@ -61,7 +61,7 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		return false;
 	}
-	
+
 	/**
 	 * returns whether or not WeakReference is enabled, thus the PHP version is over 7.4.0
 	 * @return bool is WeakReference available
@@ -70,8 +70,8 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		return self::$_weak;
 	}
-	
-	
+
+
 	/**
 	 * If WeakReference is available, converts the $items array of callable that
 	 * has WeakReferences rather than the actual object back into a regular callable.
@@ -98,8 +98,8 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		return $result;
 	}
-	
-	
+
+
 	/**
 	 * Converts the $handler callable that has WeakReferences rather than the actual object
 	 * back into a regular callable.
@@ -118,8 +118,8 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		return $handler;
 	}
-	
-	
+
+
 	/**
 	 * Converts the $handler callable into a WeakReference version for storage
 	 * @param callable $handler callable to convert into a WeakReference version
@@ -139,7 +139,7 @@ class TWeakCallableCollection extends TPriorityList
 		} elseif (is_object($handler) && !is_a($handler, '\WeakReference')) {
 			return \WeakReference::create($handler);
 		}
-		
+
 		return $handler;
 	}
 

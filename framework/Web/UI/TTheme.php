@@ -344,7 +344,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	{
 		$this->_jsFiles = $value;
 	}
-	
+
 	/**
 	 * This post-processes the theme for RTL.  It loops through all the
 	 * css files, removes all the '.*rtl.css' and '.*rtl.(media).css' files,

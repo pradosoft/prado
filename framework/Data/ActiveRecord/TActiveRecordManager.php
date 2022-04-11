@@ -99,7 +99,7 @@ class TActiveRecordManager extends \Prado\TComponent
 		if ($self !== null) {
 			$instance = $self;
 		} elseif ($instance === null) {
-			$instance = new self;
+			$instance = new self();
 		}
 		return $instance;
 	}

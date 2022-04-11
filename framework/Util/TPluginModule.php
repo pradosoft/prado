@@ -8,7 +8,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado
  */
-	
+
 namespace Prado\Util;
 
 use Prado\Exceptions\TException;
@@ -46,16 +46,16 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 {
 	/** Module pages directory for finding pages of a module	 */
 	public const PAGES_DIRECTORY = 'Pages';
-	
+
 	/** @var string path of the plugin */
 	private $_pluginPath;
-	
+
 	/** @var string path of the pages folder for the plugin*/
 	private $_pagesPath;
-	
+
 	/** @var string relative pages path to $_pluginPath */
 	private $_relativePagesPath = self::PAGES_DIRECTORY;
-	
+
 	/**
 	 * initializes the plugin module, looks for a Pages directory and adds a new {@link TBehavior}
 	 * to help TPageService find any plugin module pages
@@ -66,13 +66,13 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		if ($this->getPluginPagesPath() !== null) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachPageServiceBehavior']);
 		}
-		
+
 		if ($errorFile = $this->getErrorFile()) {
 			TException::addMessageFile($errorFile);
 		}
 		parent::init($config);
 	}
-	
+
 	/**
 	 * Called onBeginRequest
 	 * @param mixed $sender
@@ -85,7 +85,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 			$service->attachEventHandler('onAdditionalPagePaths', [$this, 'additionalPagePaths']);
 		}
 	}
-	
+
 	/**
 	 * additionalPagePaths returns possible alternative paths for the $pagePath
 	 * @param \Prado\Web\Services\TPageService $service
@@ -95,7 +95,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	{
 		return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
 	}
-	
+
 	/**
 	 * @return null|string the path of the error file for the plugin module
 	 */
@@ -107,7 +107,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return string path of the plugin
 	 */
@@ -119,7 +119,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		}
 		return $this->_pluginPath;
 	}
-	
+
 	/**
 	 * @param string $path
 	 */
@@ -127,7 +127,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	{
 		$this->_pluginPath = $path;
 	}
-	
+
 	/**
 	 * @return string the path of the Pages director for the plugin, if available
 	 */
@@ -145,7 +145,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		}
 		return $this->_pagesPath;
 	}
-	
+
 	/**
 	 * @param string $path
 	 */
@@ -154,7 +154,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		$this->_pagesPath = TPropertyValue::ensureString($path);
 		$this->_relativePagesPath = null;
 	}
-	
+
 	/**
 	 * @return string relative path from PluginPath
 	 */
@@ -167,7 +167,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 		}
 		return $this->_relativePagesPath;
 	}
-	
+
 	/**
 	 * @param string $relativePagesPath relative path of PluginPagesPath from PluginPath
 	 */

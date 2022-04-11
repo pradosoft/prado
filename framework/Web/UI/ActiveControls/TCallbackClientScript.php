@@ -78,7 +78,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 	 */
 	public function __construct()
 	{
-		$this->_actions = new TList;
+		$this->_actions = new TList();
 		parent::__construct();
 	}
 

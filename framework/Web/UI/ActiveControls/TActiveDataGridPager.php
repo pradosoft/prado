@@ -31,7 +31,7 @@ class TActiveDataGridPager extends TDataGridPager
 	public function getClientSide()
 	{
 		if ($this->_callbackoptions === null) {
-			$this->_callbackoptions = new TCallbackOptions;
+			$this->_callbackoptions = new TCallbackOptions();
 		}
 		return $this->_callbackoptions->getClientSide();
 	}

@@ -43,7 +43,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * @var IUserManager user manager
 	 */
 	private $_manager;
-	
+
 	/**
 	 * TUser auto listen to global events.
 	 *

@@ -121,7 +121,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	public function onFileUpload($param)
 	{
 		if ($this->_flag->getValue() && $this->getPage()->getIsPostBack() && $param == $this->_target->getUniqueID()) {
-			$params = new TActiveFileUploadCallbackParams;
+			$params = new TActiveFileUploadCallbackParams();
 			// save the files so that they will persist past the end of this return.
 			foreach ($this->getFiles() as $file) {
 				$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
@@ -290,7 +290,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 		parent::onPreRender($param);
 
 		if (!$this->getPage()->getIsPostBack() && isset($_GET['TActiveFileUpload_InputId']) && isset($_GET['TActiveFileUpload_TargetId']) && $_GET['TActiveFileUpload_InputId'] == $this->getClientID()) {
-			$params = new TActiveFileUploadCallbackParams;
+			$params = new TActiveFileUploadCallbackParams();
 			foreach ($this->getFiles() as $file) {
 				$localName = str_replace('\\', '/', tempnam(Prado::getPathOfNamespace($this->getTempPath()), ''));
 				$file->setLocalName($localName);
@@ -318,29 +318,29 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	{
 		$this->getPage()->getClientScript()->registerPradoScript('activefileupload');
 
-		$this->_flag = new THiddenField;
+		$this->_flag = new THiddenField();
 		$this->_flag->setID('Flag');
 		$this->getControls()->add($this->_flag);
 
-		$this->_busy = new TImage;
+		$this->_busy = new TImage();
 		$this->_busy->setID('Busy');
 		$this->_busy->setImageUrl($this->getAssetUrl('ActiveFileUploadIndicator.gif'));
 		$this->_busy->setStyle("display:none");
 		$this->getControls()->add($this->_busy);
 
-		$this->_success = new TImage;
+		$this->_success = new TImage();
 		$this->_success->setID('Success');
 		$this->_success->setImageUrl($this->getAssetUrl('ActiveFileUploadComplete.png'));
 		$this->_success->setStyle("display:none");
 		$this->getControls()->add($this->_success);
 
-		$this->_error = new TImage;
+		$this->_error = new TImage();
 		$this->_error->setID('Error');
 		$this->_error->setImageUrl($this->getAssetUrl('ActiveFileUploadError.png'));
 		$this->_error->setStyle("display:none");
 		$this->getControls()->add($this->_error);
 
-		$this->_target = new TInlineFrame;
+		$this->_target = new TInlineFrame();
 		$this->_target->setID('Target');
 		$this->_target->setFrameUrl('about:blank');
 		$this->_target->setStyle("width:0px; height:0px; border:none");

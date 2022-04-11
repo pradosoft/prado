@@ -511,7 +511,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
-		return new TSessionIterator;
+		return new TSessionIterator();
 	}
 
 	/**

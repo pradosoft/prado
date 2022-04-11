@@ -38,7 +38,6 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  */
 class TJuiDialogButton extends TControl implements ICallbackEventHandler, IActiveControl
 {
-
 	/**
 	 * Creates a new callback control, sets the adapter to
 	 * TActiveControlAdapter. If you override this class, be sure to set the

@@ -76,13 +76,13 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 {
 	/** @var TPermissionsManager manager object for the behavior */
 	private $_manager;
-	
+
 	/** @var array<string, string[]> key is the dynamic event, values are the permission names to check */
 	private $_permissionEvents;
-	
+
 	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
 	private $_events;
-	
+
 	/**
 	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
 	 */
@@ -93,7 +93,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		}
 		parent::__construct();
 	}
-	
+
 	/**
 	 * @param \Prado\TComponent $owner the object being attached to
 	 */
@@ -112,7 +112,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 			}
 		}
 	}
-	
+
 	/**
 	 * If in a proper dynamic event, checks if the application user
 	 * can perform a permission, if it can't, flag as handled.
@@ -127,7 +127,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 			array_push($args, $callchain);
 			return $args[0] ?? null;
 		}
-		
+
 		$event = strtolower($method);
 		/** @var TUserPermissionsBehavior $user */
 		$user = Prado::getApplication()->getUser();
@@ -146,7 +146,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		}
 		return call_user_func_array([$callchain, $method], $args);
 	}
-	
+
 	/**
 	 * @return \Prado\Security\Permissions\TPermissionEvent[]
 	 */
@@ -154,7 +154,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	{
 		return $this->_events ?? [];
 	}
-	
+
 	/**
 	 * Gets the TPermissionsManager for the behavior
 	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
@@ -163,7 +163,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	{
 		return $this->_manager;
 	}
-	
+
 	/**
 	 * Sets the TPermissionsManager for the behavior
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions

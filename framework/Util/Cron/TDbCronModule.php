@@ -56,50 +56,50 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 {
 	/** Name Regular Expression, no spaces, single or double quotes, less than or greater than, no percent, and cannot start with star */
 	public const NAME_VALIDATOR_REGEX = '/^[^\s`\'\"\\*<>%][^\s`\'\"<>%]*$/i';
-	
+
 	public const PERM_CRON_LOG_READ = 'cron_log_read';
-	
+
 	public const PERM_CRON_LOG_DELETE = 'cron_log_delete';
-	
+
 	public const PERM_CRON_ADD_TASK = 'cron_add_task';
-	
+
 	public const PERM_CRON_UPDATE_TASK = 'cron_update_task';
-	
+
 	public const PERM_CRON_REMOVE_TASK = 'cron_remove_task';
-	
+
 	/** @var string name of the db table for cron tasks, default 'crontabs' */
 	private $_tableName = 'crontabs';
-	
+
 	/** @var bool auto create the db table for cron, default true */
 	private $_autoCreate = true;
-	
+
 	/** @var bool has the table been verified to be in the DB */
 	private $_tableEnsured = false;
-	
+
 	/** @var bool log the cron tasks, in the table, as they run, default true  */
 	private $_logCronTasks = true;
-	
+
 	/** @var array[]|TCronTask[] the tasks created from the (parent) application configuration */
 	private $_configTasks;
-	
+
 	/** @var bool are the tasks Initialized */
 	private $_tasksInitialized = false;
-	
+
 	/** @var array[]|TCronTask[] the tasks manually added to the database */
 	private $_tasks = [];
-	
+
 	/** @var array[] the row data from the database */
 	private $_taskRows;
-	
+
 	/** @var string the ID of TDataSourceConfig module  */
 	private $_connID = '';
-	
+
 	/**  @var TDbConnection the DB connection instance  */
 	private $_conn;
-	
+
 	/** @var TCronTask[] */
 	private $_runtimeTasks;
-	
+
 	/**
 	 * constructs the instances, sets the _shellClass.
 	 */
@@ -115,10 +115,10 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	public function init($config)
 	{
 		parent::init($config);
-		
+
 		$this->_configTasks = parent::getRawTasks();
 	}
-	
+
 	/**
 	 * the global event handling requests for cron task info
 	 * @param TDbCronModule $cron
@@ -128,7 +128,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		return new TCronTaskInfo('cronclean', 'Prado\\Util\\Cron\\TDbCronCleanLogTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.'));
 	}
-	
+
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
 	 * @return \Prado\Security\Permissions\TPermissionEvent[]
@@ -144,7 +144,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, 'Cron remove Db task.', ['dyRemoveTask'], $userIsOwnerAllowedRule)
 		], parent::getPermissions($manager));
 	}
-	
+
 	/**
 	 * This checks for "name".  The name cannot by '*' or have spaces, `, ', ", <, or >t characters.
 	 * @param array $properties the task as an array of properties
@@ -158,7 +158,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		parent::validateTask($properties);
 	}
-	
+
 	/**
 	 * @param string $name name of the task to get Persistent Data from
 	 * @param object $task
@@ -183,7 +183,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return false;
 	}
-	
+
 	/**
 	 * reads in all the tasks from the db, instances them if they are active db tasks.
 	 * otherwise the rows are kept for persistent data.
@@ -199,7 +199,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 				"SELECT * FROM {$this->_tableName} WHERE active IS NOT NULL"
 			);
 			$results = $cmd->query();
-			
+
 			Prado::log('Reading DB Cron Configuration', TLogger::NOTICE, 'Prado.Cron.TDbCronModule');
 			foreach ($results->readAll() as $data) {
 				if ($data['active']) {
@@ -214,7 +214,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return array_merge($this->_tasks, $this->_configTasks ?? []);
 	}
-	
+
 	/**
 	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
 	 * @return array[TCronTask] combines the active configuration and db cron tasks
@@ -227,7 +227,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return array_merge($this->_tasks, $this->_configTasks);
 	}
-	
+
 	/**
 	 * checks for the table, and if not there and autoCreate, then creates the table else throw error.
 	 * @throws TConfigurationException if the table does not exist and cannot autoCreate
@@ -251,8 +251,8 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		$this->_tableEnsured = true;
 	}
-	
-	
+
+
 	/**
 	 * creates the module table
 	 */
@@ -272,7 +272,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$postIndices = '; CREATE INDEX tname ON ' . $this->_tableName . '(`name`);' .
 			'CREATE INDEX tclass ON ' . $this->_tableName . '(`task`);' .
 			'CREATE INDEX tactive ON ' . $this->_tableName . '(`active`);';
-			
+
 		$sql = 'CREATE TABLE IF NOT EXISTS ' . $this->_tableName . ' (
 			`tabuid` ' . $autotype . ' PRIMARY KEY' . $autoidAttributes . ', 
 			`name` VARCHAR (127) NOT NULL, 
@@ -285,14 +285,14 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			`lastexectime` VARCHAR (20) NULL DEFAULT `0`, 
 			`active` BOOLEAN NULL
 			)' . $postIndices;
-			
+
 		//`lastexectime` DECIMAL(12,8) NULL DEFAULT 0,
-		
+
 		$cmd = $this->getDbConnection()->createCommand($sql);
-		
+
 		$cmd->execute();
 	}
-	
+
 	/**
 	 * logCronTask adds a task log to the table.
 	 * @param TCronTask $task
@@ -301,13 +301,13 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	protected function logCronTask($task, $username)
 	{
 		parent::logCronTask($task, $username);
-		
+
 		$app = $this->getApplication();
-		
+
 		$logid = null;
 		if ($this->getLogCronTasks()) {
 			$this->ensureTable();
-			
+
 			$cmd = $this->getDbConnection()->createCommand(
 				"INSERT INTO {$this->_tableName} " .
 					"(name, schedule, task, moduleid, username, options, processcount, lastexectime, active)" .
@@ -326,7 +326,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return $logid;
 	}
-	
+
 	/**
 	 * This updates the LastExecTime and ProcessCount in the database
 	 * @param TCronTask $task
@@ -335,7 +335,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		$task->setLastExecTime($time = (int) microtime(true));
 		$task->setProcessCount($count = ($task->getProcessCount() + 1));
-		
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"UPDATE {$this->_tableName} SET processcount=:count, lastexectime=:time, options=:task WHERE name=:name AND active IS NOT NULL"
 		);
@@ -344,30 +344,30 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$cmd->bindValue(":task", serialize($task), PDO::PARAM_STR);
 		$cmd->bindValue(":name", $task->getName(), PDO::PARAM_STR);
 		$cmd->execute();
-		
+
 		Prado::log('Ending cron task (' . $task->getName() . ', ' . get_class($task) . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
 		$this->dyUpdateTaskInfo($task);
 	}
-	
+
 	/**
 	 * this removes any stale database rows from changing configTasks
 	 */
 	protected function filterStaleTasks()
 	{
 		$configTasks = $this->_taskRows;
-		
+
 		//remove active tasks
 		foreach ($this->_taskRows as $name => $data) {
 			if ($data['active']) {
 				unset($configTasks[$name]);
 			}
 		}
-		
+
 		//remove configuration tasks
 		foreach ($this->_configTasks as $name => $data) {
 			unset($configTasks[$name]);
 		}
-		
+
 		//remaining are stale
 		if (count($configTasks)) {
 			foreach ($configTasks as $name => $task) {
@@ -375,7 +375,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			}
 		}
 	}
-	
+
 	/**
 	 * This executes the Run Time Tasks, this method is automatically added
 	 * to TApplication::onEndRequest when there are RuntimeTasks via {@link addRuntimeTask}.
@@ -397,7 +397,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$this->filterStaleTasks();
 		return $numtasks;
 	}
-	
+
 	/**
 	 * Adds a task to being run time.  If this is the first runtime task this
 	 * method adds {@link executeRuntimeTasks} to TApplication::onEndRequest.
@@ -411,7 +411,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		$this->_runtimeTasks[$task->getName()] = $task;
 	}
-	
+
 	/**
 	 * Gets the runtime tasks.
 	 * @return \Prado\Util\Cron\TCronTask the tasks to run on {@link executeRuntimeTasks}
@@ -420,7 +420,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		return $this->_runtimeTasks;
 	}
-	
+
 	/**
 	 * Removes a task from being run time.  If there are no runtime tasks left
 	 * then it removes {@link executeRuntimeTasks} from TApplication::onEndRequest.
@@ -438,7 +438,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 		}
 	}
-	
+
 	/**
 	 * Clears all tasks from being run time, and removes the handler from onEndRequest.
 	 */
@@ -450,7 +450,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$this->_runtimeTasks = null;
 		Prado::getApplication()->detachEventHandler('onEndRequest', [$this, 'executeRuntimeTasks']);
 	}
-	
+
 	/**
 	 *
 	 * @param string $taskName
@@ -460,7 +460,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	public function getTask($taskName, $checkExisting = true, $asObject = true)
 	{
 		$this->ensureTable();
-		
+
 		if ($checkExisting) {
 			$this->ensureTasks();
 			if ($asObject) {
@@ -476,26 +476,26 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 				}
 			}
 		}
-		
-		
+
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"SELECT * FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL LIMIT 1"
 		);
 		$cmd->bindValue(":name", $taskName, PDO::PARAM_STR);
-		
+
 		$result = $cmd->queryRow();
-		
+
 		if (!$result) {
 			return null;
 		}
-		
+
 		if ($asObject) {
 			return @unserialize($result['options']);
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Adds a task to the database.  Validates the name and cannot add a task with an existing name.
 	 * This updates the table row data as well.
@@ -510,7 +510,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return $this->addTaskInternal($task, $runtime);
 	}
-	
+
 	/**
 	 * Adds a task to the database.  Validates the name and cannot add a task with an existing name.
 	 * This updates the table row data as well.
@@ -534,7 +534,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
-		
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"INSERT INTO {$this->_tableName} " .
 				"(name, schedule, task, moduleid, username, options, lastexectime, processcount, active)" .
@@ -550,7 +550,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$cmd->bindValue(":count", $count = $task->getProcessCount(), PDO::PARAM_INT);
 		$cmd->bindValue(":active", $active = (isset($this->_configTasks[$name]) ? '0' : '1'), PDO::PARAM_INT);
 		$cmd->execute();
-		
+
 		if ($this->_tasks !== null && !isset($this->_configTasks[$name])) {
 			$this->_tasks[$name] = $task;
 			$this->_taskRows[$name] = [];
@@ -569,7 +569,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Updates a task from its unique name.  If the Task is not in the DB it returns false
 	 * @param TCronTask $task
@@ -582,7 +582,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return $this->updateTaskInternal($task);
 	}
-	
+
 	/**
 	 * Updates a task from its unique name.  If the Task is not in the DB it returns false
 	 * @param \Prado\Util\Cron\TCronTask $task
@@ -601,7 +601,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
-		
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"UPDATE {$this->_tableName} SET schedule=:schedule, task=:task, moduleid=:mid, username=:username, options=:options, processcount=:count, lastexectime=:time WHERE name=:name AND active IS NOT NULL"
 		);
@@ -614,7 +614,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$cmd->bindValue(":time", $time = $task->getLastExecTime(), PDO::PARAM_STR);
 		$cmd->bindValue(":name", $name, PDO::PARAM_STR);
 		$cmd->execute();
-		
+
 		if ($this->_tasks !== null) {
 			$this->_taskRows[$name]['schedule'] = $schedule;
 			$this->_taskRows[$name]['task'] = $taskExec;
@@ -626,7 +626,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Removes a task from the database table.
 	 * This also removes the task from the current tasks, the taskRow, and runtime Tasks.
@@ -650,7 +650,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return $this->removeTaskInternal($untask);
 	}
-	
+
 	/**
 	 * Removes a task from the database table.
 	 * This also removes the task from the current tasks, the taskRow, and runtime Tasks.
@@ -664,7 +664,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		$this->ensureTable();
 		$this->ensureTasks(false);
-		
+
 		$name = is_string($untask) ? $untask : $untask->getName();
 		if (isset($this->_configTasks[$name])) {
 			return false;
@@ -672,20 +672,20 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		if (!$this->taskExists($name)) {
 			return false;
 		}
-		
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"DELETE FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL"
 		);
 		$cmd->bindValue(":name", $name, PDO::PARAM_STR);
 		$cmd->execute();
-		
+
 		// Remove task to list of tasks
 		unset($this->_tasks[$name]);
 		unset($this->_taskRows[$name]);
 		$this->removeRuntimeTask($name);
 		return true;
 	}
-		
+
 	/**
 	 * taskExists checks for a task or task name in the database
 	 * @param string $name task to check in the database
@@ -695,7 +695,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	public function taskExists($name)
 	{
 		$this->ensureTable();
-		
+
 		$db = $this->getDbConnection();
 		$cmd = $db->createCommand(
 			"SELECT COUNT(*) AS count FROM {$this->_tableName} WHERE name=:name AND active IS NOT NULL"
@@ -703,7 +703,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$cmd->bindParameter(":name", $name, PDO::PARAM_STR);
 		return $cmd->queryScalar() > 0;
 	}
-	
+
 	/**
 	 * deletes the cron log items before time minus $seconds.
 	 * @param int $seconds the number of seconds before Now
@@ -714,7 +714,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			return false;
 		}
 		$this->ensureTable();
-		
+
 		$seconds = (int) $seconds;
 		$cmd = $this->getDbConnection()->createCommand(
 			"SELECT COUNT(*) FROM {$this->_tableName} WHERE active IS NULL AND lastexectime <= :time"
@@ -727,10 +727,10 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		);
 		$cmd->bindParameter(":time", $time, PDO::PARAM_STR);
 		$cmd->execute();
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * Deletes one cron log item from the database
 	 * @param int $taskUID
@@ -742,14 +742,14 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		$this->ensureTable();
 		$taskUID = (int) $taskUID;
-		
+
 		$cmd = $this->getDbConnection()->createCommand(
 			"DELETE FROM {$this->_tableName} WHERE active IS NULL AND tabuid = :uid"
 		);
 		$cmd->bindParameter(":uid", $taskUID, PDO::PARAM_INT);
 		$cmd->execute();
 	}
-	
+
 	/**
 	 * @param null|string $name name of the logs to look for, or null for all
 	 * @return int the number of log items of all or of $name
@@ -760,7 +760,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			return false;
 		}
 		$this->ensureTable();
-		
+
 		$db = $this->getDbConnection();
 		$where = '';
 		if (is_string($name)) {
@@ -774,7 +774,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		return (int) $cmd->queryScalar();
 	}
-	
+
 	/**
 	 * Gets the cron log table of specific named or all tasks.
 	 * @param null|string $name name of the tasks to get from the log, or null for all
@@ -788,10 +788,10 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			return false;
 		}
 		$this->ensureTable();
-		
+
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
-		
+
 		$limit = $orderby = $where = '';
 		if (is_string($name)) {
 			$where = 'name=:name AND ';
@@ -840,7 +840,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 				throw new TConfigurationException('dbcron_connectionid_invalid', $this->_connID);
 			}
 		} else {
-			$db = new TDbConnection;
+			$db = new TDbConnection();
 			// default to SQLite3 database
 			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'cron.jobs';
 			$db->setConnectionString('sqlite:' . $dbFile);
@@ -881,7 +881,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		}
 		$this->_connID = $value;
 	}
-	
+
 	/**
 	 * @return bool should tasks that run be logged, default true
 	 */
@@ -889,7 +889,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		return $this->_logCronTasks;
 	}
-	
+
 	/**
 	 * @param bool $log should tasks that run be logged
 	 */
@@ -897,7 +897,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		$this->_logCronTasks = TPropertyValue::ensureBoolean($log);
 	}
-	
+
 	/**
 	 * @return string table in the database for cron tasks and logs. Defaults to 'crontabs'
 	 */

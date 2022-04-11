@@ -309,7 +309,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	protected function createResultPanel()
 	{
-		$panel = new TPanel;
+		$panel = new TPanel();
 		$this->getControls()->add($panel);
 		$panel->setID('result');
 		return $panel;
@@ -331,7 +331,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	 */
 	protected function createRepeater()
 	{
-		$repeater = new TRepeater;
+		$repeater = new TRepeater();
 		$repeater->setItemTemplate(new TTemplate('<%# $this->Data %>', null));
 		$this->getControls()->add($repeater);
 		return $repeater;
@@ -374,7 +374,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 		if ($this->getActiveControl()->canUpdateClientSide(true)) {
 			$data = [];
 			$items = $this->getSuggestions()->getItems();
-			$writer = new TTextWriter;
+			$writer = new TTextWriter();
 			for ($i = 0; $i < $items->getCount(); $i++) {
 				$items->itemAt($i)->render($writer);
 				$item = $writer->flush();

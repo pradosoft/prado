@@ -247,7 +247,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 
 		$key = 'TDbCache:' . $this->_cacheTable . ':flushed';
 		$now = time();
-		$next = $interval + (integer) $this->getApplication()->getGlobalState($key, 0);
+		$next = $interval + (int) $this->getApplication()->getGlobalState($key, 0);
 
 		if ($force || $next <= $now) {
 			if (!$this->_cacheInitialized) {
@@ -259,7 +259,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->getApplication()->setGlobalState($key, $now);
 		}
 	}
-	
+
 	/**
 	 * @param object $sender the object raising fxGetCronTaskInfos.
 	 * @param mixed $param the parameter
@@ -290,7 +290,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 */
 	public function setFlushInterval($value)
 	{
-		$this->_flushInterval = (integer) $value;
+		$this->_flushInterval = (int) $value;
 	}
 
 	/**
@@ -308,7 +308,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 				throw new TConfigurationException('dbcache_connectionid_invalid', $this->_connID);
 			}
 		} else {
-			$db = new TDbConnection;
+			$db = new TDbConnection();
 			if ($this->_connectionString !== '') {
 				$db->setConnectionString($this->_connectionString);
 				if ($this->_username !== '') {

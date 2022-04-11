@@ -7,7 +7,7 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
- 
+
 namespace Prado\Util\Cron;
 
 use Prado\Exceptions\TInvalidDataValueException;
@@ -41,7 +41,7 @@ class TShellDbCronAction extends TShellCronAction
 		'Updates a Cron task in the database.',
 		'Removes a Cron task from the database.'
 	];
-	
+
 	/**
 	 * Overrides parent getModuleClass to return the TDbCronModule class.
 	 * @return string the DbCron Class to find
@@ -50,7 +50,7 @@ class TShellDbCronAction extends TShellCronAction
 	{
 		return 'Prado\\Util\\Cron\\TDbCronModule';
 	}
-	
+
 	/**
 	 * adds a task to the database with its name, task id, schedule, and other properties.
 	 * @param array $args command arguments
@@ -61,7 +61,7 @@ class TShellDbCronAction extends TShellCronAction
 		$taskName = $args[1] ?? null;
 		$id = $args[2] ?? null;
 		$schedule = $args[3] ?? null;
-		
+
 		if (!$taskName) {
 			$this->_outWriter->writeError("Cannot add a task without a name");
 			return true;
@@ -74,7 +74,7 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_outWriter->writeError("Cannot add a task without a schedule");
 			return true;
 		}
-		
+
 		$exists = $module->taskExists($taskName);
 		if ($exists) {
 			$this->_outWriter->writeError("'{$taskName}' already exists in the database");
@@ -99,7 +99,7 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_outWriter->writeError("Schedule '{$schedule}' is not a valid schedule");
 			return true;
 		}
-		
+
 		$task = $module->instanceTask($info->getTask());
 		$task->setName($taskName);
 		$task->setSchedule($schedule);
@@ -116,11 +116,11 @@ class TShellDbCronAction extends TShellCronAction
 			}
 		}
 		$module->addTask($task);
-		
+
 		$this->_outWriter->writeLine("Task '{$taskName}' was added to the database\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 		return true;
 	}
-	
+
 	/**
 	 * updates a task in the database by its name for its schedule, username, moduleid, and other properties.
 	 * @param array $args command arguments
@@ -132,7 +132,7 @@ class TShellDbCronAction extends TShellCronAction
 			$this->_outWriter->writeError("Cannot update a task without a name");
 			return true;
 		}
-		
+
 		$task = $module->getTask($taskName);
 		if (!$task) {
 			$this->_outWriter->writeError("Task '{$taskName}' is not found");
@@ -167,7 +167,7 @@ class TShellDbCronAction extends TShellCronAction
 		$this->_outWriter->writeLine("Task '{$taskName}' was updated in the database\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 		return true;
 	}
-	
+
 	/**
 	 * removes a task in the database by its name.
 	 * @param array $args command arguments
@@ -185,7 +185,7 @@ class TShellDbCronAction extends TShellCronAction
 			return true;
 		}
 		$result = $module->removeTask($taskName);
-		
+
 		if ($result) {
 			$this->_outWriter->writeLine("'{$taskName}' was successfully removed.\n", [TShellWriter::GREEN, TShellWriter::BOLD]);
 		} else {

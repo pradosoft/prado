@@ -74,7 +74,7 @@ class TParameterModule extends \Prado\TModule
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML && ($cache = $this->getApplication()->getCache()) !== null) {
 				$cacheKey = 'TParameterModule:' . $this->_paramFile;
 				if (($configFile = $cache->get($cacheKey)) === false) {
-					$configFile = new TXmlDocument;
+					$configFile = new TXmlDocument();
 					$configFile->loadFromFile($this->_paramFile);
 					$cache->set($cacheKey, $configFile, 0, new TFileCacheDependency($this->_paramFile));
 				}
@@ -82,7 +82,7 @@ class TParameterModule extends \Prado\TModule
 				if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 					$configFile = include $this->_paramFile;
 				} else {
-					$configFile = new TXmlDocument;
+					$configFile = new TXmlDocument();
 					$configFile->loadFromFile($this->_paramFile);
 				}
 			}

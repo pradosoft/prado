@@ -50,6 +50,6 @@ class TCallbackOptions extends TControl
 	 */
 	protected function createClientSide()
 	{
-		return new TCallbackClientSide;
+		return new TCallbackClientSide();
 	}
 }

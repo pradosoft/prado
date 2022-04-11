@@ -35,11 +35,11 @@ class TDbParameterAction extends TShellAction
 		'Displays all the variables in the database.',
 		'Gets a specific parameter by <param-key>.',
 		'Sets a specific parameter <param-key> to <param-value>.'];
-	
+
 	private $_allParams = false;
-	
+
 	private $_dbparam = false;
-	
+
 	/**
 	 *
 	 */
@@ -47,7 +47,7 @@ class TDbParameterAction extends TShellAction
 	{
 		return $this->_allParams;
 	}
-	
+
 	/**
 	 * @param bool $value If this is called, set the property to true
 	 */
@@ -55,7 +55,7 @@ class TDbParameterAction extends TShellAction
 	{
 		$this->_allParams = TPropertyValue::ensureBoolean($value === '' ? true : $value);
 	}
-	
+
 	/**
 	 * Properties for the action set by parameter
 	 * @param string $actionID the action being executed
@@ -68,7 +68,7 @@ class TDbParameterAction extends TShellAction
 		}
 		return [];
 	}
-	
+
 	/**
 	 * Aliases for the properties to be set by parameter
 	 * @return array<string, string> alias => property for the $actionID
@@ -77,7 +77,7 @@ class TDbParameterAction extends TShellAction
 	{
 		return ['a' => 'all'];
 	}
-	
+
 	/**
 	 * display the database parameter key values.
 	 * @param array $args parameters
@@ -90,7 +90,7 @@ class TDbParameterAction extends TShellAction
 			$writer->writeError('No TDbParameterModule found to set parameters');
 			return;
 		}
-		
+
 		$params = Prado::getApplication()->getParameters();
 		$len = 0;
 		foreach ($params as $key => $value) {
@@ -118,7 +118,7 @@ class TDbParameterAction extends TShellAction
 		$writer->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * gets a parameter value
 	 * @param array $args parameters
@@ -128,7 +128,7 @@ class TDbParameterAction extends TShellAction
 	{
 		$writer = $this->getWriter();
 		$writer->writeLine();
-		
+
 		if (!($key = ($args[1] ?? null))) {
 			$writer->writeError('Get Parameter needs a key');
 			return true;
@@ -137,12 +137,12 @@ class TDbParameterAction extends TShellAction
 		$writer->write($key, [TShellWriter::BLUE, TShellWriter::BOLD]);
 		$writer->write(': ');
 		$value = Prado::getApplication()->getParameters()[$key];
-		
+
 		$writer->writeLine(Prado::varDump($value));
 		$writer->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * Sets a parameter value
 	 * @param array $args parameters
@@ -152,7 +152,7 @@ class TDbParameterAction extends TShellAction
 	{
 		$writer = $this->getWriter();
 		$writer->writeLine();
-		
+
 		if (!($key = ($args[1] ?? null))) {
 			$this->getWriter()->writeError('Get Parameter needs a key');
 			return true;
@@ -162,14 +162,14 @@ class TDbParameterAction extends TShellAction
 			return true;
 		}
 		$autoload = TPropertyValue::ensureBoolean($args[3] ?? true);
-		
+
 		if (!($module = $this->getDbParameterModule())) {
 			$writer->writeError('No TDbParameterModule found to set parameters');
 			return true;
 		}
-		
+
 		$module->set($key, $value, $autoload, false);
-		
+
 		$writer->write('Set Parameter ');
 		$writer->write($key, [TShellWriter::BLUE, TShellWriter::BOLD]);
 		$writer->write(' To: ');
@@ -177,7 +177,7 @@ class TDbParameterAction extends TShellAction
 		$writer->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * get the TDBParameterModule from the Application
 	 * @return null|\Prado\Util\TDbParameterModule
@@ -195,7 +195,7 @@ class TDbParameterAction extends TShellAction
 		}
 		return $this->_dbparam;
 	}
-	
+
 	/**
 	 * get the TPermissionsManager from the Application
 	 * @param \Prado\Util\TDbParameterModule $dbparam

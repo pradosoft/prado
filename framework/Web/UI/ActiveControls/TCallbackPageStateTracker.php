@@ -48,9 +48,9 @@ class TCallbackPageStateTracker
 	public function __construct($control)
 	{
 		$this->_control = $control;
-		$this->_existingState = new TMap;
-		$this->_nullObject = new stdClass;
-		$this->_states = new TMap;
+		$this->_existingState = new TMap();
+		$this->_nullObject = new stdClass();
+		$this->_states = new TMap();
 		$this->addStatesToTrack();
 	}
 

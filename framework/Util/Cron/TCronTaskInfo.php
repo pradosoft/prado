@@ -29,19 +29,19 @@ class TCronTaskInfo extends \Prado\TComponent
 {
 	/** @var string the short reference name of the task  */
 	protected $_name;
-	
+
 	/** @var string class name or module/method of the task to instance */
 	protected $_task;
-	
+
 	/** @var string module servicing the task */
 	protected $_moduleid;
-	
+
 	/** @var string title of the task */
 	protected $_title;
-	
+
 	/** @var string a short description of the task */
 	protected $_description;
-	
+
 	/**
 	 * This sets the main properties in the class
 	 * @param string $name the short reference name of the task
@@ -65,7 +65,7 @@ class TCronTaskInfo extends \Prado\TComponent
 		}
 		parent::__construct();
 	}
-	
+
 	/**
 	 * @return string the name of the Task
 	 */
@@ -82,7 +82,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	{
 		$this->_name = TPropertyValue::ensureString($name);
 	}
-	
+
 	/**
 	 * @return string the Task Class of the Task, with namespaces
 	 */
@@ -99,7 +99,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	{
 		$this->_task = TPropertyValue::ensureString($task);
 	}
-	
+
 	/**
 	 * @return string the module id of the utility module for the task
 	 */
@@ -119,7 +119,7 @@ class TCronTaskInfo extends \Prado\TComponent
 			$this->_moduleid = TPropertyValue::ensureString($moduleid);
 		}
 	}
-	
+
 	/**
 	 * @return \Prado\TModule gets the module from the module id for the task
 	 */
@@ -130,7 +130,7 @@ class TCronTaskInfo extends \Prado\TComponent
 		}
 		return Prado::getApplication()->getModule($this->_moduleid);
 	}
-	
+
 	/**
 	 * @return string the title of the Task
 	 */
@@ -146,7 +146,7 @@ class TCronTaskInfo extends \Prado\TComponent
 	{
 		$this->_title = TPropertyValue::ensureString($title);
 	}
-	
+
 	/**
 	 * @return string the Description of the Task
 	 */

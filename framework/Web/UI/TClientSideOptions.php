@@ -76,7 +76,7 @@ abstract class TClientSideOptions extends \Prado\TComponent
 	public function getOptions()
 	{
 		if (!$this->_options) {
-			$this->_options = new TMap;
+			$this->_options = new TMap();
 		}
 		return $this->_options;
 	}

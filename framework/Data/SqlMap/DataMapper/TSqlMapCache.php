@@ -37,8 +37,8 @@ abstract class TSqlMapCache implements ICache
 	 */
 	public function __construct($cacheModel = null)
 	{
-		$this->_cache = new TMap;
-		$this->_keyList = new TList;
+		$this->_cache = new TMap();
+		$this->_keyList = new TList();
 		$this->_cacheModel = $cacheModel;
 	}
 

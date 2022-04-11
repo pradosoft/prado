@@ -7,6 +7,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\WebControls
  */
+
 namespace Prado\Web\UI\WebControls;
 
 use Prado\TPropertyValue;

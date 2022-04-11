@@ -323,7 +323,7 @@ class Prado
 		if (count($params) > 0) {
 			$object = new $type(...$params);
 		} else {
-			$object = new $type;
+			$object = new $type();
 		}
 		if ($properties) {
 			foreach ($properties as $property => $value) {
@@ -441,7 +441,7 @@ class Prado
 	/**
 	 * @return array<string, string> list of path aliases
 	 */
-	protected static function getPathAliases() :array
+	protected static function getPathAliases(): array
 	{
 		return self::$_aliases;
 	}
@@ -626,7 +626,7 @@ class Prado
 	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null): void
 	{
 		if (self::$_logger === null) {
-			self::$_logger = new TLogger;
+			self::$_logger = new TLogger();
 		}
 		self::$_logger->log($msg, $level, $category, $ctl);
 	}
@@ -637,7 +637,7 @@ class Prado
 	public static function getLogger(): TLogger
 	{
 		if (self::$_logger === null) {
-			self::$_logger = new TLogger;
+			self::$_logger = new TLogger();
 		}
 		return self::$_logger;
 	}

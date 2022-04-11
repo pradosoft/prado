@@ -24,7 +24,6 @@ namespace Prado\Web\UI\WebControls;
 
 class THeader5 extends THtmlElement
 {
-
 	/**
 	 * @return string tag name
 	 */

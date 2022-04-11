@@ -28,7 +28,7 @@ class TWizardSideBarListItemTemplate extends \Prado\TComponent implements ITempl
 	 */
 	public function instantiateIn($parent)
 	{
-		$button = new TLinkButton;
+		$button = new TLinkButton();
 		$button->setID(TWizard::ID_SIDEBAR_BUTTON);
 		$parent->getControls()->add($button);
 	}

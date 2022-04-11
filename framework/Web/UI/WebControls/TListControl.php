@@ -265,7 +265,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 */
 	protected function createListItemCollection()
 	{
-		return new \Prado\Collections\TListItemCollection;
+		return new \Prado\Collections\TListItemCollection();
 	}
 
 	/**

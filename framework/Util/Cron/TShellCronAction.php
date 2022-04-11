@@ -7,7 +7,7 @@
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
- 
+
 namespace Prado\Util\Cron;
 
 use Prado\Prado;
@@ -38,9 +38,9 @@ class TShellCronAction extends TShellAction
 		'Displays the Cron tasks configured in the application.',
 		'Displays the registered Cron tasks information.'
 	];
-	
+
 	private $_cron = false;
-	
+
 	/**
 	 * @return string the Cron Class to find
 	 */
@@ -48,7 +48,7 @@ class TShellCronAction extends TShellAction
 	{
 		return 'Prado\\Util\\Cron\\TCronModule';
 	}
-	
+
 	/**
 	 * @return null|\Prado\Util\Cron\TCronModule returns the Cron Module of the applications
 	 */
@@ -74,7 +74,7 @@ class TShellCronAction extends TShellAction
 		}
 		return $this->_cron;
 	}
-	
+
 	/**
 	 * @param null|\Prado\Util\Cron\TCronModule $cron sets the Cron Module
 	 */
@@ -82,7 +82,7 @@ class TShellCronAction extends TShellAction
 	{
 		$this->_cron = $cron;
 	}
-	
+
 	/**
 	 * @param string[] $args the arguments to the command line action
 	 */
@@ -96,7 +96,7 @@ class TShellCronAction extends TShellAction
 		$module->processPendingTasks();
 		return true;
 	}
-	
+
 	/**
 	 * Shows configured tasks and their run status.  For TDbCronModule, this also shows the
 	 * database tasks as well.
@@ -105,11 +105,11 @@ class TShellCronAction extends TShellAction
 	public function actionTasks($args)
 	{
 		$module = $this->getCronModule();
-		
+
 		$this->_outWriter->writeLine("\nLast cron run was " . date('Y-m-d H:i:s', (int) $module->getLastCronTime()) . "");
 		$this->_outWriter->writeLine("The system time is " . date('Y-m-d H:i:s') . "\n");
 		$tasks = $module->getTasks();
-		
+
 		$this->_outWriter->writeLine("  Application Cron Tasks: ", [TShellWriter::BOLD]);
 		if (!count($tasks)) {
 			$this->_outWriter->writeLine("     **  There are no configured Cron Tasks.  **\n");
@@ -122,13 +122,13 @@ class TShellCronAction extends TShellAction
 				$f = 'Y-m-d H:i:s';
 			}
 			$lastrun = date($f, $task->getLastExecTime());
-			
+
 			$f = 'H:i:s';
 			$trigger = $task->getNextTriggerTime();
 			if ($trigger - time() > 86400) {
 				$f = 'Y-m-d H:i:s';
 			}
-			
+
 			if (($user = $task->getUserName()) == null) {
 				$user = $module->getDefaultUserName();
 			}
@@ -136,16 +136,16 @@ class TShellCronAction extends TShellAction
 			if ($task->getIsPending()) {
 				$nextrun = $this->_outWriter->format($nextrun, [TShellWriter::GREEN, TShellWriter::BOLD]);
 			}
-			
+
 			$rows[] = [$task->getName(), $task->getSchedule(), $task->getTask(), $lastrun, $nextrun, '@' . $user, $task->getProcessCount()];
 		}
 		$this->_outWriter->write($this->_outWriter->tableWidget(['headers' => ['Name', 'Schedule', 'Task', 'Last Run', 'Next Run', 'User', 'Run #'],
 			'rows' => $rows]));
 		$this->_outWriter->writeLine("\nAny 'next run' with a * means it is Pending\n");
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * shows the registered tasks from the application for possible configuration
 	 * or addition to TDbCronModule.
@@ -154,7 +154,7 @@ class TShellCronAction extends TShellAction
 	public function actionIndex($args)
 	{
 		$module = $this->getCronModule();
-		
+
 		$infos = $module->getTaskInfos(true);
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("  Registered Cron Task Information: ", [TShellWriter::BOLD]);

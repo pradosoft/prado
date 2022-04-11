@@ -34,7 +34,7 @@ class TFlushCachesAction extends TShellAction
 		'Flushes the specified ICache modules.',
 		'Flushes all application ICache modules.'
 	];
-	
+
 	/**
 	 * This flushes an array of ICache modules
 	 * @param array $args parameters
@@ -45,7 +45,7 @@ class TFlushCachesAction extends TShellAction
 		$app = Prado::getApplication();
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("Flushing Cache: ");
-		
+
 		$found = false;
 		array_shift($args); //Shift off the 'action/method'
 		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
@@ -64,7 +64,7 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * This flushes all the ICaches in the application
 	 * @param array $args parameters
@@ -75,7 +75,7 @@ class TFlushCachesAction extends TShellAction
 		$app = Prado::getApplication();
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("Flushing All Caches: ");
-		
+
 		$module = null;
 		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
@@ -90,7 +90,7 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine();
 		return true;
 	}
-	
+
 	/**
 	 * Displays the ICache (by module ID) in the application that can be flushed
 	 * @param array $args parameters
@@ -101,7 +101,7 @@ class TFlushCachesAction extends TShellAction
 		$app = Prado::getApplication();
 		$this->_outWriter->writeLine();
 		$this->_outWriter->writeLine("Available Caches: ");
-		
+
 		$module = null;
 		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;

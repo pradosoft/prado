@@ -94,7 +94,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	 */
 	protected function buildListPager()
 	{
-		$list = new TActiveDropDownList;
+		$list = new TActiveDropDownList();
 
 		$list->getAdapter()->getBaseActiveControl()->setClientSide(
 			$this->getClientSide()
@@ -125,15 +125,15 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		if ($buttonType === TPagerButtonType::LinkButton) {
 			if ($enabled) {
-				$button = new TActiveLinkButton;
+				$button = new TActiveLinkButton();
 			} else {
-				$button = new TLabel;
+				$button = new TLabel();
 				$button->setText($text);
 				$button->setCssClass($this->getButtonCssClass());
 				return $button;
 			}
 		} elseif ($buttonType === TPagerButtonType::ImageButton) {
-			$button = new TActiveImageButton;
+			$button = new TActiveImageButton();
 			$button->setImageUrl($this->getPageImageUrl($text, $commandName));
 			if ($enabled) {
 				$button->setVisible(true);
@@ -141,7 +141,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 				$button->setVisible(false);
 			}
 		} else {
-			$button = new TActiveButton;
+			$button = new TActiveButton();
 			if (!$enabled) {
 				$button->setEnabled(false);
 			}

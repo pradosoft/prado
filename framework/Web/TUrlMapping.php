@@ -135,7 +135,7 @@ class TUrlMapping extends TUrlManager
 				$config = include $this->_configFile;
 				$this->loadUrlMappings($config);
 			} else {
-				$dom = new TXmlDocument;
+				$dom = new TXmlDocument();
 				$dom->loadFromFile($this->_configFile);
 				$this->loadUrlMappings($dom);
 			}

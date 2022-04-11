@@ -32,7 +32,6 @@ use Prado\Web\UI\WebControls\TRepeater;
  */
 class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 {
-
   /**
    * @var string the tag used to render the surrounding container
    */

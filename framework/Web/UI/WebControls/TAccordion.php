@@ -246,7 +246,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getViewStyle()
 	{
 		if (($style = $this->getViewState('ViewStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('accordion-view');
 			$this->setViewState('ViewStyle', $style, null);
 		}
@@ -275,7 +275,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getHeaderStyle()
 	{
 		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('accordion-header');
 			$this->setViewState('HeaderStyle', $style, null);
 		}
@@ -304,7 +304,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	public function getActiveHeaderStyle()
 	{
 		if (($style = $this->getViewState('ActiveHeaderStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('accordion-header-active');
 			$this->setViewState('ActiveHeaderStyle', $style, null);
 		}

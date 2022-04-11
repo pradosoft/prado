@@ -64,7 +64,7 @@ class TPropertyValue
 		if (is_string($value)) {
 			return strcasecmp($value, 'true') == 0 || (is_numeric($value) && $value != 0);
 		} else {
-			return (boolean) $value;
+			return (bool) $value;
 		}
 	}
 
@@ -94,7 +94,7 @@ class TPropertyValue
 	 */
 	public static function ensureInteger($value): int
 	{
-		return (integer) $value;
+		return (int) $value;
 	}
 
 	/**

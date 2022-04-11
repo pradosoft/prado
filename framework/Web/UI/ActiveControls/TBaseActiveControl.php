@@ -47,7 +47,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	public function __construct($control)
 	{
 		$this->_control = $control;
-		$this->_options = new TMap;
+		$this->_options = new TMap();
 		parent::__construct();
 	}
 

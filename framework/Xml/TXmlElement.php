@@ -10,9 +10,9 @@
 
 namespace Prado\Xml;
 
-use \Prado\TPropertyValue;
-use \Prado\Collections\TList;
-use \Prado\Collections\TMap;
+use Prado\TPropertyValue;
+use Prado\Collections\TList;
+use Prado\Collections\TMap;
 
 /**
  * TXmlElement class.
@@ -165,7 +165,7 @@ class TXmlElement extends \Prado\TComponent
 	public function getAttributes()
 	{
 		if (!$this->_attributes) {
-			$this->_attributes = new TMap;
+			$this->_attributes = new TMap();
 		}
 		return $this->_attributes;
 	}
@@ -192,7 +192,7 @@ class TXmlElement extends \Prado\TComponent
 	 */
 	public function getElementsByTagName($tagName)
 	{
-		$list = new TList;
+		$list = new TList();
 		if ($this->_elements) {
 			foreach ($this->_elements as $element) {
 				if ($element->_tagName === $tagName) {

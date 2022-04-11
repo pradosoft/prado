@@ -239,7 +239,7 @@ abstract class THotSpot extends \Prado\TComponent
 		if ($attributes = $this->getViewState('Attributes', null)) {
 			return $attributes;
 		} else {
-			$attributes = new TAttributeCollection;
+			$attributes = new TAttributeCollection();
 			$this->setViewState('Attributes', $attributes, null);
 			return $attributes;
 		}

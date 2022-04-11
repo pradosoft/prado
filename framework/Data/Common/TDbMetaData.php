@@ -96,7 +96,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 		$key = $tableName === null ? $this->getDbConnection()->getConnectionString() : $tableName;
 		if (!isset($this->_tableInfoCache[$key])) {
 			$class = $this->getTableInfoClass();
-			$tableInfo = $tableName === null ? new $class : $this->createTableInfo($tableName);
+			$tableInfo = $tableName === null ? new $class() : $this->createTableInfo($tableName);
 			$this->_tableInfoCache[$key] = $tableInfo;
 		}
 		return $this->_tableInfoCache[$key];

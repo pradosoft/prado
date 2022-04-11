@@ -36,7 +36,6 @@ use Prado\Util\TSimpleDateFormatter;
  */
 class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOptions
 {
-
 	/**
 	 * The static variable is used to determine if this is the first instance of TJuiDatePicker. If true,
 	 * it will register an additional clientscript to set the language specific global default settings.

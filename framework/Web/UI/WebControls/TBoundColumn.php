@@ -180,7 +180,7 @@ class TBoundColumn extends TDataGridColumn
 						$control = $this->initializeCellRendererControl($cell, $classPath);
 						$cell->registerObject('EditControl', $control);
 					} else {
-						$control = new TTextBox;
+						$control = new TTextBox();
 						$cell->getControls()->add($control);
 						$cell->registerObject('TextBox', $control);
 					}

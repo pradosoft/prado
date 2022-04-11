@@ -226,7 +226,7 @@ class TStyle extends \Prado\TComponent
 	public function getFont()
 	{
 		if ($this->_font === null) {
-			$this->_font = new TFont;
+			$this->_font = new TFont();
 		}
 		return $this->_font;
 	}

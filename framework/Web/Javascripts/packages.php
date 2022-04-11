@@ -88,7 +88,7 @@ $packages = [
 	'jqueryui' => [
 		'jquery-ui/jquery-ui.js',
 	],
-		
+
 	//bootstrap
 	'bootstrap' => [
 		'bootstrap/js/bootstrap.js',

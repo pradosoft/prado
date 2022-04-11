@@ -62,10 +62,10 @@ class TSqlMapManager extends \Prado\TComponent
 	{
 		$this->_connection = $connection;
 
-		$this->_mappedStatements = new TMap;
-		$this->_resultMaps = new TMap;
-		$this->_parameterMaps = new TMap;
-		$this->_cacheModels = new TMap;
+		$this->_mappedStatements = new TMap();
+		$this->_resultMaps = new TMap();
+		$this->_parameterMaps = new TMap();
+		$this->_cacheModels = new TMap();
 		parent::__construct();
 	}
 

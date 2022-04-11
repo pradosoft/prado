@@ -179,7 +179,7 @@ class TRpcService extends \Prado\TService
 		} // TODO see previous
 
 		$_protocolHandlerClass = $this->protocolHandlers[$_mimeType];
-		$_protocolHandler = new $_protocolHandlerClass;
+		$_protocolHandler = new $_protocolHandlerClass();
 
 		if (($_result = $this->createApiProvider($_protocolHandler, $_providerId)->processRequest()) !== null) {
 			$_response = $this->getResponse();

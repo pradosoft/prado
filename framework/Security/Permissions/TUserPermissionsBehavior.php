@@ -31,7 +31,7 @@ class TUserPermissionsBehavior extends TBehavior
 {
 	/** @var \Prado\Security\Permissions\TPermissionsManager manager object for the behavior */
 	private $_manager;
-	
+
 	/**
 	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
 	 */
@@ -42,7 +42,7 @@ class TUserPermissionsBehavior extends TBehavior
 		}
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Gets all the rules for the permission and checks against the TUser.
 	 * @param string $permission
@@ -57,7 +57,7 @@ class TUserPermissionsBehavior extends TBehavior
 		$request = Prado::getApplication()->getRequest();
 		return $rules->isUserAllowed($this->getOwner(), $request->getRequestType(), $request->getUserHostAddress(), $extraData);
 	}
-	
+
 	/**
 	 * @param string[] $roles The default roles of all users
 	 * @param \Prado\Util\TCallChain $callchain
@@ -68,7 +68,7 @@ class TUserPermissionsBehavior extends TBehavior
 		$roles = array_merge($roles, $this->getManager()->getDefaultRoles() ?? []);
 		return $callchain->dyDefaultRoles($roles);
 	}
-	
+
 	/**
 	 * This handles the dynamic event where the $role does not match the user
 	 * roles.  It checks the hierarchy of roles/permissions
@@ -81,7 +81,7 @@ class TUserPermissionsBehavior extends TBehavior
 		$inRole = $this->getManager()->isInHierarchy($this->getOwner()->getRoles(), $role);
 		return $callchain->dyIsInRole($return, $role) || $inRole;
 	}
-	
+
 	/**
 	 * @return \Prado\Security\Permissions\TPermissionsManager application permissions manager
 	 */
@@ -89,7 +89,7 @@ class TUserPermissionsBehavior extends TBehavior
 	{
 		return $this->_manager;
 	}
-	
+
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
 	 */

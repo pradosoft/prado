@@ -7,7 +7,6 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  * @package Prado\Web\UI\WebControls
  */
- 
 
 namespace Prado\Web\UI\WebControls;
 
@@ -35,7 +34,7 @@ class TPageLoadTime extends TLabel
 	{
 		$writer->write(round(microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"], 5) . Prado::localize($this->getSecondSuffix()));
 	}
-	
+
 	/**
 	 * @return string the string that is appended to the time.  default 's' for seconds.
 	 */
@@ -43,7 +42,7 @@ class TPageLoadTime extends TLabel
 	{
 		return $this->getViewState('Suffix', 's');
 	}
-	
+
 	/**
 	 * @param string $suffix the string that is appended to the time.
 	 */

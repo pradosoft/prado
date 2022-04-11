@@ -259,7 +259,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getItems()
 	{
 		if (!$this->_items) {
-			$this->_items = new TDataGridItemCollection;
+			$this->_items = new TDataGridItemCollection();
 		}
 		return $this->_items;
 	}
@@ -279,7 +279,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	protected function createStyle()
 	{
-		return new TTableStyle;
+		return new TTableStyle();
 	}
 
 	/**
@@ -304,7 +304,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getItemStyle()
 	{
 		if (($style = $this->getViewState('ItemStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('ItemStyle', $style, null);
 		}
 		return $style;
@@ -316,7 +316,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getAlternatingItemStyle()
 	{
 		if (($style = $this->getViewState('AlternatingItemStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('AlternatingItemStyle', $style, null);
 		}
 		return $style;
@@ -328,7 +328,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getSelectedItemStyle()
 	{
 		if (($style = $this->getViewState('SelectedItemStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('SelectedItemStyle', $style, null);
 		}
 		return $style;
@@ -340,7 +340,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getEditItemStyle()
 	{
 		if (($style = $this->getViewState('EditItemStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('EditItemStyle', $style, null);
 		}
 		return $style;
@@ -352,7 +352,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getHeaderStyle()
 	{
 		if (($style = $this->getViewState('HeaderStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
@@ -364,7 +364,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getFooterStyle()
 	{
 		if (($style = $this->getViewState('FooterStyle', null)) === null) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('FooterStyle', $style, null);
 		}
 		return $style;
@@ -376,7 +376,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getPagerStyle()
 	{
 		if (($style = $this->getViewState('PagerStyle', null)) === null) {
-			$style = new TDataGridPagerStyle;
+			$style = new TDataGridPagerStyle();
 			$this->setViewState('PagerStyle', $style, null);
 		}
 		return $style;
@@ -389,7 +389,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getTableHeadStyle()
 	{
 		if (($style = $this->getViewState('TableHeadStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('TableHeadStyle', $style, null);
 		}
 		return $style;
@@ -402,7 +402,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getTableBodyStyle()
 	{
 		if (($style = $this->getViewState('TableBodyStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('TableBodyStyle', $style, null);
 		}
 		return $style;
@@ -415,7 +415,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	public function getTableFootStyle()
 	{
 		if (($style = $this->getViewState('TableFootStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$this->setViewState('TableFootStyle', $style, null);
 		}
 		return $style;
@@ -887,7 +887,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 				$this->_autoColumns = new TDataGridColumnCollection($this);
 				foreach ($state as $st) {
 					$columnClassName = $this->getAutoGenerateColumnName();
-					$column = new $columnClassName;
+					$column = new $columnClassName();
 					$column->loadState($st);
 					$this->_autoColumns->add($column);
 				}
@@ -1150,9 +1150,9 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		$index = 0;
 		foreach ($columns as $column) {
 			if ($itemType === TListItemType::Header) {
-				$cell = new TTableHeaderCell;
+				$cell = new TTableHeaderCell();
 			} else {
-				$cell = new TTableCell;
+				$cell = new TTableCell();
 			}
 			if (($id = $column->getID()) !== '') {
 				$item->registerObject($id, $cell);
@@ -1205,14 +1205,14 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	{
 		if ($buttonType === TDataGridPagerButtonType::LinkButton) {
 			if ($enabled) {
-				$button = new TLinkButton;
+				$button = new TLinkButton();
 			} else {
-				$button = new TLabel;
+				$button = new TLabel();
 				$button->setText($text);
 				return $button;
 			}
 		} else {
-			$button = new TButton;
+			$button = new TButton();
 			if (!$enabled) {
 				$button->setEnabled(false);
 			}
@@ -1353,7 +1353,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		$columnClassName = $this->getAutoGenerateColumnName();
 		foreach ($dataSource as $row) {
 			foreach ($row as $key => $value) {
-				$column = new $columnClassName;
+				$column = new $columnClassName();
 				if (is_string($key)) {
 					$column->setHeaderText($key);
 					$column->setDataField($key);
@@ -1544,7 +1544,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 		if ($this->getHasControls()) {
 			$this->groupCells();
 			if ($this->_useEmptyTemplate) {
-				$control = new TWebControl;
+				$control = new TWebControl();
 				$control->setID($this->getClientID());
 				$control->copyBaseAttributes($this);
 				if ($this->getHasStyle()) {

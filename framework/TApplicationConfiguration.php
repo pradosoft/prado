@@ -85,7 +85,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 			$fcontent = include $fname;
 			$this->loadFromPhp($fcontent, dirname($fname));
 		} else {
-			$dom = new TXmlDocument;
+			$dom = new TXmlDocument();
 			$dom->loadFromFile($fname);
 			$this->loadFromXml($dom, dirname($fname));
 		}
@@ -250,7 +250,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 			}
 		}
 	}
-	
+
 	/**
 	 * Reads the Composer static RegisteredLoaders for their Vendor Directory. Reads the Vendor
 	 * Directory composer file 'installed.json' (accumulated extensions composer.json) for the project.
@@ -272,7 +272,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 		foreach (ClassLoader::getRegisteredLoaders() as $vendorDir => $loader) {
 			$file = $vendorDir . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'installed.json';
 			$manifests = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
-			
+
 			// Loop through the installed packages
 			foreach ($manifests['packages'] as $package) {
 				$name = $package['name'];
@@ -288,7 +288,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 		}
 		return $plugins;
 	}
-	
+
 	/**
 	 * Given a module id as a composer package name, returns the extension bootstrap
 	 * {@link TModule} class.

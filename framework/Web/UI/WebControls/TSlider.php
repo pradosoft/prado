@@ -324,7 +324,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function createClientScript()
 	{
-		return new TSliderClientScript;
+		return new TSliderClientScript();
 	}
 
 	/**

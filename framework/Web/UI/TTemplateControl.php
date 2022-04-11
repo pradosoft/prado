@@ -270,7 +270,7 @@ class TTemplateControl extends TCompositeControl
 					if ($control instanceof TTextBox) {
 						$control->setText($arObj->{$key});
 					} elseif ($control instanceof TCheckBox) {
-						$control->setChecked((boolean) $arObj->{$key});
+						$control->setChecked((bool) $arObj->{$key});
 					} elseif ($control instanceof TDatePicker) {
 						$control->setDate($arObj->{$key});
 					}

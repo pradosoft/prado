@@ -42,40 +42,40 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	 * @var string the key to the application parameter
 	 */
 	private $_parameter;
-	
+
 	/**
 	 * @var bool whether or not a null parameter value should be set on the property
 	 */
 	private $_validNullValue;
-	
+
 	/**
 	 * @var string the key to the application parameter
 	 */
 	protected $_property;
-	
+
 	/**
 	 * @var string the default value of the property if there is no Parameter
 	 */
 	protected $_defaultValue;
-	
+
 	/**
 	 * @var bool should the value be localized
 	 */
 	protected $_localize;
-	
+
 	/**
 	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
-	
+
 	/**
 	 * @var string the name of the installed behavior.
 	 */
 	protected $_routeBehaviorName;
-	
+
 	/** @var bool is the behavior attached */
 	private $_initialized = false;
-	
+
 	/**
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
 	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
@@ -86,7 +86,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		
+
 		if (!$this->_parameter) {
 			throw new TConfigurationException('parameterizebehavior_no_parameter');
 		}
@@ -100,7 +100,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 				throw new TConfigurationException('parameterizebehavior_owner_has_no_property', $this->_property);
 			}
 		}
-		
+
 		$appParams = Prado::getApplication()->getParameters();
 		if (($value = $appParams->itemAt($this->_parameter)) !== null || $this->getValidNullValue()) {
 			if ($this->_localize && $value && is_string($value)) {
@@ -127,7 +127,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
 	}
-	
+
 	/**
 	 * This removes the Application Parameter handler behavior
 	 * @param object $owner the object that this behavior is attached to.
@@ -140,7 +140,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		$this->_initialized = false;
 		parent::detach($owner);
 	}
-	
+
 	/**
 	 * @return string Application parameter key to set the property.
 	 */
@@ -148,7 +148,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_parameter;
 	}
-	
+
 	/**
 	 * @param string $value Application parameter key to set the property.
 	 */
@@ -162,7 +162,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			$this->_paramBehavior->setParameter($value);
 		}
 	}
-	
+
 	/**
 	 * @return string Application parameter key to set the property.
 	 */
@@ -170,7 +170,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_validNullValue;
 	}
-	
+
 	/**
 	 * @param string $value Application parameter key to set the property.
 	 */
@@ -181,7 +181,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		$this->_validNullValue = TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	/**
 	 * @return string Application parameter key to set the property.
 	 */
@@ -189,7 +189,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_property;
 	}
-	
+
 	/**
 	 * @param string $value Application parameter key to set the property.
 	 */
@@ -200,7 +200,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		$this->_property = TPropertyValue::ensureString($value);
 	}
-	
+
 	/**
 	 * @return string The default value when there is no property and ValidNullValue is false.
 	 */
@@ -208,7 +208,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_defaultValue;
 	}
-	
+
 	/**
 	 * @param string $value The default value when there is no property and ValidNullValue is false.
 	 */
@@ -219,7 +219,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		$this->_defaultValue = TPropertyValue::ensureString($value);
 	}
-	
+
 	/**
 	 * @return string should the parameter or defaultValue be localized.
 	 */
@@ -227,7 +227,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_localize;
 	}
-	
+
 	/**
 	 * @param string $value should the parameter or defaultValue be localized.
 	 */
@@ -238,7 +238,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 		}
 		$this->_localize = TPropertyValue::ensureBoolean($value);
 	}
-	
+
 	/**
 	 * @return string The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
 	 */
@@ -246,7 +246,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		return $this->_routeBehaviorName;
 	}
-	
+
 	/**
 	 * @param string $value The TMap Routing Behavior Name for changes on the Parameter key updating the Property.
 	 */

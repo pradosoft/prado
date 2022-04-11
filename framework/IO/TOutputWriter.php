@@ -22,7 +22,6 @@ namespace Prado\IO;
  */
 class TOutputWriter extends TTextWriter
 {
-
 	/**
 	 * Flushes the content that has been written.
 	 * @return string the content being flushed

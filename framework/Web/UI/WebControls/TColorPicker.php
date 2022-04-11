@@ -142,7 +142,7 @@ class TColorPicker extends TTextBox
 	 */
 	protected function createClientSide()
 	{
-		return new TColorPickerClientSide;
+		return new TColorPickerClientSide();
 	}
 
 	/**

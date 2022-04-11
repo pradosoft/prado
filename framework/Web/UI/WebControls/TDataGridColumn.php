@@ -157,7 +157,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	public function getHeaderStyle($createStyle = true)
 	{
 		if (($style = $this->getViewState('HeaderStyle', null)) === null && $createStyle) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('HeaderStyle', $style, null);
 		}
 		return $style;
@@ -210,7 +210,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	public function getFooterStyle($createStyle = true)
 	{
 		if (($style = $this->getViewState('FooterStyle', null)) === null && $createStyle) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('FooterStyle', $style, null);
 		}
 		return $style;
@@ -223,7 +223,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	public function getItemStyle($createStyle = true)
 	{
 		if (($style = $this->getViewState('ItemStyle', null)) === null && $createStyle) {
-			$style = new TTableItemStyle;
+			$style = new TTableItemStyle();
 			$this->setViewState('ItemStyle', $style, null);
 		}
 		return $style;
@@ -423,7 +423,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 		} elseif ($this->getAllowSorting()) {
 			$sortExpression = $this->getSortExpression();
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$button = new TImageButton;
+				$button = new TImageButton();
 				$button->setImageUrl($url);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -433,7 +433,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 				$button->setCausesValidation(false);
 				$cell->getControls()->add($button);
 			} elseif ($text !== '') {
-				$button = new TLinkButton;
+				$button = new TLinkButton();
 				$button->setText($text);
 				$button->setCommandName(TDataGrid::CMD_SORT);
 				$button->setCommandParameter($sortExpression);
@@ -444,7 +444,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			}
 		} else {
 			if (($url = $this->getHeaderImageUrl()) !== '') {
-				$image = new TImage;
+				$image = new TImage();
 				$image->setImageUrl($url);
 				if ($text !== '') {
 					$image->setAlternateText($text);

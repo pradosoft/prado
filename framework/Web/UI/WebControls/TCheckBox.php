@@ -367,7 +367,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		if ($attributes = $this->getViewState('LabelAttributes', null)) {
 			return $attributes;
 		} else {
-			$attributes = new TAttributeCollection;
+			$attributes = new TAttributeCollection();
 			$this->setViewState('LabelAttributes', $attributes, null);
 			return $attributes;
 		}
@@ -381,7 +381,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 		if ($attributes = $this->getViewState('InputAttributes', null)) {
 			return $attributes;
 		} else {
-			$attributes = new TAttributeCollection;
+			$attributes = new TAttributeCollection();
 			$this->setViewState('InputAttributes', $attributes, null);
 			return $attributes;
 		}

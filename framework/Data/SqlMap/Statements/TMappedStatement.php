@@ -576,7 +576,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$index = 0;
 		$registry = $this->getManager()->getTypeHandlers();
 		foreach ($row as $k => $v) {
-			$property = new TResultProperty;
+			$property = new TResultProperty();
 			if (is_string($k) && strlen($k) > 0) {
 				$property->setColumn($k);
 			}
@@ -806,7 +806,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 	{
 		$statement = $this->getManager()->getMappedStatement($select);
 		$key = $this->getPostSelectKeys($resultMap, $property, $row);
-		$postSelect = new TPostSelectBinding;
+		$postSelect = new TPostSelectBinding();
 		$postSelect->setStatement($statement);
 		$postSelect->setResultObject($resultObject);
 		$postSelect->setResultProperty($property);

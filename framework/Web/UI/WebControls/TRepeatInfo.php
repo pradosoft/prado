@@ -145,7 +145,7 @@ class TRepeatInfo extends \Prado\TComponent
 	public function renderRepeater($writer, IRepeatInfoUser $user)
 	{
 		if ($this->_repeatLayout === TRepeatLayout::Table) {
-			$control = new TTable;
+			$control = new TTable();
 			if ($this->_caption !== '') {
 				$control->setCaption($this->_caption);
 				$control->setCaptionAlign($this->_captionAlign);
@@ -154,7 +154,7 @@ class TRepeatInfo extends \Prado\TComponent
 			$this->renderRawContents($writer, $user);
 			return;
 		} else {
-			$control = new TWebControl;
+			$control = new TWebControl();
 		}
 		$control->setID($user->getClientID());
 		$control->copyBaseAttributes($user);

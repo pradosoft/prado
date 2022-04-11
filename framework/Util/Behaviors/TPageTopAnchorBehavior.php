@@ -28,7 +28,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	 * @var string the page theme is set to this parameter key
 	 */
 	private $_topAnchor = 'top';
-	
+
 	/**
 	 * This handles the TPage.OnSaveStateComplete event to place the
 	 * '<a name="">' at the last moment and have least interference with
@@ -39,7 +39,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	{
 		return ['OnSaveStateComplete' => 'addFormANameAnchor'];
 	}
-	
+
 	/**
 	 * This method places an '<a name="">' before the TForm
 	 * @param object $page object raising the event
@@ -48,12 +48,12 @@ class TPageTopAnchorBehavior extends TBehavior
 	public function addFormANameAnchor($page, $param)
 	{
 		$topanchor = '<a name="' . $this->_topAnchor . '"></a>';
-		
+
 		if ($form = $page->getForm()) {
 			$form->getParent()->getControls()->insertBefore($form, $topanchor);
 		}
 	}
-	 
+
 	/**
 	 * @return string the top anchor name, defaults to 'top'.
 	 */
@@ -61,7 +61,7 @@ class TPageTopAnchorBehavior extends TBehavior
 	{
 		return $this->_topAnchor;
 	}
-	 
+
 	/**
 	 * @param string $value the top anchor name.
 	 */

@@ -76,7 +76,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 */
 	protected function createClientSide()
 	{
-		return new TCallbackClientSide;
+		return new TCallbackClientSide();
 	}
 
 	/**

@@ -301,7 +301,7 @@ class TPageService extends \Prado\TService
 	public function getTemplateManager()
 	{
 		if (!$this->_templateManager) {
-			$this->_templateManager = new TTemplateManager;
+			$this->_templateManager = new TTemplateManager();
 			$this->_templateManager->init(null);
 		}
 		return $this->_templateManager;
@@ -321,7 +321,7 @@ class TPageService extends \Prado\TService
 	public function getThemeManager()
 	{
 		if (!$this->_themeManager) {
-			$this->_themeManager = new TThemeManager;
+			$this->_themeManager = new TThemeManager();
 			$this->_themeManager->init(null);
 		}
 		return $this->_themeManager;
@@ -548,7 +548,7 @@ class TPageService extends \Prado\TService
 		$this->onPreRunPage($page);
 		$page->run($this->getResponse()->createHtmlWriter());
 	}
-	
+
 	/**
 	 * This event is raised if the page is not found in the BasePath.
 	 * This provides additional possible Page Paths to look for the page.
@@ -566,7 +566,7 @@ class TPageService extends \Prado\TService
 	{
 		return $this->raiseEvent('onAdditionalPagePaths', $this, $param);
 	}
-	
+
 	/**
 	 * This event is raised just before the page is run.  Any part of the system can  patch into the page
 	 * events with an onPreRunPage handler.

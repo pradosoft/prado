@@ -68,7 +68,7 @@ class TLogRouter extends \Prado\TModule
 					$phpConfig = include $this->_configFile;
 					$this->loadConfig($phpConfig);
 				} else {
-					$dom = new TXmlDocument;
+					$dom = new TXmlDocument();
 					$dom->loadFromFile($this->_configFile);
 					$this->loadConfig($dom);
 				}

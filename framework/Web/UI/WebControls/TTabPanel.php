@@ -240,7 +240,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function getViewStyle()
 	{
 		if (($style = $this->getViewState('ViewStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('tab-view');
 			$this->setViewState('ViewStyle', $style, null);
 		}
@@ -269,7 +269,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function getTabStyle()
 	{
 		if (($style = $this->getViewState('TabStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('tab-normal');
 			$this->setViewState('TabStyle', $style, null);
 		}
@@ -298,7 +298,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	public function getActiveTabStyle()
 	{
 		if (($style = $this->getViewState('ActiveTabStyle', null)) === null) {
-			$style = new TStyle;
+			$style = new TStyle();
 			$style->setCssClass('tab-active');
 			$this->setViewState('ActiveTabStyle', $style, null);
 		}

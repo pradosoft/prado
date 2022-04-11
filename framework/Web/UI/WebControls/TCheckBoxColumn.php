@@ -81,7 +81,7 @@ class TCheckBoxColumn extends TDataGridColumn
 	public function initializeCell($cell, $columnIndex, $itemType)
 	{
 		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
-			$checkBox = new TCheckBox;
+			$checkBox = new TCheckBox();
 			if ($this->getReadOnly() || $itemType !== TListItemType::EditItem) {
 				$checkBox->setEnabled(false);
 			}

@@ -35,7 +35,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 */
 	protected function createStyle()
 	{
-		return new TTableItemStyle;
+		return new TTableItemStyle();
 	}
 
 	/**

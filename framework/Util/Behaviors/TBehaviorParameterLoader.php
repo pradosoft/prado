@@ -42,28 +42,28 @@ class TBehaviorParameterLoader extends TComponent
 {
 	/** @var string name of the behavior attaching to the owner */
 	private $_behaviorName;
-	
+
 	/** @var string class of the behavior attaching to the owner */
 	private $_behaviorClass;
-	
+
 	/** @var numeric priority of the behavior attaching to the owner */
 	private $_priority;
-	
+
 	/** @var string what object to attach the behavior */
 	private $_attachto;
-	
+
 	/** @var string what class to attach the behavior */
 	private $_attachtoclass;
-	
+
 	/** @var array<string, string> additional properties to feed the behavior */
 	private $_properties = [];
-	
+
 	/** @var array<string, array<string, string>> the list of behaviors to attach to the page */
 	private static $_pageBehaviors = [];
-	
+
 	/** @var array<string, array<object>> the list of behaviors to attach to the page */
 	private static $_moduleBehaviors = [];
-	
+
 	/**
 	 * Install the behavior via dynamic event dyInit, called after a parameter
 	 * class is loaded in TParameterModule or TApplication configurations.
@@ -77,7 +77,7 @@ class TBehaviorParameterLoader extends TComponent
 		if (!$this->_behaviorClass) {
 			throw new TConfigurationException('behaviorparameterloader_no_behavior_class');
 		}
-		
+
 		if ($this->_attachto === null && $this->_attachtoclass === null) {
 			throw new TConfigurationException('behaviorparameterloader_attachto_class_required');
 		} elseif ($this->_attachto !== null && $this->_attachtoclass !== null) {
@@ -117,7 +117,7 @@ class TBehaviorParameterLoader extends TComponent
 			$owner->attachBehavior($this->_behaviorName, $this->_properties, $this->_priority);
 		}
 	}
-	
+
 	/**
 	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
 	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
@@ -132,7 +132,7 @@ class TBehaviorParameterLoader extends TComponent
 			$service->attachEventHandler('onPreRunPage', [$this, 'attachTPageBehaviors'], -20);
 		}
 	}
-	
+
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
@@ -153,7 +153,7 @@ class TBehaviorParameterLoader extends TComponent
 		}
 		self::$_moduleBehaviors = [];
 	}
-	
+
 	/**
 	 * This method attaches page behaviors to the TPage handling the TPageService::OnPreInitPage event.
 	 * @param object $sender the object that raised the event
@@ -168,7 +168,7 @@ class TBehaviorParameterLoader extends TComponent
 		}
 		self::$_pageBehaviors = [];
 	}
-	
+
 	/**
 	 * This resets the module and page behavior cache data.
 	 */
@@ -181,7 +181,7 @@ class TBehaviorParameterLoader extends TComponent
 		Prado::getApplication()->detachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		self::$_moduleBehaviors = [];
 		self::$_pageBehaviors = [];
-		
+
 		$this->_behaviorName = null;
 		$this->_behaviorClass = null;
 		$this->_priority = null;
@@ -189,7 +189,7 @@ class TBehaviorParameterLoader extends TComponent
 		$this->_attachtoclass = null;
 		$this->_properties = [];
 	}
-	
+
 	/**
 	 * gets the name of the attaching behavior.
 	 * @return string the name of the attaching behavior.
@@ -198,7 +198,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_behaviorName;
 	}
-	
+
 	/**
 	 * sets the name of the attaching behavior.
 	 * @param string $name the name of the attaching behavior.
@@ -207,7 +207,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$this->_behaviorName = TPropertyValue::ensureString($name);
 	}
-	
+
 	/**
 	 * gets the class of the attaching behavior.
 	 * @return string the class of the attaching behavior.
@@ -216,7 +216,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_behaviorClass;
 	}
-	
+
 	/**
 	 * sets the class of the attaching behavior.
 	 * @param string $className the class of the attaching behavior.
@@ -225,7 +225,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$this->_behaviorClass = TPropertyValue::ensureString($className);
 	}
-	
+
 	/**
 	 * gets the priority of the attaching behavior.
 	 * @return numeric the priority of the attaching behavior.
@@ -234,7 +234,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_priority;
 	}
-	
+
 	/**
 	 * sets the priority of the attaching behavior.
 	 * @param numeric $priority the priority of the attaching behavior.
@@ -243,7 +243,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$this->_priority = TPropertyValue::ensureFloat($priority);
 	}
-	
+
 	/**
 	 * gets the AttachTo value.
 	 * @return string the AttachTo value.
@@ -252,7 +252,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_attachto;
 	}
-	
+
 	/**
 	 * Sets the AttachTo property.
 	 * @param string $attachto the new AttachTo value.
@@ -261,7 +261,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$this->_attachto = TPropertyValue::ensureString($attachto);
 	}
-	
+
 	/**
 	 * gets the AttachToClass value.
 	 * @return string the AttachToClass value.
@@ -270,7 +270,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_attachtoclass;
 	}
-	
+
 	/**
 	 * Sets the AttachToClass property.
 	 * @param string $attachto the new AttachToClass value.
@@ -279,7 +279,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		$this->_attachtoclass = TPropertyValue::ensureString($attachto);
 	}
-	
+
 	/**
 	 * gets the Additional Properties of the behavior.
 	 * @return array additional behaviors for the behavior class.
@@ -288,7 +288,7 @@ class TBehaviorParameterLoader extends TComponent
 	{
 		return $this->_properties;
 	}
-	
+
 	/**
 	 * magic method for storing the properties for the behavior. If there is no
 	 * set Property then it stores the property to set on the behavior.

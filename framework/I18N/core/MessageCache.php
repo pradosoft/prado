@@ -22,7 +22,6 @@ require_once(__DIR__ . '/TCache_Lite.php');
  */
 class MessageCache
 {
-
 	/**
 	 * Cache Lite instance.
 	 * @var TCache_Lite

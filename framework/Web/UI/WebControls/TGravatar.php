@@ -47,7 +47,7 @@ class TGravatar extends TImage
 {
 	public const HTTP_URL = 'http://www.gravatar.com/avatar/';
 	public const HTTPS_URL = 'https://secure.gravatar.com/avatar/';
-	
+
 	/**
 	 * @return string the URL to the gravatar
 	 */
@@ -57,10 +57,10 @@ class TGravatar extends TImage
 		$params['s'] = $this->getSize();
 		$params['r'] = $this->getRating();
 		$params['d'] = $this->getDefaultImageStyle();
-		
+
 		return ($this->getUseSecureUrl() ? self::HTTPS_URL : self::HTTP_URL) . md5(strtolower(trim($this->getEmail()))) . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
 	}
-	
+
 	/**
 	 * @return null|string one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_;
 	 * this defaults to null
@@ -69,7 +69,7 @@ class TGravatar extends TImage
 	{
 		return $this->getViewState('default');
 	}
-	
+
 	/**
 	 * @param null|string $default one of: mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, _url_
 	 */
@@ -88,7 +88,7 @@ class TGravatar extends TImage
 		}
 		$this->setViewState('default', $default);
 	}
-	
+
 	/**
 	 * When the Size is not set or is null, the default size of a gravatar
 	 * from the gravatar website is 80.
@@ -98,7 +98,7 @@ class TGravatar extends TImage
 	{
 		return $this->getViewState('size');
 	}
-	
+
 	/**
 	 * @param null|int $size the pixel size of the gravatar, [1..512]
 	 */
@@ -113,7 +113,7 @@ class TGravatar extends TImage
 		}
 		$this->setViewState('size', $_size);
 	}
-	
+
 	/**
 	 * @return null|string the rating of the icon ['g', 'pg', 'r', 'x', ''], default null
 	 */
@@ -121,7 +121,7 @@ class TGravatar extends TImage
 	{
 		return $this->getViewState('rating');
 	}
-	
+
 	/**
 	 * @param null|string $rating the rating of the icon ['g', 'pg', 'r', 'x', '']
 	 */
@@ -134,7 +134,7 @@ class TGravatar extends TImage
 		}
 		$this->setViewState('rating', $rating);
 	}
-	
+
 	/**
 	 * @return string the email address associated with the gravatar icon
 	 */
@@ -142,7 +142,7 @@ class TGravatar extends TImage
 	{
 		return $this->getViewState('email', '');
 	}
-	
+
 	/**
 	 * @param string $email the email address associated with the gravatar icon
 	 */
@@ -150,7 +150,7 @@ class TGravatar extends TImage
 	{
 		$this->setViewState('email', TPropertyValue::ensureString($email), '');
 	}
-	
+
 	/**
 	 * @return bool whether or not to use the secure HTTPS url, defaults to the connection being used
 	 */
@@ -158,7 +158,7 @@ class TGravatar extends TImage
 	{
 		return $this->getViewState('use_secure_url', $this->getRequest()->getIsSecureConnection());
 	}
-	
+
 	/**
 	 * @param bool $useSecureUrl whether or not to use the secure HTTPS url
 	 */

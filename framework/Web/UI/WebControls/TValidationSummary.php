@@ -306,7 +306,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	protected function createClientScript()
 	{
-		return new TClientSideValidationSummaryOptions;
+		return new TClientSideValidationSummaryOptions();
 	}
 
 	/**
