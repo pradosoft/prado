@@ -23,6 +23,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      selenium:
+        image: selenium/standalone-chrome
+        ports:
+          - 4444:4444
     strategy:
       fail-fast: false
       matrix:
@@ -73,6 +77,20 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
           composer unittest
+
+      - name: Run Functional Tests
+        run: |
+          ACTION_BASE_PATH=`pwd`
+          sudo ln -s "$ACTION_BASE_PATH" /var/www/html/prado-master
+          cd /var/www/html/
+          sudo git clone https://github.com/pradosoft/prado-demos.git prado-demos
+          cd prado-demos
+          sudo composer install
+          sudo mv vendor/pradosoft/prado vendor/pradosoft/prado-stock
+          sudo ln -s "$ACTION_BASE_PATH" vendor/pradosoft/prado
+          cd "$ACTION_BASE_PATH"
+          sudo nohup php -S 0.0.0.0:80 -t /var/www/html/ > phpd.log 2>&1 &
+          TEST_HOST=172.17.0.1 composer functionaltest

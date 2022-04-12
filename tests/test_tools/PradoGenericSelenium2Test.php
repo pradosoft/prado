@@ -43,12 +43,23 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 */
 	];
 
-	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $baseurl;
 
 	public static $timeout = 5; //seconds
 
+	protected function getTestHost()
+	{
+		return getenv('TEST_HOST') ?: '127.0.0.1';
+	}
+
+	protected function initBaseurl()
+	{
+		self::$baseurl = 'http://' . $this->getTestHost() . '/prado-master/tests/FunctionalTests/';
+	}
+
 	protected function setUp(): void
 	{
+		$this->initBaseurl();
 
 		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/436
 		$this->setDesiredCapabilities([
@@ -294,5 +305,8 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 
 class PradoDemosSelenium2Test extends PradoGenericSelenium2Test
 {
-	public static $baseurl = 'http://127.0.0.1/prado-demos/';
+	protected function initBaseurl()
+	{
+		self::$baseurl = 'http://' . $this->getTestHost() . '/prado-demos/';
+	}
 }
