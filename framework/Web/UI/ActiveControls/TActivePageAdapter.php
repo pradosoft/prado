@@ -141,7 +141,9 @@ class TActivePageAdapter extends TControlAdapter
 	public function renderCallbackResponse($writer)
 	{
 		Prado::trace("ActivePage renderCallbackResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
-		if (($url = $this->getResponse()->getAdapter()->getRedirectedUrl()) === null) {
+		/** @var TCallbackResponseAdapter $adapter */
+		$adapter = $this->getResponse()->getAdapter();
+		if (($url = $adapter->getRedirectedUrl()) === null) {
 			$this->renderResponse($writer);
 		} else {
 			$this->redirect($url);

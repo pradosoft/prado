@@ -476,7 +476,7 @@ class TCallbackClientScript extends \Prado\TApplicationComponent
 
 	/**
 	 * Evaluate a block of javascript enclosed in a boundary.
-	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the content.
+	 * @param \Prado\Web\UI\THtmlWriter|string $writer writer for the content.
 	 */
 	public function evaluateScript($writer)
 	{

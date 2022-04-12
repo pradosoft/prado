@@ -71,7 +71,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * @return TBaseActiveControl standard active control options.
+	 * @return TBaseActiveCallbackControl standard active control options.
 	 */
 	public function getActiveControl()
 	{
@@ -155,7 +155,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 		$button->setCommandName($commandName);
 		$button->setCommandParameter($commandParameter);
 		$button->setCausesValidation(false);
-		$button->getAdapter()->getBaseActiveControl()->setClientSide(
+		$button->getActiveControl()->setClientSide(
 			$pager->getClientSide()
 		);
 		return $button;

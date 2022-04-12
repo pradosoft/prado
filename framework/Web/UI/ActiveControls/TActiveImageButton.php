@@ -39,7 +39,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	}
 
 	/**
-	 * @return TBaseActiveControl basic active control options.
+	 * @return TBaseActiveCallbackControl basic active control options.
 	 */
 	public function getActiveControl()
 	{

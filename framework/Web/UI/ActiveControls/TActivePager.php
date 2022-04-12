@@ -92,7 +92,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	{
 		$list = new TActiveDropDownList();
 
-		$list->getAdapter()->getBaseActiveControl()->setClientSide(
+		$list->getActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
 
@@ -154,7 +154,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 		$button->setCssClass($this->getButtonCssClass());
 
 		$button->attachEventHandler('OnCallback', [$this, 'handleCallback']);
-		$button->getAdapter()->getBaseActiveControl()->setClientSide(
+		$button->getActiveControl()->setClientSide(
 			$this->getClientSide()
 		);
 

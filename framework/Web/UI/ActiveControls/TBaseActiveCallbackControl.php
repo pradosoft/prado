@@ -115,9 +115,13 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 					$control = $control->$newid;
 				}
 			} else {
-				// TCheckBoxList overrides findControl() with a fake implementation
-				// but accepts a second parameter to use the standard one
-				$control = $this->getControl()->findControl($id, true);
+				if ($this->getControl() instanceof \Prado\Web\UI\WebControls\TCheckBoxList) {
+					// TCheckBoxList overrides findControl() with a fake implementation
+					// but accepts a second parameter to use the standard one
+					$control = $this->getControl()->findControl($id, true);
+				} else {
+					$control = $this->getControl()->findControl($id);
+				}
 			}
 
 			if ($control instanceof TCallbackOptions) {

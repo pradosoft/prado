@@ -1,5 +1,5 @@
 parameters:
     phpVersion: 70400 # PHP 7.4
-    level: 1
+    level: 2
     paths:
         - framework

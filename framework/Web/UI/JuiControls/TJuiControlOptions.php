@@ -160,6 +160,7 @@ class TJuiControlOptions
 				$this->_control->$eventName(
 					new TJuiEventParameter(
 						$this->_control->getResponse(),
+						/** @phpstan-ignore-next-line */
 						$callbackParam->ui ?? null
 					)
 				);
