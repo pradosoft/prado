@@ -91,7 +91,7 @@ use Prado\Collections\TPriorityMap;
  * the attached event handlers will be invoked automatically in the order they
  * are attached to the event. Event handlers must have the following signature,
  * <code>
- * function eventHandlerFuncName($sender,$param) { ... }
+ * function eventHandlerFuncName($sender, $param) { ... }
  * </code>
  * where $sender refers to the object who is responsible for the raising of the event,
  * and $param refers to a structure that may contain event-specific information.
@@ -102,19 +102,35 @@ use Prado\Collections\TPriorityMap;
  * </code>
  * To attach an event handler to an event, use one of the following ways,
  * <code>
- * $component->OnClick=$callback;  // or $component->OnClick->add($callback);
- * $component->attachEventHandler('OnClick',$callback);
+ * $component->OnClick = $callback;
+ * $component->OnClick->add($callback);
+ * $component->attachEventHandler('OnClick', $callback);
  * </code>
  * The first two ways make use of the fact that $component->OnClick refers to
  * the event handler list {@link TWeakCallableCollection} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
- * be either a string referring to a global function name, or an array whose
- * first element refers to an object and second element a method name/path that
- * is reachable by the object, e.g.
- * - 'buttonClicked' : buttonClicked($sender,$param);
- * - array($object,'buttonClicked') : $object->buttonClicked($sender,$param);
- * - array($object,'MainContent.SubmitButton.buttonClicked') :
- *   $object->MainContent->SubmitButton->buttonClicked($sender,$param);
+ * be either:
+ *
+ * a string referring to a global function name
+ * <code>
+ * $component->OnClick = 'buttonClicked';
+ * // will cause the following function to be called
+ * buttonClicked($sender, $param);
+ * </code>
+ *
+ * an array whose first element refers to an object and second element a method name/path that is reachable by the object
+ * <code>
+ * $component->OnClick = [$object, 'buttonClicked'];
+ * // will cause the following function to be called
+ * $object->buttonClicked($sender, param);
+ *
+ * // the method can also be expressed using the PRADO namespace format
+ * $component->OnClick = [$object, 'MainContent.SubmitButton.buttonClicked'];
+ * // will cause the following function to be called
+ * $object->MainContent->SubmitButton->buttonClicked($sender, $param);
+ * </code
+ *
+ * Global and dynamic events
  *
  * With the addition of behaviors, a more expansive event model is needed.  There
  * are two new event types (global and dynamic events) as well as a more comprehensive
@@ -152,8 +168,9 @@ use Prado\Collections\TPriorityMap;
  * An object may listen to a global event without defining an 'fx' method of the same name by
  * adding an object method to the global event list.  For example
  * <code>
- * $component->fxGlobalCheck=$callback;  // or $component->OnClick->add($callback);
- * $component->attachEventHandler('fxGlobalCheck',array($object, 'someMethod'));
+ * $component->fxGlobalCheck=$callback;
+ * $component->fxGlobalCheck->add($callback);
+ * $component->attachEventHandler('fxGlobalCheck', [$object, 'someMethod']);
  * </code>
  *
  * Events between Objects and their behaviors, Dynamic Events
