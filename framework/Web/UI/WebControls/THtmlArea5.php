@@ -87,7 +87,7 @@ class THtmlArea5 extends TTextBox
 	{
 		if(self::$_langs === null) {
 			self::$_langs = [];
-			$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs');
+			$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs\\langs');
 			$files = scandir($path);
 			if($files !== false) {
 				foreach ($files as $f) {
@@ -324,7 +324,7 @@ class THtmlArea5 extends TTextBox
 	{
 		$basepath = $this->getPage()->getClientScript()->getPradoScriptAssetPath('tinymce');
 		$assets = $this->getApplication()->getAssetManager();
-		$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs');
+		$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs\\langs');
 		$name = basename($path);
 		$dest = $basepath . '/langs';
 		if (!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance) {

@@ -31,19 +31,7 @@
 		{
 			"type": "composer",
 			"url": "https://asset-packagist.org"
-		},
-		{
-	        "type": "package",
-	        "package": {
-	            "name": "pradosoft/tinymce-langs",
-	            "version": "5.0.0",
-	            "dist": {
-	                "type": "zip",
-	                "url": "https://download.tiny.cloud/tinymce/community/languagepacks/5/langs.zip",
-	                "reference": "5.0.0"
-	            }
-	        }
-	    }
+		}
 	],
 	"require": {
 		"php": ">=7.3.0",

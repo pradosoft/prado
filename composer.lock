@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8635276b59bbc635b5aa8b6c37ab7143",
+    "content-hash": "ad7dd51fc6df2b2252e157abf90268ef",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -493,12 +493,36 @@
         {
             "name": "pradosoft/tinymce-langs",
             "version": "5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pradosoft/tinymce-langs.git",
+                "reference": "0fc9004a545493d0360ed269d530d1345e73606b"
+            },
             "dist": {
                 "type": "zip",
-                "url": "https://download.tiny.cloud/tinymce/community/languagepacks/5/langs.zip",
-                "reference": "5.0.0"
+                "url": "https://api.github.com/repos/pradosoft/tinymce-langs/zipball/0fc9004a545493d0360ed269d530d1345e73606b",
+                "reference": "0fc9004a545493d0360ed269d530d1345e73606b",
+                "shasum": ""
             },
-            "type": "library"
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Fabio Bas",
+                    "email": "ctrlaltca@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Localization files for tinyMCE",
+            "homepage": "https://github.com/pradosoft/tinymce-langs",
+            "support": {
+                "issues": "https://github.com/pradosoft/tinymce-langs/issues",
+                "source": "https://github.com/pradosoft/tinymce-langs/tree/5.0.0"
+            },
+            "time": "2022-04-13T15:19:37+00:00"
         },
         {
             "name": "psr/container",
