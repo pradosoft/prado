@@ -65,8 +65,8 @@ $packages = [
 		'prado/controls/htmlarea.js',
 	],
 
-	'htmlarea4' => [
-		'prado/controls/htmlarea4.js',
+	'htmlarea5' => [
+		'prado/controls/htmlarea5.js',
 	],
 
 	'accordion' => [
@@ -126,7 +126,7 @@ $dependencies = [
 	'activedatepicker' => ['jquery', 'prado', 'datepicker', 'ajax', 'activedatepicker'],
 	'colorpicker' => ['jquery', 'prado', 'colorpicker'],
 	'htmlarea' => ['jquery', 'prado', 'htmlarea'],
-	'htmlarea4' => ['jquery', 'prado', 'htmlarea4', 'tinymce'],
+	'htmlarea5' => ['jquery', 'prado', 'htmlarea5', 'tinymce'],
 	'keyboard' => ['jquery', 'prado', 'keyboard'],
 	'slider' => ['jquery', 'prado', 'slider'],
 	'inlineeditor' => ['jquery', 'prado', 'ajax', 'inlineeditor'],

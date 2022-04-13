@@ -30,6 +30,7 @@ ENH: Issue #737 - Added TSkinTemplate that doesn't do class/attribute validation
 ENH: Issue #735 - Added TPageService::onPreRunPage so modules can access Page events (belisoful)  
 BUG: Issue #728 - TWeakCallableCollection makes use of 7.4 WeakReference so fx events do not stop garbage collection (belisoful)  
 CHG: Split Wsat into its own repo pradosoft/prado-wsat (ctrlaltca)  
+CHG: T(Active)HtmlArea4 has been replaced by T(Active)HtmlArea5, based on tinyMCE version 5 (ctrlaltca)
 
 ## Version 4.1.2 - Aug 28, 2021
 

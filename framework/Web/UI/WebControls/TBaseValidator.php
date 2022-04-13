@@ -97,7 +97,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		'Prado\Web\UI\WebControls\TCheckBox' => 'TCheckBox',
 		'Prado\Web\UI\WebControls\TDatePicker' => 'TDatePicker',
 		'Prado\Web\UI\WebControls\THtmlArea' => 'THtmlArea',
-		'Prado\Web\UI\WebControls\THtmlArea4' => 'THtmlArea4',
+		'Prado\Web\UI\WebControls\THtmlArea5' => 'THtmlArea5',
 		'Prado\Web\UI\WebControls\TReCaptcha2' => 'TReCaptcha2',
 		// list controls
 		'Prado\Web\UI\WebControls\TCheckBoxList' => 'TCheckBoxList',

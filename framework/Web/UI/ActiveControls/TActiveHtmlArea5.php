@@ -1,6 +1,6 @@
 <?php
 /**
- * TActiveHtmlArea4 class file.
+ * TActiveHtmlArea5 class file.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @link https://github.com/pradosoft/prado4
@@ -9,25 +9,25 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
-use Prado\Web\UI\WebControls\THtmlArea4;
+use Prado\Web\UI\WebControls\THtmlArea5;
 use Prado\Web\UI\ActiveControls\ICallbackEventHandler;
 use Prado\Web\UI\ActiveControls\IActiveControl;
 use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 
 /**
- * TActiveHtmlArea4 class
+ * TActiveHtmlArea5 class
  *
- * TActiveHtmlArea4 is the active counterpart to {@see THtmlArea4} with added support
+ * TActiveHtmlArea5 is the active counterpart to {@see THtmlArea5} with added support
  * for callback handling and the possibility of setting the content of the WYSIWYG
  * text editor during callback.
  *
- * For basic usage please refer to the original documentation of {@see THtmlArea4}.
+ * For basic usage please refer to the original documentation of {@see THtmlArea5}.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
- * @since 4.0
+ * @since 4.2
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveHtmlArea4 extends THtmlArea4 implements ICallbackEventHandler, IActiveControl
+class TActiveHtmlArea5 extends THtmlArea5 implements ICallbackEventHandler, IActiveControl
 {
 	/**
 	 * Creates a new callback control, sets the adapter to

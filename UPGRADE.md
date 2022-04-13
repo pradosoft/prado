@@ -19,6 +19,7 @@ Upgrading from v4.1.2
 - TUserManager::switchToGuest($user) has been removed. Instead, call $user->setIsGuest(true);
 - TEnumerable::next() doesn't return an item anymore. You need to explicitly call TEnumerable::current() afterwards.
 - TCache::offsetUnset() doesn't return a boolean result anymore.
+- T(Active)HtmlArea4 has been replaced by T(Active)HtmlArea5, based on tinyMCE version 5. If you are using custom options/plugins, you may want to check if they need to be adapted for the new version.
 
 Upgrading from v4.1.1
 ---------------------

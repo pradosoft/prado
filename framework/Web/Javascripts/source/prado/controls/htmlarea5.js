@@ -1,18 +1,17 @@
-/*! PRADO THtmlArea4 javascript file | github.com/pradosoft/prado */
+/*! PRADO THtmlArea5 javascript file | github.com/pradosoft/prado */
 
 /*
  *
- * HtmlArea (tinyMCE 4) wrapper
+ * HtmlArea (tinyMCE 5) wrapper
  *
  * @author Gabor Berczi <gabor.berczi@devworx.hu>
  *
 */
 
-Prado.WebUI.THtmlArea4 = jQuery.klass(Prado.WebUI.Control,
+Prado.WebUI.THtmlArea5 = jQuery.klass(Prado.WebUI.Control,
 {
 	initialize: function($super, options)
 	{
-		options.ID = options.EditorOptions.elements;
 		$super(options);
 	},
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * THtmlArea4 class file.
+ * THtmlArea5 class file.
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -16,12 +16,12 @@ use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScript;
 
 /**
- * THtmlArea4 class
+ * THtmlArea5 class
  *
- * THtmlArea4 wraps the visual editing functionalities provided by the
- * version 4 of TinyMCE project {@link http://tinymce.com/}. It has been
+ * THtmlArea5 wraps the visual editing functionalities provided by the
+ * version 5 of TinyMCE project {@link http://tinymce.com/}. It has been
  * developed as a plug'n'play substitute for {@link THtmlArea}, that is
- * based on the previous iteration (version 3) of the same project.
+ * based on a previous iteration (version 3) of the same project.
  * Please note that both components can't be used together in the same page.
  *
  * THtmlArea displays a WYSIWYG text area on the Web page for user input
@@ -42,129 +42,35 @@ use Prado\Web\Javascripts\TJavaScript;
  * for a list of options. The options can be change/added as shown in the
  * following example.
  * <code>
- * <com:THtmlArea>
+ * <com:THtmlArea5>
  *       <prop:Options>
  *         language : "de"
- *         plugins: [ advlist anchor autolink autoresize autosave bbcode charmap code contextmenu directionality emoticons fullpage fullscreen hr image importcss insertdatetime layer legacyoutput link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace spellchecker tabfocus table template textcolor visualblocks visualchars wordcount ]
+ *         plugins: "advlist anchor autolink autoresize autosave charmap code directionality emoticons fullscreen hr image importcss insertdatetime link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace tabfocus table template visualblocks visualchars wordcount"
  *         toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image     | print preview media",
  *         statusbar: false
  *      </prop:Options>
- * </com:THtmlArea>
+ * </com:THtmlArea5>
  * </code>
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
- * @since 3.0
+ * @since 4.2
  */
-class THtmlArea4 extends TTextBox
+class THtmlArea5 extends TTextBox
 {
 	/**
-	 * @var array list of locale => language file pairs.
+	 * @var array list of available language files
 	 */
-	private static $_langs = [
-			'ar' => 'ar',
-			'bg_BG' => 'bg_BG',
-			'bs' => 'bs',
-			'ca' => 'ca',
-			'cs' => 'cs',
-			'cy' => 'cy',
-			'da' => 'da',
-			'de' => 'de',
-			'de_AT' => 'de_AT',
-			'el' => 'el',
-			'es' => 'es',
-			'et' => 'et',
-			'eu' => 'eu',
-			'fa' => 'fa',
-			'fi' => 'fi',
-			'fo' => 'fo',
-			'fr_FR' => 'fr_FR',
-			'gl' => 'gl',
-			'he_IL' => 'he_IL',
-			'hr' => 'hr',
-			'hu_HU' => 'hu_HU',
-			'id' => 'id',
-			'it' => 'it',
-			'ja' => 'ja',
-			'ka_GE' => 'ka_GE',
-			'ko_KR' => 'ko_KR',
-			'lb' => 'lb',
-			'lt' => 'lt',
-			'lv' => 'lv',
-			'nb_NO' => 'nb_NO',
-			'nl' => 'nl',
-			'pl' => 'pl',
-			'pt_BR' => 'pt_BR',
-			'pt_PT' => 'pt_PT',
-			'ro' => 'ro',
-			'ru' => 'ru',
-			'si_LK' => 'si_LK',
-			'sk' => 'sk',
-			'sl_SI' => 'sl_SI',
-			'sr' => 'sr',
-			'sv_SE' => 'sv_SE',
-			'ta' => 'ta',
-			'ta_IN' => 'ta_IN',
-			'th_TH' => 'th_TH',
-			'tr_TR' => 'tr_TR',
-			'ug' => 'ug',
-			'uk' => 'uk',
-			'uk_UA' => 'uk_UA',
-			'vi' => 'vi',
-			'vi_VN' => 'vi_VN',
-			'zh_CN' => 'zh_CN',
-			'zh_TW' => 'zh_TW',
-		];
+	private static $_langs;
 
 	/**
-	 * @var array list of default plugins to load, override using getAvailablePlugins();
+	 * @var array list of available plugins
 	 */
-	private static $_plugins = [
-		'advlist',
-		'anchor',
-		'autolink',
-		'autoresize',
-		'autosave',
-		'bbcode',
-		'charmap',
-		'code',
-		'contextmenu',
-		'directionality',
-		'emoticons',
-		'fullpage',
-		'fullscreen',
-		'hr',
-		'image',
-		'importcss',
-		'insertdatetime',
-		'layer',
-		'legacyoutput',
-		'link',
-		'lists',
-		'media',
-		'nonbreaking',
-		'noneditable',
-		'pagebreak',
-		'paste',
-		'preview',
-		'print',
-		'save',
-		'searchreplace',
-		'spellchecker',
-		'tabfocus',
-		'table',
-		'template',
-		'textcolor',
-		'visualblocks',
-		'visualchars',
-		'wordcount',
-	];
+	private static $_plugins;
 
 	/**
-	 * @var array default themes to load
+	 * @var array list of available themes
 	 */
-	private static $_themes = [
-		'modern',
-	];
+	private static $_themes;
 
 	/**
 	 * Constructor.
@@ -175,6 +81,58 @@ class THtmlArea4 extends TTextBox
 		$this->setWidth('600px');
 		$this->setHeight('250px');
 		parent::__construct();
+	}
+
+	protected function loadAvailableLanguages()
+	{
+		if(self::$_langs === null) {
+			self::$_langs = [];
+			$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs');
+			$files = scandir($path);
+			if($files !== false) {
+				foreach ($files as $f) {
+					if ($f === '.' || $f === '..' || strlen($f) < 4 || substr($f, -3) != '.js') {
+						continue;
+					}
+					$filename = substr($f, 0, -3);
+					self::$_langs[] = $filename;
+				}
+			}
+		}
+	}
+
+	protected function loadAvailablePlugins()
+	{
+		if(self::$_plugins === null) {
+			self::$_plugins = [];
+			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\plugins');
+			$files = scandir($path);
+			if($files !== false) {
+				foreach ($files as $f) {
+					if ($f === '.' || $f === '..') {
+						continue;
+					}
+					self::$_plugins[] = $f;
+				}
+			}
+		}
+	}
+
+	protected function loadAvailableThemes()
+	{
+		if(self::$_themes === null) {
+			self::$_themes = [];
+			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\themes');
+			$files = scandir($path);
+			if($files !== false) {
+				foreach ($files as $f) {
+					if ($f === '.' || $f === '..') {
+						continue;
+					}
+					self::$_themes[] = $f;
+				}
+			}
+		}
 	}
 
 	/**
@@ -224,7 +182,7 @@ class THtmlArea4 extends TTextBox
 
 	/**
 	 * Gets the current culture.
-	 * @return string current culture, e.g. de_AT.
+	 * @return string current culture, e.g. de or it_IT.
 	 */
 	public function getCulture()
 	{
@@ -233,7 +191,7 @@ class THtmlArea4 extends TTextBox
 
 	/**
 	 * Sets the culture/language for the html area
-	 * @param string $value a culture string, e.g. de_AT.
+	 * @param string $value a culture string, e.g. de or it_IT.
 	 */
 	public function setCulture($value)
 	{
@@ -293,27 +251,40 @@ class THtmlArea4 extends TTextBox
 	}
 
 	/**
-	 * Returns a list of plugins to be loaded.
-	 * Override this method to customize.
-	 * @return array list of plugins to be loaded
+	 * Returns a list of available languages
+	 * @return array list of available languages
+	 */
+	public function getAvailableLanguages()
+	{
+		$this->loadAvailableLanguages();
+		return self::$_langs;
+	}
+
+	/**
+	 * Returns a list of available plugins
+	 * @return array list of available plugins
 	 */
 	public function getAvailablePlugins()
 	{
+		$this->loadAvailablePlugins();
 		return self::$_plugins;
 	}
 
 	/**
-	 * @return array list of available themese
+	 * Returns a list of available themes
+	 * @return array list of available themes
 	 */
 	public function getAvailableThemes()
 	{
+		$this->loadAvailableThemes();
 		return self::$_themes;
 	}
 
 	protected function loadJavascriptLibrary()
 	{
 		$scripts = $this->getPage()->getClientScript();
-		$scripts->registerPradoScript('htmlarea4');
+		$scripts->registerPradoScript('htmlarea5');
+		$this->copyLangs();
 		$this->copyCustomPlugins();
 	}
 
@@ -326,12 +297,13 @@ class THtmlArea4 extends TTextBox
 		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
 		$options = [
+			'ID' => $this->getClientID(),
 			'EditorOptions' => $this->getEditorOptions()
 		];
 
 		$options = TJavaScript::encode($options, true, true);
 		$script = "new {$this->getClientClassName()}($options)";
-		$scripts->registerEndScript('prado:THtmlArea4' . $this->getClientID(), $script);
+		$scripts->registerEndScript('prado:THtmlArea5' . $this->getClientID(), $script);
 	}
 
 	protected function copyCustomPlugins()
@@ -348,17 +320,27 @@ class THtmlArea4 extends TTextBox
 		}
 	}
 
+	protected function copyLangs()
+	{
+		$basepath = $this->getPage()->getClientScript()->getPradoScriptAssetPath('tinymce');
+		$assets = $this->getApplication()->getAssetManager();
+		$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs');
+		$name = basename($path);
+		$dest = $basepath . '/langs';
+		if (!is_dir($dest) || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
+			$assets->copyDirectory($path, $dest);
+		}
+	}
+
 	/**
 	 * Default editor options gives basic tool bar only.
 	 * @return array editor initialization options.
 	 */
 	protected function getEditorOptions()
 	{
-		$options['mode'] = 'exact';
-		$options['elements'] = $this->getClientID();
+		$options['selector'] = '#' . $this->getClientID();
 		$options['language'] = $this->getLanguageSuffix($this->getCulture());
-		//$options['theme'] = 'modern'; //default
-		// mimic previous (tinyMCE3) sizing behaviour
+		$options['theme'] = 'silver';
 		$options['width'] = $this->getWidth();
 		$options['height'] = $this->getHeight();
 		$options['resize'] = 'both';
@@ -416,9 +398,10 @@ class THtmlArea4 extends TTextBox
 			$variants = $app->getCultureVariants($culture);
 		}
 
+		$langs = $this->getAvailableLanguages();
 		foreach ($variants as $variant) {
-			if (isset(self::$_langs[$variant])) {
-				return self::$_langs[$variant];
+			if (in_array($variant, $langs)) {
+				return $variant;
 			}
 		}
 
@@ -432,6 +415,6 @@ class THtmlArea4 extends TTextBox
 	 */
 	protected function getClientClassName()
 	{
-		return 'Prado.WebUI.THtmlArea4';
+		return 'Prado.WebUI.THtmlArea5';
 	}
 }

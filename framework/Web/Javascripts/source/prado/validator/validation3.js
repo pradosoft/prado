@@ -1197,7 +1197,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
 	 				return Prado.WebUI.TDatePicker.getDropDownDate(control);//.getTime();
 	 			}
 	 		case 'THtmlArea':
-	 		case 'THtmlArea4':
+	 		case 'THtmlArea5':
 	 			if(typeof tinyMCE != "undefined")
 					tinyMCE.triggerSave();
 				return control.value;
@@ -1237,7 +1237,7 @@ Prado.WebUI.TBaseValidator = jQuery.klass(Prado.WebUI.Control,
             case 'TReCaptcha2':
                 return document.getElementById(this.options.ResponseFieldName).value;
 			case 'THtmlArea':
-			case 'THtmlArea4':
+			case 'THtmlArea5':
 			default:
 				return this.trim(value);
 		}
