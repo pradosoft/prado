@@ -3,7 +3,6 @@
 //package base folder in prado alias notation
 $folders = [
 	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
-	'bootstrap' => 'Vendor\\bower-asset\\bootstrap\\dist',
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 ];
 
@@ -58,14 +57,6 @@ $packages = [
 		'jquery-ui/themes/base/jquery.ui.tooltip.css',
 	],
 
-	// bootstrap
-	'bootstrap' => [
-		'bootstrap/css/bootstrap.css',
-	],
-	'bootstrap-theme' => [
-		'bootstrap/css/bootstrap-theme.css',
-	],
-
 	//highlightjs
 	'highlightjs' => [
 		'highlightjs/styles/default.css'
@@ -90,8 +81,6 @@ $dependencies = [
 		'jquery.ui.tabs' => ['jquery.ui.core', 'jquery.ui.tabs'],
 		'jquery.ui.theme' => ['jquery.ui.core', 'jquery.ui.theme'],
 		'jquery.ui.tooltip' => ['jquery.ui.core', 'jquery.ui.tooltip'],
-		'bootstrap' => ['bootstrap'],
-		'bootstrap-theme' => ['bootstrap', 'bootstrap-theme'],
 ];
 
 return [$folders, $packages, $dependencies];

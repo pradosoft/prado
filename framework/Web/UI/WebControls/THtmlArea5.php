@@ -85,11 +85,11 @@ class THtmlArea5 extends TTextBox
 
 	protected function loadAvailableLanguages()
 	{
-		if(self::$_langs === null) {
+		if (self::$_langs === null) {
 			self::$_langs = [];
 			$path = Prado::getPathOfNameSpace('Vendor\\pradosoft\\tinymce-langs\\langs');
 			$files = scandir($path);
-			if($files !== false) {
+			if ($files !== false) {
 				foreach ($files as $f) {
 					if ($f === '.' || $f === '..' || strlen($f) < 4 || substr($f, -3) != '.js') {
 						continue;
@@ -103,11 +103,11 @@ class THtmlArea5 extends TTextBox
 
 	protected function loadAvailablePlugins()
 	{
-		if(self::$_plugins === null) {
+		if (self::$_plugins === null) {
 			self::$_plugins = [];
 			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\plugins');
 			$files = scandir($path);
-			if($files !== false) {
+			if ($files !== false) {
 				foreach ($files as $f) {
 					if ($f === '.' || $f === '..') {
 						continue;
@@ -120,11 +120,11 @@ class THtmlArea5 extends TTextBox
 
 	protected function loadAvailableThemes()
 	{
-		if(self::$_themes === null) {
+		if (self::$_themes === null) {
 			self::$_themes = [];
 			$path = Prado::getPathOfNameSpace('Vendor\\bower-asset\\tinymce\\themes');
 			$files = scandir($path);
-			if($files !== false) {
+			if ($files !== false) {
 				foreach ($files as $f) {
 					if ($f === '.' || $f === '..') {
 						continue;

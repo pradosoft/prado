@@ -20,6 +20,7 @@ Upgrading from v4.1.2
 - TEnumerable::next() doesn't return an item anymore. You need to explicitly call TEnumerable::current() afterwards.
 - TCache::offsetUnset() doesn't return a boolean result anymore.
 - T(Active)HtmlArea4 has been replaced by T(Active)HtmlArea5, based on tinyMCE version 5. If you are using custom options/plugins, you may want to check if they need to be adapted for the new version.
+- Prado doesn't bundle anymore a copy of the Bootstrap library; this forced every project to use the very same version of the library, but right now three incompatible version of the library exists (3, 4 and 5). If you were using Prado's provided version of the library, you may want to add to your project's composer.json a requirement for "bower-asset/bootstrap": "^3.3", and replace your <TStyleSheet PradoStyles="bootstrap"> tags with a direct inclusions of the library js and css files.
 
 Upgrading from v4.1.1
 ---------------------

@@ -21,7 +21,7 @@ namespace Prado\Web\UI\WebControls;
  * css library to include on the page. For example,
  *
  * <code>
- * <com:TStyleSheet PradoStyles="bootstrap, jquery.ui.progressbar" />
+ * <com:TStyleSheet PradoStyles="jquery.ui.dialog, jquery.ui.progressbar" />
  * </code>
  *
  * The child rendering result of TStyleSheet is treated as CSS code and
@@ -48,7 +48,7 @@ class TStyleSheet extends \Prado\Web\UI\TControl
 
 	/**
 	 * Include css library to the current page. The current supported
-	 * libraries are: "jquery-ui", "bootstrap" and all the split
+	 * libraries are: "jquery-ui" and all the split
 	 * jquery.ui.componentname libraries.
 	 *
 	 * @param string $value comma delimited list of css libraries to include.

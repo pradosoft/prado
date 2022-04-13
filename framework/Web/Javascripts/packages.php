@@ -5,7 +5,6 @@ $folders = [
 	'prado' => 'Prado\\Web\\Javascripts\\source\\prado',
 	'jquery' => 'Vendor\\bower-asset\\jquery\\dist',
 	'jquery-ui' => 'Vendor\\bower-asset\\jquery-ui',
-	'bootstrap' => 'Vendor\\bower-asset\\bootstrap\\dist',
 	'tinymce' => 'Vendor\\bower-asset\\tinymce',
 	'highlightjs' => 'Vendor\\bower-asset\\highlightjs',
 	'highlightjs-line-numbers' => 'Vendor\\bower-asset\\highlightjs-line-numbers.js\\dist',
@@ -89,11 +88,6 @@ $packages = [
 		'jquery-ui/jquery-ui.js',
 	],
 
-	//bootstrap
-	'bootstrap' => [
-		'bootstrap/js/bootstrap.js',
-	],
-
 	//tinymce
 	'tinymce' => [
 		'tinymce/tinymce.js',
@@ -115,7 +109,6 @@ $packages = [
 $dependencies = [
 	'jquery' => ['jquery'],
 	'prado' => ['jquery', 'prado'],
-	'bootstrap' => ['jquery', 'bootstrap'],
 	'validator' => ['jquery', 'prado', 'validator'],
 	'tabpanel' => ['jquery', 'prado', 'tabpanel'],
 	'ajax' => ['jquery', 'prado', 'ajax'],
