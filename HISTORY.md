@@ -1,4 +1,4 @@
-## Version 4.2.0 - in development
+## Version 4.2.0 - Apr 19, 2022
 
 ENH: Issue #790 TPermissionsManager implements Role Based Access Control and Authorization Rules for each permission (belisoful)  
 ENH: Prado::createComponent can take an array with "class" and object properties to set on the new object (belisoful)  
