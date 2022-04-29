@@ -48,7 +48,7 @@ use Prado\Web\UI\WebControls\TTableRow;
  * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveTableCell extends TTableCell implements ICallbackEventHandler, IActiveControl
+class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * @var \Prado\Web\UI\WebControls\TTableRow parent row control containing the cell

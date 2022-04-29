@@ -30,7 +30,7 @@ use Prado\Web\UI\WebControls\TCheckBox;
  * @since 3.1
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveCheckBox extends TCheckBox implements ICallbackEventHandler, IActiveControl
+class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * Creates a new callback control, sets the adapter to

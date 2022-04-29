@@ -1,3 +1,7 @@
+## Version 4.2.1 - In development
+
+BUG: Issue #809 - Interface order and minimum required PHP version (ganiuszka)
+
 ## Version 4.2.0 - Apr 19, 2022
 
 ENH: Issue #790 TPermissionsManager implements Role Based Access Control and Authorization Rules for each permission (belisoful)  

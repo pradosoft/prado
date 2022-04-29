@@ -40,7 +40,7 @@ use Prado\Web\UI\TControl;
  * @since 3.1
  * @method TActiveControlAdapter getAdapter()
  */
-class TCallback extends TControl implements ICallbackEventHandler, IActiveControl
+class TCallback extends TControl implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * Creates a new callback control, sets the adapter to

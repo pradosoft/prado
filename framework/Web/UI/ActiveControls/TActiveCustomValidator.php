@@ -32,7 +32,7 @@ use Prado\Web\UI\WebControls\TCustomValidator;
  * @since 3.1
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveCustomValidator extends TCustomValidator implements ICallbackEventHandler, IActiveControl
+class TActiveCustomValidator extends TCustomValidator implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * @var bool true if validation is made during a callback request.

@@ -49,7 +49,7 @@ use Prado\Web\UI\WebControls\TTableRow;
  * @since 3.1.9
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveTableRow extends TTableRow implements ICallbackEventHandler, IActiveControl
+class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * @var TTable parent table control containing the row

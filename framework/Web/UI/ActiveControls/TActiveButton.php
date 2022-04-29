@@ -29,7 +29,7 @@ use Prado\Web\UI\WebControls\TButtonTag;
  * @since 3.1
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveButton extends TButton implements ICallbackEventHandler, IActiveControl
+class TActiveButton extends TButton implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * Creates a new callback control, sets the adapter to

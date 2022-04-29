@@ -27,7 +27,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * @since 4.0
  * @method TActiveControlAdapter getAdapter()
  */
-class TActiveHtmlArea extends THtmlArea implements ICallbackEventHandler, IActiveControl
+class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEventHandler
 {
 	/**
 	 * Creates a new callback control, sets the adapter to
