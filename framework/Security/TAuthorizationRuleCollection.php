@@ -54,7 +54,7 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TPriorityList
 	public function insertAt($index, $item)
 	{
 		if ($item instanceof TAuthorizationRule) {
-			parent::insertAt($index, $item);
+			parent::insertAtIndexInPriority($item, $index);
 		} else {
 			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
 		}
