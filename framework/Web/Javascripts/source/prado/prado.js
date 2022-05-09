@@ -273,7 +273,7 @@ var Prado =
 	 * Version of Prado clientscripts
 	 * @var Version
 	 */
-	Version: '4.2.0',
+	Version: '4.2.1',
 
 	/**
 	 * Registry for Prado components

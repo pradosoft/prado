@@ -1,4 +1,4 @@
-## Version 4.2.1 - In development
+## Version 4.2.1 - May 9, 2022
 
 BUG: Issue #809 - Interface order and minimum required PHP version (ganiuszka)
 BUG: Issue #810 - Index 0 is out of range error from TAuthorizationRuleCollection::insertAt (ganiuszka)
