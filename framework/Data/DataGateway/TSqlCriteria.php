@@ -182,7 +182,7 @@ class TSqlCriteria extends \Prado\TComponent
 	}
 
 	/**
-	 * @param \ArrayAccess $value named parameters.
+	 * @param \ArrayAccess|array $value named parameters.
 	 */
 	public function setParameters($value)
 	{
