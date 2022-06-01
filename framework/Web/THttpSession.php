@@ -12,7 +12,7 @@ namespace Prado\Web;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
-use Prado;
+use Prado\Prado;
 
 /**
  * THttpSession class
