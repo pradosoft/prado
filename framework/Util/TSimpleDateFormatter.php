@@ -255,77 +255,77 @@ class TSimpleDateFormatter
 				case 'yyyy':
 				case 'yy':
 				case 'y':
-				{
-					if ($token == 'yyyy') {
-						$x = 4;
-						$y = 4;
-					}
-					if ($token == 'yy') {
-						$x = 2;
-						$y = 2;
-					}
-					if ($token == 'y') {
-						$x = 2;
-						$y = 4;
-					}
-					$year = $this->getInteger($value, $i_val, $x, $y);
-					if ($year === null) {
-						return null;
-					}
-					$i_val += strlen($year);
-					if (strlen($year) == 2) {
-						$iYear = (int) $year;
-						if ($iYear > 70) {
-							$year = $iYear + 1900;
-						} else {
-							$year = $iYear + 2000;
+					{
+						if ($token == 'yyyy') {
+							$x = 4;
+							$y = 4;
 						}
+						if ($token == 'yy') {
+							$x = 2;
+							$y = 2;
+						}
+						if ($token == 'y') {
+							$x = 2;
+							$y = 4;
+						}
+						$year = $this->getInteger($value, $i_val, $x, $y);
+						if ($year === null) {
+							return null;
+						}
+						$i_val += strlen($year);
+						if (strlen($year) == 2) {
+							$iYear = (int) $year;
+							if ($iYear > 70) {
+								$year = $iYear + 1900;
+							} else {
+								$year = $iYear + 2000;
+							}
+						}
+						$year = (int) $year;
+						break;
 					}
-					$year = (int) $year;
-					break;
-				}
 				case 'MM':
 				case 'M':
-				{
-					$month = $this->getInteger(
-						$value,
-						$i_val,
-						$this->length($token),
-						2
-					);
-					$iMonth = (int) $month;
-					if ($month === null || $iMonth < 1 || $iMonth > 12) {
-						return null;
+					{
+						$month = $this->getInteger(
+							$value,
+							$i_val,
+							$this->length($token),
+							2
+						);
+						$iMonth = (int) $month;
+						if ($month === null || $iMonth < 1 || $iMonth > 12) {
+							return null;
+						}
+						$i_val += strlen($month);
+						$month = $iMonth;
+						break;
 					}
-					$i_val += strlen($month);
-					$month = $iMonth;
-					break;
-				}
 				case 'dd':
 				case 'd':
-				{
-					$day = $this->getInteger(
-						$value,
-						$i_val,
-						$this->length($token),
-						2
-					);
-					$iDay = (int) $day;
-					if ($day === null || $iDay < 1 || $iDay > 31) {
-						return null;
+					{
+						$day = $this->getInteger(
+							$value,
+							$i_val,
+							$this->length($token),
+							2
+						);
+						$iDay = (int) $day;
+						if ($day === null || $iDay < 1 || $iDay > 31) {
+							return null;
+						}
+						$i_val += strlen($day);
+						$day = $iDay;
+						break;
 					}
-					$i_val += strlen($day);
-					$day = $iDay;
-					break;
-				}
 				default:
-				{
-					if ($this->substring($value, $i_val, $this->length($token)) != $token) {
-						return null;
+					{
+						if ($this->substring($value, $i_val, $this->length($token)) != $token) {
+							return null;
+						}
+						$i_val += $this->length($token);
+						break;
 					}
-					$i_val += $this->length($token);
-					break;
-				}
 			}
 		}
 

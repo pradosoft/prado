@@ -146,19 +146,26 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		switch ($type) {
 			case 'decimal':
-				$this->setViewState('Type', \NumberFormatter::DECIMAL); break;
+				$this->setViewState('Type', \NumberFormatter::DECIMAL);
+				break;
 			case 'currency':
-				$this->setViewState('Type', \NumberFormatter::CURRENCY); break;
+				$this->setViewState('Type', \NumberFormatter::CURRENCY);
+				break;
 			case 'percentage':
-				$this->setViewState('Type', \NumberFormatter::PERCENT); break;
+				$this->setViewState('Type', \NumberFormatter::PERCENT);
+				break;
 			case 'scientific':
-				$this->setViewState('Type', \NumberFormatter::SCIENTIFIC); break;
+				$this->setViewState('Type', \NumberFormatter::SCIENTIFIC);
+				break;
 			case 'spellout':
-				$this->setViewState('Type', \NumberFormatter::SPELLOUT); break;
+				$this->setViewState('Type', \NumberFormatter::SPELLOUT);
+				break;
 			case 'ordinal':
-				$this->setViewState('Type', \NumberFormatter::ORDINAL); break;
+				$this->setViewState('Type', \NumberFormatter::ORDINAL);
+				break;
 			case 'duration':
-				$this->setViewState('Type', \NumberFormatter::DURATION); break;
+				$this->setViewState('Type', \NumberFormatter::DURATION);
+				break;
 			default:
 				throw new TInvalidDataValueException('numberformat_type_invalid', $type);
 		}

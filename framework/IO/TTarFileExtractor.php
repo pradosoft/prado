@@ -146,8 +146,7 @@ class TTarFileExtractor
 	private function _openRead()
 	{
 		if (strtolower(substr($this->_tarname, 0, 7)) == 'http://') {
-
-		  // ----- Look if a local copy need to be done
+			// ----- Look if a local copy need to be done
 			if ($this->_temp_tarname == '') {
 				$this->_temp_tarname = uniqid('tar') . '.tmp';
 				if (!$v_file_from = @fopen($this->_tarname, 'rb')) {
@@ -358,22 +357,22 @@ class TTarFileExtractor
 		$p_remove_path_size = strlen($p_remove_path);
 
 		switch ($p_mode) {
-	  case "complete":
-		$v_extract_all = true;
-		$v_listing = false;
-	  break;
-	  case "partial":
-		  $v_extract_all = false;
-		  $v_listing = false;
-	  break;
-	  case "list":
-		  $v_extract_all = false;
-		  $v_listing = true;
-	  break;
-	  default:
-		$this->_error('Invalid extract mode (' . $p_mode . ')');
-		return false;
-	}
+			case "complete":
+				$v_extract_all = true;
+				$v_listing = false;
+				break;
+			case "partial":
+				$v_extract_all = false;
+				$v_listing = false;
+				break;
+			case "list":
+				$v_extract_all = false;
+				$v_listing = true;
+				break;
+			default:
+				$this->_error('Invalid extract mode (' . $p_mode . ')');
+				return false;
+		}
 
 		clearstatcache();
 
@@ -507,7 +506,7 @@ class TTarFileExtractor
 							// ----- Change the file mode, mtime
 							@touch($v_header['filename'], $v_header['mtime']);
 							// To be completed
-			//chmod($v_header[filename], DecOct($v_header[mode]));
+							//chmod($v_header[filename], DecOct($v_header[mode]));
 						}
 
 						// ----- Check the file size

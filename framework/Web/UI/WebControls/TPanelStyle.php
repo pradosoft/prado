@@ -87,10 +87,14 @@ class TPanelStyle extends TStyle
 		}
 
 		switch ($this->getScrollBars()) {
-			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll'); break;
-			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll'); break;
-			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll'); break;
-			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto'); break;
+			case TScrollBars::Horizontal: $this->setStyleField('overflow-x', 'scroll');
+			break;
+			case TScrollBars::Vertical: $this->setStyleField('overflow-y', 'scroll');
+			break;
+			case TScrollBars::Both: $this->setStyleField('overflow', 'scroll');
+			break;
+			case TScrollBars::Auto: $this->setStyleField('overflow', 'auto');
+			break;
 		}
 
 		if (($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {

@@ -189,11 +189,11 @@ class TGettext_MO extends TGettext
 		switch ($magic = array_shift($unpacked)) {
 			case -34:
 				$be = false;
-			break;
+				break;
 
 			case -107:
 				$be = true;
-			break;
+				break;
 
 			default:
 				return false;

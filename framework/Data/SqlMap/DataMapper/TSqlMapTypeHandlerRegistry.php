@@ -97,13 +97,17 @@ class TSqlMapTypeHandlerRegistry
 		}
 		switch (strtolower($type)) {
 			case 'integer': case 'int':
-				$type = 'integer'; break;
+				$type = 'integer';
+				break;
 			case 'float': case 'double': case 'decimal':
-				$type = 'float'; break;
+				$type = 'float';
+				break;
 			case 'boolean': case 'bool':
-				$type = 'boolean'; break;
+				$type = 'boolean';
+				break;
 			case 'string':
-				$type = 'string'; break;
+				$type = 'string';
+				break;
 			default:
 				return $value;
 		}

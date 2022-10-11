@@ -84,8 +84,7 @@ class TActiveRecordAction extends TShellAction
 //				case 'ibm':
 				default:
 					$this->_outWriter->writeError("Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
-
-			   }
+			}
 
 			$dataReader = $command->query();
 			$dataReader->bindColumn(1, $table);

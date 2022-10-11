@@ -229,10 +229,10 @@ class TDbConnection extends \Prado\TComponent
 			case 'mysql':
 			case 'sqlite':
 				$stmt = $this->_pdo->prepare('SET NAMES ?');
-			break;
+				break;
 			case 'pgsql':
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
-			break;
+				break;
 			default:
 				throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 		}

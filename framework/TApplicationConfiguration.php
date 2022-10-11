@@ -212,37 +212,37 @@ class TApplicationConfiguration extends \Prado\TComponent
 		foreach ($pathsNode->getElements() as $element) {
 			switch ($element->getTagName()) {
 				case 'alias':
-				{
-					if (($id = $element->getAttribute('id')) !== null && ($path = $element->getAttribute('path')) !== null) {
-						$path = str_replace('\\', '/', $path);
-						if (preg_match('/^\\/|.:\\/|.:\\\\/', $path)) {	// if absolute path
-							$p = realpath($path);
+					{
+						if (($id = $element->getAttribute('id')) !== null && ($path = $element->getAttribute('path')) !== null) {
+							$path = str_replace('\\', '/', $path);
+							if (preg_match('/^\\/|.:\\/|.:\\\\/', $path)) {	// if absolute path
+								$p = realpath($path);
+							} else {
+								$p = realpath($configPath . DIRECTORY_SEPARATOR . $path);
+							}
+							if ($p === false || !is_dir($p)) {
+								throw new TConfigurationException('appconfig_aliaspath_invalid', $id, $path);
+							}
+							if (isset($this->_aliases[$id])) {
+								throw new TConfigurationException('appconfig_alias_redefined', $id);
+							}
+							$this->_aliases[$id] = $p;
 						} else {
-							$p = realpath($configPath . DIRECTORY_SEPARATOR . $path);
+							throw new TConfigurationException('appconfig_alias_invalid');
 						}
-						if ($p === false || !is_dir($p)) {
-							throw new TConfigurationException('appconfig_aliaspath_invalid', $id, $path);
-						}
-						if (isset($this->_aliases[$id])) {
-							throw new TConfigurationException('appconfig_alias_redefined', $id);
-						}
-						$this->_aliases[$id] = $p;
-					} else {
-						throw new TConfigurationException('appconfig_alias_invalid');
+						$this->_empty = false;
+						break;
 					}
-					$this->_empty = false;
-					break;
-				}
 				case 'using':
-				{
-					if (($namespace = $element->getAttribute('namespace')) !== null) {
-						$this->_usings[] = $namespace;
-					} else {
-						throw new TConfigurationException('appconfig_using_invalid');
+					{
+						if (($namespace = $element->getAttribute('namespace')) !== null) {
+							$this->_usings[] = $namespace;
+						} else {
+							throw new TConfigurationException('appconfig_using_invalid');
+						}
+						$this->_empty = false;
+						break;
 					}
-					$this->_empty = false;
-					break;
-				}
 				default:
 					throw new TConfigurationException('appconfig_paths_invalid', $element->getTagName());
 			}

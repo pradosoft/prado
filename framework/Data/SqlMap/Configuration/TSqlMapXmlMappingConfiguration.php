@@ -511,19 +511,19 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			switch (strToLower($name)) {
 				case 'seconds':
 					$duration += (int) $value;
-				break;
+					break;
 				case 'minutes':
 					$duration += 60 * (int) $value;
-				break;
+					break;
 				case 'hours':
 					$duration += 3600 * (int) $value;
-				break;
+					break;
 				case 'days':
 					$duration += 86400 * (int) $value;
-				break;
+					break;
 				case 'duration':
 					$duration = (int) $value;
-				break 2; // switch, foreach
+					break 2; // switch, foreach
 			}
 		}
 		$cacheModel->setFlushInterval($duration);

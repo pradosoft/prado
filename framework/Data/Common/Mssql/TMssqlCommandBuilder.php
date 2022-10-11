@@ -130,7 +130,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 					if (count($subs) > 1 && count($subs[2]) > 0) {
 						$ordering[$subs[1][0]] = $subs[2][0];
 					}
-					//else what?
+				//else what?
 				} else {
 					$ordering[trim($part)] = 'ASC';
 				}

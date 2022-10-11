@@ -184,7 +184,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			and
 			($response = @$_POST[$this->getResponseFieldName()])
 			  )
-				   ) {
+		) {
 			return false;
 		}
 
