@@ -839,10 +839,10 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		} else {
 			$className = $type;
 		}
-		if (!$this->_attributevalidation) {
-			return $className;
-		}
 		$class = new \ReflectionClass($className);
+		if (!$this->_attributevalidation) {
+			return $class->getName();
+		}
 		if (is_subclass_of($className, '\Prado\Web\UI\TControl') || $className === '\Prado\Web\UI\TControl') {
 			foreach ($attributes as $name => $att) {
 				if (($pos = strpos($name, '.')) !== false) {
