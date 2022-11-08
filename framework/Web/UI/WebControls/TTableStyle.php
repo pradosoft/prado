@@ -183,11 +183,11 @@ class TTableStyle extends TStyle
 
 		switch ($this->getGridLines()) {
 			case TTableGridLines::Horizontal: $writer->addAttribute('rules', 'rows');
-			break;
+				break;
 			case TTableGridLines::Vertical: $writer->addAttribute('rules', 'cols');
-			break;
+				break;
 			case TTableGridLines::Both: $writer->addAttribute('rules', 'all');
-			break;
+				break;
 		}
 
 		parent::addAttributesToRender($writer);
