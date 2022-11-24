@@ -52,7 +52,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * This allows for a higher cron task throughput to handle more cron tasks.
  *
  * e.g. '@1668165071' for 2022-11-11 11:11:11 and will trigger after the
- * specified time at '12 11 11 11 ? 2022.'
+ * specified time at '12 11 11 11 ? 2022'.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
