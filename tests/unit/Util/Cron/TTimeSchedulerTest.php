@@ -146,6 +146,7 @@ class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
 			'* * * * * 1969', '* * * * * 2100',
 			'* * ?-8 * *', '* * * * ?-4',
 			'* * ?/8 * *', '* * * * ?/4',
+			'@', '@test'
 		];
 		foreach ($schedules as $schedule) {
 			foreach ($yearAppend as $yap) {
@@ -165,6 +166,16 @@ class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
 			$this->obj->setSchedule($schedule);
 			$this->assertEquals($schedule , $this->obj->getSchedule());
 		}
+		$this->obj->setSchedule($schedule = '@'.(time() - 120));
+		$this->assertEquals($schedule , $this->obj->getSchedule());
+	}
+	public function testGetNextTriggerTime_AtSecond()
+	{
+		$time = time();
+		$this->obj->setSchedule('@' . $time);
+		$this->assertNull($this->obj->getNextTriggerTime($time));
+		$this->assertNull($this->obj->getNextTriggerTime($time + 120));
+		$this->assertEquals($time, $this->obj->getNextTriggerTime($time - 120));
 	}
 	public function testGetNextTriggerTime_Minute_Hour()
 	{

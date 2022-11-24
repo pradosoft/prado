@@ -331,7 +331,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * when instancing and then loading the tasks, this sets the persisting data of the task
+	 * when instancing and then loading the tasks, this sets the persisting data of
+	 * the task from the global state.  When there is no instance in the global state,
+	 * the lastExecTime is initialized.
 	 * @param string $name name of the task.
 	 * @param TCronTask $task the task object.
 	 * @return bool updated the taskInfo with persistent data.
@@ -343,6 +345,12 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$task->setLastExecTime($tasksInfo[$name]['lastExecTime']);
 			$task->setProcessCount($tasksInfo[$name]['processCount']);
 			return true;
+		} else {
+			$task->resetTaskLastExecTime();
+			$task->setProcessCount(0);
+			$tasksInfo[$name]['lastExecTime'] = $task->getLastExecTime();
+			$tasksInfo[$name]['processCount'] = 0;
+			$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
 		}
 		return false;
 	}

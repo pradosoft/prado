@@ -158,6 +158,8 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 
 	/**
+	 * Sets the lastExecTime and processCount for a task from the DB.
+	 * Also resets the lastExecTime when not in the DB
 	 * @param string $name name of the task to get Persistent Data from
 	 * @param object $task
 	 * @return bool is the persistent data set or not
@@ -165,13 +167,9 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	protected function setPersistentData($name, $task)
 	{
 		if (isset($this->_taskRows[$name])) {
-			$time = $task->getLastExecTime();
-			$count = $task->getProcessCount();
-			$task->setLastExecTime((int) $this->_taskRows[$name]['lastexectime']);
+			$task->setLastExecTime($this->_taskRows[$name]['lastexectime']);
 			$task->setProcessCount((int) $this->_taskRows[$name]['processcount']);
 			if (serialize($task) !== $this->_taskRows[$name]['options']) {
-				$task->setLastExecTime($time);
-				$task->setProcessCount($count);
 				$this->updateTaskInternal($task);
 				return false;
 			}
@@ -532,6 +530,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
+		$task->resetTaskLastExecTime();
 
 		$cmd = $this->getDbConnection()->createCommand(
 			"INSERT INTO {$this->_tableName} " .
@@ -599,11 +598,15 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		} catch (TInvalidDataValueException $e) {
 			return false;
 		}
+		$schedule = $task->getSchedule();
+		if ($schedule != $this->_taskRows[$name]['schedule']) {
+			$task->resetTaskLastExecTime();
+		}
 
 		$cmd = $this->getDbConnection()->createCommand(
 			"UPDATE {$this->_tableName} SET schedule=:schedule, task=:task, moduleid=:mid, username=:username, options=:options, processcount=:count, lastexectime=:time WHERE name=:name AND active IS NOT NULL"
 		);
-		$cmd->bindValue(":schedule", $schedule = $task->getSchedule(), PDO::PARAM_STR);
+		$cmd->bindValue(":schedule", $schedule, PDO::PARAM_STR);
 		$cmd->bindValue(":task", $taskExec = $task->getTask(), PDO::PARAM_STR);
 		$cmd->bindValue(":mid", $mid = $task->getModuleId(), PDO::PARAM_STR);
 		$cmd->bindValue(":username", $username = $task->getUserName(), PDO::PARAM_STR);
@@ -662,8 +665,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		$this->ensureTable();
 		$this->ensureTasks(false);
-
-		$name = is_string($untask) ? $untask : $untask->getName();
+		$name = is_subclass_of($untask, 'Prado\Util\Cron\TCronTask') ? $untask->getName() : $untask;
 		if (isset($this->_configTasks[$name])) {
 			return false;
 		}
