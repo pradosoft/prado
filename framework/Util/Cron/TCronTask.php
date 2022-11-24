@@ -198,7 +198,7 @@ abstract class TCronTask extends TApplicationComponent
 	}
 
 	/**
-	 * @return numeric|null time of the next trigger after the lastExecTime, null if none.
+	 * @return null|numeric time of the next trigger after the lastExecTime, null if none.
 	 */
 	public function getNextTriggerTime()
 	{
