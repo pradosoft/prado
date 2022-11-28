@@ -153,7 +153,7 @@ class TTimeScheduler extends \Prado\TComponent
 		$schedule = trim($schedule);
 		$this->_schedule = $schedule;
 		$this->_attr = [];
-		if (strlen($schedule) > 2 && $schedule[0] == '@') {
+		if (strlen($schedule) > 1 && $schedule[0] == '@') {
 			if (is_numeric($triggerTime = substr($schedule, 1))) {
 				$this->_triggerTime = (int) $triggerTime;
 				return;
