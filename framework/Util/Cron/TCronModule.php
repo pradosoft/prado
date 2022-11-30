@@ -393,10 +393,14 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	{
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
+		$startMinute = floor(time() / 60);
 
 		$this->logCron($numtasks);
 		if ($numtasks) {
 			foreach ($pendingTasks as $key => $task) {
+				if ($startMinute != floor(time() / 60)) {
+					break;
+				}
 				$this->runTask($task);
 			}
 		}
