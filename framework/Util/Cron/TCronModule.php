@@ -498,7 +498,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
 	}
-		
+
 	/**
 	 * Logs the end of the task.
 	 * @param TCronTask $task
