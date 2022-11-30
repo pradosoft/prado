@@ -60,7 +60,7 @@ use Prado\Xml\TXmlDocument;
  * @since 4.2.0
  * @method void dyLogCron($numtasks)
  * @method void dyLogCronTask($task, $username)
- * @method void dyUpdateTaskInfo($task)
+ * @method void dyLogCronTaskEnd($task)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
@@ -458,8 +458,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 
 		$this->logCronTask($task, $username);
-		$task->execute($this);
 		$this->updateTaskInfo($task);
+		$task->execute($this);
+		$this->logCronTaskEnd($task);
 
 		if ($user) {
 			if ($restore_user) {
@@ -496,9 +497,16 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$task->setLastExecTime($time);
 
 		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
-
+	}
+		
+	/**
+	 * Logs the end of the task.
+	 * @param TCronTask $task
+	 */
+	protected function logCronTaskEnd($task)
+	{
 		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
-		$this->dyUpdateTaskInfo($task);
+		$this->dyLogCronTaskEnd($task);
 	}
 
 	/**

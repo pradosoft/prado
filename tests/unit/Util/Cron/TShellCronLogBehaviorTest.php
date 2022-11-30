@@ -75,7 +75,7 @@ class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
 		//This is auto-flushed
 		
 		
-		$component->dyUpdateTaskInfo($task);
+		$component->dyLogCronTaskEnd($task);
 		self::assertEquals(1, preg_match("/Ending Task/i", $this->writer->flush()));
 	}
 	
