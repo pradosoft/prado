@@ -340,9 +340,6 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		$cmd->bindValue(":task", serialize($task), PDO::PARAM_STR);
 		$cmd->bindValue(":name", $task->getName(), PDO::PARAM_STR);
 		$cmd->execute();
-
-		Prado::log('Ending cron task (' . $task->getName() . ', ' . get_class($task) . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
-		$this->dyUpdateTaskInfo($task);
 	}
 
 	/**
