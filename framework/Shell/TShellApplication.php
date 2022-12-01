@@ -119,6 +119,16 @@ class TShellApplication extends \Prado\TApplication
 	}
 
 	/**
+	 * This checks if shell environment is from a system CronTab.
+	 * @return bool is the shell environment in crontab
+	 * @since 4.2.3
+	 */
+	public static function detectCronTabShell()
+	{
+		return php_sapi_name() == 'cli' && !getenv('LANG') && !getenv('TERM') && !getenv('TERM_PROGRAM');
+	}
+
+	/**
 	 * This processes the arguments entered into the cli.  This is processed after
 	 * the application is initialized and modules can
 	 * @param object $sender

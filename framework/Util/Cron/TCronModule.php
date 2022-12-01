@@ -17,6 +17,7 @@ use Prado\Prado;
 use Prado\Security\IUserManager;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Shell\TShellApplication;
 use Prado\TPropertyValue;
 use Prado\Util\TLogger;
 use Prado\Xml\TXmlElement;
@@ -391,6 +392,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function processPendingTasks()
 	{
+		$inCronTab = TShellApplication::detectCronTabShell();
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
 		$startMinute = floor(time() / 60);
@@ -398,7 +400,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$this->logCron($numtasks);
 		if ($numtasks) {
 			foreach ($pendingTasks as $key => $task) {
-				if ($startMinute != floor(time() / 60)) {
+				if ($inCronTab && $startMinute != floor(time() / 60)) {
 					break;
 				}
 				$this->runTask($task);
