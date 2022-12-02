@@ -502,7 +502,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 
-		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
 	}
 
 	/**
@@ -528,7 +528,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setLastCronTime($time)
 	{
-		$this->getApplication()->setGlobalState(self::LAST_CRON_TIME, TPropertyValue::ensureFloat($time), 0);
+		$this->getApplication()->setGlobalState(self::LAST_CRON_TIME, TPropertyValue::ensureFloat($time), 0, true);
 	}
 
 	/**
