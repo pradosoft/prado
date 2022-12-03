@@ -142,6 +142,6 @@ class TShellCronLogBehavior extends TBehavior
 	{
 		$this->_outWriter->writeLine("Ending Task {$task->getName()}\n");
 
-		return $callchain->dyUpdateTaskInfo($task);
+		return $callchain->dyLogCronTaskEnd($task);
 	}
 }

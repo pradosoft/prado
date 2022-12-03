@@ -393,6 +393,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	public function processPendingTasks()
 	{
 		$inCronTab = TShellApplication::detectCronTabShell();
+		$this->filterStaleTasks();
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
 		$startMinute = floor(time() / 60);
@@ -406,7 +407,6 @@ class TCronModule extends \Prado\TModule implements IPermissions
 				$this->runTask($task);
 			}
 		}
-		$this->filterStaleTasks();
 
 		return $numtasks;
 	}
@@ -427,9 +427,13 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	protected function filterStaleTasks()
 	{
 		// Filter out any stale tasks in the global state that aren't in config
-		$tasksInfo = $this->getApplication()->getGlobalState(self::TASKS_INFO, []);
+		$app = $this->getApplication();
+		$tasksInfo = $app->getGlobalState(self::TASKS_INFO, []);
+		$count = count($tasksInfo);
 		$tasksInfo = array_intersect_key($tasksInfo, $this->_tasks);
-		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		if ($count != count($tasksInfo)) {
+			$app->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		}
 	}
 
 	/**

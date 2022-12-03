@@ -347,9 +347,10 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 */
 	protected function filterStaleTasks()
 	{
+		$this->ensureTasks();
 		$configTasks = $this->_taskRows;
 
-		//remove active tasks
+		//remove non-configuration tasks
 		foreach ($this->_taskRows as $name => $data) {
 			if ($data['active']) {
 				unset($configTasks[$name]);
