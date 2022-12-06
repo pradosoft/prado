@@ -488,7 +488,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertFalse($this->obj->addTask($task));
 		
 		$count = rand();
-		$time = microtime(true);
+		$time = floor(microtime(true)) + 0.6;
 		
 		$task = new TTestCronModuleTask();
 		$task->setName('crudTask');
