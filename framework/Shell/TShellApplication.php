@@ -63,7 +63,7 @@ class TShellApplication extends \Prado\TApplication
 	protected $_options = [];
 
 	/**
-	 * @var array<string, string> application command optionAliases of the short letter(s) and option name
+	 * @var array<array> application command optionAliases of the short letter(s) and option name
 	 */
 	protected $_optionAliases = [];
 
