@@ -844,6 +844,35 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			self::fail('failed to throw TInvalidOperationException when cannot set due to being initialized');
 		} catch(TInvalidOperationException $e) {}
 	}
+	
+	public function testInCronShell()
+	{
+		self::assertEquals(null, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell('');
+		self::assertEquals(true, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell(null);
+		self::assertEquals(null, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell(true);
+		self::assertEquals(true, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell(false);
+		self::assertEquals(false, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell(1);
+		self::assertEquals(true, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell(0);
+		self::assertEquals(false, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell('true');
+		self::assertEquals(true, $this->obj->getInCronShell());
+		
+		$this->obj->setInCronShell('false');
+		self::assertEquals(false, $this->obj->getInCronShell());
+	}
 
 	public function testAdditionalCronTasks()
 	{

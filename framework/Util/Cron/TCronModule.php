@@ -118,6 +118,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var numeric probability that a request cron will trigger [0.0 to 100.0], default 1.0 (for 1%) */
 	private $_requestCronProbability = 1.0;
 
+	/** @var null|bool is the app running in cron shell mode or not, or null for auto-detect */
+	private $_inCronShell;
+
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
 	protected $_shellClass = 'Prado\\Util\\Cron\\TShellCronAction';
 
@@ -161,6 +164,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		//Read additional Config from Property
 		$this->readConfiguration($this->_additionalCronTasks);
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
+
+		if ($app instanceof \Prado\Shell\TShellApplication) {
+			$app->registerOption('cron', [$this, 'setInCronShell'], 'If run in crontab, set this flag.  It limits tasks to the current minute, default auto-detect');
+			$app->registerOptionAlias('c', 'cron');
+		}
 
 		if (php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
 			if (100.0 * ((float) (mt_rand()) / (float) (mt_getrandmax())) <= $this->getRequestCronProbability()) {
@@ -392,7 +400,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function processPendingTasks()
 	{
-		$inCronTab = TShellApplication::detectCronTabShell();
+		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
 		$this->filterStaleTasks();
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
@@ -630,6 +638,25 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('cron_property_unchangeable', 'RequestCronProbability');
 		}
 		$this->_requestCronProbability = TPropertyValue::ensureFloat($probability);
+	}
+
+	/**
+	 * @return null|bool is cli running from cron.
+	 * @since 4.2.2
+	 */
+	public function getInCronShell()
+	{
+		return $this->_inCronShell;
+	}
+
+	/**
+	 * @param null|bool $inCronShell is cli running from cron.  This limits
+	 * pending tasks to only the current minute.
+	 * @since 4.2.2
+	 */
+	public function setInCronShell($inCronShell)
+	{
+		$this->_inCronShell = $inCronShell === null ? null : TPropertyValue::ensureBoolean($inCronShell === '' ? true : $inCronShell);
 	}
 
 	/**
