@@ -387,6 +387,9 @@ class TDbCronModuleTest extends TCronModuleTest
 		$this->obj->clearRuntimeTasks();
 		self::assertEquals(0, count($app->onEndRequest));
 		self::assertNull($this->obj->getRuntimeTasks());
+		
+		//tell the object to filterStaleTasks.  This is for testing purposes only
+		$this->obj->processPendingTasks();
 	}
 	
 	public function testGetTask()

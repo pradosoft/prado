@@ -384,11 +384,17 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			return;
 		}
 		$numtasks = count($runtimeTasks);
-		$this->logCron($numtasks);
+		$cronlogger = $this->asa(TCronModule::SHELL_LOG_BEHAVIOR);
+		if ($cronlogger) {
+			$enabled = $cronlogger->getEnabled();
+			$cronlogger->setEnabled(false);
+		}
 		foreach ($runtimeTasks as $key => $task) {
 			$this->runTask($task);
 		}
-		$this->filterStaleTasks();
+		if ($cronlogger) {
+			$cronlogger->setEnabled($enabled);
+		}
 		return $numtasks;
 	}
 
