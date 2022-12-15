@@ -104,7 +104,7 @@ class TShellApplication extends \Prado\TApplication
 		$this->registerOption('quiet', [$this, 'setQuietMode'], 'Quiets the output to <level> [1..3], default 1', '=<level>');
 		$this->registerOptionAlias('q', 'quiet');
 
-		$this->attachEventHandler('onBeginRequest', [$this, 'processArguments'], 0);
+		$this->attachEventHandler('onInitComplete', [$this, 'processArguments'], 20);
 
 		parent::run();
 	}
