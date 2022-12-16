@@ -8,17 +8,17 @@ use PHPStan\Reflection\MethodReflection;
 
 class DynamicMethodsClassReflectionExtension implements MethodsClassReflectionExtension
 {
-     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
-     {
-          if (!$classReflection->is('Prado\TComponent')) {
-               return false;
-          }
+	public function hasMethod(ClassReflection $classReflection, string $methodName): bool
+	{
+		if (!$classReflection->is('Prado\TComponent')) {
+			return false;
+		}
 
-          return strncasecmp($methodName, 'dy', 2) === 0 || strncasecmp($methodName, 'fx', 2) === 0;
-     }
+		return strncasecmp($methodName, 'dy', 2) === 0 || strncasecmp($methodName, 'fx', 2) === 0;
+	}
 
-     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
-     {
-          return new DynamicMethodReflection($classReflection, $methodName);
-     }
+	public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
+	{
+		return new DynamicMethodReflection($classReflection, $methodName);
+	}
 }
