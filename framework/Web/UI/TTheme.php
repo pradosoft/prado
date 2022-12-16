@@ -146,7 +146,7 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 				} elseif (basename($file, '.js') !== $file) {
 					$this->_jsFiles[] = $themeUrl . DIRECTORY_SEPARATOR . $file;
 				} elseif (basename($file, self::SKIN_FILE_EXT) !== $file) {
-					$template = new TSkinTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . '/' . $file);
+					$template = new TSkinTemplate(file_get_contents($themePath . DIRECTORY_SEPARATOR . $file), $themePath, $themePath . DIRECTORY_SEPARATOR . $file);
 					foreach ($template->getItems() as $skin) {
 						if (!isset($skin[2])) {  // a text string, ignored
 							continue;

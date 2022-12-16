@@ -139,16 +139,32 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 		$this->obj->setLastExecTime($value);
 		self::assertEquals(floor($value), $this->obj->getLastExecTime());
 		
+		// string of a numeric
+		$value = "9.999";
+		$this->obj->setLastExecTime($value);
+		self::assertEquals(floor($value), $this->obj->getLastExecTime());
+		
+		// null value
+		$value = null;
+		$this->obj->setLastExecTime($value);
+		self::assertEquals($value, $this->obj->getLastExecTime());
 	}
 	
 	public function testIsPending()
 	{
 		$this->obj->setSchedule("* * * * *");
-		$this->obj->setLastExecTime(time() - 60);
+		$this->obj->setLastExecTime(time() - 61);
+		self::assertTrue($this->obj->getIsPending());
+		
+		$this->obj->setLastExecTime(null);
 		self::assertTrue($this->obj->getIsPending());
 		
 		$this->obj->setLastExecTime(time());
 		self::assertFalse($this->obj->getIsPending());
 		
+		$this->obj->setSchedule("0 0 1 1 * 2000");
+		$this->obj->setLastExecTime(time());
+		self::assertEquals(null, $this->obj->getNextTriggerTime());
+		self::assertFalse($this->obj->getIsPending());
 	}
 }

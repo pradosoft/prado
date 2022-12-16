@@ -30,7 +30,7 @@ use Prado\Collections\TList;
  * @method string dyFlush()
  * @method mixed dyLogCron(int $numtasks)
  * @method mixed dyLogCronTask(\Prado\Util\Cron\TCronTask $task, string $username)
- * @method mixed dyUpdateTaskInfo(Prado\Util\Cron\TCronTask $task)
+ * @method mixed dyLogCronTaskEnd(Prado\Util\Cron\TCronTask $task)
  */
 class TCallChain extends TList implements IDynamicMethods
 {

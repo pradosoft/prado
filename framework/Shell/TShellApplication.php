@@ -18,6 +18,7 @@ use Prado\Shell\Actions\TPhpShellAction;
 use Prado\IO\ITextWriter;
 use Prado\IO\TOutputWriter;
 use Prado\Shell\TShellWriter;
+use Prado\TPropertyValue;
 
 /**
  * TShellApplication class.
@@ -67,6 +68,11 @@ class TShellApplication extends \Prado\TApplication
 	protected $_optionAliases = [];
 
 	/**
+	 * @var array<array> The option help text and help values
+	 */
+	protected $_optionsData = [];
+
+	/**
 	 * @var bool is the application help printed
 	 */
 	protected $_helpPrinted = false;
@@ -95,7 +101,10 @@ class TShellApplication extends \Prado\TApplication
 
 		$this->_outWriter = new TShellWriter(new TOutputWriter());
 
-		$this->attachEventHandler('onInitComplete', [$this, 'processArguments']);
+		$this->registerOption('quiet', [$this, 'setQuietMode'], 'Quiets the output to <level> [1..3], default 1', '=<level>');
+		$this->registerOptionAlias('q', 'quiet');
+
+		$this->attachEventHandler('onInitComplete', [$this, 'processArguments'], 20);
 
 		parent::run();
 	}
@@ -116,6 +125,16 @@ class TShellApplication extends \Prado\TApplication
 			}
 			$_SERVER['HTTP_ACCEPT_LANGUAGE'] = $lang;
 		}
+	}
+
+	/**
+	 * This checks if shell environment is from a system CronTab.
+	 * @return bool is the shell environment in crontab
+	 * @since 4.2.2
+	 */
+	public static function detectCronTabShell()
+	{
+		return php_sapi_name() == 'cli' && (!($term = getenv('TERM')) || $term == 'unknown');
 	}
 
 	/**
@@ -265,11 +284,14 @@ class TShellApplication extends \Prado\TApplication
 	 * This registers shell command line options and the setter callback
 	 * @param string $name name of the option at the command line
 	 * @param callable $setCallback the callback to set the property
+	 * @param string $description Short description of the option
+	 * @param string $values value after the option, eg "=<level>"
 	 * @since 4.2.0
 	 */
-	public function registerOption($name, $setCallback)
+	public function registerOption($name, $setCallback, $description = '', $values = '')
 	{
 		$this->_options[$name] = $setCallback;
+		$this->_optionsData[$name] = [TPropertyValue::ensureString($description), TPropertyValue::ensureString($values)];
 	}
 
 
@@ -353,8 +375,15 @@ class TShellApplication extends \Prado\TApplication
 		$outWriter->writeLine("example: prado-cli cron/tasks");
 		$outWriter->writeLine();
 		$outWriter->writeLine("The following options are available:");
-		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . "Loads the configuration.xml/php from <folder>");
-		$outWriter->writeLine(str_pad("  -q=<level>", 20) . "Quiets the output to <level> [1..3]");
+		$outWriter->writeLine(str_pad("  -d=<folder>", 20) . " Loads the configuration.xml/php from <folder>");
+		foreach ($this->_options as $option => $callable) {
+			$data = $this->_optionsData[$option];
+			$outWriter->writeLine(str_pad(" --{$option}{$data[1]}", 20) . ' ' . $data[0]);
+		}
+		foreach ($this->_optionAliases as $alias => $option) {
+			$data = $this->_optionsData[$option] ?? ['', ''];
+			$outWriter->writeLine(str_pad("  -{$alias}{$data[1]}", 20) . " is an alias for --" . $option);
+		}
 		$outWriter->writeLine();
 		$outWriter->writeLine("The following commands are available:");
 		foreach ($this->_actions as $action) {

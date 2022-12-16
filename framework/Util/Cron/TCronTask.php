@@ -175,16 +175,35 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function setLastExecTime($v)
 	{
-		$this->_lastexectime = TPropertyValue::ensureInteger($v);
+		if ($v !== null) {
+			$this->_lastexectime = TPropertyValue::ensureInteger($v);
+		} else {
+			$this->_lastexectime = null;
+		}
 	}
 
 	/**
-	 * @return numeric time of the next trigger after the lastExecTime
+	 * Resets the lastExecTime to either null or, if there is a next trigger
+	 * time from time(), sets lastExecTime to now.  This prevents erroneously
+	 * triggering repeating tasks on first cron from existing prior triggers
+	 * from time=0.
+	 */
+	public function resetTaskLastExecTime()
+	{
+		$now = time();
+		$schedule = $this->getScheduler();
+		$nextTriggerTime = $schedule->getNextTriggerTime($now);
+		$this->_lastexectime = ($nextTriggerTime === null) ? null :
+			(($schedule->getNextTriggerTime(0) == $nextTriggerTime) ? null : $now);
+	}
+
+	/**
+	 * @return null|numeric time of the next trigger after the lastExecTime, null if none.
 	 */
 	public function getNextTriggerTime()
 	{
 		$s = $this->getScheduler();
-		return $s->getNextTriggerTime($this->_lastexectime);
+		return $s->getNextTriggerTime($this->_lastexectime ?? 0);
 	}
 
 	/**
@@ -192,7 +211,8 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function getIsPending()
 	{
-		return time() >= $this->getNextTriggerTime();
+		$trigger = $this->getNextTriggerTime();
+		return $trigger !== null && time() >= $trigger;
 	}
 
 	/**

@@ -17,6 +17,7 @@ use Prado\Prado;
 use Prado\Security\IUserManager;
 use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
+use Prado\Shell\TShellApplication;
 use Prado\TPropertyValue;
 use Prado\Util\TLogger;
 use Prado\Xml\TXmlElement;
@@ -60,7 +61,7 @@ use Prado\Xml\TXmlDocument;
  * @since 4.2.0
  * @method void dyLogCron($numtasks)
  * @method void dyLogCronTask($task, $username)
- * @method void dyUpdateTaskInfo($task)
+ * @method void dyLogCronTaskEnd($task)
  * @method bool dyRegisterShellAction($returnValue)
  * @method \Prado\Shell\TShellWriter getOutputWriter()
  * @see https://crontab.guru For more info on Crontab Schedule Expressions.
@@ -117,6 +118,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/** @var numeric probability that a request cron will trigger [0.0 to 100.0], default 1.0 (for 1%) */
 	private $_requestCronProbability = 1.0;
 
+	/** @var null|bool is the app running in cron shell mode or not, or null for auto-detect */
+	private $_inCronShell;
+
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
 	protected $_shellClass = 'Prado\\Util\\Cron\\TShellCronAction';
 
@@ -160,6 +164,11 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		//Read additional Config from Property
 		$this->readConfiguration($this->_additionalCronTasks);
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
+
+		if ($app instanceof \Prado\Shell\TShellApplication) {
+			$app->registerOption('cron', [$this, 'setInCronShell'], 'If run in crontab, set this flag.  It limits tasks to the current minute, default auto-detect');
+			$app->registerOptionAlias('c', 'cron');
+		}
 
 		if (php_sapi_name() !== 'cli' && $this->getEnableRequestCron()) {
 			if (100.0 * ((float) (mt_rand()) / (float) (mt_getrandmax())) <= $this->getRequestCronProbability()) {
@@ -331,7 +340,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	}
 
 	/**
-	 * when instancing and then loading the tasks, this sets the persisting data of the task
+	 * when instancing and then loading the tasks, this sets the persisting data of
+	 * the task from the global state.  When there is no instance in the global state,
+	 * the lastExecTime is initialized.
 	 * @param string $name name of the task.
 	 * @param TCronTask $task the task object.
 	 * @return bool updated the taskInfo with persistent data.
@@ -343,6 +354,12 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			$task->setLastExecTime($tasksInfo[$name]['lastExecTime']);
 			$task->setProcessCount($tasksInfo[$name]['processCount']);
 			return true;
+		} else {
+			$task->resetTaskLastExecTime();
+			$task->setProcessCount(0);
+			$tasksInfo[$name]['lastExecTime'] = $task->getLastExecTime();
+			$tasksInfo[$name]['processCount'] = 0;
+			$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
 		}
 		return false;
 	}
@@ -383,16 +400,21 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function processPendingTasks()
 	{
+		$inCronTab = (($inCron = $this->getInCronShell()) !== null) ? $inCron : TShellApplication::detectCronTabShell();
+		$this->filterStaleTasks();
 		$pendingTasks = $this->getPendingTasks();
 		$numtasks = count($pendingTasks);
+		$startMinute = floor(time() / 60);
 
 		$this->logCron($numtasks);
 		if ($numtasks) {
 			foreach ($pendingTasks as $key => $task) {
+				if ($inCronTab && $startMinute != floor(time() / 60)) {
+					break;
+				}
 				$this->runTask($task);
 			}
 		}
-		$this->filterStaleTasks();
 
 		return $numtasks;
 	}
@@ -413,9 +435,13 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	protected function filterStaleTasks()
 	{
 		// Filter out any stale tasks in the global state that aren't in config
-		$tasksInfo = $this->getApplication()->getGlobalState(self::TASKS_INFO, []);
+		$app = $this->getApplication();
+		$tasksInfo = $app->getGlobalState(self::TASKS_INFO, []);
+		$count = count($tasksInfo);
 		$tasksInfo = array_intersect_key($tasksInfo, $this->_tasks);
-		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		if ($count != count($tasksInfo)) {
+			$app->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		}
 	}
 
 	/**
@@ -450,8 +476,9 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		}
 
 		$this->logCronTask($task, $username);
-		$task->execute($this);
 		$this->updateTaskInfo($task);
+		$task->execute($this);
+		$this->logCronTaskEnd($task);
 
 		if ($user) {
 			if ($restore_user) {
@@ -487,10 +514,17 @@ class TCronModule extends \Prado\TModule implements IPermissions
 		$task->setProcessCount($count);
 		$task->setLastExecTime($time);
 
-		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, []);
+		$this->getApplication()->setGlobalState(self::TASKS_INFO, $tasksInfo, [], true);
+	}
 
+	/**
+	 * Logs the end of the task.
+	 * @param TCronTask $task
+	 */
+	protected function logCronTaskEnd($task)
+	{
 		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
-		$this->dyUpdateTaskInfo($task);
+		$this->dyLogCronTaskEnd($task);
 	}
 
 	/**
@@ -506,7 +540,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	public function setLastCronTime($time)
 	{
-		$this->getApplication()->setGlobalState(self::LAST_CRON_TIME, TPropertyValue::ensureFloat($time), 0);
+		$this->getApplication()->setGlobalState(self::LAST_CRON_TIME, TPropertyValue::ensureFloat($time), 0, true);
 	}
 
 	/**
@@ -604,6 +638,25 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('cron_property_unchangeable', 'RequestCronProbability');
 		}
 		$this->_requestCronProbability = TPropertyValue::ensureFloat($probability);
+	}
+
+	/**
+	 * @return null|bool is cli running from cron.
+	 * @since 4.2.2
+	 */
+	public function getInCronShell()
+	{
+		return $this->_inCronShell;
+	}
+
+	/**
+	 * @param null|bool $inCronShell is cli running from cron.  This limits
+	 * pending tasks to only the current minute.
+	 * @since 4.2.2
+	 */
+	public function setInCronShell($inCronShell)
+	{
+		$this->_inCronShell = $inCronShell === null ? null : TPropertyValue::ensureBoolean($inCronShell === '' ? true : $inCronShell);
 	}
 
 	/**

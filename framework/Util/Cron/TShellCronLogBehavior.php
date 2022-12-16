@@ -138,10 +138,10 @@ class TShellCronLogBehavior extends TBehavior
 	 * @param \Prado\Util\TCallChain $callchain the chain of methods
 	 * @return mixed
 	 */
-	public function dyUpdateTaskInfo($task, $callchain)
+	public function dyLogCronTaskEnd($task, $callchain)
 	{
 		$this->_outWriter->writeLine("Ending Task {$task->getName()}\n");
 
-		return $callchain->dyUpdateTaskInfo($task);
+		return $callchain->dyLogCronTaskEnd($task);
 	}
 }

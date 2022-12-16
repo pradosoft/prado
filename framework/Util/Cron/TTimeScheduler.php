@@ -37,9 +37,26 @@ use Prado\Exceptions\TInvalidDataValueException;
  * Russian, Hindi, and Arabic and their abbreviations.  The Days of the Week supports English, German,
  * Spanish, French, Italian, Russian, and Hindi and their abbreviations.
  *
+ * There are schedule shortcuts:
+ *     '@yearly' => '0 0 1 1 ?'
+ *     '@annually' => '0 0 1 1 ?'
+ *     '@monthly' => '0 0 1 * ?'
+ *     '@weekly' => '0 0 ? * 0'
+ *     '@midnight' => '0 0 * * ?'
+ *     '@daily' => '0 0 * * ?'
+ *     '@hourly' => '0 * * * ?'
+ *
+ * An efficient one-off task at a specified unix time can be scheduled with
+ * '@(\d)' where \d is the unix time in the local php instance time zone.
+ * This minimizes costly validation, parsing, and nextTriggerTime processing.
+ * This allows for a higher cron task throughput to handle more cron tasks.
+ *
+ * e.g. '@1668165071' for 2022-11-11 11:11:11 and will trigger after the
+ * specified time at '12 11 11 11 ? 2022'.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
- *
+ * @see https://crontab.guru For more info on Crontab Schedule Expressions.
  */
 class TTimeScheduler extends \Prado\TComponent
 {
@@ -67,6 +84,9 @@ class TTimeScheduler extends \Prado\TComponent
 
 	/** The cron schedule */
 	private $_schedule;
+
+	/** efficient one off trigger time */
+	protected $_triggerTime;
 
 	/** the parsed attributes of the schedule */
 	private $_attr = [];
@@ -107,6 +127,9 @@ class TTimeScheduler extends \Prado\TComponent
 				]
 		];
 
+	/** validation is computed only once */
+	private static $_validatorCache;
+
 	/**
 	 * @return string This returns the cron schedule
 	 */
@@ -130,58 +153,91 @@ class TTimeScheduler extends \Prado\TComponent
 		$schedule = trim($schedule);
 		$this->_schedule = $schedule;
 		$this->_attr = [];
-		$minute = '(?:[0-9]|[1-5][0-9])';
-		$minuteStar = '\*(?:\/(?:[1-9]|[1-5][0-9]))?';
-		$minuteRegex = $minute . '(?:\-(?:[1-9]|[1-5][0-9]))?(?:\/(?:[1-9]|[1-5][0-9]))?';
-		$hour = '(?:[0-9]|1[0-9]|2[0-3])';
-		$hourStar = '\*(?:\/(?:[1-9]|1[0-9]|2[0-3]))?';
-		$hourRegex = $hour . '(?:\-(?:[1-9]|1[0-9]|2[0-3]))?(?:\/(?:[1-9]|1[0-9]|2[0-3]))?';
-		$dom = '(?:(?:[1-9]|[12][0-9]|3[01])W?)';
-		$domWOW = '(?:[1-9]|[12][0-9]|3[01])';
-		$domStar = '\*(?:\/(?:[1-9]|[12][0-9]|3[01]))?';
-		$domRegex = '(?:' . $dom . '(?:\-' . $dom . ')?(?:\/' . $domWOW . ')?|' . '(?:L(?:\-[1-5])?)' . ')';
-		$month = '(?:[1-9]|1[012]|' .
-			self::$_keywords[self::MONTH_OF_YEAR][1] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][2] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][3] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][4] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][5] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][6] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][7] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][8] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][9] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][10] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][11] . '|' .
-			self::$_keywords[self::MONTH_OF_YEAR][12] . ')';
-		$monthStar = '\*(?:\/(?:[1-9]|1[012]))?';
-		$monthRegex = $month . '(?:\-' . $month . ')?(?:\/(?:[1-9]|1[012]))?';
-		$dow = '(?:[0-6]|' .
-			self::$_keywords[self::DAY_OF_WEEK][0] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][1] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][2] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][3] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][4] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][5] . '|' .
-			self::$_keywords[self::DAY_OF_WEEK][6] . ')';
-		$dowStar = '\*(?:\/[0-6])?';
-		$dowRegex = '(?:[0-6]L|' . $dow . '(?:(?:\-' . $dow . ')?(?:\/[0-6])?|#[1-5])?)';
-		$year = '(?:19[7-9][0-9]|20[0-9][0-9])';
-		$yearStar = '\*(?:\/[0-9]?[0-9])?';
-		$yearRegex = $year . '(?:\-' . $year . ')?(?:\/[0-9]?[0-9])?';
-		$regex = '/^(?:(@(?:annually|yearly|monthly|weekly|daily|hourly))|' .
-			'(?#minute)((?:' . $minuteStar . '|' . $minuteRegex . ')(?:\,(?:' . $minuteStar . '|' . $minuteRegex . '))*)[\s]+' .
-			'(?#hour)((?:' . $hourStar . '|' . $hourRegex . ')(?:\,(?:' . $hourStar . '|' . $hourRegex . '))*)[\s]+' .
-			'(?#DoM)(\?|(?:(?:' . $domStar . '|' . $domRegex . ')(?:,(?:' . $domStar . '|' . $domRegex . '))*))[\s]+' .
-			'(?#month)((?:' . $monthStar . '|' . $monthRegex . ')(?:\,(?:' . $monthStar . '|' . $monthRegex . '))*)[\s]+' .
-			'(?#DoW)(\?|(?:' . $dowStar . '|' . $dowRegex . ')(?:\,(?:' . $dowStar . '|' . $dowRegex . '))*)' .
-			'(?#year)(?:[\s]+' .
-				'((?:' . $yearStar . '|' . $yearRegex . ')(?:\,(?:' . $yearStar . '|' . $yearRegex . '))*)' .
-			')?' .
-		')$/i';
+		if (strlen($schedule) > 1 && $schedule[0] == '@') {
+			if (is_numeric($triggerTime = substr($schedule, 1))) {
+				$this->_triggerTime = (int) $triggerTime;
+				return;
+			}
+		}
+
+		if (self::$_validatorCache) {
+			$minuteValidator = self::$_validatorCache['m'];
+			$hourValidator = self::$_validatorCache['h'];
+			$domValidator = self::$_validatorCache['dom'];
+			$monthValidator = self::$_validatorCache['mo'];
+			$dowValidator = self::$_validatorCache['dow'];
+			$yearValidator = self::$_validatorCache['y'];
+			$fullValidator = self::$_validatorCache['f'];
+		} else {
+			$minute = '(?:[0-9]|[1-5][0-9])';
+			$minuteStar = '\*(?:\/(?:[1-9]|[1-5][0-9]))?';
+			$minuteRegex = $minute . '(?:\-(?:[1-9]|[1-5][0-9]))?(?:\/(?:[1-9]|[1-5][0-9]))?';
+			$hour = '(?:[0-9]|1[0-9]|2[0-3])';
+			$hourStar = '\*(?:\/(?:[1-9]|1[0-9]|2[0-3]))?';
+			$hourRegex = $hour . '(?:\-(?:[1-9]|1[0-9]|2[0-3]))?(?:\/(?:[1-9]|1[0-9]|2[0-3]))?';
+			$dom = '(?:(?:[1-9]|[12][0-9]|3[01])W?)';
+			$domWOW = '(?:[1-9]|[12][0-9]|3[01])';
+			$domStar = '\*(?:\/(?:[1-9]|[12][0-9]|3[01]))?';
+			$domRegex = '(?:' . $dom . '(?:\-' . $dom . ')?(?:\/' . $domWOW . ')?|' . '(?:L(?:\-[1-5])?)' . ')';
+			$month = '(?:[1-9]|1[012]|' .
+				self::$_keywords[self::MONTH_OF_YEAR][1] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][2] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][3] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][4] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][5] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][6] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][7] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][8] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][9] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][10] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][11] . '|' .
+				self::$_keywords[self::MONTH_OF_YEAR][12] . ')';
+			$monthStar = '\*(?:\/(?:[1-9]|1[012]))?';
+			$monthRegex = $month . '(?:\-' . $month . ')?(?:\/(?:[1-9]|1[012]))?';
+			$dow = '(?:[0-6]|' .
+				self::$_keywords[self::DAY_OF_WEEK][0] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][1] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][2] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][3] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][4] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][5] . '|' .
+				self::$_keywords[self::DAY_OF_WEEK][6] . ')';
+			$dowStar = '\*(?:\/[0-6])?';
+			$dowRegex = '(?:[0-6]L|' . $dow . '(?:(?:\-' . $dow . ')?(?:\/[0-6])?|#[1-5])?)';
+			$year = '(?:19[7-9][0-9]|20[0-9][0-9])';
+			$yearStar = '\*(?:\/[0-9]?[0-9])?';
+			$yearRegex = $year . '(?:\-' . $year . ')?(?:\/[0-9]?[0-9])?';
+			$fullValidator = '/^(?:(@(?:annually|yearly|monthly|weekly|daily|hourly))|' .
+				'(?#minute)((?:' . $minuteStar . '|' . $minuteRegex . ')(?:\,(?:' . $minuteStar . '|' . $minuteRegex . '))*)[\s]+' .
+				'(?#hour)((?:' . $hourStar . '|' . $hourRegex . ')(?:\,(?:' . $hourStar . '|' . $hourRegex . '))*)[\s]+' .
+				'(?#DoM)(\?|(?:(?:' . $domStar . '|' . $domRegex . ')(?:,(?:' . $domStar . '|' . $domRegex . '))*))[\s]+' .
+				'(?#month)((?:' . $monthStar . '|' . $monthRegex . ')(?:\,(?:' . $monthStar . '|' . $monthRegex . '))*)[\s]+' .
+				'(?#DoW)(\?|(?:' . $dowStar . '|' . $dowRegex . ')(?:\,(?:' . $dowStar . '|' . $dowRegex . '))*)' .
+				'(?#year)(?:[\s]+' .
+					'((?:' . $yearStar . '|' . $yearRegex . ')(?:\,(?:' . $yearStar . '|' . $yearRegex . '))*)' .
+				')?' .
+			')$/i';
+
+			$minuteValidator = '/^(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?$/i';
+			$hourValidator = '/^(\*|' . $hour . ')(?:\-(' . $hour . '))?(?:\/(' . $hour . '))?$/i';
+			$domValidator = '/^(\*|\?|L|' . $domWOW . ')(W)?(?:\-(' . $domWOW . ')(W)?)?(?:\/(' . $domWOW . '))?$/i';
+			$monthValidator = '/^(\*|' . $month . ')(?:\-(' . $month . '))?(?:\/(' . $month . '))?$/i';
+			$dowValidator = '/^(\*|\?|' . $dow . ')(L)?(?:\-(' . $dow . ')(L)?)?(?:\/(' . $dow . '))?(?:#([1-5]))?$/i';
+			$yearValidator = '/^(\*|' . $year . ')(?:\-(' . $year . '))?(?:\/([1-9]?[0-9]))?$/i';
+			self::$_validatorCache = [
+					'm' => $minuteValidator,
+					'h' => $hourValidator,
+					'dom' => $domValidator,
+					'mo' => $monthValidator,
+					'dow' => $dowValidator,
+					'y' => $yearValidator,
+					'f' => $fullValidator
+				];
+		}
 
 		$i = 0;
 		do {
-			if (!preg_match($regex, $schedule, $matches)) {
+			if (!preg_match($fullValidator, $schedule, $matches)) {
 				throw new TInvalidDataValueException('timescheduler_invalid_string', $schedule);
 			}
 			if ($matches[1]) {
@@ -195,7 +251,7 @@ class TTimeScheduler extends \Prado\TComponent
 
 		$this->_attr[self::MINUTE] = [];
 		foreach (explode(',', $matches[2]) as $match) {
-			if (preg_match('/^(\*|' . $minute . ')(?:\-(' . $minute . '))?(?:\/(' . $minute . '))?$/i', $match, $m2)) {
+			if (preg_match($minuteValidator, $match, $m2)) {
 				if ($m2[1] === '*') {
 					$data = ['min' => 0, 'end' => 59];
 				} else {
@@ -214,7 +270,7 @@ class TTimeScheduler extends \Prado\TComponent
 
 		$this->_attr[self::HOUR] = [];
 		foreach (explode(',', $matches[3]) as $match) {
-			if (preg_match('/^(\*|' . $hour . ')(?:\-(' . $hour . '))?(?:\/(' . $hour . '))?$/i', $match, $m2)) {
+			if (preg_match($hourValidator, $match, $m2)) {
 				if ($m2[1] === '*') {
 					$data = ['hour' => 0, 'end' => 23];
 				} else {
@@ -233,7 +289,7 @@ class TTimeScheduler extends \Prado\TComponent
 
 		$this->_attr[self::DAY_OF_MONTH] = [];
 		foreach (explode(',', $matches[4]) as $match) {
-			if (preg_match('/^(\*|\?|L|' . $domWOW . ')(W)?(?:\-(' . $domWOW . ')(W)?)?(?:\/(' . $domWOW . '))?$/i', $match, $m2)) {
+			if (preg_match($domValidator, $match, $m2)) {
 				$data = ['dom' => $m2[1]]; // *, ?, \d, L
 				$data['domWeekday'] = $m2[2] ?? null;
 				$data['end'] = $m2[3] ?? ($m2[1] != 'L' ? $m2[1] : null);
@@ -251,7 +307,7 @@ class TTimeScheduler extends \Prado\TComponent
 
 		$this->_attr[self::MONTH_OF_YEAR] = [];
 		foreach (explode(',', $matches[5]) as $match) {
-			if (preg_match('/^(\*|' . $month . ')(?:\-(' . $month . '))?(?:\/(' . $month . '))?$/i', $match, $m2)) {
+			if (preg_match($monthValidator, $match, $m2)) {
 				if ($m2[1] === '*') {
 					$data = ['moy' => 1, 'end' => 12];
 				} else {
@@ -270,7 +326,7 @@ class TTimeScheduler extends \Prado\TComponent
 
 		$this->_attr[self::DAY_OF_WEEK] = [];
 		foreach (explode(',', $matches[6]) as $match) {
-			if (preg_match('/^(\*|\?|' . $dow . ')(L)?(?:\-(' . $dow . ')(L)?)?(?:\/(' . $dow . '))?(?:#([1-5]))?$/i', $match, $m2)) {
+			if (preg_match($dowValidator, $match, $m2)) {
 				if ($m2[1] === '*' || $m2[1] === '?') {
 					$data = ['dow' => 0, 'end' => 6];
 				} else {
@@ -293,7 +349,7 @@ class TTimeScheduler extends \Prado\TComponent
 		$this->_attr[self::YEAR] = [];
 		$matches[7] = $matches[7] ?? '*';
 		foreach (explode(',', $matches[7]) as $match) {
-			if (preg_match('/^(\*|' . $year . ')(?:\-(' . $year . '))?(?:\/([1-9]?[0-9]))?$/i', $match, $m2)) {
+			if (preg_match($yearValidator, $match, $m2)) {
 				if ($m2[1] === '*') {
 					$data = ['year' => self::YEAR_MIN];
 					$data['end'] = self::YEAR_MAX;
@@ -520,7 +576,7 @@ class TTimeScheduler extends \Prado\TComponent
 	protected function getYearsArray()
 	{
 		$ya = [];
-		for ($i = self::YEAR_MIN; $i <= self::YEAR_MAX; $i++) {
+		for ($i = self::YEAR_MIN - 1; $i <= self::YEAR_MAX; $i++) {
 			$ya['' . $i] = 0;
 		}
 		foreach ($this->_attr[self::YEAR] as $m) {
@@ -544,14 +600,18 @@ class TTimeScheduler extends \Prado\TComponent
 		if ($priortime === null || $this->_schedule === null) {
 			return null;
 		}
-		$restoreZone = date_default_timezone_get();
-		date_default_timezone_set("UTC");
 		if ($priortime === false) {
 			$priortime = time();
-		}
-		if (!is_numeric($priortime)) {
+		} elseif (!is_numeric($priortime)) {
 			$priortime = strtotime($priortime);
 		}
+		if ($this->_triggerTime !== null) {
+			if ($priortime >= $this->_triggerTime) {
+				return null;
+			}
+			return $this->_triggerTime;
+		}
+
 		$lastdata = getdate($priortime);
 
 		$oyear = $year = $lastdata['year'];
@@ -663,7 +723,6 @@ class TTimeScheduler extends \Prado\TComponent
 						$month = 1;
 						$year++;
 						if ($year > self::YEAR_MAX) {
-							date_default_timezone_set($restoreZone);
 							return null;
 						}
 					}
@@ -693,7 +752,6 @@ class TTimeScheduler extends \Prado\TComponent
 		} else {
 			$time = strtotime("$nyear-$nmonth-$nday $nhour:$nmin:00");
 		}
-		date_default_timezone_set($restoreZone);
 		return $time;
 	}
 }

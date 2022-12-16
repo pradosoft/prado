@@ -259,8 +259,8 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			$str .= PHP_EOL;
 		}
 		$last = count($table['headers'] ?? $table['rows'][0]) - 1;
-		$lastcolumn = 0;
 		foreach ($table['rows'] as $row => $data) {
+			$lastcolumn = 0;
 			if (isset($data['span'])) {
 				$str .= $data['span'];
 			} else {
