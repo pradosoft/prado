@@ -3,3 +3,8 @@ parameters:
     level: 2
     paths:
         - framework
+services:
+    -
+        class: Prado\PHPStan\DynamicMethodsClassReflectionExtension
+        tags:
+            - phpstan.broker.methodsClassReflectionExtension
