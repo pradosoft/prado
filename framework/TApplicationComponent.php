@@ -70,7 +70,7 @@ class TApplicationComponent extends \Prado\TComponent
 			} else {
 				$baseClassName = $className;
 			}
-			if (isset(Prado::$classMap[$baseClassName])) {
+			if ($mode === TApplicationMode::Performance || isset(Prado::$classMap[$baseClassName])) {
 				$_classfx[$className] = $fx;
 				$cache->set(self::APP_COMPONENT_FX_CACHE, $_classfx);
 			}
