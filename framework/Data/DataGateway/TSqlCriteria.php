@@ -142,7 +142,7 @@ class TSqlCriteria extends \Prado\TComponent
 		//    [LIMIT {[offset,] row_count | row_count OFFSET offset}]
 		// See: http://dev.mysql.com/doc/refman/5.0/en/select.html
 
-		if (preg_match('/ORDER\s+BY\s+(.*?)(?=LIMIT)|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
+		if (preg_match('/ORDER\s+BY\s+(.*?)(?=\s+(?:LIMIT|OFFSET))|ORDER\s+BY\s+(.*?)$/i', $value, $matches) > 0) {
 			// condition contains ORDER BY
 			$value = str_replace($matches[0], '', $value);
 			if (strlen($matches[1]) > 0) {
