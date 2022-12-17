@@ -66,10 +66,6 @@ class TAssetManager extends \Prado\TModule
 	 */
 	private $_checkTimestamp = false;
 	/**
-	 * @var \Prado\TApplication application instance
-	 */
-	private $_application;
-	/**
 	 * @var array published assets
 	 */
 	private $_published = [];
