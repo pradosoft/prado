@@ -35,6 +35,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * {@link TParameterizeBehavior} can be attached to TGravatar to give
  * default values for various properties like DefaultImageStyle and Rating.
+ * PRADO Skins can also be used to provide default values.
  *
  * See {@link https://gravatar.com} for more information.
  *
