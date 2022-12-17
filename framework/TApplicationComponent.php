@@ -52,7 +52,7 @@ class TApplicationComponent extends \Prado\TComponent
 	protected function getClassFxEvents($class)
 	{
 		$app = $this->getApplication();
-		$className = $cache = null;
+		$mode = $className = $cache = null;
 		if ($app && (($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && ($cache = $app->getCache())) {
 			static $_classfx = null;
 			if ($_classfx === null) {
