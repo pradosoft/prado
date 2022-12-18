@@ -59,6 +59,18 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * done by the page or user.  These changes are restored when
  * this module is loaded again.
  *
+ * When TPermissionsManager is a module in your app, there is one permission
+ * to control user access to its function:
+ *  - TDbParameterModule::PERM_PARAM_SHELL 'param_shell' enables the shell command to index, get and set database parameters.
+ *
+ * The role and rule management functions only work when the TDbParameter Module is specified.
+ * The following gives user "admin" and all users with "Administrators" role the
+ * permission to access permissions shell and its full functionality:
+ * <code>
+ *   <permissionrule name="param_shell" action="allow" users="admin" />
+ *   <permissionrule name="param_shell" action="allow" roles="Administrators" />
+ * <code>
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
