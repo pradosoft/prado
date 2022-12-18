@@ -1100,7 +1100,7 @@ class TComponent
 	 * invoke all attached event handlers for the event in {@link TWeakCallableCollection} order.
 	 * This method does not handle intra-object/behavior dynamic 'dy' events.
 	 *
-	 * There are ways to handle event responses.  By defailt {@link EVENT_RESULT_FILTER},
+	 * There are ways to handle event responses.  By default {@link EVENT_RESULT_FILTER},
 	 * all event responses are stored in an array, filtered for null responses, and returned.
 	 * If {@link EVENT_RESULT_ALL} is specified, all returned results will be stored along
 	 * with the sender and param in an array
@@ -1644,9 +1644,6 @@ class TComponent
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
 		$behavior = self::instanceBehavior($behavior);
-		if ($behavior instanceof IBehavior) {
-			$behavior->setEnabled(true);
-		}
 		if ($this->_m === null) {
 			$this->_m = new TPriorityMap();
 		}

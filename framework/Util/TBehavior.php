@@ -9,6 +9,8 @@
 
 namespace Prado\Util;
 
+use Prado\TPropertyValue;
+
 /**
  * TBehavior is a convenient base class for behavior classes.
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -16,7 +18,7 @@ namespace Prado\Util;
  */
 class TBehavior extends \Prado\TComponent implements IBehavior
 {
-	private $_enabled;
+	private $_enabled = true;
 	private $_owner;
 
 	/**
@@ -83,6 +85,6 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	 */
 	public function setEnabled($value)
 	{
-		$this->_enabled = $value;
+		$this->_enabled = TPropertyValue::ensureBoolean($value);
 	}
 }
