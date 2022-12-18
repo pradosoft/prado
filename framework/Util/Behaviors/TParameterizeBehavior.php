@@ -86,6 +86,10 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		parent::attach($owner);
 
+		if (!$this->getEnabled()) {
+			$this->_initialized = true;
+			return;
+		}
 		if (!$this->_parameter) {
 			throw new TConfigurationException('parameterizebehavior_no_parameter');
 		}
@@ -114,7 +118,19 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			$owner->setSubProperty($this->_property, $value);
 		}
 		$this->_initialized = true;
+
+		$this->attachParamMapRoute();
+	}
+
+	/**
+	 *
+	 *
+	 * @param $owner The owner to receive parameter changes
+	 */
+	protected function attachParamMapRoute()
+	{
 		if ($this->_routeBehaviorName) {
+			$owner = $this->getOwner();
 			if ($this->_localize) {
 				$_property = $this->_property;
 				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, function ($v) use ($owner, $_property) {
@@ -123,8 +139,25 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 			} else {
 				$this->_paramBehavior = new TMapRouteBehavior($this->_parameter, [$owner, 'set' . $this->_property]);
 			}
+			$appParams = Prado::getApplication()->getParameters();
 			$appParams->attachBehavior($this->_routeBehaviorName, $this->_paramBehavior);
 		}
+	}
+
+
+	/**
+	 * This attaches and detaches the routing behavior on the Application Parameters.
+	 * @param bool $enabled whether this behavior is enabled
+	 */
+	public function setEnabled($enabled)
+	{
+		if ($enabled == true && !$this->_paramBehavior) {
+			$this->attachParamMapRoute();
+		} elseif ($enabled == false && $this->_paramBehavior) {
+			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+			$this->_paramBehavior = null;
+		}
+		parent::setEnabled($enabled);
 	}
 
 	/**
@@ -135,6 +168,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	{
 		if ($this->_paramBehavior) {
 			Prado::getApplication()->getParameters()->detachBehavior($this->_routeBehaviorName);
+			$this->_routeBehaviorName = null;
 		}
 		$this->_initialized = false;
 		parent::detach($owner);

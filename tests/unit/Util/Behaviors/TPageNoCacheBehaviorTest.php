@@ -28,7 +28,11 @@ class TPageNoCacheBehaviorTest extends PHPUnit\Framework\TestCase
 		$page->setHead($head);
 		
 		self::assertEquals(0, $head->getMetaTags()->count());
+		$this->obj->setEnabled(false);
+		$this->obj->addNoCacheMeta($page, null);
+		self::assertEquals(0, $head->getMetaTags()->count());
 		
+		$this->obj->setEnabled(true);
 		$this->obj->addNoCacheMeta($page, null);
 		self::assertEquals(3, $head->getMetaTags()->count());
 		

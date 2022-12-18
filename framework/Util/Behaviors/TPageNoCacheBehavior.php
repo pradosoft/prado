@@ -47,7 +47,7 @@ class TPageNoCacheBehavior extends \Prado\Util\TBehavior
 	 */
 	public function addNoCacheMeta($page, $param)
 	{
-		if ($head = $page->getHead()) {
+		if ($this->getEnabled() && $head = $page->getHead()) {
 			$hasExpires = $hasPragma = $hasCacheControl = false;
 			$metatags = $head->getMetaTags();
 			if ($this->_checkMetaNoCache) {

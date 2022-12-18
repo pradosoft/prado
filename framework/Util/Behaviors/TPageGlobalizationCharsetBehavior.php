@@ -45,7 +45,7 @@ class TPageGlobalizationCharsetBehavior extends \Prado\Util\TBehavior
 	 */
 	public function addCharsetMeta($page, $param)
 	{
-		if ($head = $page->getHead()) {
+		if ($this->getEnabled() && ($head = $page->getHead())) {
 			$hasCharset = false;
 			$metatags = $head->getMetaTags();
 			if ($this->_checkMetaCharset) {

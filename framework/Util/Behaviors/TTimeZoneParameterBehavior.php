@@ -68,7 +68,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	public function attach($owner)
 	{
 		parent::attach($owner);
-		if (!$this->_timeZoneParameter) {
+		if (!$this->getEnabled() || !$this->_timeZoneParameter) {
 			return;
 		}
 		$appParams = Prado::getApplication()->getParameters();
@@ -89,6 +89,23 @@ class TTimeZoneParameterBehavior extends TBehavior
 			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
 		}
 		parent::detach($owner);
+	}
+
+
+	/**
+	 * This attaches and detaches the routing behavior on the Application Parameters.
+	 * @param bool $enabled whether this behavior is enabled
+	 */
+	public function setEnabled($enabled)
+	{
+		if ($enabled == true && !$this->_paramBehavior) {
+			$this->_paramBehavior = new TMapRouteBehavior($this->_timeZoneParameter, [$this, 'setTimeZone']);
+			Prado::getApplication()->getParameters()->attachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME, $this->_paramBehavior);
+		} elseif ($enabled == false && $this->_paramBehavior) {
+			Prado::getApplication()->getParameters()->detachBehavior(self::APP_PARAM_ROUTE_BEHAVIOR_NAME);
+			$this->_paramBehavior = null;
+		}
+		parent::setEnabled($enabled);
 	}
 
 	/**
