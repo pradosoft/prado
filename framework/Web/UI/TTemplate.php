@@ -11,6 +11,7 @@ namespace Prado\Web\UI;
 
 use Prado\Prado;
 use Prado\TComponent;
+use Prado\TPropertyValue;
 use Prado\Web\Javascripts\TJavaScriptLiteral;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TException;
@@ -441,6 +442,32 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				}
 			}
 			$setter = 'set' . $name;
+			if (method_exists($component, $setter)) {
+				if ($reflector = new \ReflectionClass($component)) {
+					try {
+						$params = $reflector->getMethod($setter)->getParameters();
+						if (
+							!empty($params) &&
+							isset($params[0]) &&
+							!empty($params[0]->getType()) &&
+							$params[0]->getType() instanceof \ReflectionNamedType
+						) {
+							switch ($params[0]->getType()->getName()) {
+								case 'bool':
+									$value = TPropertyValue::ensureBoolean($value);
+									break;
+								case 'int':
+									$value = TPropertyValue::ensureInteger($value);
+									break;
+								case 'float':
+									$value = TPropertyValue::ensureFloat($value);
+									break;
+							}
+						}
+					} catch (\ReflectionException $e) {
+					}
+				}
+			}
 			$component->$setter($value);
 		}
 	}
