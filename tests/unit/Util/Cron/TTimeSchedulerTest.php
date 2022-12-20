@@ -812,6 +812,9 @@ class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
 	public function assertTime($checkTime, $schedule, $date)
 	{	
 		$this->obj->setSchedule($schedule);
-		$this->assertEquals(dfo($checkTime), dfo($this->obj->getNextTriggerTime($date)));
+		$ndate = $this->obj->getNextTriggerTime($date);
+		$ndate = $ndate === null ? null : dfo($ndate);
+		$checkTime = $checkTime === null ? null : dfo($checkTime);
+		$this->assertEquals($checkTime, $ndate);
 	}
 }
