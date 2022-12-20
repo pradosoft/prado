@@ -446,22 +446,22 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 				if ($reflector = new \ReflectionClass($component)) {
 					try {
 						$params = $reflector->getMethod($setter)->getParameters();
-						if (
-							!empty($params) &&
-							isset($params[0]) &&
-							!empty($params[0]->getType()) &&
-							$params[0]->getType() instanceof \ReflectionNamedType
-						) {
-							switch ($params[0]->getType()->getName()) {
-								case 'bool':
-									$value = TPropertyValue::ensureBoolean($value);
-									break;
-								case 'int':
-									$value = TPropertyValue::ensureInteger($value);
-									break;
-								case 'float':
-									$value = TPropertyValue::ensureFloat($value);
-									break;
+						if (!empty($params) && isset($params[0]) && $type = $params[0]->getType()) {
+							if ($type instanceof \ReflectionNamedType) {
+								switch ($type->getName()) {
+									case 'bool':
+										$value = TPropertyValue::ensureBoolean($value);
+										break;
+									case 'int':
+										$value = TPropertyValue::ensureInteger($value);
+										break;
+									case 'float':
+										$value = TPropertyValue::ensureFloat($value);
+										break;
+									case 'string':
+										$value = TPropertyValue::ensureString($value);
+										break;
+								}
 							}
 						}
 					} catch (\ReflectionException $e) {
