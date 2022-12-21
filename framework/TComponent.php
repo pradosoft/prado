@@ -940,7 +940,7 @@ class TComponent
 	}
 
 	/**
-	 * Determines whether a method is defined. When behaviors are enabled, this 
+	 * Determines whether a method is defined. When behaviors are enabled, this
 	 * will loop through all enabled behaviors checking for the method as well.
 	 * Nested behaviors within behaviors are not supported but the nested behavior can
 	 * affect the primary behavior like any behavior affects their owner.
