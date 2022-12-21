@@ -1590,6 +1590,18 @@ class TComponent
 	}
 
 	/**
+	 * Returns all the behaviors attached to the TComponent.  IBehavior[s] may
+	 * be attached but not {@link \Prado\Util\IBehavior::getEnabled Enabled}.
+	 *
+	 * @return array all the behaviors attached to the TComponent
+	 * @since 4.2.2
+	 */
+	public function getBehaviors()
+	{
+		return isset($this->_m) ? $this->_m->toArray() : [];
+	}
+
+	/**
 	 * Attaches a list of behaviors to the component.
 	 * Each behavior is indexed by its name and should be an instance of
 	 * {@link IBehavior}, a string specifying the behavior class, or a

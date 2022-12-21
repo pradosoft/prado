@@ -984,6 +984,20 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$behavior->setInstanceReturn(true);
 		$this->assertTrue($this->component->isa('FooBehavior'));
 	}
+	
+	public function testGetBehaviors()
+	{
+		$this->assertEquals([], $this->component->getBehaviors());
+		$b = new FooBarBehavior();
+		$this->assertEquals($b, $this->component->attachBehavior('FooBarBehavior', $b));
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$b->setEnabled(false);
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$b->setEnabled(true);
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$this->assertEquals($b, $this->component->detachBehavior('FooBarBehavior'));
+		$this->assertEquals([], $this->component->getBehaviors());
+	}
 
 	public function testAttachDetachBehavior()
 	{
@@ -1714,6 +1728,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior());
 		$this->assertTrue($this->component->hasMethod('getExcitement'));
 		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('getExcitement'));
+		
+		//Test behaviors within behaviors.
 		$this->component->BehaviorTestBehavior->attachBehavior('SubBehavior', new FooFooClassBehavior());
 		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('faafaaEverMore'));
 		$this->assertFalse($this->component->hasMethod('faafaaEverMore'));
