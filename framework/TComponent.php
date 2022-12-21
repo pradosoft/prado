@@ -792,7 +792,7 @@ class TComponent
 				return true;
 			}
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && ($behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
+				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
 					return isset($behavior->$name);
 				}
 			}
