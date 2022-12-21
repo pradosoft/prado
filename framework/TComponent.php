@@ -1709,11 +1709,10 @@ class TComponent
 	 */
 	public function detachBehavior($name, $priority = false)
 	{
-		if ($this->_m != null && isset($this->_m[$name])) {
-			$this->_m[$name]->detach($this);
-			$behavior = $this->_m->itemAt($name);
-			$this->_m->remove($name, $priority);
+		if ($this->_m != null && ($behavior = $this->_m->itemAt($name, $priority))) {
 			$this->dyDetachBehavior($name, $behavior);
+			$behavior->detach($this);
+			$this->_m->remove($name, $priority);
 			return $behavior;
 		}
 		return null;
