@@ -1,6 +1,7 @@
 
 ## Version 4.2.2 - ____
 
+ENH: Issue #828 - TApplication::onSetUser raised when setting user. (belisoful)
 BUG: Issue #815 - Cron tasks delay until their proper time on first entry. Long running cron tasks no longer repeat further pending tasks. (belisoful)
 
 ## Version 4.2.1 - May 9, 2022
