@@ -36,6 +36,7 @@ namespace Prado\Util;
  * <code>
  * public function dyMethodOfClassBehavior($object, $firstParam, $secondParam, $callchain){
  *      // $object === $objWithClassBehavior, $firstParam === 1, $secondParam === 20, $callchain instanceof {@link TCallChain}
+ *      return $callchain->dyMethodOfClassBehavior($firstParam, $secondParam);
  * }
  * </code>
  *

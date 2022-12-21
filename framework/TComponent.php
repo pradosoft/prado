@@ -1460,15 +1460,22 @@ class TComponent
 	 * This is done so class behaviors are added last first.
 	 * @param string $name name the key of the class behavior
 	 * @param object|string $behavior class behavior or name of the object behavior per instance
-	 * @param null|IBaseBehavior|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
+	 * @param null|array|IBaseBehavior|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
-	 * TPanel::attachClassBehavior('javascripts', (new TJsPanelBehavior())->init($this));
+	 * TPanel::attachClassBehavior('javascripts', new TJsPanelClassBehavior());
+	 * TApplication::attachClassBehavior('jpegize', 'Prado\\Util\\Behaviors\\TJPEGizeAssetBehavior', 'Prado\\Web\\TFileAsset');
 	 * </code>
-	 * @param null|numeric $priority priority of behavior, default: null the default priority of the {@link TWeakCallableCollection}  Optional.
-	 * @throws TInvalidOperationException if the class behavior is being added to a {@link TComponent}; due to recursion.
+	 * An array is used to initialize values of the behavior. eg. ['class' => '\\MyBehavior', 'property' => 'value'].
+	 * @param null|numeric $priority priority of behavior, default: null the default
+	 *  priority of the {@link TWeakCallableCollection}  Optional.
+	 * @throws TInvalidOperationException if the class behavior is being added to a
+	 *  {@link TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
+	 * @return array|object the behavior if its an IClassBehavior and an array of all
+	 * behaviors that have been attached from 'fxAttachClassBehavior' when the Class
+	 * Behavior being attached is a per instance IBehavior.
 	 * @since 3.2.3
 	 */
 	public static function attachClassBehavior($name, $behavior, $class = null, $priority = null)
@@ -1487,6 +1494,9 @@ class TComponent
 		if ($class === 'prado\\tcomponent') {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
 		}
+		if (is_object($behavior) && $behavior instanceof IBehavior) {
+			throw new TInvalidOperationException('component_tbehavior_cannot_attach_as_class_behavior');
+		}
 		if (empty(self::$_um[$class])) {
 			self::$_um[$class] = [];
 		}
@@ -1494,9 +1504,11 @@ class TComponent
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
 		$behaviorObject = self::instanceBehavior($behavior);
-		$param = new TClassBehaviorEventParameter($class, $name, $behavior, $priority);
+		$isClassBehavior = $behaviorObject instanceof \Prado\Util\IClassBehavior;
+		$param = new TClassBehaviorEventParameter($class, $name, $isClassBehavior ? $behaviorObject : $behavior, $priority);
 		self::$_um[$class] = [$name => $param] + self::$_um[$class];
-		return $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
+		$results = $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
+		return $isClassBehavior ? $behaviorObject : $results;
 	}
 
 
@@ -1510,6 +1522,9 @@ class TComponent
 	 *		{@link TWeakCallableCollection} priority, and numeric is a specific priority.
 	 * @throws TInvalidOperationException if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
+	 * @return null|array|object the behavior if its an IClassBehavior and an array of all behaviors
+	 * that have been detached from 'fxDetachClassBehavior' when the Class Behavior being
+	 * attached is a per instance IBehavior.  Null if no behavior of $name to detach.
 	 * @since 3.2.3
 	 */
 	public static function detachClassBehavior($name, $class = null, $priority = false)
@@ -1526,13 +1541,15 @@ class TComponent
 			$name = get_class($name);
 		}
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
-			return false;
+			return null;
 		}
 		$param = self::$_um[$class][$name];
 		$behavior = $param->getBehavior();
 		$behaviorObject = self::instanceBehavior($behavior);
+		$isClassBehavior = $behaviorObject instanceof \Prado\Util\IClassBehavior;
 		unset(self::$_um[$class][$name]);
-		return $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
+		$results = $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
+		return $isClassBehavior ? $behaviorObject : $results;
 	}
 
 	/**
