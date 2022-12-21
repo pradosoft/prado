@@ -908,11 +908,28 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
+	 * This sets the application user and raises the onSetUser event.
 	 * @param \Prado\Security\IUser $user the application user
 	 */
 	public function setUser(\Prado\Security\IUser $user)
 	{
 		$this->_user = $user;
+		$this->onSetUser($user);
+	}
+
+	/**
+	 * Raises onSetUser event.
+	 * Allows modules/components to run handlers when the Application User is set.
+	 * e.g. A user module could set the $_SERVER['HTTP_ACCEPT_LANGUAGE'] and
+	 * $_SERVER['HTTP_ACCEPT_CHARSET'] in a cli environment to the user's last
+	 * web Language and Charset so Emails (and other templates) get language
+	 * customized.
+	 * @param \Prado\Security\IUser $user
+	 * @since 4.2.2
+	 */
+	public function onSetUser(\Prado\Security\IUser $user)
+	{
+		$this->raiseEvent('onSetUser', $this, $user);
 	}
 
 	/**
