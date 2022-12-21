@@ -23,6 +23,16 @@ namespace Prado\Util;
 interface IBaseBehavior
 {
 	/**
+	 * The array key for the $config data in instancing behaviors with init($config),
+	 */
+	public const CONFIG_KEY = "=config";
+	/**
+	 * Handles behavior configurations from TBehaviorsModule
+	 * @param mixed $config
+	 * @since 4.2.2
+	 */
+	public function init($config);
+	/**
 	 * Attaches the behavior object to the component.
 	 * @param \Prado\TComponent $component the component that this behavior is to be attached to.
 	 */

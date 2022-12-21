@@ -1436,6 +1436,9 @@ class TComponent
 	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
 	 * 		$b = $this->instanceBehavior(new MyBehavior);
 	 * </code>
+	 * If the behavior is an array, the key IBaseBehavior::CONFIG_KEY is stripped and used to initialize
+	 * the behavior.
+	 *
 	 * @param array|IBaseBehavior|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
 	 * @throws TInvalidDataTypeException if the behavior is not an {@link IBaseBehavior}
 	 * @return IBaseBehavior&TComponent an instance of $behavior or $behavior itself
@@ -1443,11 +1446,22 @@ class TComponent
 	 */
 	protected static function instanceBehavior($behavior)
 	{
-		if (is_string($behavior) || (is_array($behavior) && isset($behavior['class']))) {
+		$hasConfig = false;
+		$config = null;
+		$isArray = false;
+		if (is_string($behavior) || (($isArray = is_array($behavior)) && isset($behavior['class']))) {
+			if ($isArray && array_key_exists(IBaseBehavior::CONFIG_KEY, $behavior)) {
+				$config = $behavior[IBaseBehavior::CONFIG_KEY];
+				unset($behavior[IBaseBehavior::CONFIG_KEY]);
+				$hasConfig = true;
+			}
 			$behavior = Prado::createComponent($behavior);
 		}
 		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
+		}
+		if ($hasConfig) {
+			$behavior->init($config);
 		}
 		return $behavior;
 	}

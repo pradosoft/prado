@@ -22,6 +22,17 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	private $_owner;
 
 	/**
+	 * This processes configuration elements from TBehaviorsModule.  This is usually
+	 * called after attach but cannot be guaranteed to be called outside the {@link
+	 * TBehaviorsModule} environment. This is only needed for complex behavior
+	 * configurations.
+	 * @param array|\Prado\Xml\TXmlElement $config any innards to the behavior configuration.
+	 */
+	public function init($config)
+	{
+	}
+
+	/**
 	 * Declares events and the corresponding event handler methods.
 	 * The events are defined by the {@link owner} component, while the handler
 	 * methods by the behavior class. The handlers will be attached to the corresponding
