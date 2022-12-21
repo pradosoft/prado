@@ -349,6 +349,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		//-- testRemovePermissionRuleInternal
 		$this->obj->setDbParameter($dbparam = new TDbParameterModule());
+		$dbparam->unlisten();
 		$dbparam->init(null);
 		
 		// rules remove down the hierarchy
@@ -440,6 +441,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 	public function testAddRemoveRoleChildren()
 	{
 		$dbparam = new TDbParameterModule();
+		$dbparam->unlisten();
 		$dbparam->init(null);
 		$this->obj->setDbParameter($dbparam);
 		
@@ -472,6 +474,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 	public function testAddRemovePermissionRule()
 	{
 		$dbparam = new TDbParameterModule();
+		$dbparam->unlisten();
 		$dbparam->init(null);
 		$this->obj->setDbParameter($dbparam);
 		
@@ -725,6 +728,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		self::assertNull($this->obj->getDbParameter());
 		
 		$dbparam = new TDbParameterModule();
+		$dbparam->unlisten();
 		$this->obj->setDbParameter($dbparam);
 		self::assertEquals($dbparam, $this->obj->getDbParameter());
 		

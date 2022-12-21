@@ -29,6 +29,11 @@ class TPageTopAnchorBehaviorTest extends PHPUnit\Framework\TestCase
 		$page->setForm($form);
 		
 		self::assertEquals(1, $page->getControls()->count());
+		$this->obj->setEnabled(false);
+		$this->obj->addFormANameAnchor($page, null);
+		self::assertEquals(1, $page->getControls()->count());
+		
+		$this->obj->setEnabled(true);
 		$this->obj->addFormANameAnchor($page, null);
 		self::assertEquals(2, $page->getControls()->count());
 	}

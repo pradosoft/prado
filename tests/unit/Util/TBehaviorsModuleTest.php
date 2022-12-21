@@ -17,6 +17,18 @@ class TestModuleBehavior1 extends TBehavior
 		$this->_propertyA = $value;
 	}
 }
+class TestModuleClassBehavior1 extends TClassBehavior
+{
+	private $_propertyA = 'default';
+	public function getPropertyA()
+	{
+		return $this->_propertyA;
+	}
+	public function setPropertyA($value)
+	{
+		$this->_propertyA = $value;
+	}
+}
 class TestModuleBehavior2 extends TestModuleBehavior1
 {
 }
@@ -24,6 +36,9 @@ class TestModuleBehavior3 extends TestModuleBehavior2
 {
 }
 class TestModuleBehavior4 extends TestModuleBehavior3
+{
+}
+class TestModuleBehavior5 extends TestModuleBehavior4
 {
 }
 
@@ -62,9 +77,11 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->fail(get_class($e) .' should not have been raised on init(null)');
 		}
 		$behaviors = '<module id="bmod">
+		<behavior name="testBehavior5" class="TestModuleBehavior5" attachto="behavior:testBehavior1" Priority="19" PropertyA="value5"/>
+		<behavior name="testBehavior6" class="TestModuleBehavior5" attachto="behavior:testBehavior3" Priority="19" PropertyA="value6"/>
 		<behavior name="testBehavior1" class="TestModuleBehavior1" attachto="Application" Priority="1" PropertyA="value1"/>
 		<behavior name="testBehavior2" class="TestModuleBehavior2" attachto="Page" Priority="2" PropertyA="value2"/>
-		<behavior name="testBehavior3" class="TestModuleBehavior3" attachtoclass="TestModuleBM2" Priority="3" PropertyA="value3"/>
+		<behavior name="testBehavior3" class="TestModuleClassBehavior1" attachtoclass="TestModuleBM2" Priority="3" PropertyA="value3"/>
 		<behavior name="testBehavior4" class="TestModuleBehavior4" attachto="module:modB" Priority="4" PropertyA="value4"/>
 			</module>';
 		$xmldoc = new TXmlDocument('1.0', 'utf-8');
@@ -87,16 +104,21 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->obj->init($xmldoc);
 			
 			//Check was App behavior installed
-			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
+			$this->assertInstanceOf('TestModuleBehavior1', $b1 = $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
+			
+			$this->assertInstanceOf('TestModuleBehavior5', $b5 = $b1->asa('testBehavior5'));
+			$this->assertEquals('value5', $b1->asa('testBehavior5')->propertyA);
+			
 			
 			// Check that the Page behavhiors will be installed onBeginRequest->OnPreRunPage
 			$this->assertEquals(1, count($app->onBeginRequest));
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testBehavior3'));
+			$this->assertInstanceOf('TestModuleClassBehavior1', $b3 = $log->asa('testBehavior3'));
 			$this->assertEquals('value3', $log->asa('testBehavior3')->propertyA);
+			$this->assertEquals('value6', $b3->asa('testBehavior6')->propertyA);
 			
 			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);

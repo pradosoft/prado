@@ -31,7 +31,11 @@ class TPageGlobalizationCharsetBehaviorTest extends PHPUnit\Framework\TestCase
 		$page->setHead($head);
 		
 		self::assertEquals(0, $head->getMetaTags()->count());
-		
+		$this->obj->setEnabled(false);
+		$this->obj->addCharsetMeta($page, null);
+		self::assertEquals(0, $head->getMetaTags()->count());
+
+		$this->obj->setEnabled(true);
 		$this->obj->addCharsetMeta($page, null);
 		self::assertEquals(1, $head->getMetaTags()->count());
 		self::assertEquals('utf-8', strtolower($head->getMetaTags()[0]->getCharset()));

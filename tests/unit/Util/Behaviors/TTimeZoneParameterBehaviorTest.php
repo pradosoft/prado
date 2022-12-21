@@ -39,15 +39,25 @@ class TTimeZoneParameterBehaviorTest extends PHPUnit\Framework\TestCase
 		
 		// sets the parameter timezone on attach
 		$app->attachBehavior($behaviorName, $this->obj);
+		$app->detachBehavior($behaviorName);
+		
+		// sets the parameter timezone on attach
+		$app->attachBehavior($behaviorName, $this->obj);
 		
 		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
 		$params['test:TimeZone'] = 'America/Los_Angeles';
 		self::assertEquals('America/Los_Angeles', $this->obj->getTimeZone());
+		$this->obj->setEnabled(false);
+		$params['test:TimeZone'] = 'UTC';
+		self::assertEquals('America/Los_Angeles', $this->obj->getTimeZone());
+		$this->obj->setEnabled(true);
+		$params['test:TimeZone'] = 'Europe/Rome';
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
 		
 		// And test the detach method too
 		$app->detachBehavior($behaviorName);
 		$params['test:TimeZone'] = 'Europe/London';
-		self::assertEquals('America/Los_Angeles', $this->obj->getTimeZone());
+		self::assertEquals('Europe/Rome', $this->obj->getTimeZone());
 		
 		unset($params['test:TimeZone']);
 	}

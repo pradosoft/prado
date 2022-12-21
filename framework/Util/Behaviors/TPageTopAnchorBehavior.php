@@ -46,9 +46,8 @@ class TPageTopAnchorBehavior extends TBehavior
 	 */
 	public function addFormANameAnchor($page, $param)
 	{
-		$topanchor = '<a name="' . $this->_topAnchor . '"></a>';
-
-		if ($form = $page->getForm()) {
+		if ($this->getEnabled() && $form = $page->getForm()) {
+			$topanchor = '<a name="' . $this->_topAnchor . '"></a>';
 			$form->getParent()->getControls()->insertBefore($form, $topanchor);
 		}
 	}

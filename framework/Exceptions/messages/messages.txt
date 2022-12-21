@@ -15,6 +15,7 @@ component_statements_invalid			= Component '{0}' is evaluating invalid PHP state
 component_class_behavior_defined		= Component '{0}' already has a class behavior of '{1}'.
 component_not_a_behavior				= Component '{0}' is being added as behavior is not a TBaseBehavior.
 component_no_tcomponent_class_behaviors	= TComponent cannot have class behaviors attached due to recursion.
+component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach to multiple owners.  Pass a string or an array of IBehavior class and properties to instance on each owner.
 component_no_class_provided_nor_late_binding = Adding or Removing Class Behaviors must have PHP feature Late Static Binding or a class provided as a parameter
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).

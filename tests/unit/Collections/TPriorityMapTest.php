@@ -225,8 +225,12 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TPriorityMapTestNoItemBehavior);
 		
 		$this->assertInstanceOf('TPriorityMapTest_MapItem', $item3 = $this->map['key3']);
-		
 		$this->assertEquals('value', $item3->data);
+		
+		$this->map['key3'] = null;
+		$this->assertNull($this->map['key3']);
+		$this->assertNull($this->map->itemAt('key3'));
+		$this->assertNull($this->map->itemAt('key3', null));
 	}
 
 	public function testArrayWrite()

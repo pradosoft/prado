@@ -179,6 +179,7 @@ class FooFooClassBehavior extends FooClassBehavior
 {
 	public function faafaaEverMore($object, $laa, $sol)
 	{
+		return 'ffemResult';
 	}
 }
 
@@ -693,9 +694,17 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($this->component->asa('FooClassBehavior'), "Component is already a FooClassBehavior and should not have this behavior");
 
 		//Add the FooClassBehavior
-		$this->component->attachClassBehavior('FooClassBehavior', 'FooClassBehavior');
-		$this->component->attachClassBehavior('FooClassBehavior2', new FooClassBehavior);
-		$this->component->attachClassBehavior('FooClassBehavior3', ['class' => 'FooClassBehavior', 'propertyA'=>'value']);
+		$b1 = $this->component->attachClassBehavior('FooClassBehavior', 'FooClassBehavior');
+		$this->assertInstanceof('FooClassBehavior', $b1);
+		$b2 = $this->component->attachClassBehavior('FooClassBehavior2', $ob2 = new FooClassBehavior());
+		$this->assertInstanceof('FooClassBehavior', $b2);
+		$this->assertEquals($ob2, $b2);
+		$b3 = $this->component->attachClassBehavior('FooClassBehavior3', ['class' => 'FooClassBehavior', 'propertyA'=>'value']);
+		$this->assertInstanceof('FooClassBehavior', $b3);
+		$b4 = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
+		$this->assertEquals([$this->component->FooRegularBehavior], $b4);
+		$b5 = $this->component->attachClassBehavior('FooRegularBehavior2', ['class' => 'BehaviorTestBehavior', 'Excitement'=>'behavior-value']);
+		$this->assertEquals([$this->component->FooRegularBehavior2], $b5);
 
 		//Test that the existing listening component can be a FooClassBehavior
 		$this->assertNotNull($this->component->asa('FooClassBehavior'), "Component is does not have the FooClassBehavior and should have this behavior");
@@ -703,19 +712,32 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('default', $this->component->asa('FooClassBehavior2')->PropertyA, "Component is does not have the FooClassBehavior2 and should have this behavior");
 		$this->assertNotNull($this->component->asa('FooClassBehavior3'), "Component is does not have the FooClassBehavior3 and should have this behavior");
 		$this->assertEquals('value', $this->component->asa('FooClassBehavior3')->PropertyA, "Component is does not have the FooClassBehavior2 and should have this behavior");
+		$this->assertNotNull($this->component->asa('FooRegularBehavior'));
+		$this->assertEquals('faa', $this->component->asa('FooRegularBehavior')->Excitement);
+		$this->assertNotNull($this->component->asa('FooRegularBehavior2'));
+		$this->assertEquals('behavior-value', $this->component->asa('FooRegularBehavior2')->Excitement);
 
 		// test if the function modifies new instances of the object
 		$anothercomponent = new NewComponent();
 
 		//The new component should be a FooClassBehavior
-		$this->assertNotNull($anothercomponent->asa('FooClassBehavior'), "anothercomponent does not have the FooClassBehavior");
-		$this->assertNotNull($anothercomponent->asa('FooClassBehavior2'), "anothercomponent does not have the FooClassBehavior2");
-		$this->assertNotNull($anothercomponent->asa('FooClassBehavior3'), "anothercomponent does not have the FooClassBehavior3");
+		$this->assertNotNull($anothercomponent->asa('FooClassBehavior'), "anothercomponent does not have the FooClassBehavior and should");
+		$this->assertNotNull($anothercomponent->asa('FooClassBehavior2'), "anothercomponent does not have the FooClassBehavior2 and should");
+		$this->assertNotNull($anothercomponent->asa('FooClassBehavior3'), "anothercomponent does not have the FooClassBehavior3 and should");
+		$this->assertNotNull($anothercomponent->asa('FooRegularBehavior'), "anothercomponent does not have the FooRegularBehavior and should");
+		$this->assertNotNull($anothercomponent->asa('FooRegularBehavior2'), "anothercomponent does not have the FooRegularBehavior2 and should");
 
 		// test when overwriting an existing class behavior, it should throw an TInvalidOperationException
 		try {
 			$this->component->attachClassBehavior('FooClassBehavior', new BarClassBehavior);
 			$this->fail('TInvalidOperationException not raised when overwriting an existing behavior');
+		} catch (TInvalidOperationException $e) {
+		}
+		
+		// test when overwriting an existing class behavior, it should throw an TInvalidOperationException
+		try {
+			$this->component->attachClassBehavior('RegularBehaviorFail', new BehaviorTestBehavior());
+			$this->fail('TInvalidOperationException not raised when attaching a regular object behavior to the entire class.  Regular behaviors cannot have more than one owner.');
 		} catch (TInvalidOperationException $e) {
 		}
 
@@ -750,12 +772,15 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->detachClassBehavior('FooClassBehavior2');
 		$this->component->detachClassBehavior('FooClassBehavior3');
 		$this->component->detachClassBehavior('BarClassBehavior');
+		$this->component->detachClassBehavior('FooRegularBehavior');
+		$this->component->detachClassBehavior('FooRegularBehavior2');
 
 		// Test attaching of single object behaviors as class-wide behaviors
 		$this->component->attachClassBehavior('BarBehaviorObject', 'BarBehavior');
 		$this->assertTrue($this->component->asa('BarBehaviorObject') instanceof BarBehavior);
 		$this->assertEquals($this->component->BarBehaviorObject->Owner, $this->component);
 		$this->component->detachClassBehavior('BarBehaviorObject');
+		$this->assertNull($this->component->asa('BarBehaviorObject'));
 	}
 
 
@@ -770,26 +795,42 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$prenolistencomponent = new NewComponentNoListen();
 
 		//Attach a class behavior
-		$this->component->attachClassBehavior('FooClassBehavior', new FooClassBehavior);
+		$b = $this->component->attachClassBehavior('FooClassBehavior', $cb = new FooClassBehavior());
+		$this->assertEquals($cb, $b);
+		$b = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
+		$rb = $this->component->FooRegularBehavior;
+		$this->assertEquals([$rb], $b);
 
 		//Create new components that listen and don't listen to global events
 		$anothercomponent = new NewComponent();
 		$postnolistencomponent = new NewComponentNoListen();
+		$ancomb = $anothercomponent->FooRegularBehavior;
 
 		//ensures that all the Components are properly initialized
 		$this->assertEquals(2, $this->component->getEventHandlers('fxDetachClassBehavior')->getCount());
-		$this->assertNotNull($this->component->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
+		$this->assertNotNull($this->component->asa('FooClassBehavior'), "Listening Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNull($prenolistencomponent->asa('FooClassBehavior'), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNotNull($anothercomponent->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNotNull($postnolistencomponent->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
+		$this->assertNotNull($anothercomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
+		$this->assertNotNull($postnolistencomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
 
 
-		$this->component->detachClassBehavior('FooClassBehavior');
+		$deb = $this->component->detachClassBehavior('FooClassBehavior');
+		$this->assertEquals($cb, $deb);
+		
+		$derb = $this->component->detachClassBehavior('FooRegularBehavior');
+		$this->assertEquals([$rb, $ancomb], $derb);
+		
+		$noReturnBehavior = $this->component->detachClassBehavior('NoBehaviorOfThisName');
+		$this->assertNull($noReturnBehavior);
 
 		$this->assertNull($this->component->asa('FooClassBehavior'), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNull($prenolistencomponent->asa('FooClassBehavior'), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNull($anothercomponent->asa('FooClassBehavior'), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNotNull($postnolistencomponent->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
+		$this->assertNull($anothercomponent->asa('FooRegularBehavior'), "Component has the FooRegularBehavior and should _not_ have this behavior");
+		$this->assertNotNull($postnolistencomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
 
 
 		//tear down function variables
@@ -982,6 +1023,22 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		//This forces the isa on the BarBehavior to respond to any class with true
 		$behavior->setInstanceReturn(true);
 		$this->assertTrue($this->component->isa('FooBehavior'));
+	}
+	
+	public function testGetBehaviors()
+	{
+		$this->assertEquals([], $this->component->getBehaviors());
+		$b = new FooBarBehavior();
+		$this->assertEquals($b, $this->component->attachBehavior('FooBarBehavior', $b));
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$b->setEnabled(false);
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$b->setEnabled(true);
+		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$this->assertEquals(false, is_object($this->component->getBehaviors()));
+		$this->assertEquals(true, is_array($this->component->getBehaviors()));
+		$this->assertEquals($b, $this->component->detachBehavior('FooBarBehavior'));
+		$this->assertEquals([], $this->component->getBehaviors());
 	}
 
 	public function testAttachDetachBehavior()
@@ -1689,6 +1746,53 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->setSubProperty('Object.Text', 'new object text');
 		$this->assertEquals('new object text', $this->component->getSubProperty('Object.Text'));
 	}
+	
+	public function testHasMethod()
+	{
+		$this->assertTrue($this->component->hasMethod('eventReturnValue'));
+		$this->assertTrue($this->component->hasMethod('eventreturnvalue'));
+		$this->assertFalse($this->component->hasMethod('noeventreturnvalue'));
+	
+		// fx won't throw an error if any of these fx function are called on an object.
+		//	It is a special prefix event designation that every object responds to all events/methods.
+		$this->assertTrue($this->component->hasMethod('fxAttachClassBehavior'));
+		$this->assertTrue($this->component->hasMethod('fxattachclassbehavior'));
+	
+		$this->assertTrue($this->component->hasMethod('fxNonExistantGlobalEvent'));
+		$this->assertTrue($this->component->hasMethod('fxnonexistantglobalevent'));
+	
+		$this->assertTrue($this->component->hasMethod('dyNonExistantLocalEvent'));
+		$this->assertTrue($this->component->hasMethod('dynonexistantlocalevent'));
+	
+	
+		//Test behavior events
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior());
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('getExcitement'));
+		
+		//Test behaviors within behaviors.
+		$this->component->BehaviorTestBehavior->attachBehavior('SubBehavior', new FooFooClassBehavior());
+		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('faafaaEverMore'));
+		$this->assertFalse($this->component->hasMethod('faafaaEverMore'));
+		$this->assertEquals('ffemResult', $this->component->BehaviorTestBehavior->faafaaEverMore(null, null, null));
+		try {
+			$this->component->faafaaEverMore(null, null, null);
+			$this->fail('TApplicationException not raised when calling a behaviors behaviors method');
+		} catch (TApplicationException $e) {
+		}
+		
+	
+		$this->component->disableBehavior('BehaviorTestBehavior');
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->enableBehavior('BehaviorTestBehavior');
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+	
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->enableBehaviors();
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+	}
 
 	public function testHasEvent()
 	{
@@ -1705,7 +1809,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->component->hasEvent('fxnonexistantglobalevent'));
 
 		$this->assertTrue($this->component->hasEvent('dyNonExistantLocalEvent'));
-		$this->assertTrue($this->component->hasEvent('fxnonexistantlocalevent'));
+		$this->assertTrue($this->component->hasEvent('dynonexistantlocalevent'));
 
 
 		//Test behavior events
@@ -1717,6 +1821,11 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->disableBehavior('BehaviorTestBehavior');
 		$this->assertFalse($this->component->hasEvent('onBehaviorEvent'));
 		$this->component->enableBehavior('BehaviorTestBehavior');
+		$this->assertTrue($this->component->hasEvent('onBehaviorEvent'));
+		
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->hasEvent('onBehaviorEvent'));
+		$this->component->enableBehaviors();
 		$this->assertTrue($this->component->hasEvent('onBehaviorEvent'));
 	}
 

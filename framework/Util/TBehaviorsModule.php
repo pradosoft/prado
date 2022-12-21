@@ -48,20 +48,51 @@ use Prado\Xml\TXmlElement;
  *
  * This allows TBehaviorsModule to load behaviors, dynamically, from parameters with the TParameterizeBehavior.
  *
+ * Multiple TBehaviorsModules can be instanced, for instance, a second set of behaviors
+ * could be configured in TPageService.  The second TBehaviorsModule can reference
+ * behaviors from the first to attach its behaviors.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var TBehavior[] behaviors attaching to the TPage
+	 * @var bool wether or not WeakReference is available
+	 */
+	private static $_weak;
+
+	/**
+	 * @var IBaseBehavior[] loaded behaviors.
+	 */
+	private static $_behaviors = [];
+
+	/**
+	 * @var IBaseBehavior[] behaviors attaching to the TPage
 	 */
 	private $_pageBehaviors = [];
+
+	/**
+	 * @var array[] delayed behaviors attaching to the loaded behaviors
+	 */
+	private $_behaviorBehaviors = [];
 
 	/**
 	 * @var array[] additional behaviors in a configuration format: array[], serialized php object, json object, string of xml
 	 */
 	private $_additionalBehaviors;
+
+	/**
+	 * Constructor.
+	 *  Discovers the availability of the {@link WeakReference} object in PHP 7.4.0+.
+	 */
+	public function __construct()
+	{
+		if (self::$_weak === null) {
+			self::$_weak = class_exists('\WeakReference', false);
+		}
+		parent::__construct();
+	}
 
 	/**
 	 * Initializes the module by loading behaviors.  If there are page behaviors, this
@@ -77,6 +108,21 @@ class TBehaviorsModule extends \Prado\TModule
 		if (count($this->_pageBehaviors)) {
 			$this->getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 		}
+		foreach ($this->_behaviorBehaviors as $target => $behaviors) {
+			if (!isset(self::$_behaviors[$target])) {
+				throw new TConfigurationException('behaviormodule_behaviorowner_required', 'behavior:' . $target);
+			}
+			$owner = self::$_behaviors[$target];
+			$owner = is_a($owner, '\WeakReference') ? $owner->get() : $owner;
+			foreach ($behaviors as $properties) {
+				$priority = $properties['priority'] ?? null;
+				unset($properties['priority']);
+				$name = $properties['name'];
+				unset($properties['name']);
+				$owner->attachBehavior($name, $properties, $priority);
+			}
+		}
+		$this->_behaviorBehaviors = [];
 		parent::init($config);
 	}
 
@@ -153,13 +199,17 @@ class TBehaviorsModule extends \Prado\TModule
 			if ($attachToClass) {
 				$priority = $properties['priority'] ?? null;
 				unset($properties['priority']);
-				TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
+				$behavior = TComponent::attachClassBehavior($name, $properties, $attachToClass, $priority);
 			} else {
 				if (strtolower($attachTo) == "page") {
 					$this->_pageBehaviors[$name] = $properties;
 					continue;
 				} elseif (strncasecmp($attachTo, 'module:', 7) === 0) {
 					$owner = $this->getApplication()->getModule(trim(substr($attachTo, 7)));
+				} elseif (strncasecmp($attachTo, 'behavior:', 9) === 0) {
+					$properties['name'] = $name;
+					$this->_behaviorBehaviors[trim(substr($attachTo, 9))][] = $properties;
+					continue;
 				} else {
 					$owner = $this->getSubProperty($attachTo);
 				}
@@ -168,7 +218,10 @@ class TBehaviorsModule extends \Prado\TModule
 				if (!$owner) {
 					throw new TConfigurationException('behaviormodule_behaviorowner_required', $attachTo);
 				}
-				$owner->attachBehavior($name, $properties, $priority);
+				$behavior = $owner->attachBehavior($name, $properties, $priority);
+			}
+			if (!is_array($behavior)) {
+				self::$_behaviors[$name] = self::$_weak ? \WeakReference::create($behavior) : $behavior;
 			}
 		}
 	}

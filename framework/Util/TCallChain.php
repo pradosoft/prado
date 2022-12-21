@@ -17,20 +17,6 @@ use Prado\Collections\TList;
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
  * @since 3.2.3
- * @method mixed dyLoadPageConfigurationFromPhp($config, $configPath, $configPagePath)
- * @method mixed dyLoadPageConfigurationFromXml($dom, $configPath, $configPagePath)
- * @method mixed dyApplyConfiguration()
- * @method string[] dyDefaultRoles($defaultRoles)
- * @method bool dyIsInRole($returnValue, $role)
- * @method mixed dyAddItem(mixed $key, mixed $value)
- * @method mixed dyRemoveItem(mixed $key, mixed $value)
- * @method mixed dyNoItem(mixed $returnValue, mixed $key)
- * @method mixed dyWrite(string $str, array|int|\Prado\Util\TCallChain|string $p1, null|\Prado\Util\TCallChain $p2)
- * @method mixed dyWriteLine(string $str, array|int|\Prado\Util\TCallChain|string $p1, null|\Prado\Util\TCallChain $p2)
- * @method string dyFlush()
- * @method mixed dyLogCron(int $numtasks)
- * @method mixed dyLogCronTask(\Prado\Util\Cron\TCronTask $task, string $username)
- * @method mixed dyLogCronTaskEnd(Prado\Util\Cron\TCronTask $task)
  */
 class TCallChain extends TList implements IDynamicMethods
 {
