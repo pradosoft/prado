@@ -179,6 +179,7 @@ class FooFooClassBehavior extends FooClassBehavior
 {
 	public function faafaaEverMore($object, $laa, $sol)
 	{
+		return 'ffemResult';
 	}
 }
 
@@ -1689,6 +1690,51 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->setSubProperty('Object.Text', 'new object text');
 		$this->assertEquals('new object text', $this->component->getSubProperty('Object.Text'));
 	}
+	
+	public function testHasMethod()
+	{
+		$this->assertTrue($this->component->hasMethod('eventReturnValue'));
+		$this->assertTrue($this->component->hasMethod('eventreturnvalue'));
+		$this->assertFalse($this->component->hasMethod('noeventreturnvalue'));
+	
+		// fx won't throw an error if any of these fx function are called on an object.
+		//	It is a special prefix event designation that every object responds to all events/methods.
+		$this->assertTrue($this->component->hasMethod('fxAttachClassBehavior'));
+		$this->assertTrue($this->component->hasMethod('fxattachclassbehavior'));
+	
+		$this->assertTrue($this->component->hasMethod('fxNonExistantGlobalEvent'));
+		$this->assertTrue($this->component->hasMethod('fxnonexistantglobalevent'));
+	
+		$this->assertTrue($this->component->hasMethod('dyNonExistantLocalEvent'));
+		$this->assertTrue($this->component->hasMethod('dynonexistantlocalevent'));
+	
+	
+		//Test behavior events
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior());
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('getExcitement'));
+		$this->component->BehaviorTestBehavior->attachBehavior('SubBehavior', new FooFooClassBehavior());
+		$this->assertTrue($this->component->BehaviorTestBehavior->hasMethod('faafaaEverMore'));
+		$this->assertFalse($this->component->hasMethod('faafaaEverMore'));
+		$this->assertEquals('ffemResult', $this->component->BehaviorTestBehavior->faafaaEverMore(null, null, null));
+		try {
+			$this->component->faafaaEverMore(null, null, null);
+			$this->fail('TApplicationException not raised when calling a behaviors behaviors method');
+		} catch (TApplicationException $e) {
+		}
+		
+	
+		$this->component->disableBehavior('BehaviorTestBehavior');
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->enableBehavior('BehaviorTestBehavior');
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+	
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->hasMethod('getExcitement'));
+		$this->component->enableBehaviors();
+		$this->assertTrue($this->component->hasMethod('getExcitement'));
+	}
 
 	public function testHasEvent()
 	{
@@ -1705,7 +1751,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->component->hasEvent('fxnonexistantglobalevent'));
 
 		$this->assertTrue($this->component->hasEvent('dyNonExistantLocalEvent'));
-		$this->assertTrue($this->component->hasEvent('fxnonexistantlocalevent'));
+		$this->assertTrue($this->component->hasEvent('dynonexistantlocalevent'));
 
 
 		//Test behavior events
@@ -1717,6 +1763,11 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->disableBehavior('BehaviorTestBehavior');
 		$this->assertFalse($this->component->hasEvent('onBehaviorEvent'));
 		$this->component->enableBehavior('BehaviorTestBehavior');
+		$this->assertTrue($this->component->hasEvent('onBehaviorEvent'));
+		
+		$this->component->disableBehaviors();
+		$this->assertFalse($this->component->hasEvent('onBehaviorEvent'));
+		$this->component->enableBehaviors();
 		$this->assertTrue($this->component->hasEvent('onBehaviorEvent'));
 	}
 

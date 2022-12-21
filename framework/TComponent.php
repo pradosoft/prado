@@ -940,6 +940,31 @@ class TComponent
 	}
 
 	/**
+	 * Determines whether a method is defined. When behaviors are enabled, this 
+	 * will loop through all enabled behaviors checking for the method as well.
+	 * Nested behaviors within behaviors are not supported but the nested behavior can
+	 * affect the primary behavior like any behavior affects their owner.
+	 * Note, method name are case-insensitive.
+	 * @param string $name the method name
+	 * @return bool
+	 * @since 4.2.2
+	 */
+	public function hasMethod($name)
+	{
+		if (method_exists($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
+			return true;
+		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+			foreach ($this->_m->toArray() as $behavior) {
+				//method_exists($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
+				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && method_exists($behavior, $name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Determines whether an event is defined.
 	 * An event is defined if the class has a method whose name is the event name
 	 * prefixed with 'on', 'fx', or 'dy'.
