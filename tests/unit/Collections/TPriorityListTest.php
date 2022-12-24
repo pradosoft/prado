@@ -29,6 +29,25 @@ class AutoPriorityListItem extends PriorityListItem implements IPriorityitem
 	}
 }
 
+class SetPriorityListItem extends PriorityListItem implements IPriorityProperty
+{
+	public $priority;
+	
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+
+	public function setPriority($value)
+	{
+		$this->priority = $value;
+	}
+
+	public function __invoke()
+	{
+	}
+}
+
 /**
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList
  *
@@ -486,6 +505,14 @@ class TPriorityListTest extends TListTest
 		
 		$plist->remove($aplistitem);
 		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(10));
+		
+		
+		$aplistitem->priority = '7';
+		$plist->insertAtIndexInPriority($aplistitem, false, 'not_numeric');
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(7));
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(7));
 	}
 	
 
@@ -523,6 +550,68 @@ class TPriorityListTest extends TListTest
 		$plist = new $this->_baseClass($this->plist, true);
 		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
 		$plist->removeAtIndexInPriority(0);
+	}
+	
+	public function testIPriorityProperty()
+	{
+		$plist = new $this->_baseClass();
+		$plist[] = $this->pfirst;
+		
+		$aplistitem = new SetPriorityListItem("my Data");
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(null));
+		$this->assertEquals($plist->getDefaultPriority(), $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(null));
+		$this->assertEquals($plist->getDefaultPriority(), $aplistitem->getPriority());
+		
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$aplistitem->priority = 5;
+		$this->assertEquals(5, $aplistitem->getPriority());
+		$this->assertEquals(true, $aplistitem instanceof IPriorityItem);
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(5));
+		$this->assertEquals(5, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(5));
+		$this->assertEquals(5, $aplistitem->getPriority());
+		
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		
+		$aplistitem->priority = 'string';
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(10));
+		$this->assertEquals(10, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(10));
+		$this->assertEquals(10, $aplistitem->getPriority());
+		
+		
+		$aplistitem->priority = '7';
+		$plist->insertAtIndexInPriority($aplistitem, false, 'not_numeric');
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(7));
+		$this->assertEquals(7, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(7));
+		$this->assertEquals(7, $aplistitem->getPriority());
 	}
 
 	public function testPriorityOfTPriorityList()

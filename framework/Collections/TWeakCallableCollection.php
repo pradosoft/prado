@@ -215,11 +215,13 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{
-		if ($priority === null) {
-			if ($item instanceof IPriorityItem) {
-				$priority = $item->getPriority();
-				$priority = is_numeric($priority) ? $priority : null;
-			}
+		$itemPriority = null;
+		if (($priority === null || !is_numeric($priority)) && $item instanceof IPriorityItem) {
+			$itemPriority = $priority = $item->getPriority();
+		}
+		$priority = $this->ensurePriority($priority);
+		if ($item instanceof IPriorityProperty && $itemPriority != $priority) {
+			$item->setPriority($priority);
 		}
 		return parent::insertAtIndexInPriority($this->filterItemForInput($item, true), $index, $priority, $preserveCache);
 	}
