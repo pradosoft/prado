@@ -17,6 +17,17 @@ namespace Prado\Util;
 class TClassBehavior extends \Prado\TComponent implements IClassBehavior
 {
 	/**
+	 * This processes configuration elements [from TBehaviorsModule].  This is usually
+	 * called before attach but cannot be guaranteed to be called outside the {@link
+	 * TBehaviorsModule} environment. This is only needed for complex behavior
+	 * configurations.
+	 * @param array|\Prado\Xml\TXmlElement $config any innards to the behavior configuration.
+	 */
+	public function init($config)
+	{
+	}
+
+	/**
 	 * Attaches the behavior object to the component.
 	 * @param \Prado\TComponent $component the component that this behavior is to be attached to.
 	 */

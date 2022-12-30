@@ -174,13 +174,27 @@ class TBehaviorsModule extends \Prado\TModule
 			return;
 		}
 		foreach ($config as $properties) {
+			$element = $properties;
 			if ($isXml) {
 				$properties = array_change_key_case($properties->getAttributes()->toArray());
 			} else {
 				if (!is_array($properties)) {
 					throw new TConfigurationException('behaviormodule_behavior_as_array_required');
 				}
+				if (isset($properties['properties'])) {
+					$properties = $properties['properties'];
+					unset($element['properties']);
+					$properties['class'] = $element['class'];
+					unset($element['class']);
+				} else {
+					unset($element['name']);
+					unset($element['class']);
+					unset($element['attachto']);
+					unset($element['attachtoclass']);
+					unset($element['priority']);
+				}
 			}
+			$properties[IBaseBehavior::CONFIG_KEY] = $element;
 			$name = $properties['name'];
 			unset($properties['name']);
 			if (!$name) {

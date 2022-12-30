@@ -8,6 +8,17 @@ use Prado\Web\UI\TPage;
 class TestModuleBehavior1 extends TBehavior
 {
 	private $_propertyA = 'default';
+	private $_initConfig = 'init_not_called/no_init_data';
+	
+	public function init($config)
+	{
+		$this->_initConfig = $config;
+	}
+	public function getBehaviorInitConfig()
+	{
+		return $this->_initConfig;
+	}
+	
 	public function getPropertyA()
 	{
 		return $this->_propertyA;
@@ -106,6 +117,8 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			//Check was App behavior installed
 			$this->assertInstanceOf('TestModuleBehavior1', $b1 = $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
+			$this->assertInstanceOf('\Prado\Xml\TXmlElement', $b1->getBehaviorInitConfig());
+			$this->assertEquals('behavior', $b1->getBehaviorInitConfig()->getTagName());
 			
 			$this->assertInstanceOf('TestModuleBehavior5', $b5 = $b1->asa('testBehavior5'));
 			$this->assertEquals('value5', $b1->asa('testBehavior5')->propertyA);
@@ -131,6 +144,9 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		}
 		$phpconfig = ['class' => 'TBehaviorsModule', 'properties' => [], 'behaviors' => [
 			['name' => 'testBehavior1', 'class' => 'TestModuleBehavior1', 'attachto' => 'Application', 'priority' => 1, 'propertya' => 'value1'],
+			['class' => 'TestModuleBehavior1', 'properties' => ['name' => 'propBehaviorName', 'attachto' => 'Application', 'priority' => 8, 'propertya' => 'abc'], 
+					'complexProp' => 'complexValue'
+				],
 			['name' => 'testBehavior2', 'class' => 'TestModuleBehavior2', 'attachto' => 'Page', 'priority' => '2', 'propertya' => 'value2'],
 			['name' => 'testBehavior3', 'class' => 'TestModuleBehavior3', 'attachtoclass' => 'TestModuleBM2', 'priority' => 3.0, 'propertya' => 'value3'],
 			['name' => 'testBehavior4', 'class' => 'TestModuleBehavior4', 'attachto' => 'module:modB', 'priority' => 4, 'propertya' => 'value4']
@@ -139,6 +155,8 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$this->obj->init($phpconfig);
 			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
+			$this->assertEquals(['propertya' => 'value1'], $app->testBehavior1->getBehaviorInitConfig());
+			$this->assertEquals(['complexProp' => 'complexValue'], $app->propBehaviorName->getBehaviorInitConfig());
 			$this->assertEquals(1, count($app->onBeginRequest));
 			$app->onBeginRequest->clear();
 			

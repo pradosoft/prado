@@ -20,7 +20,7 @@ namespace Prado\Util;
  * events that are defined in the behavior class and not available in the
  * class.  Objects may signal behaviors through dynamic events.
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2.3
  */
 interface IBehavior extends IBaseBehavior
