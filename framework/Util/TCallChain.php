@@ -99,8 +99,7 @@ class TCallChain extends TList implements IDynamicMethods
 		}
 
 		if (!$this->_iterator) {
-			$chain_array = array_reverse($this->toArray());
-			$this->_iterator = new \ArrayIterator($chain_array);
+			$this->_iterator = new \ArrayIterator($this->toArray());
 		}
 		if ($this->_iterator->valid()) {
 			do {
