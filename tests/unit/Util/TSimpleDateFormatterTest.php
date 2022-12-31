@@ -105,6 +105,8 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 		$this->obj->setPattern("MM/dd");
 		$this->assertSame(date("Y-10-22"), date('Y-m-d', $this->obj->parse('10/22', true)));
 		$this->assertSame(date("Y-10-22"), date('Y-m-d', $this->obj->parse('10/22', false)));
+		
+		$this->assertSame(date("Y-10-01"), date('Y-m-d', $this->obj->parse('09/31', false)));
 	}
 
 	public function testParseMonthPattern()
@@ -124,11 +126,11 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 		// default to current date = true
 		$this->obj->setPattern('MM');
-		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse('09', true)));
+		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse('08', true)));
 
 		$this->obj->setPattern('M');
-		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse("9", true)));
-		$this->assertSame(date('Y-09-d'), date('Y-m-d', $this->obj->parse("09", true)));
+		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse("8", true)));
+		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse("08", true)));
 
 		// test wrong month
 		$this->assertNull($this->obj->parse('13', true));
@@ -170,8 +172,8 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 		// test missing month
 		$this->obj->setPattern("yy/MM");
-		$this->assertSame(date("2019-09-01"), date('Y-m-d', $this->obj->parse("19/09", false)));
-		$this->assertSame(date("2019-09-d"), date('Y-m-d', $this->obj->parse("19/09", true)));
+		$this->assertSame(date("2019-08-01"), date('Y-m-d', $this->obj->parse("19/08", false)));
+		$this->assertSame(date("2019-08-d"), date('Y-m-d', $this->obj->parse("19/08", true)));
 	}
 
 	public function testIsValidDate()
