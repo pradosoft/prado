@@ -328,11 +328,11 @@ class TPriorityList extends TList
 		}
 
 		$itemPriority = null;
-		if (($priority === null || !is_numeric($priority)) && $item instanceof IPriorityItem) {
+		if (($isPriorityItem = $item instanceof IPriorityItem) && ($priority === null || !is_numeric($priority))) {
 			$itemPriority = $priority = $item->getPriority();
 		}
 		$priority = $this->ensurePriority($priority);
-		if (($item instanceof IPriorityProperty) && $itemPriority != $priority) {
+		if (($item instanceof IPriorityCapture) && (!$isPriorityItem || $itemPriority !== $priority)) {
 			$item->setPriority($priority);
 		}
 

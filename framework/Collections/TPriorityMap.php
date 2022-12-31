@@ -331,11 +331,11 @@ class TPriorityMap extends TMap
 	public function add($key, $value, $priority = null)
 	{
 		$itemPriority = null;
-		if (($priority === null || !is_numeric($priority)) && $value instanceof IPriorityItem) {
+		if (($isPriorityItem = $value instanceof IPriorityItem) && ($priority === null || !is_numeric($priority))) {
 			$itemPriority = $priority = $value->getPriority();
 		}
 		$priority = $this->ensurePriority($priority);
-		if (($value instanceof IPriorityProperty) && $itemPriority != $priority) {
+		if (($value instanceof IPriorityCapture) && (!$isPriorityItem || $itemPriority !== $priority)) {
 			$value->setPriority($priority);
 		}
 

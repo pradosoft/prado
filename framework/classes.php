@@ -24,6 +24,7 @@ return [
 'TFileCacheDependency' => 'Prado\Caching\TFileCacheDependency',
 'TGlobalStateCacheDependency' => 'Prado\Caching\TGlobalStateCacheDependency',
 'TMemCache' => 'Prado\Caching\TMemCache',
+'IPriorityCapture' => 'Prado\Collections\IPriorityCapture',
 'IPriorityItem' => 'Prado\Collections\IPriorityItem',
 'IPriorityProperty' => 'Prado\Collections\IPriorityProperty',
 'TAttributeCollection' => 'Prado\Collections\TAttributeCollection',
