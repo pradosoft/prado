@@ -1,6 +1,7 @@
 <?php
 
 
+use Prado\Exceptions\TApplicationException;
 use Prado\Util\TCallChain;
 
 class TCallChainTest extends PHPUnit\Framework\TestCase
@@ -11,6 +12,20 @@ class TCallChainTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+	}
+	
+	public function testException()
+	{
+		$chain = new TCallChain('dySimpleMethod');
+		
+		$chain->dySimpleMethod();
+		
+		self::assertTrue(true);
+		try {
+			$chain->dyNoMethod();
+			self::fail('Expected TApplicationException not thrown when invalid dynamic event raised.');
+		} catch (TApplicationException $e) {
+		}
 	}
 
 	protected $_order = [];

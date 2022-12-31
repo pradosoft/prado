@@ -9,6 +9,7 @@
 
 namespace Prado\Util;
 
+use Prado\Exceptions\TApplicationException;
 use Prado\Collections\TList;
 
 /**
@@ -145,6 +146,8 @@ class TCallChain extends TList implements IDynamicMethods
 	{
 		if ($this->_method == $method) {
 			return call_user_func_array([$this, 'call'], $args);
+		} else {
+			throw new TApplicationException('callchain_bad_dynamic_event', $method, $this->_method);
 		}
 		return null;
 	}
