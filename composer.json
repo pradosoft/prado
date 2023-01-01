@@ -84,7 +84,10 @@
     "config": {
         "platform": {
             "php": "7.3"
-        }
+        },
+		"allow-plugins": {
+			"phpdocumentor/shim": true
+		}
     },
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",
