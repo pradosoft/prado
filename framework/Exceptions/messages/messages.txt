@@ -138,6 +138,8 @@ pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attri
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
 
+callchain_bad_dynamic_event				= TCallChain.{0} was raised but {1} was expected..
+
 behaviormodule_behavior_as_array_required = php <behavior> must be an array.
 behaviormodule_behaviorname_required	= <behavior> must contain a 'name' attribute for attaching the behavior.
 behaviormodule_behaviorclass_required	= <behavior> must contain a 'class' attribute defining the behavior class.
