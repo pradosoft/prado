@@ -19,10 +19,6 @@ namespace Prado\Collections;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.2
  */
-interface IPriorityProperty extends IPriorityItem
+interface IPriorityProperty extends IPriorityItem, IPriorityCapture
 {
-	/**
-	 * @param numeric $value priority of the item
-	 */
-	public function setPriority($value);
 }

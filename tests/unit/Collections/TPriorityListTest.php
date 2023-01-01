@@ -15,7 +15,7 @@ class PriorityListItem
 	}
 }
 
-class AutoPriorityListItem extends PriorityListItem implements IPriorityitem
+class AutoPriorityListItem extends PriorityListItem implements IPriorityItem
 {
 	public $priority;
 	
@@ -24,12 +24,36 @@ class AutoPriorityListItem extends PriorityListItem implements IPriorityitem
 		return $this->priority;
 	}
 	
+	public function setPriority($value)
+	{
+		$this->priority = $value;
+	}
+	
 	public function __invoke()
 	{
 	}
 }
 
-class SetPriorityListItem extends PriorityListItem implements IPriorityProperty
+class CapturePriorityListItem extends PriorityListItem implements IPriorityCapture
+{
+	public $priority;
+	
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+	
+	public function setPriority($value)
+	{
+		$this->priority = $value;
+	}
+	
+	public function __invoke()
+	{
+	}
+}
+
+class PriorityPropertyListItem extends PriorityListItem implements IPriorityProperty
 {
 	public $priority;
 	
@@ -479,6 +503,7 @@ class TPriorityListTest extends TListTest
 		
 		$plist->insertAtIndexInPriority($aplistitem, false, 20);
 		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		$this->assertEquals(null, $aplistitem->getPriority());
 		
 		$plist->remove($aplistitem);
 		$this->assertEquals(null, $plist->itemsAtPriority(20));
@@ -552,12 +577,57 @@ class TPriorityListTest extends TListTest
 		$plist->removeAtIndexInPriority(0);
 	}
 	
+	public function testIPriorityCapture()
+	{
+		$plist = new $this->_baseClass();
+		$plist[] = $this->pfirst;
+		
+		$aplistitem = new CapturePriorityListItem("my Data");
+		$this->assertEquals(null, $aplistitem->getPriority());
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(null));
+		$this->assertEquals($plist->getDefaultPriority(), $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority(null));
+		$this->assertEquals($plist->getDefaultPriority(), $aplistitem->getPriority());
+		
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$aplistitem->priority = 5;
+		$this->assertEquals(5, $aplistitem->getPriority());
+		$this->assertEquals(true, $aplistitem instanceof IPriorityCapture);
+		$this->assertEquals(false, $aplistitem instanceof IPriorityItem);
+		$plist->insertAtIndexInPriority($aplistitem, false, null);
+		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority($aplistitem->getPriority()));
+		$this->assertEquals($aplistitem->getPriority(), $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals([$this->pfirst], $plist->itemsAtPriority($aplistitem->getPriority()));
+		$this->assertEquals($aplistitem->getPriority(), $aplistitem->getPriority());
+		
+		$aplistitem->priority = 5;
+		$plist->insertAtIndexInPriority($aplistitem, false, 20);
+		$this->assertEquals([$aplistitem], $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+		
+		$plist->remove($aplistitem);
+		$this->assertEquals(null, $plist->itemsAtPriority(20));
+		$this->assertEquals(20, $aplistitem->getPriority());
+	}
+	
 	public function testIPriorityProperty()
 	{
 		$plist = new $this->_baseClass();
 		$plist[] = $this->pfirst;
 		
-		$aplistitem = new SetPriorityListItem("my Data");
+		$aplistitem = new PriorityPropertyListItem("my Data");
 		$plist->insertAtIndexInPriority($aplistitem, false, null);
 		$this->assertEquals([$this->pfirst, $aplistitem], $plist->itemsAtPriority(null));
 		$this->assertEquals($plist->getDefaultPriority(), $aplistitem->getPriority());
