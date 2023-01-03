@@ -22,7 +22,22 @@ class AutoPriorityMapItem extends TPriorityMapTest_MapItem implements IPriorityI
 	}
 }
 
-class SetPriorityMapItem extends TPriorityMapTest_MapItem implements IPriorityProperty
+class CapturePropertyMapItem extends TPriorityMapTest_MapItem implements IPriorityCapture
+{
+	public $priority;
+	
+	public function getPriority()
+	{
+		return $this->priority;
+	}
+	
+	public function setPriority($value)
+	{
+		$this->priority = $value;
+	}
+}
+
+class PriorityPropertyMapItem extends TPriorityMapTest_MapItem implements IPriorityProperty
 {
 	public $priority;
 	
@@ -381,9 +396,9 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		
 		$this->assertEquals(5, $this->map->getCount());
 		
-		$this->map = new TPriorityMap();
 		// Test IPriorityProperty
-		$autoItem = new SetPriorityMapItem();
+		$this->map = new TPriorityMap();
+		$autoItem = new PriorityPropertyMapItem();
 		
 		$this->map->add('keyA', $autoItem);
 		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityAt('keyA'));
@@ -402,6 +417,45 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(4, $this->map->priorityAt('keyC'));
 		$this->assertEquals(4, $this->map->priorityOf($autoItem));
 		$this->assertEquals(4, $autoItem->getPriority());
+		$this->map->remove('keyC');
+		
+		$autoItem->priority = 3;
+		$this->map->add('keyD', $autoItem, 5);
+		$this->assertEquals(5, $this->map->priorityAt('keyD'));
+		$this->assertEquals(5, $this->map->priorityOf($autoItem));
+		$this->assertEquals(5, $autoItem->getPriority());
+		$this->map->remove('keyD');
+		
+		$autoItem->priority = 'not_a_numeric';
+		$this->map->add('keyE', $autoItem, 'not_numeric');
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityAt('keyE'));
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityOf($autoItem));
+		$this->assertEquals($this->map->getDefaultPriority(), $autoItem->getPriority());
+		$this->map->remove('keyE');
+		
+		$this->assertEquals(0, $this->map->getCount());
+		
+		// Test IPriorityCapture
+		$this->map = new TPriorityMap();
+		$autoItem = new CapturePropertyMapItem();
+		
+		$this->map->add('keyA', $autoItem);
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityAt('keyA'));
+		$this->assertEquals($this->map->getDefaultPriority(), $autoItem->getPriority());
+		$this->map->remove('keyA');
+		
+		$autoItem->priority = 4;
+		$this->map->add('keyB', $autoItem);
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityAt('keyB'));
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityOf($autoItem));
+		$this->assertEquals($this->map->getDefaultPriority(), $autoItem->getPriority());
+		$this->map->remove('keyB');
+		
+		$autoItem->priority = 4;
+		$this->map->add('keyC', $autoItem, 'not_numeric');
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityAt('keyC'));
+		$this->assertEquals($this->map->getDefaultPriority(), $this->map->priorityOf($autoItem));
+		$this->assertEquals($this->map->getDefaultPriority(), $autoItem->getPriority());
 		$this->map->remove('keyC');
 		
 		$autoItem->priority = 3;
