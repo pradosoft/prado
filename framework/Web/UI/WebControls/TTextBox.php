@@ -651,7 +651,10 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 		$config = $this->getViewState('Config', null);
         if ($config === null) {
             $config = \HTMLPurifier_Config::createDefault();
-            $config->set('Cache.SerializerPath', Prado::getApplication()->getRuntimePath());
+            $config->set(
+                'Cache.SerializerPath',
+                Prado::getApplication()->getRuntimePath()
+            );
         }
 		return $config;
 	}
