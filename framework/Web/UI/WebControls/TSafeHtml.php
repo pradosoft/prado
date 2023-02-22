@@ -46,7 +46,11 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	public function getConfig()
 	{
 		$config = $this->getViewState('Config', null);
-		return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
+        if ($config === null) {
+            $config = \HTMLPurifier_Config::createDefault();
+            $config->set('Cache.SerializerPath', Prado::getApplication()->getRuntimePath());
+        }
+		return $config;
 	}
 
 	/**
