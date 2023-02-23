@@ -433,4 +433,6 @@ urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' must point to an 
 
 urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter is required for pattern '{0}'.
 
-juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed. 
+juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.
+
+htmlpurifier_source_path_failed		    = Unable to create html purifier cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.

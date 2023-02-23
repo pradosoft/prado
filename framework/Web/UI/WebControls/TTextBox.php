@@ -13,6 +13,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TTextBox class
@@ -649,6 +650,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function getConfig()
 	{
 		$config = $this->getViewState('Config', null);
-		return ($config === null) ? \HTMLPurifier_Config::createDefault() : $config;
+		if ($config === null) {
+			$path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
+			if (!is_dir($path)) {
+				if (@mkdir($path) === false) {
+					throw new TConfigurationException(
+						'htmlpurifier_source_path_failed',
+						$path
+					);
+				}
+				chmod($path, Prado::getDefaultPermissions());
+			}
+			$config = \HTMLPurifier_Config::createDefault();
+			$config->set(
+				'Cache.SerializerPath',
+				$path
+			);
+		}
+		return $config;
 	}
 }
