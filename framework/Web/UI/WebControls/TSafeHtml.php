@@ -11,6 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\IO\TTextWriter;
 use Prado\Prado;
+use Prado\Shell\Actions\TPhpShellAction;
 
 /**
  * TSafeHtml class
@@ -47,10 +48,20 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 	{
 		$config = $this->getViewState('Config', null);
         if ($config === null) {
+            $path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
+            if (!is_dir($path)) {
+                if (@mkdir($path) === false) {
+                    throw new TConfigurationException(
+                        'globalization_source_path_failed',
+                        $path
+                    );
+                }
+                chmod($path, Prado::getDefaultPermissions());
+            }
             $config = \HTMLPurifier_Config::createDefault();
             $config->set(
                 'Cache.SerializerPath',
-                Prado::getApplication()->getRuntimePath()
+                $path
             );
         }
 		return $config;
