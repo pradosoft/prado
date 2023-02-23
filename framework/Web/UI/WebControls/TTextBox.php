@@ -649,23 +649,23 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function getConfig()
 	{
 		$config = $this->getViewState('Config', null);
-        if ($config === null) {
-            $path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
-            if (!is_dir($path)) {
-                if (@mkdir($path) === false) {
-                    throw new TConfigurationException(
-                        'htmlpurifier_source_path_failed',
-                        $path
-                    );
-                }
-                chmod($path, Prado::getDefaultPermissions());
-            }
-            $config = \HTMLPurifier_Config::createDefault();
-            $config->set(
-                'Cache.SerializerPath',
-                $path
-            );
-        }
+		if ($config === null) {
+			$path = Prado::getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'htmlpurifier';
+			if (!is_dir($path)) {
+				if (@mkdir($path) === false) {
+					throw new TConfigurationException(
+						'htmlpurifier_source_path_failed',
+						$path
+					);
+				}
+				chmod($path, Prado::getDefaultPermissions());
+			}
+			$config = \HTMLPurifier_Config::createDefault();
+			$config->set(
+				'Cache.SerializerPath',
+				$path
+			);
+		}
 		return $config;
 	}
 }
