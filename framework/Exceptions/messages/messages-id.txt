@@ -464,3 +464,5 @@ ar_delete_invalid						= Turunan {0} tidak bisa dihapus karena ada rekaman baru 
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' tidak benar. ia merujuk ke modul aplikasi yang benar.
 
 juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.
+
+htmlpurifier_source_path_failed		    = Unable to create html purifier cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.

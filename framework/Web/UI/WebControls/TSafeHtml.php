@@ -11,7 +11,6 @@ namespace Prado\Web\UI\WebControls;
 
 use Prado\IO\TTextWriter;
 use Prado\Prado;
-use Prado\Shell\Actions\TPhpShellAction;
 
 /**
  * TSafeHtml class
@@ -52,7 +51,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
             if (!is_dir($path)) {
                 if (@mkdir($path) === false) {
                     throw new TConfigurationException(
-                        'globalization_source_path_failed',
+                        'htmlpurifier_source_path_failed',
                         $path
                     );
                 }

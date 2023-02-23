@@ -654,7 +654,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
             if (!is_dir($path)) {
                 if (@mkdir($path) === false) {
                     throw new TConfigurationException(
-                        'globalization_source_path_failed',
+                        'htmlpurifier_source_path_failed',
                         $path
                     );
                 }

@@ -418,3 +418,5 @@ tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable
 tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.
 
 juidatepicker_settextmode_unsupported = TextMode of TJuiDatePicker cannot be changed.
+
+htmlpurifier_source_path_failed = Impossible de créer le répertoire de cache '{0}' pour html purifier. Veuillez vous assurer que le répertoire parent existe et possède les droits d'écriture.
