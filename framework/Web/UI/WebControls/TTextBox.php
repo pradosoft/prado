@@ -13,6 +13,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\Web\THttpUtility;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TConfigurationException;
 
 /**
  * TTextBox class

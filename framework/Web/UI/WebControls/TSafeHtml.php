@@ -9,6 +9,7 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\Exceptions\TConfigurationException;
 use Prado\IO\TTextWriter;
 use Prado\Prado;
 
