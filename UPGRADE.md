@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.2.1
+# Upgrading Instructions for PRADO Framework v4.2.2
 
 ### !!!IMPORTANT!!!
 
@@ -6,6 +6,10 @@ The following upgrading instructions are cumulative. That is,
 if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
+
+Upgrading from v4.2.1
+---------------------
+- The way PRADO determines what service to instanciate when receiving a request has been changed. If you experience problems, the old behavior can be restored setting the "request" module to use the "ServiceOrder" ResolveMethod in application configuration.
 
 Upgrading from v4.1.2
 ---------------------
