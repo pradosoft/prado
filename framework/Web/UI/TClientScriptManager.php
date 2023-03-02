@@ -203,7 +203,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 									if (!in_array($url = $baseUrl . '/' . $minPath, $packagesUrl)) {
 										if (!is_file($filePath = $path . DIRECTORY_SEPARATOR . $minPath)) {
 											file_put_contents($filePath, TJavaScript::JSMin(file_get_contents($base . '/' . $subPath)));
-											chmod($filePath, Prado::getDefaultPermissions());
+											chmod($filePath, Prado::getDefaultFilePermissions());
 										}
 										$packagesUrl[] = $url;
 									}

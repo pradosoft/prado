@@ -492,7 +492,7 @@ class MessageSource_XLIFF extends MessageSource
 
 		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir, Prado::getDefaultPermissions());
+			@chmod($dir, Prado::getDefaultDirPermissions());
 		}
 
 		if (!is_dir($dir)) {
@@ -500,7 +500,7 @@ class MessageSource_XLIFF extends MessageSource
 		}
 
 		file_put_contents($file, $this->getTemplate($catalogue));
-		chmod($file, Prado::getDefaultPermissions());
+		chmod($file, Prado::getDefaultFilePermissions());
 
 		return [$variant, $file];
 	}

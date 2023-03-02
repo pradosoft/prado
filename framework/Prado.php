@@ -25,7 +25,20 @@ if (!defined('PRADO_DIR')) {
 	define('PRADO_DIR', __DIR__);
 }
 
+// Defines the default permission for writable directories
+// @todo, the test on PRADO_CHMOD must be remove in the next major release
+if (!defined('PRADO_DIR_CHMOD')) {
+	define('PRADO_DIR_CHMOD', !defined('PRADO_CHMOD') ? 0755 : PRADO_CHMOD);
+}
+
+// Defines the default permission for writable files
+// @todo, the test on PRADO_CHMOD must be removed in the next major release
+if (!defined('PRADO_FILE_CHMOD')) {
+	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0644 : PRADO_CHMOD);
+}
+
 // Defines the default permission for writable directories and files
+// @todo, adding this define must be removed in the next major release
 if (!defined('PRADO_CHMOD')) {
 	define('PRADO_CHMOD', 0777);
 }
@@ -249,11 +262,28 @@ class Prado
 	}
 
 	/**
+	 * @deprecated deprecated since version 4.2.2, replaced by @getDefaultDirPermissions and @getDefaultFilePermissions
 	 * @return int chmod permissions, defaults to 0777
 	 */
 	public static function getDefaultPermissions(): int
 	{
 		return PRADO_CHMOD;
+	}
+
+	/**
+	 * @return int chmod dir permissions, defaults to 0755
+	 */
+	public static function getDefaultDirPermissions(): int
+	{
+		return PRADO_DIR_CHMOD;
+	}
+
+	/**
+	 * @return int chmod file permissions, defaults to 0644
+	 */
+	public static function getDefaultFilePermissions(): int
+	{
+		return PRADO_FILE_CHMOD;
 	}
 
 	/**

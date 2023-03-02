@@ -478,12 +478,12 @@ class TTarFileExtractor
 				if ($v_extract_file) {
 					if ($v_header['typeflag'] == "5") {
 						if (!@file_exists($v_header['filename'])) {
-							if (!@mkdir($v_header['filename'], Prado::getDefaultPermissions())) {
+							if (!@mkdir($v_header['filename'], Prado::getDefaultDirPermissions())) {
 								$this->_error('Unable to create directory {'
 								  . $v_header['filename'] . '}');
 								return false;
 							}
-							chmod($v_header['filename'], Prado::getDefaultPermissions());
+							chmod($v_header['filename'], Prado::getDefaultDirPermissions());
 						}
 					} else {
 						if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
@@ -573,11 +573,11 @@ class TTarFileExtractor
 			return false;
 		}
 
-		if (!@mkdir($p_dir, Prado::getDefaultPermissions())) {
+		if (!@mkdir($p_dir, Prado::getDefaultDirPermissions())) {
 			$this->_error("Unable to create directory '$p_dir'");
 			return false;
 		}
-		chmod($p_dir, Prado::getDefaultPermissions());
+		chmod($p_dir, Prado::getDefaultDirPermissions());
 
 		return true;
 	}

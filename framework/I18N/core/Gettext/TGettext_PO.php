@@ -161,7 +161,7 @@ class TGettext_PO extends TGettext
 		//done
 		@flock($fh, LOCK_UN);
 		@fclose($fh);
-		chmod($file, Prado::getDefaultPermissions());
+		chmod($file, Prado::getDefaultFilePermissions());
 		return true;
 	}
 }

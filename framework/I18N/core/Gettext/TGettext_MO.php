@@ -346,7 +346,7 @@ class TGettext_MO extends TGettext
 		// done
 		@flock($this->_handle, LOCK_UN);
 		@fclose($this->_handle);
-		chmod($file, Prado::getDefaultPermissions());
+		chmod($file, Prado::getDefaultFilePermissions());
 		return true;
 	}
 }

@@ -217,7 +217,7 @@ class TGlobalization extends \Prado\TModule
 							$config['source']
 						);
 					}
-					chmod($config['source'], Prado::getDefaultPermissions()); //make it deletable
+					chmod($config['source'], Prado::getDefaultDirPermissions()); //make it deletable
 				}
 			} else {
 				throw new TConfigurationException("invalid source dir '{$config['source']}'");
@@ -232,7 +232,7 @@ class TGlobalization extends \Prado\TModule
 						$config['cache']
 					);
 				}
-				chmod($config['cache'], Prado::getDefaultPermissions()); //make it deletable
+				chmod($config['cache'], Prado::getDefaultDirPermissions()); //make it deletable
 			}
 		} else {
 			unset($config['cache']);

@@ -56,7 +56,7 @@ class TSafeHtml extends \Prado\Web\UI\TControl
 						$path
 					);
 				}
-				chmod($path, Prado::getDefaultPermissions());
+				chmod($path, Prado::getDefaultDirPermissions());
 			}
 			$config = \HTMLPurifier_Config::createDefault();
 			$config->set(

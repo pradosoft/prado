@@ -255,7 +255,7 @@ class TAssetManager extends \Prado\TModule
 	{
 		if (!is_dir($dst)) {
 			@mkdir($dst);
-			@chmod($dst, Prado::getDefaultPermissions());
+			@chmod($dst, Prado::getDefaultDirPermissions());
 		}
 		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
 		if (@filemtime($dstFile) < @filemtime($src)) {
@@ -276,7 +276,7 @@ class TAssetManager extends \Prado\TModule
 	{
 		if (!is_dir($dst)) {
 			@mkdir($dst);
-			@chmod($dst, Prado::getDefaultPermissions());
+			@chmod($dst, Prado::getDefaultDirPermissions());
 		}
 		if ($folder = @opendir($src)) {
 			while ($file = @readdir($folder)) {
@@ -285,7 +285,7 @@ class TAssetManager extends \Prado\TModule
 				} elseif (is_file($src . DIRECTORY_SEPARATOR . $file)) {
 					if (@filemtime($dst . DIRECTORY_SEPARATOR . $file) < @filemtime($src . DIRECTORY_SEPARATOR . $file)) {
 						@copy($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
-						@chmod($dst . DIRECTORY_SEPARATOR . $file, Prado::getDefaultPermissions());
+						@chmod($dst . DIRECTORY_SEPARATOR . $file, Prado::getDefaultFilePermissions());
 					}
 				} else {
 					$this->copyDirectory($src . DIRECTORY_SEPARATOR . $file, $dst . DIRECTORY_SEPARATOR . $file);
