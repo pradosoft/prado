@@ -34,7 +34,7 @@ if (!defined('PRADO_DIR_CHMOD')) {
 // Defines the default permission for writable files
 // @todo, the test on PRADO_CHMOD must be removed in the next major release
 if (!defined('PRADO_FILE_CHMOD')) {
-	define('PRADO_FILE_CHMOD',  !defined('PRADO_CHMOD') ? 0644 : PRADO_CHMOD);
+	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0644 : PRADO_CHMOD);
 }
 
 // Defines the default permission for writable directories and files
