@@ -7,7 +7,7 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
-Upgrading from v4.2.2
+Upgrading from v4.2.1
 ---------------------
 - The Prado::getDefaultPermissions() function is now deprecated and has been replaced by Prado::getDefaultDirPermissions() and Prado::getDefaultFilePermissions(). If you have defined PRADO_CHMOD in your index.php file, please replace it with PRADO_DIR_CHMOD and PRADO_FILE_CHMOD.
 
