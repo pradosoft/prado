@@ -435,7 +435,7 @@ class MessageSource_gettext extends MessageSource
 		$dir = dirname($mo_file);
 		if (!is_dir($dir)) {
 			@mkdir($dir);
-			@chmod($dir, Prado::getDefaultPermissions());
+			@chmod($dir, Prado::getDefaultDirPermissions());
 		}
 		if (!is_dir($dir)) {
 			throw new TException("Unable to create directory $dir");

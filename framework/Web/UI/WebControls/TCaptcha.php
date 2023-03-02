@@ -10,6 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TConfigurationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
@@ -426,7 +427,7 @@ class TCaptcha extends TImage
 		$path = dirname($this->getApplication()->getAssetManager()->getPublishedPath($captchaScript));
 		$fileName = $path . DIRECTORY_SEPARATOR . 'captcha_key.php';
 		if (!is_file($fileName)) {
-			@mkdir($path);
+			@mkdir($path, Prado::getDefaultDirPermissions());
 			$key = $this->generateRandomKey();
 			$content = "<?php
 \$privateKey='$key';

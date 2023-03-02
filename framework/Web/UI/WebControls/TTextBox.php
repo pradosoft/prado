@@ -659,7 +659,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 						$path
 					);
 				}
-				chmod($path, Prado::getDefaultPermissions());
+				chmod($path, Prado::getDefaultDirPermissions());
 			}
 			$config = \HTMLPurifier_Config::createDefault();
 			$config->set(
