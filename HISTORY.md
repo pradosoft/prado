@@ -6,6 +6,7 @@ ENH: Issue #866 - HTMLPurifier_Config and cache path (majuca)
 ENH: Issue #868 - RFC: Service detection is fragile (ctrlaltca)
 BUG: Issue #815 - Cron tasks delay until their proper time on first entry. Long running cron tasks no longer repeat further pending tasks. (belisoful)
 ENH: Issue #865 - File and dir permissions were too permissive 0777, now the file permissions are 0644 and 0755 for directory by default. (majuca)
+ENH: Issue #869 - Remove execute permission on all files excepted on php-cli (majuca)
 
 ## Version 4.2.1 - May 9, 2022
 
