@@ -332,6 +332,7 @@ return [
 'THttpCookie' => 'Prado\Web\THttpCookie',
 'THttpCookieCollection' => 'Prado\Web\THttpCookieCollection',
 'THttpRequest' => 'Prado\Web\THttpRequest',
+'THttpRequestResolveMethod' => 'Prado\Web\THttpRequestResolveMethod',
 'THttpRequestUrlFormat' => 'Prado\Web\THttpRequestUrlFormat',
 'THttpResponse' => 'Prado\Web\THttpResponse',
 'THttpResponseAdapter' => 'Prado\Web\THttpResponseAdapter',
