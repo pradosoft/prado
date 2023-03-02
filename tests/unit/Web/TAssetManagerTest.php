@@ -40,7 +40,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		// Make asset directory if not exists
 		if (!file_exists(self::$assetDir)) {
 			if (is_writable(dirname(self::$assetDir))) {
-				mkdir(self::$assetDir) ;
+				mkdir(self::$assetDir, Prado::getDefaultDirPermissions()) ;
 			} else {
 				throw new Exception('Directory ' . dirname(self::$assetDir) . ' is not writable');
 			}

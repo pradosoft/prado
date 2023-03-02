@@ -351,7 +351,7 @@ class TApplication extends \Prado\TComponent
 					if (@mkdir($runtimePath) === false) {
 						throw new TConfigurationException('application_runtimepath_failed', $runtimePath);
 					}
-					@chmod($runtimePath, Prado::getDefaultPermissions()); //make it deletable
+					@chmod($runtimePath, Prado::getDefaultDirPermissions()); //make it deletable
 				}
 				$this->setConfigurationFile($configFile);
 			}
