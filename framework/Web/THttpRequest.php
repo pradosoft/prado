@@ -112,6 +112,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	private $_cookieOnly;
 	private $_urlFormat = THttpRequestUrlFormat::Get;
+	private $_resolveMethod = THttpRequestResolveMethod::ParameterOrder;
 	private $_services;
 	private $_requestResolved = false;
 	private $_enableCookieValidation = false;
@@ -356,6 +357,28 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function setUrlFormat($value)
 	{
 		$this->_urlFormat = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestUrlFormat');
+	}
+
+	/**
+	 * @return THttpRequestResolveMethod the method used to determine the service used to
+	 * handle the request. Defaults to THttpRequestResolveMethod::ParameterOrder.
+	 * @since 4.2.2
+	 */
+	public function getResolveMethod()
+	{
+		return $this->_resolveMethod;
+	}
+
+	/**
+	 * Sets the method used to determine the service used to handle the request.
+	 * This can be done using the service order defined in application.xml or
+	 * the order of the parameters received in the request.
+	 * @param THttpRequestResolveMethod $value the format of URLs.
+	 * @since 4.2.2
+	 */
+	public function setResolveMethod($value)
+	{
+		$this->_resolveMethod = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestResolveMethod');
 	}
 
 	/**
@@ -753,16 +776,31 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	{
 		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'], 'Prado\Web\THttpRequest');
 		$getParams = $this->parseUrl();
-		foreach ($getParams as $name => $value) {
-			$_GET[$name] = $value;
-		}
-		$this->_items = array_merge($_GET, $_POST);
-		$this->_requestResolved = true;
-		foreach ($serviceIDs as $serviceID) {
-			if ($this->contains($serviceID)) {
-				$this->setServiceID($serviceID);
-				$this->setServiceParameter($this->itemAt($serviceID));
-				return $serviceID;
+
+		if ($this->_resolveMethod == THttpRequestResolveMethod::ServiceOrder) {
+			foreach ($getParams as $name => $value) {
+				$_GET[$name] = $value;
+			}
+			$this->_items = array_merge($_GET, $_POST);
+			$this->_requestResolved = true;
+			foreach ($serviceIDs as $serviceID) {
+				if ($this->contains($serviceID)) {
+					$this->setServiceID($serviceID);
+					$this->setServiceParameter($this->itemAt($serviceID));
+					return $serviceID;
+				}
+			}
+		} else {
+			// THttpRequestResolveMethod::ParameterOrder
+			// Prepend parameters extracted from the URL so they gets first in the parameters array
+			$this->_items = array_merge($getParams, $_GET, $_POST);
+			$this->_requestResolved = true;
+			foreach ($this->_items as $serviceID => $value) {
+				if (in_array($serviceID, $serviceIDs)) {
+					$this->setServiceID($serviceID);
+					$this->setServiceParameter($this->itemAt($serviceID));
+					return $serviceID;
+				}
 			}
 		}
 		return null;
