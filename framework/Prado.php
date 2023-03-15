@@ -375,15 +375,20 @@ class Prado
 
 		if (isset(self::$_usings[$namespace]) ||
 			class_exists($namespace, false) ||
-			interface_exists($namespace, false)) {
+			interface_exists($namespace, false) ||
+			trait_exists($namespace, false)) {
 			return;
 		}
 
 		if (array_key_exists($namespace, self::$classMap)) {
 			// fast autoload a Prado3 class name
 			$phpNamespace = self::$classMap[$namespace];
-			if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
-				if (!class_exists($namespace) && !interface_exists($namespace)) {
+			if (class_exists($phpNamespace, true) ||
+				interface_exists($phpNamespace, true) ||
+				trait_exists($phpNamespace, true)) {
+				if (!class_exists($namespace) &&
+					!interface_exists($namespace) &&
+					!trait_exists($namespace)) {
 					class_alias($phpNamespace, $namespace);
 				}
 				return;
@@ -394,8 +399,12 @@ class Prado
 				$path = $v . DIRECTORY_SEPARATOR . $namespace . self::CLASS_FILE_EXT;
 				if (file_exists($path)) {
 					$phpNamespace = '\\' . $k . '\\' . $namespace;
-					if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
-						if (!class_exists($namespace) && !interface_exists($namespace)) {
+					if (class_exists($phpNamespace, true) ||
+						interface_exists($phpNamespace, true) ||
+						trait_exists($phpNamespace, true)) {
+						if (!class_exists($namespace) &&
+							!interface_exists($namespace) &&
+							!trait_exists($namespace)) {
 							class_alias($phpNamespace, $namespace);
 						}
 						return;
@@ -407,13 +416,17 @@ class Prado
 			if ($className === '*') {  // a directory
 				self::$_usings[substr($namespace, 0, $pos)] = $path;
 			} else {  // a file
-				if (class_exists($className, false) || interface_exists($className, false)) {
+				if (class_exists($className, false) ||
+					interface_exists($className, false) ||
+					trait_exists($className, false)) {
 					return;
 				}
 
 				if (file_exists($path)) {
 					include_once($path);
-					if (!class_exists($className, false) && !interface_exists($className, false)) {
+					if (!class_exists($className, false) &&
+						!interface_exists($className, false) &&
+						!trait_exists($className, false)) {
 						class_alias($namespace, $className);
 					}
 				}
