@@ -16,6 +16,7 @@
             </source>
             <ignore hidden="true" symlinks="true">
                 <path>I18N/core</path>
+                <path>PHPStan</path>
                 <path>Web/Javascripts/source</path>
                 <path>Web/Javascripts/*packages.php</path>
                 <path>Web/UI/WebControls/assets</path>
