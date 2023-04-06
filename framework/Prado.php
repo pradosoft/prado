@@ -102,7 +102,7 @@ class Prado
 	 */
 	public static function getVersion(): string
 	{
-		return '4.2.1';
+		return '4.2.2';
 	}
 
 	/**
