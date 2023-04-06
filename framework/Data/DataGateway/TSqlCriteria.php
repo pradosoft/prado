@@ -272,14 +272,14 @@ class TSqlCriteria extends \Prado\TComponent
 		}
 		$params = [];
 		foreach ($this->getParameters() as $k => $v) {
-			$params[] = "{$k} => ${v}";
+			$params[] = "{$k} => {$v}";
 		}
 		if (count($params) > 0) {
 			$str .= ', "' . implode(', ', $params) . '"';
 		}
 		$orders = [];
 		foreach ($this->getOrdersBy() as $k => $v) {
-			$orders[] = "{$k} => ${v}";
+			$orders[] = "{$k} => {$v}";
 		}
 		if (count($orders) > 0) {
 			$str .= ', "' . implode(', ', $orders) . '"';
