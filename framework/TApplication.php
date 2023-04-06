@@ -382,7 +382,7 @@ class TApplication extends \Prado\TComponent
 					break;
 				}
 				$method = self::$_steps[$this->_step];
-				Prado::trace("Executing $method()", 'Prado\TApplication');
+				Prado::trace("Executing $method()", TApplication::class);
 				$this->$method();
 				$this->_step++;
 			}
@@ -534,7 +534,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setMode($value)
 	{
-		$this->_mode = TPropertyValue::ensureEnum($value, '\Prado\TApplicationMode');
+		$this->_mode = TPropertyValue::ensureEnum($value, TApplicationMode::class);
 	}
 
 	/**
@@ -706,7 +706,7 @@ class TApplication extends \Prado\TComponent
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
 	 * When null modules are found, load them with {@link getModule}. eg.
 	 * <code>
-	 *	foreach (Prado::getApplication()->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+	 *	foreach (Prado::getApplication()->getModulesByType(\Prado\Caching\ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
 	 *		...
 	 *	}
@@ -966,19 +966,19 @@ class TApplication extends \Prado\TComponent
 
 	protected function getApplicationConfigurationClass()
 	{
-		return '\Prado\TApplicationConfiguration';
+		return TApplicationConfiguration::class;
 	}
 
 	protected function internalLoadModule($id, $force = false)
 	{
 		[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
 		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
-			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", '\Prado\TApplication');
+			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", TApplication::class);
 			$this->setModule($id, null);
 			return null;
 		}
 
-		Prado::trace("Loading module $id ({$moduleClass})", '\Prado\TApplication');
+		Prado::trace("Loading module $id ({$moduleClass})", TApplication::class);
 		$module = Prado::createComponent($moduleClass);
 		foreach ($initProperties as $name => $value) {
 			if ($name === 'lazy') {
@@ -1020,7 +1020,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		if (empty($this->_services)) {
-			$this->_services = [$this->getPageServiceID() => ['Prado\Web\Services\TPageService', [], null]];
+			$this->_services = [$this->getPageServiceID() => [\Prado\Web\Services\TPageService::class, [], null]];
 		}
 
 		// load parameters
@@ -1084,7 +1084,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function initApplication()
 	{
-		Prado::trace('Initializing application', 'Prado\TApplication');
+		Prado::trace('Initializing application', TApplication::class);
 
 		if ($this->_configFile !== null) {
 			if ($this->_cacheFile === null || @filemtime($this->_cacheFile) < filemtime($this->_configFile)) {
@@ -1157,7 +1157,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onError($param)
 	{
-		Prado::log($param->getMessage(), TLogger::ERROR, 'Prado\TApplication');
+		Prado::log($param->getMessage(), TLogger::ERROR, TApplication::class);
 		$this->raiseEvent('OnError', $this, $param);
 		$this->getErrorHandler()->handleError($this, $param);
 	}

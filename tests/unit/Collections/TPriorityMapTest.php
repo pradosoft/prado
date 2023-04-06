@@ -173,7 +173,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	public function testCanNotAddWhenReadOnly()
 	{
 		$map = new TPriorityMap([], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$map->add('key', 'value');
 	}
 
@@ -198,7 +198,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 	public function testCanNotRemoveWhenReadOnly()
 	{
 		$map = new TPriorityMap(['key' => 'value'], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$map->remove('key');
 	}
 
@@ -224,7 +224,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->map->getCount() == 2);
 		$this->assertTrue($this->map['key3'] === $this->item3);
 		$this->assertTrue($this->map['key4'] === $this->item1);
-		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		self::expectException(TInvalidDataTypeException::class);
 		$this->map->copyFrom($this);
 	}
 
@@ -235,7 +235,7 @@ class TPriorityMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(3, $this->map->getCount());
 		$this->assertTrue($this->map['key2'] === $this->item1);
 		$this->assertTrue($this->map['key3'] === $this->item3);
-		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		self::expectException(TInvalidDataTypeException::class);
 		$this->map->mergeWith($this);
 	}
 

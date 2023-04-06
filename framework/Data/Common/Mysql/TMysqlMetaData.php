@@ -36,7 +36,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Mysql\TMysqlTableInfo';
+		return \Prado\Data\Common\Mysql\TMysqlTableInfo::class;
 	}
 
 	/**
@@ -44,7 +44,7 @@ class TMysqlMetaData extends TDbMetaData
 	 */
 	protected function getTableColumnClass()
 	{
-		return '\Prado\Data\Common\Mysql\TMysqlTableColumn';
+		return \Prado\Data\Common\Mysql\TMysqlTableColumn::class;
 	}
 
 	/**

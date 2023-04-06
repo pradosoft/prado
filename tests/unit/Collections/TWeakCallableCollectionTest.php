@@ -40,7 +40,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 
 	protected function newList()
 	{
-		return  'Prado\\Collections\\TWeakCallableCollection';
+		return  TWeakCallableCollection::class;
 	}
 	protected function newListItem()
 	{
@@ -57,7 +57,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 
 	public function testGetWeakReferenceEnabledTWeakCallableCollection()
 	{
-		self::assertEquals('Prado\Collections\TWeakCallableCollection', get_class($this->list));
+		self::assertEquals(TWeakCallableCollection::class, get_class($this->list));
 		self::assertEquals(class_exists('\WeakReference'), $this->list->getWeakReferenceEnabled());
 		self::assertEquals(class_exists('\WeakReference'), TWeakCallableCollection::getWeakReferenceEnabled());
 	}

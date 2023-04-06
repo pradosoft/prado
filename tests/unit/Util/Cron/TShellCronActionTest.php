@@ -15,12 +15,12 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 	
 	protected function getTestClass()
 	{
-		return 'Prado\\Util\\Cron\\TShellCronAction';
+		return TShellCronAction::class;
 	}
 	
 	protected function getTestCronClass()
 	{
-		return 'Prado\\Util\\Cron\\TCronModule';
+		return TCronModule::class;
 	}
 
 	protected function setUp(): void
@@ -37,7 +37,7 @@ class TShellCronActionTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellCronAction', $this->obj);
+		$this->assertInstanceOf(TShellCronAction::class, $this->obj);
 	}
 
 	public function testCronModule()

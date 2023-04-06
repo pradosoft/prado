@@ -44,7 +44,7 @@ class TParameterizeBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TParameterizeBehavior', $this->obj);
+		$this->assertInstanceOf(TParameterizeBehavior::class, $this->obj);
 	}
 
 	public function testAttachBehavior_badParameters()

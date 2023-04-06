@@ -29,7 +29,7 @@ class TPermissionsConfigurationBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', $this->behavior);
+		self::assertInstanceOf(TPermissionsConfigurationBehavior::class, $this->behavior);
 		self::assertNull($this->behavior->getPermissionsManager());
 		
 		$this->behavior = new TPermissionsBehavior($v = new stdClass());

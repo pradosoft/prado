@@ -266,7 +266,7 @@ class TPriorityListTest extends TListTest
 
 		$this->assertEquals(100, $plist->priorityAt(4));
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$plist->insertAt(5, $this->pitem3);
 	}
 
@@ -325,7 +325,7 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals(1, $plist->indexOf($this->pitem2));
 		$this->assertEquals(0, $plist->indexOf($this->pfirst));
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$plist->removeAt(3);
 	}
 
@@ -545,7 +545,7 @@ class TPriorityListTest extends TListTest
 	public function testCanNotInsertAtIndexInPriorityWhenReadOnlyTList()
 	{
 		$list = new $this->_baseClass([], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$list->insertAtIndexInPriority($this->item1);
 	}
 
@@ -574,7 +574,7 @@ class TPriorityListTest extends TListTest
 	public function testCanNotRemoveAtIndexInPriorityWhenReadOnlyTList()
 	{
 		$plist = new $this->_baseClass($this->plist, true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$plist->removeAtIndexInPriority(0);
 	}
 	
@@ -915,7 +915,7 @@ class TPriorityListTest extends TListTest
 		$this->assertTrue($this->plist[2] === $this->pitem2);
 		$this->assertTrue($this->plist[3] === $this->pitem3);
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$a = $this->plist[4];
 	}
 

@@ -53,7 +53,7 @@ class TRepeaterItem extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INam
 	 */
 	public function setItemType($value)
 	{
-		$this->_itemType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TListItemType');
+		$this->_itemType = TPropertyValue::ensureEnum($value, TListItemType::class);
 	}
 
 	/**

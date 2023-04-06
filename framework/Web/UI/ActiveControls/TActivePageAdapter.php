@@ -109,7 +109,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function processCallbackEvent($writer)
 	{
-		Prado::trace("ActivePage raiseCallbackEvent()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
+		Prado::trace("ActivePage raiseCallbackEvent()", TActivePageAdapter::class);
 		$this->raiseCallbackEvent();
 	}
 
@@ -140,7 +140,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	public function renderCallbackResponse($writer)
 	{
-		Prado::trace("ActivePage renderCallbackResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
+		Prado::trace("ActivePage renderCallbackResponse()", TActivePageAdapter::class);
 		/** @var TCallbackResponseAdapter $adapter */
 		$adapter = $this->getResponse()->getAdapter();
 		if (($url = $adapter->getRedirectedUrl()) === null) {
@@ -156,7 +156,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function redirect($url)
 	{
-		Prado::trace("ActivePage redirect()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
+		Prado::trace("ActivePage redirect()", TActivePageAdapter::class);
 		$this->appendContentPart($this->getResponse(), self::CALLBACK_REDIRECT, $url);
 	}
 
@@ -167,7 +167,7 @@ class TActivePageAdapter extends TControlAdapter
 	 */
 	protected function renderResponse($writer)
 	{
-		Prado::trace("ActivePage renderResponse()", 'Prado\Web\UI\ActiveControls\TActivePageAdapter');
+		Prado::trace("ActivePage renderResponse()", TActivePageAdapter::class);
 		//renders all the defered render() calls.
 		foreach ($this->_controlsToRender as $rid => $forRender) {
 			$forRender[0]->render($forRender[1]);

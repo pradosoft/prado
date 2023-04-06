@@ -253,9 +253,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->_initialized = true;
 
 		$manager = class_exists('\WeakReference', false) ? \WeakReference::create($this) : $this;
-		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsBehavior', 'permissionsmanager' => $manager], 'Prado\\Security\\Permissions\\IPermissions', -10);
-		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TUserPermissionsBehavior', 'permissionsmanager' => $manager], 'Prado\\Security\\IUser', -10);
-		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', 'permissionsmanager' => $manager], 'Prado\\Web\\Services\\TPageConfiguration', -10);
+		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
+		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => TUserPermissionsBehavior::class, 'permissionsmanager' => $manager], \Prado\Security\IUser::class, -10);
+		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => TPermissionsConfigurationBehavior::class, 'permissionsmanager' => $manager], \Prado\Web\Services\TPageConfiguration::class, -10);
 
 		$this->loadPermissionsData($config);
 		if ($this->_permissionFile !== null) {
@@ -388,7 +388,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				if (!$name) {
 					throw new TConfigurationException('permissions_rules_require_name');
 				}
-				$class = $properties['class'] ?? 'Prado\\Security\\TAuthorizationRule';
+				$class = $properties['class'] ?? TAuthorizationRule::class;
 				$action = $properties['action'] ?? '';
 				$users = $properties['users'] ?? '';
 				$roles = $properties['roles'] ?? '';
@@ -488,7 +488,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	public function registerShellAction($sender, $param)
 	{
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
-			$app->addShellActionClass(['class' => 'Prado\\Security\\Permissions\\TPermissionsAction', 'PermissionsManager' => $this]);
+			$app->addShellActionClass(['class' => TPermissionsAction::class, 'PermissionsManager' => $this]);
 		}
 	}
 
@@ -927,9 +927,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function __destruct()
 	{
-		TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, 'Prado\\Security\\Permissions\\IPermissions');
-		TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, 'Prado\\Security\\IUser');
-		TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, 'Prado\\Web\\Services\\TPageConfiguration');
+		TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, IPermissions::class);
+		TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, \Prado\Security\IUser::class);
+		TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, \Prado\Web\Services\TPageConfiguration::class);
 		parent::__destruct();
 	}
 }

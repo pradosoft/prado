@@ -118,7 +118,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 	{
 		$response = new THttpResponse();
 		$response->init(null);
-		self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $response->getCookies());
+		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $response->getCookies());
 		self::assertEquals(0, $response->getCookies()->getCount());
 		// force a flush
 		ob_end_flush();

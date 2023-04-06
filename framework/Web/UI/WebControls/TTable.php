@@ -162,7 +162,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign'), TTableCaptionAlign::NotSet);
+		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, TTableCaptionAlign::class), TTableCaptionAlign::NotSet);
 	}
 
 	/**

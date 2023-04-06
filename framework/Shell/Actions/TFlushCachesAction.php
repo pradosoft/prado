@@ -46,7 +46,7 @@ class TFlushCachesAction extends TShellAction
 
 		$found = false;
 		array_shift($args); //Shift off the 'action/method'
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			if (in_array($id, $args)) {
 				$module = (!$module) ? $app->getModule($id) : $module;
 				$module->flush();
@@ -75,7 +75,7 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine("Flushing All Caches: ");
 
 		$module = null;
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
 			$module->flush();
 			$this->_outWriter->write('  ');
@@ -101,7 +101,7 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine("Available Caches: ");
 
 		$module = null;
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::BLUE, TShellWriter::BOLD]);

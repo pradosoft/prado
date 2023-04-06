@@ -86,7 +86,7 @@ class TActivePanel extends TPanel implements IActiveControl
 				// If we update a TActivePanel on callback,
 				// We shouldn't update all childs, because the whole content will be replaced by
 				// the parent
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
+				foreach ($this->findControlsByType(\Prado\Web\UI\ActiveControls\IActiveControl::class, false) as $control) {
 					$control->getActiveControl()->setEnableUpdate(false);
 				}
 			}

@@ -71,13 +71,13 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 	{
 		$request = new THttpRequest();
 		$request->init(null);
-		self::assertInstanceOf('Prado\\Web\\TUri', $request->getUrl());
+		self::assertInstanceOf(\Prado\Web\TUri::class, $request->getUrl());
 		// Try with $_SERVER['HTTP_HOST'] empty
 		$request = null;
 		$request = new THttpRequest();
 		$request->init(null);
 		$_SERVER['HTTP_HOST'] = '';
-		self::assertInstanceOf('Prado\\Web\\TUri', $request->getUrl());
+		self::assertInstanceOf(\Prado\Web\TUri::class, $request->getUrl());
 	}
 
 	public function testGetUrlManager()
@@ -121,14 +121,14 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request->setUrlManager('goodmanager');
 		$request->init(null);
 		self::assertEquals('goodmanager', $request->getUrlManager());
-		self::assertInstanceOf('Prado\\Web\\TUrlManager', $request->getUrlManagerModule());
+		self::assertInstanceOf(\Prado\Web\TUrlManager::class, $request->getUrlManagerModule());
 	}
 
 	public function testSetUrlFormat()
 	{
 		$request = new THttpRequest();
 		$request->setUrlFormat('Path');
-		self::assertEquals('Path', $request->getUrlFormat());
+		self::assertEquals(THttpRequestUrlFormat::Path, $request->getUrlFormat());
 		// Test invalid
 		try {
 			$request->setUrlFormat('Bad');
@@ -301,7 +301,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request->init(null);
 		$request->setEnableCookieValidation(false);
 		$cookies = $request->getCookies();
-		self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $cookies);
+		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $cookies);
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
 		$request = null;
 
@@ -313,7 +313,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request->init(null);
 		$request->setEnableCookieValidation(true);
 		$cookies = $request->getCookies();
-		self::assertInstanceOf('Prado\\Web\\THttpCookieCollection', $cookies);
+		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $cookies);
 		self::assertEquals('0123456789abcdef', $cookies->itemAt('phpsessid')->getValue());
 	}
 

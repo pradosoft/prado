@@ -88,7 +88,7 @@ class TDbConnection extends \Prado\TComponent
 	 *
 	 * @since 3.1.7
 	 */
-	public const DEFAULT_TRANSACTION_CLASS = '\Prado\Data\TDbTransaction';
+	public const DEFAULT_TRANSACTION_CLASS = \Prado\Data\TDbTransaction::class;
 
 	private $_dsn = '';
 	private $_username = '';
@@ -471,7 +471,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setColumnCase($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode')) {
+		switch (TPropertyValue::ensureEnum($value, TDbColumnCaseMode::class)) {
 			case TDbColumnCaseMode::Preserved:
 				$value = PDO::CASE_NATURAL;
 				break;
@@ -506,7 +506,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setNullConversion($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode')) {
+		switch (TPropertyValue::ensureEnum($value, TDbNullConversionMode::class)) {
 			case TDbNullConversionMode::Preserved:
 				$value = PDO::NULL_NATURAL;
 				break;

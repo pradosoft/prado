@@ -67,7 +67,7 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(null, $element->getElementByTagName('first'));
 		$element->Elements[] = new TXmlElement('first');
 		$first = $element->getElementByTagName('first');
-		self::assertInstanceOf('Prado\\Xml\\TXmlElement', $first);
+		self::assertInstanceOf(TXmlElement::class, $first);
 		self::assertEquals('first', $first->getTagName());
 	}
 

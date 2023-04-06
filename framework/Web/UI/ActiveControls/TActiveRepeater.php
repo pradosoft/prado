@@ -121,7 +121,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	 */
 	private function renderPager()
 	{
-		$pager = $this->getPage()->findControlsByType('Prado\Web\UI\ActiveControls\TActivePager', false);
+		$pager = $this->getPage()->findControlsByType(\Prado\Web\UI\ActiveControls\TActivePager::class, false);
 		foreach ($pager as $item) {
 			if ($item->ControlToPaginate == $this->getID()) {
 				$writer = $this->getResponse()->createHtmlWriter();

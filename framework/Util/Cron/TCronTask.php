@@ -221,7 +221,7 @@ abstract class TCronTask extends TApplicationComponent
 	public function getScheduler()
 	{
 		if ($this->_scheduler === null) {
-			$this->_scheduler = Prado::createComponent('Prado\\Util\\Cron\\TTimeScheduler');
+			$this->_scheduler = Prado::createComponent(TTimeScheduler::class);
 			$this->_scheduler->setSchedule($this->_schedule);
 		}
 		return $this->_scheduler;

@@ -24,7 +24,7 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'a'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'b'));
 
-		self::expectException('Prado\\Data\SqlMap\DataMapper\\TInvalidPropertyException');
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 	}
 
@@ -63,10 +63,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'A'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'B'));
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -92,7 +92,7 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		TPropertyAccess::set($testobj, 'c', 30);
 		self::assertEquals(30, TPropertyAccess::get($testobj, 'c'));
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -185,10 +185,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.c'));
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.C'));
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.c.C');
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.d.C');
 	}
 }

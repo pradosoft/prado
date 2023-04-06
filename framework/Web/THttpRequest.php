@@ -356,7 +356,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestUrlFormat');
+		$this->_urlFormat = TPropertyValue::ensureEnum($value, THttpRequestUrlFormat::class);
 	}
 
 	/**
@@ -378,7 +378,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setResolveMethod($value)
 	{
-		$this->_resolveMethod = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestResolveMethod');
+		$this->_resolveMethod = TPropertyValue::ensureEnum($value, THttpRequestResolveMethod::class);
 	}
 
 	/**
@@ -774,7 +774,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function resolveRequest($serviceIDs)
 	{
-		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'], 'Prado\Web\THttpRequest');
+		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'], THttpRequest::class);
 		$getParams = $this->parseUrl();
 
 		if ($this->_resolveMethod == THttpRequestResolveMethod::ServiceOrder) {

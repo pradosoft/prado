@@ -55,7 +55,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setAlign($value)
 	{
-		$this->setViewState('Align', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameAlign'), TInlineFrameAlign::NotSet);
+		$this->setViewState('Align', TPropertyValue::ensureEnum($value, TInlineFrameAlign::class), TInlineFrameAlign::NotSet);
 	}
 
 	/**
@@ -151,7 +151,7 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 	 */
 	public function setScrollBars($value)
 	{
-		$this->setViewState('ScrollBars', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TInlineFrameScrollBars'), TInlineFrameScrollBars::Auto);
+		$this->setViewState('ScrollBars', TPropertyValue::ensureEnum($value, TInlineFrameScrollBars::class), TInlineFrameScrollBars::Auto);
 	}
 
 	/**

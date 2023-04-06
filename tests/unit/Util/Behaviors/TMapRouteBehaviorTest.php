@@ -45,7 +45,7 @@ class TMapRouteBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TMapRouteBehavior', $this->behavior);
+		$this->assertInstanceOf(TMapRouteBehavior::class, $this->behavior);
 		
 		try {
 			$b = new TMapRouteBehavior(null, null);

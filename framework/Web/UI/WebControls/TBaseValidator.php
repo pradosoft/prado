@@ -94,15 +94,15 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	private static $_clientClass = [
 		// normal controls needing special handling to extract their values
-		'Prado\Web\UI\WebControls\TCheckBox' => 'TCheckBox',
-		'Prado\Web\UI\WebControls\TDatePicker' => 'TDatePicker',
-		'Prado\Web\UI\WebControls\THtmlArea' => 'THtmlArea',
-		'Prado\Web\UI\WebControls\THtmlArea5' => 'THtmlArea5',
-		'Prado\Web\UI\WebControls\TReCaptcha2' => 'TReCaptcha2',
+		\Prado\Web\UI\WebControls\TCheckBox::class => 'TCheckBox',
+		\Prado\Web\UI\WebControls\TDatePicker::class => 'TDatePicker',
+		\Prado\Web\UI\WebControls\THtmlArea::class => 'THtmlArea',
+		\Prado\Web\UI\WebControls\THtmlArea5::class => 'THtmlArea5',
+		\Prado\Web\UI\WebControls\TReCaptcha2::class => 'TReCaptcha2',
 		// list controls
-		'Prado\Web\UI\WebControls\TCheckBoxList' => 'TCheckBoxList',
-		'Prado\Web\UI\WebControls\TListBox' => 'TListBox',
-		'Prado\Web\UI\WebControls\TRadioButton' => 'TRadioButton',
+		\Prado\Web\UI\WebControls\TCheckBoxList::class => 'TCheckBoxList',
+		\Prado\Web\UI\WebControls\TListBox::class => 'TListBox',
+		\Prado\Web\UI\WebControls\TRadioButton::class => 'TRadioButton',
 	];
 
 	/**
@@ -353,7 +353,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidatorDisplayStyle'), TValidatorDisplayStyle::Fixed);
+		$this->setViewState('Display', TPropertyValue::ensureEnum($value, TValidatorDisplayStyle::class), TValidatorDisplayStyle::Fixed);
 	}
 
 	/**

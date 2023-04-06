@@ -33,7 +33,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 	
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsManager', $this->obj);
+		self::assertInstanceOf(TPermissionsManager::class, $this->obj);
 	}
 	
 	public function testInit()
@@ -43,16 +43,16 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		//check class behaviors
 		self::assertNotNull($this->obj->asa(TPermissionsManager::PERMISSIONS_BEHAVIOR));
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsBehavior', $this->obj->asa(TPermissionsManager::PERMISSIONS_BEHAVIOR));
+		self::assertInstanceOf(TPermissionsBehavior::class, $this->obj->asa(TPermissionsManager::PERMISSIONS_BEHAVIOR));
 		
 		$userManager = new TUserManager();
 		$user = new TUser($userManager);
 		self::assertNotNull($user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserPermissionsBehavior', $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
+		self::assertInstanceOf(TUserPermissionsBehavior::class, $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
 		
 		$pageConfig = new TPageConfiguration('.');
 		self::assertNotNull($pageConfig->asa(TPermissionsManager::PERMISSIONS_CONFIG_BEHAVIOR));
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', $pageConfig->asa(TPermissionsManager::PERMISSIONS_CONFIG_BEHAVIOR));
+		self::assertInstanceOf(TPermissionsConfigurationBehavior::class, $pageConfig->asa(TPermissionsManager::PERMISSIONS_CONFIG_BEHAVIOR));
 		
 		try {
 			//Cannot re-initialize
@@ -80,7 +80,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['all', 'initrole'], $this->obj->getHierarchyRoles());
 		self::assertEquals(['admin', 'manager', 'developer', 'subscriber'], $this->obj->getHierarchyRoleChildren('initRole'));
 		self::assertNotNull($rules = $this->obj->getPermissionRules(TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES));
-		self::assertInstanceOf('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceOf(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(1, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals(['default'], $rules[0]->getRoles());
@@ -125,7 +125,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules('test_permissions_2');
 		
 		self::assertNotNull($rules);
-		self::assertInstanceOf('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceOf(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals([$rule1, $rule2], $rules->toArray());
 	}
@@ -163,7 +163,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules(TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES);
 		
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(1, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals([TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES], $rules[0]->getRoles());
@@ -199,7 +199,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules($perm2);
 		
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(1, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals([TPermissionsManager::PERM_PERMISSIONS_MANAGE_RULES], $rules[0]->getRoles());
@@ -228,7 +228,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules($perm2);
 		
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(1, count($rules));
 		self::assertEquals($rule, $rules[0]);
 		
@@ -267,7 +267,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules($perm1);
 		
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals(['developer'], $rules[0]->getRoles());
 		self::assertEquals('allow', $rules[0]->getAction());
@@ -277,7 +277,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm2);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('allow', $rules[0]->getAction());
 		self::assertEquals(['developer'], $rules[0]->getRoles());
@@ -287,7 +287,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm3);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('allow', $rules[0]->getAction());
 		self::assertEquals(['developer'], $rules[0]->getRoles());
@@ -298,7 +298,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm4);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals(['default'], $rules[0]->getRoles());
@@ -308,7 +308,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm5);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals(['subscribers'], $rules[0]->getRoles());
@@ -329,7 +329,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm6);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('allow', $rules[0]->getAction());
 		self::assertEquals(['administrator'], $rules[0]->getRoles());
@@ -339,7 +339,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$rules = $this->obj->getPermissionRules($perm7);
 		self::assertNotNull($rules);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 		self::assertEquals('deny', $rules[0]->getAction());
 		self::assertEquals(['subscribers'], $rules[0]->getRoles());
@@ -509,7 +509,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$this->obj->init(null);
 		self::assertEquals([TPermissionsManager::PERM_PERMISSIONS_SHELL, TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES, TPermissionsManager::PERM_PERMISSIONS_MANAGE_RULES], array_keys($this->obj->getPermissionRules(null)));
 		self::assertNotNull($rules = $this->obj->getPermissionRules(TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES));
-		self::assertInstanceOf('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceOf(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(2, count($rules));
 	}
 	
@@ -583,7 +583,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$rules = $this->obj->getPermissionRules(TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES);
 		self::assertNotNull($rules);
 		self::assertEquals(1, count($rules));
-		self::assertInstanceOf('Prado\\Security\\TAuthorizationRule', $rules[0]);
+		self::assertInstanceOf(TAuthorizationRule::class, $rules[0]);
 		self::assertEquals(['cron'], $rules[0]->getRoles());
 	}
 	
@@ -629,7 +629,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		//Check if permission as allowed role when true
 		$this->obj->registerPermission('test_perm_1', 'description');
 		self::assertEquals(1, count($this->obj->getPermissionRules('test_perm_1')));
-		self::assertInstanceOf('Prado\\Security\\TAuthorizationRule', $this->obj->getPermissionRules('test_perm_1')[0]);
+		self::assertInstanceOf(TAuthorizationRule::class, $this->obj->getPermissionRules('test_perm_1')[0]);
 		self::assertEquals(['test_perm_1'], $this->obj->getPermissionRules('test_perm_1')[0]->getRoles());
 		
 		$this->obj->setAutoAllowWithPermission(false);
@@ -664,7 +664,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		//check that registering permissions adds and doesn't add on AutoPresetRules property
 		$this->obj->registerPermission('test_perm_1', 'description', new TUserOwnerRule());
 		self::assertEquals(1, count($this->obj->getPermissionRules('test_perm_1')));
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserOwnerRule', $this->obj->getPermissionRules('test_perm_1')[0]);
+		self::assertInstanceOf(TUserOwnerRule::class, $this->obj->getPermissionRules('test_perm_1')[0]);
 		
 		$this->obj->setAutoPresetRules(false);
 		$this->obj->registerPermission('test_perm_2', 'description', new TUserOwnerRule());
@@ -822,7 +822,7 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		
 		$userManager = new TUserManager();
 		$user = new TUser($userManager);
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserPermissionsBehavior', $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
+		self::assertInstanceOf(TUserPermissionsBehavior::class, $user->asa(TPermissionsManager::USER_PERMISSIONS_BEHAVIOR));
 		
 		$obj->__destruct();
 		$obj = null;

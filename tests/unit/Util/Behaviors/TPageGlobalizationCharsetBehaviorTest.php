@@ -19,7 +19,7 @@ class TPageGlobalizationCharsetBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TPageGlobalizationCharsetBehavior', $this->obj);
+		$this->assertInstanceOf(TPageGlobalizationCharsetBehavior::class, $this->obj);
 	}
 
 	public function testAddCharsetMeta()

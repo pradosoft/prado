@@ -24,7 +24,7 @@ class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellCronLogBehavior', $this->obj);
+		$this->assertInstanceOf(TShellCronLogBehavior::class, $this->obj);
 		self::assertNull($this->obj->getOutputWriter());
 		
 		$this->obj = new TShellCronLogBehavior($this->writer);

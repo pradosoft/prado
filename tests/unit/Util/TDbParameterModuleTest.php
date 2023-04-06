@@ -55,7 +55,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		$this->obj->init(null);
 		
 		self::assertNull($this->obj->get($key, false));
-		self::assertInstanceOf('Prado\\Util\\Behaviors\\TMapLazyLoadBehavior', $params->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
+		self::assertInstanceOf(TMapLazyLoadBehavior::class, $params->asa(TDbParameterModule::APP_PARAMETER_LAZY_BEHAVIOR));
 		self::assertEquals(1, Prado::getApplication()->onBeginRequest->count());
 		
 		try {
@@ -103,7 +103,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 		
 		self::assertNull($params->asa(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR));
 		$this->obj->attachParameterStorage(null, null);
-		self::assertInstanceOf('Prado\\Util\\Behaviors\\TMapRouteBehavior', $params->asa(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR));
+		self::assertInstanceOf(TMapRouteBehavior::class, $params->asa(TDbParameterModule::APP_PARAMETER_SET_BEHAVIOR));
 		
 		$params[$key] = $value;
 		//makes sure the behavior is working for setting the parameter when 
@@ -177,7 +177,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('\\Prado\\Util\\TDbParameterModule', $this->obj);
+		self::assertInstanceOf(TDbParameterModule::class, $this->obj);
 	}
 	
 	public function testGet()
@@ -248,7 +248,7 @@ class TDbParameterModuleTest extends PHPUnit\Framework\TestCase
 
 	public function testGetDbConnection()
 	{
-		self::assertInstanceOf('Prado\\Data\\TDbConnection', $this->obj->getDbConnection());
+		self::assertInstanceOf(TDbConnection::class, $this->obj->getDbConnection());
 	}
 
 	public function testKeyField()

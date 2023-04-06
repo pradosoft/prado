@@ -111,12 +111,12 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var string base path class in namespace format
 	 */
-	private $_basePageClass = '\Prado\Web\UI\TPage';
+	private $_basePageClass = \Prado\Web\UI\TPage::class;
 	/**
 	 * @var string clientscript manager class in namespace format
 	 * @since 3.1.7
 	 */
-	private $_clientScriptManagerClass = '\Prado\Web\UI\TClientScriptManager';
+	private $_clientScriptManagerClass = \Prado\Web\UI\TClientScriptManager::class;
 	/**
 	 * @var string default page
 	 */
@@ -153,7 +153,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function init($config)
 	{
-		Prado::trace("Initializing TPageService", '\Prado\Web\Services\TPageService');
+		Prado::trace("Initializing TPageService", TPageService::class);
 
 		$pageConfig = $this->loadPageConfig($config);
 
@@ -460,7 +460,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function run()
 	{
-		Prado::trace("Running page service", 'Prado\Web\Services\TPageService');
+		Prado::trace("Running page service", TPageService::class);
 		$this->_page = $this->createPage($this->getRequestedPagePath());
 		$this->runPage($this->_page, $this->_properties);
 	}
@@ -519,7 +519,7 @@ class TPageService extends \Prado\TService
 			}
 		}
 
-		if ($className !== '\Prado\Web\UI\TPage' && !is_subclass_of($className, '\Prado\Web\UI\TPage')) {
+		if ($className !== TPage::class && !is_subclass_of($className, TPage::class)) {
 			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
 		}
 

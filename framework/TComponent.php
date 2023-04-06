@@ -596,7 +596,7 @@ class TComponent
 			$this->getEventHandlers($func)->add([$this, $func]);
 		}
 
-		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+		if (is_a($this, IDynamicMethods::class)) {
 			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
@@ -633,7 +633,7 @@ class TComponent
 			$this->detachEventHandler($func, [$this, $func]);
 		}
 
-		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+		if (is_a($this, IDynamicMethods::class)) {
 			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
@@ -1597,7 +1597,7 @@ class TComponent
 	 * it should extend.
 	 * <code>
 	 * TPanel::attachClassBehavior('javascripts', new TJsPanelClassBehavior());
-	 * TApplication::attachClassBehavior('jpegize', 'Prado\\Util\\Behaviors\\TJPEGizeAssetBehavior', 'Prado\\Web\\TFileAsset');
+	 * TApplication::attachClassBehavior('jpegize', \Prado\Util\Behaviors\TJPEGizeAssetBehavior::class, \Prado\Web\TFileAsset::class);
 	 * </code>
 	 * An array is used to initialize values of the behavior. eg. ['class' => '\\MyBehavior', 'property' => 'value'].
 	 * @param null|numeric $priority priority of behavior, default: null the default
@@ -1727,7 +1727,7 @@ class TComponent
 				}
 
 				$check = null;
-				if (($behavior->isa('\Prado\Util\IInstanceCheck')) && $check = $behavior->isinstanceof($class, $this)) {
+				if (($behavior->isa(\Prado\Util\IInstanceCheck::class)) && $check = $behavior->isinstanceof($class, $this)) {
 					return true;
 				}
 				if ($check === null && ($behavior->isa($class))) {

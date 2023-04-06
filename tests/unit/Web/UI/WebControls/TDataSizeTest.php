@@ -19,7 +19,7 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('\\Prado\\Web\\UI\\WebControls\\TDataSize', $this->obj);
+		self::assertInstanceOf(TDataSize::class, $this->obj);
 	}
 	
 	
@@ -37,7 +37,7 @@ class TDataSizeTest extends PHPUnit\Framework\TestCase
 		$this->obj->setSize($rand);
 		self::assertEquals($rand, $this->obj->getSize());
 		
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$this->obj->setSize(-1);
 	}
 	

@@ -94,10 +94,10 @@ class TShellApplication extends \Prado\TApplication
 		$this->_arguments = $args;
 		$this->detectShellLanguageCharset();
 
-		$this->addShellActionClass('Prado\\Shell\\Actions\\TFlushCachesAction');
-		$this->addShellActionClass('Prado\\Shell\\Actions\\THelpAction');
-		$this->addShellActionClass('Prado\\Shell\\Actions\\TPhpShellAction');
-		$this->addShellActionClass('Prado\\Shell\\Actions\\TActiveRecordAction');
+		$this->addShellActionClass(TFlushCachesAction::class);
+		$this->addShellActionClass(THelpAction::class);
+		$this->addShellActionClass(TPhpShellAction::class);
+		$this->addShellActionClass(TActiveRecordAction::class);
 
 		$this->_outWriter = new TShellWriter(new TOutputWriter());
 

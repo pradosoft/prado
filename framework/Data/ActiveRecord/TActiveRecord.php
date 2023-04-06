@@ -895,7 +895,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 		if ($value === null) {
 			$this->_invalidFinderResult = null;
 		} else {
-			$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'Prado\\Data\\ActiveRecord\\TActiveRecordInvalidFinderResult');
+			$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::class);
 		}
 	}
 

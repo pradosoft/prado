@@ -77,7 +77,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\TBehaviorsModule', $this->obj);
+		$this->assertInstanceOf(TBehaviorsModule::class, $this->obj);
 	}
 
 	public function testInit()
@@ -248,7 +248,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		
 		// serialized array of behaviors is an array of behaviors
 		$this->obj->setAdditionalBehaviors('<module id="bmod"><behavior name="testBehavior" class="TestModuleBehavior1" attachto="Application" Priority="12" PropertyA="value2"/></module>');
-		$this->assertInstanceOf('\\Prado\\Xml\\TXmlDocument', $this->obj->getAdditionalBehaviors());
+		$this->assertInstanceOf(\Prado\Xml\TXmlDocument::class, $this->obj->getAdditionalBehaviors());
 		
 	}
 }

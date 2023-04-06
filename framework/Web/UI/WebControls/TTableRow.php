@@ -131,7 +131,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setTableSection($value)
 	{
-		$this->setViewState('TableSection', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableRowSection'), TTableRowSection::Body);
+		$this->setViewState('TableSection', TPropertyValue::ensureEnum($value, TTableRowSection::class), TTableRowSection::Body);
 	}
 
 	/**

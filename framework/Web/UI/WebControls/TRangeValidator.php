@@ -123,7 +123,7 @@ class TRangeValidator extends TBaseValidator
 	 */
 	public function setDataType($value)
 	{
-		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRangeValidationDataType'), TRangeValidationDataType::String);
+		$this->setViewState('DataType', TPropertyValue::ensureEnum($value, TRangeValidationDataType::class), TRangeValidationDataType::String);
 	}
 
 	/**

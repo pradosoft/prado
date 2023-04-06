@@ -363,7 +363,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			$reflect = new ReflectionClass(get_class($this));
 			$folder = $reflect->getFileName();
 
-			foreach ($this->getApplication()->getModulesByType('Prado\\Util\\IPluginModule') as $id => $module) {
+			foreach ($this->getApplication()->getModulesByType(\Prado\Util\IPluginModule::class) as $id => $module) {
 				if (!$module) {
 					continue;
 				}
@@ -927,7 +927,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function dataBindProperties()
 	{
-		Prado::trace("Data bind properties", 'Prado\Web\UI\TControl');
+		Prado::trace("Data bind properties", TControl::class);
 		if (isset($this->_rf[self::RF_DATA_BINDINGS])) {
 			if (($context = $this->getTemplateControl()) === null) {
 				$context = $this;
@@ -958,7 +958,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function dataBindChildren()
 	{
-		Prado::trace("dataBindChildren()", 'Prado\Web\UI\TControl');
+		Prado::trace("dataBindChildren()", TControl::class);
 		if (isset($this->_rf[self::RF_CONTROLS])) {
 			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
 				if ($control instanceof IBindable) {
@@ -1468,7 +1468,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function onDataBinding($param)
 	{
-		Prado::trace("onDataBinding()", 'Prado\Web\UI\TControl');
+		Prado::trace("onDataBinding()", TControl::class);
 		$this->raiseEvent('OnDataBinding', $this, $param);
 	}
 

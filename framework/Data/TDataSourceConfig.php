@@ -49,7 +49,7 @@ class TDataSourceConfig extends \Prado\TModule
 {
 	private $_connID = '';
 	private $_conn;
-	private $_connClass = '\Prado\Data\TDbConnection';
+	private $_connClass = \Prado\Data\TDbConnection::class;
 
 	/**
 	 * Initalize the database connection properties from attributes in <database> tag.
