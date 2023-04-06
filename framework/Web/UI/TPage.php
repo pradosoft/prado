@@ -53,7 +53,7 @@ class TPage extends TTemplateControl
 		'PRADO_LASTFOCUS' => true,
 		'PRADO_PAGESTATE' => true,
 		'PRADO_CALLBACK_TARGET' => true,
-		'PRADO_CALLBACK_PARAMETER' => true
+		'PRADO_CALLBACK_PARAMETER' => true,
 	];
 	/**
 	 * @var TForm form instance

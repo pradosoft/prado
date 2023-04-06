@@ -26,7 +26,7 @@ class TMysqlTableColumn extends TDbTableColumn
 	private static $types = [
 		'integer' => ['bit', 'tinyint', 'smallint', 'mediumint', 'int', 'integer', 'bigint'],
 		'boolean' => ['boolean', 'bool'],
-		'float' => ['float', 'double', 'double precision', 'decimal', 'dec', 'numeric', 'fixed']
+		'float' => ['float', 'double', 'double precision', 'decimal', 'dec', 'numeric', 'fixed'],
 		];
 
 	/**

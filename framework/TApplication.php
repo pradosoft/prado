@@ -153,7 +153,7 @@ class TApplication extends \Prado\TComponent
 		'onSaveState',
 		'onSaveStateComplete',
 		'onPreFlushOutput',
-		'flushOutput'
+		'flushOutput',
 	];
 
 	/**

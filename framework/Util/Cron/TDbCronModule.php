@@ -139,7 +139,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			new TPermissionEvent(static::PERM_CRON_LOG_DELETE, 'Cron delete Db log.', ['dyClearCronLog', 'dyRemoveCronLogItem']),
 			new TPermissionEvent(static::PERM_CRON_ADD_TASK, 'Cron add Db Task.', ['dyAddTask']),
 			new TPermissionEvent(static::PERM_CRON_UPDATE_TASK, 'Cron update Db task.', ['dyUpdateTask'], $userIsOwnerAllowedRule),
-			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, 'Cron remove Db task.', ['dyRemoveTask'], $userIsOwnerAllowedRule)
+			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, 'Cron remove Db task.', ['dyRemoveTask'], $userIsOwnerAllowedRule),
 		], parent::getPermissions($manager));
 	}
 
@@ -812,7 +812,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			} else {
 				$limit = " LIMIT {$pageSize}";
 			}
-			$sortingDesc = $sortingDesc ?? true;
+			$sortingDesc ??= true;
 		}
 		if ($sortingDesc !== null) {
 			$sortingDesc = TPropertyValue::ensureBoolean($sortingDesc) ? "DESC" : "ASC";

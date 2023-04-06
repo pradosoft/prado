@@ -79,22 +79,22 @@ class TOracleMetaData extends TDbMetaData
 		// sequence on the field.
 		$sql =
 <<<EOD
-		SELECT
-			a.COLUMN_ID,
-			LOWER(a.COLUMN_NAME) as attname,
-			a.DATA_TYPE || DECODE( a.DATA_TYPE, 'NUMBER', '('||a.DATA_PRECISION||','||DATA_SCALE||')' , '') as type,
-			a.DATA_LENGTH as atttypmod,
-			DECODE(a.NULLABLE, 'Y', '0', '1') as attnotnull,
-			DECODE(a.DEFAULT_LENGTH, NULL, '0', '1') as atthasdef,
-			DATA_DEFAULT as adsrc,
-			'0' AS attisserial
-		FROM
-			ALL_TAB_COLUMNS a
-		WHERE
-			TABLE_NAME = '{$tableName}'
-			AND OWNER = '{$schemaName}'
-		ORDER BY a.COLUMN_ID
-EOD;
+	SELECT
+		a.COLUMN_ID,
+		LOWER(a.COLUMN_NAME) as attname,
+		a.DATA_TYPE || DECODE( a.DATA_TYPE, 'NUMBER', '('||a.DATA_PRECISION||','||DATA_SCALE||')' , '') as type,
+		a.DATA_LENGTH as atttypmod,
+		DECODE(a.NULLABLE, 'Y', '0', '1') as attnotnull,
+		DECODE(a.DEFAULT_LENGTH, NULL, '0', '1') as atthasdef,
+		DATA_DEFAULT as adsrc,
+		'0' AS attisserial
+	FROM
+		ALL_TAB_COLUMNS a
+	WHERE
+		TABLE_NAME = '{$tableName}'
+		AND OWNER = '{$schemaName}'
+	ORDER BY a.COLUMN_ID
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$command = $this->getDbConnection()->createCommand($sql);
@@ -154,11 +154,11 @@ EOD;
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$sql =
 <<<EOD
-		select	OBJECT_TYPE
-		from 	ALL_OBJECTS
-		where	OBJECT_NAME = '{$tableName}'
-		and 	OWNER = '{$schemaName}'
-EOD;
+	select OBJECT_TYPE
+	from ALL_OBJECTS
+	where OBJECT_NAME = '{$tableName}'
+	and OWNER = '{$schemaName}'
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':schema',$schemaName);
@@ -260,17 +260,20 @@ EOD;
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-//		select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc,
+		//		select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc,
 		$sql =
 <<<EOD
-		select b.COLUMN_NAME as consrc,
-			   a.CONSTRAINT_TYPE as contype
-		from ALL_CONSTRAINTS a, ALL_CONS_COLUMNS b
- 		where (a.constraint_name = b.constraint_name AND a.table_name = b.table_name AND a.owner = b.owner)
+	select
+		b.COLUMN_NAME as consrc,
+		a.CONSTRAINT_TYPE as contype
+	from
+		ALL_CONSTRAINTS a, ALL_CONS_COLUMNS b
+	where
+		(a.constraint_name = b.constraint_name AND a.table_name = b.table_name AND a.owner = b.owner)
 		and	  a.TABLE_NAME = '{$tableName}'
 		and   a.OWNER = '{$schemaName}'
 		and   a.CONSTRAINT_TYPE in ('P','R')
-EOD;
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		//$command->bindValue(':table', $tableName);
@@ -359,15 +362,19 @@ EOD;
 	public function findTableNames($schema = '')
 	{
 		if ($schema === '') {
-			$sql = <<<EOD
-SELECT table_name, '{$schema}' as table_schema FROM user_tables
-EOD;
+			$sql =
+<<<EOD
+	SELECT table_name, '{$schema}' as table_schema
+	FROM user_tables
+	EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
 		} else {
-			$sql = <<<EOD
-SELECT object_name as table_name, owner as table_schema FROM all_objects
-WHERE object_type = 'TABLE' AND owner=:schema
-EOD;
+			$sql =
+<<<EOD
+	SELECT object_name as table_name, owner as table_schema
+	FROM all_objects
+	WHERE object_type = 'TABLE' AND owner=:schema
+	EOD;
 			$command = $this->getDbConnection()->createCommand($sql);
 			$command->bindParameter(':schema', $schema);
 		}

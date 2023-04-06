@@ -457,7 +457,7 @@ class TComponent
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
 		}
-		$_classhierarchy[$class] = $_classhierarchy[$class] ?? [];
+		$_classhierarchy[$class] ??= [];
 		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
 
 		return $classes;

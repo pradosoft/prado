@@ -379,7 +379,7 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			'privatekey' => $privkey,
 			'remoteip' => $remoteip,
 			'challenge' => $challenge,
-			'response' => $response
+			'response' => $response,
 			] + $extra_params
 		);
 

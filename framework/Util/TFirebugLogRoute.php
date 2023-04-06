@@ -69,19 +69,20 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	{
 		$page = $this->getService()->getRequestedPage();
 		if ($page->getIsCallback()) {
-			return <<<EOD
+			return
+<<<EOD
 
-<script>
-/*<![CDATA[*/
-if (typeof(console) == 'object')
-{
-	var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
-	if(typeof log[groupFunc] === "function")
-		log[groupFunc]("Callback logs ("+blocks.length+" entries)");
+	<script>
+	/*<![CDATA[*/
+	if (typeof(console) == 'object')
+	{
+		var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
+		if(typeof log[groupFunc] === "function")
+			log[groupFunc]("Callback logs ("+blocks.length+" entries)");
 
-	console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
+		console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
 
-EOD;
+	EOD;
 		}
 		return '';
 	}
@@ -112,15 +113,15 @@ EOD;
 
 	protected function renderFooter()
 	{
-		$string = <<<EOD
+		$string =
+<<<EOD
+		if(typeof console.groupEnd === "function")
+			console.groupEnd();
 
-	if(typeof console.groupEnd === "function")
-		console.groupEnd();
+	}
+	</script>
 
-}
-</script>
-
-EOD;
+	EOD;
 
 		return $string;
 	}

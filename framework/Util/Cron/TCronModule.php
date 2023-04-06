@@ -186,7 +186,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	public function getPermissions($manager)
 	{
 		return [
-			new TPermissionEvent(static::PERM_CRON_SHELL, 'Activates cron shell commands.', 'dyRegisterShellAction')
+			new TPermissionEvent(static::PERM_CRON_SHELL, 'Activates cron shell commands.', 'dyRegisterShellAction'),
 		];
 	}
 

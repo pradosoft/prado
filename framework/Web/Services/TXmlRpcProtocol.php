@@ -87,7 +87,7 @@ class TXmlRpcProtocol extends TRpcProtocol
 	{
 		return $this->encode([
 			'faultCode' => $exception->getCode(),
-			'faultString' => $exception->getMessage()
+			'faultString' => $exception->getMessage(),
 		]);
 	}
 

@@ -219,7 +219,7 @@ class TGettext_MO extends TGettext
 		for ($i = 0; $i < $count; $i++) {
 			$original[$i] = [
 				'length' => $this->_readInt($be),
-				'offset' => $this->_readInt($be)
+				'offset' => $this->_readInt($be),
 			];
 		}
 
@@ -230,7 +230,7 @@ class TGettext_MO extends TGettext
 		for ($i = 0; $i < $count; $i++) {
 			$translat[$i] = [
 				'length' => $this->_readInt($be),
-				'offset' => $this->_readInt($be)
+				'offset' => $this->_readInt($be),
 			];
 		}
 

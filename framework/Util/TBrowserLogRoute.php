@@ -73,29 +73,31 @@ class TBrowserLogRoute extends TLogRoute
 	{
 		$string = '';
 		if ($className = $this->getCssClass()) {
-			$string = <<<EOD
-<table class="$className">
-	<tr class="header">
-		<th colspan="5">
-			Application Log
-		</th>
-	</tr><tr class="description">
-	    <th>&nbsp;</th>
-		<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
-	</tr>
-EOD;
+			$string =
+<<<EOD
+	<table class="$className">
+		<tr class="header">
+			<th colspan="5">
+				Application Log
+			</th>
+		</tr><tr class="description">
+		    <th>&nbsp;</th>
+			<th>Category</th><th>Message</th><th>Time Spent (s)</th><th>Cumulated Time Spent (s)</th>
+		</tr>
+	EOD;
 		} else {
-			$string = <<<EOD
-<table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
-	<tr>
-		<th style="background-color: black; color:white;" colspan="5">
-			Application Log
-		</th>
-	</tr><tr style="background-color: #ccc; color:black">
-	    <th style="width: 15px">&nbsp;</th>
-		<th style="width: auto">Category</th><th style="width: auto">Message</th><th style="width: 120px">Time Spent (s)</th><th style="width: 150px">Cumulated Time Spent (s)</th>
-	</tr>
-EOD;
+			$string =
+<<<EOD
+	<table cellspacing="0" cellpadding="2" border="0" width="100%" style="table-layout:auto">
+		<tr>
+			<th style="background-color: black; color:white;" colspan="5">
+				Application Log
+			</th>
+		</tr><tr style="background-color: #ccc; color:black">
+		    <th style="width: 15px">&nbsp;</th>
+			<th style="width: auto">Category</th><th style="width: auto">Message</th><th style="width: 120px">Time Spent (s)</th><th style="width: 150px">Cumulated Time Spent (s)</th>
+		</tr>
+	EOD;
 		}
 		return $string;
 	}
@@ -116,26 +118,26 @@ EOD;
 			$colorCssClass = $log[1];
 			$messageCssClass = $info['even'] ? 'even' : 'odd';
 			$string = <<<EOD
-	<tr class="message level$colorCssClass $messageCssClass">
-		<td class="code">&nbsp;</td>
-		<td class="category">{$log[2]}</td>
-		<td class="message">{$msg}</td>
-		<td class="time">{$delta}</td>
-		<td class="cumulatedtime">{$total}</td>
-	</tr>
-EOD;
+					<tr class="message level$colorCssClass $messageCssClass">
+						<td class="code">&nbsp;</td>
+						<td class="category">{$log[2]}</td>
+						<td class="message">{$msg}</td>
+						<td class="time">{$delta}</td>
+						<td class="cumulatedtime">{$total}</td>
+					</tr>
+				EOD;
 		} else {
 			$bgcolor = $info['even'] ? "#fff" : "#eee";
 			$color = $this->getColorLevel($log[1]);
 			$string = <<<EOD
-	<tr style="background-color: {$bgcolor}; color:#000">
-		<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
-		<td>{$log[2]}</td>
-		<td>{$msg}</td>
-		<td style="text-align:center">{$delta}</td>
-		<td style="text-align:center">{$total}</td>
-	</tr>
-EOD;
+					<tr style="background-color: {$bgcolor}; color:#000">
+						<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
+						<td>{$log[2]}</td>
+						<td>{$msg}</td>
+						<td style="text-align:center">{$delta}</td>
+						<td style="text-align:center">{$total}</td>
+					</tr>
+				EOD;
 		}
 		return $string;
 	}

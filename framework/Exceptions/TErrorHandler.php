@@ -214,7 +214,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%ErrorMessage%%' => htmlspecialchars($errorMessage),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $version,
-			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time())
+			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time()),
 		];
 
 		$this->getApplication()->getResponse()->setStatusCode($statusCode, $isDebug ? $exception->getMessage() : null);
@@ -304,7 +304,7 @@ class TErrorHandler extends \Prado\TModule
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
 			'%%Version%%' => $version,
-			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time())
+			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time()),
 		];
 
 		$content = $this->getExceptionTemplate($exception);

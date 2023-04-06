@@ -14,8 +14,8 @@ $config
     ->setLineEnding("\n")
 	->setRules([
 		'@PSR12' => true,
+		'@PHP74Migration' => true,
 		'align_multiline_comment' => true,
-		'array_syntax' => ['syntax' => 'short'],
 		'binary_operator_spaces' => true,
 		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
@@ -26,13 +26,11 @@ $config
 		'dir_constant' => true,
 		'is_null' => true,
 		'function_typehint_space' => true,
-		'list_syntax' => ['syntax' => 'short'],
 		'method_chaining_indentation' => true,
 		'modernize_types_casting' => true,
 		'no_alias_functions' => true,
 		'no_blank_lines_after_phpdoc' => true,
 		'no_null_property_initialization' => true,
-		'no_whitespace_before_comma_in_array' => true,
 		'phpdoc_add_missing_param_annotation' => ['only_untyped' => false],
 		'phpdoc_indent' => true,
 		'phpdoc_no_package' => true,
@@ -42,9 +40,7 @@ $config
 		'phpdoc_types_order' => true,
 		'psr_autoloading' => true,
 		'ternary_operator_spaces' => true,
-		'ternary_to_null_coalescing' => true,
 		'trim_array_spaces' => true,
-		'visibility_required' => true,
 		'whitespace_after_comma_in_array' => true,
 	])
 	->setFinder($finder);

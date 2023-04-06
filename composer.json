@@ -34,7 +34,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.3.0",
+		"php": ">=7.4.0",
 		"ext-ctype": "*",
 		"ext-dom": "*",
 		"ext-intl": "*",
@@ -83,8 +83,11 @@
     },
     "config": {
         "platform": {
-            "php": "7.3"
-        }
+            "php": "7.4"
+        },
+		"allow-plugins": {
+			"phpdocumentor/shim": true
+		}
     },
 	"support" : {
 		"issues" : "https://github.com/pradosoft/prado/issues",

@@ -1047,7 +1047,6 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 		$this->createHeader();
 		$this->createStepContent();
 		$this->createNavigation();
-//		$this->clearChildState();
 	}
 
 	/**

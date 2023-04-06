@@ -73,7 +73,7 @@ class TJsonRpcClient extends TRpcClient
 		return json_encode([
 			'method' => $method,
 			'params' => $parameters,
-			'id' => $this->getIsNotification() ? null : $_requestId
+			'id' => $this->getIsNotification() ? null : $_requestId,
 		]);
 	}
 

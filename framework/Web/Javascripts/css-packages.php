@@ -59,7 +59,7 @@ $packages = [
 
 	//highlightjs
 	'highlightjs' => [
-		'highlightjs/styles/default.css'
+		'highlightjs/styles/default.css',
 	],
 ];
 
