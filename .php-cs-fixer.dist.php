@@ -14,7 +14,7 @@ $config
     ->setLineEnding("\n")
 	->setRules([
 		'@PSR12' => true,
-		'@PHP74Migration' => true,
+		'@PHP82Migration' => true,
 		'align_multiline_comment' => true,
 		'binary_operator_spaces' => true,
 		'blank_line_after_namespace' => true,

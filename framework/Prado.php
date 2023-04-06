@@ -28,19 +28,19 @@ if (!defined('PRADO_DIR')) {
 // Defines the default permission for writable directories
 // @todo, the test on PRADO_CHMOD must be remove in the next major release
 if (!defined('PRADO_DIR_CHMOD')) {
-	define('PRADO_DIR_CHMOD', !defined('PRADO_CHMOD') ? 0755 : PRADO_CHMOD);
+	define('PRADO_DIR_CHMOD', !defined('PRADO_CHMOD') ? 0o755 : PRADO_CHMOD);
 }
 
 // Defines the default permission for writable files
 // @todo, the test on PRADO_CHMOD must be removed in the next major release
 if (!defined('PRADO_FILE_CHMOD')) {
-	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0644 : PRADO_CHMOD);
+	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0o644 : PRADO_CHMOD);
 }
 
 // Defines the default permission for writable directories and files
 // @todo, adding this define must be removed in the next major release
 if (!defined('PRADO_CHMOD')) {
-	define('PRADO_CHMOD', 0777);
+	define('PRADO_CHMOD', 0o777);
 }
 
 // Defines the Composer's vendor/ path.
