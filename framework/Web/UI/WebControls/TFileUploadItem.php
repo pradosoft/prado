@@ -155,7 +155,7 @@ class TFileUploadItem extends \Prado\TComponent
 			'fileSize' => $this->_fileSize,
 			'fileType' => $this->_fileType,
 			'errorCode' => $this->_errorCode,
-			'localName' => $this->_localName
+			'localName' => $this->_localName,
 		];
 	}
 }

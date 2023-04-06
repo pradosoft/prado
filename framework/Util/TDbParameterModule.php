@@ -192,7 +192,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function getPermissions($manager)
 	{
 		return [
-			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction')
+			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction'),
 		];
 	}
 

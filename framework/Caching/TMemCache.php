@@ -188,7 +188,7 @@ class TMemCache extends TCache
 				}
 				$server = ['Host' => $host, 'Port' => $port, 'Weight' => 1];
 				$checks = [
-					'Weight' => 'memcache_serverweight_invalid'
+					'Weight' => 'memcache_serverweight_invalid',
 				];
 				foreach ($checks as $property => $exception) {
 					$value = $properties->remove($property);

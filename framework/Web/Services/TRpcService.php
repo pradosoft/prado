@@ -72,7 +72,7 @@ class TRpcService extends \Prado\TService
 	 */
 	protected $protocolHandlers = [
 		'application/json' => 'TJsonRpcProtocol',
-		'text/xml' => 'TXmlRpcProtocol'
+		'text/xml' => 'TXmlRpcProtocol',
 	];
 
 	/**

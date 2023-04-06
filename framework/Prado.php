@@ -73,13 +73,13 @@ class Prado
 	 */
 	private static $_aliases = [
 		'Prado' => PRADO_DIR,
-		'Vendor' => PRADO_VENDORDIR
+		'Vendor' => PRADO_VENDORDIR,
 		];
 	/**
 	 * @var array<string, string> list of namespaces currently in use
 	 */
 	private static $_usings = [
-		'Prado' => PRADO_DIR
+		'Prado' => PRADO_DIR,
 		];
 	/**
 	 * @var array<string, string> list of namespaces currently in use

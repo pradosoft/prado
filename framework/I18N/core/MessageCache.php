@@ -56,7 +56,7 @@ class MessageCache
 		$options = [
 			'cacheDir' => $cacheDir,
 			'lifeTime' => $this->getLifeTime(),
-			'automaticSerialization' => true
+			'automaticSerialization' => true,
 		];
 
 		$this->cache = new TCache_Lite($options);

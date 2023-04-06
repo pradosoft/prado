@@ -75,7 +75,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					return $this->encode([
 						'id' => $this->_id,
 						'result' => $this->callApiMethod($_request['method'], $_request['params']),
-						'error' => null
+						'error' => null,
 					]);
 				}
 			}
@@ -104,7 +104,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					'code' => $exception->getCode(),
 					'message' => $exception->getMessage(),
 					'data' => null,
-					]
+					],
 			]);
 		} else {
 			return $this->encode([
@@ -113,7 +113,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 					'code' => $exception->getCode(),
 					'message' => $exception->getMessage(),
 					'data' => null,
-					]
+					],
 			]);
 		}
 	}

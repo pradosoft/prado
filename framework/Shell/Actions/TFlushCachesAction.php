@@ -30,7 +30,7 @@ class TFlushCachesAction extends TShellAction
 		'Allows you to flush the cache(s).',
 		'Displays the cache modules that can be flushed.',
 		'Flushes the specified ICache modules.',
-		'Flushes all application ICache modules.'
+		'Flushes all application ICache modules.',
 	];
 
 	/**

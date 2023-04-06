@@ -102,7 +102,7 @@ $packages = [
 	//clipboard
 	'clipboard' => [
 		'clipboard/clipboard.js',
-	]
+	],
 ];
 
 //package names and their dependencies

@@ -41,7 +41,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		TLogger::WARNING => 'Warning',
 		TLogger::ERROR => 'Error',
 		TLogger::ALERT => 'Alert',
-		TLogger::FATAL => 'Fatal'
+		TLogger::FATAL => 'Fatal',
 	];
 	/**
 	 * @var array lookup table for level values
@@ -53,7 +53,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		'warning' => TLogger::WARNING,
 		'error' => TLogger::ERROR,
 		'alert' => TLogger::ALERT,
-		'fatal' => TLogger::FATAL
+		'fatal' => TLogger::FATAL,
 	];
 	/**
 	 * @var int log level filter (bits)

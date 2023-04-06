@@ -370,7 +370,6 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$generatedKey = $this->getPreGeneratedSelectKey($connection, $parameter);
 
 		$command = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter);
-//		var_dump($command,$parameter);
 		$result = $command->execute();
 
 		if ($generatedKey === null) {

@@ -404,19 +404,20 @@ class MessageSource_PHP extends MessageSource
 	protected function getTemplate($catalogue)
 	{
 		$date = @date('Y-m-d\TH:i:s\Z');
-		$php = <<<EOD
-<?php
-return array(
-	'info' => array(
-		'source-language' => 'EN',
-		'target-language' => '{$this->culture}',
-		'original' => '$catalogue',
-		'date' => '$date'
-	),
-	'trans-unit' => array(
-	)
-);
-EOD;
+		$php =
+<<<EOD
+	<?php
+	return array(
+		'info' => array(
+			'source-language' => 'EN',
+			'target-language' => '{$this->culture}',
+			'original' => '$catalogue',
+			'date' => '$date'
+		),
+		'trans-unit' => array(
+		)
+	);
+	EOD;
 		return $php;
 	}
 }

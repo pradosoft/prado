@@ -38,7 +38,7 @@ class TShellDbCronAction extends TShellCronAction
 		'Displays the registered Cron tasks information.',
 		'Adds a Cron task to the database.',
 		'Updates a Cron task in the database.',
-		'Removes a Cron task from the database.'
+		'Removes a Cron task from the database.',
 	];
 
 	/**

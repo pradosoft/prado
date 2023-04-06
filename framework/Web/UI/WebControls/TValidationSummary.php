@@ -347,7 +347,6 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	{
 		$this->renderJsSummary();
 		if ($this->getShowSummary()) {
-//		    $this->setStyle('display:block');
 			switch ($this->getDisplayMode()) {
 				case TValidationSummaryDisplayMode::SimpleList:
 					$this->renderList($writer);

@@ -227,7 +227,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		return [
 			new TPermissionEvent(static::PERM_PERMISSIONS_SHELL, 'Activates permissions shell commands.', 'dyRegisterShellAction'),
 			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_ROLES, 'Manages Db Permissions Role Children.', ['dyAddRoleChildren', 'dyRemoveRoleChildren']),
-			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_RULES, 'Manages Db Permissions Rules.', ['dyAddPermissionRule', 'dyRemovePermissionRule'])
+			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_RULES, 'Manages Db Permissions Rules.', ['dyAddPermissionRule', 'dyRemovePermissionRule']),
 		];
 	}
 
@@ -573,7 +573,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->_hierarchy[$role] = array_merge($this->_hierarchy[$role] ?? [], $children);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['roles'] = $runtimeData['roles'] ?? [];
+		$runtimeData['roles'] ??= [];
 		$runtimeData['roles'][$role] = array_unique(array_merge($runtimeData['roles'][$role] ?? [], $children));
 		$this->_dbParameter->set($this->_parameter, $runtimeData);
 
@@ -630,7 +630,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->addPermissionRuleInternal($permission, $rule);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['permissionrules'] = $runtimeData['permissionrules'] ?? [];
+		$runtimeData['permissionrules'] ??= [];
 		$runtimeData['permissionrules'][$permission][] = $rule;
 		$this->_dbParameter->set($this->_parameter, $runtimeData);
 
@@ -654,7 +654,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->removePermissionRuleInternal($permission, $rule);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['permissionrules'] = $runtimeData['permissionrules'] ?? [];
+		$runtimeData['permissionrules'] ??= [];
 
 		if (($index = array_search($rule, $runtimeData['permissionrules'][$permission] ?? [], true)) === false) {
 			return false;

@@ -98,7 +98,7 @@ class TTimeScheduler extends \Prado\TComponent
 		'@weekly' => '0 0 ? * 0',
 		'@midnight' => '0 0 * * ?',
 		'@daily' => '0 0 * * ?',
-		'@hourly' => '0 * * * ?'
+		'@hourly' => '0 * * * ?',
 		];
 	private static $_keywords = [
 		self::MONTH_OF_YEAR => [
@@ -114,7 +114,7 @@ class TTimeScheduler extends \Prado\TComponent
 					9 => '(?:september|septiembre|septembre|settembre|sep|sept|sett|Сентябрь|Сен|सितम्बर|سبتمبر)',
 					10 => '(?:october|oktober|octubre|octobre|ottobre|okt|oct|ott|Октябрь|Окт|अक्टूबर|أكتوبر)',
 					11 => '(?:november|noviembre|novembre|nov|Ноябрь|Ноя|नवम्बर|نوفمبر)',
-					12 => '(?:december|dezember|diciembre|décembre|dicembre|dec|dez|déc|dic|Декабрь|Дек|दिसम्बर|ديسمبر)'
+					12 => '(?:december|dezember|diciembre|décembre|dicembre|dec|dez|déc|dic|Декабрь|Дек|दिसम्बर|ديسمبر)',
 				],
 		self::DAY_OF_WEEK => [ //no Arabic as those are just numbered days of the week
 					0 => '(?:sunday|sonntag|sun|son|su|so|domingo|do|d|dimanche|dim|domenica|dom|Воскресенье|Вск|Вс|रविवार|रवि)',
@@ -123,8 +123,8 @@ class TTimeScheduler extends \Prado\TComponent
 					3 => '(?:wednesday|mittwoch|mit|wed|we|mi|miércoles|x|mercredi|mer|mercoledì|me|Среда|Сре|Ср|बुधवार|बुध)',
 					4 => '(?:thursday|donnerstag|don|thu|th|do|jueves|ju|j|jeudi|jeu|giovedì|gio|gi|Четверг|Чтв|Чт|गुरुवार|गुरु)',
 					5 => '(?:friday|freitag|fre|fri|fr|viernes|vi|v|vendredi|ven|venerdì|ve|Пятница|Птн|Пт|शुक्रवार|शुक्र)',
-					6 => '(?:saturday|samstag|sam|sat|sa|sábado|s|samedi|sabato|sab|Суббота|Сбт|Сб|शनिवार|शनि)'
-				]
+					6 => '(?:saturday|samstag|sam|sat|sa|sábado|s|samedi|sabato|sab|Суббота|Сбт|Сб|शनिवार|शनि)',
+				],
 		];
 
 	/** validation is computed only once */
@@ -231,7 +231,7 @@ class TTimeScheduler extends \Prado\TComponent
 					'mo' => $monthValidator,
 					'dow' => $dowValidator,
 					'y' => $yearValidator,
-					'f' => $fullValidator
+					'f' => $fullValidator,
 				];
 		}
 
@@ -347,7 +347,7 @@ class TTimeScheduler extends \Prado\TComponent
 		}
 
 		$this->_attr[self::YEAR] = [];
-		$matches[7] = $matches[7] ?? '*';
+		$matches[7] ??= '*';
 		foreach (explode(',', $matches[7]) as $match) {
 			if (preg_match($yearValidator, $match, $m2)) {
 				if ($m2[1] === '*') {
