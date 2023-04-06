@@ -75,7 +75,7 @@ class TTemplateManager extends \Prado\TModule
 	public function getTemplateByFileName($fileName)
 	{
 		if (($fileName = $this->getLocalizedTemplate($fileName)) !== null) {
-			Prado::trace("Loading template $fileName", '\Prado\Web\UI\TTemplateManager');
+			Prado::trace("Loading template $fileName", TTemplateManager::class);
 			if (($cache = $this->getApplication()->getCache()) === null) {
 				return new TTemplate(file_get_contents($fileName), dirname($fileName), $fileName);
 			} else {

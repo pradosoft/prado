@@ -64,7 +64,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDisplay($value)
 	{
-		$this->setViewState('Display', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayStyle'), TValidationSummaryDisplayStyle::Fixed);
+		$this->setViewState('Display', TPropertyValue::ensureEnum($value, TValidationSummaryDisplayStyle::class), TValidationSummaryDisplayStyle::Fixed);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class TValidationSummary extends \Prado\Web\UI\WebControls\TWebControl
 	 */
 	public function setDisplayMode($value)
 	{
-		$this->setViewState('DisplayMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TValidationSummaryDisplayMode'), TValidationSummaryDisplayMode::BulletList);
+		$this->setViewState('DisplayMode', TPropertyValue::ensureEnum($value, TValidationSummaryDisplayMode::class), TValidationSummaryDisplayMode::BulletList);
 	}
 
 	/**

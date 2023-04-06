@@ -123,7 +123,7 @@ class TReCaptcha2 extends TActivePanel implements \Prado\Web\UI\ActiveControls\I
 
 	public function getResponseFieldName()
 	{
-		$captchas = $this->getPage()->findControlsByType('Prado\Web\UI\WebControls\TReCaptcha2');
+		$captchas = $this->getPage()->findControlsByType(TReCaptcha2::class);
 		$cont = 0;
 		$responseFieldName = self::ChallengeFieldName;
 		foreach ($captchas as $captcha) {

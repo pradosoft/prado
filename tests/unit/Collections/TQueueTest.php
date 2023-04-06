@@ -40,7 +40,7 @@ class TQueueTest extends PHPUnit\Framework\TestCase
 	{
 		$queue = new TQueue();
 		$data = new stdClass();
-		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		self::expectException(TInvalidDataTypeException::class);
 		$queue->copyFrom($data);
 	}
 
@@ -67,7 +67,7 @@ class TQueueTest extends PHPUnit\Framework\TestCase
 	public function testCanNotPeekAnEmptyQueue()
 	{
 		$queue = new TQueue();
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$item = $queue->peek();
 	}
 
@@ -82,7 +82,7 @@ class TQueueTest extends PHPUnit\Framework\TestCase
 	public function testCanNotDequeueAnEmptyQueue()
 	{
 		$queue = new TQueue();
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$item = $queue->dequeue();
 	}
 

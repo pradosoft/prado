@@ -102,11 +102,11 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 	{
 		$userManager = new TUserManager();
 		$userManager->setPasswordMode('Clear');
-		self::assertEquals('Clear', $userManager->getPasswordMode());
+		self::assertEquals(TUserManagerPasswordMode::Clear, $userManager->getPasswordMode());
 		$userManager->setPasswordMode('MD5');
-		self::assertEquals('MD5', $userManager->getPasswordMode());
+		self::assertEquals(TUserManagerPasswordMode::MD5, $userManager->getPasswordMode());
 		$userManager->setPasswordMode('SHA1');
-		self::assertEquals('SHA1', $userManager->getPasswordMode());
+		self::assertEquals(TUserManagerPasswordMode::SHA1, $userManager->getPasswordMode());
 		try {
 			$userManager->setPasswordMode('Invalid');
 			self::fail('Exception TInvalidDataValueException not thrown');
@@ -128,10 +128,10 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 		$userManager = new TUserManager();
 		$userManager->init(self::$config);
 		$guest = $userManager->getUser(null);
-		self::assertInstanceOf('Prado\\Security\\TUser', $guest);
+		self::assertInstanceOf(\Prado\Security\TUser::class, $guest);
 		self::assertTrue($guest->getIsGuest());
 		$user = $userManager->getUser('joe');
-		self::assertInstanceOf('Prado\\Security\\TUser', $user);
+		self::assertInstanceOf(\Prado\Security\TUser::class, $user);
 		self::assertEquals('joe', $user->getName());
 		self::assertEquals(['Writer'], $user->getRoles());
 		self::assertFalse($user->getIsGuest());

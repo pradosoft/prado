@@ -19,7 +19,7 @@ class TPageTopAnchorBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TPageTopAnchorBehavior', $this->obj);
+		$this->assertInstanceOf(TPageTopAnchorBehavior::class, $this->obj);
 	}
 	
 	public function testAddFormANameAnchor()

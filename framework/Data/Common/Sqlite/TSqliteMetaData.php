@@ -29,7 +29,7 @@ class TSqliteMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Sqlite\TSqliteTableInfo';
+		return \Prado\Data\Common\Sqlite\TSqliteTableInfo::class;
 	}
 
 	/**

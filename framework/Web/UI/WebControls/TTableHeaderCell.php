@@ -60,7 +60,7 @@ class TTableHeaderCell extends TTableCell
 	 */
 	public function setScope($value)
 	{
-		$this->setViewState('Scope', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableHeaderScope'), TTableHeaderScope::NotSet);
+		$this->setViewState('Scope', TPropertyValue::ensureEnum($value, TTableHeaderScope::class), TTableHeaderScope::NotSet);
 	}
 
 	/**

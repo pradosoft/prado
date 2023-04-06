@@ -93,7 +93,7 @@ class TUrlMapping extends TUrlManager
 
 	private $_urlPrefix = '';
 
-	private $_defaultMappingClass = '\Prado\Web\TUrlMappingPattern';
+	private $_defaultMappingClass = \Prado\Web\TUrlMappingPattern::class;
 
 	/**
 	 * Initializes this module.

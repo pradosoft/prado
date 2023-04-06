@@ -113,7 +113,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 	 */
 	public function setTextAlign($value)
 	{
-		$this->setViewState('TextAlign', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTextAlign'), TTextAlign::Right);
+		$this->setViewState('TextAlign', TPropertyValue::ensureEnum($value, TTextAlign::class), TTextAlign::Right);
 	}
 
 

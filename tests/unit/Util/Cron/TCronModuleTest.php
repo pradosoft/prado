@@ -92,7 +92,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 	
 	protected function getTestClass()
 	{
-		return "\\Prado\\Util\\Cron\\TCronModule";
+		return \Prado\Util\Cron\TCronModule::class;
 	}
 	
 	protected function setUp(): void
@@ -387,28 +387,28 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals($jobs[1]['schedule'], $tasks[$tn2]->getSchedule());
 		self::assertEquals($jobs[1]['username'], $tasks[$tn2]->getUserName());
 		self::assertEquals($tn2, $tasks[$tn2]->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn2]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn2]);
 		self::assertEquals('CMT_UserManager3', $tasks[$tn2]->getModuleId());
 		self::assertEquals('method1', $tasks[$tn2]->getMethod());
 		self::assertEquals($jobs[2]['schedule'], $tasks[$tn3]->getSchedule());
 		self::assertEquals(null, $tasks[$tn3]->getUserName());
 		self::assertEquals($tn3, $tasks[$tn3]->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn3]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn3]);
 		self::assertEquals('CMT_UserManager3', $tasks[$tn3]->getModuleId());
 		self::assertEquals('method2(true)', $tasks[$tn3]->getMethod());
 		self::assertEquals($jobs[3]['schedule'], $tasks[$tn4]->getSchedule());
 		self::assertEquals(null, $tasks[$tn4]->getUserName());
 		self::assertEquals($tn4, $tasks[$tn4]->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn4]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn4]);
 		self::assertEquals('CMT_UserManager3', $tasks[$tn4]->getModuleId());
 		self::assertEquals('method3(86400)', $tasks[$tn4]->getMethod());
 		
 		$tasks = $this->obj->getRawTasks();
 		self::assertEquals(count($jobs), count($tasks));
 		self::assertInstanceOf('TTestCronModuleTask', $tasks[$tn1]);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn2]);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn3]);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks[$tn4]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn2]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn3]);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks[$tn4]);
 		
 		self::assertEquals(0, $tasks[$tn1]->getProcessCount());
 		self::assertTrue(abs($tasks[$tn1]->getLastExecTime() - time()) < 2);
@@ -495,21 +495,21 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('value1', $tasks['testTask1']->getPropertyA());
 		self::assertEquals('2 * * * ?', $tasks['testTask2']->getSchedule());
 		self::assertEquals('testTask2', $tasks['testTask2']->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask2']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask2']);
 		self::assertEquals('CMT_UserManager3', $tasks['testTask2']->getModuleId());
 		self::assertEquals('method1', $tasks['testTask2']->getMethod());
 		self::assertEquals(0, $tasks['testTask2']->getProcessCount());
 		self::assertTrue((microtime(true) - $tasks['testTask2']->getLastExecTime()) < 2);
 		self::assertEquals('3 * * * ?', $tasks['testTask3']->getSchedule());
 		self::assertEquals('testTask3', $tasks['testTask3']->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask3']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask3']);
 		self::assertEquals('CMT_UserManager3', $tasks['testTask3']->getModuleId());
 		self::assertEquals('method2(true)', $tasks['testTask3']->getMethod());
 		self::assertEquals(0, $tasks['testTask3']->getProcessCount());
 		self::assertTrue((microtime(true) - $tasks['testTask3']->getLastExecTime()) < 2);
 		self::assertEquals('4 * * * ?', $tasks['testTask4']->getSchedule());
 		self::assertEquals('testTask4', $tasks['testTask4']->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask4']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask4']);
 		self::assertEquals('CMT_UserManager3', $tasks['testTask4']->getModuleId());
 		self::assertEquals('method3(86400)', $tasks['testTask4']->getMethod());
 		self::assertEquals(0, $tasks['testTask4']->getProcessCount());
@@ -552,8 +552,8 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		self::assertFalse(isset($pendingTasks['testTask3']));
 		self::assertFalse(isset($pendingTasks['testTask4']));
 		self::assertFalse(isset($pendingTasks['testTask5']));
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $pendingTasks['testTask6']);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $pendingTasks['testTask7']);
+		self::assertInstanceOf(TCronMethodTask::class, $pendingTasks['testTask6']);
+		self::assertInstanceOf(TCronMethodTask::class, $pendingTasks['testTask7']);
 
 		self::assertEquals(2, $this->obj->processPendingTasks());
 
@@ -585,12 +585,12 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 			['name' => 'testTask4', 'schedule' => '0 0 1 1 *', 'task' => 'module2'.self::SEPARATOR.'method2(true)'],
 			['name' => 'testTask5', 'schedule' => '0 0 1 1 *', 'task' => 'module3'.self::SEPARATOR.'method3(86400)']
 		]);
-		$tasks = $this->obj->getTasksByType('Prado\\Util\\Cron\\TCronMethodTask');
+		$tasks = $this->obj->getTasksByType(TCronMethodTask::class);
 		
 		self::assertEquals(3, count($tasks));
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask3']);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask4']);
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask5']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask3']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask4']);
+		self::assertInstanceOf(TCronMethodTask::class, $tasks['testTask5']);
 		
 		self::assertEquals('module1', $tasks['testTask3']->getModuleId());
 		self::assertEquals('method1', $tasks['testTask3']->getMethod());
@@ -610,7 +610,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		// task class not TCronTask
 		$this->obj = new $this->baseClass();
 		$this->obj->init([
-			['name' => 'testTask1', 'schedule' => '0 0 1 1 *', 'task' => '\\Prado\\Util\\Cron\\TCronModule']
+			['name' => 'testTask1', 'schedule' => '0 0 1 1 *', 'task' => TCronModule::class]
 		]);
 		try {
 			$tasks = $this->obj->getTasks();
@@ -913,7 +913,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		
 		// serialized array of behaviors is an array of behaviors
 		$this->obj->setAdditionalCronTasks('<module id="cron"><task schedule="* * * * *" task="TTestCronModuleTask" /></module>');
-		$this->assertInstanceOf('\\Prado\\Xml\\TXmlDocument', $this->obj->getAdditionalCronTasks());
+		$this->assertInstanceOf(\Prado\Xml\TXmlDocument::class, $this->obj->getAdditionalCronTasks());
 		
 		try {
 			$this->obj->init(null);

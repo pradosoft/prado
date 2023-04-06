@@ -29,7 +29,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	public function processLogs($logs)
 	{
 		$page = $this->getService()->getRequestedPage();
-		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
+		if (empty($logs) || $this->getApplication()->getMode() === \Prado\TApplicationMode::Performance) {
 			return;
 		}
 		$first = $logs[0][3];

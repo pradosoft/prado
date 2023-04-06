@@ -171,7 +171,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 	 */
 	public function setHotSpotMode($value)
 	{
-		$this->setViewState('HotSpotMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THotSpotMode'), THotSpotMode::NotSet);
+		$this->setViewState('HotSpotMode', TPropertyValue::ensureEnum($value, THotSpotMode::class), THotSpotMode::NotSet);
 	}
 
 	/**

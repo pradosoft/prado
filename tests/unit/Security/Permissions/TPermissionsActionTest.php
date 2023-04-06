@@ -36,7 +36,7 @@ class TPermissionsActionTest extends PHPUnit\Framework\TestCase
 	
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsAction', $this->obj);
+		self::assertInstanceOf(TPermissionsAction::class, $this->obj);
 	}
 	
 	public function testActionIndex()
@@ -220,7 +220,7 @@ class TPermissionsActionTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('*', $rules['perm_name'][1]->getVerb());
 		self::assertEquals(['*'], $rules['perm_name'][1]->getIpRules());
 		self::assertNull($rules['perm_name'][1]->getPriority());
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserOwnerRule', $rules['perm_name'][1]);
+		self::assertInstanceOf(TUserOwnerRule::class, $rules['perm_name'][1]);
 		
 		self::assertTrue($this->obj->actionAddRule(['perm/add-rule', 'perm_name', 'deny', '', '', '', '', '10001']));
 		self::assertTrue(is_numeric(stripos($text = $this->writer->flush(), "Success")));

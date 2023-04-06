@@ -9,7 +9,7 @@ class TUSkinTemplateTest extends TTemplateTest
 {
 	protected function getTestClass()
 	{
-		return 'Prado\\Web\\UI\\TSkinTemplate';
+		return \Prado\Web\UI\TSkinTemplate::class;
 	}
 	
 	public function testConstruct()

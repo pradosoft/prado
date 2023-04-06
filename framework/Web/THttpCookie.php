@@ -193,7 +193,7 @@ class THttpCookie extends \Prado\TComponent
 	 */
 	public function setSameSite($value)
 	{
-		$this->_sameSite = TPropertyValue::ensureEnum($value, '\Prado\Web\THttpCookieSameSite');
+		$this->_sameSite = TPropertyValue::ensureEnum($value, THttpCookieSameSite::class);
 	}
 
 	/**

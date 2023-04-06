@@ -81,7 +81,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->_captionAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TTableCaptionAlign');
+		$this->_captionAlign = TPropertyValue::ensureEnum($value, TTableCaptionAlign::class);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatDirection($value)
 	{
-		$this->_repeatDirection = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRepeatDirection');
+		$this->_repeatDirection = TPropertyValue::ensureEnum($value, TRepeatDirection::class);
 	}
 
 	/**
@@ -132,7 +132,7 @@ class TRepeatInfo extends \Prado\TComponent
 	 */
 	public function setRepeatLayout($value)
 	{
-		$this->_repeatLayout = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TRepeatLayout');
+		$this->_repeatLayout = TPropertyValue::ensureEnum($value, TRepeatLayout::class);
 	}
 
 	/**
@@ -179,20 +179,20 @@ class TRepeatInfo extends \Prado\TComponent
 	protected function renderRawContents($writer, $user)
 	{
 		if ($user->getHasHeader()) {
-			$user->renderItem($writer, $this, 'Header', -1);
+			$user->renderItem($writer, $this, TListItemType::Header, -1);
 		}
 
 		// render items
 		$hasSeparators = $user->getHasSeparators();
 		$itemCount = $user->getItemCount();
 		for ($i = 0; $i < $itemCount; ++$i) {
-			$user->renderItem($writer, $this, 'Item', $i);
+			$user->renderItem($writer, $this, TListItemType::Item, $i);
 			if ($hasSeparators && $i != $itemCount - 1) {
-				$user->renderItem($writer, $this, 'Separator', $i);
+				$user->renderItem($writer, $this, TListItemType::Separator, $i);
 			}
 		}
 		if ($user->getHasFooter()) {
-			$user->renderItem($writer, $this, 'Footer', -1);
+			$user->renderItem($writer, $this, TListItemType::Footer, -1);
 		}
 	}
 
@@ -222,19 +222,19 @@ class TRepeatInfo extends \Prado\TComponent
 				if ($column == 0) {
 					$writer->renderBeginTag('tr');
 				}
-				if (($style = $user->generateItemStyle('Item', $i)) !== null) {
+				if (($style = $user->generateItemStyle(TListItemType::Item, $i)) !== null) {
 					$style->addAttributesToRender($writer);
 				}
 				$writer->renderBeginTag('td');
-				$user->renderItem($writer, $this, 'Item', $i);
+				$user->renderItem($writer, $this, TListItemType::Item, $i);
 				$writer->renderEndTag();
 				$writer->writeLine();
 				if ($hasSeparators && $i != $itemCount - 1) {
-					if (($style = $user->generateItemStyle('Separator', $i)) !== null) {
+					if (($style = $user->generateItemStyle(TListItemType::Separator, $i)) !== null) {
 						$style->addAttributesToRender($writer);
 					}
 					$writer->renderBeginTag('td');
-					$user->renderItem($writer, $this, 'Separator', $i);
+					$user->renderItem($writer, $this, TListItemType::Separator, $i);
 					$writer->renderEndTag();
 					$writer->writeLine();
 				}
@@ -258,9 +258,9 @@ class TRepeatInfo extends \Prado\TComponent
 		} else {
 			$column = 0;
 			for ($i = 0; $i < $itemCount; ++$i) {
-				$user->renderItem($writer, $this, 'Item', $i);
+				$user->renderItem($writer, $this, TListItemType::Item, $i);
 				if ($hasSeparators && $i != $itemCount - 1) {
-					$user->renderItem($writer, $this, 'Separator', $i);
+					$user->renderItem($writer, $this, TListItemType::Separator, $i);
 				}
 				$column++;
 				if ($column == $columns || $i == $itemCount - 1) {
@@ -328,11 +328,11 @@ class TRepeatInfo extends \Prado\TComponent
 						continue;
 					}
 					$renderedItems++;
-					if (($style = $user->generateItemStyle('Item', $index)) !== null) {
+					if (($style = $user->generateItemStyle(TListItemType::Item, $index)) !== null) {
 						$style->addAttributesToRender($writer);
 					}
 					$writer->renderBeginTag('td');
-					$user->renderItem($writer, $this, 'Item', $index);
+					$user->renderItem($writer, $this, TListItemType::Item, $index);
 					$writer->renderEndTag();
 					$writer->writeLine();
 					if (!$hasSeparators) {
@@ -343,11 +343,11 @@ class TRepeatInfo extends \Prado\TComponent
 							$writer->renderEndTag();
 							$writer->renderBeginTag('tr');
 						}
-						if (($style = $user->generateItemStyle('Separator', $index)) !== null) {
+						if (($style = $user->generateItemStyle(TListItemType::Separator, $index)) !== null) {
 							$style->addAttributesToRender($writer);
 						}
 						$writer->renderBeginTag('td');
-						$user->renderItem($writer, $this, 'Separator', $index);
+						$user->renderItem($writer, $this, TListItemType::Separator, $index);
 						$writer->renderEndTag();
 						$writer->writeLine();
 					} elseif ($columns > 1) {
@@ -385,7 +385,7 @@ class TRepeatInfo extends \Prado\TComponent
 						continue;
 					}
 					$renderedItems++;
-					$user->renderItem($writer, $this, 'Item', $index);
+					$user->renderItem($writer, $this, TListItemType::Item, $index);
 					$writer->writeLine();
 					if (!$hasSeparators) {
 						continue;
@@ -394,7 +394,7 @@ class TRepeatInfo extends \Prado\TComponent
 						if ($columns == 1) {
 							$writer->writeBreak();
 						}
-						$user->renderItem($writer, $this, 'Separator', $index);
+						$user->renderItem($writer, $this, TListItemType::Separator, $index);
 					}
 					$writer->writeLine();
 				}
@@ -426,16 +426,16 @@ class TRepeatInfo extends \Prado\TComponent
 				$writer->addAttribute('colspan', "$columns");
 			}
 			$writer->addAttribute('scope', 'col');
-			if (($style = $user->generateItemStyle('Header', -1)) !== null) {
+			if (($style = $user->generateItemStyle(TListItemType::Header, -1)) !== null) {
 				$style->addAttributesToRender($writer);
 			}
 			$writer->renderBeginTag('th');
-			$user->renderItem($writer, $this, 'Header', -1);
+			$user->renderItem($writer, $this, TListItemType::Header, -1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		} else {
-			$user->renderItem($writer, $this, 'Header', -1);
+			$user->renderItem($writer, $this, TListItemType::Header, -1);
 			if ($needBreak) {
 				$writer->writeBreak();
 			}
@@ -458,16 +458,16 @@ class TRepeatInfo extends \Prado\TComponent
 			if ($columns > 1) {
 				$writer->addAttribute('colspan', "$columns");
 			}
-			if (($style = $user->generateItemStyle('Footer', -1)) !== null) {
+			if (($style = $user->generateItemStyle(TListItemType::Footer, -1)) !== null) {
 				$style->addAttributesToRender($writer);
 			}
 			$writer->renderBeginTag('td');
-			$user->renderItem($writer, $this, 'Footer', -1);
+			$user->renderItem($writer, $this, TListItemType::Footer, -1);
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 			$writer->renderEndTag();
 		} else {
-			$user->renderItem($writer, $this, 'Footer', -1);
+			$user->renderItem($writer, $this, TListItemType::Footer, -1);
 		}
 		$writer->writeLine();
 	}

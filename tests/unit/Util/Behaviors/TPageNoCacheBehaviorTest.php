@@ -17,7 +17,7 @@ class TPageNoCacheBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TPageNoCacheBehavior', $this->obj);
+		$this->assertInstanceOf(TPageNoCacheBehavior::class, $this->obj);
 	}
 
 	public function testAddNoCacheMeta()

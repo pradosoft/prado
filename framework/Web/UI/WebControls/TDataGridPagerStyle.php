@@ -84,7 +84,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setMode($value)
 	{
-		$this->_mode = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerMode');
+		$this->_mode = TPropertyValue::ensureEnum($value, TDataGridPagerMode::class);
 	}
 
 	/**
@@ -100,7 +100,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setButtonType($value)
 	{
-		$this->_buttonType = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerButtonType');
+		$this->_buttonType = TPropertyValue::ensureEnum($value, TDataGridPagerButtonType::class);
 	}
 
 	/**
@@ -200,7 +200,7 @@ class TDataGridPagerStyle extends TPanelStyle
 	 */
 	public function setPosition($value)
 	{
-		$this->_position = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDataGridPagerPosition');
+		$this->_position = TPropertyValue::ensureEnum($value, TDataGridPagerPosition::class);
 	}
 
 	/**

@@ -135,7 +135,7 @@ class TPageConfiguration extends \Prado\TComponent
 	 */
 	public function loadFromFile($fname, $configPagePath)
 	{
-		Prado::trace("Loading page configuration file $fname", 'Prado\Web\Services\TPageService');
+		Prado::trace("Loading page configuration file $fname", \Prado\Web\Services\TPageService::class);
 		if (empty($fname) || !is_file($fname)) {
 			return;
 		}

@@ -504,7 +504,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function flushContent($continueBuffering = true)
 	{
-		Prado::trace("Flushing output", 'Prado\Web\THttpResponse');
+		Prado::trace("Flushing output", THttpResponse::class);
 		$this->ensureHeadersSent();
 		if ($this->_bufferOutput) {
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
@@ -589,7 +589,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getContents()
 	{
-		Prado::trace("Retrieving output", 'Prado\Web\THttpResponse');
+		Prado::trace("Retrieving output", THttpResponse::class);
 		return $this->_bufferOutput ? ob_get_contents() : '';
 	}
 
@@ -601,7 +601,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_bufferOutput && ob_get_length() > 0) {
 			ob_clean();
 		}
-		Prado::trace("Clearing output", 'Prado\Web\THttpResponse');
+		Prado::trace("Clearing output", THttpResponse::class);
 	}
 
 	/**
@@ -637,7 +637,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function appendHeader($value, $replace = true)
 	{
-		Prado::trace("Sending header '$value'", 'Prado\Web\THttpResponse');
+		Prado::trace("Sending header '$value'", THttpResponse::class);
 		header($value, $replace);
 	}
 

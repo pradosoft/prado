@@ -199,7 +199,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		$s = $a ? 's' : '';
 		$permission = $s . ' ("' . $permission . '")';
 
-		Prado::log('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"', TLogger::WARNING, 'Prado.Permission.TPermissionsBehavior');
+		Prado::log('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"', TLogger::WARNING, TPermissionsBehavior::class);
 
 		$permission = ($app->getMode() == TApplicationMode::Debug) ? $permission : 's';
 		if ($app instanceof \Prado\Shell\TShellApplication) {

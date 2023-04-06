@@ -51,7 +51,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TBehaviorParameterLoader', $this->obj);
+		$this->assertInstanceOf(TBehaviorParameterLoader::class, $this->obj);
 	}
 
 	public function testDyInit()

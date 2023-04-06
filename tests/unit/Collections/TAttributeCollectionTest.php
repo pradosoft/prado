@@ -25,7 +25,7 @@ class TAttributeCollectionTest extends PHPUnit\Framework\TestCase
 	{
 		$collection = new TAttributeCollection([], true);
 		self::assertEquals(false, $collection->canGetProperty('Property'));
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$value = $collection->Property;
 	}
 
@@ -40,7 +40,7 @@ class TAttributeCollectionTest extends PHPUnit\Framework\TestCase
 	public function testCanNotSetPropertyIfReadOnly()
 	{
 		$collection = new TAttributeCollection([], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$collection->Property = 'value';
 	}
 

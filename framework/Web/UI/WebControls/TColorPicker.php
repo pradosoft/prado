@@ -65,7 +65,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function setMode($value)
 	{
-		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, TColorPickerMode::class), TColorPickerMode::Basic);
 	}
 
 	/**

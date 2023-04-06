@@ -29,7 +29,7 @@ use ReflectionClass;
  */
 class TActiveRecordGateway extends \Prado\TComponent
 {
-	public const DEFAULT_DATA_GATEWAY_CLASS = '\Prado\Data\DataGateway\TDataGatewayCommand';
+	public const DEFAULT_DATA_GATEWAY_CLASS = \Prado\Data\DataGateway\TDataGatewayCommand::class;
 
 	/**
 	 * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}

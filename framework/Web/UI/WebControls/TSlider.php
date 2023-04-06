@@ -70,7 +70,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	public function setDirection($value)
 	{
-		$this->setViewState('Direction', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TSliderDirection'), TSliderDirection::Horizontal);
+		$this->setViewState('Direction', TPropertyValue::ensureEnum($value, TSliderDirection::class), TSliderDirection::Horizontal);
 	}
 
 	/**

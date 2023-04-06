@@ -31,7 +31,7 @@ class TMssqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Mssql\TMssqlTableInfo';
+		return \Prado\Data\Common\Mssql\TMssqlTableInfo::class;
 	}
 
 	/**

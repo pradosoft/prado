@@ -11,7 +11,7 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 	
 	protected function getTestClass()
 	{
-		return 'Prado\\Shell\\TShellWriter';
+		return TShellWriter::class;
 	}
 
 	protected function setUp(): void
@@ -28,7 +28,7 @@ class TShellWriterTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Shell\\TShellWriter', $this->obj);
+		$this->assertInstanceOf(TShellWriter::class, $this->obj);
 	}
 	
 	public function testColorSupported()

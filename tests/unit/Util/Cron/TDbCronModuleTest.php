@@ -9,7 +9,7 @@ class TDbCronModuleTest extends TCronModuleTest
 {
 	protected function getTestClass()
 	{
-		return "\\Prado\\Util\\Cron\\TDbCronModule";
+		return TDbCronModule::class;
 	}
 	
 	protected function tearDown(): void
@@ -39,9 +39,9 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals($this->obj, $task->args[0]);
 		
 		$taskInfo = $taskInfos[0];
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronTaskInfo', $taskInfo);
+		self::assertInstanceOf(\Prado\Util\Cron\TCronTaskInfo::class, $taskInfo);
 		self::assertEquals('cronclean', $taskInfo->getName());
-		self::assertEquals('Prado\\Util\\Cron\\TDbCronCleanLogTask', $taskInfo->getTask());
+		self::assertEquals(\Prado\Util\Cron\TDbCronCleanLogTask::class, $taskInfo->getTask());
 		self::assertEquals('testCronModule100', $taskInfo->getModuleId());
 		
 		$taskInfos = $taskInfos[1];
@@ -171,7 +171,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertEquals('value1', $tasks['testTask1']->getPropertyA());
 		self::assertEquals('2 * 1 1 *', $tasks['testTask2']->getSchedule());
 		self::assertEquals('testTask2', $tasks['testTask2']->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask2']);
+		self::assertInstanceOf(\Prado\Util\Cron\TCronMethodTask::class, $tasks['testTask2']);
 		self::assertEquals('CMT_UserManager3', $tasks['testTask2']->getModuleId());
 		self::assertEquals('method1', $tasks['testTask2']->getMethod());
 		
@@ -181,7 +181,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertInstanceOf('TTestCronModuleTask', $tasks['testTask3']);
 		self::assertEquals('4 * * * * 2020', $tasks['testTask4']->getSchedule());
 		self::assertEquals('testTask4', $tasks['testTask4']->getName());
-		self::assertInstanceOf('Prado\\Util\\Cron\\TCronMethodTask', $tasks['testTask4']);
+		self::assertInstanceOf(\Prado\Util\Cron\TCronMethodTask::class, $tasks['testTask4']);
 		self::assertEquals('CMT_UserManager3', $tasks['testTask4']->getModuleId());
 		self::assertEquals('method3(86400)', $tasks['testTask4']->getMethod());
 		//Yay, the sum of what needs to happen just happened.
@@ -457,7 +457,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		self::assertNull($task['username']);
 		self::assertEquals(0, $task['processcount']);
 		self::assertTrue(abs(microtime(true) - $task['lastexectime']) < 2);
-		self::assertInstanceOf('\\Prado\\Util\\Cron\\TCronMethodTask', $this->obj->getTask('testTaskAB', true, true));
+		self::assertInstanceOf(\Prado\Util\Cron\TCronMethodTask::class, $this->obj->getTask('testTaskAB', true, true));
 		
 		// Test DB task for GetTask
 		$task = $this->obj->getTask('testTask5', true, false);
@@ -770,7 +770,7 @@ class TDbCronModuleTest extends TCronModuleTest
 	
 	public function testGetDbConnection()
 	{
-		self::assertInstanceOf('Prado\\Data\\TDbConnection', $this->obj->getDbConnection());
+		self::assertInstanceOf(\Prado\Data\TDbConnection::class, $this->obj->getDbConnection());
 	}
 	
 	public function testConnectionId()

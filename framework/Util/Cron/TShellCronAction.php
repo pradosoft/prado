@@ -45,7 +45,7 @@ class TShellCronAction extends TShellAction
 	 */
 	public function getModuleClass()
 	{
-		return 'Prado\\Util\\Cron\\TCronModule';
+		return \Prado\Util\Cron\TCronModule::class;
 	}
 
 	/**

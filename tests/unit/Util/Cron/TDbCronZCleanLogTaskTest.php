@@ -4,13 +4,13 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
 use Prado\Util\Cron\TDbCronModule;
-
+use Prado\Util\Cron\TDbCronCleanLogTask;
 
 class TDbCronZCleanLogTaskTest extends TCronTaskTest
 {	
 	protected function getTestClass()
 	{
-		return 'Prado\\Util\\Cron\\TDbCronCleanLogTask';
+		return TDbCronCleanLogTask::class;
 	}
 	
 	public function hasNullModuleId()
@@ -20,12 +20,9 @@ class TDbCronZCleanLogTaskTest extends TCronTaskTest
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TDbCronCleanLogTask', $this->obj);
-		
-		
+		$this->assertInstanceOf(TDbCronCleanLogTask::class, $this->obj);
 	}
-	
-	
+
 	public function testExecute()
 	{
 		$dbcron = new TDbCronModule();

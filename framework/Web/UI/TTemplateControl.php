@@ -123,7 +123,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	protected function loadTemplate()
 	{
-		Prado::trace("Loading template " . get_class($this), '\Prado\Web\UI\TTemplateControl');
+		Prado::trace("Loading template " . get_class($this), TTemplateControl::class);
 		$template = $this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
 		return $template;
 	}

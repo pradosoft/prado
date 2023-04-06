@@ -319,7 +319,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ($this->_started) {
 			throw new TInvalidOperationException('httpsession_cookiemode_unchangeable');
 		} else {
-			$value = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpSessionCookieMode');
+			$value = TPropertyValue::ensureEnum($value, THttpSessionCookieMode::class);
 			if ($value === THttpSessionCookieMode::None) {
 				ini_set('session.use_cookies', '0');
 				ini_set('session.use_only_cookies', '0');

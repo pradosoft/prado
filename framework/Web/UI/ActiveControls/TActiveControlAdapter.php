@@ -50,7 +50,7 @@ class TActiveControlAdapter extends TControlAdapter
 	/**
 	 * @var string view state tracker class.
 	 */
-	private $_stateTrackerClass = '\Prado\Web\UI\ActiveControls\TCallbackPageStateTracker';
+	private $_stateTrackerClass = \Prado\Web\UI\ActiveControls\TCallbackPageStateTracker::class;
 
 	/**
 	 * Constructor.
@@ -70,9 +70,9 @@ class TActiveControlAdapter extends TControlAdapter
 	{
 		if ($type === null) {
 			if ($this->getControl() instanceof ICallbackEventHandler) {
-				$this->_activeControlType = 'Prado\\Web\UI\\ActiveControls\\TBaseActiveCallbackControl';
+				$this->_activeControlType = \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl::class;
 			} else {
-				$this->_activeControlType = 'Prado\\Web\UI\\ActiveControls\\TBaseActiveControl';
+				$this->_activeControlType = \Prado\Web\UI\ActiveControls\TBaseActiveControl::class;
 			}
 		} else {
 			$this->_activeControlType = $type;

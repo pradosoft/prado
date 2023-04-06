@@ -122,7 +122,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	private $_inCronShell;
 
 	/** @var string the cli class to instance for CLI command line actions; this changes for TDbCronModule */
-	protected $_shellClass = 'Prado\\Util\\Cron\\TShellCronAction';
+	protected $_shellClass = \Prado\Util\Cron\TShellCronAction::class;
 
 	/** @var array[] any additional tasks to install from properties */
 	private $_additionalCronTasks;
@@ -150,7 +150,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 		// Otherwise manually look for the IUserManager
 		if ($this->_userManager === null) {
-			$users = $app->getModulesByType('Prado\\Security\\IUserManager');
+			$users = $app->getModulesByType(\Prado\Security\IUserManager::class);
 			foreach ($users as $id => $module) {
 				$this->_userManager = $app->getModule($id);
 				break;
@@ -424,7 +424,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	protected function logCron($numtasks)
 	{
-		Prado::log("Processing {$numtasks} Cron Tasks", TLogger::INFO, 'Prado.Cron.TCronModule');
+		Prado::log("Processing {$numtasks} Cron Tasks", TLogger::INFO, TCronModule::class);
 		$this->dyLogCron($numtasks);
 		$this->setLastCronTime(microtime(true));
 	}
@@ -496,7 +496,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	protected function logCronTask($task, $username)
 	{
-		Prado::log('Running cron task (' . $task->getName() . ', ' . $username . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
+		Prado::log('Running cron task (' . $task->getName() . ', ' . $username . ')', TLogger::INFO, TCronModule::class);
 		$this->dyLogCronTask($task, $username);
 	}
 
@@ -523,7 +523,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	 */
 	protected function logCronTaskEnd($task)
 	{
-		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, 'Prado.Cron.TCronModule');
+		Prado::log('Ending cron task (' . $task->getName() . ', ' . $task->getTask() . ')', TLogger::INFO, TCronModule::class);
 		$this->dyLogCronTaskEnd($task);
 	}
 

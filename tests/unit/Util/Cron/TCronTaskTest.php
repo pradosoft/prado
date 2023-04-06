@@ -37,7 +37,7 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TCronTask', $this->obj);
+		$this->assertInstanceOf(TCronTask::class, $this->obj);
 	}
 	
 	public function testName()
@@ -49,7 +49,7 @@ class TCronTaskTest extends PHPUnit\Framework\TestCase
 	
 	public function testGetTask()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TCronTask', $this->obj);
+		$this->assertInstanceOf(TCronTask::class, $this->obj);
 	}
 	
 	public function testSchedule()

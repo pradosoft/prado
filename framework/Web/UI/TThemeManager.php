@@ -49,7 +49,7 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * default theme class
 	 */
-	public const DEFAULT_THEMECLASS = '\Prado\Web\UI\TTheme';
+	public const DEFAULT_THEMECLASS = \Prado\Web\UI\TTheme::class;
 
 	/**
 	 * @var string

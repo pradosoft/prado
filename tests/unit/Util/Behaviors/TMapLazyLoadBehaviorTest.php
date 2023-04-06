@@ -36,7 +36,7 @@ class TMapLazyLoadBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Behaviors\\TMapLazyLoadBehavior', $this->behavior);
+		$this->assertInstanceOf(TMapLazyLoadBehavior::class, $this->behavior);
 		
 		try {
 			$b = new TMapLazyLoadBehavior(null);

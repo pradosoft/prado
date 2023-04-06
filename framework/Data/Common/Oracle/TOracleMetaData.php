@@ -33,7 +33,7 @@ class TOracleMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Oracle\TOracleTableInfo';
+		return \Prado\Data\Common\Oracle\TOracleTableInfo::class;
 	}
 
 	/**

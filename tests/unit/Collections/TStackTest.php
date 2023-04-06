@@ -40,7 +40,7 @@ class TStackTest extends PHPUnit\Framework\TestCase
 	{
 		$stack = new TStack();
 		$data = new stdClass();
-		self::expectException('Prado\\Exceptions\\TInvalidDataTypeException');
+		self::expectException(TInvalidDataTypeException::class);
 		$stack->copyFrom($data);
 	}
 
@@ -67,7 +67,7 @@ class TStackTest extends PHPUnit\Framework\TestCase
 	public function testCanNotPeekAnEmptyStack()
 	{
 		$stack = new TStack();
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$item = $stack->peek();
 	}
 
@@ -82,7 +82,7 @@ class TStackTest extends PHPUnit\Framework\TestCase
 	public function testCanNotPopAnEmptyStack()
 	{
 		$stack = new TStack();
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$item = $stack->pop();
 	}
 

@@ -44,7 +44,7 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsBehavior', $this->behavior);
+		self::assertInstanceOf(TPermissionsBehavior::class, $this->behavior);
 		self::assertNull($this->behavior->getPermissionsManager());
 		
 		$this->behavior = new TPermissionsBehavior($v = new stdClass());
@@ -75,7 +75,7 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 		
 		//Test attach
 		self::assertEquals(3,count($this->behavior->getPermissionEvents()));
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionEvent', $manager->getPermissionEvents()[0]);
+		self::assertInstanceOf(TPermissionEvent::class, $manager->getPermissionEvents()[0]);
 		self::assertEquals(2, count($manager->getPermissionRules($permission)));
 		
 		$userName = 'developer3';
@@ -101,12 +101,12 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 		
 		// Test the extra parameter of the behavior.
 		$manager->loadPermissionsData(['permissionrules' => [
-			['name' => $permission, 'class' => 'Prado\\Security\\Permissions\\TUserOwnerRule', 'action' => 'allow']
+			['name' => $permission, 'class' => TUserOwnerRule::class, 'action' => 'allow']
 		]]);
-		self::assertInstanceof('Prado\\Security\\TAuthorizationRuleCollection', $rules);
+		self::assertInstanceof(TAuthorizationRuleCollection::class, $rules);
 		self::assertEquals(3, count($rules));
 		
-		self::assertInstanceof('Prado\\Security\\Permissions\\TUserOwnerRule', $rules[1]);
+		self::assertInstanceof(TUserOwnerRule::class, $rules[1]);
 		$extra = ['username' => $userName];
 		$_extra = ['extra' => $extra];
 		self::assertTrue($rules->isUserAllowed($user, 'get', '192.168.0.10', $extra));

@@ -167,7 +167,7 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 			// If we update a TActiveTableRow on callback, we shouldn't update all childs,
 			// because the whole content will be replaced by the parent.
 			if ($this->getHasControls()) {
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
+				foreach ($this->findControlsByType(\Prado\Web\UI\ActiveControls\IActiveControl::class, false) as $control) {
 					$control->getActiveControl()->setEnableUpdate(false);
 				}
 			}
