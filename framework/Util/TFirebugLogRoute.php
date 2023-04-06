@@ -61,7 +61,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 			$content = $response->createHtmlWriter();
 			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_DEBUG_HEADER);
 			$content->write($blocks);
-			$response->write($content);
+			$response->write($content->flush());
 		}
 	}
 
@@ -92,7 +92,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[1]);
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
+		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
@@ -105,7 +105,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		$logfunc = $this->getFirebugLoggingFunction($log[1]);
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
+		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 
 		return [$logfunc, $total, $delta, $msg];
