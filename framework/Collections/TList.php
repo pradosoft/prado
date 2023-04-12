@@ -225,7 +225,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function clear()
 	{
-		for ($i = $this->_c - 1;$i >= 0;--$i) {
+		for ($i = $this->_c - 1; $i >= 0; --$i) {
 			$this->removeAt($i);
 		}
 	}
@@ -236,7 +236,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function contains($item)
 	{
-		return $this->indexOf($item) >= 0;
+		return $this->indexOf($item) != -1;
 	}
 
 	/**
