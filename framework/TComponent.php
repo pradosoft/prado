@@ -1570,7 +1570,7 @@ class TComponent
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behaviorname the behavior name
-	 * @return IBehavior the behavior object, or null if the behavior does not exist
+	 * @return object the behavior object, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
