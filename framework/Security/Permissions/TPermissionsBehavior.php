@@ -87,7 +87,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	public function __construct($manager = null)
 	{
 		if ($manager) {
-			$this->setManager($manager);
+			$this->setPermissionsManager($manager);
 		}
 		parent::__construct();
 	}
@@ -99,14 +99,15 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	{
 		parent::attach($owner);
 		if (method_exists($owner, 'getPermissions')) {
+			$manager = $this->getPermissionsManager();
 			$this->_permissionEvents = [];
-			$this->_events = $owner->getPermissions($this->getManager()) ?? [];
+			$this->_events = $owner->getPermissions($manager) ?? [];
 			foreach ($this->_events as $permEvent) {
 				$perm = $permEvent->getName();
 				foreach ($permEvent->getEvents() as $event) {
 					$this->_permissionEvents[$event][] = $perm;
 				}
-				$this->getManager()->registerPermission($perm, $permEvent->getDescription(), $permEvent->getRules());
+				$manager->registerPermission($perm, $permEvent->getDescription(), $permEvent->getRules());
 			}
 		}
 	}
@@ -157,7 +158,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 * Gets the TPermissionsManager for the behavior
 	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
 	 */
-	public function getManager()
+	public function getPermissionsManager()
 	{
 		return $this->_manager;
 	}
@@ -166,7 +167,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 * Sets the TPermissionsManager for the behavior
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
 	 */
-	public function setManager($manager)
+	public function setPermissionsManager($manager)
 	{
 		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
 			$manager = $manager->get();
