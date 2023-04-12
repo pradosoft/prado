@@ -475,6 +475,7 @@ return [
 'TTemplateManager' => 'Prado\Web\UI\TTemplateManager',
 'TTheme' => 'Prado\Web\UI\TTheme',
 'TThemeManager' => 'Prado\Web\UI\TThemeManager',
+'TWebColors' => 'Prado\Web\UI\TWebColors',
 'IDataSource' => 'Prado\Web\UI\WebControls\IDataSource',
 'IItemDataRenderer' => 'Prado\Web\UI\WebControls\IItemDataRenderer',
 'IListControlAdapter' => 'Prado\Web\UI\WebControls\IListControlAdapter',

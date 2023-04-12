@@ -1,3 +1,6 @@
+## Version 4.2.3 - TBA
+
+ENH: Issue #861 - TWebColors lists all the Web Colors in a TEnumerable and implements TPropertyValue::ensureHexColor
 
 ## Version 4.2.2 - April 6, 2023
 
