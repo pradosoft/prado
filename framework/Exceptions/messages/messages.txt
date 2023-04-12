@@ -19,6 +19,7 @@ component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach t
 component_no_class_provided_nor_late_binding = Adding or Removing Class Behaviors must have PHP feature Late Static Binding or a class provided as a parameter
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
+propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
 
 list_index_invalid						= Index '{0}' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
