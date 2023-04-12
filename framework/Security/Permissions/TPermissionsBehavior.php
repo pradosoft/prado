@@ -10,8 +10,10 @@
 namespace Prado\Security\Permissions;
 
 use Prado\Prado;
+use Prado\TApplicationMode;
 use Prado\Util\IDynamicMethods;
 use Prado\Util\TBehavior;
+use Prado\Util\TLogger;
 
 /**
  * TPermissionsBehavior class.
@@ -173,5 +175,37 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;
+	}
+
+	/**
+	 * This logs permissions failures in the Prado::log and with the shell when
+	 * the Application is a TShellApplication.  When the Application is in Debug
+	 * mode, the failed permission is written to shell-cli, otherwise the exact
+	 * permission is keep hidden from the shell user for security purposes.
+	 * @param array|string $permission the permission(s) that failed.
+	 * @param string $action short description of the action that failed.
+	 * @param \Prado\Util\TCallChain $callchain the series of dynamic events being raised.
+	 * @param mixed $permission
+	 */
+	public function dyLogPermissionFailed($permission, $action, $callchain)
+	{
+		$app = Prado::getApplication();
+		$user = $app->getUser();
+		$name = '(undefined)';
+		if ($user) {
+			$name = $user->getName();
+		}
+		$permission = ($a = is_array($permission)) ? implode('", "', $permission) : $permission;
+		$s = $a ? 's' : '';
+		$permission = $s . ' ("' . $permission . '")';
+
+		Prado::log('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"', TLogger::WARNING, 'Prado.Permission.TPermissionsBehavior');
+
+		$permission = ($app->getMode() == TApplicationMode::Debug) ? $permission : 's';
+		if ($app instanceof \Prado\Shell\TShellApplication) {
+			$writer = $app->getWriter();
+			$writer->writeError('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"');
+		}
+		return $callchain->dyLogPermissionFailed($permission, $action);
 	}
 }
