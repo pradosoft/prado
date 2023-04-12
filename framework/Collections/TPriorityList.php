@@ -489,7 +489,7 @@ class TPriorityList extends TList
 	 */
 	public function contains($item)
 	{
-		return $this->indexOf($item) >= 0;
+		return $this->indexOf($item) != -1;
 	}
 
 	/**
