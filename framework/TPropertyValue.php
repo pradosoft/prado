@@ -191,4 +191,55 @@ class TPropertyValue
 	{
 		return empty($value) ? null : $value;
 	}
+
+	/**
+	 * Converts the value to a web "#RRGGBB" hex color.
+	 * The value[s] could be as an A) Web Color or # Hex Color string, or B) as a color
+	 * encoded integer, eg 0x00RRGGBB, or C) a triple ($value [red], $green, $blue).
+	 * In instance (A), $green is treated as a boolean flag for whether to convert
+	 * any web colors to their # hex color.
+	 * @param int|string $value String Web Color name or Hex Color (eg. '#336699'),
+	 *   int color (0x00RRGGBB [$blue is null]), or int red [0..255] when $blue is not null.
+	 * @param bool|int $green When $blue !== null, $green is an int color, otherwise its
+	 *   the flag to allow converting Web Color names to their web colors. Default true,
+	 *	 for allow web colors to translate into their # hex color.
+	 * @param ?int $blue The blue color. Default null for (A) or (B)
+	 * @return string The valid # hex color.
+	 */
+	public static function ensureHexColor($value, $green = true, ?int $blue = null)
+	{
+		if (is_numeric($value)) {
+			if ($blue === null) {
+				$blue = $value & 0xFF;
+				$green = ($value >> 8) & 0xFF;
+				$value = ($value >> 16) & 0xFF;
+			}
+			return '#' . strtoupper(
+				str_pad(dechex(max(0, min($value, 255))), 2, '0', STR_PAD_LEFT) .
+						 str_pad(dechex(max(0, min($green, 255))), 2, '0', STR_PAD_LEFT) .
+						 str_pad(dechex(max(0, min($blue, 255))), 2, '0', STR_PAD_LEFT)
+			);
+		}
+		$value = self::ensureString($value);
+		$len = strlen($value);
+		if ($green && $len > 0 && $value[0] !== '#') {
+			static $colors;
+			if (!$colors) {
+				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColors::class);
+				$colors = $reflect->getConstants();
+				$colors = array_change_key_case($colors);
+			}
+			if (array_key_exists($lvalue = strtolower($value), $colors)) {
+				$value = $colors[$lvalue];
+				$len = strlen($value);
+			}
+		}
+		if ($len == 0 || $value[0] !== '#' || ($len !== 4 && $len !== 7) || !preg_match('/^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/', $value)) {
+			throw new TInvalidDataValueException('propertyvalue_invalid_hex_color', $value);
+		}
+		if ($len === 4) {
+			$value = preg_replace('/^#(.)(.)(.)$/', '#${1}${1}${2}${2}${3}${3}', $value);
+		}
+		return strtoupper($value);
+	}
 }
