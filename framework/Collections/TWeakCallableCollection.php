@@ -30,7 +30,6 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	private static $_weak;
 
-
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object. Discovers the availability of the
@@ -66,6 +65,9 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public static function getWeakReferenceEnabled()
 	{
+		if (self::$_weak === null) {
+			self::$_weak = class_exists('\WeakReference', false);
+		}
 		return self::$_weak;
 	}
 
@@ -146,7 +148,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * This flattens the priority list into a flat array [0,...,n-1]. This is needed to filter the output.
 	 * @return array array of items in the list in priority and index order
 	 */
-	protected function flattenPriorities()
+	protected function flattenPriorities(): array
 	{
 		return $this->filterItemsForOutput(parent::flattenPriorities());
 	}
@@ -159,7 +161,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array array of items in the list in priority and index order,
 	 *    where objects are WeakReference
 	 */
-	protected function flattenPrioritiesWeak()
+	protected function flattenPrioritiesWeak(): array
 	{
 		return parent::flattenPriorities();
 	}
@@ -186,9 +188,9 @@ class TWeakCallableCollection extends TPriorityList
 	 * Gets all the items at a specific priority. This is needed to filter the output.
 	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled
 	 * in with the default priority, if left blank.
-	 * @return array all items at priority in index order, null if there are no items at that priority
+	 * @return ?array all items at priority in index order, null if there are no items at that priority
 	 */
-	public function itemsAtPriority($priority = null)
+	public function itemsAtPriority($priority = null): ?array
 	{
 		return $this->filterItemsForOutput(parent::itemsAtPriority($priority));
 	}
@@ -272,7 +274,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array the array of priorities keys with values of arrays of callables.
 	 * The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toPriorityArray()
+	public function toPriorityArray(): array
 	{
 		$result = [];
 		foreach (parent::toPriorityArray() as $i => $v) {
@@ -299,7 +301,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority, $inclusive = false)
+	public function toArrayBelowPriority($priority, $inclusive = false): array
 	{
 		return $this->filterItemsForOutput(parent::toArrayBelowPriority($priority, $inclusive));
 	}
@@ -311,7 +313,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority, $inclusive = true)
+	public function toArrayAbovePriority($priority, $inclusive = true): array
 	{
 		return $this->filterItemsForOutput(parent::toArrayAbovePriority($priority, $inclusive));
 	}

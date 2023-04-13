@@ -86,7 +86,7 @@ class TControlCollection extends \Prado\Collections\TList
 	/**
 	 * Overrides the parent implementation by invoking {@link TControl::clearNamingContainer}
 	 */
-	public function clear()
+	public function clear(): void
 	{
 		parent::clear();
 		if ($this->_o instanceof INamingContainer) {

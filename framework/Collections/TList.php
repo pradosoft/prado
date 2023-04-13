@@ -44,16 +44,16 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d = [];
+	protected array $_d = [];
 	/**
 	 * number of items
 	 * @var int
 	 */
-	private $_c = 0;
+	protected int $_c = 0;
 	/**
 	 * @var bool whether this list is read-only
 	 */
-	private $_r = false;
+	private bool $_r = false;
 
 	/**
 	 * Constructor.
@@ -74,7 +74,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @return bool whether this list is read-only or not. Defaults to false.
 	 */
-	public function getReadOnly()
+	public function getReadOnly(): bool
 	{
 		return $this->_r;
 	}
@@ -82,9 +82,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @param bool $value whether this list is read-only or not
 	 */
-	protected function setReadOnly($value)
+	protected function setReadOnly(bool $value)
 	{
-		$this->_r = TPropertyValue::ensureBoolean($value);
+		$this->_r = $value;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
 	#[\ReturnTypeWillChange]
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		return new \ArrayIterator($this->_d);
 	}
@@ -111,7 +111,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @return int the number of items in the list
 	 */
-	public function getCount()
+	public function getCount(): int
 	{
 		return $this->_c;
 	}
@@ -223,7 +223,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Removes all items in the list.
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function clear()
+	public function clear(): void
 	{
 		for ($i = $this->_c - 1; $i >= 0; --$i) {
 			$this->removeAt($i);
@@ -234,7 +234,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed $item the item
 	 * @return bool whether the list contains the item
 	 */
-	public function contains($item)
+	public function contains($item): bool
 	{
 		return $this->indexOf($item) != -1;
 	}
@@ -303,7 +303,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @return array the list of items in array
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return $this->_d;
 	}
@@ -393,5 +393,26 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	public function offsetUnset($offset): void
 	{
 		$this->removeAt($offset);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		if ($this->_d === []) {
+			$exprops[] = "\0*\0_d";
+		}
+		if ($this->_c === 0) {
+			$exprops[] = "\0*\0_c";
+		}
+		if ($this->_r === false) {
+			$exprops[] = "\0Prado\\Collections\\TList\0_r";
+		}
 	}
 }
