@@ -772,6 +772,7 @@ class TPriorityList extends TList
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 * @param array $exprops by reference
+	 * @since 4.2.3
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
