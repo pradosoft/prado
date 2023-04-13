@@ -274,9 +274,9 @@ class TPriorityMap extends TMap
 	/**
 	 * Gets all the items at a specific priority.
 	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
-	 * @return array all items at priority in index order, null if there are no items at that priority
+	 * @return ?array all items at priority in index order, null if there are no items at that priority
 	 */
-	public function itemsAtPriority($priority = null)
+	public function itemsAtPriority($priority = null): ?array
 	{
 		$priority = $this->ensurePriority($priority);
 		return $this->_d[$priority] ?? null;
@@ -458,7 +458,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority, $inclusive = false)
+	public function toArrayBelowPriority($priority, $inclusive = false): array
 	{
 		$this->sortPriorities();
 		$items = [];
@@ -478,7 +478,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority, $inclusive = true)
+	public function toArrayAbovePriority($priority, $inclusive = true): array
 	{
 		$this->sortPriorities();
 		$items = [];
