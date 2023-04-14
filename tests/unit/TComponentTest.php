@@ -95,6 +95,19 @@ class NewComponent extends TComponent
 	}
 }
 
+class NewComponentBehavior extends TBehavior
+{
+	public $data = 0;
+	public function events()
+	{
+		return ['onMyEvent' => 'ncBehaviorHandler'];
+	}
+	
+	public function ncBehaviorHandler($sender, $param)
+	{
+		
+	}
+}
 
 class NewComponentNoListen extends NewComponent
 {
@@ -2461,5 +2474,86 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		$this->assertFalse(isset($this->component->ColorAttribute));
 		$this->assertFalse(isset($this->component->JsColorAttribute));
+	}
+
+	public function testClone()
+	{
+		$obj = new NewComponent();
+		$this->component = new NewComponent();
+		$this->component->attachBehavior('CopyBehavior', $b = new NewComponentBehavior());
+		$this->component->onMyEvent[] = [$this->component, 'myEventHandler'];
+		$this->component->onMyEvent[] = [$obj, 'myEventHandler'];
+		$this->assertEquals(3, count($this->component->onMyEvent));
+		
+		$this->assertNotNull($this->component->asa('CopyBehavior'));
+		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
+	
+		$copy = clone $this->component;
+		$copy->Text = 'copyObject';
+		
+		$this->assertNotNull($copy->asa('CopyBehavior'));
+		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
+		$this->assertEquals($copy, $copy->CopyBehavior->getOwner());
+		$this->assertTrue($copy->CopyBehavior !== $this->component->CopyBehavior);
+		$this->assertEquals(3, count($this->component->onMyEvent));
+		$this->assertEquals(-1, $this->component->onMyEvent->indexOf([$copy->CopyBehavior, 'ncBehaviorHandler']));
+		$this->assertEquals(3, count($copy->onMyEvent));
+		$this->assertEquals(-1, $copy->onMyEvent->indexOf([$b, 'ncBehaviorHandler']));
+		$this->assertEquals(2, $copy->onMyEvent->indexOf([$copy->CopyBehavior, 'ncBehaviorHandler']));
+	}
+	
+	public function testWakeUp()
+	{
+		NewComponent::attachClassBehavior('ClassBehavior1', $cb1 = new FooClassBehavior());
+		$cb1->propertya = 'second value';
+		NewComponent::attachClassBehavior('ClassBehavior2', $cb2 = new FooFooClassBehavior());
+		NewComponent::attachClassBehavior('ClassBehavior4', $cb4 = new FooClassBehavior());
+		$cb4->propertya = '4th value';
+		$obj = new NewComponent();
+		$this->component = new NewComponent();
+		$this->component->attachBehavior('CopyBehavior', $b = new NewComponentBehavior());
+		$this->component->onMyEvent[] = [$this->component, 'myEventHandler'];
+		$this->component->onMyEvent[] = [$obj, 'myEventHandler'];
+		$this->assertEquals(3, count($this->component->onMyEvent));
+		
+		$this->assertNotNull($this->component->asa('CopyBehavior'));
+		$this->assertNotNull($this->component->asa('ClassBehavior1'));
+		$this->assertNotNull($this->component->asa('ClassBehavior2'));
+		$this->assertNull($this->component->asa('ClassBehavior3'));
+		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
+	
+		$data = serialize($this->component);
+		NewComponent::detachClassBehavior('ClassBehavior2');
+		$this->assertNull($this->component->asa('ClassBehavior2'));
+		NewComponent::attachClassBehavior('ClassBehavior3', $cb3 = new BarClassBehavior());
+		$this->assertNotNull($this->component->asa('ClassBehavior3'));
+		NewComponent::detachClassBehavior('ClassBehavior4');
+		NewComponent::attachClassBehavior('ClassBehavior4', $cb4a = new FooClassBehavior());
+		$cb4a->propertya = 'new 4th value';
+		$cb2->propertya = '3rd value';
+		$copy = unserialize($data);
+		$copy->Text = 'copyObject';
+		
+		$this->assertEquals($cb3, $this->component->asa('ClassBehavior3'));
+		$this->assertEquals($cb4a, $this->component->asa('ClassBehavior4'));
+		$this->assertNotNull($copy->asa('CopyBehavior'));
+		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
+		$this->assertEquals($copy, $copy->CopyBehavior->getOwner());
+		$this->assertTrue($copy->CopyBehavior !== $this->component->CopyBehavior);
+		$this->assertEquals(3, count($this->component->onMyEvent));
+		$this->assertEquals(-1, $this->component->onMyEvent->indexOf([$copy->CopyBehavior, 'ncBehaviorHandler']));
+		$this->assertEquals(-1, $copy->onMyEvent->indexOf([$this->component->CopyBehavior, 'ncBehaviorHandler']));
+		$this->assertEquals(0, $copy->onMyEvent->indexOf([$copy->CopyBehavior, 'ncBehaviorHandler']));
+		$this->assertEquals(1, count($copy->onMyEvent));
+		$this->assertEquals($this->component->asa('ClassBehavior1'), $copy->asa('ClassBehavior1'));
+		$this->assertNull($this->component->asa('ClassBehavior2'));
+		$this->assertNotNull($copy->asa('ClassBehavior2'));
+		$this->assertNotEquals($cb2, $copy->asa('ClassBehavior2'));
+		$this->assertEquals($this->component->asa('ClassBehavior3'), $copy->asa('ClassBehavior3'));
+		$this->assertEquals($cb4a, $copy->asa('ClassBehavior4'));
+		
+		NewComponent::detachClassBehavior('ClassBehavior1');
+		NewComponent::detachClassBehavior('ClassBehavior3');
+		
 	}
 }
