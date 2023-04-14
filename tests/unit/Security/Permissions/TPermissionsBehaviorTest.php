@@ -45,18 +45,18 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 	public function testConstruct()
 	{
 		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsBehavior', $this->behavior);
-		self::assertNull($this->behavior->getManager());
+		self::assertNull($this->behavior->getPermissionsManager());
 		
 		$this->behavior = new TPermissionsBehavior($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testManager()
 	{
-		$this->behavior->setManager($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
-		$this->behavior->setManager(\WeakReference::create($v));
-		self::assertEquals($v, $this->behavior->getManager());
+		$this->behavior->setPermissionsManager($v = new stdClass());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
+		$this->behavior->setPermissionsManager(\WeakReference::create($v));
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testAttachAndEvent()
@@ -64,7 +64,7 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 		$permission = TPermissionsManager::PERM_PERMISSIONS_MANAGE_ROLES;
 		$this->manager = $manager = new TPermissionsManager();
 		$manager->setId('perms');
-		$this->behavior->setManager($manager);
+		$this->behavior->setPermissionsManager($manager);
 		
 		self::assertEquals([], $this->behavior->getPermissionEvents());
 		self::assertNull($manager->getPermissionRules($permission));
@@ -83,7 +83,7 @@ class TPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 		$this->user = $user = new TUser($userManager);
 		$user->setName($userName);
 		Prado::getApplication()->setUser($user);
-		$user->attachBehavior('can', ['class' => 'Prado\Security\Permissions\TUserPermissionsBehavior', 'manager' => $manager]);
+		$user->attachBehavior('can', ['class' => 'Prado\Security\Permissions\TUserPermissionsBehavior', 'permissionsmanager' => $manager]);
 		
 		//Test dynamic event permission
 		$user->setRoles($permission);
