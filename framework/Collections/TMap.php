@@ -41,7 +41,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @var array<int|string, mixed> internal data storage
 	 */
-	protected array $_d = [];
+	protected $_d = [];
 	/**
 	 * @var bool whether this list is read-only
 	 */

@@ -44,7 +44,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * internal data storage
 	 * @var array
 	 */
-	protected array $_d = [];
+	protected $_d = [];
 	/**
 	 * number of items
 	 * @var int
