@@ -533,22 +533,19 @@ class TComponent
 	 */
 	public function getClassHierarchy($lowercase = false)
 	{
-		static $_classhierarchy = [];
+		static $_classhierarchy = [[], []];
 		$class = get_class($this);
-		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
+		if (isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
 		$classes = array_values(class_implements($class));
-		array_push($classes, $class);
-		while ($class = get_parent_class($class)) {
+		do {
 			array_push($classes, $class);
-		}
+		} while ($class = get_parent_class($class));
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
 		}
-		$_classhierarchy[$class] ??= [];
 		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
-
 		return $classes;
 	}
 
