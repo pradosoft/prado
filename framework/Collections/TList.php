@@ -406,10 +406,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_d === []) {
-			$exprops[] = "\0*\0_d";
-		}
 		if ($this->_c === 0) {
+			$exprops[] = "\0*\0_d";
 			$exprops[] = "\0*\0_c";
 		}
 		if ($this->_r === false) {

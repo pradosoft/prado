@@ -284,7 +284,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if ($this->_d === []) {
+		if (count($this->_d) === 0) {
 			$exprops[] = "\0*\0_d";
 		}
 		if ($this->_r === false) {
