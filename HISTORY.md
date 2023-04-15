@@ -1,8 +1,8 @@
 ## Version 4.2.3 - TBA
 
-ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors.
-BUG: Issue #843 - Permissions Manager behaviors update getManager to getPermissionsManager for specificity.
-ENH: Issue #861 - TWebColors lists all the Web Colors in a TEnumerable and implements TPropertyValue::ensureHexColor
+ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
+BUG: Issue #843 - Permissions Manager behaviors rename the method 'getManager' to 'getPermissionsManager' for specificity. (belisoful)
+ENH: Issue #861 - TWebColors lists all the Web Colors in a TEnumerable and implements TPropertyValue::ensureHexColor (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
