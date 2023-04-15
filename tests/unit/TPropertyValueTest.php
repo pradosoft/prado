@@ -211,6 +211,11 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('#050000', TPropertyValue::ensureHexColor(5, -1, 0));
 		self::assertEquals('#00FF0A', TPropertyValue::ensureHexColor(0, 256, 10));
 		
+		
+		self::assertEquals('#808182', TPropertyValue::ensureHexColor([128, 129, 130]));
+		self::assertEquals('#838485', TPropertyValue::ensureHexColor(['red' => 131, 'green' => 132, 'blue' => 133]));
+		self::assertEquals('#898A8B', TPropertyValue::ensureHexColor([134, 135, 136, 'red' => 137, 'green' => 138, 'blue' => 139]));
+		
 		try {
 			self::assertEquals('value', TPropertyValue::ensureHexColor(null));
 			self::fail('failed to throw TInvalidDataValueException for blank value');
