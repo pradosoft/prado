@@ -138,12 +138,13 @@ class TPriorityListTest extends TListTest
 		$this->item4 = null;
 
 		// ****  start the setup for non-TList things
-		$this->list = null;
-		$this->item1 = null;
-		$this->item2 = null;
-		$this->item3 = null;
-		$this->item4 = null;
-		$this->item5 = null;
+		$this->plist = null;
+		$this->pfirst = null;
+		$this->pitem1 = null;
+		$this->pitem2 = null;
+		$this->pitem3 = null;
+		$this->pitem4 = null;
+		$this->pitem5 = null;
 	}
 
 	//*****************************************************************

@@ -273,7 +273,7 @@ class TPagedList extends TList
 	/**
 	 * @return int the number of items in current page
 	 */
-	public function getCount()
+	public function getCount(): int
 	{
 		if ($this->_customPaging) {
 			return parent::getCount();
@@ -289,8 +289,7 @@ class TPagedList extends TList
 	/**
 	 * @return \Iterator iterator
 	 */
-	#[\ReturnTypeWillChange]
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		if ($this->_customPaging) {
 			return parent::getIterator();
@@ -349,8 +348,7 @@ class TPagedList extends TList
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return $this->itemAt($offset);
 	}
@@ -358,7 +356,7 @@ class TPagedList extends TList
 	/**
 	 * @return array the list of items in array
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		$c = $this->getCount();
 		$array = [];

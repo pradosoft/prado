@@ -11,7 +11,6 @@ namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
-use Prado\TPropertyValue;
 use Traversable;
 
 /**
@@ -42,29 +41,11 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @var array<int|string, mixed> internal data storage
 	 */
-	protected $_d = [];
+	protected array $_d = [];
 	/**
 	 * @var bool whether this list is read-only
 	 */
-	protected $_r = false;
-
-	/**
-	 * Returns an array with the names of all variables of this object that should NOT be serialized
-	 * because their value is the default one or useless to be cached for the next page loads.
-	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
-	 * implementation first.
-	 * @param array $exprops by reference
-	 */
-	protected function _getZappableSleepProps(&$exprops)
-	{
-		parent::_getZappableSleepProps($exprops);
-		if ($this->_d === []) {
-			$exprops[] = "\0*\0_d";
-		}
-		if ($this->_r === false) {
-			$exprops[] = "\0*\0_r";
-		}
-	}
+	private bool $_r = false;
 
 	/**
 	 * Constructor.
@@ -75,17 +56,17 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function __construct($data = null, $readOnly = false)
 	{
+		parent::__construct();
 		if ($data !== null) {
 			$this->copyFrom($data);
 		}
 		$this->setReadOnly($readOnly);
-		parent::__construct();
 	}
 
 	/**
 	 * @return bool whether this map is read-only or not. Defaults to false.
 	 */
-	public function getReadOnly()
+	public function getReadOnly(): bool
 	{
 		return $this->_r;
 	}
@@ -93,9 +74,9 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @param bool $value whether this list is read-only or not
 	 */
-	protected function setReadOnly($value)
+	protected function setReadOnly(bool $value)
 	{
-		$this->_r = TPropertyValue::ensureBoolean($value);
+		$this->_r = $value;
 	}
 
 	/**
@@ -103,8 +84,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
-	#[\ReturnTypeWillChange]
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		return new \ArrayIterator($this->_d);
 	}
@@ -122,7 +102,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @return int the number of items in the map
 	 */
-	public function getCount()
+	public function getCount(): int
 	{
 		return count($this->_d);
 	}
@@ -130,7 +110,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @return array<int|string> the key list
 	 */
-	public function getKeys()
+	public function getKeys(): array
 	{
 		return array_keys($this->_d);
 	}
@@ -188,7 +168,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Removes all items in the map.
 	 */
-	public function clear()
+	public function clear(): void
 	{
 		foreach (array_keys($this->_d) as $key) {
 			$this->remove($key);
@@ -199,7 +179,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $key the key
 	 * @return bool whether the map contains an item with the specified key
 	 */
-	public function contains($key)
+	public function contains($key): bool
 	{
 		return isset($this->_d[$key]) || array_key_exists($key, $this->_d);
 	}
@@ -207,7 +187,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @return array<int|string, mixed> the list of items in array
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return $this->_d;
 	}
@@ -218,7 +198,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
-	public function copyFrom($data)
+	public function copyFrom($data): void
 	{
 		if (is_array($data) || $data instanceof Traversable) {
 			if ($this->getCount() > 0) {
@@ -238,7 +218,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
-	public function mergeWith($data)
+	public function mergeWith($data): void
 	{
 		if (is_array($data) || $data instanceof Traversable) {
 			foreach ($data as $key => $value) {
@@ -266,8 +246,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $offset the offset to retrieve element.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return $this->itemAt($offset);
 	}
@@ -291,5 +270,23 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	public function offsetUnset($offset): void
 	{
 		$this->remove($offset);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		if (count($this->_d) === 0) {
+			$exprops[] = "\0*\0_d";
+		}
+		if ($this->_r === false) {
+			$exprops[] = "\0" . __CLASS__ . "\0_r";
+		}
 	}
 }

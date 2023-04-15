@@ -11,7 +11,6 @@ namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
-use Prado\TPropertyValue;
 
 /**
  * TPriorityMap class
@@ -53,7 +52,7 @@ use Prado\TPropertyValue;
  * is used, rounding occurs into the integer space rather than in
  * the decimal space.  See {@link round}.
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2a
  * @method void dyAddItem(mixed $key, mixed $value)
  * @method void dyRemoveItem(mixed $key, mixed $value)
@@ -64,15 +63,15 @@ class TPriorityMap extends TMap
 	/**
 	 * @var bool indicates if the _d is currently ordered.
 	 */
-	private $_o = false;
+	protected bool $_o = false;
 	/**
 	 * @var null|array cached flattened internal data storage
 	 */
-	private $_fd;
+	protected ?array $_fd = null;
 	/**
 	 * @var int number of items contain within the map
 	 */
-	private $_c = 0;
+	protected int $_c = 0;
 	/**
 	 * @var numeric the default priority of items without specified priorities
 	 */
@@ -80,7 +79,7 @@ class TPriorityMap extends TMap
 	/**
 	 * @var int the precision of the numeric priorities within this priority list.
 	 */
-	private $_p = 8;
+	private int $_p = 8;
 
 	/**
 	 * Constructor.
@@ -93,13 +92,9 @@ class TPriorityMap extends TMap
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
-		parent::__construct();
-		if ($data !== null) {
-			$this->copyFrom($data);
-		}
-		$this->setReadOnly($readOnly);
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
+		parent::__construct($data, $readOnly);
 	}
 
 	/**
@@ -116,13 +111,13 @@ class TPriorityMap extends TMap
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
+		$this->_dp = (string) round((float) $value, $this->_p);
 	}
 
 	/**
 	 * @return int The precision of numeric priorities, defaults to 8
 	 */
-	public function getPrecision()
+	public function getPrecision(): int
 	{
 		return $this->_p;
 	}
@@ -131,9 +126,9 @@ class TPriorityMap extends TMap
 	 * This must be called internally or when instantiated.
 	 * @param int $value The precision of numeric priorities.
 	 */
-	protected function setPrecision($value)
+	protected function setPrecision(int $value): void
 	{
-		$this->_p = TPropertyValue::ensureInteger($value);
+		$this->_p = $value;
 	}
 
 	/**
@@ -149,18 +144,7 @@ class TPriorityMap extends TMap
 		if ($priority === null || !is_numeric($priority)) {
 			$priority = $this->getDefaultPriority();
 		}
-		return (string) round(TPropertyValue::ensureFloat($priority), $this->_p);
-	}
-
-	/**
-	 * Returns an iterator for traversing the items in the map.
-	 * This method is required by the interface \IteratorAggregate.
-	 * @return \Iterator an iterator for traversing the items in the map.
-	 */
-	#[\ReturnTypeWillChange]
-	public function getIterator()
-	{
-		return new \ArrayIterator($this->flattenPriorities());
+		return (string) round((float) $priority, $this->_p);
 	}
 
 
@@ -179,7 +163,7 @@ class TPriorityMap extends TMap
 	 * This flattens the priority map into a flat array [0,...,n-1]
 	 * @return array array of items in the list in priority and index order
 	 */
-	protected function flattenPriorities()
+	protected function flattenPriorities(): array
 	{
 		if (is_array($this->_fd)) {
 			return $this->_fd;
@@ -196,9 +180,19 @@ class TPriorityMap extends TMap
 	/**
 	 * @return int the number of items in the map
 	 */
-	public function getCount()
+	public function getCount(): int
 	{
 		return $this->_c;
+	}
+
+	/**
+	 * This returns a list of the priorities within this map, ordered lowest to highest.
+	 * @return array the array of priority numerics in decreasing priority order
+	 */
+	public function getPriorities(): array
+	{
+		$this->sortPriorities();
+		return array_keys($this->_d);
 	}
 
 	/**
@@ -217,20 +211,20 @@ class TPriorityMap extends TMap
 	}
 
 	/**
-	 * This returns a list of the priorities within this map, ordered lowest to highest.
-	 * @return array the array of priority numerics in decreasing priority order
+	 * Returns an iterator for traversing the items in the map.
+	 * This method is required by the interface \IteratorAggregate.
+	 * @return \Iterator an iterator for traversing the items in the map.
 	 */
-	public function getPriorities()
+	public function getIterator(): \Iterator
 	{
-		$this->sortPriorities();
-		return array_keys($this->_d);
+		return new \ArrayIterator($this->flattenPriorities());
 	}
 
 	/**
 	 * Returns the keys within the map ordered through the priority of each key-value pair
 	 * @return array the key list
 	 */
-	public function getKeys()
+	public function getKeys(): array
 	{
 		return array_keys($this->flattenPriorities());
 	}
@@ -275,9 +269,9 @@ class TPriorityMap extends TMap
 	/**
 	 * Gets all the items at a specific priority.
 	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled in with the default priority, if left blank.
-	 * @return array all items at priority in index order, null if there are no items at that priority
+	 * @return ?array all items at priority in index order, null if there are no items at that priority
 	 */
-	public function itemsAtPriority($priority = null)
+	public function itemsAtPriority($priority = null): ?array
 	{
 		$priority = $this->ensurePriority($priority);
 		return $this->_d[$priority] ?? null;
@@ -339,7 +333,7 @@ class TPriorityMap extends TMap
 			$value->setPriority($priority);
 		}
 
-		if (!$this->_r) {
+		if (!$this->getReadOnly()) {
 			foreach ($this->_d as $innerpriority => $items) {
 				if (array_key_exists($key, $items)) {
 					unset($this->_d[$innerpriority][$key]);
@@ -347,6 +341,7 @@ class TPriorityMap extends TMap
 					if (count($this->_d[$innerpriority]) === 0) {
 						unset($this->_d[$innerpriority]);
 					}
+					break;
 				}
 			}
 			if (!isset($this->_d[$priority])) {
@@ -378,7 +373,7 @@ class TPriorityMap extends TMap
 	 */
 	public function remove($key, $priority = false)
 	{
-		if (!$this->_r) {
+		if (!$this->getReadOnly()) {
 			if ($priority === false) {
 				$this->sortPriorities();
 				foreach ($this->_d as $priority => $items) {
@@ -421,7 +416,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Removes all items in the map.  {@link remove} is called on all items.
 	 */
-	public function clear()
+	public function clear(): void
 	{
 		foreach ($this->_d as $priority => $items) {
 			foreach (array_keys($items) as $key) {
@@ -434,7 +429,7 @@ class TPriorityMap extends TMap
 	 * @param mixed $key the key
 	 * @return bool whether the map contains an item with the specified key
 	 */
-	public function contains($key)
+	public function contains($key): bool
 	{
 		$map = $this->flattenPriorities();
 		return isset($map[$key]) || array_key_exists($key, $map);
@@ -446,7 +441,7 @@ class TPriorityMap extends TMap
 	 * their priority.
 	 * @return array the list of items in array
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return $this->flattenPriorities();
 	}
@@ -458,7 +453,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority, $inclusive = false)
+	public function toArrayBelowPriority($priority, $inclusive = false): array
 	{
 		$this->sortPriorities();
 		$items = [];
@@ -478,7 +473,7 @@ class TPriorityMap extends TMap
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority, $inclusive = true)
+	public function toArrayAbovePriority($priority, $inclusive = true): array
 	{
 		$this->sortPriorities();
 		$items = [];
@@ -497,7 +492,7 @@ class TPriorityMap extends TMap
 	 * @param array|TPriorityMap|\Traversable $data the data to be copied from, must be an array, object implementing
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
-	public function copyFrom($data)
+	public function copyFrom($data): void
 	{
 		if ($data instanceof TPriorityMap) {
 			if ($this->getCount() > 0) {
@@ -527,7 +522,7 @@ class TPriorityMap extends TMap
 	 * object implementing Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
-	public function mergeWith($data)
+	public function mergeWith($data): void
 	{
 		if ($data instanceof TPriorityMap) {
 			foreach ($data->getPriorities() as $priority) {
@@ -541,6 +536,32 @@ class TPriorityMap extends TMap
 			}
 		} elseif ($data !== null) {
 			throw new TInvalidDataTypeException('map_data_not_iterable');
+		}
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 * @since 4.2.3
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		if ($this->_o === false) {
+			$exprops[] = "\0*\0_o";
+		}
+		$exprops[] = "\0*\0_fd";
+		if ($this->_c === 0) {
+			$exprops[] = "\0*\0_c";
+		}
+		if ($this->_dp == 10) {
+			$exprops[] = "\0" . __CLASS__ . "\0_dp";
+		}
+		if ($this->_p === 8) {
+			$exprops[] = "\0" . __CLASS__ . "\0_p";
 		}
 	}
 }
