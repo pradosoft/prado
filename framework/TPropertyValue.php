@@ -214,7 +214,7 @@ class TPropertyValue
 		if (is_array($value)) {
 			$blue = array_key_exists('blue', $value) ? $value['blue'] : (array_key_exists(2, $value) ? $value[2] : null);
 			$green = array_key_exists('green', $value) ? $value['green'] : (array_key_exists(1, $value) ? $value[1] : true);
-			$value = array_key_exists('red', $value) ? $value['red'] : (array_key_exists(0, $value) ? $value[0] : 0);
+			$value = array_key_exists('red', $value) ? $value['red'] : (array_key_exists(0, $value) ? $value[0] : null);
 		}
 		if (is_numeric($value)) {
 			if ($blue === null) {
