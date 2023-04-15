@@ -76,7 +76,7 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	}
 
 	/**
-	 * @return \Prado\TComponent the owner component that this behavior is attached to.
+	 * @return object the owner component that this behavior is attached to.
 	 */
 	public function getOwner()
 	{
@@ -97,5 +97,32 @@ class TBehavior extends \Prado\TComponent implements IBehavior
 	public function setEnabled($value)
 	{
 		$this->_enabled = TPropertyValue::ensureBoolean($value);
+	}
+
+	/**
+	 * This resets the Owner on cloning.
+	 * @since 4.2.3
+	 */
+	public function __clone()
+	{
+		$this->_owner = null;
+		parent::__clone();
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 * @since 4.2.3
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		if ($this->_enabled === true) {
+			$exprops[] = "\0Prado\\Util\\TBehavior\0_enabled";
+		}
+		$exprops[] = "\0Prado\\Util\\TBehavior\0_owner";
 	}
 }

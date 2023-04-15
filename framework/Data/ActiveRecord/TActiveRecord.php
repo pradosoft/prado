@@ -212,6 +212,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		$this->setupColumnMapping();
 		$this->setupRelations();
+		parent::__wakeup();
 	}
 
 	/**

@@ -880,6 +880,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (null === $this->_selectQueue) {
 			$this->_selectQueue = [];
 		}
+		parent::__wakeup();
 	}
 
 	public function __sleep()
