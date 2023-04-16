@@ -89,6 +89,7 @@ class TStyle extends \Prado\TComponent
 		if ($this->_font !== null) {
 			$this->_font = clone($this->_font);
 		}
+		parent::__clone();
 	}
 
 	/**

@@ -330,8 +330,8 @@ class TApplication extends \Prado\TComponent
 	protected function resolvePaths($basePath)
 	{
 		// determine configuration path and file
-		if (empty($basePath) || ($basePath = realpath($basePath)) === false) {
-			throw new TConfigurationException('application_basepath_invalid', $basePath);
+		if (empty($errValue = $basePath) || ($basePath = realpath($basePath)) === false) {
+			throw new TConfigurationException('application_basepath_invalid', $errValue);
 		}
 		if (is_dir($basePath) && is_file($basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName())) {
 			$configFile = $basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName();
