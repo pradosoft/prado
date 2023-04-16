@@ -11,6 +11,7 @@ namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\TPropertyValue;
 
 /**
  * TPriorityMap class
@@ -111,7 +112,7 @@ class TPriorityMap extends TMap
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp = (string) round((float) $value, $this->_p);
+		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
 
 	/**
@@ -126,9 +127,9 @@ class TPriorityMap extends TMap
 	 * This must be called internally or when instantiated.
 	 * @param int $value The precision of numeric priorities.
 	 */
-	protected function setPrecision(int $value): void
+	protected function setPrecision($value): void
 	{
-		$this->_p = $value;
+		$this->_p = TPropertyValue::ensureInt($value);
 	}
 
 	/**

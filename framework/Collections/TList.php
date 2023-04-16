@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\TPropertyValue;
 
 /**
  * TList class
@@ -81,9 +82,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @param bool $value whether this list is read-only or not
 	 */
-	protected function setReadOnly(bool $value)
+	protected function setReadOnly($value)
 	{
-		$this->_r = $value;
+		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

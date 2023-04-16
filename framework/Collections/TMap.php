@@ -11,6 +11,7 @@ namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
 use Traversable;
 
 /**
@@ -74,9 +75,9 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * @param bool $value whether this list is read-only or not
 	 */
-	protected function setReadOnly(bool $value)
+	protected function setReadOnly($value)
 	{
-		$this->_r = $value;
+		$this->_r = TPropertyValue::ensureBoolean($value);;
 	}
 
 	/**

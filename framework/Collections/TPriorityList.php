@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\TPropertyValue;
 
 /**
  * TPriorityList class
@@ -97,7 +98,7 @@ class TPriorityList extends TList
 	 */
 	protected function setDefaultPriority($value)
 	{
-		$this->_dp = (string) round((float) $value, $this->_p);
+		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
 	}
 
 	/**
@@ -112,9 +113,9 @@ class TPriorityList extends TList
 	 * This must be called internally or when instantiated.
 	 * @param int $value The precision of numeric priorities.
 	 */
-	protected function setPrecision(int $value): void
+	protected function setPrecision($value): void
 	{
-		$this->_p = $value;
+		$this->_p = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -469,7 +470,7 @@ class TPriorityList extends TList
 			if (($index = array_search($item, $items, true)) !== false) {
 				$absindex += $index;
 				return $withindex ? [$priority, $index, $absindex,
-						'priority' => $priority, 'index' => $index, 'absindex' => $absindex] : $priority;
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
 			} else {
 				$absindex += count($items);
 			}
@@ -500,7 +501,7 @@ class TPriorityList extends TList
 				$index -= $c;
 			} else {
 				return $withindex ? [$priority, $index, $absindex,
-						'priority' => $priority, 'index' => $index, 'absindex' => $absindex] : $priority;
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
 			}
 		}
 		return false;
