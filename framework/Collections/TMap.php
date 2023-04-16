@@ -77,7 +77,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	protected function setReadOnly($value)
 	{
-		$this->_r = TPropertyValue::ensureBoolean($value);;
+		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

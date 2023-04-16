@@ -129,7 +129,7 @@ class TPriorityMap extends TMap
 	 */
 	protected function setPrecision($value): void
 	{
-		$this->_p = TPropertyValue::ensureInt($value);
+		$this->_p = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
