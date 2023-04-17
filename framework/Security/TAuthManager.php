@@ -426,7 +426,7 @@ class TAuthManager extends \Prado\TModule
 	 * @param int $expire number of seconds that automatic login will remain effective. If 0, it means user logs out when session ends. This parameter is added since 3.1.1.
 	 * @return bool if login is successful
 	 */
-	public function login($username, $password, $expire = 0)
+	public function login($username, #[\SensitiveParameter] $password, $expire = 0)
 	{
 		if ($this->_userManager->validateUser($username, $password)) {
 			if (($user = $this->_userManager->getUser($username)) === null) {

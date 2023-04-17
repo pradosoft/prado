@@ -136,7 +136,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 	/**
 	 * @param string $password password of the login from the command line
 	 */
-	public function setPassword($password)
+	public function setPassword(#[\SensitiveParameter] $password)
 	{
 		$this->_password = $password;
 	}

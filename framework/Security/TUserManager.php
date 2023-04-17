@@ -277,7 +277,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 * @param string $password password
 	 * @return bool true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username, $password)
+	public function validateUser($username, #[\SensitiveParameter] $password)
 	{
 		if ($this->_passwordMode === TUserManagerPasswordMode::MD5) {
 			$password = md5($password);

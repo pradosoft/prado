@@ -123,7 +123,7 @@ class TDbConnection extends \Prado\TComponent
 	 * @param string $charset Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
-	public function __construct($dsn = '', $username = '', $password = '', $charset = '')
+	public function __construct($dsn = '', $username = '', #[\SensitiveParameter] $password = '', $charset = '')
 	{
 		$this->_dsn = $dsn;
 		$this->_username = $username;
@@ -287,7 +287,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * @param string $value the password for establishing DB connection
 	 */
-	public function setPassword($value)
+	public function setPassword(#[\SensitiveParameter] $value)
 	{
 		$this->_password = $value;
 	}
