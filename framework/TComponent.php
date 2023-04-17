@@ -538,11 +538,12 @@ class TComponent
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
-		$classes = array_values(class_implements($class));
-		array_push($classes, $class);
-		while ($class = get_parent_class($class)) {
-			array_push($classes, $class);
-		}
+		$classes = [array_values(class_implements($class))];
+		do {
+			$classes[] = array_values(class_uses($class));
+			$classes[] = [$class];
+		} while ($class = get_parent_class($class));
+		$classes = array_merge(...$classes);
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
 		}
