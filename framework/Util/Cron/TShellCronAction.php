@@ -92,7 +92,7 @@ class TShellCronAction extends TShellAction
 			return true;
 		}
 		$time = $module->getLastCronTime();
-		$this->_outWriter->writeLine("\n Last cron run time was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s TP', $time)) . '');
+		$this->_outWriter->writeLine("\n Last cron run time was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s TP', (int) $time)) . '');
 		$module->processPendingTasks();
 		return true;
 	}
