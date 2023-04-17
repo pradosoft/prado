@@ -79,7 +79,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	protected function getTagName()
 	{
-		return ($this->getTextMode() === 'MultiLine') ? 'textarea' : 'input';
+		return ($this->getTextMode() === TTextBoxMode::MultiLine) ? 'textarea' : 'input';
 	}
 
 	/**
@@ -176,23 +176,15 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				$writer->addAttribute('value', $text);
 			}
 
-			if (($act = $this->getAutoCompleteType()) !== 'None') {
-				if ($act === 'Disabled') {
+			switch($this->getAutoCompleteType()) {
+				case TTextBoxAutoCompleteType::Enabled:
+					$writer->addAttribute('autocomplete', 'on');
+					break;
+				case TTextBoxAutoCompleteType::Disabled:
 					$writer->addAttribute('autocomplete', 'off');
-				} elseif ($act === 'Search') {
-					$writer->addAttribute('vcard_name', 'search');
-				} elseif ($act === 'HomeCountryRegion') {
-					$writer->addAttribute('vcard_name', 'HomeCountry');
-				} elseif ($act === 'BusinessCountryRegion') {
-					$writer->addAttribute('vcard_name', 'BusinessCountry');
-				} else {
-					if (strpos($act, 'Business') === 0) {
-						$act = 'Business' . '.' . substr($act, 8);
-					} elseif (strpos($act, 'Home') === 0) {
-						$act = 'Home' . '.' . substr($act, 4);
-					}
-					$writer->addAttribute('vcard_name', 'vCard.' . $act);
-				}
+					break;
+				case TTextBoxAutoCompleteType::None:
+					break;
 			}
 
 			if (($cols = $this->getColumns()) > 0) {
@@ -346,7 +338,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function renderContents($writer)
 	{
-		if ($this->getTextMode() === 'MultiLine') {
+		if ($this->getTextMode() === TTextBoxMode::MultiLine) {
 			$writer->write(THttpUtility::htmlEncode($this->getText()));
 		}
 	}
@@ -359,7 +351,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	public function renderBeginTag($writer)
 	{
 		parent::renderBeginTag($writer);
-		if ($this->getTextMode() === 'MultiLine') {
+		if ($this->getTextMode() === TTextBoxMode::MultiLine) {
 			$writer->write("\n");
 		}
 	}
@@ -378,7 +370,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function setAutoCompleteType($value)
 	{
-		$this->setViewState('AutoCompleteType', TPropertyValue::ensureEnum($value, 'TTextBoxAutoCompleteType'), TTextBoxAutoCompleteType::None);
+		$this->setViewState('AutoCompleteType', TPropertyValue::ensureEnum($value, TTextBoxAutoCompleteType::class), TTextBoxAutoCompleteType::None);
 	}
 
 	/**
@@ -599,7 +591,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 	 */
 	public function setTextMode($value)
 	{
-		$this->setViewState('TextMode', TPropertyValue::ensureEnum($value, 'TTextBoxMode'), TTextBoxMode::SingleLine);
+		$this->setViewState('TextMode', TPropertyValue::ensureEnum($value, TTextBoxMode::class), TTextBoxMode::SingleLine);
 	}
 
 	/**
