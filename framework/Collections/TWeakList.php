@@ -70,12 +70,16 @@ class TWeakList extends TList
 	 * Initializes the weak list with an array or an iterable object.
 	 * @param null|array|\Iterator $data The initial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly Whether the list is read-only. Default is false.
-	 * @param bool $discardInvalid Whether the list is scrubbed of invalid WeakReferences.
-	 *   Default is true.
+	 * @param ?bool $discardInvalid Whether the list is scrubbed of invalid WeakReferences.
+	 *   Default is null for the opposite of $readOnly.  Thus, Read Only lists retain
+	 *   invalid WeakReference; and Mutable lists scrub invalid WeakReferences.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data = null, $readOnly = false, $discardInvalid = true)
+	public function __construct($data = null, $readOnly = false, $discardInvalid = null)
 	{
+		if ($discardInvalid === null) {
+			$discardInvalid = !$readOnly;
+		}
 		$this->_discardInvalid = $discardInvalid;
 		if ($discardInvalid) {
 			$this->weakStart();

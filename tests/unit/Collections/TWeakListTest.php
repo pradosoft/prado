@@ -69,7 +69,7 @@ class TWeakListTest extends TListTest
 			# is a unit test
 	
 	methods:
-	-*		__Construct
+	-*	 #	__Construct
 	-*& 	getIterator (calls $this->toArray to scrub)
 	-* ~ #	getCount [scrub WeakRef]
 	-* ~=#	itemAt [scrub WeakRef]
@@ -92,6 +92,30 @@ class TWeakListTest extends TListTest
 	-*	 #	_getZappableSleepProps
 	
 	*/
+	
+	public function testConstructTWeakList()
+	{
+		$this->list = new $this->_baseClass();
+		self::assertTrue($this->list->getDiscardInvalid());
+			
+		$this->list = new $this->_baseClass(null, false);
+		self::assertTrue($this->list->getDiscardInvalid());
+		
+		$this->list = new $this->_baseClass(null, false, true);
+		self::assertTrue($this->list->getDiscardInvalid());
+		
+		$this->list = new $this->_baseClass(null, false, false);
+		self::assertFalse($this->list->getDiscardInvalid());
+		
+		$this->list = new $this->_baseClass(null, true);
+		self::assertFalse($this->list->getDiscardInvalid());
+		
+		$this->list = new $this->_baseClass(null, true, true);
+		self::assertTrue($this->list->getDiscardInvalid());
+		
+		$this->list = new $this->_baseClass(null, true, false);
+		self::assertFalse($this->list->getDiscardInvalid());
+	}
 	
 	public function testGetIteratorTWeakList()
 	{
