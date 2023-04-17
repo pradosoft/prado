@@ -11,6 +11,7 @@ use Prado\Util\Cron\TDbCronModule;
 class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 {
 	protected $obj;
+	protected $writer;
 	
 	protected function getTestClass()
 	{
