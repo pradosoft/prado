@@ -171,7 +171,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	 */
 	public function setPermissionsManager($manager)
 	{
-		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
+		if ($manager instanceof \WeakReference) {
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;

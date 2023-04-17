@@ -58,17 +58,12 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 	public function testGetWeakReferenceEnabledTWeakCallableCollection()
 	{
 		self::assertEquals(TWeakCallableCollection::class, $this->list::class);
-		self::assertEquals(class_exists('\WeakReference'), $this->list->getWeakReferenceEnabled());
-		self::assertEquals(class_exists('\WeakReference'), TWeakCallableCollection::getWeakReferenceEnabled());
+		self::assertEquals(true, $this->list->getWeakReferenceEnabled());
+		self::assertEquals(true, TWeakCallableCollection::getWeakReferenceEnabled());
 	}
 	
 	public function testToPriorityArrayWeakTWeakCallableCollection()
 	{
-		if(!TWeakCallableCollection::getWeakReferenceEnabled()) {
-			self::markTestSkipped('The WeakReferences are only available in PHP 7.4+. You are running PHP version ' . phpversion());
-			return;
-		}
-			
 		$list = new TWeakCallableCollection();
 		$component = new TComponent;
 		

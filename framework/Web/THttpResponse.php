@@ -669,23 +669,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$value = $cookie->getValue();
 		}
 
-		if (PHP_VERSION_ID >= 70300) {
-			setcookie(
-				$cookie->getName(),
-				$value,
-				$cookie->getPhpOptions()
-			);
-		} else {
-			setcookie(
-				$cookie->getName(),
-				$value,
-				$cookie->getExpire(),
-				$cookie->getPath(),
-				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
-			);
-		}
+		setcookie(
+			$cookie->getName(),
+			$value,
+			$cookie->getPhpOptions()
+		);
 	}
 
 	/**
@@ -695,25 +683,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function removeCookie($cookie)
 	{
-		if (PHP_VERSION_ID >= 70300) {
-			$options = $cookie->getPhpOptions();
-			$options['expires'] = 0;
-			setcookie(
-				$cookie->getName(),
-				null,
-				$options
-			);
-		} else {
-			setcookie(
-				$cookie->getName(),
-				null,
-				0,
-				$cookie->getPath(),
-				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
-			);
-		}
+		$options = $cookie->getPhpOptions();
+		$options['expires'] = 0;
+		setcookie(
+			$cookie->getName(),
+			null,
+			$options
+		);
 	}
 
 	/**

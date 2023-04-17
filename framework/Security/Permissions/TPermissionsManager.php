@@ -252,7 +252,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		}
 		$this->_initialized = true;
 
-		$manager = class_exists('\WeakReference', false) ? \WeakReference::create($this) : $this;
+		$manager = \WeakReference::create($this);
 		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
 		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => TUserPermissionsBehavior::class, 'permissionsmanager' => $manager], \Prado\Security\IUser::class, -10);
 		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => TPermissionsConfigurationBehavior::class, 'permissionsmanager' => $manager], \Prado\Web\Services\TPageConfiguration::class, -10);

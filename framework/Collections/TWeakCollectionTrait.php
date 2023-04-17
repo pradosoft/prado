@@ -42,18 +42,12 @@ trait TWeakCollectionTrait
 	/** @var int Number of known objects in the collection. */
 	private int $_weakCount = 0;
 
-	private static ?bool $_hasWeakMap = null;
 	/**
-	 * Initializes a new WeakMap in PHP 8.0+.
+	 * Initializes a new WeakMap
 	 */
 	protected function weakStart(): void
 	{
-		if (self::$_hasWeakMap === null) { // PHP 8.0+
-			self::$_hasWeakMap = class_exists('\WeakMap', false);
-		}
-		if (self::$_hasWeakMap) {
-			$this->_weakMap = new \WeakMap();
-		}
+		$this->_weakMap = new \WeakMap();
 	}
 
 	/**
@@ -77,13 +71,12 @@ trait TWeakCollectionTrait
 	}
 
 	/**
-	 * Checks if the WeakMap has changed.  Prior to PHP 8.0, this will always return
-	 * true.
+	 * Checks if the WeakMap has changed.
 	 * @return bool Are there any changes to the WeakMap.
 	 */
 	protected function weakChanged(): bool
 	{
-		return $this->_weakMap && $this->_weakMap->count() !== $this->_weakCount || !self::$_hasWeakMap;
+		return $this->_weakMap && $this->_weakMap->count() !== $this->_weakCount;
 	}
 
 	/**
