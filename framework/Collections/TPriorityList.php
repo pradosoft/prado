@@ -406,14 +406,17 @@ class TPriorityList extends TList
 		}
 
 		$priority = $this->ensurePriority($priority);
-		if (!isset($this->_d[$priority]) || $index < 0 || $index >= count($this->_d[$priority])) {
+		if (!isset($this->_d[$priority]) || $index < 0 || $index >= ($c = count($this->_d[$priority]))) {
 			throw new TInvalidDataValueException('list_item_inexistent');
 		}
 
 		// $value is an array of elements removed, only one
-		$value = array_splice($this->_d[$priority], $index, 1);
-		$value = $value[0];
-
+		if ($index === $c - 1) {
+			$value = array_pop($this->_d[$priority]);
+		} else {
+			$value = array_splice($this->_d[$priority], $index, 1);
+			$value = $value[0];
+		}
 		if (!count($this->_d[$priority])) {
 			unset($this->_d[$priority]);
 		}
