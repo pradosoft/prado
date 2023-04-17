@@ -324,7 +324,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	 */
 	public function setForControl($value)
 	{
-		throw new TNotSupportedException('basevalidator_forcontrol_unsupported', get_class($this));
+		throw new TNotSupportedException('basevalidator_forcontrol_unsupported', $this::class);
 	}
 
 	/**
@@ -497,7 +497,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if (($id = $this->getControlToValidate()) !== '' && ($control = $this->findControl($id)) !== null) {
 			return $control;
 		} else {
-			throw new TConfigurationException('basevalidator_controltovalidate_invalid', get_class($this));
+			throw new TConfigurationException('basevalidator_controltovalidate_invalid', $this::class);
 		}
 	}
 
@@ -512,7 +512,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		if ($control instanceof \Prado\Web\UI\IValidatable) {
 			return $control->getValidationPropertyValue();
 		} else {
-			throw new TInvalidDataTypeException('basevalidator_validatable_required', get_class($this));
+			throw new TInvalidDataTypeException('basevalidator_validatable_required', $this::class);
 		}
 	}
 

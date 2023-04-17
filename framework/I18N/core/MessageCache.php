@@ -97,7 +97,7 @@ class MessageCache
 	 */
 	protected function getGroup($catalogue, $culture)
 	{
-		return $catalogue . ':' . get_class($this);
+		return $catalogue . ':' . $this::class;
 	}
 
 	/**

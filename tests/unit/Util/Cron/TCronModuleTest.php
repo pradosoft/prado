@@ -121,7 +121,7 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->obj->init(null);
 		} catch (Exception $e) {
-			$this->fail(get_class($e) .' should not have been raised on init(null)');
+			$this->fail($e::class .' should not have been raised on init(null)');
 		}
 		if (!Prado::getApplication()->getModule('CMT_UserManager')) {
 			self::assertNull($this->obj->getUserManager());

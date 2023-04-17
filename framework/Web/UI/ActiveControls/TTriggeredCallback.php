@@ -53,7 +53,7 @@ abstract class TTriggeredCallback extends TCallback
 		if ($id === '') {
 			throw new TConfigurationException(
 				'ttriggeredcallback_invalid_controlid',
-				get_class($this)
+				$this::class
 			);
 		}
 		return $id;

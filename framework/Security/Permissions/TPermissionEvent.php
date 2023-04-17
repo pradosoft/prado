@@ -106,7 +106,7 @@ class TPermissionEvent extends \Prado\TComponent
 		if (is_string($events)) {
 			$events = array_map('trim', explode(',', $events));
 		} elseif ($events !== null && !is_array($events)) {
-			throw new TConfigurationException('permissions_events_invalid', is_object($events) ? get_class($events) : $events);
+			throw new TConfigurationException('permissions_events_invalid', is_object($events) ? $events::class : $events);
 		}
 		$this->_events = array_map('strtolower', array_filter($events ?? []));
 	}
@@ -130,7 +130,7 @@ class TPermissionEvent extends \Prado\TComponent
 			$rules = [$rules];
 		}
 		if ($rules !== null && !is_array($rules)) {
-			throw new TConfigurationException('permissions_rules_invalid', is_object($rules) ? get_class($rules) : $rules);
+			throw new TConfigurationException('permissions_rules_invalid', is_object($rules) ? $rules::class : $rules);
 		}
 		$this->_rules = $rules ?? [];
 	}

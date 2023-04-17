@@ -207,7 +207,7 @@ class TListControlValidator extends TBaseValidator
 				'listcontrolvalidator_invalid_control',
 				$this->getID(),
 				$this->getControlToValidate(),
-				get_class($control)
+				$control::class
 			);
 		}
 

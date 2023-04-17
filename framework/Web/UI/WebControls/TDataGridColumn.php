@@ -87,7 +87,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	public function setID($value)
 	{
 		if (!preg_match(TControl::ID_FORMAT, $value)) {
-			throw new TInvalidDataValueException('datagridcolumn_id_invalid', get_class($this), $value);
+			throw new TInvalidDataValueException('datagridcolumn_id_invalid', $this::class, $value);
 		}
 		$this->_id = $value;
 	}
@@ -522,7 +522,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 			try {
 				return eval("return $expression;");
 			} catch (Exception $e) {
-				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', get_class($this), $expression, $e->getMessage());
+				throw new TInvalidDataValueException('datagridcolumn_expression_invalid', $this::class, $expression, $e->getMessage());
 			}
 		} else {
 			return sprintf($formatString, $value);

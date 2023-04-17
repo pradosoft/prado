@@ -366,7 +366,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 					$children = array_map('trim', explode(',', $children));
 				}
 				if (!is_array($children)) {
-					throw new TConfigurationException('permissions_role_children_invalid', $role, is_object($children) ? get_class($children) : $children);
+					throw new TConfigurationException('permissions_role_children_invalid', $role, is_object($children) ? $children::class : $children);
 				}
 			}
 
@@ -566,7 +566,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? $children::class : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));
@@ -596,7 +596,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? $children::class : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));
@@ -897,7 +897,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('permissions_property_unchangeable', 'DbParameter');
 		}
 		if ($provider !== null && !is_string($provider) && !($provider instanceof TDbParameterModule)) {
-			throw new TConfigurationException('permissions_dbparameter_invalid', is_object($provider) ? get_class($provider) : $provider);
+			throw new TConfigurationException('permissions_dbparameter_invalid', is_object($provider) ? $provider::class : $provider);
 		}
 		$this->_dbParameter = $provider;
 	}

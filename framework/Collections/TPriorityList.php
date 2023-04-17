@@ -252,7 +252,7 @@ class TPriorityList extends TList
 	public function add($item, $priority = null)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		return $this->insertAtIndexInPriority($item, false, $priority, true);
@@ -269,7 +269,7 @@ class TPriorityList extends TList
 	public function insertAt($index, $item)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
@@ -292,7 +292,7 @@ class TPriorityList extends TList
 	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		$itemPriority = null;
@@ -355,7 +355,7 @@ class TPriorityList extends TList
 	public function remove($item, $priority = false)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		if (($p = $this->priorityOf($item, true)) !== false) {
@@ -382,7 +382,7 @@ class TPriorityList extends TList
 	public function removeAt($index)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
@@ -402,7 +402,7 @@ class TPriorityList extends TList
 	public function removeAtIndexInPriority($index, $priority = null)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		$priority = $this->ensurePriority($priority);
@@ -432,7 +432,7 @@ class TPriorityList extends TList
 	public function clear(): void
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		foreach ($this->_d as $priority => $items) {
@@ -521,7 +521,7 @@ class TPriorityList extends TList
 	public function insertBefore($indexitem, $item)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		if (($priority = $this->priorityOf($indexitem, true)) === false) {
@@ -544,7 +544,7 @@ class TPriorityList extends TList
 	public function insertAfter($indexitem, $item)
 	{
 		if ($this->getReadOnly()) {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
 		if (($priority = $this->priorityOf($indexitem, true)) === false) {

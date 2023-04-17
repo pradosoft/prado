@@ -52,7 +52,7 @@ class TFlushCachesAction extends TShellAction
 				$module->flush();
 				$this->_outWriter->write('  ');
 				$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
-				$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+				$this->_outWriter->writeLine(' (' . $module::class . ')');
 				$found = true;
 			}
 		}
@@ -80,7 +80,7 @@ class TFlushCachesAction extends TShellAction
 			$module->flush();
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
-			$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+			$this->_outWriter->writeLine(' (' . $module::class . ')');
 		}
 		if (!$module) {
 			$this->_outWriter->writeLine('  (no caches were found)', [TShellWriter::RED, TShellWriter::BOLD]);
@@ -105,7 +105,7 @@ class TFlushCachesAction extends TShellAction
 			$module = (!$module) ? $app->getModule($id) : $module;
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::BLUE, TShellWriter::BOLD]);
-			$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+			$this->_outWriter->writeLine(' (' . $module::class . ')');
 		}
 		if (!$module) {
 			$this->_outWriter->writeLine('  (no caches were found)', [TShellWriter::RED, TShellWriter::BOLD]);

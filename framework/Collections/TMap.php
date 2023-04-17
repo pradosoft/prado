@@ -140,7 +140,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 			$this->_d[$key] = $value;
 			$this->dyAddItem($key, $value);
 		} else {
-			throw new TInvalidOperationException('map_readonly', get_class($this));
+			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
 	}
 
@@ -162,7 +162,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 				return null;
 			}
 		} else {
-			throw new TInvalidOperationException('map_readonly', get_class($this));
+			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
 	}
 

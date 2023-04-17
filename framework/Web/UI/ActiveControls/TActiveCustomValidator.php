@@ -83,7 +83,7 @@ class TActiveCustomValidator extends TCustomValidator implements IActiveControl,
 	{
 		throw new TNotSupportedException(
 			'tactivecustomvalidator_clientfunction_unsupported',
-			get_class($this)
+			$this::class
 		);
 	}
 

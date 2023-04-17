@@ -184,7 +184,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	 */
 	public function setGroupingText($value)
 	{
-		throw new TNotSupportedException('Rendering as a fieldset is not supported for {0}.', get_class($this));
+		throw new TNotSupportedException('Rendering as a fieldset is not supported for {0}.', $this::class);
 	}
 
 	/**

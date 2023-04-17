@@ -96,12 +96,12 @@ class TVarDumper
 				break;
 			case 'object':
 				if (($id = array_search($var, self::$_objects, true)) !== false) {
-					self::$_output .= get_class($var) . '#' . ($id + 1) . '(...)';
+					self::$_output .= $var::class . '#' . ($id + 1) . '(...)';
 				} elseif (self::$_depth <= $level) {
-					self::$_output .= get_class($var) . '(...)';
+					self::$_output .= $var::class . '(...)';
 				} else {
 					$id = array_push(self::$_objects, $var);
-					$className = get_class($var);
+					$className = $var::class;
 					$members = (array) $var;
 					$keys = array_keys($members);
 					$spaces = str_repeat(' ', $level * 4);

@@ -40,13 +40,13 @@ class TTemplateControlInheritable extends TTemplateControl
 	public function createChildControls()
 	{
 		if (null === ($_template = $this->getTemplate())) {
-			$this->doCreateChildControlsFor(get_class($this));
+			$this->doCreateChildControlsFor($this::class);
 			return;
 		}
 
 		foreach ($_template->getDirective() as $_name => $_value) {
 			if (!is_string($_value)) {
-				throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $_name);
+				throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
 			}
 
 			$this->setSubProperty($_name, $_value);
@@ -80,7 +80,7 @@ class TTemplateControlInheritable extends TTemplateControl
 		if (null !== ($_template = $this->getService()->getTemplateManager()->getTemplateByClassName($parentClass))) {
 			foreach ($_template->getDirective() as $_name => $_value) {
 				if (!is_string($_value)) {
-					throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $_name);
+					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $_name);
 				}
 
 				$this->setSubProperty($_name, $_value);

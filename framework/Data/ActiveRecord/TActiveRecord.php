@@ -274,7 +274,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	private function setupColumnMapping()
 	{
-		$className = get_class($this);
+		$className = $this::class;
 		if (!isset(self::$_columnMapping[$className])) {
 			$class = new ReflectionClass($className);
 			self::$_columnMapping[$className] = $class->getStaticPropertyValue('COLUMN_MAPPING');
@@ -286,7 +286,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	private function setupRelations()
 	{
-		$className = get_class($this);
+		$className = $this::class;
 		if (!isset(self::$_relations[$className])) {
 			$class = new ReflectionClass($className);
 			$relations = [];
@@ -308,7 +308,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 			$data = get_object_vars($data);
 		}
 		if (!is_array($data)) {
-			throw new TActiveRecordException('ar_data_invalid', get_class($this));
+			throw new TActiveRecordException('ar_data_invalid', $this::class);
 		}
 		foreach ($data as $name => $value) {
 			$this->setColumnValue($name, $value);
@@ -363,7 +363,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function equals(TActiveRecord $record, $strict = false)
 	{
-		if ($record === null || get_class($this) !== get_class($record)) {
+		if ($record === null || $this::class !== $record::class) {
 			return false;
 		}
 		$tableInfo = $this->getRecordTableInfo();
@@ -440,7 +440,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 				return true;
 			}
 		} else {
-			throw new TActiveRecordException('ar_save_invalid', get_class($this));
+			throw new TActiveRecordException('ar_save_invalid', $this::class);
 		}
 
 		return false;
@@ -462,7 +462,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 				return true;
 			}
 		} else {
-			throw new TActiveRecordException('ar_delete_invalid', get_class($this));
+			throw new TActiveRecordException('ar_delete_invalid', $this::class);
 		}
 
 		return false;
@@ -531,7 +531,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	protected function populateObject($data)
 	{
-		return self::createRecord(get_class($this), $data);
+		return self::createRecord($this::class, $data);
 	}
 
 	/**
@@ -993,7 +993,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function getColumnValue($columnName)
 	{
-		$className = get_class($this);
+		$className = $this::class;
 		if (isset(self::$_columnMapping[$className][$columnName])) {
 			$columnName = self::$_columnMapping[$className][$columnName];
 		}
@@ -1009,7 +1009,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function setColumnValue($columnName, $value)
 	{
-		$className = get_class($this);
+		$className = $this::class;
 		if (isset(self::$_columnMapping[$className][$columnName])) {
 			$columnName = self::$_columnMapping[$className][$columnName];
 		}
@@ -1023,7 +1023,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function getRecordRelation($property)
 	{
-		$className = get_class($this);
+		$className = $this::class;
 		$property = strtolower($property);
 		return self::$_relations[$className][$property] ?? null;
 	}
@@ -1034,7 +1034,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function getRecordRelations()
 	{
-		return self::$_relations[get_class($this)];
+		return self::$_relations[$this::class];
 	}
 
 	/**
@@ -1044,7 +1044,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 */
 	public function hasRecordRelation($property)
 	{
-		return isset(self::$_relations[get_class($this)][strtolower($property)]);
+		return isset(self::$_relations[$this::class][strtolower($property)]);
 	}
 
 	/**
