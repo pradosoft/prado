@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTextBoxMode class.
+ * TTextBoxMode enum.
  * TTextBoxMode defines the enumerable type for the possible mode
  * that a {@link TTextBox} control could be at.
  *
@@ -39,22 +39,22 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TTextBoxMode extends \Prado\TEnumerable
+enum TTextBoxMode: string
 {
-	public const SingleLine = 'SingleLine';
-	public const MultiLine = 'MultiLine';
-	public const Password = 'Password';
-	public const Color = 'Color';
-	public const Date = 'Date';
-	public const Datetime = 'Datetime';
-	public const DatetimeLocal = 'DatetimeLocal';
-	public const Email = 'Email';
-	public const Month = 'Month';
-	public const Number = 'Number';
-	public const Range = 'Range';
-	public const Search = 'Search';
-	public const Tel = 'Tel';
-	public const Time = 'Time';
-	public const Url = 'Url';
-	public const Week = 'Week';
+	case SingleLine = 'SingleLine';
+	case MultiLine = 'MultiLine';
+	case Password = 'Password';
+	case Color = 'Color';
+	case Date = 'Date';
+	case Datetime = 'Datetime';
+	case DatetimeLocal = 'DatetimeLocal';
+	case Email = 'Email';
+	case Month = 'Month';
+	case Number = 'Number';
+	case Range = 'Range';
+	case Search = 'Search';
+	case Tel = 'Tel';
+	case Time = 'Time';
+	case Url = 'Url';
+	case Week = 'Week';
 }

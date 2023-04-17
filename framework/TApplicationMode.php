@@ -1,6 +1,6 @@
 <?php
 /**
- * TApplication class file
+ * TApplication enum file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -10,7 +10,7 @@
 namespace Prado;
 
 /**
- * TApplicationMode class.
+ * TApplicationMode enum.
  * TApplicationMode defines the possible mode that an application can be set at by
  * setting {@link TApplication::setMode Mode}.
  * In particular, the following modes are defined
@@ -21,10 +21,10 @@ namespace Prado;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TApplicationMode extends \Prado\TEnumerable
+enum TApplicationMode: string
 {
-	public const Off = 'Off';
-	public const Debug = 'Debug';
-	public const Normal = 'Normal';
-	public const Performance = 'Performance';
+	case Off = 'Off';
+	case Debug = 'Debug';
+	case Normal = 'Normal';
+	case Performance = 'Performance';
 }

@@ -98,7 +98,7 @@ class TPanelStyle extends TStyle
 		}
 
 		if (($align = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
-			$this->setStyleField('text-align', strtolower($align));
+			$this->setStyleField('text-align', strtolower($align->value));
 		}
 
 		if (!$this->getWrap()) {

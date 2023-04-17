@@ -10,7 +10,7 @@
 namespace Prado\Security;
 
 /**
- * TUserManagerPasswordMode class.
+ * TUserManagerPasswordMode enum.
  * TUserManagerPasswordMode defines the enumerable type for the possible modes
  * that user passwords can be specified for a {@link TUserManager}.
  *
@@ -22,9 +22,9 @@ namespace Prado\Security;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TUserManagerPasswordMode extends \Prado\TEnumerable
+enum TUserManagerPasswordMode: string
 {
-	public const Clear = 'Clear';
-	public const MD5 = 'MD5';
-	public const SHA1 = 'SHA1';
+	case Clear = 'Clear';
+	case MD5 = 'MD5';
+	case SHA1 = 'SHA1';
 }

@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * THotSpotMode class.
+ * THotSpotMode enum.
  * THotSpotMode defines the enumerable type for the possible hot spot modes.
  *
  * The following enumerable values are defined:
@@ -22,10 +22,10 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class THotSpotMode extends \Prado\TEnumerable
+enum THotSpotMode: string
 {
-	public const NotSet = 'NotSet';
-	public const Navigate = 'Navigate';
-	public const PostBack = 'PostBack';
-	public const Inactive = 'Inactive';
+	case NotSet = 'NotSet';
+	case Navigate = 'Navigate';
+	case PostBack = 'PostBack';
+	case Inactive = 'Inactive';
 }

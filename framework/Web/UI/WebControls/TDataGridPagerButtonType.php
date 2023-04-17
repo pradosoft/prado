@@ -15,7 +15,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDataGridPagerButtonType class.
+ * TDataGridPagerButtonType enum.
  * TDataGridPagerButtonType defines the enumerable type for the possible types of datagrid pager buttons.
  *
  * The following enumerable values are defined:
@@ -25,8 +25,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TDataGridPagerButtonType extends \Prado\TEnumerable
+enum TDataGridPagerButtonType: string
 {
-	public const LinkButton = 'LinkButton';
-	public const PushButton = 'PushButton';
+	case LinkButton = 'LinkButton';
+	case PushButton = 'PushButton';
 }

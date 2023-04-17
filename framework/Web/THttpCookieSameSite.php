@@ -10,7 +10,7 @@
 namespace Prado\Web;
 
 /**
- * THttpCookieSameSite class.
+ * THttpCookieSameSite enum.
  * THttpCookieSameSite defines the enumerable type for the possible values of the
  * SameSite property of {@link THttpCookie}.
  *
@@ -28,9 +28,9 @@ namespace Prado\Web;
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.1.2
  */
-class THttpCookieSameSite extends \Prado\TEnumerable
+enum THttpCookieSameSite: string
 {
-	public const Lax = 'Lax';
-	public const Strict = 'Strict';
-	public const None = 'None';
+	case Lax = 'Lax';
+	case Strict = 'Strict';
+	case None = 'None';
 }

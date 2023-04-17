@@ -153,33 +153,58 @@ class TPropertyValue
 	 * @param mixed $enums class name of the enumerable type, or array of valid enumeration values. If this is not an array,
 	 * the method considers its parameters are of variable length, and the second till the last parameters are enumeration values.
 	 * @throws TInvalidDataValueException if the original value is not in the string array.
-	 * @return string the valid enumeration value
+	 * @return string|\UnitEnum the valid enumeration value
 	 */
-	public static function ensureEnum($value, $enums): string
+	public static function ensureEnum($value, $enums): string|\UnitEnum
 	{
 		static $types = [];
 		if (func_num_args() === 2 && is_string($enums)) {
 			if (!isset($types[$enums])) {
 				$types[$enums] = new \ReflectionClass($enums);
 			}
-			if ($types[$enums]->hasConstant($value)) {
-				return $value;
+
+			if($types[$enums]->isEnum()) {
+				// Php 8.1 native enum instances
+				if($value instanceof $enums) {
+					return $value;
+				}
+				$enumValue = $enums::tryFrom($value);
+				if($enumValue !== null) {
+					return $enumValue;
+				}
+
+				throw new TInvalidDataValueException(
+					'propertyvalue_enumvalue_invalid',
+					$value,
+					implode(' | ', array_column($enums::cases(), 'name'))
+				);
 			} else {
+				// Prado's TEnumerable instances
+				if ($types[$enums]->hasConstant($value)) {
+					return $value;
+				}
+
 				throw new TInvalidDataValueException(
 					'propertyvalue_enumvalue_invalid',
 					$value,
 					implode(' | ', $types[$enums]->getConstants())
 				);
 			}
-		} elseif (!is_array($enums)) {
+		}
+		// sanity check of a string value to see if it is among the given list of strings.
+		if (!is_array($enums)) {
 			$enums = func_get_args();
 			array_shift($enums);
 		}
 		if (in_array($value, $enums, true)) {
 			return $value;
-		} else {
-			throw new TInvalidDataValueException('propertyvalue_enumvalue_invalid', $value, implode(' | ', $enums));
 		}
+
+		throw new TInvalidDataValueException(
+			'propertyvalue_enumvalue_invalid',
+			$value,
+			implode(' | ', $enums)
+		);
 	}
 
 	/**

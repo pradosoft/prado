@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDatePickerMode class.
+ * TDatePickerMode enum.
  * TDatePickerMode defines the enumerable type for the possible UI mode
  * that a {@link TDatePicker} control can take.
  *
@@ -23,10 +23,10 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TDatePickerMode extends \Prado\TEnumerable
+enum TDatePickerMode: string
 {
-	public const Basic = 'Basic';
-	public const Clickable = 'Clickable';
-	public const Button = 'Button';
-	public const ImageButton = 'ImageButton';
+	case Basic = 'Basic';
+	case Clickable = 'Clickable';
+	case Button = 'Button';
+	case ImageButton = 'ImageButton';
 }

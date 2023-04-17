@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TVerticalAlign class.
+ * TVerticalAlign enum.
  * TVerticalAlign defines the enumerable type for the possible vertical alignments in a CSS style.
  *
  * The following enumerable values are defined:
@@ -23,10 +23,10 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.0.4
  * @deprecated use the CSS vertical-align property instead
  */
-class TVerticalAlign extends \Prado\TEnumerable
+enum TVerticalAlign: string
 {
-	public const NotSet = 'NotSet';
-	public const Top = 'Top';
-	public const Bottom = 'Bottom';
-	public const Middle = 'Middle';
+	case NotSet = 'NotSet';
+	case Top = 'Top';
+	case Bottom = 'Bottom';
+	case Middle = 'Middle';
 }

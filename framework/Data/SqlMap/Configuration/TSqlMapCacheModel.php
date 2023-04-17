@@ -11,6 +11,7 @@ namespace Prado\Data\SqlMap\Configuration;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes;
 
 /**
  * TSqlMapCacheModel corresponds to the <cacheModel> sql mapping configuration tag.
@@ -42,13 +43,6 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	private $_properties = [];
 	private $_flushInterval = 0;
 
-	private static $_cacheTypes = [];
-
-	public static function registerCacheType($type, $className)
-	{
-		self::$_cacheTypes[$type] = $className;
-	}
-
 	/**
 	 * @return string unique cache model identifier.
 	 */
@@ -66,7 +60,7 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
+	 * @return TSqlMapCacheTypes cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
 	 */
 	public function getImplementation()
 	{
@@ -74,15 +68,11 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	}
 
 	/**
-	 * @param string $value cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
+	 * @param TSqlMapCacheTypes $value cache implements of TSqlMapCacheTypes, either 'Basic', 'LRU' or 'FIFO'.
 	 */
 	public function setImplementation($value)
 	{
-		if (isset(self::$_cacheTypes[$value])) {
-			$this->_implementation = $value;
-		} else {
-			$this->_implementation = TPropertyValue::ensureEnum($value, \Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes::class);
-		}
+		$this->_implementation = TPropertyValue::ensureEnum($value, \Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes::class);
 	}
 
 	/**
@@ -120,14 +110,13 @@ class TSqlMapCacheModel extends \Prado\TComponent
 	public function getImplementationClass()
 	{
 		$implementation = $this->_implementation;
-		if (isset(self::$_cacheTypes[$implementation])) {
-			return self::$_cacheTypes[$implementation];
-		}
-
-		switch (TPropertyValue::ensureEnum($implementation, \Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes::class)) {
-			case TSqlMapCacheTypes::FIFO: return \Prado\Data\SqlMap\DataMapper\TSqlMapFifoCache::class;
-			case TSqlMapCacheTypes::LRU: return \Prado\Data\SqlMap\DataMapper\TSqlMapLruCache::class;
-			case TSqlMapCacheTypes::Basic: return \Prado\Data\SqlMap\DataMapper\TSqlMapApplicationCache::class;
+		switch (TPropertyValue::ensureEnum($implementation, TSqlMapCacheTypes::class)) {
+			case TSqlMapCacheTypes::FIFO:
+				return \Prado\Data\SqlMap\DataMapper\TSqlMapFifoCache::class;
+			case TSqlMapCacheTypes::LRU:
+				return \Prado\Data\SqlMap\DataMapper\TSqlMapLruCache::class;
+			case TSqlMapCacheTypes::Basic:
+				return \Prado\Data\SqlMap\DataMapper\TSqlMapApplicationCache::class;
 		}
 		return '';
 	}

@@ -10,7 +10,7 @@
 namespace Prado\Web;
 
 /**
- * THttpSessionCookieMode class.
+ * THttpSessionCookieMode enum.
  * THttpSessionCookieMode defines the enumerable type for the possible methods of
  * using cookies to store session ID.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class THttpSessionCookieMode extends \Prado\TEnumerable
+enum THttpSessionCookieMode: string
 {
-	public const None = 'None';
-	public const Allow = 'Allow';
-	public const Only = 'Only';
+	case None = 'None';
+	case Allow = 'Allow';
+	case Only = 'Only';
 }

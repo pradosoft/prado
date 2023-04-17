@@ -10,7 +10,7 @@
 namespace Prado\Web;
 
 /**
- * TUrlMappingPatternSecureConnection class
+ * TUrlMappingPatternSecureConnection enum
  *
  * TUrlMappingPatternSecureConnection defines the enumerable type for the possible SecureConnection
  * URL prefix behavior that can be used by {@link TUrlMappingPattern::constructUrl()}.
@@ -18,35 +18,35 @@ namespace Prado\Web;
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @since 3.2
  */
-class TUrlMappingPatternSecureConnection extends \Prado\TEnumerable
+enum TUrlMappingPatternSecureConnection: string
 {
 	/**
 	 * Keep current SecureConnection status
 	 * means no prefixing
 	 */
-	public const Automatic = 'Automatic';
+	case Automatic = 'Automatic';
 
 	/**
 	 * Force use secured connection
 	 * always prefixing with https://example.com/path/to/app
 	 */
-	public const Enable = 'Enable';
+	case Enable = 'Enable';
 
 	/**
 	 * Force use unsecured connection
 	 * always prefixing with http://example.com/path/to/app
 	 */
-	public const Disable = 'Disable';
+	case Disable = 'Disable';
 
 	/**
 	 * Force use secured connection, if in unsecured mode
 	 * prefixing with https://example.com/path/to/app
 	 */
-	public const EnableIfNotSecure = 'EnableIfNotSecure';
+	case EnableIfNotSecure = 'EnableIfNotSecure';
 
 	/**
 	 * Force use unsecured connection, if in secured mode
 	 * prefixing with https://example.com/path/to/app
 	 */
-	public const DisableIfSecure = 'DisableIfSecure';
+	case DisableIfSecure = 'DisableIfSecure';
 }

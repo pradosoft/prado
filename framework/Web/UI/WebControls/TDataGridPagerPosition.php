@@ -15,7 +15,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDataGridPagerPosition class.
+ * TDataGridPagerPosition enum.
  * TDataGridPagerPosition defines the enumerable type for the possible positions that a datagrid pager can be located at.
  *
  * The following enumerable values are defined:
@@ -26,9 +26,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TDataGridPagerPosition extends \Prado\TEnumerable
+enum TDataGridPagerPosition: string
 {
-	public const Bottom = 'Bottom';
-	public const Top = 'Top';
-	public const TopAndBottom = 'TopAndBottom';
+	case Bottom = 'Bottom';
+	case Top = 'Top';
+	case TopAndBottom = 'TopAndBottom';
 }

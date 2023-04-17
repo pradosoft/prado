@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTableHeaderScope class.
+ * TTableHeaderScope enum.
  * TTableHeaderScope defines the enumerable type for the possible table scopes that a table header is associated with.
  *
  * The following enumerable values are defined:
@@ -21,9 +21,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TTableHeaderScope extends \Prado\TEnumerable
+enum TTableHeaderScope: string
 {
-	public const NotSet = 'NotSet';
-	public const Row = 'Row';
-	public const Column = 'Column';
+	case NotSet = 'NotSet';
+	case Row = 'Row';
+	case Column = 'Column';
 }

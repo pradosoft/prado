@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TContentDirection class.
+ * TContentDirection enum.
  * TContentDirection defines the enumerable type for the possible directions that a panel can be at.
  *
  * The following enumerable values are defined:
@@ -21,9 +21,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TContentDirection extends \Prado\TEnumerable
+enum TContentDirection: string
 {
-	public const NotSet = 'NotSet';
-	public const LeftToRight = 'LeftToRight';
-	public const RightToLeft = 'RightToLeft';
+	case NotSet = 'NotSet';
+	case LeftToRight = 'LeftToRight';
+	case RightToLeft = 'RightToLeft';
 }

@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TScrollBars class.
+ * TScrollBars enum.
  * TScrollBars defines the enumerable type for the possible scroll bar mode
  * that a {@link TPanel} control could use.
  *
@@ -24,11 +24,11 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TScrollBars extends \Prado\TEnumerable
+enum TScrollBars: string
 {
-	public const None = 'None';
-	public const Auto = 'Auto';
-	public const Both = 'Both';
-	public const Horizontal = 'Horizontal';
-	public const Vertical = 'Vertical';
+	case None = 'None';
+	case Auto = 'Auto';
+	case Both = 'Both';
+	case Horizontal = 'Horizontal';
+	case Vertical = 'Vertical';
 }

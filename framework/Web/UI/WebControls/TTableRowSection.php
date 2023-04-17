@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTableRowSection class.
+ * TTableRowSection enum.
  * TTableRowSection defines the enumerable type for the possible table sections
  * that a {@link TTableRow} can be within.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TTableRowSection extends \Prado\TEnumerable
+enum TTableRowSection: string
 {
-	public const Header = 'Header';
-	public const Body = 'Body';
-	public const Footer = 'Footer';
+	case Header = 'Header';
+	case Body = 'Body';
+	case Footer = 'Footer';
 }

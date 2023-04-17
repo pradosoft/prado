@@ -1136,7 +1136,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		$item = $param->getItem();
 		$itemType = $item->getItemType();
-		if ($itemType === 'Item' || $itemType === 'AlternatingItem' || $itemType === 'SelectedItem' || $itemType === 'EditItem') {
+		if ($itemType === TListItemType::Item || $itemType === TListItemType::AlternatingItem || $itemType === TListItemType::SelectedItem || $itemType === TListItemType::EditItem) {
 			if (($button = $item->findControl(self::ID_SIDEBAR_BUTTON)) !== null) {
 				$step = $item->getData();
 				if (($this->getStepType($step) === TWizardStepType::Complete)) {

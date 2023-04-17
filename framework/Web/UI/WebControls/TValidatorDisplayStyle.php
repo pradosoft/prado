@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TValidatorDisplayStyle class.
+ * TValidatorDisplayStyle enum.
  * TValidatorDisplayStyle defines the enumerable type for the possible styles
  * that a validator control can display the error message.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TValidatorDisplayStyle extends \Prado\TEnumerable
+enum TValidatorDisplayStyle: string
 {
-	public const None = 'None';
-	public const Dynamic = 'Dynamic';
-	public const Fixed = 'Fixed';
+	case None = 'None';
+	case Dynamic = 'Dynamic';
+	case Fixed = 'Fixed';
 }

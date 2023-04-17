@@ -10,7 +10,7 @@
 namespace Prado\Data\ActiveRecord;
 
 /**
- * TActiveRecordInvalidFinderResult class.
+ * TActiveRecordInvalidFinderResult enum.
  * TActiveRecordInvalidFinderResult defines the enumerable type for possible results
  * if an invalid {@link TActiveRecord::__call magic-finder} invoked.
  *
@@ -24,8 +24,8 @@ namespace Prado\Data\ActiveRecord;
  * @see TActiveRecord::setInvalidFinderResult
  * @since 3.1.5
  */
-class TActiveRecordInvalidFinderResult extends \Prado\TEnumerable
+enum TActiveRecordInvalidFinderResult: string
 {
-	public const Null = 'Null';
-	public const Exception = 'Exception';
+	case Null = 'Null';
+	case Exception = 'Exception';
 }

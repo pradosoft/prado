@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTableGridLines class.
+ * TTableGridLines enum.
  * TTableGridLines defines the enumerable type for the possible grid line types of an HTML table.
  *
  * The following enumerable values are defined:
@@ -23,10 +23,10 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.0.4
  * @deprecated use CSS to style the borders of individual elements
  */
-class TTableGridLines extends \Prado\TEnumerable
+enum TTableGridLines: string
 {
-	public const None = 'None';
-	public const Horizontal = 'Horizontal';
-	public const Vertical = 'Vertical';
-	public const Both = 'Both';
+	case None = 'None';
+	case Horizontal = 'Horizontal';
+	case Vertical = 'Vertical';
+	case Both = 'Both';
 }

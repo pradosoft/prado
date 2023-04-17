@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDatePickerInputMode class.
+ * TDatePickerInputMode enum.
  * TDatePickerInputMode defines the enumerable type for the possible datepicker input methods.
  *
  * The following enumerable values are defined:
@@ -20,8 +20,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TDatePickerInputMode extends \Prado\TEnumerable
+enum TDatePickerInputMode: string
 {
-	public const TextBox = 'TextBox';
-	public const DropDownList = 'DropDownList';
+	case TextBox = 'TextBox';
+	case DropDownList = 'DropDownList';
 }

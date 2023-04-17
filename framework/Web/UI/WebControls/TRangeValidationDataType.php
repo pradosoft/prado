@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TRangeValidationDataType class.
+ * TRangeValidationDataType enum.
  * TRangeValidationDataType defines the enumerable type for the possible data types that
  * a range validator can validate upon.
  *
@@ -24,7 +24,11 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TRangeValidationDataType extends TValidationDataType
+enum TRangeValidationDataType: string
 {
-	public const StringLength = 'StringLength';
+	case Integer = 'Integer';
+	case Float = 'Float';
+	case Date = 'Date';
+	case String = 'String';
+	case StringLength = 'StringLength';
 }

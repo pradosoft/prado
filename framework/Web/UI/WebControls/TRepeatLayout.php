@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TRepeatLayout class.
+ * TRepeatLayout enum.
  * TRepeatLayout defines the enumerable type for the possible layouts
  * that repeated contents can take.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TRepeatLayout extends \Prado\TEnumerable
+enum TRepeatLayout: string
 {
-	public const Table = 'Table';
-	public const Flow = 'Flow';
-	public const Raw = 'Raw';
+	case Table = 'Table';
+	case Flow = 'Flow';
+	case Raw = 'Raw';
 }

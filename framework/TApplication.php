@@ -279,7 +279,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_authRules;
 	/**
-	 * @var string|TApplicationMode application mode
+	 * @var TApplicationMode application mode
 	 */
 	private $_mode = TApplicationMode::Debug;
 
@@ -532,7 +532,7 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string|TApplicationMode application mode. Defaults to TApplicationMode::Debug.
+	 * @return TApplicationMode application mode. Defaults to TApplicationMode::Debug.
 	 */
 	public function getMode()
 	{

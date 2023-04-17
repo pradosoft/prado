@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTextAlign class.
+ * TTextAlign enum.
  * TTextAlign defines the enumerable type for the possible text alignments
  *
  * The following enumerable values are defined:
@@ -20,8 +20,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TTextAlign extends \Prado\TEnumerable
+enum TTextAlign: string
 {
-	public const Left = 'Left';
-	public const Right = 'Right';
+	case Left = 'Left';
+	case Right = 'Right';
 }

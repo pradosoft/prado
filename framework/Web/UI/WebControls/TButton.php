@@ -57,7 +57,13 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	 */
 	protected function getTagName()
 	{
-		return strtolower($this->getButtonTag());
+		switch($this->getButtonTag()) {
+			case TButtonTag::Input:
+				return 'input';
+			case TButtonTag::Button:
+			default:
+				return 'button';
+		}
 	}
 
 	/**
@@ -101,7 +107,18 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	{
 		$page = $this->getPage();
 		$page->ensureRenderInForm($this);
-		$writer->addAttribute('type', strtolower($this->getButtonType()));
+		switch($this->getButtonType()) {
+			case TButtonType::Submit:
+				$writer->addAttribute('type', 'submit');
+				break;
+			case TButtonType::Reset:
+				$writer->addAttribute('type', 'reset');
+				break;
+			case TButtonType::Button:
+				$writer->addAttribute('type', 'button');
+				break;
+		}
+
 		if (($uniqueID = $this->getUniqueID()) !== '') {
 			$writer->addAttribute('name', $uniqueID);
 		}

@@ -22,10 +22,10 @@ namespace Prado\Web\UI\WebControls;
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
  */
-class TDisplayStyle extends \Prado\TEnumerable
+enum TDisplayStyle: string
 {
-	public const None = 'None';
-	public const Dynamic = 'Dynamic';
-	public const Fixed = 'Fixed';
-	public const Hidden = 'Hidden';
+	case None = 'None';
+	case Dynamic = 'Dynamic';
+	case Fixed = 'Fixed';
+	case Hidden = 'Hidden';
 }

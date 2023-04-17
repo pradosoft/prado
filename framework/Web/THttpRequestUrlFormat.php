@@ -10,7 +10,7 @@
 namespace Prado\Web;
 
 /**
- * THttpRequestUrlFormat class.
+ * THttpRequestUrlFormat enum.
  * THttpRequestUrlFormat defines the enumerable type for the possible URL formats
  * that can be recognized by {@link THttpRequest}.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class THttpRequestUrlFormat extends \Prado\TEnumerable
+enum THttpRequestUrlFormat: string
 {
-	public const Get = 'Get';
-	public const Path = 'Path';
-	public const HiddenPath = 'HiddenPath';
+	case Get = 'Get';
+	case Path = 'Path';
+	case HiddenPath = 'HiddenPath';
 }

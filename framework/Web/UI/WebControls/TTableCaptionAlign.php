@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TTableCaptionAlign class.
+ * TTableCaptionAlign enum.
  * TTableCaptionAlign defines the enumerable type for the possible alignments
  * that a table caption can take.
  *
@@ -24,11 +24,11 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TTableCaptionAlign extends \Prado\TEnumerable
+enum TTableCaptionAlign: string
 {
-	public const NotSet = 'NotSet';
-	public const Top = 'Top';
-	public const Bottom = 'Bottom';
-	public const Left = 'Left';
-	public const Right = 'Right';
+	case NotSet = 'NotSet';
+	case Top = 'Top';
+	case Bottom = 'Bottom';
+	case Left = 'Left';
+	case Right = 'Right';
 }

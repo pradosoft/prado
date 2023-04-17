@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TButtonTag class.
+ * TButtonTag enum.
  * TButtonTag defines the enumerable type for the possible tag names that a {@link TButton} can use for rendering.
  *
  * The following enumerable values are defined:
@@ -19,8 +19,8 @@ namespace Prado\Web\UI\WebControls;
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  */
-class TButtonTag extends \Prado\TEnumerable
+enum TButtonTag: string
 {
-	public const Input = 'Input';
-	public const Button = 'Button';
+	case Input = 'Input';
+	case Button = 'Button';
 }

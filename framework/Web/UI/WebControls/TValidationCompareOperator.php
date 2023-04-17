@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TValidationCompareOperator class.
+ * TValidationCompareOperator enum.
  * TValidationCompareOperator defines the enumerable type for the comparison operations
  * that {@link TCompareValidator} can perform validation with.
  *
@@ -25,12 +25,12 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TValidationCompareOperator extends \Prado\TEnumerable
+enum TValidationCompareOperator: string
 {
-	public const Equal = 'Equal';
-	public const NotEqual = 'NotEqual';
-	public const GreaterThan = 'GreaterThan';
-	public const GreaterThanEqual = 'GreaterThanEqual';
-	public const LessThan = 'LessThan';
-	public const LessThanEqual = 'LessThanEqual';
+	case Equal = 'Equal';
+	case NotEqual = 'NotEqual';
+	case GreaterThan = 'GreaterThan';
+	case GreaterThanEqual = 'GreaterThanEqual';
+	case LessThan = 'LessThan';
+	case LessThanEqual = 'LessThanEqual';
 }

@@ -11,7 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TInlineFrameAlign class.
+ * TInlineFrameAlign enum.
  * TInlineFrameAlign defines the enumerable type for the possible alignments
  * that the content in a {@link TInlineFrame} could be.
  *
@@ -27,12 +27,12 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.0.4
  * @deprecated obsolete since html5
  */
-class TInlineFrameAlign extends \Prado\TEnumerable
+enum TInlineFrameAlign: string
 {
-	public const NotSet = 'NotSet';
-	public const Left = 'Left';
-	public const Right = 'Right';
-	public const Top = 'Top';
-	public const Middle = 'Middle';
-	public const Bottom = 'Bottom';
+	case NotSet = 'NotSet';
+	case Left = 'Left';
+	case Right = 'Right';
+	case Top = 'Top';
+	case Middle = 'Middle';
+	case Bottom = 'Bottom';
 }

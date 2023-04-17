@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TListSelectionMode class.
+ * TListSelectionMode enum.
  * TListSelectionMode defines the enumerable type for the possible selection modes of a {@link TListBox}.
  *
  * The following enumerable values are defined:
@@ -20,8 +20,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TListSelectionMode extends \Prado\TEnumerable
+enum TListSelectionMode: string
 {
-	public const Single = 'Single';
-	public const Multiple = 'Multiple';
+	case Single = 'Single';
+	case Multiple = 'Multiple';
 }

@@ -333,7 +333,7 @@ class TRangeValidator extends TBaseValidator
 		$options = parent::getClientScriptOptions();
 		$options['MinValue'] = $this->getMinValue();
 		$options['MaxValue'] = $this->getMaxValue();
-		$options['DataType'] = $this->getDataType();
+		$options['DataType'] = $this->getDataType()->value;
 		$options['StrictComparison'] = $this->getStrictComparison();
 		if (($dateFormat = $this->getDateFormat()) !== '') {
 			$options['DateFormat'] = $dateFormat;

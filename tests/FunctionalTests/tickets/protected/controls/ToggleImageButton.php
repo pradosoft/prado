@@ -43,8 +43,8 @@ class ToggleImageButton extends TImageButton
 	}
 }
 
-class ToggleImageButtonState extends TEnumerable
+enum ToggleImageButtonState: string
 {
-	const Down = 'Down';
-	const Up = 'Up';
+	case Down = 'Down';
+	case Up = 'Up';
 }

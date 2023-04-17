@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TWizardStepType class.
+ * TWizardStepType enum.
  * TWizardStepType defines the enumerable type for the possible types of {@link TWizard wizard} steps.
  *
  * The following enumerable values are defined:
@@ -23,11 +23,11 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TWizardStepType extends \Prado\TEnumerable
+enum TWizardStepType: string
 {
-	public const Auto = 'Auto';
-	public const Complete = 'Complete';
-	public const Start = 'Start';
-	public const Step = 'Step';
-	public const Finish = 'Finish';
+	case Auto = 'Auto';
+	case Complete = 'Complete';
+	case Start = 'Start';
+	case Step = 'Step';
+	case Finish = 'Finish';
 }

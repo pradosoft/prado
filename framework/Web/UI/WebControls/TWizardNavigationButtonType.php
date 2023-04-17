@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TWizardNavigationButtonType class.
+ * TWizardNavigationButtonType enum.
  * TWizardNavigationButtonType defines the enumerable type for the possible types of buttons
  * that can be used in the navigation part of a {@link TWizard}.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TWizardNavigationButtonType extends \Prado\TEnumerable
+enum TWizardNavigationButtonType: string
 {
-	public const Button = 'Button';
-	public const Image = 'Image';
-	public const Link = 'Link';
+	case Button = 'Button';
+	case Image = 'Image';
+	case Link = 'Link';
 }

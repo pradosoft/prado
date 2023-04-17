@@ -9,13 +9,13 @@
 namespace Prado\Util;
 
 /**
- * TRpcClientTypesEnumerable class
+ * TRpcClientTypesEnumerable enum
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @since 3.2
  */
-class TRpcClientTypesEnumerable extends \Prado\TEnumerable
+enum TRpcClientTypesEnumerable: string
 {
-	public const JSON = 'TJsonRpcClient';
-	public const XML = 'TXmlRpcClient';
+	case JSON = 'TJsonRpcClient';
+	case XML = 'TXmlRpcClient';
 }

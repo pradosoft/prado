@@ -11,7 +11,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TSliderDirection class.
+ * TSliderDirection enum.
  *
  * TSliderDirection defines the enumerable type for the possible direction that can be used in a {@link TSlider}
  *
@@ -22,8 +22,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.1
  */
-class TSliderDirection extends \Prado\TEnumerable
+enum TSliderDirection: string
 {
-	public const Horizontal = 'Horizontal';
-	public const Vertical = 'Vertical';
+	case Horizontal = 'Horizontal';
+	case Vertical = 'Vertical';
 }

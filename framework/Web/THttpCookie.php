@@ -210,7 +210,7 @@ class THttpCookie extends \Prado\TComponent
 			'domain' => $this->_domain,
 			'secure' => $this->_secure,
 			'httponly' => $this->_httpOnly,
-			'samesite' => $this->_sameSite,
+			'samesite' => $this->_sameSite->value,
 		];
 	}
 }

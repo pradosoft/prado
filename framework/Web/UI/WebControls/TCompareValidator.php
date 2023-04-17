@@ -223,9 +223,9 @@ class TCompareValidator extends TBaseValidator
 			$options['ValueToCompare'] = $value;
 		}
 		if (($operator = $this->getOperator()) !== TValidationCompareOperator::Equal) {
-			$options['Operator'] = $operator;
+			$options['Operator'] = $operator->value;
 		}
-		$options['DataType'] = $this->getDataType();
+		$options['DataType'] = $this->getDataType()->value;
 		if (($dateFormat = $this->getDateFormat()) !== '') {
 			$options['DateFormat'] = $dateFormat;
 		}

@@ -10,23 +10,23 @@
 namespace Prado\Data;
 
 /**
- * TDbColumnCaseMode
+ * TDbColumnCaseMode enum
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbColumnCaseMode extends \Prado\TEnumerable
+enum TDbColumnCaseMode: string
 {
 	/**
 	 * Column name cases are kept as is from the database
 	 */
-	public const Preserved = 'Preserved';
+	case Preserved = 'Preserved';
 	/**
 	 * Column names are converted to lower case
 	 */
-	public const LowerCase = 'LowerCase';
+	case LowerCase = 'LowerCase';
 	/**
 	 * Column names are converted to upper case
 	 */
-	public const UpperCase = 'UpperCase';
+	case UpperCase = 'UpperCase';
 }

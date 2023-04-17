@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TColorPickerMode class.
+ * TColorPickerMode enum.
  * TColorPickerMode defines the enumerable type for the possible UI mode
  * that a {@link TColorPicker} control can take.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TColorPickerMode extends \Prado\TEnumerable
+enum TColorPickerMode: string
 {
-	public const Simple = 'Simple';
-	public const Basic = 'Basic';
-	public const Full = 'Full';
+	case Simple = 'Simple';
+	case Basic = 'Basic';
+	case Full = 'Full';
 }

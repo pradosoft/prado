@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TBulletedListDisplayMode class.
+ * TBulletedListDisplayMode enum.
  * TBulletedListDisplayMode defines the enumerable type for the possible display mode
  * of a {@link TBulletedList} control.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TBulletedListDisplayMode extends \Prado\TEnumerable
+enum TBulletedListDisplayMode: string
 {
-	public const Text = 'Text';
-	public const HyperLink = 'HyperLink';
-	public const LinkButton = 'LinkButton';
+	case Text = 'Text';
+	case HyperLink = 'HyperLink';
+	case LinkButton = 'LinkButton';
 }

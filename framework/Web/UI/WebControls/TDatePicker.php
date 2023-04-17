@@ -532,7 +532,7 @@ class TDatePicker extends TTextBox
 	protected function getDatePickerOptions()
 	{
 		$options['ID'] = $this->getClientID();
-		$options['InputMode'] = $this->getInputMode();
+		$options['InputMode'] = $this->getInputMode()->value;
 		$options['Format'] = $this->getDateFormat();
 		$options['FirstDayOfWeek'] = $this->getFirstDayOfWeek();
 		if (($cssClass = $this->getCssClass()) !== '') {
@@ -551,7 +551,7 @@ class TDatePicker extends TTextBox
 				$options['Trigger'] = $this->getDatePickerButtonID();
 				break;
 		}
-		$options['PositionMode'] = $this->getPositionMode();
+		$options['PositionMode'] = $this->getPositionMode()->value;
 
 		$options = array_merge($options, $this->getCulturalOptions());
 		if ($this->_clientScript !== null) {

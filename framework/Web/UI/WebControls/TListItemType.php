@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TListItemType class.
+ * TListItemType enum.
  * TListItemType defines the enumerable type for the possible types
  * that databound list items could take.
  *
@@ -27,14 +27,14 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TListItemType extends \Prado\TEnumerable
+enum TListItemType: string
 {
-	public const Header = 'Header';
-	public const Footer = 'Footer';
-	public const Item = 'Item';
-	public const Separator = 'Separator';
-	public const AlternatingItem = 'AlternatingItem';
-	public const EditItem = 'EditItem';
-	public const SelectedItem = 'SelectedItem';
-	public const Pager = 'Pager';
+	case Header = 'Header';
+	case Footer = 'Footer';
+	case Item = 'Item';
+	case Separator = 'Separator';
+	case AlternatingItem = 'AlternatingItem';
+	case EditItem = 'EditItem';
+	case SelectedItem = 'SelectedItem';
+	case Pager = 'Pager';
 }

@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TPagerMode class.
+ * TPagerMode enum.
  * TPagerMode defines the enumerable type for the possible modes that a {@link TPager} control can take.
  *
  * The following enumerable values are defined:
@@ -21,9 +21,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TPagerMode extends \Prado\TEnumerable
+enum TPagerMode: string
 {
-	public const NextPrev = 'NextPrev';
-	public const Numeric = 'Numeric';
-	public const DropDownList = 'DropDownList';
+	case NextPrev = 'NextPrev';
+	case Numeric = 'Numeric';
+	case DropDownList = 'DropDownList';
 }

@@ -123,11 +123,11 @@ class TTableItemStyle extends TStyle
 		}
 
 		if (($horizontalAlign = $this->getHorizontalAlign()) !== THorizontalAlign::NotSet) {
-			$writer->addStyleAttribute('text-align', strtolower($horizontalAlign));
+			$writer->addStyleAttribute('text-align', strtolower($horizontalAlign->value));
 		}
 
 		if (($verticalAlign = $this->getVerticalAlign()) !== TVerticalAlign::NotSet) {
-			$writer->addStyleAttribute('vertical-align', strtolower($verticalAlign));
+			$writer->addStyleAttribute('vertical-align', strtolower($verticalAlign->value));
 		}
 
 		parent::addAttributesToRender($writer);

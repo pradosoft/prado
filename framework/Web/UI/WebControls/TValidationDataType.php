@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TValidationDataType class.
+ * TValidationDataType enum.
  * TValidationDataType defines the enumerable type for the possible data types that
  * a comparison validator can validate upon.
  *
@@ -23,10 +23,10 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TValidationDataType extends \Prado\TEnumerable
+enum TValidationDataType: string
 {
-	public const Integer = 'Integer';
-	public const Float = 'Float';
-	public const Date = 'Date';
-	public const String = 'String';
+	case Integer = 'Integer';
+	case Float = 'Float';
+	case Date = 'Date';
+	case String = 'String';
 }

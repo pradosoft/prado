@@ -15,7 +15,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDataGridPagerMode class.
+ * TDataGridPagerMode enum.
  * TDataGridPagerMode defines the enumerable type for the possible modes that a datagrid pager can take.
  *
  * The following enumerable values are defined:
@@ -25,8 +25,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TDataGridPagerMode extends \Prado\TEnumerable
+enum TDataGridPagerMode: string
 {
-	public const NextPrev = 'NextPrev';
-	public const Numeric = 'Numeric';
+	case NextPrev = 'NextPrev';
+	case Numeric = 'Numeric';
 }

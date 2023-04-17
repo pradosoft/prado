@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * THorizontalAlign class.
+ * THorizontalAlign enum.
  * THorizontalAlign defines the enumerable type for the possible horizontal alignments in a CSS style.
  *
  * The following enumerable values are defined:
@@ -24,11 +24,11 @@ namespace Prado\Web\UI\WebControls;
  * @since 3.0.4
  * @deprecated use the CSS text-align property instead
  */
-class THorizontalAlign extends \Prado\TEnumerable
+enum THorizontalAlign: string
 {
-	public const NotSet = 'NotSet';
-	public const Left = 'Left';
-	public const Right = 'Right';
-	public const Center = 'Center';
-	public const Justify = 'Justify';
+	case NotSet = 'NotSet';
+	case Left = 'Left';
+	case Right = 'Right';
+	case Center = 'Center';
+	case Justify = 'Justify';
 }

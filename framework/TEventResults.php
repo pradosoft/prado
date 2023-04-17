@@ -18,7 +18,7 @@ namespace Prado;
  *
  * @author Brad Anderson <javalizard@mac.com>
  */
-class TEventResults extends \Prado\TEnumerable
+class TEventResults
 {
 	public const EVENT_RESULT_FEED_FORWARD = 1;
 	public const EVENT_RESULT_FILTER = 2;

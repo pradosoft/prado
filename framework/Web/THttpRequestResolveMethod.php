@@ -10,7 +10,7 @@
 namespace Prado\Web;
 
 /**
- * THttpRequestResolveMethod class.
+ * THttpRequestResolveMethod enum.
  * THttpRequestResolveMethod defines the method used to determine the
  * service that needs to be instanciated to handle the user request.
  *
@@ -28,8 +28,8 @@ namespace Prado\Web;
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.2.2
  */
-class THttpRequestResolveMethod extends \Prado\TEnumerable
+enum THttpRequestResolveMethod: string
 {
-	public const ServiceOrder = 'ServiceOrder';
-	public const ParameterOrder = 'ParameterOrder';
+	case ServiceOrder = 'ServiceOrder';
+	case ParameterOrder = 'ParameterOrder';
 }

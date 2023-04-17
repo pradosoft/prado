@@ -167,7 +167,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 		$control = $this->getValidationTarget();
 		$options['ID'] = $this->getClientID();
 		$options['FormID'] = $this->getPage()->getForm()->getClientID();
-		$options['Display'] = $this->getDisplay();
+		$options['Display'] = $this->getDisplay()->value;
 		$options['ErrorMessage'] = $this->getErrorMessage();
 		if ($this->getFocusOnError()) {
 			$options['FocusOnError'] = $this->getFocusOnError();

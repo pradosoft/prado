@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TDatePickerPositionMode class.
+ * TDatePickerPositionMode enum.
  * TDatePickerPositionMode defines the positions available for the calendar popup, relative to the corresponding input.
  *
  * The following enumerable values are defined:
@@ -20,8 +20,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @since 3.1.4
  */
-class TDatePickerPositionMode extends \Prado\TEnumerable
+enum TDatePickerPositionMode: string
 {
-	public const Top = 'Top';
-	public const Bottom = 'Bottom';
+	case Top = 'Top';
+	case Bottom = 'Bottom';
 }

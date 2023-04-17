@@ -10,16 +10,16 @@
 namespace Prado\Data\SqlMap\Configuration;
 
 /**
- * TSqlMapCacheTypes enumerable class.
+ * TSqlMapCacheTypes enumerable enum.
  *
  * Implemented cache are 'Basic', 'FIFO' and 'LRU'.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
-class TSqlMapCacheTypes extends \Prado\TEnumerable
+enum TSqlMapCacheTypes: string
 {
-	public const Basic = 'Basic';
-	public const FIFO = 'FIFO';
-	public const LRU = 'LRU';
+	case Basic = 'Basic';
+	case FIFO = 'FIFO';
+	case LRU = 'LRU';
 }

@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TButtonType class.
+ * TButtonType enum.
  * TButtonType defines the enumerable type for the possible types that a {@link TButton} can take.
  *
  * The following enumerable values are defined:
@@ -21,9 +21,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TButtonType extends \Prado\TEnumerable
+enum TButtonType: string
 {
-	public const Submit = 'Submit';
-	public const Reset = 'Reset';
-	public const Button = 'Button';
+	case Submit = 'Submit';
+	case Reset = 'Reset';
+	case Button = 'Button';
 }

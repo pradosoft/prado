@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TValidationSummaryDisplayStylw class.
+ * TValidationSummaryDisplayStyle enum.
  * TValidationSummaryDisplayStyle defines the enumerable type for the possible styles
  * that a {@link TValidationSummary} can display the collected error messages.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TValidationSummaryDisplayStyle extends \Prado\TEnumerable
+enum TValidationSummaryDisplayStyle: string
 {
-	public const None = 'None';
-	public const Dynamic = 'Dynamic';
-	public const Fixed = 'Fixed';
+	case None = 'None';
+	case Dynamic = 'Dynamic';
+	case Fixed = 'Fixed';
 }

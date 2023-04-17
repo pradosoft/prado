@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TValidationSummaryDisplayMode class.
+ * TValidationSummaryDisplayMode enum.
  * TValidationSummaryDisplayMode defines the enumerable type for the possible modes
  * that a {@link TValidationSummary} can organize and display the collected error messages.
  *
@@ -23,10 +23,10 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TValidationSummaryDisplayMode extends \Prado\TEnumerable
+enum TValidationSummaryDisplayMode: string
 {
-	public const SimpleList = 'SimpleList';
-	public const SingleParagraph = 'SingleParagraph';
-	public const BulletList = 'BulletList';
-	public const HeaderOnly = 'HeaderOnly';
+	case SimpleList = 'SimpleList';
+	case SingleParagraph = 'SingleParagraph';
+	case BulletList = 'BulletList';
+	case HeaderOnly = 'HeaderOnly';
 }

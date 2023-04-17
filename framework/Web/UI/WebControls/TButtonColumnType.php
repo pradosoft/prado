@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TButtonColumnType class.
+ * TButtonColumnType enum.
  * TButtonColumnType defines the enumerable type for the possible types of buttons
  * that can be used in a {@link TButtonColumn}.
  *
@@ -22,9 +22,9 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TButtonColumnType extends \Prado\TEnumerable
+enum TButtonColumnType: string
 {
-	public const LinkButton = 'LinkButton';
-	public const PushButton = 'PushButton';
-	public const ImageButton = 'ImageButton';
+	case LinkButton = 'LinkButton';
+	case PushButton = 'PushButton';
+	case ImageButton = 'ImageButton';
 }

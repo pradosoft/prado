@@ -10,23 +10,23 @@
 namespace Prado\Data;
 
 /**
- * TDbNullConversionMode
+ * TDbNullConversionMode enum
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbNullConversionMode extends \Prado\TEnumerable
+enum TDbNullConversionMode: string
 {
 	/**
 	 * No conversion is performed for null and empty values.
 	 */
-	public const Preserved = 'Preserved';
+	case Preserved = 'Preserved';
 	/**
 	 * NULL is converted to empty string
 	 */
-	public const NullToEmptyString = 'NullToEmptyString';
+	case NullToEmptyString = 'NullToEmptyString';
 	/**
 	 * Empty string is converted to NULL
 	 */
-	public const EmptyStringToNull = 'EmptyStringToNull';
+	case EmptyStringToNull = 'EmptyStringToNull';
 }

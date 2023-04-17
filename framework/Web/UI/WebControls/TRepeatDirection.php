@@ -10,7 +10,7 @@
 namespace Prado\Web\UI\WebControls;
 
 /**
- * TRepeatDirection class.
+ * TRepeatDirection enum.
  * TRepeatDirection defines the enumerable type for the possible directions
  * that repeated contents can repeat along
  *
@@ -21,8 +21,8 @@ namespace Prado\Web\UI\WebControls;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4
  */
-class TRepeatDirection extends \Prado\TEnumerable
+enum TRepeatDirection: string
 {
-	public const Vertical = 'Vertical';
-	public const Horizontal = 'Horizontal';
+	case Vertical = 'Vertical';
+	case Horizontal = 'Horizontal';
 }
