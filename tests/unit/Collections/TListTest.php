@@ -76,6 +76,10 @@ class TListTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
 		$list = new $this->_baseClass(null, false);
 		self::assertEquals(false, $list->getReadOnly(), 'List is read-only');
+		$list = new $this->_baseClass(null, "true");
+		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
+		$list = new $this->_baseClass(null, "false");
+		self::assertEquals(false, $list->getReadOnly(), 'List is read-only');
 	}
 
 	public function testGetCountTList()

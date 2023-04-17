@@ -82,7 +82,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @param bool $value whether this list is read-only or not
 	 */
-	public function setReadOnly($value)
+	protected function setReadOnly($value)
 	{
 		$this->_r = TPropertyValue::ensureBoolean($value);
 	}
