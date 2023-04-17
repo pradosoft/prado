@@ -141,16 +141,14 @@ class TWeakCallableCollection extends TPriorityList
 		return $handler;
 	}
 
-
 	/**
 	 * This flattens the priority list into a flat array [0,...,n-1]. This is needed to filter the output.
 	 * @return array array of items in the list in priority and index order
 	 */
-	protected function flattenPriorities()
+	protected function flattenPriorities(): array
 	{
 		return $this->filterItemsForOutput(parent::flattenPriorities());
 	}
-
 
 	/**
 	 * This flattens the priority list into a flat array [0,...,n-1], but
@@ -159,7 +157,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array array of items in the list in priority and index order,
 	 *    where objects are WeakReference
 	 */
-	protected function flattenPrioritiesWeak()
+	protected function flattenPrioritiesWeak(): array
 	{
 		return parent::flattenPriorities();
 	}
@@ -186,9 +184,9 @@ class TWeakCallableCollection extends TPriorityList
 	 * Gets all the items at a specific priority. This is needed to filter the output.
 	 * @param null|numeric $priority priority of the items to get.  Defaults to null, filled
 	 * in with the default priority, if left blank.
-	 * @return array all items at priority in index order, null if there are no items at that priority
+	 * @return ?array all items at priority in index order, null if there are no items at that priority
 	 */
-	public function itemsAtPriority($priority = null)
+	public function itemsAtPriority($priority = null): ?array
 	{
 		return $this->filterItemsForOutput(parent::itemsAtPriority($priority));
 	}
@@ -266,13 +264,12 @@ class TWeakCallableCollection extends TPriorityList
 		return parent::priorityOf($this->filterItemForInput($item), $withindex);
 	}
 
-
 	/**
 	 *  This is needed to filter the output.
 	 * @return array the array of priorities keys with values of arrays of callables.
 	 * The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toPriorityArray()
+	public function toPriorityArray(): array
 	{
 		$result = [];
 		foreach (parent::toPriorityArray() as $i => $v) {
@@ -280,7 +277,6 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		return $result;
 	}
-
 
 	/**
 	 * @return array the array of priorities keys with values of arrays of callables with
@@ -299,7 +295,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority, $inclusive = false)
+	public function toArrayBelowPriority($priority, $inclusive = false): array
 	{
 		return $this->filterItemsForOutput(parent::toArrayBelowPriority($priority, $inclusive));
 	}
@@ -311,8 +307,24 @@ class TWeakCallableCollection extends TPriorityList
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority, $inclusive = true)
+	public function toArrayAbovePriority($priority, $inclusive = true): array
 	{
 		return $this->filterItemsForOutput(parent::toArrayAbovePriority($priority, $inclusive));
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 * @since 4.2.3
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		$c = $this->_c;
+		$this->_c = 0;
+		parent::_getZappableSleepProps($exprops);
+		$this->_c = $c;
 	}
 }
