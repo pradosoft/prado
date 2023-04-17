@@ -152,7 +152,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function insertAt($index, $item)
+	public function insertAt($index, $item): void
 	{
 		if (!$this->_r) {
 			if ($index === $this->_c) {
