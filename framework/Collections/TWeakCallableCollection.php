@@ -26,12 +26,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 class TWeakCallableCollection extends TPriorityList
 {
 	/**
-	 * @var bool wether or not WeakReference is available
-	 */
-	private static $_weak;
-
-
-	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object. Discovers the availability of the
 	 * {@link WeakReference} object in PHP 7.4.0+.
@@ -43,9 +37,6 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
 	{
-		if (self::$_weak === null) {
-			self::$_weak = class_exists('\WeakReference', false);
-		}
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
 	}
 
@@ -61,12 +52,13 @@ class TWeakCallableCollection extends TPriorityList
 	}
 
 	/**
-	 * returns whether or not WeakReference is enabled, thus the PHP version is over 7.4.0
+	 * returns whether or not WeakReference is enabled
 	 * @return bool is WeakReference available
+	 * @deprecated since 4.3: this method will always return true
 	 */
 	public static function getWeakReferenceEnabled()
 	{
-		return self::$_weak;
+		return true;
 	}
 
 
@@ -78,9 +70,6 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function filterItemsForOutput($items)
 	{
-		if (!self::$_weak) {
-			return $items;
-		}
 		if (!is_array($items)) {
 			return $items;
 		}
@@ -106,9 +95,6 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function filterItemForOutput($handler)
 	{
-		if (!self::$_weak) {
-			return $handler;
-		}
 		if (is_array($handler) && is_object($handler[0]) && is_a($handler[0], '\WeakReference')) {
 			return [$handler[0]->get(), $handler[1]];
 		} elseif (is_object($handler) && is_a($handler, '\WeakReference')) {
@@ -128,9 +114,6 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		if ($validate && !is_callable($handler, false)) {
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
-		}
-		if (!self::$_weak) {
-			return $handler;
 		}
 		if (is_array($handler) && is_object($handler[0]) && !is_a($handler[0], '\WeakReference')) {
 			return [\WeakReference::create($handler[0]), $handler[1]];

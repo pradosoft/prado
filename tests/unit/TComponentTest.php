@@ -598,11 +598,6 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		// PHP versions less than 7.4 (without WeakReference) doesn't call the __destruct method when unsetting variables;
-		//	Thus any object that listens must be explicitly call unlisten.
-		if ($this->component && !class_exists('\WeakReference')) {
-			$this->component->unlisten();
-		}
 		$this->component = null;
 	}
 
