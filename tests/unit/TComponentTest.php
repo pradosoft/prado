@@ -118,8 +118,14 @@ class NewComponentNoListen extends NewComponent
 	}
 }
 
+trait DynamicCatchingTrait {
+	public $_variable;
+}
+
 class DynamicCatchingComponent extends NewComponentNoListen implements IDynamicMethods
 {
+	use DynamicCatchingTrait;
+	
 	public function __dycall($method, $args)
 	{
 	}
@@ -853,9 +859,9 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	public function testGetClassHierarchy()
 	{
 		$component = new DynamicCatchingComponent;
-		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy());
-		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy(false));
-		$this->assertEquals(['prado\\util\\idynamicmethods', 'dynamiccatchingcomponent', 'newcomponentnolisten', 'newcomponent', 'prado\tcomponent'], $component->getClassHierarchy(true));
+		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingTrait', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy());
+		$this->assertEquals(['Prado\\Util\\IDynamicMethods', 'DynamicCatchingTrait', 'DynamicCatchingComponent', 'NewComponentNoListen', 'NewComponent', 'Prado\TComponent'], $component->getClassHierarchy(false));
+		$this->assertEquals(['prado\\util\\idynamicmethods', 'dynamiccatchingtrait', 'dynamiccatchingcomponent', 'newcomponentnolisten', 'newcomponent', 'prado\tcomponent'], $component->getClassHierarchy(true));
 	}
 
 
