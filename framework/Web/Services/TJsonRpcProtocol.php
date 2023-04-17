@@ -10,6 +10,7 @@ namespace Prado\Web\Services;
 
 use Prado\Exceptions\THttpException;
 use Prado\Web\THttpResponse;
+use Prado\Web\Javascripts\TJavaScript;
 
 /**
  * TJsonRpcProtocol class
@@ -135,9 +136,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function decode($data)
 	{
-		$s = json_decode($data, true);
-		self::checkJsonError();
-		return $s;
+		return TJavaScript::jsonDecode($data, true);
 	}
 
 	/**
@@ -147,17 +146,7 @@ class TJsonRpcProtocol extends TRpcProtocol
 	 */
 	public function encode($data)
 	{
-		$s = json_encode($data);
-		self::checkJsonError();
-		return $s;
-	}
-
-	private static function checkJsonError()
-	{
-		$errnum = json_last_error();
-		if ($errnum != JSON_ERROR_NONE) {
-			throw new \Exception("JSON error: " . $errnum);
-		}
+		return TJavaScript::jsonEncode($data);
 	}
 
 	/**
