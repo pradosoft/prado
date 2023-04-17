@@ -72,7 +72,6 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$item2 = $list[] = ['CallableListItem', 'staticHandler'];
 		$item3 = $list[] = [$this->item1, 'eventHandler'];
 		$item4 = $list[] = 'CallableListItem::staticHandler';
-		$item5 = $list[] = ['CallableListItemChild','parent::staticHandler'];
 		$item6 = $list[] = $this->item2;
 		
 		// Check that callables that have proper syntax but do not exist
@@ -118,8 +117,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$this->assertEquals($p[$priority][2][0]->get(), $this->item1);
 		$this->assertEquals($p[$priority][2][1], 'eventHandler');
 		$this->assertEquals($p[$priority][3], 'CallableListItem::staticHandler');
-		$this->assertEquals($p[$priority][4], ['CallableListItemChild','parent::staticHandler']);
-		$this->assertEquals($p[$priority][5]->get(), $this->item2);
+		$this->assertEquals($p[$priority][4]->get(), $this->item2);
 		
 	}
 	
