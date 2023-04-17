@@ -63,7 +63,7 @@ class TListItemCollection extends TList
 	 * @param TListItem $item the item to be inserted.
 	 * @throws TInvalidDataTypeException if the item being inserted is neither a string nor TListItem
 	 */
-	public function insertAt($index, $item): void
+	public function insertAt($index, $item)
 	{
 		if (is_string($item)) {
 			$item = $this->createNewListItem($item);
