@@ -57,7 +57,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 
 	public function testGetWeakReferenceEnabledTWeakCallableCollection()
 	{
-		self::assertEquals(TWeakCallableCollection::class, get_class($this->list));
+		self::assertEquals(TWeakCallableCollection::class, $this->list::class);
 		self::assertEquals(class_exists('\WeakReference'), $this->list->getWeakReferenceEnabled());
 		self::assertEquals(class_exists('\WeakReference'), TWeakCallableCollection::getWeakReferenceEnabled());
 	}

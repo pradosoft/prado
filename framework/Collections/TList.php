@@ -164,7 +164,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -187,7 +187,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -214,7 +214,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -271,7 +271,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 			return $index;
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -295,7 +295,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 			return $index + 1;
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 

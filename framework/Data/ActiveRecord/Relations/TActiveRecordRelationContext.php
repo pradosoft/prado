@@ -176,7 +176,7 @@ class TActiveRecordRelationContext
 			throw new TActiveRecordException(
 				'ar_undefined_relation_prop',
 				$this->_property,
-				get_class($this->_record),
+				$this->_record::class,
 				'RELATIONS'
 			);
 		}

@@ -595,7 +595,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('cron_property_unchangeable', 'UserManager');
 		}
 		if (!is_string($provider) && !($provider instanceof IUserManager) && $provider !== null) {
-			throw new TConfigurationException('cron_usermanager_invalid', is_object($provider) ? get_class($provider) : $provider);
+			throw new TConfigurationException('cron_usermanager_invalid', is_object($provider) ? $provider::class : $provider);
 		}
 		$this->_userManager = $provider;
 	}

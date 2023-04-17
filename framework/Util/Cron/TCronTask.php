@@ -95,7 +95,7 @@ abstract class TCronTask extends TApplicationComponent
 	 */
 	public function getTask()
 	{
-		return get_class($this);
+		return $this::class;
 	}
 
 	/**

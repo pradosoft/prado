@@ -371,7 +371,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	public function setDuration($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
-			throw new TInvalidDataValueException('outputcache_duration_invalid', get_class($this));
+			throw new TInvalidDataValueException('outputcache_duration_invalid', $this::class);
 		}
 		$this->_duration = $value;
 	}

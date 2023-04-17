@@ -553,7 +553,7 @@ class Prado
 					} elseif (is_int($item) || is_float($item)) {
 						echo $item;
 					} elseif (is_object($item)) {
-						echo get_class($item);
+						echo $item::class;
 					} elseif (is_array($item)) {
 						echo 'array(' . count($item) . ')';
 					} elseif (is_bool($item)) {

@@ -48,7 +48,7 @@ class TComponentReflection extends \Prado\TComponent
 		if (is_string($component) && class_exists($component, false)) {
 			$this->_className = $component;
 		} elseif (is_object($component)) {
-			$this->_className = get_class($component);
+			$this->_className = $component::class;
 		} else {
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
 		}

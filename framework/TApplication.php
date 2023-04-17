@@ -725,7 +725,7 @@ class TApplication extends \Prado\TComponent
 				if ($strict ? ($moduleClass === $type) : ($moduleClass instanceof $type)) {
 					$m[$id] = null;
 				}
-			} elseif ($module !== null && ($strict ? (get_class($module) === $type) : $module->isa($type))) {
+			} elseif ($module !== null && ($strict ? ($module::class === $type) : $module->isa($type))) {
 				$m[$id] = $module;
 			}
 		}

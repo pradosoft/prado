@@ -96,7 +96,7 @@ class TDatePicker extends TTextBox
 	{
 		throw new TNotSupportedException(
 			'tdatepicker_autopostback_unsupported',
-			get_class($this)
+			$this::class
 		);
 	}
 

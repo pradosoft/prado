@@ -149,7 +149,7 @@ class TScaffoldEditView extends TScaffoldBase
 			throw new TConfigurationException(
 				'scaffold_invalid_edit_renderer',
 				$this->getID(),
-				get_class($record)
+				$record::class
 			);
 		}
 	}
@@ -267,7 +267,7 @@ class TScaffoldEditView extends TScaffoldBase
 	protected function getScaffoldInputBuilder($record)
 	{
 		static $_builders = [];
-		$class = get_class($record);
+		$class = $record::class;
 		if (!isset($_builders[$class])) {
 			$_builders[$class] = TScaffoldInputBase::createInputBuilder($record);
 		}

@@ -114,7 +114,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	public function setAccessKey($value)
 	{
 		if (strlen($value) > 1) {
-			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', get_class($this), $value);
+			throw new TInvalidDataValueException('webcontrol_accesskey_invalid', $this::class, $value);
 		}
 		$this->setViewState('AccessKey', $value, '');
 	}
@@ -326,7 +326,7 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 		if (is_string($value)) {
 			$this->getStyle()->setCustomStyle($value);
 		} else {
-			throw new TInvalidDataValueException('webcontrol_style_invalid', get_class($this));
+			throw new TInvalidDataValueException('webcontrol_style_invalid', $this::class);
 		}
 	}
 

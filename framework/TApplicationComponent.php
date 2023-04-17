@@ -58,7 +58,7 @@ class TApplicationComponent extends \Prado\TComponent
 			if ($_classfx === null) {
 				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
 			}
-			$className = get_class($class);
+			$className = $class::class;
 			if (isset($_classfx[$className])) {
 				return $_classfx[$className];
 			}
@@ -137,13 +137,13 @@ class TApplicationComponent extends \Prado\TComponent
 	 * because the asset path will be relative to the directory containing the child class file.
 	 *
 	 * @param string $assetPath path of the asset that is relative to the directory containing the specified class file.
-	 * @param string $className name of the class whose containing directory will be prepend to the asset path. If null, it means get_class($this).
+	 * @param string $className name of the class whose containing directory will be prepend to the asset path. If null, it means $this::class.
 	 * @return string URL to the asset path.
 	 */
 	public function publishAsset($assetPath, $className = null)
 	{
 		if ($className === null) {
-			$className = get_class($this);
+			$className = $this::class;
 		}
 		$class = new \ReflectionClass($className);
 		$fullPath = dirname($class->getFileName()) . DIRECTORY_SEPARATOR . $assetPath;

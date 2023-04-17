@@ -181,7 +181,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 				return $key;
 			}
 		}
-		throw new TConfigurationException('tactivetablecell_control_notincollection', get_class($this), $this->getUniqueID());
+		throw new TConfigurationException('tactivetablecell_control_notincollection', $this::class, $this->getUniqueID());
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 			if ($row instanceof TTableRow) {
 				$this->_row = $row;
 			} else {
-				throw new TConfigurationException('tactivetablecell_control_outoftable', get_class($this), $this->getUniqueID());
+				throw new TConfigurationException('tactivetablecell_control_outoftable', $this::class, $this->getUniqueID());
 			}
 		}
 		return $this->_row;

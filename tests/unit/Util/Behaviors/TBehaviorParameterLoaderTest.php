@@ -70,7 +70,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->AttachTo = 'module:BPLoaderModuleTest';
 			$this->obj->dyInit(null);
 		} catch (Exception $e) {
-			$this->fail(get_class($e) ." should not have been raised on init(null)\n" . $e->__toString());
+			$this->fail($e::class ." should not have been raised on init(null)\n" . $e->__toString());
 		}
 		$this->obj->reset();
 		try {
@@ -79,14 +79,14 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->AttachToClass = 'TPage';
 			$this->obj->dyInit(null);
 		} catch (Exception $e) {
-			$this->fail(get_class($e) ." should not have been raised on init(null)\n" . $e->__toString());
+			$this->fail($e::class ." should not have been raised on init(null)\n" . $e->__toString());
 		}
 		$this->obj->reset();
 		try {
 			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
 			$this->obj->AttachTo = 'module:module';
 			$this->obj->dyInit(null);
-			$this->fail(get_class($e) ." should have been raised on init(null) without a BehaviorName");
+			$this->fail($e::class ." should have been raised on init(null) without a BehaviorName");
 		} catch (Exception $e) {
 		}
 		$this->obj->reset();
@@ -94,7 +94,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->BehaviorName = 'test';
 			$this->obj->AttachTo = 'module:module';
 			$this->obj->dyInit(null);
-			$this->fail(get_class($e) ." should have been raised on init(null) without a BehaviorClass");
+			$this->fail($e::class ." should have been raised on init(null) without a BehaviorClass");
 		} catch (Exception $e) {
 		}
 		$this->obj->reset();
@@ -102,7 +102,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->BehaviorName = 'test';
 			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
 			$this->obj->dyInit(null);
-			$this->fail(get_class($e) ." should have been raised on init(null) without an AttachTo/Class");
+			$this->fail($e::class ." should have been raised on init(null) without an AttachTo/Class");
 		} catch (Exception $e) {
 		}
 		$this->obj->reset();

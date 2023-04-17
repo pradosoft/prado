@@ -514,7 +514,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		}
 		if (class_exists('TActiveRecord', false) && $obj instanceof TActiveRecord) {
 			//Create a new clean active record.
-			$obj = TActiveRecord::createRecord(get_class($obj), $obj);
+			$obj = TActiveRecord::createRecord($obj::class, $obj);
 		}
 		return $obj;
 	}
@@ -775,7 +775,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 					throw new TSqlMapExecutionException(
 						'sqlmap_non_groupby_array_list_type',
 						$resultMap->getID(),
-						get_class($resultObject),
+						$resultObject::class,
 						$key
 					);
 				}

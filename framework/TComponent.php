@@ -534,7 +534,7 @@ class TComponent
 	public function getClassHierarchy($lowercase = false)
 	{
 		static $_classhierarchy = [];
-		$class = get_class($this);
+		$class = $this::class;
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
@@ -561,7 +561,7 @@ class TComponent
 	protected function getClassFxEvents($class)
 	{
 		static $_classfx = [];
-		$className = get_class($class);
+		$className = $class::class;
 		if (isset($_classfx[$className])) {
 			return $_classfx[$className];
 		}
@@ -694,7 +694,7 @@ class TComponent
 			}
 
 			if (($getset == 'set') && method_exists($this, 'getjs' . $propname)) {
-				throw new TInvalidOperationException('component_property_readonly', get_class($this), $method);
+				throw new TInvalidOperationException('component_property_readonly', $this::class, $method);
 			}
 		}
 		if ($this->callBehaviorsMethod($method, $return, ...$args)) {
@@ -703,7 +703,7 @@ class TComponent
 
 		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
 		if (!method_exists($this, $method)) {
-			throw new TApplicationException('component_method_undefined', get_class($this), $method);
+			throw new TApplicationException('component_method_undefined', $this::class, $method);
 		}
 	}
 
@@ -766,7 +766,7 @@ class TComponent
 				}
 			}
 		}
-		throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
+		throw new TInvalidOperationException('component_property_undefined', $this::class, $name);
 	}
 
 	/**
@@ -813,9 +813,9 @@ class TComponent
 		}
 
 		if (method_exists($this, 'get' . $name) || method_exists($this, 'getjs' . $name)) {
-			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		} else {
-			throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
+			throw new TInvalidOperationException('component_property_undefined', $this::class, $name);
 		}
 	}
 
@@ -888,11 +888,11 @@ class TComponent
 					}
 				}
 				if (!$unset && method_exists($this, 'get' . $name)) {
-					throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+					throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 				}
 			}
 		} elseif (method_exists($this, 'get' . $name)) {
-			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		}
 	}
 
@@ -1162,7 +1162,7 @@ class TComponent
 				}
 			}
 		}
-		throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
+		throw new TInvalidOperationException('component_event_undefined', $this::class, $name);
 	}
 
 	/**
@@ -1350,7 +1350,7 @@ class TComponent
 								$response = $object->$method($sender, $param, $name);
 							}
 						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler);
 						}
 					} else {
 						$response = call_user_func($handler, $sender, $param, $name);
@@ -1371,11 +1371,11 @@ class TComponent
 								$response = $object->$method($sender, $param, $name);
 							}
 						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler[1]);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler[1]);
 						}
 					}
 				} else {
-					throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, gettype($handler));
+					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler));
 				}
 
 				$this->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response);
@@ -1395,7 +1395,7 @@ class TComponent
 				}
 			}
 		} elseif (strncasecmp($name, 'on', 2) === 0 && !$this->hasEvent($name)) {
-			throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
+			throw new TInvalidOperationException('component_event_undefined', $this::class, $name);
 		}
 
 		if ($responsetype & TEventResults::EVENT_RESULT_FILTER) {
@@ -1430,7 +1430,7 @@ class TComponent
 		try {
 			return eval("return $expression;");
 		} catch (\Exception $e) {
-			throw new TInvalidOperationException('component_expression_invalid', get_class($this), $expression, $e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage());
 		}
 	}
 
@@ -1463,7 +1463,7 @@ class TComponent
 			ob_end_clean();
 			return $content;
 		} catch (\Exception $e) {
-			throw new TInvalidOperationException('component_statements_invalid', get_class($this), $statements, $e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage());
 		}
 	}
 
@@ -1576,7 +1576,7 @@ class TComponent
 			$behavior = Prado::createComponent($behavior);
 		}
 		if (!($behavior instanceof IBaseBehavior)) {
-			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
+			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
 		}
 		if ($hasConfig) {
 			$behavior->init($config);
@@ -1620,7 +1620,7 @@ class TComponent
 		}
 
 		if (!is_string($name)) {
-			$name = get_class($name);
+			$name = $name::class;
 		}
 		$class = strtolower($class);
 		if ($class === 'prado\\tcomponent') {
@@ -1670,7 +1670,7 @@ class TComponent
 
 		$class = strtolower($class);
 		if (!is_string($name)) {
-			$name = get_class($name);
+			$name = $name::class;
 		}
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
 			return null;

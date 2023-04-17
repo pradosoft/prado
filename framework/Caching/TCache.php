@@ -65,7 +65,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 			if ($this->getApplication()->getCache() === null) {
 				$this->getApplication()->setCache($this);
 			} else {
-				throw new TConfigurationException('cache_primary_duplicated', get_class($this));
+				throw new TConfigurationException('cache_primary_duplicated', $this::class);
 			}
 		}
 		parent::init($config);

@@ -298,7 +298,7 @@ class TErrorHandler extends \Prado\TModule
 		}
 
 		$tokens = [
-			'%%ErrorType%%' => get_class($exception),
+			'%%ErrorType%%' => $exception::class,
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
 			'%%SourceFile%%' => htmlspecialchars($this->hidePrivatePathParts($fileName)) . ' (' . $errorLine . ')',
 			'%%SourceCode%%' => $source,

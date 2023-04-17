@@ -355,7 +355,7 @@ class TPriorityMap extends TMap
 			$this->_fd = null;
 			$this->dyAddItem($key, $value);
 		} else {
-			throw new TInvalidOperationException('map_readonly', get_class($this));
+			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
 		return $priority;
 	}
@@ -410,7 +410,7 @@ class TPriorityMap extends TMap
 				}
 			}
 		} else {
-			throw new TInvalidOperationException('map_readonly', get_class($this));
+			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
 	}
 

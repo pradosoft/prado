@@ -102,7 +102,7 @@ class TPermissionsAction extends TShellAction
 		}
 
 		return ($writer->format($a = $rule->getAction(), [TShellWriter::BOLD, $a === 'allow' ? TShellWriter::GREEN : TShellWriter::RED]) . ': ') .
-			(get_class($rule) === TUserOwnerRule::class ? 'User Owner- ' : '') .
+			($rule::class === TUserOwnerRule::class ? 'User Owner- ' : '') .
 			(($p = $rule->getPriority()) ? '∆' . $p . ' ' : '') .
 			(($users[0] !== '*') ? 'users="' . implode(', ', $users) . '" ' : '') .
 			((($r = $rule->getRoles()) && (count($r) !== 1 || $r[0] !== '*')) ? 'roles="' . implode(', ', $r) . '" ' : '') .
