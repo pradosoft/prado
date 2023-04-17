@@ -403,7 +403,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	/**
 	 * @param string $value the password for establishing DB connection
 	 */
-	public function setPassword($value)
+	public function setPassword(#[\SensitiveParameter] $value)
 	{
 		$this->_password = $value;
 	}

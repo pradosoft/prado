@@ -59,7 +59,7 @@ abstract class TDbUser extends TUser
 	 * @param string $password password
 	 * @return bool whether the validation succeeds
 	 */
-	abstract public function validateUser($username, $password);
+	abstract public function validateUser($username, #[\SensitiveParameter] $password);
 
 	/**
 	 * Creates a new user instance given the username.
