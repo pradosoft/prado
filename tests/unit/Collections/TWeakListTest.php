@@ -91,6 +91,10 @@ class TWeakListTest extends TListTest
 	-		offsetUnset (calls $this->removeAt)
 	-*	 #	_getZappableSleepProps
 	
+		 #	Test Closures are not made WeakReference (they are not lost if the only anonymous function).
+		 #	Test arrays as items have their objects made WeakReference and back.
+		 #	Test changing [set]DiscardInvalid by children, adding objects to WeakMap and scrubbing.
+	
 	*/
 	
 	public function testConstructTWeakList()
