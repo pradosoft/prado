@@ -178,10 +178,12 @@ class TPriorityList extends TList
 			} else {
 				throw new TInvalidDataValueException('prioritylist_index_invalid', $index, count($this->_d[$priority] ?? []), $priority);
 			}
-		} else {
+		} elseif ($index === 0 || $index === false) {
 			$c = 0;
 			$this->_o = false;
 			$this->_d[$priority] = [$item];
+		} else {
+			throw new TInvalidDataValueException('prioritylist_index_invalid', $index, 0, $priority);
 		}
 
 		if ($preserveCache) {
@@ -278,7 +280,6 @@ class TPriorityList extends TList
 			throw new TInvalidDataValueException('list_item_inexistent');
 		}
 
-		// $value is an array of elements removed, only one
 		if ($index === $c - 1) {
 			$value = array_pop($this->_d[$priority]);
 		} else {
@@ -352,7 +353,9 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * Returns the priority of an item at a particular flattened index.
+	 * Returns the priority of an item at a particular flattened index.  The index after 
+	 * the last item does not exist but receives a priority from the last item so that
+	 * priority information about any new items being appended is available.
 	 * @param int $index index of the item within the list
 	 * @param bool $withindex this specifies if the full positional data of the item within the list is returned.
 	 * 		This defaults to false, if no parameter is provided, so only provides the priority number of the item by default.
