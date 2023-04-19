@@ -22,6 +22,9 @@ class TListTest extends PHPUnit\Framework\TestCase
 	protected $item3;
 	protected $item4;
 	
+	protected $_baseClass;
+	protected $_baseItemClass;
+	
 	protected function newList()
 	{
 		return  'TList';
@@ -34,8 +37,6 @@ class TListTest extends PHPUnit\Framework\TestCase
 	{
 		return true;
 	}
-	protected $_baseClass;
-	protected $_baseItemClass;
 
 	protected function setUp(): void
 	{
