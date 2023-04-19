@@ -334,13 +334,13 @@ class TPriorityList extends TList
 		$this->sortPriorities();
 
 		$absindex = 0;
-		foreach ($this->_d as $priority => $items) {
-			if (($index = array_search($item, $items, true)) !== false) {
+		foreach (array_keys($this->_d) as $priority) {
+			if (($index = array_search($item, $this->_d[$priority], true)) !== false) {
 				$absindex += $index;
 				return $withindex ? [$priority, $index, $absindex,
 						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
 			} else {
-				$absindex += count($items);
+				$absindex += count($this->_d[$priority]);
 			}
 		}
 
@@ -364,8 +364,8 @@ class TPriorityList extends TList
 
 		$absindex = $index;
 		$this->sortPriorities();
-		foreach ($this->_d as $priority => $items) {
-			if ($index >= ($c = count($items))) {
+		foreach (array_keys($this->_d) as $priority) {
+			if ($index >= ($c = count($this->_d[$priority]))) {
 				$index -= $c;
 			} else {
 				return $withindex ? [$priority, $index, $absindex,
