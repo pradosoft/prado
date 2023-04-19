@@ -328,6 +328,9 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals($this->pitem1, $this->plist->itemAtIndexInPriority(0, $this->plist->getDefaultPriority()));
 		$this->assertEquals($this->pfirst, $this->plist->itemAtIndexInPriority(0, -10000000));
 		$this->assertEquals($this->pitem3, $this->plist->itemAtIndexInPriority(0, 100));
+		
+		self::expectException(TInvalidDataValueException::class);
+		$this->plist->itemAtIndexInPriority(2);
 	}
 
 

@@ -89,13 +89,20 @@ class TPriorityList extends TList
 	/**
 	 * Returns the item at an index within a priority
 	 * @param int $index the index into the list of items at priority
-	 * @param numeric $priority the priority which to index.  no parameter or null will result in the default priority
+	 * @param null|numeric $priority the priority which to index.  no parameter or null 
+	 *   will result in the default priority
+	 * @throws TInvalidDataValueException if the index is out of the range at the 
+	 *   priority or no items at the priority.
 	 * @return mixed the element at the offset, false if no element is found at the offset
 	 */
 	public function itemAtIndexInPriority($index, $priority = null)
 	{
 		$priority = $this->ensurePriority($priority);
-		return isset($this->_d[$priority]) ? 0 <= $index && $index < count($this->_d[$priority]) ? $this->_d[$priority][$index] : false : false;
+		if (isset($this->_d[$priority]) && 0 <= $index && $index < count($this->_d[$priority])) {
+			return $this->_d[$priority][$index];
+		} else {
+			throw new TInvalidDataValueException('prioritylist_index_invalid', $index, $priority);
+		}
 	}
 
 	/**
