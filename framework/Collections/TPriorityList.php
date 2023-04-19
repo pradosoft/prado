@@ -358,7 +358,7 @@ class TPriorityList extends TList
 	 */
 	public function priorityAt($index, $withindex = false)
 	{
-		if ($index < 0 || $index >= max(1, $this->getCount())) {
+		if ($index < 0 || $index > $this->getCount()) {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
 

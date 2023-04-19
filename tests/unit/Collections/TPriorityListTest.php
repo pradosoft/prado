@@ -259,6 +259,8 @@ class TPriorityListTest extends TListTest
 		$plist = new $this->_baseClass();
 		$this->assertNull($plist->insertAt(0, $this->pitem3));
 		$this->assertEquals($this->pitem3, $plist->itemAt(0));
+		$this->assertNull($plist->insertAt(1, $this->pitem4));
+		$this->assertEquals($this->pitem3, $plist->itemAt(0));
 
 		self::expectException(TInvalidDataValueException::class);
 		$plist->insertAt(5, $this->pitem3);
