@@ -113,8 +113,8 @@ class TPriorityMap extends TMap
 	public function itemAt($key, $priority = false)
 	{
 		if ($priority === false) {
-			$map = $this->flattenPriorities();
-			return array_key_exists($key, $map) ? $map[$key] : $this->dyNoItem(null, $key);
+			$this->flattenPriorities();
+			return array_key_exists($key, $this->_fd) ? $this->_fd[$key] : $this->dyNoItem(null, $key);
 		} else {
 			$priority = $this->ensurePriority($priority);
 			return (isset($this->_d[$priority]) && array_key_exists($key, $this->_d[$priority])) ? $this->_d[$priority][$key] : $this->dyNoItem(null, $key);
@@ -293,8 +293,8 @@ class TPriorityMap extends TMap
 	 */
 	public function contains($key): bool
 	{
-		$map = $this->flattenPriorities();
-		return isset($map[$key]) || array_key_exists($key, $map);
+		$this->flattenPriorities();
+		return isset($this->_fd[$key]) || array_key_exists($key, $this->_fd);
 	}
 
 	/**

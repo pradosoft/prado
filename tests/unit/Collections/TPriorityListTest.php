@@ -1031,7 +1031,8 @@ class TPriorityListTest extends TListTest
 				$found++;
 			}
 		}
-		$this->assertTrue($n == 4 && $found == 4);
+		$this->assertTrue($n == 4, "Not 4 items in the list.");
+		$this->assertTrue($found == 4, "$found of 4 items were in the list.");
 	}
 
 	public function testArrayMiscTPriorityList()

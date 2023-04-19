@@ -79,8 +79,8 @@ class TPriorityList extends TList
 	public function itemAt($index)
 	{
 		if ($index >= 0 && $index < $this->getCount()) {
-			$arr = $this->flattenPriorities();
-			return $arr[$index];
+			$this->flattenPriorities();
+			return $this->_fd[$index];
 		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
@@ -305,7 +305,8 @@ class TPriorityList extends TList
 	 */
 	public function indexOf($item)
 	{
-		if (($index = array_search($item, $this->flattenPriorities(), true)) === false) {
+		$this->flattenPriorities();
+		if (($index = array_search($item, $this->_fd, true)) === false) {
 			return -1;
 		} else {
 			return $index;

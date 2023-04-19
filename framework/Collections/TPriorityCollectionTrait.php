@@ -146,15 +146,14 @@ trait TPriorityCollectionTrait
 
 	/**
 	 * This flattens the priority list into a flat array [0,...,n-1]
-	 * @return array array of items in the list in priority and index order
 	 */
-	protected function flattenPriorities(): array
+	protected function flattenPriorities(): void
 	{
 		if (is_array($this->_fd)) {
-			return $this->_fd;
+			return;
 		}
 		$this->sortPriorities();
-		return $this->_fd = array_merge(...$this->_d);
+		$this->_fd = array_merge(...$this->_d);
 	}
 
 	/**
@@ -188,7 +187,8 @@ trait TPriorityCollectionTrait
 	 */
 	public function getIterator(): \Iterator
 	{
-		return new \ArrayIterator($this->flattenPriorities());
+		$this->flattenPriorities();
+		return new \ArrayIterator($this->_fd);
 	}
 
 	/**
@@ -207,7 +207,8 @@ trait TPriorityCollectionTrait
 	 */
 	public function toArray(): array
 	{
-		return $this->flattenPriorities();
+		$this->flattenPriorities();
+		return $this->_fd;
 	}
 
 	/**
