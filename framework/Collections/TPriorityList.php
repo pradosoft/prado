@@ -138,8 +138,10 @@ class TPriorityList extends TList
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
 			$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
-		} else {
+		} elseif($index === $this->_c) {
 			$this->insertAtIndexInPriority($item);
+		} else {
+			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
 	}
 
@@ -358,19 +360,20 @@ class TPriorityList extends TList
 	 */
 	public function priorityAt($index, $withindex = false)
 	{
-		if ($index < 0 || $index > $this->getCount()) {
-			throw new TInvalidDataValueException('list_index_invalid', $index);
-		}
-
-		$absindex = $index;
-		$this->sortPriorities();
-		foreach (array_keys($this->_d) as $priority) {
-			if ($index >= ($c = count($this->_d[$priority]))) {
-				$index -= $c;
-			} else {
-				return $withindex ? [$priority, $index, $absindex,
-						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
+		if (0 <= $index && $index <= $this->getCount()) {
+			$c = $absindex = $index;
+			$priority = null;
+			$this->sortPriorities();
+			foreach (array_keys($this->_d) as $priority) {
+				if ($index >= ($c = count($this->_d[$priority]))) {
+					$index -= $c;
+				} else {
+					return $withindex ? [$priority, $index, $absindex,
+							'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
+				}
 			}
+			return $withindex ? [$priority, $c, $absindex,
+					'priority' => $priority, 'index' => $c, 'absindex' => $absindex, ] : $priority;
 		}
 		return false;
 	}
