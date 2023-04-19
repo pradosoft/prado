@@ -138,8 +138,6 @@ class TPriorityList extends TList
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
 			$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
-		} elseif($index === $this->_c) {
-			$this->insertAtIndexInPriority($item);
 		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
@@ -170,12 +168,16 @@ class TPriorityList extends TList
 			$item->setPriority($priority);
 		}
 
-		if ($index === false && isset($this->_d[$priority])) {
-			$c = count($this->_d[$priority]);
-			$this->_d[$priority][] = $item;
-		} elseif (isset($this->_d[$priority])) {
-			$c = $index;
-			array_splice($this->_d[$priority], $index, 0, [$item]);
+		if (isset($this->_d[$priority])) {
+			if ($index === false) {
+				$c = count($this->_d[$priority]);
+				$this->_d[$priority][] = $item;
+			} elseif (0 <= $index && $index <= count($this->_d[$priority])) {
+				$c = $index;
+				array_splice($this->_d[$priority], $index, 0, [$item]);
+			} else {
+				throw new TInvalidDataValueException('prioritylist_index_invalid', $index, count($this->_d[$priority] ?? []), $priority);
+			}
 		} else {
 			$c = 0;
 			$this->_o = false;
@@ -194,7 +196,7 @@ class TPriorityList extends TList
 				}
 				array_splice($this->_fd, $c, 0, [$item]);
 			}
-		} elseif (!$preserveCache) {
+		} else {
 			if ($this->_fd !== null && count($this->_d) == 1) {
 				array_splice($this->_fd, $c, 0, [$item]);
 			} else {
