@@ -80,12 +80,6 @@ class PriorityPropertyListItem extends PriorityListItem implements IPriorityProp
  */
 class TPriorityListTest extends TListTest
 {
-	protected $list;
-	protected $item1;
-	protected $item2;
-	protected $item3;
-	protected $item4;
-
 	protected $plist;
 	protected $pfirst;
 	protected $pitem1;
@@ -132,11 +126,7 @@ class TPriorityListTest extends TListTest
 
 	protected function tearDown(): void
 	{
-		$this->list = null;
-		$this->item1 = null;
-		$this->item2 = null;
-		$this->item3 = null;
-		$this->item4 = null;
+		parent::tearDown();
 
 		// ****  start the setup for non-TList things
 		$this->plist = null;
@@ -321,9 +311,11 @@ class TPriorityListTest extends TListTest
 	{
 		$plist = new $this->_baseClass($this->plist);
 
+		$this->assertEquals(4, $plist->getCount());
 		$this->assertEquals($this->pitem1, $plist->removeAt(1));
+		$this->assertEquals(3, $plist->getCount());
 		$this->assertEquals(-1, $plist->indexOf($this->pitem1));
-		$this->assertEquals(1, $plist->indexOf($this->pitem2));
+		$this->assertEquals(1, $plist->indexOf($this->pitem2), 'Item 2 was not in the list.');
 		$this->assertEquals(0, $plist->indexOf($this->pfirst));
 
 		self::expectException(TInvalidDataValueException::class);
