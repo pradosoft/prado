@@ -25,7 +25,7 @@ list_index_invalid						= Index '{0}' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
 list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 list_readonly							= {0} is read-only.
-prioritylist_index_invalid				= Index '{0}' at Priority '{1}' is out of range.
+prioritylist_index_invalid				= Index '{0}' of '{1}' at Priority '{2}' is out of range.
 
 map_addition_disallowed					= The new item cannot be added to the map.
 map_item_unremovable					= The item cannot be removed from the map.

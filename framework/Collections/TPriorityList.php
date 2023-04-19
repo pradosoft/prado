@@ -101,7 +101,7 @@ class TPriorityList extends TList
 		if (isset($this->_d[$priority]) && 0 <= $index && $index < count($this->_d[$priority])) {
 			return $this->_d[$priority][$index];
 		} else {
-			throw new TInvalidDataValueException('prioritylist_index_invalid', $index, $priority);
+			throw new TInvalidDataValueException('prioritylist_index_invalid', $index, count($this->_d[$priority] ?? []), $priority);
 		}
 	}
 
