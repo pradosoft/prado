@@ -1564,19 +1564,23 @@ class TComponent
 	 */
 	protected static function instanceBehavior($behavior)
 	{
-		$config = null;
 		$isArray = false;
+		$init = false;
 		if (is_string($behavior) || (($isArray = is_array($behavior)) && isset($behavior['class']))) {
+			$config = null;
 			if ($isArray && array_key_exists(IBaseBehavior::CONFIG_KEY, $behavior)) {
 				$config = $behavior[IBaseBehavior::CONFIG_KEY];
 				unset($behavior[IBaseBehavior::CONFIG_KEY]);
 			}
 			$behavior = Prado::createComponent($behavior);
+			$init = true;
 		}
 		if (!($behavior instanceof IBaseBehavior)) {
 			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
 		}
-		$behavior->init($config);
+		if ($init) {
+			$behavior->init($config);
+		}
 		return $behavior;
 	}
 
