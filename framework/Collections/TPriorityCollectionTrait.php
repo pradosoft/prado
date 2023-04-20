@@ -228,7 +228,7 @@ trait TPriorityCollectionTrait
 	 * @return array the array of priorities keys with values of arrays of items that are below a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayBelowPriority($priority, $inclusive = false): array
+	public function toArrayBelowPriority($priority, bool $inclusive = false): array
 	{
 		$this->sortPriorities();
 		$items = [];
@@ -248,7 +248,7 @@ trait TPriorityCollectionTrait
 	 * @return array the array of priorities keys with values of arrays of items that are above a specified priority.
 	 *  The priorities are sorted so important priorities, lower numerics, are first.
 	 */
-	public function toArrayAbovePriority($priority, $inclusive = true): array
+	public function toArrayAbovePriority($priority, bool $inclusive = true): array
 	{
 		$this->sortPriorities();
 		$items = [];
