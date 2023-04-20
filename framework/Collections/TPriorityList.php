@@ -365,7 +365,7 @@ class TPriorityList extends TList
 	 */
 	public function priorityAt($index, $withindex = false)
 	{
-		if (0 <= $index && $index <= $this->getCount()) {
+		if (0 <= $index && $index <= $this->_c) {
 			$c = $absindex = $index;
 			$priority = null;
 			$this->sortPriorities();
@@ -532,8 +532,7 @@ class TPriorityList extends TList
 			return;
 		}
 		if ($offset === $this->getCount()) {
-			$priority = $this->priorityAt($offset - 1, true);
-			$priority[1]++;
+			$priority = $this->priorityAt($offset, true);
 		} else {
 			$priority = $this->priorityAt($offset, true);
 			$this->removeAtIndexInPriority($priority[1], $priority[0]);
