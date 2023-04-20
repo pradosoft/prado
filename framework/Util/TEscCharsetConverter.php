@@ -74,7 +74,7 @@ class TEscCharsetConverter
 			"\x1B\x24\x28\x4F" => 'ISO-2022-JP-3',	"\x1B\x24\x29\x4F" => 'ISO-2022-JP-3',	"\x1B\x24\x2A\x4F" => 'ISO-2022-JP-3',	"\x1B\x24\x2B\x4F" => 'ISO-2022-JP-3',
 			"\x1B\x24\x28\x50" => 'ISO-2022-JP-3',	"\x1B\x24\x29\x50" => 'ISO-2022-JP-3',	"\x1B\x24\x2A\x50" => 'ISO-2022-JP-3',	"\x1B\x24\x2B\x50" => 'ISO-2022-JP-3',
 		];
-	
+
 	/**
 	 * Convert an Escape Character Code Encoding to the iconv character
 	 * encoding.
