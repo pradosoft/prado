@@ -318,7 +318,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
-		Prado::getApplication() > setThemeManager($value);
+		Prado::getApplication()->setThemeManager($value);
 	}
 
 	/**
