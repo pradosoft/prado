@@ -175,6 +175,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		-*	  	protected: _getZappableSleepProps
 		
 		# Test callable types and Closure.
+		# test DiscardInvalid
 		
 	*/
 	
