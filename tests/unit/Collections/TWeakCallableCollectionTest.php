@@ -9,9 +9,10 @@ use Prado\Exceptions\TPhpErrorException;
 class CallableListItem
 {
 	public $data = 'data';
-	public function __construct($d)
+	public function __construct($d = null)
 	{
-		$this->data = $d;
+		if ($d !== null)
+			$this->data = $d;
 	}
 	public function eventHandler($sender, $param)
 	{

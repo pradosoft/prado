@@ -125,24 +125,15 @@ class TWeakCallableCollection extends TPriorityList
 	}
 
 	/**
-	 * This flattens the priority list into a flat array [0,...,n-1]. This is needed to filter the output.
-	 * @return array array of items in the list in priority and index order
+	 * Returns an iterator for traversing the items in the list.
+	 * This method is required by the interface \IteratorAggregate.
+	 * @return \Iterator an iterator for traversing the items in the list.
+	 * since 4.2.3
 	 */
-	protected function flattenPriorities(): array
+	public function getIterator(): \Iterator
 	{
-		return $this->filterItemsForOutput(parent::flattenPriorities());
-	}
-
-	/**
-	 * This flattens the priority list into a flat array [0,...,n-1], but
-	 * leaves the objects in the array as WeakReference rather than standard
-	 * callable.
-	 * @return array array of items in the list in priority and index order,
-	 *    where objects are WeakReference
-	 */
-	protected function flattenPrioritiesWeak(): array
-	{
-		return parent::flattenPriorities();
+		$this->flattenPriorities();
+		return new \ArrayIterator($this->filterItemsForOutput($this->_fd));
 	}
 
 
@@ -156,8 +147,8 @@ class TWeakCallableCollection extends TPriorityList
 	public function itemAt($index)
 	{
 		if ($index >= 0 && $index < $this->getCount()) {
-			$arr = $this->flattenPrioritiesWeak();
-			return $this->filterItemForOutput($arr[$index]);
+			parent::flattenPriorities();
+			return $this->filterItemForOutput($this->_fd[$index]);
 		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
@@ -226,7 +217,8 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function indexOf($item)
 	{
-		if (($index = array_search($this->filterItemForInput($item), $this->flattenPrioritiesWeak(), true)) === false) {
+		parent::flattenPriorities();
+		if (($index = array_search($this->filterItemForInput($item), $this->_fd, true)) === false) {
 			return -1;
 		} else {
 			return $index;
@@ -245,6 +237,16 @@ class TWeakCallableCollection extends TPriorityList
 	public function priorityOf($item, $withindex = false)
 	{
 		return parent::priorityOf($this->filterItemForInput($item), $withindex);
+	}
+
+	/**
+	 * @return array the priority list of items in array
+	 * @since 4.2.3
+	 */
+	public function toArray(): array
+	{
+		$this->flattenPriorities();
+		return $this->filterItemsForOutput($this->_fd);
 	}
 
 	/**

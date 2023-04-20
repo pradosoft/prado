@@ -10,6 +10,12 @@ use Prado\Util\TBehavior;
 class TMapTest_MapItem
 {
 	public $data = 'data';
+	
+	public function __construct($d = null)
+	{
+		if($d !== null)
+			$this->data = $d;
+	}
 }
 
 class TMapTestBehavior extends TBehavior implements IDynamicMethods
@@ -41,13 +47,28 @@ class TMapTest extends PHPUnit\Framework\TestCase
 	protected $item1;
 	protected $item2;
 	protected $item3;
+	
+	protected $_baseClass;
+	protected $_baseItemClass;
 
+	protected function newList()
+	{
+		return  TMap::class;
+	}
+	protected function newListItem()
+	{
+		return TMapTest_MapItem::class;
+	}
+	
 	protected function setUp(): void
 	{
-		$this->map = new TMap;
-		$this->item1 = new TMapTest_MapItem;
-		$this->item2 = new TMapTest_MapItem;
-		$this->item3 = new TMapTest_MapItem;
+		$this->_baseClass = $this->newList();
+		$this->_baseItemClass = $this->newListItem();
+		
+		$this->map = new $this->_baseClass();
+		$this->item1 = new $this->_baseItemClass(1);
+		$this->item2 = new $this->_baseItemClass(2);
+		$this->item3 = new $this->_baseItemClass(3);
 		$this->map->add('key1', $this->item1);
 		$this->map->add('key2', $this->item2);
 	}
