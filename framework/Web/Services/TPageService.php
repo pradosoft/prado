@@ -137,14 +137,6 @@ class TPageService extends \Prado\TService
 	 * @var bool whether service is initialized
 	 */
 	private $_initialized = false;
-	/**
-	 * @var TThemeManager theme manager
-	 */
-	private $_themeManager;
-	/**
-	 * @var TTemplateManager template manager
-	 */
-	private $_templateManager;
 
 	/**
 	 * Initializes the service.
@@ -295,42 +287,38 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @return TTemplateManager template manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function getTemplateManager()
 	{
-		if (!$this->_templateManager) {
-			$this->_templateManager = new TTemplateManager();
-			$this->_templateManager->init(null);
-		}
-		return $this->_templateManager;
+		return Prado::getApplication()->getTemplateManager();
 	}
 
 	/**
 	 * @param TTemplateManager $value template manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
-		$this->_templateManager = $value;
+		Prado::getApplication()->setTemplateManager($value);
 	}
 
 	/**
 	 * @return TThemeManager theme manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function getThemeManager()
 	{
-		if (!$this->_themeManager) {
-			$this->_themeManager = new TThemeManager();
-			$this->_themeManager->init(null);
-		}
-		return $this->_themeManager;
+		return Prado::getApplication()->getThemeManager();
 	}
 
 	/**
 	 * @param TThemeManager $value theme manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
-		$this->_themeManager = $value;
+		Prado::getApplication() > setThemeManager($value);
 	}
 
 	/**
