@@ -294,6 +294,7 @@ return [
 'TDbParameterModule' => 'Prado\Util\TDbParameterModule',
 'TDbPluginModule' => 'Prado\Util\TDbPluginModule',
 'TEmailLogRoute' => 'Prado\Util\TEmailLogRoute',
+'TEscCharsetConverter' => 'Prado\Util\TEscCharsetConverter',
 'TFileLogRoute' => 'Prado\Util\TFileLogRoute',
 'TFirebugLogRoute' => 'Prado\Util\TFirebugLogRoute',
 'TFirePhpLogRoute' => 'Prado\Util\TFirePhpLogRoute',
