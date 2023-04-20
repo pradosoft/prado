@@ -62,7 +62,7 @@ use Prado\TPropertyValue;
 class TPriorityMap extends TMap
 {
 	use TPriorityCollectionTrait;
-	
+
 	/**
 	 * @var int number of items contain within the map
 	 */
@@ -71,7 +71,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
-	 * @param null|array|TPriorityMap|TPriorityList|\Traversable $data the initial data. Default is null, meaning no initialization.
+	 * @param null|array|TPriorityList|TPriorityMap|\Traversable $data the initial data. Default is null, meaning no initialization.
 	 * @param bool $readOnly whether the list is read-only
 	 * @param numeric $defaultPriority the default priority of items without specified priorities.
 	 * @param int $precision the precision of the numeric priorities
@@ -106,7 +106,7 @@ class TPriorityMap extends TMap
 	 * Returns the item with the specified key.  If a priority is specified, only items
 	 * within that specific priority will be selected.
 	 * @param mixed $key the key
-	 * @param false|null|numeric $priority the priority.  null is the default priority, false is any priority,
+	 * @param null|false|numeric $priority the priority.  null is the default priority, false is any priority,
 	 *    and numeric is a specific priority.  default: false, any priority.
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */
@@ -300,7 +300,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Copies iterable data into the map.
 	 * Note, existing data in the map will be cleared first.
-	 * @param array|TPriorityMap|TPriorityList|\Traversable $data the data to be copied from, must be an array, object implementing
+	 * @param array|TPriorityList|TPriorityMap|\Traversable $data the data to be copied from, must be an array, object implementing
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
 	public function copyFrom($data): void
@@ -340,7 +340,7 @@ class TPriorityMap extends TMap
 	/**
 	 * Merges iterable data into the map.
 	 * Existing data in the map will be kept and overwritten if the keys are the same.
-	 * @param array|TPriorityMap|TPriorityList|\Traversable $data the data to be merged with, must be an array,
+	 * @param array|TPriorityList|TPriorityMap|\Traversable $data the data to be merged with, must be an array,
 	 * object implementing Traversable, or a TPriorityMap
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */

@@ -89,9 +89,9 @@ class TPriorityList extends TList
 	/**
 	 * Returns the item at an index within a priority
 	 * @param int $index the index into the list of items at priority
-	 * @param null|numeric $priority the priority which to index.  no parameter or null 
+	 * @param null|numeric $priority the priority which to index.  no parameter or null
 	 *   will result in the default priority
-	 * @throws TInvalidDataValueException if the index is out of the range at the 
+	 * @throws TInvalidDataValueException if the index is out of the range at the
 	 *   priority or no items at the priority.
 	 * @return mixed the element at the offset, false if no element is found at the offset
 	 */
@@ -353,7 +353,7 @@ class TPriorityList extends TList
 	}
 
 	/**
-	 * Returns the priority of an item at a particular flattened index.  The index after 
+	 * Returns the priority of an item at a particular flattened index.  The index after
 	 * the last item does not exist but receives a priority from the last item so that
 	 * priority information about any new items being appended is available.
 	 * @param int $index index of the item within the list

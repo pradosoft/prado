@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
  * classes.
  *
  * The trait adds a boolean for whether or not _d is ordered, a cached flattened
- * array _fd, a default priority (by default, 10) _dp, and precision of priorities (by 
+ * array _fd, a default priority (by default, 10) _dp, and precision of priorities (by
  * default, 8 [decimal places]) _p.
  *
  * The trait adds methods:
@@ -53,17 +53,17 @@ trait TPriorityCollectionTrait
 	 * @var bool indicates if the _d is currently ordered.
 	 */
 	protected bool $_o = false;
-	
+
 	/**
 	 * @var null|array cached flattened internal data storage
 	 */
 	protected ?array $_fd = null;
-	
+
 	/**
 	 * @var string the default priority of items without specified priorities
 	 */
 	private string $_dp = '10';
-	
+
 	/**
 	 * @var int the precision of the numeric priorities within this priority list.
 	 */
@@ -107,10 +107,11 @@ trait TPriorityCollectionTrait
 		$_d = [];
 		foreach(array_keys($this->_d) as $priority) {
 			$newPriority = $this->ensurePriority($priority);
-			if (array_key_exists($newPriority, $_d))
+			if (array_key_exists($newPriority, $_d)) {
 				$_d[$newPriority] = array_merge($_d[$newPriority], $this->_d[$priority]);
-			else
+			} else {
 				$_d[$newPriority] = $this->_d[$priority];
+			}
 		}
 		$this->_d = $_d;
 		$this->_fd = null;

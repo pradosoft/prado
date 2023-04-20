@@ -125,18 +125,10 @@ class TWeakCallableCollection extends TPriorityList
 	}
 
 	/**
-	 * This flattens the priority list into a flat array [0,...,n-1]. This is needed to filter the output.
-	 * @return array array of items in the list in priority and index order
-	 *
-	protected function flattenPriorities(): array
-	{
-		return $this->filterItemsForOutput(parent::flattenPriorities());
-	}
-	
-	/**
 	 * Returns an iterator for traversing the items in the list.
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
+	 * since 4.2.3
 	 */
 	public function getIterator(): \Iterator
 	{
@@ -246,9 +238,10 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		return parent::priorityOf($this->filterItemForInput($item), $withindex);
 	}
-	
+
 	/**
 	 * @return array the priority list of items in array
+	 * @since 4.2.3
 	 */
 	public function toArray(): array
 	{
