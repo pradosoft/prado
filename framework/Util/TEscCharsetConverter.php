@@ -101,10 +101,11 @@ class TEscCharsetConverter
 	 * @return ?string The ESC character code representing the encoding
 	 *   or null if not found.
 	 */
-	public static function encodeEscapeCharset(string $charset): string
+	public static function encodeEscapeCharset(string $charset): ?string
 	{
-		if(($escEncoding = array_search($charset, self::ESC_CHAR_ENCODINGS_MAP) !== false)
-			return $charset;
+		if (($escEncoding = array_search($charset, self::ESC_CHAR_ENCODINGS_MAP)) !== false) {
+			return $escEncoding;
+		}
 		return null;
 	}
 }
