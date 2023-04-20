@@ -18,9 +18,9 @@ use Prado\Web\TAssetManager;
 use Prado\Web\THttpRequest;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpSession;
+use Prado\Util\TLogger;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
-use Prado\Util\TLogger;
 
 /**
  * TApplication class.
