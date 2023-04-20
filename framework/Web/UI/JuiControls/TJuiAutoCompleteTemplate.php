@@ -38,7 +38,7 @@ class TJuiAutoCompleteTemplate extends \Prado\TComponent implements ITemplate
 	{
 		$parent->getControls()->add($this->_template);
 	}
-	
+
 	/**
 	 * TTemplateManager calls this method for caching the included file modification times.
 	 * @return array list of included external template files

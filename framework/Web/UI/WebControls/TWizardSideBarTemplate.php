@@ -32,7 +32,7 @@ class TWizardSideBarTemplate extends \Prado\TComponent implements ITemplate
 		$dataList->setItemTemplate(new TWizardSideBarListItemTemplate());
 		$parent->getControls()->add($dataList);
 	}
-	
+
 	/**
 	 * TTemplateManager calls this method for caching the included file modification times.
 	 * @return array list of included external template files
