@@ -224,7 +224,6 @@ permissions_children_invalid			= TPermissionsManager.*RoleChildren children must
 permissions_property_unchangeable		= TPermissionsManager.{0} cannot be set because it is already initialized.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
 
-thememanager_service_unavailable		= TThemeManager requires TPageService to be available. This error often occurs when you configure TThemeManager outside of the page service configuration.
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
 thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.

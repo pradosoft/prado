@@ -19,6 +19,8 @@ use Prado\Web\THttpRequest;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpSession;
 use Prado\Util\TLogger;
+use Prado\Web\UI\TTemplateManager;
+use Prado\Web\UI\TThemeManager;
 
 /**
  * TApplication class.
@@ -264,6 +266,14 @@ class TApplication extends \Prado\TComponent
 	 * @var TAssetManager asset manager module
 	 */
 	private $_assetManager;
+	/**
+	 * @var \Prado\Web\UI\TTemplateManager template manager module
+	 */
+	private $_templateManager;
+	/**
+	 * @var \Prado\Web\UI\TThemeManager theme manager module
+	 */
+	private $_themeManager;
 	/**
 	 * @var \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
 	 */
@@ -861,6 +871,46 @@ class TApplication extends \Prado\TComponent
 	public function setAssetManager(TAssetManager $value)
 	{
 		$this->_assetManager = $value;
+	}
+
+	/**
+	 * @return TTemplateManager template manager
+	 */
+	public function getTemplateManager()
+	{
+		if (!$this->_templateManager) {
+			$this->_templateManager = new TTemplateManager();
+			$this->_templateManager->init(null);
+		}
+		return $this->_templateManager;
+	}
+
+	/**
+	 * @param TTemplateManager $value template manager
+	 */
+	public function setTemplateManager(TTemplateManager $value)
+	{
+		$this->_templateManager = $value;
+	}
+
+	/**
+	 * @return TThemeManager theme manager
+	 */
+	public function getThemeManager()
+	{
+		if (!$this->_themeManager) {
+			$this->_themeManager = new TThemeManager();
+			$this->_themeManager->init(null);
+		}
+		return $this->_themeManager;
+	}
+
+	/**
+	 * @param TThemeManager $value theme manager
+	 */
+	public function setThemeManager(TThemeManager $value)
+	{
+		$this->_themeManager = $value;
 	}
 
 	/**

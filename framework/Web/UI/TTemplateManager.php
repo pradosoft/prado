@@ -51,7 +51,7 @@ class TTemplateManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$this->getService()->setTemplateManager($this);
+		Prado::getApplication()->setTemplateManager($this);
 		parent::init($config);
 	}
 
