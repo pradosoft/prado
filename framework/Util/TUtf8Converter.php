@@ -19,7 +19,9 @@ namespace Prado\Util;
  * @since 4.0.2
  * @see https://en.wikipedia.org/wiki/ISO/IEC_2022 General structure of character encodings.
  * @see https://en.wikipedia.org/wiki/ISO/IEC_646 National standards for ASCII.
- * @see https://www.sljfaq.org/afaq/encodings.html Japanese encodings.
+ * @see https://www.sljfaq.org/afaq/encodings.html Japanese encodings and character sets.
+ *
+ * These are not yet in iconv (as of April, 2023):
  * @todo missing ISO-5427. https://en.wikipedia.org/wiki/ISO_5427. (8 bit Cyrillic, 1979/1981)
  * @todo missing ČSN (Czech technical standard) 369103. https://en.wikipedia.org/wiki/KOI_character_encodings (also Cyrillic)
  */
