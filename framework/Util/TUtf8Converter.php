@@ -17,10 +17,15 @@ namespace Prado\Util;
  *
  * @author Fabio Bas <fbio.bas@gmail.com>
  * @since 4.0.2
+ * @see https://en.wikipedia.org/wiki/ISO/IEC_2022 General structure of character encodings.
+ * @see https://en.wikipedia.org/wiki/ISO/IEC_646 National standards for ASCII.
+ * @see https://www.sljfaq.org/afaq/encodings.html Japanese encodings.
+ * @todo missing ISO-5427. https://en.wikipedia.org/wiki/ISO_5427. (8 bit Cyrillic, 1979/1981)
+ * @todo missing ČSN (Czech technical standard) 369103. https://en.wikipedia.org/wiki/KOI_character_encodings (also Cyrillic)
  */
 class TUtf8Converter
 {
-	public const ESC_CHARSET_MAP = [
+	public const ESC_CHARENCODINGS_MAP = [
 			"\x1B\x25\x47" => 'UTF-8', // ESC-'%G'
 
 			"\x1B\x28\x40" => 'ASCII',	"\x1B\x29\x40" => 'ASCII',	"\x1B\x2A\x40" => 'ASCII',	"\x1B\x2B\x40" => 'ASCII',
@@ -95,7 +100,7 @@ class TUtf8Converter
 	 * may not have been encoded if iconv fails.
 	 * @param string $string the UTF-8 string for conversion
 	 * @param string $to destination encoding
-	 * @param ?string $lang Language of the encoding.
+	 * @param ?string $lang Language of the encoding as accepted by PHP setLocale
 	 * @return string encoded string.
 	 */
 	public static function fromUTF8($string, $to, $lang = null)
@@ -127,8 +132,8 @@ class TUtf8Converter
 		$codes = explode($esc, trim($charset, $esc));
 		foreach ($codes as $code) {
 			$code = $esc . $code;
-			if (array_key_exists($code, self::ESC_CHARSET_MAP)) {
-				return self::ESC_CHARSET_MAP[$code];
+			if (array_key_exists($code, self::ESC_CHARENCODINGS_MAP)) {
+				return self::ESC_CHARENCODINGS_MAP[$code];
 			}
 		}
 		return null;
@@ -142,6 +147,6 @@ class TUtf8Converter
 	 */
 	public static function encodeEscapeCharset(string $charset): string
 	{
-		return array_search($charset, self::ESC_CHARSET_MAP);
+		return array_search($charset, self::ESC_CHARENCODINGS_MAP);
 	}
 }
