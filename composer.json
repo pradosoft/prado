@@ -55,7 +55,6 @@
 		"bower-asset/clipboard": "^2",
 		"bower-asset/highlightjs-line-numbers.js": "^2",
 		"psy/psysh": "^0"
-		"bower-asset/highlightjs-line-numbers.js": "^2.8",
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "9.*",
