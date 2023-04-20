@@ -84,7 +84,7 @@ class TTemplateManager extends \Prado\TModule
 		if ($tplClass === null) {
 			$tplClass = $this->_defaultTemplateClass;
 		}
-		if ($tplClass != TTemplate::class && !is_subclass_of($tplClass, TTemplate::class)) {
+		if ($tplClass != ITemplate::class && !is_subclass_of($tplClass, ITemplate::class)) {
 			return null;
 		}
 		if (($fileName = $this->getLocalizedTemplate($fileName, $culture)) !== null) {

@@ -48,6 +48,15 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	public function instantiateIn($parent)
 	{
 	}
+	
+	/**
+	 * TTemplateManager calls this method for caching the included file modification times.
+	 * @return array list of included external template files
+	 */
+	public function getIncludedFiles()
+	{
+		return [];
+	}
 
 	/**
 	 * Creates a navigation button.
