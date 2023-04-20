@@ -235,9 +235,9 @@ trait TPriorityCollectionTrait
 			if ((!$inclusive && $itemspriority >= $priority) || $itemspriority > $priority) {
 				break;
 			}
-			$items = array_merge($items, $itemsatpriority);
+			$items[] = $itemsatpriority;
 		}
-		return $items;
+		return array_merge(...$items);
 	}
 
 	/**
@@ -255,9 +255,9 @@ trait TPriorityCollectionTrait
 			if ((!$inclusive && $itemspriority <= $priority) || $itemspriority < $priority) {
 				continue;
 			}
-			$items = array_merge($items, $itemsatpriority);
+			$items[] = $itemsatpriority;
 		}
-		return $items;
+		return array_merge(...$items);
 	}
 
 	/**
