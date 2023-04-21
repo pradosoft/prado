@@ -1564,10 +1564,10 @@ class TComponent
 	 */
 	protected static function instanceBehavior($behavior)
 	{
+		$config = null;
 		$isArray = false;
 		$init = false;
 		if (is_string($behavior) || (($isArray = is_array($behavior)) && isset($behavior['class']))) {
-			$config = null;
 			if ($isArray && array_key_exists(IBaseBehavior::CONFIG_KEY, $behavior)) {
 				$config = $behavior[IBaseBehavior::CONFIG_KEY];
 				unset($behavior[IBaseBehavior::CONFIG_KEY]);
