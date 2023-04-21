@@ -7,6 +7,17 @@ use Prado\Web\UI\TPage;
 class TestModuleBehaviorLoader1 extends TBehavior
 {
 	private $_propertyA = 'default';
+	public $config = null;
+	
+	public const NULL_CONFIG = "null-config";
+	
+	public function init($config)
+	{
+		if ($config === null)
+			$config = self::NULL_CONFIG;
+		$this->config = $config;
+	}
+	
 	public function getPropertyA()
 	{
 		return $this->_propertyA;
@@ -116,11 +127,12 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->obj->BehaviorClass = 'TestModuleBehaviorLoader1';
 			$this->obj->AttachTo = 'Application';
 			$this->obj->propertya = 'value1';
-			$this->obj->dyInit(null);
+			$this->obj->dyInit(['data123']);
 			
 			//Check was App behavior installed
 			$this->assertInstanceOf('TestModuleBehaviorLoader1', $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
+			$this->assertEquals(['data123'], $app->asa('testBehavior1')->config);
 			$app->detachBehavior('testBehavior1');
 		}
 	}

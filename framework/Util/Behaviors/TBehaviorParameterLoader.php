@@ -14,6 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TComponent;
 use Prado\TPropertyValue;
+use Prado\Util\IBaseBehavior;
 
 /**
  * TBehaviorParameterLoader class.
@@ -82,6 +83,7 @@ class TBehaviorParameterLoader extends TComponent
 			throw new TConfigurationException('behaviorparameterloader_attachto_and_class_only_one');
 		}
 		$this->_properties['class'] = $this->_behaviorClass;
+		$this->_properties[IBaseBehavior::CONFIG_KEY] = $config;
 		if ($this->_attachtoclass) {
 			TComponent::attachClassBehavior($this->_behaviorName, $this->_properties, $this->_attachtoclass, $this->_priority);
 		} else {
