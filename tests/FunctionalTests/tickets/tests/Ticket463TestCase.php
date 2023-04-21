@@ -6,6 +6,11 @@ class Ticket463TestCase extends PradoGenericSelenium2Test
 	{
 		$this->url('tickets/index.php?page=Ticket463');
 		$this->assertEquals("Verifying Ticket 463", $this->title());
-		$this->assertStringContainsString('May 1, 2005 at 12:00:00 AM', $this->source());
+		// clean the output from UTF8-encoded spaces
+		// it has been noted that the date can contain characters
+		// such as Narrow no-break space (U+202F) as separator between
+		//the time and the AM/PM suffix
+		$cleanSource = preg_replace("/\s+/u", " ", $this->source());
+		$this->assertStringContainsString('May 1, 2005 at 12:00:00 AM', $cleanSource);
 	}
 }
