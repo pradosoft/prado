@@ -1,5 +1,7 @@
 ## Version 4.2.3 - TBA
 
+BUG: Issue #824 - All system initialized behaviors call the behavior "init($config)"" similar to TModule. (belisoful)
+BUG: Issue #848 - TComponent events support Closures [anonymous functions]. (belisoful)
 ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TComponent::getClassHierarchy.  Class-wide behaviors support attaching to Traits as well as interfaces, classes, and their parents. (belisoful)
 ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
 BUG: Issue #843 - Permissions Manager behaviors rename the method 'getManager' to 'getPermissionsManager' for specificity. (belisoful)
@@ -18,7 +20,6 @@ ENH: Issues #840, #847 - TPriority updates (belisoful)
 ENH: Issues #818, #846 - TCallChain updates (belisoful)
 ENH: Issue #866 - HTMLPurifier_Config and cache path (majuca)
 ENH: Issue #868 - RFC: Service detection is fragile (ctrlaltca)
-BUG: Issue #815 - Cron tasks delay until their proper time on first entry. Long running cron tasks no longer repeat further pending tasks. (belisoful)
 ENH: Issue #865 - File and dir permissions were too permissive 0777, now the file permissions are 0644 and 0755 for directory by default. (majuca)
 ENH: Issue #869 - Remove execute permission on all files excepted on php-cli (majuca)
 ENH: Issue #875 - Make Prado::using able to autoload traits defined as prado3 namespaces (ctrlaltca)

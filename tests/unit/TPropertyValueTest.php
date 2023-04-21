@@ -196,7 +196,7 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 	}
 	
 	
-	public function testEnsureColor()
+	public function testEnsureHexColor()
 	{
 		// Integer Color in format 0x00RRGGBB
 		self::assertEquals('#000000', TPropertyValue::ensureHexColor(0));
