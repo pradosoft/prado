@@ -18,6 +18,14 @@ class TMapTest_MapItem
 	}
 }
 
+class TTestMap extends TMap
+{
+	public function _setReadOnly($value)
+	{
+		$this->setReadOnly($value);
+	}
+}
+
 class TMapTestBehavior extends TBehavior implements IDynamicMethods
 {
 	public $method;
@@ -53,7 +61,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	protected function newList()
 	{
-		return  TMap::class;
+		return  TTestMap::class;
 	}
 	protected function newListItem()
 	{
@@ -217,6 +225,12 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('TMapTest_MapItem', $item3 = $this->map['key3']);
 		
 		$this->assertEquals('value', $item3->data);
+		
+		$this->map['key3'] = null;
+		
+		$this->assertNull($this->map['key3']);
+		$this->assertNull($this->map->itemAt('key3'));
+		$this->assertTrue($this->map->contains('key3'));
 	}
 
 	public function testArrayWrite()
@@ -241,6 +255,13 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($this->item2, $b->args[1]);
 		$this->assertTrue($this->map->getCount() === 2);
 		$this->assertFalse($this->map->contains('key2'));
+		
+		$this->map[] = $this->item1;
+		$this->map[] = $this->item2;
+		$this->map[] = $this->item3;
+		$this->assertEquals($this->item1, $this->map[0]);
+		$this->assertEquals($this->item2, $this->map[1]);
+		$this->assertEquals($this->item3, $this->map[2]);
 	}
 
 	public function testArrayForeach()

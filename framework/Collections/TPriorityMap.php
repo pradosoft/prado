@@ -196,19 +196,24 @@ class TPriorityMap extends TMap
 		}
 
 		if (!$this->getReadOnly()) {
-			foreach (array_keys($this->_d) as $innerpriority) {
-				if (array_key_exists($key, $this->_d[$innerpriority])) {
-					unset($this->_d[$innerpriority][$key]);
-					$this->_c--;
-					if (count($this->_d[$innerpriority]) === 0) {
-						unset($this->_d[$innerpriority]);
+			if ($key !== null) {
+				foreach (array_keys($this->_d) as $innerpriority) {
+					if (array_key_exists($key, $this->_d[$innerpriority])) {
+						unset($this->_d[$innerpriority][$key]);
+						$this->_c--;
+						if (count($this->_d[$innerpriority]) === 0) {
+							unset($this->_d[$innerpriority]);
+						}
+						break;
 					}
-					break;
 				}
 			}
 			if (!isset($this->_d[$priority])) {
-				$this->_d[$priority] = [$key => $value];
+				$this->_d[$priority] = [];
 				$this->_o = false;
+			}
+			if ($key === null) {
+				$this->_d[$priority][] = $value;
 			} else {
 				$this->_d[$priority][$key] = $value;
 			}
