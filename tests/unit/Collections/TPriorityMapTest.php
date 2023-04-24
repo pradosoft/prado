@@ -316,7 +316,7 @@ class TPriorityMapTest extends TMapTest
 
 		$this->assertEquals(8, $this->map->Precision);
 		$this->assertEquals(5.4, $this->map->add('key1', $this->item1, 5.4));
-		$this->assertEquals(5.5, $this->map->add('key2', $this->item2, 5.5));
+		$this->assertEquals(5.5, $this->map->add(11, $this->item2, 5.5));
 		$this->assertEquals(5.6, $this->map->add('key3', $this->item3, 5.6));
 		$this->assertEquals(5.3, $this->map->add('key4', $this->item4, 5.3));
 		
@@ -325,6 +325,7 @@ class TPriorityMapTest extends TMapTest
 		
 		$this->assertEquals(5, $this->map->priorityOf($this->item1));
 		$this->assertEquals(6, $this->map->priorityOf($this->item2));
+		$this->assertEquals(6, $this->map->priorityAt(11)); // $this->item2
 		$this->assertEquals(6, $this->map->priorityOf($this->item3));
 		$this->assertEquals(5, $this->map->priorityOf($this->item4));
 		$this->map->clear();
