@@ -84,7 +84,7 @@ class TParameterizeBehaviorTest extends PHPUnit\Framework\TestCase
 			$ownerNoSet->attachBehavior($behaviorName, $this->obj);
 			$this->fail("Attaching should have thrown TConfigurationException as object doesn't have the Property");
 		} catch(TConfigurationException $e) {}
-		$owner->detachBehavior($behaviorName);
+		$ownerNoSet->detachBehavior($behaviorName);
 		
 		$this->obj->setParameter('');
 		try {
