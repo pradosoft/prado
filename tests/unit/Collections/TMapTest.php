@@ -18,6 +18,14 @@ class TMapTest_MapItem
 	}
 }
 
+class TTestMap extends TMap
+{
+	public function _setReadOnly($value)
+	{
+		$this->setReadOnly($value);
+	}
+}
+
 class TMapTestBehavior extends TBehavior implements IDynamicMethods
 {
 	public $method;
@@ -53,7 +61,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	protected function newList()
 	{
-		return  TMap::class;
+		return  TTestMap::class;
 	}
 	protected function newListItem()
 	{
@@ -84,18 +92,26 @@ class TMapTest extends PHPUnit\Framework\TestCase
 	public function testConstruct()
 	{
 		$a = [1, 2, 'key3' => 3];
-		$map = new TMap($a);
+		$map = new $this->_baseClass($a);
 		$this->assertEquals(3, $map->getCount());
-		$map2 = new TMap($this->map);
+		$map2 = new $this->_baseClass($this->map);
 		$this->assertEquals(2, $map2->getCount());
 	}
-
+	
 	public function testGetReadOnly()
 	{
-		$map = new TMap(null, true);
+		$map = new $this->_baseClass(null, true);
 		self::assertEquals(true, $map->getReadOnly(), 'List is not read-only');
-		$map = new TList(null, false);
+		$map = new $this->_baseClass(null, false);
 		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
+	}
+	
+	public function testSetReadOnly()
+	{
+		// Requires testing unit on base class to implement _setReadOnly as public
+		$map = new $this->_baseClass(null, false);
+		$map->_setReadOnly(true);
+		self::assertEquals(true, $map->getReadOnly(), 'List is not converted to Read Only');
 	}
 
 	public function testGetCount()
@@ -118,6 +134,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->map->add('key3', $this->item3);
 		$this->assertTrue($this->map->getCount() == 3);
 		$this->assertTrue($this->map->contains('key3'));
+		$this->assertEquals($this->item3, $this->map->itemAt('key3'));
 		
 		$this->assertEquals('dyAddItem', $b->method);
 		$this->assertEquals('key3', $b->args[0]);
@@ -126,7 +143,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	public function testCanNotAddWhenReadOnly()
 	{
-		$map = new TMap([], true);
+		$map = new $this->_baseClass([], true);
 		self::expectException(TInvalidOperationException::class);
 		$map->add('key', 'value');
 	}
@@ -152,7 +169,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	public function testCanNotRemoveWhenReadOnly()
 	{
-		$map = new TMap(['key' => 'value'], true);
+		$map = new $this->_baseClass(['key' => 'value'], true);
 		self::expectException(TInvalidOperationException::class);
 		$map->remove('key');
 	}
@@ -197,6 +214,8 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	public function testArrayRead()
 	{
+		$this->assertNull($this->map['NoItemHere']);
+		
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestBehavior);
 		
 		$this->assertTrue($this->map['key1'] === $this->item1);
@@ -217,6 +236,12 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('TMapTest_MapItem', $item3 = $this->map['key3']);
 		
 		$this->assertEquals('value', $item3->data);
+		
+		$this->map['key3'] = null;
+		
+		$this->assertNull($this->map['key3']);
+		$this->assertNull($this->map->itemAt('key3'));
+		$this->assertTrue($this->map->contains('key3'));
 	}
 
 	public function testArrayWrite()
@@ -241,6 +266,20 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($this->item2, $b->args[1]);
 		$this->assertTrue($this->map->getCount() === 2);
 		$this->assertFalse($this->map->contains('key2'));
+		
+		$this->map[] = $this->item1;
+		$this->map[] = $this->item2;
+		$this->map[] = $this->item3;
+		$this->assertEquals($this->item1, $this->map[0]);
+		$this->assertEquals($this->item2, $this->map[1]);
+		$this->assertEquals($this->item3, $this->map[2]);
+		
+		$this->map[4] = $item5 = new $this->_baseItemClass(5);
+		$this->assertEquals($item5, $this->map[4]);
+		$this->map[] = $item4 = new $this->_baseItemClass(-4);
+		$this->assertEquals($item4, $this->map[5]);
+		$this->map[] = $item6= new $this->_baseItemClass(-6);
+		$this->assertEquals($item6, $this->map[6]);
 	}
 
 	public function testArrayForeach()
@@ -268,7 +307,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	public function testToArray()
 	{
-		$map = new TMap(['key' => 'value']);
+		$map = new $this->_baseClass(['key' => 'value']);
 		self::assertEquals(['key' => 'value'], $map->toArray());
 	}
 }

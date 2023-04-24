@@ -70,6 +70,17 @@ class TPriorityList extends TList
 	}
 
 	/**
+	 * This is required for TPriorityCollectionTrait to determine the style of combining
+	 * arrays.
+	 * @return bool This returns true for array_merge (list style).  false would be
+	 *   array_replace (map style).
+	 */
+	private function getPriorityCombineStyle(): bool
+	{
+		return true;
+	}
+
+	/**
 	 * Returns the item at the index of a flattened priority list.
 	 * {@link offsetGet} calls this method.
 	 * @param int $index the index of the item to get
@@ -119,7 +130,7 @@ class TPriorityList extends TList
 			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
-		return $this->insertAtIndexInPriority($item, false, $priority, true);
+		return $this->insertAtIndexInPriority($item, null, $priority, true);
 	}
 
 	/**
@@ -147,18 +158,21 @@ class TPriorityList extends TList
 	 * Inserts an item at the specified index within a priority.  Override and call this method to
 	 * insert your own functionality.
 	 * @param mixed $item item to add within the list.
-	 * @param false|int $index index within the priority to add the item, defaults to false which appends the item at the priority
+	 * @param null|false|int $index index within the priority to add the item, defaults to null which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it to the default priority
 	 * @param bool $preserveCache preserveCache specifies if this is a special quick function or not. This defaults to false.
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @todo PRADO version 4.3 remove $index: false => null conversion. false should be invalid input data.
 	 */
-	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
+	public function insertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
 		if ($this->getReadOnly()) {
 			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
-
+		if ($index === false) {
+			$index = null; // conversion, remove for PRADO 4.3
+		}
 		$itemPriority = null;
 		if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
 			$itemPriority = $priority = $item->getPriority();
@@ -169,7 +183,7 @@ class TPriorityList extends TList
 		}
 
 		if (isset($this->_d[$priority])) {
-			if ($index === false) {
+			if ($index === null) {
 				$c = count($this->_d[$priority]);
 				$this->_d[$priority][] = $item;
 			} elseif (0 <= $index && $index <= count($this->_d[$priority])) {
@@ -178,7 +192,7 @@ class TPriorityList extends TList
 			} else {
 				throw new TInvalidDataValueException('prioritylist_index_invalid', $index, count($this->_d[$priority] ?? []), $priority);
 			}
-		} elseif ($index === 0 || $index === false) {
+		} elseif ($index === 0 || $index === null) {
 			$c = 0;
 			$this->_o = false;
 			$this->_d[$priority] = [$item];
@@ -444,7 +458,7 @@ class TPriorityList extends TList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->insertAtIndexInPriority($array[$priority][$i], false, $priority);
+					$this->insertAtIndexInPriority($array[$priority][$i], null, $priority);
 				}
 			}
 		} elseif ($data instanceof TPriorityMap) {
@@ -454,7 +468,7 @@ class TPriorityList extends TList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				foreach ($array[$priority] as $item) {
-					$this->insertAtIndexInPriority($item, false, $priority);
+					$this->insertAtIndexInPriority($item, null, $priority);
 				}
 			}
 		} elseif (is_array($data) || $data instanceof \Traversable) {
@@ -483,14 +497,14 @@ class TPriorityList extends TList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->insertAtIndexInPriority($array[$priority][$i], false, $priority);
+					$this->insertAtIndexInPriority($array[$priority][$i], null, $priority);
 				}
 			}
 		} elseif ($data instanceof TPriorityMap) {
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				foreach ($array[$priority] as $item) {
-					$this->insertAtIndexInPriority($item, false, $priority);
+					$this->insertAtIndexInPriority($item, null, $priority);
 				}
 			}
 		} elseif (is_array($data) || $data instanceof \Traversable) {
@@ -531,11 +545,13 @@ class TPriorityList extends TList
 			$this->add($item);
 			return;
 		}
-		if ($offset === $this->getCount()) {
+		if (0 <= $offset && $offset <= ($count = $this->getCount())) {
 			$priority = $this->priorityAt($offset, true);
+			if ($offset !== $count) {
+				$this->removeAtIndexInPriority($priority[1], $priority[0]);
+			}
 		} else {
-			$priority = $this->priorityAt($offset, true);
-			$this->removeAtIndexInPriority($priority[1], $priority[0]);
+			throw new TInvalidDataValueException('list_index_invalid', $offset);
 		}
 		$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
 	}

@@ -68,6 +68,9 @@ class TPriorityMap extends TMap
 	 */
 	protected int $_c = 0;
 
+	/** @var int The next highest integer key at which we can add an item. */
+	protected int $_ic = 0;
+
 	/**
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
@@ -82,6 +85,17 @@ class TPriorityMap extends TMap
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
 		parent::__construct($data, $readOnly);
+	}
+
+	/**
+	 * This is required for TPriorityCollectionTrait to determine the style of combining
+	 * arrays.
+	 * @return bool This returns false for array_replace (map style).  true would be
+	 *   array_merge (list style).
+	 */
+	private function getPriorityCombineStyle(): bool
+	{
+		return false;
 	}
 
 	/**
@@ -196,6 +210,11 @@ class TPriorityMap extends TMap
 		}
 
 		if (!$this->getReadOnly()) {
+			if ($key === null) {
+				$key = $this->_ic++;
+			} elseif (is_numeric($key)) {
+				$this->_ic = (int) max($this->_ic, floor($key) + 1);
+			}
 			foreach (array_keys($this->_d) as $innerpriority) {
 				if (array_key_exists($key, $this->_d[$innerpriority])) {
 					unset($this->_d[$innerpriority][$key]);
@@ -285,6 +304,7 @@ class TPriorityMap extends TMap
 				$this->remove($key);
 			}
 		}
+		$this->_ic = 0;
 	}
 
 	/**
@@ -322,7 +342,7 @@ class TPriorityMap extends TMap
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->add($index++, $array[$priority][$i], $priority);
+					$this->add(null, $array[$priority][$i], $priority);
 				}
 			}
 		} elseif (is_array($data) || $data instanceof \Traversable) {
@@ -357,7 +377,7 @@ class TPriorityMap extends TMap
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->add($index++, $array[$priority][$i], $priority);
+					$this->add(null, $array[$priority][$i], $priority);
 				}
 			}
 		} elseif (is_array($data) || $data instanceof \Traversable) {
@@ -380,6 +400,12 @@ class TPriorityMap extends TMap
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
+		if ($this->_c === 0) {
+			$exprops[] = "\0*\0_c";
+		}
+		if ($this->_ic === 0) {
+			$exprops[] = "\0*\0_ic";
+		}
 		$this->_priorityZappableSleepProps($exprops);
 	}
 }

@@ -42,7 +42,18 @@ use Prado\TPropertyValue;
  *	- {@link toArrayAbovePriority} the items above a priority, default is inclusive.
  *	- {@link _priorityZappableSleepProps} to add the excluded trait properties on sleep.
  *
- * The priorities are implemented as numeric strings
+ * The priorities are implemented as numeric strings.
+ *
+ * Any class using this trait must implement a getPriorityCombineStyle method to
+ * determine if arrays are merged or replaced to combine together.
+ *
+ * For example, something like this is required in your class:
+ * <code>
+ *		private function getPriorityCombineStyle(): bool
+ *		{
+ *			return true; // for merge (list style), and false for replace (map style)
+ *		}
+ * </code>
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
@@ -108,7 +119,11 @@ trait TPriorityCollectionTrait
 		foreach(array_keys($this->_d) as $priority) {
 			$newPriority = $this->ensurePriority($priority);
 			if (array_key_exists($newPriority, $_d)) {
-				$_d[$newPriority] = array_merge($_d[$newPriority], $this->_d[$priority]);
+				if ($this->getPriorityCombineStyle()) {
+					$_d[$newPriority] = array_merge($_d[$newPriority], $this->_d[$priority]);
+				} else {
+					$_d[$newPriority] = array_replace($_d[$newPriority], $this->_d[$priority]);
+				}
 			} else {
 				$_d[$newPriority] = $this->_d[$priority];
 			}
@@ -146,15 +161,24 @@ trait TPriorityCollectionTrait
 	}
 
 	/**
-	 * This flattens the priority list into a flat array [0,...,n-1]
+	 * This flattens the priority list into a flat array [0,...,n-1] (with array_merge)
+	 * and a priority map into a single flat map of keys and values (with array_replace).
 	 */
 	protected function flattenPriorities(): void
 	{
 		if (is_array($this->_fd)) {
 			return;
 		}
+		if (empty($this->_d)) {
+			$this->_fd = [];
+			return;
+		}
 		$this->sortPriorities();
-		$this->_fd = array_merge(...$this->_d);
+		if ($this->getPriorityCombineStyle()) {
+			$this->_fd = array_merge(...$this->_d);
+		} else {
+			$this->_fd = array_replace(...$this->_d);
+		}
 	}
 
 	/**
@@ -170,13 +194,13 @@ trait TPriorityCollectionTrait
 	/**
 	 * Gets the number of items at a priority within the list
 	 * @param null|numeric $priority optional priority at which to count items.  if no parameter, it will be set to the default {@link getDefaultPriority}
-	 * @return false|int the number of items in the list at the specified priority
+	 * @return int the number of items in the list at the specified priority
 	 */
 	public function getPriorityCount($priority = null)
 	{
 		$priority = $this->ensurePriority($priority);
-		if (!isset($this->_d[$priority]) || !is_array($this->_d[$priority])) {
-			return false;
+		if (empty($this->_d[$priority])) {
+			return 0;
 		}
 		return count($this->_d[$priority]);
 	}
@@ -238,7 +262,14 @@ trait TPriorityCollectionTrait
 			}
 			$items[] = $itemsatpriority;
 		}
-		return array_merge(...$items);
+		if(empty($items)) {
+			return [];
+		}
+		if ($this->getPriorityCombineStyle()) {
+			return array_merge(...$items);
+		} else {
+			return array_replace(...$items);
+		}
 	}
 
 	/**
@@ -258,7 +289,14 @@ trait TPriorityCollectionTrait
 			}
 			$items[] = $itemsatpriority;
 		}
-		return array_merge(...$items);
+		if(empty($items)) {
+			return [];
+		}
+		if ($this->getPriorityCombineStyle()) {
+			return array_merge(...$items);
+		} else {
+			return array_replace(...$items);
+		}
 	}
 
 	/**

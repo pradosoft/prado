@@ -360,7 +360,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->setScrubError(false);
 		
 		self::assertEquals(1, $list->getPriorityCount(10));
-		self::assertFalse($list->getPriorityCount(15));
+		self::assertEquals(0, $list->getPriorityCount(15));
 	}
 	
 	public function testGetIteratorTPriorityList_TWCC()

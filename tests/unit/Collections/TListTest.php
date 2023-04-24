@@ -375,6 +375,16 @@ class TListTest extends PHPUnit\Framework\TestCase
 		self::assertEquals([
 			$this->item1, $this->item4, $this->item3
 		], $list->toArray());
+		
+		// First non-existing index is a valid set index.
+		$list->offsetSet(3, $this->item2);
+		self::assertEquals([
+			$this->item1, $this->item4, $this->item3, $this->item2
+		], $list->toArray());
+		
+		// anything beyond the first non-existing index is invalid.
+		self::expectException(TInvalidDataValueException::class, "Exception is not being thrown when adding to the list outside of 0 <= n <= count");
+		$list->offsetSet(5, $this->item2);
 	}
 
 	public function testOffsetUnsetTList()

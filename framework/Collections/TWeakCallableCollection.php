@@ -281,7 +281,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * All invalid WeakReference[s] are optionally removed from the list before counting.
 	 * @param null|numeric $priority optional priority at which to count items.  if no
 	 *    parameter, it will be set to the default {@link getDefaultPriority}
-	 * @return false|int the number of items in the list at the specified priority
+	 * @return int the number of items in the list at the specified priority
 	 * @since 4.2.3
 	 */
 	public function getPriorityCount($priority = null)
@@ -399,7 +399,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * calls {@link internalInsertAtIndexInPriority}.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param mixed $item item to add within the list.
-	 * @param false|int $index index within the priority to add the item, defaults to false
+	 * @param null|false|int $index index within the priority to add the item, defaults to null
 	 *    which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it
 	 *   to the default priority
@@ -409,7 +409,7 @@ class TWeakCallableCollection extends TPriorityList
 	 *   the bound
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 */
-	public function insertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
+	public function insertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
 		$this->scrubWeakReferences();
 		return $this->internalInsertAtIndexInPriority($item, $index, $priority, $preserveCache);
@@ -420,7 +420,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * list of WeakReference.  This converts the item into a WeakReference if it is an object
 	 * or contains an object in its callable.  This does not convert Closure into WeakReference.
 	 * @param mixed $item item to add within the list.
-	 * @param false|int $index index within the priority to add the item, defaults to false
+	 * @param null|false|int $index index within the priority to add the item, defaults to null
 	 *    which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it
 	 *    to the default priority
@@ -431,7 +431,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 * @since 4.2.3
 	 */
-	protected function internalInsertAtIndexInPriority($item, $index = false, $priority = null, $preserveCache = false)
+	protected function internalInsertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
 		$itemPriority = null;
 		if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
@@ -605,7 +605,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @param bool $withindex this specifies if the full positional data of the item
 	 *   within the list is returned.  This defaults to false, if no parameter is provided,
 	 *   so only provides the priority number of the item by default.
-	 * @return array|numeric the priority of the item in the list, false if not found.
+	 * @return array|false|numeric the priority of the item in the list, false if not found.
 	 *   if withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex,
 	 *    2 => flattenedIndex, 'priority' => $priority, 'index' => $priorityIndex,
 	 *   'absindex' => flattenedIndex]
@@ -791,7 +791,7 @@ class TWeakCallableCollection extends TPriorityList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->internalInsertAtIndexInPriority($array[$priority][$i], false, $priority);
+					$this->internalInsertAtIndexInPriority($array[$priority][$i], null, $priority);
 				}
 			}
 		} elseif ($data instanceof TPriorityMap) {
@@ -801,7 +801,7 @@ class TWeakCallableCollection extends TPriorityList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				foreach ($array[$priority] as $item) {
-					$this->internalInsertAtIndexInPriority($item, false, $priority);
+					$this->internalInsertAtIndexInPriority($item, null, $priority);
 				}
 			}
 		} elseif (is_array($data) || ($data instanceof Traversable)) {
@@ -833,14 +833,14 @@ class TWeakCallableCollection extends TPriorityList
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				for ($i = 0, $c = count($array[$priority]); $i < $c; $i++) {
-					$this->internalInsertAtIndexInPriority($array[$priority][$i], false, $priority);
+					$this->internalInsertAtIndexInPriority($array[$priority][$i], null, $priority);
 				}
 			}
 		} elseif ($data instanceof TPriorityMap) {
 			$array = $data->toPriorityArray();
 			foreach (array_keys($array) as $priority) {
 				foreach ($array[$priority] as $item) {
-					$this->internalInsertAtIndexInPriority($item, false, $priority);
+					$this->internalInsertAtIndexInPriority($item, null, $priority);
 				}
 			}
 		} elseif (is_array($data) || ($data instanceof Traversable)) {
@@ -877,14 +877,16 @@ class TWeakCallableCollection extends TPriorityList
 		}
 
 		if ($offset === null) {
-			$this->internalInsertAtIndexInPriority($item, false, null, true);
+			$this->internalInsertAtIndexInPriority($item, null, null, true);
 			return;
 		}
-		if ($offset === $this->getCount()) {
+		if (0 <= $offset && $offset <= ($count = $this->getCount())) {
 			$priority = parent::priorityAt($offset, true);
+			if ($offset !== $count) {
+				$this->internalRemoveAtIndexInPriority($priority[1], $priority[0]);
+			}
 		} else {
-			$priority = parent::priorityAt($offset, true);
-			$this->internalRemoveAtIndexInPriority($priority[1], $priority[0]);
+			throw new TInvalidDataValueException('list_index_invalid', $offset);
 		}
 		$this->internalInsertAtIndexInPriority($item, $priority[1], $priority[0]);
 	}
