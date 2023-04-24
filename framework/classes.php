@@ -40,6 +40,7 @@ return [
 'TPagedListPageChangedEventParameter' => 'Prado\Collections\TPagedListPageChangedEventParameter',
 'TPagedMapIterator' => 'Prado\Collections\TPagedMapIterator',
 'TPriorityCollectionTrait' => 'Prado\Collections\TPriorityCollectionTrait',
+'TPriorityItemTrait' => 'Prado\Collections\TPriorityItemTrait',
 'TPriorityList' => 'Prado\Collections\TPriorityList',
 'TPriorityMap' => 'Prado\Collections\TPriorityMap',
 'TQueue' => 'Prado\Collections\TQueue',
