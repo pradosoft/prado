@@ -99,6 +99,15 @@ class TPriorityMap extends TMap
 	}
 
 	/**
+	 * @return int This is the key for the next appended item that doesn't have its
+	 *   own key.
+	 */
+	public function getNextIntegerKey(): int
+	{
+		return $this->_ic;
+	}
+
+	/**
 	 * @return int the number of items in the map
 	 */
 	public function getCount(): int
