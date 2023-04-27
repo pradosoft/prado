@@ -970,6 +970,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		//Check that the component has only the class behavior assigned
 		$this->assertNotNull($this->component->asa('FooClassBehavior'));
+		$this->assertNotNull($this->component->asa(strtoupper('FooClassBehavior')));
 		$this->assertNull($this->component->asa('FooFooClassBehavior'));
 		$this->assertNull($this->component->asa($barClassName));
 		$this->assertNull($this->component->asa('NonExistantClassBehavior'));
@@ -1134,14 +1135,14 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals([], $this->component->getBehaviors());
 		$b = new FooBarBehavior();
 		$this->assertEquals($b, $this->component->attachBehavior('FooBarBehavior', $b));
-		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$this->assertEquals(['foobarbehavior' => $b], $this->component->getBehaviors());
 		$b->setEnabled(false);
-		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$this->assertEquals(['foobarbehavior' => $b], $this->component->getBehaviors());
 		$b->setEnabled(true);
-		$this->assertEquals(['FooBarBehavior' => $b], $this->component->getBehaviors());
+		$this->assertEquals(['foobarbehavior' => $b], $this->component->getBehaviors());
 		$this->assertEquals(false, is_object($this->component->getBehaviors()));
 		$this->assertEquals(true, is_array($this->component->getBehaviors()));
-		$this->assertEquals($b, $this->component->detachBehavior('FooBarBehavior'));
+		$this->assertEquals($b, $this->component->detachBehavior('foobarbehavior'));
 		$this->assertEquals([], $this->component->getBehaviors());
 	}
 
@@ -1237,8 +1238,9 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		
 		
-		$this->component->attachBehavior('FooBehavior', 'FooBehavior');
+		$this->component->attachBehavior(strtoupper('FooBehavior'), 'FooBehavior');
 
+		$this->assertNotNull($this->component->asa(strtoupper('FooBehavior')));
 		$this->assertNotNull($this->component->asa('FooBehavior'));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
@@ -1261,7 +1263,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		$this->assertEquals('value',$this->component->asa('FooBehavior')->PropertyA);
 		
-		$this->component->detachBehavior('FooBehavior');
+		$this->component->detachBehavior(strtoupper('FooBehavior'));
 
 		$this->assertNull($this->component->asa('FooBehavior'));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
@@ -1447,7 +1449,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$fooB->syncEventHandlers(null, false);
 		$this->assertEquals(2, $this->component->onMyEvent->getCount());
 
-		$this->assertTrue($this->component->disableBehavior($behaviorName));
+		//Test upper case name as well.
+		$this->assertTrue($this->component->disableBehavior(strtoupper($behaviorName)));
 		$this->assertEquals(0, $this->component->onMyEvent->getCount());
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertEquals(0, $this->component->onMyEvent->getCount());
@@ -1462,7 +1465,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		} catch (TApplicationException $e) {
 		}
 		
-		$this->assertTrue($this->component->enableBehavior($behaviorName));
+		//Test upper case name as well.
+		$this->assertTrue($this->component->enableBehavior(strtoupper($behaviorName)));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
 		$this->assertEquals(2, $this->component->onMyEvent->getCount());
 
@@ -1845,6 +1849,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->disableBehavior('BehaviorTestBehavior');
 
 		$this->assertEquals($behavior, $this->component->BehaviorTestBehavior);
+		$this->assertEquals($behavior, $this->component->behaviortestbehavior);
+		$this->assertEquals($behavior, $this->component->BEHAVIORTESTBEHAVIOR);
 		try {
 			$behavior = $this->component->BehaviorTestBehavior2;
 			$this->fail('exception not raised when getting undefined property');
@@ -1984,9 +1990,11 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse(isset($this->component->BehaviorTestBehavior));
 		$this->assertFalse(isset($this->component->onBehaviorEvent));
 
-		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior);
+		$this->component->attachBehavior('BehaviorTestBehavior', new BehaviorTestBehavior());
 
+		$this->assertTrue(isset($this->component->behaviortestbehavior));
 		$this->assertTrue(isset($this->component->BehaviorTestBehavior));
+		$this->assertTrue(isset($this->component->BEHAVIORTESTBEHAVIOR));
 		$this->assertFalse(isset($this->component->onBehaviorEvent));
 
 		$this->component->attachEventHandler('onBehaviorEvent', 'foo');
@@ -2080,7 +2088,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(0, count($this->component->BehaviorTestBehavior->onBehaviorEvent));
 
 		// Remove behavior via unset
-		unset($this->component->BehaviorTestBehavior);
+		unset($this->component->behaviortestbehavior);
 		$this->assertFalse($this->component->asa('BehaviorTestBehavior') instanceof BehaviorTestBehavior);
 	}
 
@@ -2826,7 +2834,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$copy = clone $this->component;
 		$copy->Text = 'copyObject';
 		
-		$this->assertNotNull($copy->asa('CopyBehavior'));
+		$this->assertNotNull($copy->asa('COPYBehavior'));
 		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
 		$this->assertEquals($copy, $copy->CopyBehavior->getOwner());
 		$this->assertTrue($copy->CopyBehavior !== $this->component->CopyBehavior);
@@ -2844,9 +2852,9 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		NewComponent::attachClassBehavior('ClassBehavior2', $cb2 = new FooFooClassBehavior());
 		NewComponent::attachClassBehavior('ClassBehavior4', $cb4 = new FooClassBehavior());
 		$cb4->propertya = '4th value';
-		$this->assertEquals('ClassBehavior1', $cb1->getName());
-		$this->assertEquals('ClassBehavior2', $cb2->getName());
-		$this->assertEquals('ClassBehavior4', $cb4->getName());
+		$this->assertEquals('classbehavior1', $cb1->getName());
+		$this->assertEquals('classbehavior2', $cb2->getName());
+		$this->assertEquals('classbehavior4', $cb4->getName());
 		
 		$obj = new NewComponent();
 		$this->component = new NewComponent();
