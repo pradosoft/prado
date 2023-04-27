@@ -70,9 +70,6 @@ class TBehaviorParameterLoader extends TComponent
 	 */
 	public function dyInit($config)
 	{
-		if (!$this->_behaviorName) {
-			throw new TConfigurationException('behaviorparameterloader_no_behavior_name');
-		}
 		if (!$this->_behaviorClass) {
 			throw new TConfigurationException('behaviorparameterloader_no_behavior_class');
 		}
@@ -84,14 +81,15 @@ class TBehaviorParameterLoader extends TComponent
 		}
 		$this->_properties['class'] = $this->_behaviorClass;
 		$this->_properties[IBaseBehavior::CONFIG_KEY] = $config;
+		$name = $this->getBehaviorName();
 		if ($this->_attachtoclass) {
-			TComponent::attachClassBehavior($this->_behaviorName, $this->_properties, $this->_attachtoclass, $this->_priority);
+			TComponent::attachClassBehavior($name, $this->_properties, $this->_attachtoclass, $this->_priority);
 		} else {
 			if (strtolower($this->_attachto) == "page") {
 				if (!count(self::$_pageBehaviors)) {
 					Prado::getApplication()->attachEventHandler('onBeginRequest', [$this, 'attachTPageServiceHandler']);
 				}
-				self::$_pageBehaviors[$this->_behaviorName] = $this->_properties;
+				self::$_pageBehaviors[$name] = $this->_properties;
 				return;
 			} elseif (strncasecmp(strtolower($this->_attachto), 'module:', 7) === 0) {
 				if (!count(self::$_moduleBehaviors)) {
@@ -102,7 +100,7 @@ class TBehaviorParameterLoader extends TComponent
 					throw new TConfigurationException('behaviorparameterloader_moduleid_required', $moduleid);
 				}
 				self::$_moduleBehaviors[$moduleid] = self::$_moduleBehaviors[$moduleid] ?? [];
-				self::$_moduleBehaviors[$moduleid][$this->_behaviorName] = $this->_properties;
+				self::$_moduleBehaviors[$moduleid][$name] = $this->_properties;
 				return;
 			} elseif (strtolower($this->_attachto) == "application") {
 				$owner = Prado::getApplication();
@@ -114,7 +112,7 @@ class TBehaviorParameterLoader extends TComponent
 			if (!$owner) {
 				throw new TConfigurationException('behaviorparameterloader_behaviorowner_required', $this->_attachto);
 			}
-			$owner->attachBehavior($this->_behaviorName, $this->_properties, $this->_priority);
+			$owner->attachBehavior($name, $this->_properties, $this->_priority);
 		}
 	}
 
@@ -192,7 +190,7 @@ class TBehaviorParameterLoader extends TComponent
 
 	/**
 	 * gets the name of the attaching behavior.
-	 * @return string the name of the attaching behavior.
+	 * @return null|numeric|string the name of the attaching behavior.
 	 */
 	public function getBehaviorName()
 	{
@@ -201,11 +199,15 @@ class TBehaviorParameterLoader extends TComponent
 
 	/**
 	 * sets the name of the attaching behavior.
-	 * @param string $name the name of the attaching behavior.
+	 * @param numeric|string $name the name of the attaching behavior.
 	 */
 	public function setBehaviorName($name)
 	{
-		$this->_behaviorName = TPropertyValue::ensureString($name);
+		if (empty($name) || is_numeric($name)) {
+			$this->_behaviorName = null;
+		} else {
+			$this->_behaviorName = TPropertyValue::ensureString($name);
+		}
 	}
 
 	/**
