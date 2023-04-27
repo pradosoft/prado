@@ -284,6 +284,7 @@ return [
 'IDynamicMethods' => 'Prado\Util\IDynamicMethods',
 'IInstanceCheck' => 'Prado\Util\IInstanceCheck',
 'IPluginModule' => 'Prado\Util\IPluginModule',
+'TBaseBehavior' => 'Prado\Util\TBaseBehavior',
 'TBehavior' => 'Prado\Util\TBehavior',
 'TBehaviorsModule' => 'Prado\Util\TBehaviorsModule',
 'TBrowserLogRoute' => 'Prado\Util\TBrowserLogRoute',

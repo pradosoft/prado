@@ -1,7 +1,7 @@
 ## Version 4.2.3 - TBA
 
-BUG: Issue #824 - All system initialized behaviors call the behavior "init($config)"" similar to TModule. (belisoful)
-BUG: Issue #848 - TComponent events support Closures [anonymous functions]. (belisoful)
+ENH: Issues #824, #838, #851, #891 - General Behaviors Update: IBaseBehavior has init($config) method. TClassBehavior tracks their owners.  Behaviors attach their registered event handlers at the behavior priority.  Registered Behavior event can optionally attached and detached automatically when the behavior is enabled or disabled (default).  Behavior events() support Closures and multiple handlers per event. IBehaviors are attachable class-wide by cloning. Behaviors for behaviors has better support. (belisoful)
+ENH: ISSUE #848 - TComponent events support Closure (anonymous functions) as handlers. (belisoful)
 ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TComponent::getClassHierarchy.  Class-wide behaviors support attaching to Traits as well as interfaces, classes, and their parents. (belisoful)
 ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
 BUG: Issue #843 - Permissions Manager behaviors rename the method 'getManager' to 'getPermissionsManager' for specificity. (belisoful)

@@ -140,7 +140,19 @@ pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attri
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
 
-callchain_bad_dynamic_event				= TCallChain.{0} was raised but {1} was expected..
+basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
+basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
+basebehavior_sync_not_owner				= The TBaseBehavior "{0}" cannot synchronize event handlers on an object that is not the owner.
+behavior_has_owner						= The TBehavior "{0}" can only attach to one owner.
+behavior_bad_attach_component			= The TBehavior "{0}" can only attach to a TComponent.
+behavior_detach_without_owner			= The TBehavior "{0}" cannot be detached without an owner.
+behavior_detach_wrong_owner				= The TBehavior "{0}" cannot detach from an object that is not its owner.
+classbehavior_owner_attach_once			= The TClassBehavior "{0}" can only be attached to an owner once.  The handlers would not be unique.
+classbehavior_bad_attach_component		= The TClassBehavior "{0}" can only attach to a TComponent.
+classbehavior_detach_without_owner		= The TClassBehavior "{0}" cannot be detached without an owner.
+classbehavior_detach_wrong_owner		= The TClassBehavior "{0}" cannot detach from an object that is not its owner.
+
+callchain_bad_dynamic_event				= TCallChain.{0} was raised but {1} was expected.
 
 behaviormodule_behavior_as_array_required = php <behavior> must be an array.
 behaviormodule_behaviorname_required	= <behavior> must contain a 'name' attribute for attaching the behavior.

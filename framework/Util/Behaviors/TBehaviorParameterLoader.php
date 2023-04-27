@@ -10,6 +10,7 @@
 
 namespace Prado\Util\Behaviors;
 
+use Prado\Collections\TPriorityItemTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TComponent;
@@ -39,14 +40,13 @@ use Prado\Util\IBaseBehavior;
  */
 class TBehaviorParameterLoader extends TComponent
 {
+	use TPriorityItemTrait;
+
 	/** @var string name of the behavior attaching to the owner */
 	private $_behaviorName;
 
 	/** @var string class of the behavior attaching to the owner */
 	private $_behaviorClass;
-
-	/** @var numeric priority of the behavior attaching to the owner */
-	private $_priority;
 
 	/** @var string what object to attach the behavior */
 	private $_attachto;
@@ -224,24 +224,6 @@ class TBehaviorParameterLoader extends TComponent
 	public function setBehaviorClass($className)
 	{
 		$this->_behaviorClass = TPropertyValue::ensureString($className);
-	}
-
-	/**
-	 * gets the priority of the attaching behavior.
-	 * @return numeric the priority of the attaching behavior.
-	 */
-	public function getPriority()
-	{
-		return $this->_priority;
-	}
-
-	/**
-	 * sets the priority of the attaching behavior.
-	 * @param numeric $priority the priority of the attaching behavior.
-	 */
-	public function setPriority($priority)
-	{
-		$this->_priority = TPropertyValue::ensureFloat($priority);
 	}
 
 	/**

@@ -1,12 +1,8 @@
 <?php
 /**
- * TComponent, TPropertyValue classes
+ * IClassBehavior class
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
- *
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -14,33 +10,75 @@
 namespace Prado\Util;
 
 /**
- * IClassBehavior interface is implements behaviors across all instances of
- * a particular class
+ * IClassBehavior is the base interface for class behaviors that extend owner objects
+ * with new information, properties, run time methods, and fine process modification.
+ * This is a stateless behavior class and typically does not retains per object
+ * information.  Each instance of IClassBehavior may be attached to multiple owners.
  *
- * Any calls to functions not present in the original object but to behaviors
- * derived from this class, will have inserted as the first argument parameter
- * the object containing the behavior.
+ * IClassBehavior is one of two types of behavior interfaces.  The other type of
+ * behavior interface is the {@link IBehavior} that handles stateful behaviors and
+ * where each behavior is attached to only one owner.
+ *
+ * All public methods and properties in the behavior are inherited by the owners
+ * and so IClassBehavior act like run-time traits.  All methods called on the
+ * owner but implemented by the IClassBehavior, will have the owner (calling object)
+ * injected as the first argument parameter of the method to identify it.
  *
  * For example:
  * <code>
- * $objWithClassBehavior->MethodOfClassBehavior(1, 20);
+ *  $result = $ownerObject->MethodOfClassBehavior(1, 20);
+ *  $filteredText = $ownerObject->dyFilteringBehavior('filtered text', 10);
  * </code>
- * will be acted within the class behavior like this:
+ * will be acted within the IClassBehavior implementation as:
  * <code>
- * public function MethodOfClassBehavior($object, $firstParam, $secondParam){
- *      // $object === $objWithClassBehavior, $firstParam === 1, $secondParam === 20
- * }
+ *  public function MethodOfClassBehavior($owner, $firstParam, $secondParam)
+ *  {
+ *      // $owner === $ownerObject, $firstParam === 1, $secondParam === 20
+ *      return $firstParam + $secondParam + $owner->getNumber();
+ *  }
  * </code>
  *
- * This also holds for 'dy' events as well.  For dynamic events, method arguments would be:
+ * When an IClassBehaviors implements a "dy" dynamic event, the {@link TCallChain}
+ * is appended to the end of the method argument list as well.  For example, a dynamic
+ * event method implementation might look like:
  * <code>
- * public function dyMethodOfClassBehavior($object, $firstParam, $secondParam, $callchain){
- *      // $object === $objWithClassBehavior, $firstParam === 1, $secondParam === 20, $callchain instanceof {@link TCallChain}
- *      return $callchain->dyMethodOfClassBehavior($firstParam, $secondParam);
- * }
+ *  public function dyFilteringBehavior($owner, $defaultReturnData, $secondParam, TCallChain $chain)
+ *  {
+ *      // $owner === $ownerObject, $defaultReturnData === 'filter text', $secondParam === 10
+ *      $defaultReturnData = $owner->processText($defaultReturnData, $secondParam);
+ *
+ *      // TCallChain dynamic method will return $defaultReturnData after other behaviors are run
+ *      return $chain->dyFilteringBehavior($defaultReturnData, $secondParam);
+ *  }
+ * </code>
+ * In dynamic events, the TCallChain must be called with the dynamic event method
+ * to continue the chain but without the first (owner object) and last (TCallChain)
+ * argument parameter.  The $chain will return the first parameter value so as to
+ * act like a filtering mechanism or default return value.
+ *
+ * The call chain may be optional to make the dynamic event method callable without
+ * the $chain but will always be present in owner called behavior dynamic event
+ * methods.  For example:
+ * <code>
+ *  public function dyFilteringBehavior($owner, $defaultReturnData, $secondParam, ?TCallChain $chain = null)
+ *  {
+ *      // $owner === $ownerObject, $defaultReturnData === 'filter text', $secondParam === 10
+ *      $defaultReturnData = $owner->processText($defaultReturnData, $secondParam);
+ *
+ *      // TCallChain dynamic method will return $defaultReturnData after other behaviors are run
+ *      if ($chain)
+ *          return $chain->dyFilteringBehavior($defaultReturnData, $secondParam);
+ *      else
+ *           return $defaultReturnData;
+ *  }
  * </code>
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * All dynamic event logic should be before the $chain dynamic event continuation
+ * unless specifically designated, in very rare instances.  Placing your behavior
+ * logic after the $chain continuation will reverse the order of the processing
+ * from behavior priority.
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2.3
  */
 interface IClassBehavior extends IBaseBehavior
