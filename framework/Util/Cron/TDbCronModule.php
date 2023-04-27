@@ -192,7 +192,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			$this->ensureTable();
 			$this->_taskRows = $this->_tasks = [];
 			$cmd = $this->getDbConnection()->createCommand(
-				"SELECT * FROM {$this->_tableName} WHERE active IS NOT NULL"
+				"SELECT * FROM {$this->_tableName} WHERE active IS NOT NULL ORDER BY tabuid"
 			);
 			$results = $cmd->query();
 
