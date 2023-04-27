@@ -211,7 +211,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	/**
 	 * This sets the attachment status of the behavior handlers on the owner. It only
 	 * returns true when there is a change in status.
-	 * @param ?TComponent $component The owner of the behavior.
+	 * @param TComponent $component The owner of the behavior.
 	 * @param bool $attach "true" to attach the handlers or "false" to detach.
 	 * @return bool Is there a change in the attachment status on the owner.
 	 * @since 4.2.3
