@@ -288,15 +288,24 @@ class TPriorityMapTest extends TMapTest
 	
 	public function testArrayWriteTPriorityMap()
 	{
+		$this->assertEquals(0, $this->map->getNextIntegerKey());
 		$this->map[] = $this->item1;
+		$this->assertEquals(1, $this->map->getNextIntegerKey());
 		$this->map->add(null, $this->item2, 15);
+		$this->assertEquals(2, $this->map->getNextIntegerKey());
 		$this->map[] = $this->item3;
+		$this->assertEquals(3, $this->map->getNextIntegerKey());
 		$this->map->add(null, $this->item4, 5);
+		$this->assertEquals(4, $this->map->getNextIntegerKey());
 		$this->assertEquals($this->item1, $this->map[0]);
 		$this->assertEquals($this->item2, $this->map[1]);
 		$this->assertEquals($this->item3, $this->map[2]);
 		$this->assertEquals($this->item4, $this->map[3]);
 		$this->assertNull($this->map[4]);
+		
+		$this->map[11] = $this->item1;
+		$this->assertEquals($this->item1, $this->map[11]);
+		$this->assertEquals(12, $this->map->getNextIntegerKey());
 	}
 	
 	// **    End TMap tests on TPriorityMap
