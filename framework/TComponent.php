@@ -788,6 +788,7 @@ class TComponent
 			return self::$_ue[$name];
 		} elseif ($this->getBehaviorsEnabled()) {
 			// getting a behavior property/event (handler list)
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return $this->_m[$name];
 			} elseif ($this->_m !== null) {
@@ -876,6 +877,7 @@ class TComponent
 			$name = strtolower($name);
 			return isset(self::$_ue[$name]) && self::$_ue[$name]->getCount();
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return true;
 			}
@@ -909,6 +911,7 @@ class TComponent
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$this->getEventHandlers($name)->remove([$this, $name]);
 		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				$this->detachBehavior($name);
 			} else {
@@ -1682,6 +1685,7 @@ class TComponent
 		if (empty(self::$_um[$class])) {
 			self::$_um[$class] = [];
 		}
+		$name = strtolower($name);
 		if (isset(self::$_um[$class][$name])) {
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
@@ -1722,6 +1726,7 @@ class TComponent
 		if (!is_string($name)) {
 			$name = $name::class;
 		}
+		$name = strtolower($name);
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
 			return null;
 		}
@@ -1744,6 +1749,7 @@ class TComponent
 	 */
 	public function asa($behaviorname)
 	{
+		$behaviorname = strtolower($behaviorname);
 		return $this->_m[$behaviorname] ?? null;
 	}
 
@@ -1891,6 +1897,7 @@ class TComponent
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
+		$name = strtolower($name);
 		if ($this->_m && isset($this->_m[$name])) {
 			$this->detachBehavior($name);
 		}
@@ -1926,6 +1933,7 @@ class TComponent
 	 */
 	public function detachBehavior($name, $priority = false)
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && ($behavior = $this->_m->itemAt($name, $priority))) {
 			$this->callBehaviorsMethod('dyDetachBehavior', $return, $name, $behavior);
 			$behavior->detach($this);
@@ -2014,6 +2022,7 @@ class TComponent
 	 */
 	public function enableBehavior($name): bool
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && isset($this->_m[$name])) {
 			$behavior = $this->_m[$name];
 			if ($behavior->getEnabled() === false) {
@@ -2045,6 +2054,7 @@ class TComponent
 	 */
 	public function disableBehavior($name): bool
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && isset($this->_m[$name])) {
 			$behavior = $this->_m[$name];
 			if ($behavior->getEnabled() === true) {

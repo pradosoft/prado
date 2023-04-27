@@ -206,8 +206,8 @@ abstract class TBaseBehavior extends TComponent implements IBaseBehavior
 	public function setName($value)
 	{
 		if (!$this->hasOwner()) {
-			$this->_name = TPropertyValue::ensureString($value);
-		} elseif ($value !== $this->_name) {
+			$this->_name = $value;
+		} elseif (strtolower($value) !== $this->_name) {
 			throw new TInvalidOperationException('basebehavior_cannot_setname_with_owner', $this->_name, $value);
 		}
 	}

@@ -186,7 +186,7 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 			}
 			$properties[IBaseBehavior::CONFIG_KEY] = $element;
-			$name = $properties['name'];
+			$name = $properties['name'] ?? null;
 			unset($properties['name']);
 			if (!$name) {
 				throw new TConfigurationException('behaviormodule_behaviorname_required');
