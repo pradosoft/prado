@@ -150,11 +150,11 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
+		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		$exponentMaxValue = (1 << $exponentBits) - 1;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 || $exponentBias < 0 || $exponentBias > $exponentMaxValue) {
-			throw new TInvalidDataValueException('datareader_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
+			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
 		}
-		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		$sign = self::isNegativeFloat($value) ? 1 : 0;
 		$value = abs($value);
 		$exponent = 0;
@@ -264,7 +264,7 @@ class TBitHelper
 		$exponentMaxValue = (1 << $exponentBits) - 1;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 ||
 			($exponentBias !== null && ($exponentBias < 0 || $exponentBias > $exponentMaxValue))) {
-			throw new TInvalidDataValueException('datareader_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
+			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
 		}
 		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		$sign = ($fpXX >> ($exponentBits + $mantissaBits)) & 0x1;

@@ -287,6 +287,7 @@ return [
 'TBaseBehavior' => 'Prado\Util\TBaseBehavior',
 'TBehavior' => 'Prado\Util\TBehavior',
 'TBehaviorsModule' => 'Prado\Util\TBehaviorsModule',
+'TBitHelper' => 'Prado\Util\TBitHelper',
 'TBrowserLogRoute' => 'Prado\Util\TBrowserLogRoute',
 'TCallChain' => 'Prado\Util\TCallChain',
 'TClassBehavior' => 'Prado\Util\TClassBehavior',
