@@ -150,8 +150,8 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
-		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		$exponentMaxValue = (1 << $exponentBits) - 1;
+		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 || $exponentBias < 0 || $exponentBias > $exponentMaxValue) {
 			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
 		}
