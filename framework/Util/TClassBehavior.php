@@ -51,7 +51,7 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	 */
 	private ?TWeakList $_owners = null;
 
-	/** @var null|array|WeakMap This tracks whether an owner has event handlers attached. */
+	/** @var null|array|\WeakMap This tracks whether an owner has event handlers attached. */
 	private $_handlersInstalled;
 
 	/**
