@@ -73,25 +73,25 @@ interface IBaseBehavior extends IPriorityProperty
 
 	/**
 	 * Attaches the behavior object to the component.
-	 * @param Prado\TComponent $component The component that this behavior is being attached to.
+	 * @param \Prado\TComponent $component The component that this behavior is being attached to.
 	 */
 	public function attach($component);
 
 	/**
 	 * Detaches the behavior object from the component.
-	 * @param Prado\TComponent $component The component that this behavior is being detached from.
+	 * @param \Prado\TComponent $component The component that this behavior is being detached from.
 	 */
 	public function detach($component);
 
 	/**
 	 * @return ?string The name of the behavior in the owner[s].
+	 * @since 4.2.3
 	 */
 	public function getName(): ?string;
 
 	/**
 	 * @param ?string $value The name of the behavior in the owner[s].
-	 * @throws TInvalidOperationException When there is an owner and the new name is
-	 *   not the same as the given name.
+	 * @since 4.2.3
 	 */
 	public function setName($value);
 
