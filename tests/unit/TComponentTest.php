@@ -1375,8 +1375,22 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
-		
 	}
+	
+	
+	public function testAttachBehaviorEventHandlersAtPriority()
+	{
+		$this->component->attachBehavior($name1 = 'TestWithEvents1', $b1 = new FooBehaviorWithEvents());
+		$this->component->attachBehavior($name2 = 'TestWithEvents2', $b2 = new FooBehaviorWithEvents(), 3);
+		
+		$this->assertEquals('fooEventHandler', $b1->eventsLog()['onMyEvent'][0]);
+		$this->assertInstanceOf('\Closure', $b1->eventsLog()['onMyEvent'][1]);
+		$this->assertEquals(10, $this->component->onMyEvent->priorityOf([$b1, $b1->eventsLog()['onMyEvent'][0]]));
+		$this->assertEquals(10, $this->component->onMyEvent->priorityOf($b1->eventsLog()['onMyEvent'][1]));
+		$this->assertEquals(3, $this->component->onMyEvent->priorityOf([$b2, $b2->eventsLog()['onMyEvent'][0]]));
+		$this->assertEquals(3, $this->component->onMyEvent->priorityOf($b2->eventsLog()['onMyEvent'][1]));
+	}
+
 
 	public function testAttachDetachBehaviors()
 	{
