@@ -275,7 +275,13 @@ use Prado\Web\Javascripts\TJavaScriptString;
  *
  * Anonymous Behaviors are supported where the behavior does not have a name or
  * the behavior has a numeric for a name.  These cannot be access by name because
- * their names may be different for each request or even for each object.
+ * their names may be different in each request, for each object, and even the same
+ * object between serialization-sleep and unserialization-wakeup.
+ *
+ * When serializing a component with behaviors, behaviors are saved and restored.
+ * Named IClassBehavior class behaviors are updated with the current instance
+ * of the named class behavior rather than replicate it from the wake up. {@link
+ * __wakeup} will add any new named class behaviors to the unserializing component.
  *
  * IClassBehaviors can only use one given name for all behaviors except when applied
  * anonymously (with no name or a numeric name).
@@ -489,7 +495,8 @@ class TComponent
 			$this->_m = new TPriorityMap();
 			foreach ($behaviors->getPriorities() as $priority) {
 				foreach ($behaviors->itemsAtPriority($priority) as $name => $behavior) {
-					if ($behavior instanceof IClassBehavior) {
+					if ($behavior instanceof IClassBehavior && !is_numeric($name)) {
+						//Replace class behaviors with their current instances, if they exist.
 						foreach ($classes as $class) {
 							if (isset(self::$_um[$class]) && array_key_exists($name, self::$_um[$class])) {
 								$behavior = self::$_um[$class][$name]->getBehavior();
@@ -505,6 +512,9 @@ class TComponent
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
 				foreach (self::$_um[$class] as $name => $behavior) {
+					if(is_numeric($name)) {
+						continue;
+					}
 					if (!array_key_exists($name, $classBehaviors)) {
 						$this->attachBehaviors([$name => $behavior], true);
 					}
