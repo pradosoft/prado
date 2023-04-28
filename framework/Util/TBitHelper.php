@@ -184,7 +184,7 @@ class TBitHelper
 				}
 			}
 		}
-		$fpXX = ($sign << ($exponentBits + $mantissaBits)) | ($exponent << $mantissaBits) | $mantissa;
+		$fpXX = ((($sign << $exponentBits) | $exponent) << $mantissaBits) | $mantissa;
 		return $fpXX;
 	}
 
