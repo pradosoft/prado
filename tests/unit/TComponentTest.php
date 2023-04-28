@@ -93,6 +93,16 @@ class NewComponent extends TComponent
 	{
 		$this->_colorattribute = $colorattribute;
 	}
+	
+	public $_protectedValue = 'protectedData';
+	protected function getProtectedValue()
+	{
+		return $this->_protectedValue;
+	}
+	protected function setProtectedValue($value )
+	{
+		$this->_protectedValue = $value;
+	}
 }
 
 class NewComponentBehavior extends TBehavior
@@ -2902,6 +2912,25 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		
 		NewComponent::detachClassBehavior('ClassBehavior1');
 		NewComponent::detachClassBehavior('ClassBehavior3');
+		
+	}
+	
+	public function testProtectedSetter()
+	{
+		
+		// Calling protected method doesn't fail, but doesn't call the method
+		//   and returns null.
+		$this->assertEquals(null, $this->component->getProtectedValue());
+		
+		//
+		$value = null;
+		try {
+			$value = $this->component->ProtectedValue;
+			$this->fail("TInvalidOperationException was not properly thrown when accessing a protected property.");
+		} catch(TInvalidOperationException $e) {
+		}
+		$this->assertEquals(null, $value);
+		
 		
 	}
 }
