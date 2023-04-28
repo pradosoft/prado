@@ -11,7 +11,6 @@ namespace Prado\Util;
 
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TComponent;
-use Prado\TPropertyValue;
 use Prado\Util\TCallChain;
 
 use WeakReference;

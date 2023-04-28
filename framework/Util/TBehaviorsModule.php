@@ -188,8 +188,8 @@ class TBehaviorsModule extends \Prado\TModule
 			$properties[IBaseBehavior::CONFIG_KEY] = $element;
 			$name = $properties['name'] ?? null;
 			unset($properties['name']);
-			if (!$name) {
-				throw new TConfigurationException('behaviormodule_behaviorname_required');
+			if (empty($name) || is_numeric($name)) {
+				$name = null;
 			}
 
 			$attachTo = $properties['attachto'] ?? null;

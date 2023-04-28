@@ -635,6 +635,7 @@ function foobarfoobar($sender, $param)
 class TComponentTest extends PHPUnit\Framework\TestCase
 {
 	protected $tearDownScripts = [];
+	protected $anonymousClassIndex = 0;
 	protected $component;
 
 	protected function setUp(): void
@@ -656,6 +657,10 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		}
 		$this->tearDownScripts = [];
 		$this->component = null;
+		
+		$component = new NewComponent();
+		
+		$this->assertEquals([], $component->getBehaviors());
 	}
 
 
@@ -757,6 +762,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	//Test Class behaviors
 	public function testAttachClassBehavior()
 	{
+		$this->assertEquals([], $this->component->getBehaviors());
 
 	// ensure that the class is listening
 		$this->assertEquals(1, $this->component->getEventHandlers('fxAttachClassBehavior')->getCount());
@@ -775,8 +781,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		
 		// Add class behavior as instanced IClassBehavior behavior
 		$b2 = $this->component->attachClassBehavior('FooClassBehavior2', $ob2 = new FooClassBehavior());
-		$this->assertInstanceof('FooClassBehavior', $b2);
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooClassBehavior2');};
+		$this->assertInstanceof('FooClassBehavior', $b2);
 		$this->assertEquals($ob2, $b2);
 		$this->assertNotNull($this->component->asa('FooClassBehavior2'), "Component is does not have the FooClassBehavior2 and should have this behavior");
 		$this->assertEquals('default', $this->component->asa('FooClassBehavior2')->PropertyA, "Component is does not have the FooClassBehavior2 and should have this behavior");
@@ -792,8 +798,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		
 		// add class behavior as IBehavior string
 		$b4 = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
-		$this->assertEquals([$this->component->FooRegularBehavior], $b4);
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooRegularBehavior');};
+		$this->assertEquals([$this->component->FooRegularBehavior], $b4);
 		$this->assertNotNull($this->component->asa('FooRegularBehavior'));
 		$this->assertEquals('faa', $this->component->asa('FooRegularBehavior')->Excitement);
 		$this->assertEquals(BehaviorTestBehavior::NULL_CONFIG, $this->component->asa('FooRegularBehavior')->_config, "Component did not initialize the behavior when it should");
@@ -808,17 +814,40 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		
 		// Add class behavior as instance of IBehavior to be cloned
 		$b6 = $this->component->attachClassBehavior('FooRegularBehavior3', $ob6 = new BehaviorTestBehavior());
-		$this->assertEquals($this->component, $b6[0]->getOwner());
 		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooRegularBehavior3');};
+		$this->assertEquals($this->component, $b6[0]->getOwner());
 		$this->assertNotNull($this->component->asa('FooRegularBehavior3'));
 		$this->assertEquals('faa', $this->component->asa('FooRegularBehavior3')->Excitement);
 		$this->assertNull($this->component->asa('FooRegularBehavior3')->_config, "Component did not initialize the behavior when it should");
+		
+		// Add anonymous class behavior, numeric
+		$this->assertNull($this->component->asa(0));
+		$b7 = $this->component->attachClassBehavior('11', $ob7 = new BehaviorTestBehavior());
+		$b7name = $this->anonymousClassIndex++;
+		$this->tearDownScripts[] = function() use ($b7name) { $this->component->detachClassBehavior($b7name);};
+		$ob7->Excitement = 'anon_behavior';
+		$this->assertEquals($this->component, $b7[0]->getOwner());
+		$this->assertNotNull($this->component->asa(0));
+		$this->assertEquals('faa', $this->component->asa(0)->Excitement, "The original IBehavior attached to a class should have been cloned to attach and not be the original behavior in this instance."); 
+		$this->assertNull($this->component->asa(0)->_config, "Component did not initialize the behavior when it should");
+		
+		// Add anonymous class behavior, null
+		$b8 = $this->component->attachClassBehavior(null, $ob8 = new BehaviorTestBehavior());
+		$b8name = $this->anonymousClassIndex++;
+		$this->tearDownScripts[] = function() use ($b8name) {$this->component->detachClassBehavior($b8name);};
+		$ob7->Excitement = 'anon_null_behavior';
+		$this->assertEquals($this->component, $b8[0]->getOwner());
+		$this->assertNotNull($this->component->asa(1));
+		$this->assertEquals('faa', $this->component->asa(1)->Excitement);
+		$this->assertNull($this->component->asa(1)->_config, "Component did not initialize the behavior when it should");
 
 
 		// test if the function modifies new instances of the object
 		$anothercomponent = new NewComponent();
 
 		//The new component should be a FooClassBehavior
+		$this->assertNotNull($anothercomponent->asa(0), "anothercomponent does not have the numeric named anonymous behavior");
+		$this->assertNotNull($anothercomponent->asa(1), "anothercomponent does not have the null named anonymous behavior");
 		$this->assertNotNull($anothercomponent->asa('FooClassBehavior'), "anothercomponent does not have the FooClassBehavior and should");
 		$this->assertNotNull($anothercomponent->asa('FooClassBehavior2'), "anothercomponent does not have the FooClassBehavior2 and should");
 		$this->assertNotNull($anothercomponent->asa('FooClassBehavior3'), "anothercomponent does not have the FooClassBehavior3 and should");
@@ -883,15 +912,29 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals($this->component->BarBehaviorObject->Owner, $this->component);
 		$this->component->detachClassBehavior('BarBehaviorObject');
 		$this->assertNull($this->component->asa('BarBehaviorObject'));
-		
 	}
 
 
+	public function testAttachClassBehavior_AnonymousOverExistingAnon()
+	{
+		$component = new NewComponent();
+		$component->attachBehavior(null, $behavior = new BehaviorTestBehavior());
+		$component->attachClassBehavior(null, $classBehaviors = new FooClassBehavior());
+		$indexName = $this->anonymousClassIndex++;
+		$this->tearDownScripts[] = function() use ($indexName) {NewComponent::detachClassBehavior($indexName);};
+		$this->assertEquals([$classBehaviors], $this->component->getBehaviors());
+		$this->assertEquals([$behavior, $classBehaviors], $component->getBehaviors());
+		$this->assertEquals($behavior, $component->asa(0));
+		$this->assertEquals($classBehaviors, $component->asa(1));
+		$this->assertEquals($classBehaviors, $this->component->asa(0));
+	}
 
 
 
 	public function testDetachClassBehavior()
 	{
+		$this->assertEquals([], $this->component->getBehaviors());
+		
 		// ensure that the component is listening
 		$this->assertEquals(1, $this->component->getEventHandlers('fxDetachClassBehavior')->getCount());
 
@@ -899,10 +942,14 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		//Attach a class behavior
 		$b = $this->component->attachClassBehavior('FooClassBehavior', $cb = new FooClassBehavior());
+		$this->tearDownScripts['FooClassBehavior'] = function() {$this->component->detachClassBehavior('FooClassBehavior');};
 		$this->assertEquals($cb, $b);
 		$b = $this->component->attachClassBehavior('FooRegularBehavior', 'BehaviorTestBehavior');
+		$this->tearDownScripts['FooRegularBehavior'] = function() {$this->component->detachClassBehavior('FooRegularBehavior');};
 		$rb = $this->component->FooRegularBehavior;
 		$this->assertEquals([$rb], $b);
+		
+		$this->assertEquals(1, $this->component->getEventHandlers('fxDetachClassBehavior')->getCount());
 
 		//Create new components that listen and don't listen to global events
 		$anothercomponent = new NewComponent();
@@ -910,18 +957,20 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$ancomb = $anothercomponent->FooRegularBehavior;
 
 		//ensures that all the Components are properly initialized
-		$this->assertEquals(2, $this->component->getEventHandlers('fxDetachClassBehavior')->getCount());
 		$this->assertNotNull($this->component->asa('FooClassBehavior'), "Listening Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNull($prenolistencomponent->asa('FooClassBehavior'), "Component has the FooClassBehavior and should _not_ have this behavior");
 		$this->assertNotNull($anothercomponent->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNotNull($postnolistencomponent->asa('FooClassBehavior'), "Component does not have the FooClassBehavior and should have this behavior");
 		$this->assertNotNull($anothercomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
 		$this->assertNotNull($postnolistencomponent->asa('FooRegularBehavior'), "Component does not have the FooRegularBehavior and should have this behavior");
+		$this->assertEquals(2, $this->component->getEventHandlers('fxDetachClassBehavior')->getCount());
 
 
+		unset($this->tearDownScripts['FooClassBehavior']);
 		$deb = $this->component->detachClassBehavior('FooClassBehavior');
 		$this->assertEquals($cb, $deb);
 		
+		unset($this->tearDownScripts['FooRegularBehavior']);
 		$derb = $this->component->detachClassBehavior('FooRegularBehavior');
 		$this->assertEquals([$rb, $ancomb], $derb);
 		
@@ -967,7 +1016,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		// add the class behavior
 		$this->component->attachClassBehavior('FooClassBehavior', new FooClassBehavior);
-
+		$this->tearDownScripts[] = function() {$this->component->detachClassBehavior('FooClassBehavior');};
+		
 		//Check that the component has only the class behavior assigned
 		$this->assertNotNull($this->component->asa('FooClassBehavior'));
 		$this->assertNotNull($this->component->asa(strtoupper('FooClassBehavior')));
@@ -982,6 +1032,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($anothercomponent->asa('NonExistantClassBehavior'));
 
 		// remove the class behavior
+		array_pop($this->tearDownScripts);
 		$this->component->detachClassBehavior('FooClassBehavior');
 
 		// Check the function doesn't have the behavior any more
@@ -1247,31 +1298,47 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		$this->assertEquals('default',$this->component->asa('FooBehavior')->PropertyA);
 		
-		$this->component->detachBehavior('FooBehavior');
+		$this->component->detachBehavior(strtolower('FooBehavior'));
 
 		$this->assertNull($this->component->asa('FooBehavior'));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		
-		
-		$this->component->attachBehavior('FooBehavior', ['class' => 'FooBehavior', 'PropertyA'=>'value']);
+		// Anonymous null named behavior
+		$this->component->attachBehavior(null, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name_null']);
 
-		$this->assertNotNull($this->component->asa('FooBehavior'));
+		$this->assertNotNull($this->component->asa(0));
 		$this->assertTrue($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
-		$this->assertEquals('value',$this->component->asa('FooBehavior')->PropertyA);
+		$this->assertEquals('anon_name_null',$this->component->asa(0)->PropertyA);
 		
-		$this->component->detachBehavior(strtoupper('FooBehavior'));
+		$this->component->detachBehavior(0);
 
-		$this->assertNull($this->component->asa('FooBehavior'));
+		$this->assertNull($this->component->asa(0));
 		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		
 		
-		$this->component->attachBehavior('FooBehavior', ['class' => 'FooBehavior', 'PropertyA'=>'value']);
+		// Anonymous number behavior
+		$this->component->attachBehavior(11, ['class' => 'FooBehavior', 'PropertyA'=>'anon_name']);
+		
+		$this->assertNotNull($this->component->asa(1));
+		$this->assertTrue($this->component->isa(FooBehavior::class));
+		$this->assertNull($this->component->asa('BarBehavior'));
+		$this->assertFalse($this->component->isa(BarBehavior::class));
+		$this->assertEquals('anon_name',$this->component->asa(1)->PropertyA);
+		
+		$this->component->detachBehavior(1);
+		
+		$this->assertNull($this->component->asa(1));
+		$this->assertFalse($this->component->isa(FooBehavior::class));
+		$this->assertNull($this->component->asa('BarBehavior'));
+		$this->assertFalse($this->component->isa(BarBehavior::class));
+		
+		
 		
 		
 		//Instance TClassBehavior
@@ -1295,7 +1362,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		}
 		
 		$this->assertNotNull($this->component->asa('FooClassBehavior'));
-		$this->assertTrue($this->component->isa(FooBehavior::class));
+		$this->assertFalse($this->component->isa(FooBehavior::class));
 		$this->assertNull($this->component->asa('BarBehavior'));
 		$this->assertFalse($this->component->isa(BarBehavior::class));
 		
@@ -2848,13 +2915,22 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	public function testWakeUp()
 	{
 		NewComponent::attachClassBehavior('ClassBehavior1', $cb1 = new FooClassBehavior());
+		$this->tearDownScripts['ClassBehavior1'] = function() {NewComponent::detachClassBehavior('ClassBehavior1');};
 		$cb1->propertya = 'second value';
 		NewComponent::attachClassBehavior('ClassBehavior2', $cb2 = new FooFooClassBehavior());
+		$this->tearDownScripts['ClassBehavior2'] = function() {NewComponent::detachClassBehavior('ClassBehavior2');};
 		NewComponent::attachClassBehavior('ClassBehavior4', $cb4 = new FooClassBehavior());
-		$cb4->propertya = '4th value';
+		$this->tearDownScripts['ClassBehavior4'] = function() {NewComponent::detachClassBehavior('ClassBehavior4');};
+		
+		// Anonynmous behavior
+		$behavior5Name = $this->anonymousClassIndex++;
+		NewComponent::attachClassBehavior(null, $cb5 = new FooClassBehavior());
+		$this->tearDownScripts['ClassBehavior5'] = function() use ($behavior5Name) {NewComponent::detachClassBehavior($behavior5Name);};
+		$cb5->propertya = '5th value';
 		$this->assertEquals('classbehavior1', $cb1->getName());
 		$this->assertEquals('classbehavior2', $cb2->getName());
 		$this->assertEquals('classbehavior4', $cb4->getName());
+		
 		
 		$obj = new NewComponent();
 		$this->component = new NewComponent();
@@ -2870,18 +2946,39 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($this->component->asa('ClassBehavior3'));
 		$this->assertEquals($this->component, $this->component->CopyBehavior->getOwner());
 	
+		// Serialize
 		$data = serialize($this->component);
+		
+		// Change environment
 		NewComponent::detachClassBehavior('ClassBehavior2'); // Without an existing class behavior
+		unset($this->tearDownScripts['ClassBehavior2']);
 		$this->assertNull($this->component->asa('ClassBehavior2'));
 		NewComponent::attachClassBehavior('ClassBehavior3', $cb3 = new BarClassBehavior());
+		
+		// ClassBehavior3 is new between sleep and wake up.
+		$this->tearDownScripts['ClassBehavior3'] = function() {NewComponent::detachClassBehavior('ClassBehavior3');};
 		$this->assertNotNull($this->component->asa('ClassBehavior3')); // With new class behavior
 		NewComponent::detachClassBehavior('ClassBehavior4');	// with a replacement class behavior.
 		NewComponent::attachClassBehavior('ClassBehavior4', $cb4a = new FooClassBehavior());
 		$cb4a->propertya = 'new 4th value';
 		$cb2->propertya = '3rd value';
+		$cb5->propertya = 'old 5th value';
+		
+		// anonymous 1 is new between sleep and wake up.
+		$behavior6Name = $this->anonymousClassIndex++;
+		NewComponent::attachClassBehavior(null, $cb6 = new FooClassBehavior());
+		$this->tearDownScripts['ClassBehavior6'] = function() use ($behavior6Name) {NewComponent::detachClassBehavior($behavior6Name);};
+		$cb6->propertya = '6th value';
+		
+		// Unserialize
 		$copy = unserialize($data);
 		$copy->Text = 'copyObject';
 		
+		$this->assertNotEquals($cb5, $copy->asa(0));
+		$this->assertInstanceOf($cb5::class, $copy->asa(0));
+		$this->assertNull($copy->asa(1), "anonymous behavior added between sleep and wake up was attached when it should not have been");
+		$this->assertEquals($cb5, $this->component->asa(0));
+		$this->assertEquals($cb6, $this->component->asa(1));
 		$this->assertEquals($cb3, $this->component->asa('ClassBehavior3'));
 		$this->assertEquals($cb4a, $this->component->asa('ClassBehavior4'));
 		$this->assertNotNull($copy->asa('CopyBehavior'));
@@ -2899,9 +2996,5 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertNotEquals($cb2, $copy->asa('ClassBehavior2'));
 		$this->assertEquals($this->component->asa('ClassBehavior3'), $copy->asa('ClassBehavior3'));
 		$this->assertEquals($cb4a, $copy->asa('ClassBehavior4'));
-		
-		NewComponent::detachClassBehavior('ClassBehavior1');
-		NewComponent::detachClassBehavior('ClassBehavior3');
-		
 	}
 }

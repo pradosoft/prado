@@ -273,6 +273,20 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * detaching class behaviors.  Any objects listening to the global 'fx' event
  * {@link fxDetachClassBehavior} will have a class behavior removed.
  *
+ * Anonymous Behaviors are supported where the behavior does not have a name or
+ * the behavior has a numeric for a name.  These cannot be accessed by name because
+ * their names may be different in each request, for different owners, and possibly,
+ * though extremely rarely, even the same object between serialization-sleep and
+ * unserialization-wakeup.
+ *
+ * When serializing a component with behaviors, behaviors are saved and restored.
+ * Named IClassBehavior class behaviors are updated with the current instance
+ * of the named class behavior rather than replicate it from the wake up. {@link
+ * __wakeup} will add any new named class behaviors to the unserializing component.
+ *
+ * IClassBehaviors can only use one given name for all behaviors except when applied
+ * anonymously (with no name or a numeric name).
+ *
  *
  * Dynamic Intra-Object Behavior Events
  *
@@ -482,7 +496,8 @@ class TComponent
 			$this->_m = new TPriorityMap();
 			foreach ($behaviors->getPriorities() as $priority) {
 				foreach ($behaviors->itemsAtPriority($priority) as $name => $behavior) {
-					if ($behavior instanceof IClassBehavior) {
+					if ($behavior instanceof IClassBehavior && !is_numeric($name)) {
+						//Replace class behaviors with their current instances, if they exist.
 						foreach ($classes as $class) {
 							if (isset(self::$_um[$class]) && array_key_exists($name, self::$_um[$class])) {
 								$behavior = self::$_um[$class][$name]->getBehavior();
@@ -498,6 +513,9 @@ class TComponent
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
 				foreach (self::$_um[$class] as $name => $behavior) {
+					if(is_numeric($name)) {
+						continue;
+					}
 					if (!array_key_exists($name, $classBehaviors)) {
 						$this->attachBehaviors([$name => $behavior], true);
 					}
@@ -1675,9 +1693,6 @@ class TComponent
 			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
 		}
 
-		if (!is_string($name)) {
-			$name = $name::class;
-		}
 		$class = strtolower($class);
 		if ($class === strtolower(TComponent::class)) {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
@@ -1685,15 +1700,19 @@ class TComponent
 		if (empty(self::$_um[$class])) {
 			self::$_um[$class] = [];
 		}
-		$name = strtolower($name);
-		if (isset(self::$_um[$class][$name])) {
+		$name = strtolower($name !== null ? $name : '');
+		if (!empty($name) && !is_numeric($name) && isset(self::$_um[$class][$name])) {
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
 		$behaviorObject = self::instanceBehavior($behavior);
 		$behaviorObject->setName($name);
 		$isClassBehavior = $behaviorObject instanceof \Prado\Util\IClassBehavior;
 		$param = new TClassBehaviorEventParameter($class, $name, $isClassBehavior ? $behaviorObject : $behavior, $priority);
-		self::$_um[$class] = [$name => $param] + self::$_um[$class];
+		if (empty($name) || is_numeric($name)) {
+			self::$_um[$class][] = $param;
+		} else {
+			self::$_um[$class] = [$name => $param] + self::$_um[$class];
+		}
 		$results = $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 		return $isClassBehavior ? $behaviorObject : $results;
 	}
@@ -1723,9 +1742,6 @@ class TComponent
 		}
 
 		$class = strtolower($class);
-		if (!is_string($name)) {
-			$name = $name::class;
-		}
 		$name = strtolower($name);
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
 			return null;
@@ -1736,6 +1752,9 @@ class TComponent
 		$behaviorObject->setName($name);
 		$isClassBehavior = $behaviorObject instanceof IClassBehavior;
 		unset(self::$_um[$class][$name]);
+		if(empty(self::$_um[$class])) {
+			unset(self::$_um[$class]);
+		}
 		$results = $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 		return $isClassBehavior ? $behaviorObject : $results;
 	}
@@ -1886,7 +1905,7 @@ class TComponent
 	 * to be executed when attachBehavior is called.  All attached behaviors are notified through
 	 * dyAttachBehavior.
 	 *
-	 * @param string $name the behavior's name. It should uniquely identify this behavior.
+	 * @param null|numeric|string $name the behavior's name. It should uniquely identify this behavior.
 	 * @param array|IBaseBehavior|string $behavior the behavior configuration. This is the name of the Behavior Class
 	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
@@ -1897,13 +1916,16 @@ class TComponent
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
-		$name = strtolower($name);
+		$name = strtolower($name !== null ? $name : '');
 		if ($this->_m && isset($this->_m[$name])) {
 			$this->detachBehavior($name);
 		}
 		$behavior = self::instanceBehavior($behavior);
 		if ($this->_m === null) {
 			$this->_m = new TPriorityMap();
+		}
+		if (empty($name) || is_numeric($name)) {
+			$name = $this->_m->getNextIntegerKey();
 		}
 		$this->_m->add($name, $behavior, $priority);
 		$behavior->setName($name);

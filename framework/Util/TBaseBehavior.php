@@ -11,6 +11,7 @@ namespace Prado\Util;
 
 use Prado\Collections\TPriorityItemTrait;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\TApplicationComponent;
 use Prado\TComponent;
 use Prado\TPropertyValue;
 
@@ -45,7 +46,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-abstract class TBaseBehavior extends TComponent implements IBaseBehavior
+abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehavior
 {
 	use TPriorityItemTrait;
 
@@ -71,6 +72,16 @@ abstract class TBaseBehavior extends TComponent implements IBaseBehavior
 	{
 		$this->_name = null;
 		parent::__clone();
+	}
+
+	/**
+	 * Behaviors do not automatically listen to global events.
+	 *
+	 * @return bool returns whether or not to listen.
+	 */
+	public function getAutoGlobalListen()
+	{
+		return false;
 	}
 
 	/**
@@ -207,7 +218,7 @@ abstract class TBaseBehavior extends TComponent implements IBaseBehavior
 	{
 		if (!$this->hasOwner()) {
 			$this->_name = $value;
-		} elseif (strtolower($value) !== $this->_name) {
+		} elseif (!is_numeric($value) && strtolower($value) !== $this->_name) {
 			throw new TInvalidOperationException('basebehavior_cannot_setname_with_owner', $this->_name, $value);
 		}
 	}
