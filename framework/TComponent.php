@@ -735,7 +735,7 @@ class TComponent
 		if (($getset == 'get') || ($getset == 'set')) {
 			$propname = substr($method, 3);
 			$jsmethod = $getset . 'js' . $propname;
-			if (Prado::method_exists($this, $jsmethod)) {
+			if (Prado::method_accessible($this, $jsmethod)) {
 				if (count($args) > 0) {
 					if ($args[0] && !($args[0] instanceof TJavaScriptString)) {
 						$args[0] = new TJavaScriptString($args[0]);
@@ -744,7 +744,7 @@ class TComponent
 				return $this->$jsmethod(...$args);
 			}
 
-			if (($getset == 'set') && Prado::method_exists($this, 'getjs' . $propname)) {
+			if (($getset == 'set') && Prado::method_accessible($this, 'getjs' . $propname)) {
 				throw new TInvalidOperationException('component_property_readonly', $this::class, $method);
 			}
 		}
@@ -784,10 +784,10 @@ class TComponent
 	 */
 	public function __get($name)
 	{
-		if (Prado::method_exists($this, $getter = 'get' . $name)) {
+		if (Prado::method_accessible($this, $getter = 'get' . $name)) {
 			// getting a property
 			return $this->$getter();
-		} elseif (Prado::method_exists($this, $jsgetter = 'getjs' . $name)) {
+		} elseif (Prado::method_accessible($this, $jsgetter = 'getjs' . $name)) {
 			// getting a javascript property
 			return (string) $this->$jsgetter();
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
@@ -838,12 +838,12 @@ class TComponent
 	 */
 	public function __set($name, $value)
 	{
-		if (Prado::method_exists($this, $setter = 'set' . $name)) {
+		if (Prado::method_accessible($this, $setter = 'set' . $name)) {
 			if (strncasecmp($name, 'js', 2) === 0 && $value && !($value instanceof TJavaScriptLiteral)) {
 				$value = new TJavaScriptLiteral($value);
 			}
 			return $this->$setter($value);
-		} elseif (Prado::method_exists($this, $jssetter = 'setjs' . $name)) {
+		} elseif (Prado::method_accessible($this, $jssetter = 'setjs' . $name)) {
 			if ($value && !($value instanceof TJavaScriptString)) {
 				$value = new TJavaScriptString($value);
 			}
@@ -863,7 +863,7 @@ class TComponent
 			}
 		}
 
-		if (Prado::method_exists($this, 'get' . $name) || Prado::method_exists($this, 'getjs' . $name)) {
+		if (Prado::method_accessible($this, 'get' . $name) || Prado::method_accessible($this, 'getjs' . $name)) {
 			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		} else {
 			throw new TInvalidOperationException('component_property_undefined', $this::class, $name);
@@ -884,9 +884,9 @@ class TComponent
 	 */
 	public function __isset($name)
 	{
-		if (Prado::method_exists($this, $getter = 'get' . $name)) {
+		if (Prado::method_accessible($this, $getter = 'get' . $name)) {
 			return $this->$getter() !== null;
-		} elseif (Prado::method_exists($this, $jsgetter = 'getjs' . $name)) {
+		} elseif (Prado::method_accessible($this, $jsgetter = 'getjs' . $name)) {
 			return $this->$jsgetter() !== null;
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$name = strtolower($name);
@@ -920,9 +920,9 @@ class TComponent
 	 */
 	public function __unset($name)
 	{
-		if (Prado::method_exists($this, $setter = 'set' . $name)) {
+		if (Prado::method_accessible($this, $setter = 'set' . $name)) {
 			$this->$setter(null);
-		} elseif (Prado::method_exists($this, $jssetter = 'setjs' . $name)) {
+		} elseif (Prado::method_accessible($this, $jssetter = 'setjs' . $name)) {
 			$this->$jssetter(null);
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$this->_e[strtolower($name)]->clear();
@@ -940,11 +940,11 @@ class TComponent
 						$unset++;
 					}
 				}
-				if (!$unset && Prado::method_exists($this, 'get' . $name)) {
+				if (!$unset && Prado::method_accessible($this, 'get' . $name)) {
 					throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 				}
 			}
-		} elseif (Prado::method_exists($this, 'get' . $name)) {
+		} elseif (Prado::method_accessible($this, 'get' . $name)) {
 			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		}
 	}
@@ -972,7 +972,7 @@ class TComponent
 	 */
 	public function canGetProperty($name)
 	{
-		if (Prado::method_exists($this, 'get' . $name) || Prado::method_exists($this, 'getjs' . $name)) {
+		if (Prado::method_accessible($this, 'get' . $name) || Prado::method_accessible($this, 'getjs' . $name)) {
 			return true;
 		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
@@ -995,7 +995,7 @@ class TComponent
 	 */
 	public function canSetProperty($name)
 	{
-		if (Prado::method_exists($this, 'set' . $name) || Prado::method_exists($this, 'setjs' . $name)) {
+		if (Prado::method_accessible($this, 'set' . $name) || Prado::method_accessible($this, 'setjs' . $name)) {
 			return true;
 		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
@@ -1076,7 +1076,7 @@ class TComponent
 				}
 			} else {
 				foreach ($this->_m->toArray() as $behavior) {
-					if ($behavior->getEnabled() && Prado::method_exists($behavior, $method)) {
+					if ($behavior->getEnabled() && Prado::method_accessible($behavior, $method)) {
 						if ($behavior instanceof IClassBehavior) {
 							array_unshift($args, $this);
 						}
@@ -1110,7 +1110,7 @@ class TComponent
 	{
 		$classArgs = $callchain = null;
 		foreach ($this->_m->toArray() as $behavior) {
-			if ($behavior->getEnabled() && (Prado::method_exists($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
+			if ($behavior->getEnabled() && (Prado::method_accessible($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
 				if ($classArgs === null) {
 					$classArgs = $args;
 					array_unshift($classArgs, $this);
@@ -1136,12 +1136,12 @@ class TComponent
 	 */
 	public function hasMethod($name)
 	{
-		if (Prado::method_exists($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
+		if (Prado::method_accessible($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
 			return true;
 		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				//Prado::method_exists($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
-				if ($behavior->getEnabled() && Prado::method_exists($behavior, $name)) {
+				//Prado::method_accessible($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
+				if ($behavior->getEnabled() && Prado::method_accessible($behavior, $name)) {
 					return true;
 				}
 			}
@@ -1416,7 +1416,7 @@ class TComponent
 					if (($pos = strrpos($handler, '.')) !== false) {
 						$object = $this->getSubProperty(substr($handler, 0, $pos));
 						$method = substr($handler, $pos + 1);
-						if (Prado::method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+						if (Prado::method_accessible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
 								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
@@ -1437,7 +1437,7 @@ class TComponent
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
 						}
-						if (Prado::method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+						if (Prado::method_accessible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
 								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
