@@ -76,6 +76,10 @@ class TPriorityMapTestNoItemBehavior extends TBehavior
 
 class TPriorityMapUnit extends TPriorityMap
 {
+	public function _setDefaultPriority($value)
+	{
+		$this->setDefaultPriority($value);
+	}
 	public function _setPrecision($value)
 	{
 		$this->setPrecision($value);
@@ -320,7 +324,7 @@ class TPriorityMapTest extends TMapTest
 	{
 		$this->assertEquals(10, $this->map->DefaultPriority);
 
-		$this->map->DefaultPriority = 5;
+		$this->map->_setDefaultPriority(5);
 		$this->assertEquals(5, $this->map->getDefaultPriority());
 
 		$this->assertEquals(8, $this->map->Precision);

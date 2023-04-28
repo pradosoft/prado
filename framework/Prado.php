@@ -435,6 +435,34 @@ class Prado
 	}
 
 	/**
+	 * PHP's method_exists only checks for existence of a method and not if it can
+	 * be accessed by the calling object.  This checks if the caller of the
+	 * component matches the context of the component; if the caller class and the method
+	 * class are the same class, private methods access is allowed.  In effect,
+	 * $this can call magic methods and run protected and private methods, while other
+	 * classes can only access public methods.
+	 * Otherwise, external objects can only call public methods.
+	 * @param object|string $object_or_class The object to check for the method within.
+	 * @param string $method
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function method_exists($object_or_class, string $method): bool
+	{
+		if (method_exists($object_or_class, $method)) {
+			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+			$reflection = new \ReflectionMethod($object_or_class, $method);
+			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
+				return $reflection->isPublic();
+			} elseif ($reflection->isPrivate()) {
+				return $trace[2]['class'] === $reflection->class;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Translates a namespace into a file path.
 	 * The first segment of the namespace is considered as a path alias
 	 * which is replaced with the actual path. The rest segments are
