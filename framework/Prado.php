@@ -447,7 +447,7 @@ class Prado
 	 * @return bool Does the method exist and is publicly callable.
 	 * @since 4.2.3
 	 */
-	public static function method_exists($object_or_class, string $method): bool
+	public static function method_accessible($object_or_class, string $method): bool
 	{
 		if (method_exists($object_or_class, $method)) {
 			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
