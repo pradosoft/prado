@@ -274,9 +274,10 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * {@link fxDetachClassBehavior} will have a class behavior removed.
  *
  * Anonymous Behaviors are supported where the behavior does not have a name or
- * the behavior has a numeric for a name.  These cannot be access by name because
- * their names may be different in each request, for each object, and even the same
- * object between serialization-sleep and unserialization-wakeup.
+ * the behavior has a numeric for a name.  These cannot be accessed by name because
+ * their names may be different in each request, for different owners, and possibly,
+ * though extremely rarely, even the same object between serialization-sleep and
+ * unserialization-wakeup.
  *
  * When serializing a component with behaviors, behaviors are saved and restored.
  * Named IClassBehavior class behaviors are updated with the current instance
