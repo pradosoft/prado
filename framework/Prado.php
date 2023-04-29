@@ -435,19 +435,19 @@ class Prado
 	}
 
 	/**
-	 * PHP's method_exists only checks for existence of a method and not if it can
-	 * be accessed by the calling object.  This checks if the caller of the
-	 * component matches the context of the component; if the caller class and the method
-	 * class are the same class, private methods access is allowed.  In effect,
-	 * $this can call magic methods and run protected and private methods, while other
-	 * classes can only access public methods.
-	 * Otherwise, external objects can only call public methods.
-	 * @param object|string $object_or_class The object to check for the method within.
+	 * This conforms PHP's Magic Methods to PHP's Visibility standards for public,
+	 * protected, and private properties, methods, and constants. This method checks
+	 * if the object calling your method can access your object's property, method,
+	 * or constant based upon the defined visibility.  External objects can only access
+	 * public properties, methods, and constants.  When calling the self, private
+	 * properties, methods, and constants are allowed to be accessed by the same class.
+	 * @param object|string $object_or_class The object to check for the method within
+	 *   and for visibility to the calling object.
 	 * @param string $method
 	 * @return bool Does the method exist and is publicly callable.
 	 * @since 4.2.3
 	 */
-	public static function method_accessible($object_or_class, string $method): bool
+	public static function method_visible($object_or_class, string $method): bool
 	{
 		if (method_exists($object_or_class, $method)) {
 			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
@@ -460,6 +460,32 @@ class Prado
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * This checks if object calling your object method is the same object.  In effect,
+	 * this signifies if self, parents, and children have visibility to "protected"
+	 * properties, methods, and constants.
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function isCallingSelf(): bool
+	{
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		return isset($trace[2]) && isset($trace[1]['object']) && isset($trace[2]['object']) && $trace[1]['object'] === $trace[2]['object'];
+	}
+
+	/**
+	 * This checks if object calling your object method is the same object and same class.
+	 * In effect, this allows only the self to have visibility to "private" properties,
+	 * methods, and constants.
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function isCallingSelfClass(): bool
+	{
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		return isset($trace[2]) && isset($trace[1]['object']) && isset($trace[2]['object']) && $trace[1]['object'] === $trace[2]['object'] && $trace[1]['class'] === $trace[2]['class'];
 	}
 
 	/**
