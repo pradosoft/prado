@@ -1434,7 +1434,7 @@ class TComponent
 					} else {
 						$object = $method = null;
 					}
-					if (is_object($handler) || is_string($handler) || is_string($object)) {
+					if (is_object($handler) || is_string($object)) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
 						if (($pos = strrpos($method, '.')) !== false) {
