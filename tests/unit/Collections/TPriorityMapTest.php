@@ -76,6 +76,8 @@ class TPriorityMapTestNoItemBehavior extends TBehavior
 
 class TPriorityMapUnit extends TPriorityMap
 {
+	use TListResetTrait;
+	
 	public function _setDefaultPriority($value)
 	{
 		$this->setDefaultPriority($value);

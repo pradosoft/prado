@@ -9,6 +9,8 @@ use Prado\TComponent;
 
 class TWeakCallableCollectionUnit extends TWeakCallableCollection
 {
+	use TListResetTrait;
+	
 	// NOTE: "TWCC" is the short name for "TWeakCallableCollection"
 	
 	public $_scrubCount = 0;
@@ -60,9 +62,18 @@ class TWeakCallableCollectionUnit extends TWeakCallableCollection
 		return $this->weakObjectCount($obj);
 	}
 	
-	public function _setDiscardInvalid(bool $value): void
+	public function resetDiscardInvalid(bool $value): void
 	{
 		$this->setDiscardInvalid($value);
+	}
+	public function resetDefaultPriority($value)
+	{
+		$this->setDefaultPriority($value);
+	}
+	
+	public function resetPrecision($value)
+	{
+		$this->setPrecision($value);
 	}
 }
 
@@ -194,7 +205,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$item7 = $list[] = function($n) { return $n + $n; };
 		self::assertNotEquals(6, count($list), "Closure is wrongly being WeakReferenced.");
 		self::assertEquals(7, count($list));
-		self::assertEquals(3, $list->getWeakCount());
+		self::assertEquals(3, $list->getWeakCount(), "Weak Callable Objects not added to the WeakMap");
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item2));
 		self::assertEquals(1, $list->getWeakObjectCount($item7));
@@ -280,7 +291,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list = new $this->_baseClass([$this->item1, $this->pitem2, $this->pitem3, $this->item4], true);
 		$this->pitem2 = null;
 		$this->pitem3 = null;
-		self::assertEquals(4, $list->getCount());
+		self::assertEquals(4, $list->getCount(), "Read only list incorrectly scrubbed.");
 		self::assertEquals($this->item1, $list[0]);
 		self::assertTrue($list[1] === null);
 		self::assertTrue($list[2] === null);
@@ -291,7 +302,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 	{
 		$list = new $this->_baseClass();
 		self::assertEquals(0, $list->getWeakCount());
-		$list->_setDiscardInvalid(false);
+		$list->resetDiscardInvalid(false);
 		self::assertFalse($list->getDiscardInvalid());
 		self::assertTrue($list->getWeakCount() === null);
 		$list->add($this->item2, 10);
@@ -311,7 +322,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals([$this->item4, 'eventHandler'], $list[4]);
 		
 		$list->setScrubError(true);
-		$list->_setDiscardInvalid(true);
+		$list->resetDiscardInvalid(true);
 		$list->setScrubError(false);
 		
 		self::assertTrue($list->getDiscardInvalid());
@@ -324,6 +335,15 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals($this->item1, $list[0]);
 		self::assertEquals($closure, $list[1]);
 		self::assertEquals([$this->item4, 'eventHandler'], $list[2]);
+		
+		$list = new $this->_baseClass();
+		$list->setDiscardInvalid(true);
+		self::assertTrue($list->getDiscardInvalid());
+		$list->resetDiscardInvalid(false);
+		self::assertFalse($list->getDiscardInvalid());
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setDiscardInvalid(true);
 	}
 	
 	public function testGetPriorities_TWCC()

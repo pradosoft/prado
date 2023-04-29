@@ -20,10 +20,7 @@ class TMapTest_MapItem
 
 class TTestMap extends TMap
 {
-	public function _setReadOnly($value)
-	{
-		$this->setReadOnly($value);
-	}
+	use TListResetTrait;
 }
 
 class TMapTestBehavior extends TBehavior implements IDynamicMethods
@@ -98,20 +95,29 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $map2->getCount());
 	}
 	
-	public function testGetReadOnly()
+	public function testReadOnly()
 	{
 		$map = new $this->_baseClass(null, true);
-		self::assertEquals(true, $map->getReadOnly(), 'List is not read-only');
+		self::assertEquals(true, $map->getReadOnly(), 'Map is not read-only');
 		$map = new $this->_baseClass(null, false);
-		self::assertEquals(false, $map->getReadOnly(), 'List is read-only');
-	}
-	
-	public function testSetReadOnly()
-	{
-		// Requires testing unit on base class to implement _setReadOnly as public
+		self::assertEquals(false, $map->getReadOnly(), 'Map is read-only');
+		
+		// Requires testing unit on base class to implement resetReadOnly as public
 		$map = new $this->_baseClass(null, false);
-		$map->_setReadOnly(true);
-		self::assertEquals(true, $map->getReadOnly(), 'List is not converted to Read Only');
+		$map->resetReadOnly(true);
+		self::assertEquals(true, $map->getReadOnly(), 'Map is not converted to Read Only');
+		
+		$map = new $this->_baseClass(null, null);
+		self::assertEquals(false, $map->getReadOnly(), 'Map read only property is not set and not false');
+		$map->setReadOnly(true);
+		self::assertEquals(true, $map->getReadOnly(), 'Map is not read-only after set to true');
+		$map->resetReadOnly(false);
+		self::assertEquals(false, $map->getReadOnly(), 'Map is read-only after reset to false');
+		
+		// Cannot change Read Only once set
+		$map = new $this->_baseClass(null, false);
+		self::expectException(TInvalidOperationException::class);
+		$map->setReadOnly(true);
 	}
 
 	public function testGetCount()

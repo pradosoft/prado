@@ -73,6 +73,21 @@ class PriorityPropertyListItem extends PriorityListItem implements IPriorityProp
 	}
 }
 
+class TPriorityListUnit extends TPriorityList
+{
+	use TListResetTrait;
+	
+	public function resetDefaultPriority($value)
+	{
+		$this->setDefaultPriority($value);
+	}
+	
+	public function resetPrecision($value)
+	{
+		$this->setPrecision($value);
+	}
+}
+
 /**
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList
  *
@@ -90,11 +105,11 @@ class TPriorityListTest extends TListTest
 
 	protected function newList()
 	{
-		return  'TPriorityList';
+		return  TPriorityListUnit::class;
 	}
 	protected function newListItem()
 	{
-		return 'PriorityListItem';
+		return PriorityListItem::class;
 	}
 	protected function getCanAddNull()
 	{
@@ -169,6 +184,40 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals(-10000000, $list2->priorityAt(0));
 		$this->assertEquals($list2->DefaultPriority, $list2->priorityAt(2));
 		$this->assertEquals(100, $list2->priorityAt(3));
+	}
+	
+	public function testDefaultPriority()
+	{
+		$this->assertEquals(10, $this->list->getDefaultPriority());
+		
+		$list = new $this->_baseClass();
+		$this->assertEquals(10, $list->getDefaultPriority());
+		
+		$list = new $this->_baseClass();
+		$list->setDefaultPriority(21);
+		$this->assertEquals(21, $list->getDefaultPriority());
+		$list->resetDefaultPriority(15);
+		$this->assertEquals(15, $list->getDefaultPriority());
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setDefaultPriority(20);
+	}
+	
+	public function testPrecision()
+	{
+		$this->assertEquals(8, $this->list->getPrecision());
+		
+		$list = new $this->_baseClass();
+		$this->assertEquals(8, $list->getPrecision());
+		
+		$list = new $this->_baseClass();
+		$list->setPrecision(4);
+		$this->assertEquals(4, $list->getPrecision());
+		$list->resetPrecision(5);
+		$this->assertEquals(5, $list->getPrecision());
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setPrecision(6);
 	}
 
 	public function testGetPriorityCountTPriorityList()

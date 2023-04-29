@@ -11,6 +11,7 @@ namespace Prado\Collections;
 
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 use Traversable;
 
@@ -44,22 +45,23 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	protected array $_d = [];
 	/**
-	 * @var bool whether this list is read-only
+	 * @var ?bool whether this list is read-only
 	 */
-	private bool $_r = false;
+	private ?bool $_r = null;
 
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param null|array|\Iterator $data the intial data. Default is null, meaning no initialization.
-	 * @param bool $readOnly whether the list is read-only
+	 * @param ?bool $readOnly whether the list is read-only, default null.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data = null, $readOnly = false)
+	public function __construct($data = null, $readOnly = null)
 	{
 		parent::__construct();
 		if ($data !== null) {
 			$this->copyFrom($data);
+			$readOnly = (bool) $readOnly;
 		}
 		$this->setReadOnly($readOnly);
 	}
@@ -69,15 +71,30 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function getReadOnly(): bool
 	{
-		return $this->_r;
+		return (bool) $this->_r;
 	}
 
 	/**
-	 * @param bool $value whether this list is read-only or not
+	 * @param null|bool|string $value whether this list is read-only or not
 	 */
-	protected function setReadOnly($value)
+	public function setReadOnly($value)
 	{
-		$this->_r = TPropertyValue::ensureBoolean($value);
+		if ($value === null) {
+			return;
+		}
+		if($this->_r === null || Prado::isCallingSelf()) {
+			$this->_r = TPropertyValue::ensureBoolean($value);
+		} else {
+			throw new TInvalidOperationException('map_readonly_set', $this::class);
+		}
+	}
+
+	/**
+	 * This sets the read only property.
+	 */
+	protected function ensureReadOnly(): void
+	{
+		$this->_r = (bool) $this->_r;
 	}
 
 	/**
@@ -137,6 +154,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	public function add($key, $value)
 	{
 		if (!$this->_r) {
+			$this->ensureReadOnly();
 			if ($key === null) {
 				$this->_d[] = $value;
 			} else {
@@ -287,10 +305,10 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	protected function _getZappableSleepProps(&$exprops)
 	{
 		parent::_getZappableSleepProps($exprops);
-		if (count($this->_d) === 0) {
+		if (empty($this->_d)) {
 			$exprops[] = "\0*\0_d";
 		}
-		if ($this->_r === false) {
+		if ($this->_r === null) {
 			$exprops[] = "\0" . __CLASS__ . "\0_r";
 		}
 	}

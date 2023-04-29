@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
@@ -71,20 +72,23 @@ trait TPriorityCollectionTrait
 	protected ?array $_fd = null;
 
 	/**
-	 * @var string the default priority of items without specified priorities
+	 * @var ?string the default priority of items without specified priorities
 	 */
-	private string $_dp = '10';
+	private ?string $_dp = null;
 
 	/**
-	 * @var int the precision of the numeric priorities within this priority list.
+	 * @var ?int the precision of the numeric priorities within this priority list.
 	 */
-	private int $_p = 8;
+	private ?int $_p = null;
 
 	/**
 	 * @return numeric gets the default priority of inserted items without a specified priority
 	 */
 	public function getDefaultPriority()
 	{
+		if ($this->_dp === null) {
+			$this->_dp = '10';
+		}
 		return $this->_dp;
 	}
 
@@ -92,9 +96,16 @@ trait TPriorityCollectionTrait
 	 * This must be called internally or when instantiated.
 	 * @param numeric $value sets the default priority of inserted items without a specified priority
 	 */
-	protected function setDefaultPriority($value)
+	public function setDefaultPriority($value)
 	{
-		$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->_p);
+		if ($value === $this->_dp) {
+			return;
+		}
+		if($this->_dp === null || Prado::isCallingSelf()) {
+			$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->getPrecision());
+		} else {
+			throw new TInvalidOperationException('prioritytrait_no_set_default_priority');
+		}
 	}
 
 	/**
@@ -102,6 +113,9 @@ trait TPriorityCollectionTrait
 	 */
 	public function getPrecision(): int
 	{
+		if ($this->_p === null) {
+			$this->_p = 8;
+		}
 		return $this->_p;
 	}
 
@@ -111,8 +125,14 @@ trait TPriorityCollectionTrait
 	 * the DefaultPriority to the new precision as well.
 	 * @param int $value The precision of numeric priorities.
 	 */
-	protected function setPrecision($value): void
+	public function setPrecision($value): void
 	{
+		if ($value === $this->_p) {
+			return;
+		}
+		if($this->_p !== null && !Prado::isCallingSelf()) {
+			throw new TInvalidOperationException('prioritytrait_no_set_precision');
+		}
 		$this->_p = TPropertyValue::ensureInteger($value);
 		$this->setDefaultPriority($this->_dp);
 		$_d = [];
@@ -145,7 +165,7 @@ trait TPriorityCollectionTrait
 		if ($priority === null || !is_numeric($priority)) {
 			$priority = $this->getDefaultPriority();
 		}
-		return (string) round((float) $priority, $this->_p);
+		return (string) round((float) $priority, $this->getPrecision());
 	}
 
 
@@ -312,10 +332,10 @@ trait TPriorityCollectionTrait
 			$exprops[] = "\0*\0_o";
 		}
 		$exprops[] = "\0*\0_fd";
-		if ($this->_dp == 10) {
+		if ($this->_dp === null) {
 			$exprops[] = "\0" . __CLASS__ . "\0_dp";
 		}
-		if ($this->_p === 8) {
+		if ($this->_p === null) {
 			$exprops[] = "\0" . __CLASS__ . "\0_p";
 		}
 	}

@@ -75,12 +75,13 @@ class TPriorityMap extends TMap
 	 * Constructor.
 	 * Initializes the array with an array or an iterable object.
 	 * @param null|array|TPriorityList|TPriorityMap|\Traversable $data the initial data. Default is null, meaning no initialization.
-	 * @param bool $readOnly whether the list is read-only
-	 * @param numeric $defaultPriority the default priority of items without specified priorities.
-	 * @param int $precision the precision of the numeric priorities
+	 * @param ?bool $readOnly whether the list is read-only
+	 * @param numeric $defaultPriority the default priority of items without specified
+	 *   priorities.  Default null for 10.
+	 * @param int $precision the precision of the numeric priorities.  Default null for 8.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data = null, $readOnly = false, $defaultPriority = 10, $precision = 8)
+	public function __construct($data = null, $readOnly = null, $defaultPriority = null, $precision = null)
 	{
 		$this->setPrecision($precision);
 		$this->setDefaultPriority($defaultPriority);
@@ -219,6 +220,7 @@ class TPriorityMap extends TMap
 		}
 
 		if (!$this->getReadOnly()) {
+			$this->ensureReadOnly();
 			if ($key === null) {
 				$key = $this->_ic++;
 			} elseif (is_numeric($key)) {
