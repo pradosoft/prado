@@ -1429,8 +1429,12 @@ class TComponent
 						$response = call_user_func($handler, $sender, $param, $name);
 					}
 				} elseif (is_callable($handler, true)) {
-					[$object, $method] = $handler;
-					if (is_string($object)) {
+					if (is_array($handler)) {
+						[$object, $method] = $handler;
+					} else {
+						$object = $method = null;
+					}
+					if (is_object($handler) || is_string($handler) || is_string($object)) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
 						if (($pos = strrpos($method, '.')) !== false) {
