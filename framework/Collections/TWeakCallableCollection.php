@@ -63,7 +63,7 @@ class TWeakCallableCollection extends TPriorityList
 	 *   Default null for the opposite of Read-Only.  Mutable Lists expunge invalid
 	 *   WeakReferences and Read only lists do not.  Set this bool to override the default
 	 *   behavior.
-	 * @param null|mixed $precision
+	 * @param null|int $precision The numeric precision of the priority.
 	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and
 	 *   is neither an array nor an iterator.
 	 */

@@ -58,9 +58,9 @@ class TPriorityList extends TList
 	 * Initializes the list with an array or an iterable object.
 	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initial data.
 	 * @param ?bool $readOnly whether the list is read-only
-	 * @param numeric $defaultPriority the default priority of items without specified
+	 * @param ?numeric $defaultPriority the default priority of items without specified
 	 *   priorities. Default null for 10.
-	 * @param int $precision the precision of the numeric priorities.  Default null for 8.
+	 * @param ?int $precision the precision of the numeric priorities.  Default null for 8.
 	 * @throws TInvalidDataTypeException If data is not null and is neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = null, $defaultPriority = null, $precision = null)
