@@ -150,7 +150,7 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
-		$exponentMaxValue = (1 << $exponentBits) - 1;
+		$exponentMaxValue = ~(-1 << $exponentBits);
 		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 || $exponentBias < 0 || $exponentBias > $exponentMaxValue) {
 			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
@@ -162,7 +162,7 @@ class TBitHelper
 
 		if ($IEEEConformance && is_nan($value)) {
 			$exponent = $exponentMaxValue;
-			$mantissa = (1 << $mantissaBits) - 1;
+			$mantissa = ~(-1 << $mantissaBits);
 		} elseif ($IEEEConformance && (is_infinite($value) || $value >= pow(2, ($exponentMaxValue - 1) - $exponentBias) * (1 << $mantissaBits))) {
 			$exponent = $exponentMaxValue;
 		} elseif ($value == 0) {
@@ -261,7 +261,7 @@ class TBitHelper
 	{
 		$exponentBits = ($exponentBits === null) ? 5 : $exponentBits;
 		$mantissaBits = ($mantissaBits === null) ? 10 : $mantissaBits;
-		$exponentMaxValue = (1 << $exponentBits) - 1;
+		$exponentMaxValue = ~(-1 << $exponentBits);
 		if ($exponentBits <= 0 || $mantissaBits <= 0 || ($exponentBits + $mantissaBits + 1) > PHP_INT_SIZE * 8 ||
 			($exponentBias !== null && ($exponentBias < 0 || $exponentBias > $exponentMaxValue))) {
 			throw new TInvalidDataValueException('bithelper_bad_fp_format', $exponentBits, $mantissaBits, $exponentBias, PHP_INT_SIZE * 8);
@@ -269,7 +269,7 @@ class TBitHelper
 		$exponentBias = ($exponentBias === null) ? $exponentMaxValue >> 1 : $exponentBias;
 		$sign = ($fpXX >> ($exponentBits + $mantissaBits)) & 0x1;
 		$exponent = ($fpXX >> $mantissaBits) & $exponentMaxValue;
-		$mantissa = $fpXX & ((1 << $mantissaBits) - 1);
+		$mantissa = $fpXX & ~(-1 << $mantissaBits);
 		if ($IEEEConformance && $exponent == 0) { // subnormal numbers.
 			$value = $mantissa * pow(2, 1 - $exponentBias - $mantissaBits);
 		} elseif ($IEEEConformance && $exponent == $exponentMaxValue) {
