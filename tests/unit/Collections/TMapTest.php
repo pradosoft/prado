@@ -195,6 +195,19 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertFalse($this->map->contains('key3'));
 	}
 
+	public function testKeyOf()
+	{
+		$item4 = new $this->_baseItemClass(4);
+		$item5 = new $this->_baseItemClass(5);
+		$this->map[2] = $item4;
+		$this->map[] = $item5;
+		$this->assertEquals('key1', $this->map->keyOf($this->item1));
+		$this->assertEquals('key2', $this->map->keyOf($this->item2));
+		$this->assertFalse($this->map->keyOf($this->item3));
+		$this->assertEquals(2, $this->map->keyOf($item4));
+		$this->assertEquals(3, $this->map->keyOf($item5));
+	}
+
 	public function testCopyFrom()
 	{
 		$array = ['key3' => $this->item3, 'key4' => $this->item1];

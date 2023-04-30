@@ -208,6 +208,15 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
+	 * @param mixed $item the item
+	 * @return false|mixed the key of the item in the map, false if not found.
+	 */
+	public function keyOf($item)
+	{
+		return array_search($item, $this->_d, true);
+	}
+
+	/**
 	 * @return array<int|string, mixed> the list of items in array
 	 */
 	public function toArray(): array
