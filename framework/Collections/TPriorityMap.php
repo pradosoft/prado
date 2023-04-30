@@ -330,7 +330,7 @@ class TPriorityMap extends TMap
 	 * @param mixed $item the item
 	 * @return false|mixed the key of the item in the map, false if not found.
 	 */
-	public function indexOf($item)
+	public function keyOf($item)
 	{
 		$this->flattenPriorities();
 		return array_search($item, $this->_fd, true);
