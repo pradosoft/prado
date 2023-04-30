@@ -168,10 +168,10 @@ class TPriorityList extends TList
 	 */
 	public function insertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
+		$this->collapseReadOnly();
 		if ($this->getReadOnly()) {
 			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
-		$this->ensureReadOnly();
 		if ($index === false) {
 			$index = null; // conversion, remove for PRADO 4.3
 		}

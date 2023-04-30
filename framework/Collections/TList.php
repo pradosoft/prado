@@ -99,7 +99,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * This sets the read only property.
 	 */
-	protected function ensureReadOnly(): void
+	protected function collapseReadOnly(): void
 	{
 		$this->_r = (bool) $this->_r;
 	}
@@ -171,8 +171,8 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertAt($index, $item)
 	{
+		$this->collapseReadOnly();
 		if (!$this->_r) {
-			$this->ensureReadOnly();
 			if ($index === $this->_c) {
 				$this->_d[$this->_c++] = $item;
 			} elseif ($index >= 0 && $index < $this->_c) {

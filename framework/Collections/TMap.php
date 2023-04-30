@@ -92,7 +92,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * This sets the read only property.
 	 */
-	protected function ensureReadOnly(): void
+	protected function collapseReadOnly(): void
 	{
 		$this->_r = (bool) $this->_r;
 	}
@@ -153,8 +153,8 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function add($key, $value)
 	{
+		$this->collapseReadOnly();
 		if (!$this->_r) {
-			$this->ensureReadOnly();
 			if ($key === null) {
 				$this->_d[] = $value;
 			} else {

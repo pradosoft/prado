@@ -219,8 +219,8 @@ class TPriorityMap extends TMap
 			$value->setPriority($priority);
 		}
 
+		$this->collapseReadOnly();
 		if (!$this->getReadOnly()) {
-			$this->ensureReadOnly();
 			if ($key === null) {
 				$key = $this->_ic++;
 			} elseif (is_numeric($key)) {
