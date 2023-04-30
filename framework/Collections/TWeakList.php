@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 use ArrayAccess;
@@ -60,31 +61,25 @@ class TWeakList extends TList
 {
 	use TWeakCollectionTrait;
 
-	/** @var bool Should invalid WeakReference automatically be deleted from the list.
+	/** @var ?bool Should invalid WeakReference automatically be deleted from the list.
 	 *    Default True.
 	 */
-	private bool $_discardInvalid = true;
+	private ?bool $_discardInvalid = null;
 
 	/**
 	 * Constructor.
 	 * Initializes the weak list with an array or an iterable object.
 	 * @param null|array|\Iterator $data The initial data. Default is null, meaning no initialization.
-	 * @param bool $readOnly Whether the list is read-only. Default is false.
+	 * @param ?bool $readOnly Whether the list is read-only. Default is null.
 	 * @param ?bool $discardInvalid Whether the list is scrubbed of invalid WeakReferences.
 	 *   Default is null for the opposite of $readOnly.  Thus, Read Only lists retain
 	 *   invalid WeakReference; and Mutable lists scrub invalid WeakReferences.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data = null, $readOnly = false, $discardInvalid = null)
+	public function __construct($data = null, $readOnly = null, $discardInvalid = null)
 	{
-		if ($discardInvalid === null) {
-			$discardInvalid = !$readOnly;
-		}
-		$this->_discardInvalid = $discardInvalid;
-		if ($discardInvalid) {
-			$this->weakStart();
-		}
 		parent::__construct($data, $readOnly);
+		$this->setDiscardInvalid($discardInvalid);
 	}
 
 	/**
@@ -148,7 +143,7 @@ class TWeakList extends TList
 	 */
 	protected function scrubWeakReferences(): void
 	{
-		if (!$this->_discardInvalid || !$this->weakChanged()) {
+		if (!$this->getDiscardInvalid() || !$this->weakChanged()) {
 			return;
 		}
 		for ($i = $this->_c - 1; $i >= 0; $i--) {
@@ -169,14 +164,31 @@ class TWeakList extends TList
 	 */
 	public function getDiscardInvalid(): bool
 	{
+		$this->ensureDiscardInvalid();
 		return $this->_discardInvalid;
+	}
+
+	/**
+	 * Ensures that DiscardInvalid is set.
+	 */
+	protected function ensureDiscardInvalid()
+	{
+		if ($this->_discardInvalid === null) {
+			$this->setDiscardInvalid(!$this->getReadOnly());
+		}
 	}
 
 	/**
 	 * @param bool $value Sets the TWeakList scrubbing of invalid WeakReference.
 	 */
-	protected function setDiscardInvalid($value): void
+	public function setDiscardInvalid($value): void
 	{
+		if($value === $this->_discardInvalid) {
+			return;
+		}
+		if ($this->_discardInvalid !== null && !Prado::isCallingSelf()) {
+			throw new TInvalidOperationException('weak_no_set_discard_invalid', $this::class);
+		}
 		$value = TPropertyValue::ensureBoolean($value);
 		if ($value && !$this->_discardInvalid) {
 			$this->weakStart();
@@ -247,6 +259,7 @@ class TWeakList extends TList
 	 */
 	public function add($item)
 	{
+		$this->ensureDiscardInvalid();
 		$this->scrubWeakReferences();
 		if (is_object($item)) {
 			$this->weakAdd($item);
@@ -268,6 +281,7 @@ class TWeakList extends TList
 	 */
 	public function insertAt($index, $item)
 	{
+		$this->ensureDiscardInvalid();
 		$this->scrubWeakReferences();
 		if (is_object($item)) {
 			$this->weakAdd($item);
@@ -527,7 +541,7 @@ class TWeakList extends TList
 		$this->_c = $c;
 
 		$this->_weakZappableSleepProps($exprops);
-		if ($this->_discardInvalid === true) {
+		if ($this->_discardInvalid === null) {
 			$exprops[] = "\0" . __CLASS__ . "\0_discardInvalid";
 		}
 	}

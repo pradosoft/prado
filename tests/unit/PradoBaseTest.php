@@ -2,7 +2,7 @@
 
 use Prado\Prado;
 
-class MethodAccessibleTestClassA
+class MethodVisibleTestClassA
 {
 	public function getPublicPropertyA()
 	{
@@ -18,113 +18,135 @@ class MethodAccessibleTestClassA
 	}
 	
 	//Access Self
-	public function methodAccessibleAAccessPublicPropertyA()
+	public function methodVisibleAAccessPublicPropertyA()
 	{
 		return method_exists($this, 'getPublicPropertyA');
 	}
-	public function methodAccessibleAAccessProtectedPropertyA()
+	public function methodVisibleAAccessProtectedPropertyA()
 	{
 		return method_exists($this, 'getProtectedPropertyA');
 	}
-	public function methodAccessibleAAccessPrivatePropertyA()
+	public function methodVisibleAAccessPrivatePropertyA()
 	{
 		return method_exists($this, 'getPrivatePropertyA');
 	}
-	public function pradoMethodAccessibleAAccessPublicPropertyA()
+	public function pradoMethodVisibleAAccessPublicPropertyA()
 	{
-		return Prado::method_accessible($this, 'getPublicPropertyA');
+		return Prado::method_visible($this, 'getPublicPropertyA');
 	}
-	public function pradoMethodAccessibleAAccessProtectedPropertyA()
+	public function pradoMethodVisibleAAccessProtectedPropertyA()
 	{
-		return Prado::method_accessible($this, 'getProtectedPropertyA');
+		return Prado::method_visible($this, 'getProtectedPropertyA');
 	}
-	public function pradoMethodAccessibleAAccessPrivatePropertyA()
+	public function pradoMethodVisibleAAccessPrivatePropertyA()
 	{
-		return Prado::method_accessible($this, 'getPrivatePropertyA');
+		return Prado::method_visible($this, 'getPrivatePropertyA');
 	}
 	
 	//Access Child
-	public function methodAccessibleAAccessPublicPropertyB()
+	public function methodVisibleAAccessPublicPropertyB()
 	{
 		return method_exists($this, 'getPublicPropertyB');
 	}
-	public function methodAccessibleAAccessProtectedPropertyB()
+	public function methodVisibleAAccessProtectedPropertyB()
 	{
 		return method_exists($this, 'getProtectedPropertyB');
 	}
-	public function methodAccessibleAAccessPrivatePropertyB()
+	public function methodVisibleAAccessPrivatePropertyB()
 	{
 		return method_exists($this, 'getPrivatePropertyB');
 	}
-	public function pradoMethodAccessibleAAccessPublicPropertyB()
+	public function pradoMethodVisibleAAccessPublicPropertyB()
 	{
-		return Prado::method_accessible($this, 'getPublicPropertyB');
+		return Prado::method_visible($this, 'getPublicPropertyB');
 	}
-	public function pradoMethodAccessibleAAccessProtectedPropertyB()
+	public function pradoMethodVisibleAAccessProtectedPropertyB()
 	{
-		return Prado::method_accessible($this, 'getProtectedPropertyB');
+		return Prado::method_visible($this, 'getProtectedPropertyB');
 	}
-	public function pradoMethodAccessibleAAccessPrivatePropertyB()
+	public function pradoMethodVisibleAAccessPrivatePropertyB()
 	{
-		return Prado::method_accessible($this, 'getPrivatePropertyB');
+		return Prado::method_visible($this, 'getPrivatePropertyB');
 	}
 	
-	public function testFromClassA($tester, $instance)
+	
+	public function isCallingSelfInA()
+	{
+		return Prado::isCallingSelf();
+	}
+	public function isCallingSelfClassInA()
+	{
+		return Prado::isCallingSelfClass();
+	}
+	
+	public function testMethodVisibleFromClassA($tester, $instance)
 	{
 		//  calling self from parent
 		{ // Parent calls Parent Accesses Parent
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleAAccessPublicPropertyA());
-			$tester->assertTrue($instance->methodAccessibleAAccessProtectedPropertyA());
-			$tester->assertTrue($instance->methodAccessibleAAccessPrivatePropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessPublicPropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessProtectedPropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessProtectedPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPrivatePropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessProtectedPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPrivatePropertyA());
 		}
 		
 		{ // Parent calls Child Accesses child
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleBAccessPublicPropertyB());
-			$tester->assertTrue($instance->methodAccessibleBAccessProtectedPropertyB());
-			$tester->assertTrue($instance->methodAccessibleBAccessPrivatePropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessPublicPropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessProtectedPropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessProtectedPropertyB());
-			$tester->assertFalse($instance->pradoMethodAccessibleBAccessPrivatePropertyB(), "Parent cannot access child private method.");
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessProtectedPropertyB());
+			$tester->assertFalse($instance->pradoMethodVisibleBAccessPrivatePropertyB(), "Parent cannot access child private method.");
 		}
 		
 		
 		{ // Parent calls Parent Accesses Child
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleAAccessPublicPropertyB());
-			$tester->assertTrue($instance->methodAccessibleAAccessProtectedPropertyB());
-			$tester->assertTrue($instance->methodAccessibleAAccessPrivatePropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessPublicPropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessProtectedPropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessProtectedPropertyB());
-			$tester->assertFalse($instance->pradoMethodAccessibleAAccessPrivatePropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessProtectedPropertyB());
+			$tester->assertFalse($instance->pradoMethodVisibleAAccessPrivatePropertyB());
 		}
 		
 		
 		{ // Parent calls Child Accesses Parent
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleBAccessPublicPropertyA());
-			$tester->assertTrue($instance->methodAccessibleBAccessProtectedPropertyA());
-			$tester->assertTrue($instance->methodAccessibleBAccessPrivatePropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessPublicPropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessProtectedPropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessProtectedPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPrivatePropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessProtectedPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPrivatePropertyA());
 		}
+	}
+	
+	public function testIsCallingSelfFromClassA($tester, $instance)
+	{
+		$tester->assertTrue($instance->isCallingSelfInA());
+		$tester->assertTrue($instance->isCallingSelfInB());
+	}
+	
+	public function testIsCallingSelfClassFromClassA($tester, $instance)
+	{
+		$tester->assertTrue($instance->isCallingSelfClassInA());
+		$tester->assertFalse($instance->isCallingSelfClassInB());
 	}
 }
 
-class MethodAccessibleTestClassB extends MethodAccessibleTestClassA
+class MethodVisibleTestClassB extends MethodVisibleTestClassA
 {
 	public function getPublicPropertyB()
 	{
@@ -140,109 +162,131 @@ class MethodAccessibleTestClassB extends MethodAccessibleTestClassA
 	}
 	
 	//Access Self
-	public function methodAccessibleBAccessPublicPropertyB()
+	public function methodVisibleBAccessPublicPropertyB()
 	{
 		return method_exists($this, 'getPublicPropertyB');
 	}
-	public function methodAccessibleBAccessProtectedPropertyB()
+	public function methodVisibleBAccessProtectedPropertyB()
 	{
 		return method_exists($this, 'getProtectedPropertyB');
 	}
-	public function methodAccessibleBAccessPrivatePropertyB()
+	public function methodVisibleBAccessPrivatePropertyB()
 	{
 		return method_exists($this, 'getPrivatePropertyB');
 	}
-	public function pradoMethodAccessibleBAccessPublicPropertyB()
+	public function pradoMethodVisibleBAccessPublicPropertyB()
 	{
-		return Prado::method_accessible($this, 'getPublicPropertyB');
+		return Prado::method_visible($this, 'getPublicPropertyB');
 	}
-	public function pradoMethodAccessibleBAccessProtectedPropertyB()
+	public function pradoMethodVisibleBAccessProtectedPropertyB()
 	{
-		return Prado::method_accessible($this, 'getProtectedPropertyB');
+		return Prado::method_visible($this, 'getProtectedPropertyB');
 	}
-	public function pradoMethodAccessibleBAccessPrivatePropertyB()
+	public function pradoMethodVisibleBAccessPrivatePropertyB()
 	{
-		return Prado::method_accessible($this, 'getPrivatePropertyB');
+		return Prado::method_visible($this, 'getPrivatePropertyB');
 	}
 	
 	// Access Parent
-	public function methodAccessibleBAccessPublicPropertyA()
+	public function methodVisibleBAccessPublicPropertyA()
 	{
 		return method_exists($this, 'getPublicPropertyA');
 	}
-	public function methodAccessibleBAccessProtectedPropertyA()
+	public function methodVisibleBAccessProtectedPropertyA()
 	{
 		return method_exists($this, 'getProtectedPropertyA');
 	}
-	public function methodAccessibleBAccessPrivatePropertyA()
+	public function methodVisibleBAccessPrivatePropertyA()
 	{
 		return method_exists($this, 'getPrivatePropertyA');
 	}
-	public function pradoMethodAccessibleBAccessPublicPropertyA()
+	public function pradoMethodVisibleBAccessPublicPropertyA()
 	{
-		return Prado::method_accessible($this, 'getPublicPropertyA');
+		return Prado::method_visible($this, 'getPublicPropertyA');
 	}
-	public function pradoMethodAccessibleBAccessProtectedPropertyA()
+	public function pradoMethodVisibleBAccessProtectedPropertyA()
 	{
-		return Prado::method_accessible($this, 'getProtectedPropertyA');
+		return Prado::method_visible($this, 'getProtectedPropertyA');
 	}
-	public function pradoMethodAccessibleBAccessPrivatePropertyA()
+	public function pradoMethodVisibleBAccessPrivatePropertyA()
 	{
-		return Prado::method_accessible($this, 'getPrivatePropertyA');
+		return Prado::method_visible($this, 'getPrivatePropertyA');
 	}
 	
-	public function testFromClassB($tester, $instance)
+	
+	public function isCallingSelfInB()
+	{
+		return Prado::isCallingSelf();
+	}
+	public function isCallingSelfClassInB()
+	{
+		return Prado::isCallingSelfClass();
+	}
+	
+	public function testMethodVisibleFromClassB($tester, $instance)
 	{
 		//  calling self from child
 		{ // Child calls Parent Accesses Parent
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleAAccessPublicPropertyA());
-			$tester->assertTrue($instance->methodAccessibleAAccessProtectedPropertyA());
-			$tester->assertTrue($instance->methodAccessibleAAccessPrivatePropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessPublicPropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessProtectedPropertyA());
+			$tester->assertTrue($instance->methodVisibleAAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessProtectedPropertyA());
-			$tester->assertFalse($instance->pradoMethodAccessibleAAccessPrivatePropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessProtectedPropertyA());
+			$tester->assertFalse($instance->pradoMethodVisibleAAccessPrivatePropertyA());
 		}
 		
 		{ // Child calls Child Accesses child
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleBAccessPublicPropertyB());
-			$tester->assertTrue($instance->methodAccessibleBAccessProtectedPropertyB());
-			$tester->assertTrue($instance->methodAccessibleBAccessPrivatePropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessPublicPropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessProtectedPropertyB());
+			$tester->assertTrue($instance->methodVisibleBAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessProtectedPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPrivatePropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessProtectedPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPrivatePropertyB());
 		}
 		
 		
 		{ // Child calls Parent Accesses Child
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleAAccessPublicPropertyB());
-			$tester->assertTrue($instance->methodAccessibleAAccessProtectedPropertyB());
-			$tester->assertTrue($instance->methodAccessibleAAccessPrivatePropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessPublicPropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessProtectedPropertyB());
+			$tester->assertTrue($instance->methodVisibleAAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessProtectedPropertyB());
-			$tester->assertTrue($instance->pradoMethodAccessibleAAccessPrivatePropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessProtectedPropertyB());
+			$tester->assertTrue($instance->pradoMethodVisibleAAccessPrivatePropertyB());
 		}
 		
 		
 		{ // Child calls Child Accesses Parent
 			//	Normal method_exists
-			$tester->assertTrue($instance->methodAccessibleBAccessPublicPropertyA());
-			$tester->assertTrue($instance->methodAccessibleBAccessProtectedPropertyA());
-			$tester->assertTrue($instance->methodAccessibleBAccessPrivatePropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessPublicPropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessProtectedPropertyA());
+			$tester->assertTrue($instance->methodVisibleBAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyA());
-			$tester->assertTrue($instance->pradoMethodAccessibleBAccessProtectedPropertyA());
-			$tester->assertFalse($instance->pradoMethodAccessibleBAccessPrivatePropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyA());
+			$tester->assertTrue($instance->pradoMethodVisibleBAccessProtectedPropertyA());
+			$tester->assertFalse($instance->pradoMethodVisibleBAccessPrivatePropertyA());
 		}
+	}
+	
+	public function testIsCallingSelfFromClassB($tester, $instance)
+	{
+		$tester->assertTrue($instance->isCallingSelfInA());
+		$tester->assertTrue($instance->isCallingSelfInB());
+	}
+	
+	public function testIsCallingSelfClassFromClassB($tester, $instance)
+	{
+		$tester->assertFalse($instance->isCallingSelfClassInA());
+		$tester->assertTrue($instance->isCallingSelfClassInB());
 	}
 }
 
@@ -270,63 +314,85 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue(interface_exists(self::INTERFACE_SHORT_NAME, false));
 	}
 	
-	public function testMethod_Exists()
+	public function testMethod_Visible()
 	{
-		$instance = new MethodAccessibleTestClassB();
+		$instance = new MethodVisibleTestClassB();
 		
 		// calling instance from external
 		{ //Parent Accesses Parent
 			//	Normal method_exists
-			$this->assertTrue($instance->methodAccessibleAAccessPublicPropertyA());
-			$this->assertTrue($instance->methodAccessibleAAccessProtectedPropertyA());
-			$this->assertTrue($instance->methodAccessibleAAccessPrivatePropertyA());
+			$this->assertTrue($instance->methodVisibleAAccessPublicPropertyA());
+			$this->assertTrue($instance->methodVisibleAAccessProtectedPropertyA());
+			$this->assertTrue($instance->methodVisibleAAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$this->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyA());
-			$this->assertFalse($instance->pradoMethodAccessibleAAccessProtectedPropertyA());
-			$this->assertFalse($instance->pradoMethodAccessibleAAccessPrivatePropertyA());
+			$this->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyA());
+			$this->assertFalse($instance->pradoMethodVisibleAAccessProtectedPropertyA());
+			$this->assertFalse($instance->pradoMethodVisibleAAccessPrivatePropertyA());
 		}
 		
 		{ // Child Accesses child
 			//	Normal method_exists
-			$this->assertTrue($instance->methodAccessibleBAccessPublicPropertyB());
-			$this->assertTrue($instance->methodAccessibleBAccessProtectedPropertyB());
-			$this->assertTrue($instance->methodAccessibleBAccessPrivatePropertyB());
+			$this->assertTrue($instance->methodVisibleBAccessPublicPropertyB());
+			$this->assertTrue($instance->methodVisibleBAccessProtectedPropertyB());
+			$this->assertTrue($instance->methodVisibleBAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$this->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyB());
-			$this->assertFalse($instance->pradoMethodAccessibleBAccessProtectedPropertyB());
-			$this->assertFalse($instance->pradoMethodAccessibleBAccessPrivatePropertyB());
+			$this->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyB());
+			$this->assertFalse($instance->pradoMethodVisibleBAccessProtectedPropertyB());
+			$this->assertFalse($instance->pradoMethodVisibleBAccessPrivatePropertyB());
 		}
 		
 		
 		{ //Parent Accesses Child
 			//	Normal method_exists
-			$this->assertTrue($instance->methodAccessibleAAccessPublicPropertyB());
-			$this->assertTrue($instance->methodAccessibleAAccessProtectedPropertyB());
-			$this->assertTrue($instance->methodAccessibleAAccessPrivatePropertyB());
+			$this->assertTrue($instance->methodVisibleAAccessPublicPropertyB());
+			$this->assertTrue($instance->methodVisibleAAccessProtectedPropertyB());
+			$this->assertTrue($instance->methodVisibleAAccessPrivatePropertyB());
 			
 			//	Prado method_exists
-			$this->assertTrue($instance->pradoMethodAccessibleAAccessPublicPropertyB());
-			$this->assertFalse($instance->pradoMethodAccessibleAAccessProtectedPropertyB());
-			$this->assertFalse($instance->pradoMethodAccessibleAAccessPrivatePropertyB());
+			$this->assertTrue($instance->pradoMethodVisibleAAccessPublicPropertyB());
+			$this->assertFalse($instance->pradoMethodVisibleAAccessProtectedPropertyB());
+			$this->assertFalse($instance->pradoMethodVisibleAAccessPrivatePropertyB());
 		}
 		
 		
 		{ //Child Accesses Parent
 			//	Normal method_exists
-			$this->assertTrue($instance->methodAccessibleBAccessPublicPropertyA());
-			$this->assertTrue($instance->methodAccessibleBAccessProtectedPropertyA());
-			$this->assertTrue($instance->methodAccessibleBAccessPrivatePropertyA());
+			$this->assertTrue($instance->methodVisibleBAccessPublicPropertyA());
+			$this->assertTrue($instance->methodVisibleBAccessProtectedPropertyA());
+			$this->assertTrue($instance->methodVisibleBAccessPrivatePropertyA());
 			
 			//	Prado method_exists
-			$this->assertTrue($instance->pradoMethodAccessibleBAccessPublicPropertyA());
-			$this->assertFalse($instance->pradoMethodAccessibleBAccessProtectedPropertyA());
-			$this->assertFalse($instance->pradoMethodAccessibleBAccessPrivatePropertyA());
+			$this->assertTrue($instance->pradoMethodVisibleBAccessPublicPropertyA());
+			$this->assertFalse($instance->pradoMethodVisibleBAccessProtectedPropertyA());
+			$this->assertFalse($instance->pradoMethodVisibleBAccessPrivatePropertyA());
 		}
 		
-		$instance->testFromClassA($this, $instance);
-		$instance->testFromClassB($this, $instance);
+		$instance->testMethodVisibleFromClassA($this, $instance);
+		$instance->testMethodVisibleFromClassB($this, $instance);
+	}
+	
+	public function testIsCallingSelf()
+	{
+		$instance = new MethodVisibleTestClassB();
+		
+		$this->assertFalse($instance->isCallingSelfInA());
+		$this->assertFalse($instance->isCallingSelfInB());
+		
+		$instance->testIsCallingSelfFromClassA($this, $instance);
+		$instance->testIsCallingSelfFromClassB($this, $instance);
+	}
+	
+	public function testIsCallingSelfClass()
+	{
+		$instance = new MethodVisibleTestClassB();
+		
+		$this->assertFalse($instance->isCallingSelfClassInA());
+		$this->assertFalse($instance->isCallingSelfClassInB());
+		
+		$instance->testIsCallingSelfClassFromClassA($this, $instance);
+		$instance->testIsCallingSelfClassFromClassB($this, $instance);
 	}
 
 	public function testCreateComponentWithNamespace()

@@ -7,6 +7,8 @@ use Prado\Exceptions\TInvalidOperationException;
 
 class TWeakListUnit extends TWeakList
 {
+	use TListResetTrait;
+	
 	public function getWeakCount(): ?int
 	{
 		return $this->weakCount();
@@ -17,7 +19,7 @@ class TWeakListUnit extends TWeakList
 		return $this->weakObjectCount($obj);
 	}
 	
-	public function _setDiscardInvalid(bool $value): void
+	public function resetDiscardInvalid(bool $value): void
 	{
 		$this->setDiscardInvalid($value);
 	}
@@ -119,6 +121,33 @@ class TWeakListTest extends TListTest
 		
 		$this->list = new $this->_baseClass(null, true, false);
 		self::assertFalse($this->list->getDiscardInvalid());
+		
+		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4], true);
+		$this->item2 = null;
+		$this->item3 = null;
+		self::assertEquals(4, $list->getCount());
+		self::assertEquals($this->item1, $list[0]);
+		self::assertTrue($list[1] === null);
+		self::assertTrue($list[2] === null);
+		self::assertEquals($this->item4, $list[3]);
+		
+		$this->item2 = new $this->_baseItemClass(2);
+		$this->item3 = new $this->_baseItemClass(3);
+		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4], false);
+		$this->item2 = null;
+		$this->item3 = null;
+		self::assertEquals(2, $list->getCount());
+		self::assertEquals($this->item1, $list[0]);
+		self::assertEquals($this->item4, $list[1]);
+		
+		$this->item2 = new $this->_baseItemClass(2);
+		$this->item3 = new $this->_baseItemClass(3);
+		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4], null);
+		$this->item2 = null;
+		$this->item3 = null;
+		self::assertEquals(2, $list->getCount());
+		self::assertEquals($this->item1, $list[0]);
+		self::assertEquals($this->item4, $list[1]);
 	}
 	
 	public function testGetIteratorTWeakList()
@@ -414,6 +443,12 @@ class TWeakListTest extends TListTest
 	
 	public function testDiscardInvalid()
 	{
+		$list = new $this->_baseClass();
+		$list->setDiscardInvalid(true);
+		self::assertTrue($list->getDiscardInvalid());
+		$list->resetDiscardInvalid(false);
+		self::assertFalse($list->getDiscardInvalid());
+		
 		$this->list->add($this->item3);
 		$this->list->add($this->item4);
 		self::assertTrue($this->list->getDiscardInvalid());
@@ -424,17 +459,20 @@ class TWeakListTest extends TListTest
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
 		
-		$this->list->_setDiscardInvalid(false);
+		$this->list->resetDiscardInvalid(false);
 		self::assertNull($this->list->weakCount());
 		self::assertFalse($this->list->getDiscardInvalid());
 		
 		unset($this->item2);
 		unset($this->item3);
 		
-		$this->list->_setDiscardInvalid(true);
+		$this->list->resetDiscardInvalid(true);
 		self::assertTrue($this->list->getDiscardInvalid());
 		self::assertEquals(2, $this->list->getWeakCount());
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setDiscardInvalid(true);
 	}
 }

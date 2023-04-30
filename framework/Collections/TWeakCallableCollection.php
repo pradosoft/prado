@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 use Closure;
@@ -45,8 +46,8 @@ class TWeakCallableCollection extends TPriorityList
 {
 	use TWeakCollectionTrait;
 
-	/** @var bool Should invalid WeakReferences automatically be deleted from the list */
-	private bool $_discardInvalid = true;
+	/** @var ?bool Should invalid WeakReferences automatically be deleted from the list */
+	private ?bool $_discardInvalid = null;
 
 	/**
 	 * Constructor.
@@ -62,29 +63,19 @@ class TWeakCallableCollection extends TPriorityList
 	 *   Default null for the opposite of Read-Only.  Mutable Lists expunge invalid
 	 *   WeakReferences and Read only lists do not.  Set this bool to override the default
 	 *   behavior.
-	 * @param null|mixed $precision
+	 * @param null|int $precision The numeric precision of the priority.
 	 * @throws \Prado\Exceptions\TInvalidDataTypeException If data is not null and
 	 *   is neither an array nor an iterator.
 	 */
 	public function __construct($data = null, $readOnly = null, $defaultPriority = null, $precision = null, $discardInvalid = null)
 	{
-		if ($readOnly === null) {
-			$readOnly = false;
-		}
-		if ($discardInvalid === null) {
-			$discardInvalid = !$readOnly;
-		}
-		$this->_discardInvalid = $discardInvalid;
-		if ($discardInvalid) {
-			$this->weakStart();
-		}
-		if ($defaultPriority === null) {
-			$defaultPriority = 10;
-		}
-		if ($precision === null) {
-			$precision = 8;
+		if ($set = ($discardInvalid === false || $discardInvalid === null && $readOnly === true)) {
+			$this->setDiscardInvalid(false);
 		}
 		parent::__construct($data, $readOnly, $defaultPriority, $precision);
+		if (!$set) {
+			$this->setDiscardInvalid($discardInvalid);
+		}
 	}
 
 	/**
@@ -182,7 +173,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function scrubWeakReferences()
 	{
-		if (!$this->_discardInvalid || !$this->weakChanged()) {
+		if (!$this->getDiscardInvalid() || !$this->weakChanged()) {
 			return;
 		}
 		foreach (array_keys($this->_d) as $priority) {
@@ -213,17 +204,34 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function getDiscardInvalid(): bool
 	{
-		return $this->_discardInvalid;
+		$this->ensureDiscardInvalid();
+		return (bool) $this->_discardInvalid;
+	}
+
+	/**
+	 * Ensures that DiscardInvalid is set.
+	 */
+	protected function ensureDiscardInvalid()
+	{
+		if ($this->_discardInvalid === null) {
+			$this->setDiscardInvalid(!$this->getReadOnly());
+		}
 	}
 
 	/**
 	 * All invalid WeakReference[s] are optionally removed from the list on $value
 	 *  being "true".
-	 * @param bool $value Sets the TWeakList scrubbing of invalid WeakReferences.
+	 * @param null|bool|string $value Sets the TWeakList scrubbing of invalid WeakReferences.
 	 * @since 4.2.3
 	 */
-	protected function setDiscardInvalid($value): void
+	public function setDiscardInvalid($value): void
 	{
+		if($value === $this->_discardInvalid) {
+			return;
+		}
+		if ($this->_discardInvalid !== null && !Prado::isCallingSelf()) {
+			throw new TInvalidOperationException('weak_no_set_discard_invalid', $this::class);
+		}
 		$value = TPropertyValue::ensureBoolean($value);
 		if ($value && !$this->_discardInvalid) {
 			$this->weakStart();
@@ -238,7 +246,7 @@ class TWeakCallableCollection extends TPriorityList
 							} else {
 								parent::removeAtIndexInPriority($i, $priority);
 							}
-						} else {
+						} else { // Closure
 							$this->weakAdd($obj);
 						}
 					}
@@ -433,6 +441,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function internalInsertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
+		$this->ensureDiscardInvalid();
 		$itemPriority = null;
 		if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
 			$itemPriority = $priority = $item->getPriority();
@@ -907,7 +916,7 @@ class TWeakCallableCollection extends TPriorityList
 		$this->_c = $c;
 
 		$this->_weakZappableSleepProps($exprops);
-		if ($this->_discardInvalid === true) {
+		if ($this->_discardInvalid === null) {
 			$exprops[] = "\0" . __CLASS__ . "\0_discardInvalid";
 		}
 	}

@@ -13,6 +13,18 @@ class ListItem
 		$this->data = $d;
 	}
 }
+trait TListResetTrait 
+{
+	public function resetReadOnly($value)
+	{
+		$this->setReadOnly($value);
+	}
+}
+
+class TListUnit extends TList
+{
+	use TListResetTrait;
+}
 
 class TListTest extends PHPUnit\Framework\TestCase
 {
@@ -27,11 +39,11 @@ class TListTest extends PHPUnit\Framework\TestCase
 	
 	protected function newList()
 	{
-		return  'TList';
+		return  TListUnit::class;
 	}
 	protected function newListItem()
 	{
-		return 'ListItem';
+		return ListItem::class;
 	}
 	protected function getCanAddNull()
 	{
@@ -71,7 +83,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(2, $list2->getCount());
 	}
 
-	public function testGetReadOnlyTList()
+	public function testReadOnlyTList()
 	{
 		$list = new $this->_baseClass(null, true);
 		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
@@ -81,6 +93,18 @@ class TListTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only');
 		$list = new $this->_baseClass(null, "false");
 		self::assertEquals(false, $list->getReadOnly(), 'List is read-only');
+		
+		$list = new $this->_baseClass(null, null);
+		self::assertEquals(false, $list->getReadOnly(), 'List read only property is not set and not false');
+		$list->setReadOnly(true);
+		self::assertEquals(true, $list->getReadOnly(), 'List is not read-only after set to true');
+		$list->resetReadOnly(false);
+		self::assertEquals(false, $list->getReadOnly(), 'List is read-only after reset to false');
+		
+		// Cannot change Read Only once set
+		$list = new $this->_baseClass(null, false);
+		self::expectException(TInvalidOperationException::class);
+		$list->setReadOnly(true);
 	}
 
 	public function testGetCountTList()
