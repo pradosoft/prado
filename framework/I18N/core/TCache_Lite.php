@@ -510,11 +510,12 @@ class TCache_Lite
 	 */
 	protected function _write($data)
 	{
-		$fp = @fopen($this->_file, "wb");
+		$fp = @fopen($this->_file, "cb");
 		if ($fp) {
 			if ($this->_fileLocking) {
 				@flock($fp, LOCK_EX);
 			}
+			@ftruncate($fp, 0);
 			if ($this->_readControl) {
 				@fwrite($fp, $this->_hash($data, $this->_readControlType), 32);
 			}
