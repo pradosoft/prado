@@ -31,7 +31,7 @@ class TMssqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Mssql\TMssqlTableInfo';
+		return \Prado\Data\Common\Mssql\TMssqlTableInfo::class;
 	}
 
 	/**
@@ -73,15 +73,19 @@ class TMssqlMetaData extends TDbMetaData
 	{
 		[$catalogName, $schemaName, $tableName] = $this->getCatalogSchemaTableName($table);
 		$this->getDbConnection()->setActive(true);
-		$sql = <<<EOD
-				SELECT t.*,
-												c.*,
-					columnproperty(object_id(c.table_schema + '.' + c.table_name), c.column_name,'IsIdentity') as IsIdentity
-										FROM INFORMATION_SCHEMA.TABLES t,
-												INFORMATION_SCHEMA.COLUMNS c
-									WHERE t.table_name = c.table_name
-										AND t.table_name = :table
-EOD;
+		$sql =
+<<<EOD
+	SELECT
+		t.*,
+		c.*,
+		columnproperty(object_id(c.table_schema + '.' + c.table_name), c.column_name,'IsIdentity') as IsIdentity
+	FROM
+		INFORMATION_SCHEMA.TABLES t,
+		INFORMATION_SCHEMA.COLUMNS c
+	WHERE
+		t.table_name = c.table_name
+		AND t.table_name = :table
+	EOD;
 		if ($schemaName !== null) {
 			$sql .= ' AND t.table_schema = :schema';
 		}
@@ -195,17 +199,20 @@ EOD;
 	 */
 	protected function getConstraintKeys($col)
 	{
-		$sql = <<<EOD
-		SELECT k.column_name field_name
-				FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
-				LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS c
-					ON k.table_name = c.table_name
-				AND k.constraint_name = c.constraint_name
-			WHERE k.constraint_catalog = DB_NAME()
-		AND
-			c.constraint_type ='PRIMARY KEY'
-				AND k.table_name = :table
-EOD;
+		$sql =
+<<<EOD
+	SELECT
+		k.column_name field_name
+	FROM
+		INFORMATION_SCHEMA.KEY_COLUMN_USAGE k
+		LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS c
+		ON k.table_name = c.table_name
+		AND k.constraint_name = c.constraint_name
+	WHERE
+		k.constraint_catalog = DB_NAME()
+		AND	c.constraint_type ='PRIMARY KEY'
+		AND k.table_name = :table
+	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$primary = [];
@@ -224,31 +231,34 @@ EOD;
 	protected function getForeignConstraints($col)
 	{
 		//From http://msdn2.microsoft.com/en-us/library/aa175805(SQL.80).aspx
-		$sql = <<<EOD
-		SELECT
-				KCU1.CONSTRAINT_NAME AS 'FK_CONSTRAINT_NAME'
-			, KCU1.TABLE_NAME AS 'FK_TABLE_NAME'
-			, KCU1.COLUMN_NAME AS 'FK_COLUMN_NAME'
-			, KCU1.ORDINAL_POSITION AS 'FK_ORDINAL_POSITION'
-			, KCU2.CONSTRAINT_NAME AS 'UQ_CONSTRAINT_NAME'
-			, KCU2.TABLE_NAME AS 'UQ_TABLE_NAME'
-			, KCU2.COLUMN_NAME AS 'UQ_COLUMN_NAME'
-			, KCU2.ORDINAL_POSITION AS 'UQ_ORDINAL_POSITION'
-		FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
+		$sql =
+<<<EOD
+	SELECT
+		KCU1.CONSTRAINT_NAME AS 'FK_CONSTRAINT_NAME'
+		, KCU1.TABLE_NAME AS 'FK_TABLE_NAME'
+		, KCU1.COLUMN_NAME AS 'FK_COLUMN_NAME'
+		, KCU1.ORDINAL_POSITION AS 'FK_ORDINAL_POSITION'
+		, KCU2.CONSTRAINT_NAME AS 'UQ_CONSTRAINT_NAME'
+		, KCU2.TABLE_NAME AS 'UQ_TABLE_NAME'
+		, KCU2.COLUMN_NAME AS 'UQ_COLUMN_NAME'
+		, KCU2.ORDINAL_POSITION AS 'UQ_ORDINAL_POSITION'
+	FROM
+		INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
 		JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU1
 		ON KCU1.CONSTRAINT_CATALOG = RC.CONSTRAINT_CATALOG
-			AND KCU1.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA
-			AND KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME
+		AND KCU1.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA
+		AND KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME
 		JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU2
 		ON KCU2.CONSTRAINT_CATALOG =
 		RC.UNIQUE_CONSTRAINT_CATALOG
-			AND KCU2.CONSTRAINT_SCHEMA =
+		AND KCU2.CONSTRAINT_SCHEMA =
 		RC.UNIQUE_CONSTRAINT_SCHEMA
-			AND KCU2.CONSTRAINT_NAME =
+		AND KCU2.CONSTRAINT_NAME =
 		RC.UNIQUE_CONSTRAINT_NAME
-			AND KCU2.ORDINAL_POSITION = KCU1.ORDINAL_POSITION
-		WHERE KCU1.TABLE_NAME = :table
-EOD;
+		AND KCU2.ORDINAL_POSITION = KCU1.ORDINAL_POSITION
+	WHERE
+		KCU1.TABLE_NAME = :table
+	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $col['TABLE_NAME']);
 		$fkeys = [];
@@ -284,10 +294,12 @@ EOD;
 	public function findTableNames($schema = 'dbo')
 	{
 		$condition = "TABLE_TYPE='BASE TABLE'";
-		$sql = <<<EOD
-SELECT TABLE_NAME, TABLE_SCHEMA FROM [INFORMATION_SCHEMA].[TABLES]
-WHERE TABLE_SCHEMA=:schema AND $condition
-EOD;
+		$sql =
+<<<EOD
+	SELECT TABLE_NAME, TABLE_SCHEMA
+	FROM [INFORMATION_SCHEMA].[TABLES]
+	WHERE TABLE_SCHEMA=:schema AND $condition
+	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindParameter(":schema", $schema);
 		$rows = $command->query();

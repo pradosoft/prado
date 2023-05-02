@@ -35,7 +35,7 @@ class TShellCronAction extends TShellAction
 	protected $description = ['Manages Cron time-based services',
 		'Runs the Cron Pending Tasks.',
 		'Displays the Cron tasks configured in the application.',
-		'Displays the registered Cron tasks information.'
+		'Displays the registered Cron tasks information.',
 	];
 
 	private $_cron = false;
@@ -45,7 +45,7 @@ class TShellCronAction extends TShellAction
 	 */
 	public function getModuleClass()
 	{
-		return 'Prado\\Util\\Cron\\TCronModule';
+		return \Prado\Util\Cron\TCronModule::class;
 	}
 
 	/**
@@ -92,7 +92,7 @@ class TShellCronAction extends TShellAction
 			return true;
 		}
 		$time = $module->getLastCronTime();
-		$this->_outWriter->writeLine("\n Last cron run time was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s TP', $time)) . '');
+		$this->_outWriter->writeLine("\n Last cron run time was " . ($time == 0 ? 'never' : date('Y-m-d H:i:s TP', (int) $time)) . '');
 		$module->processPendingTasks();
 		return true;
 	}
@@ -183,7 +183,7 @@ class TShellCronAction extends TShellAction
 		foreach ($infos as $taskinfo) {
 			$rows[] = [
 					$this->_outWriter->format($taskinfo->getName(), [TShellWriter::BLUE, TShellWriter::BOLD]),
-					$taskinfo->getTask(), $taskinfo->getModuleId(), $taskinfo->getTitle()
+					$taskinfo->getTask(), $taskinfo->getModuleId(), $taskinfo->getTitle(),
 				];
 			$rows[] = ['span' => $this->_outWriter->format('      ' . $taskinfo->getDescription(), TShellWriter::DARK_GRAY)];
 		}

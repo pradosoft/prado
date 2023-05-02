@@ -149,7 +149,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, THorizontalAlign::class);
 	}
 
 	/**
@@ -168,7 +168,7 @@ class TTableItemStyle extends TStyle
 	 */
 	public function setVerticalAlign($value)
 	{
-		$this->_verticalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TVerticalAlign');
+		$this->_verticalAlign = TPropertyValue::ensureEnum($value, TVerticalAlign::class);
 	}
 
 	/**

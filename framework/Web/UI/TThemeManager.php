@@ -49,7 +49,7 @@ class TThemeManager extends \Prado\TModule
 	/**
 	 * default theme class
 	 */
-	public const DEFAULT_THEMECLASS = '\Prado\Web\UI\TTheme';
+	public const DEFAULT_THEMECLASS = \Prado\Web\UI\TTheme::class;
 
 	/**
 	 * @var string
@@ -77,12 +77,7 @@ class TThemeManager extends \Prado\TModule
 	public function init($config)
 	{
 		$this->_initialized = true;
-		$service = $this->getService();
-		if ($service instanceof TPageService) {
-			$service->setThemeManager($this);
-		} else {
-			throw new TConfigurationException('thememanager_service_unavailable');
-		}
+		Prado::getApplication()->setThemeManager($this);
 		parent::init($config);
 	}
 

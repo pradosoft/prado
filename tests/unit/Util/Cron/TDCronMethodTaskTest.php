@@ -25,7 +25,7 @@ class TDCronMethodTaskTest extends TCronTaskTest
 {	
 	protected function getTestClass()
 	{
-		return 'Prado\\Util\\Cron\\TCronMethodTask';
+		return TCronMethodTask::class;
 	}
 	
 	public function hasNullModuleId()
@@ -35,7 +35,7 @@ class TDCronMethodTaskTest extends TCronTaskTest
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TCronMethodTask', $this->obj);
+		$this->assertInstanceOf(TCronMethodTask::class, $this->obj);
 		
 		self::assertNull($this->obj->getModuleId());
 		self::assertNull($this->obj->getModuleId());

@@ -58,11 +58,6 @@ use Prado\Xml\TXmlElement;
 class TBehaviorsModule extends \Prado\TModule
 {
 	/**
-	 * @var bool wether or not WeakReference is available
-	 */
-	private static $_weak;
-
-	/**
 	 * @var IBaseBehavior[] loaded behaviors.
 	 */
 	private static $_behaviors = [];
@@ -84,13 +79,9 @@ class TBehaviorsModule extends \Prado\TModule
 
 	/**
 	 * Constructor.
-	 *  Discovers the availability of the {@link WeakReference} object in PHP 7.4.0+.
 	 */
 	public function __construct()
 	{
-		if (self::$_weak === null) {
-			self::$_weak = class_exists('\WeakReference', false);
-		}
 		parent::__construct();
 	}
 
@@ -195,10 +186,10 @@ class TBehaviorsModule extends \Prado\TModule
 				}
 			}
 			$properties[IBaseBehavior::CONFIG_KEY] = $element;
-			$name = $properties['name'];
+			$name = $properties['name'] ?? null;
 			unset($properties['name']);
-			if (!$name) {
-				throw new TConfigurationException('behaviormodule_behaviorname_required');
+			if (empty($name) || is_numeric($name)) {
+				$name = null;
 			}
 
 			$attachTo = $properties['attachto'] ?? null;
@@ -235,7 +226,7 @@ class TBehaviorsModule extends \Prado\TModule
 				$behavior = $owner->attachBehavior($name, $properties, $priority);
 			}
 			if (!is_array($behavior)) {
-				self::$_behaviors[$name] = self::$_weak ? \WeakReference::create($behavior) : $behavior;
+				self::$_behaviors[$name] = \WeakReference::create($behavior);
 			}
 		}
 	}

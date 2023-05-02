@@ -432,7 +432,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function setUrlFormat($value)
 	{
-		$this->_urlFormat = TPropertyValue::ensureEnum($value, 'Prado\\Web\\THttpRequestUrlFormat');
+		$this->_urlFormat = TPropertyValue::ensureEnum($value, THttpRequestUrlFormat::class);
 	}
 
 	/**
@@ -471,7 +471,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function setSecureConnection($value)
 	{
-		$this->_secureConnection = TPropertyValue::ensureEnum($value, 'Prado\\Web\\TUrlMappingPatternSecureConnection');
+		$this->_secureConnection = TPropertyValue::ensureEnum($value, TUrlMappingPatternSecureConnection::class);
 	}
 
 	/**

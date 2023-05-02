@@ -425,7 +425,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 					unset($parameter['class']);
 					$properties = $parameter['properties'] ?? [];
 					$properties['id'] = $id;
-					$this->_parameters[$id] = [$type, $properties];
+					$this->_parameters[$id] = [$type, $properties, $parameter];
 				}
 			} else {
 				$this->_parameters[$id] = $parameter;
@@ -453,7 +453,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 						$this->_parameters[$id] = $value;
 					}
 				} else {
-					$this->_parameters[$id] = [$type, $properties->toArray()];
+					$this->_parameters[$id] = [$type, $properties->toArray(), $element];
 				}
 				$this->_empty = false;
 			} else {

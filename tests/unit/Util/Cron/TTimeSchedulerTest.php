@@ -27,7 +27,7 @@ class TTimeSchedulerTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TTimeScheduler', $this->obj);
+		$this->assertInstanceOf(TTimeScheduler::class, $this->obj);
 	}
 
 	public function testGetSchedule()

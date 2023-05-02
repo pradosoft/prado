@@ -88,7 +88,7 @@ class TDbConnection extends \Prado\TComponent
 	 *
 	 * @since 3.1.7
 	 */
-	public const DEFAULT_TRANSACTION_CLASS = '\Prado\Data\TDbTransaction';
+	public const DEFAULT_TRANSACTION_CLASS = \Prado\Data\TDbTransaction::class;
 
 	private $_dsn = '';
 	private $_username = '';
@@ -123,7 +123,7 @@ class TDbConnection extends \Prado\TComponent
 	 * @param string $charset Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
-	public function __construct($dsn = '', $username = '', $password = '', $charset = '')
+	public function __construct($dsn = '', $username = '', #[\SensitiveParameter] $password = '', $charset = '')
 	{
 		$this->_dsn = $dsn;
 		$this->_username = $username;
@@ -137,7 +137,11 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function __sleep()
 	{
-//		$this->close(); - DO NOT CLOSE the current connection as serializing doesn't neccessarily mean we don't this connection anymore in the current session
+		/*
+		 * $this->close();
+		 * DO NOT CLOSE the current connection as serializing doesn't necessarily mean
+		 * we don't this connection anymore in the current session
+		 */
 		return array_diff(parent::__sleep(), ["\0Prado\Data\TDbConnection\0_pdo", "\0Prado\Data\TDbConnection\0_active"]);
 	}
 
@@ -283,7 +287,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * @param string $value the password for establishing DB connection
 	 */
-	public function setPassword($value)
+	public function setPassword(#[\SensitiveParameter] $value)
 	{
 		$this->_password = $value;
 	}
@@ -467,7 +471,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setColumnCase($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbColumnCaseMode')) {
+		switch (TPropertyValue::ensureEnum($value, TDbColumnCaseMode::class)) {
 			case TDbColumnCaseMode::Preserved:
 				$value = PDO::CASE_NATURAL;
 				break;
@@ -502,7 +506,7 @@ class TDbConnection extends \Prado\TComponent
 	 */
 	public function setNullConversion($value)
 	{
-		switch (TPropertyValue::ensureEnum($value, 'Prado\\Data\\TDbNullConversionMode')) {
+		switch (TPropertyValue::ensureEnum($value, TDbNullConversionMode::class)) {
 			case TDbNullConversionMode::Preserved:
 				$value = PDO::NULL_NATURAL;
 				break;

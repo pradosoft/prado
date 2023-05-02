@@ -2,6 +2,7 @@
 
 use Prado\Collections\IPriorityItem;
 use Prado\Collections\TPriorityList;
+use Prado\Collections\TPriorityMap;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -72,6 +73,21 @@ class PriorityPropertyListItem extends PriorityListItem implements IPriorityProp
 	}
 }
 
+class TPriorityListUnit extends TPriorityList
+{
+	use TListResetTrait;
+	
+	public function resetDefaultPriority($value)
+	{
+		$this->setDefaultPriority($value);
+	}
+	
+	public function resetPrecision($value)
+	{
+		$this->setPrecision($value);
+	}
+}
+
 /**
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList
  *
@@ -79,12 +95,6 @@ class PriorityPropertyListItem extends PriorityListItem implements IPriorityProp
  */
 class TPriorityListTest extends TListTest
 {
-	protected $list;
-	protected $item1;
-	protected $item2;
-	protected $item3;
-	protected $item4;
-
 	protected $plist;
 	protected $pfirst;
 	protected $pitem1;
@@ -95,11 +105,11 @@ class TPriorityListTest extends TListTest
 
 	protected function newList()
 	{
-		return  'TPriorityList';
+		return  TPriorityListUnit::class;
 	}
 	protected function newListItem()
 	{
-		return 'PriorityListItem';
+		return PriorityListItem::class;
 	}
 	protected function getCanAddNull()
 	{
@@ -131,19 +141,16 @@ class TPriorityListTest extends TListTest
 
 	protected function tearDown(): void
 	{
-		$this->list = null;
-		$this->item1 = null;
-		$this->item2 = null;
-		$this->item3 = null;
-		$this->item4 = null;
+		parent::tearDown();
 
 		// ****  start the setup for non-TList things
-		$this->list = null;
-		$this->item1 = null;
-		$this->item2 = null;
-		$this->item3 = null;
-		$this->item4 = null;
-		$this->item5 = null;
+		$this->plist = null;
+		$this->pfirst = null;
+		$this->pitem1 = null;
+		$this->pitem2 = null;
+		$this->pitem3 = null;
+		$this->pitem4 = null;
+		$this->pitem5 = null;
 	}
 
 	//*****************************************************************
@@ -177,6 +184,40 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals(-10000000, $list2->priorityAt(0));
 		$this->assertEquals($list2->DefaultPriority, $list2->priorityAt(2));
 		$this->assertEquals(100, $list2->priorityAt(3));
+	}
+	
+	public function testDefaultPriority()
+	{
+		$this->assertEquals(10, $this->list->getDefaultPriority());
+		
+		$list = new $this->_baseClass();
+		$this->assertEquals(10, $list->getDefaultPriority());
+		
+		$list = new $this->_baseClass();
+		$list->setDefaultPriority(21);
+		$this->assertEquals(21, $list->getDefaultPriority());
+		$list->resetDefaultPriority(15);
+		$this->assertEquals(15, $list->getDefaultPriority());
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setDefaultPriority(20);
+	}
+	
+	public function testPrecision()
+	{
+		$this->assertEquals(8, $this->list->getPrecision());
+		
+		$list = new $this->_baseClass();
+		$this->assertEquals(8, $list->getPrecision());
+		
+		$list = new $this->_baseClass();
+		$list->setPrecision(4);
+		$this->assertEquals(4, $list->getPrecision());
+		$list->resetPrecision(5);
+		$this->assertEquals(5, $list->getPrecision());
+		
+		self::expectException(TInvalidOperationException::class);
+		$list->setPrecision(6);
 	}
 
 	public function testGetPriorityCountTPriorityList()
@@ -262,10 +303,22 @@ class TPriorityListTest extends TListTest
 		$plist = new $this->_baseClass($this->plist);
 		$this->assertNull($plist->insertAt(0, $this->pitem3));
 		$this->assertEquals(-10000000, $plist->priorityAt(0));
-
 		$this->assertEquals(100, $plist->priorityAt(4));
+		
+		$plist = new $this->_baseClass();
+		$this->assertNull($plist->insertAt(0, $this->pitem1));
+		$this->assertEquals($this->pitem1, $plist->itemAt(0));
+		$this->assertEquals(10, $plist->priorityOf($this->pitem1));
+		$plist->add($this->pitem4, 20);
+		$this->assertNull($plist->insertAt(1, $this->pitem2));
+		$this->assertEquals($this->pitem1, $plist->itemAt(0));
+		$this->assertEquals($this->pitem2, $plist->itemAt(1));
+		$this->assertEquals(20, $plist->priorityOf($this->pitem2));
+		$this->assertNull($plist->insertAt(3, $this->pitem3));
+		$this->assertEquals(20, $plist->priorityOf($this->pitem3));
+		$this->assertEquals(20, $plist->priorityAt(3));
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$plist->insertAt(5, $this->pitem3);
 	}
 
@@ -319,12 +372,14 @@ class TPriorityListTest extends TListTest
 	{
 		$plist = new $this->_baseClass($this->plist);
 
+		$this->assertEquals(4, $plist->getCount());
 		$this->assertEquals($this->pitem1, $plist->removeAt(1));
+		$this->assertEquals(3, $plist->getCount());
 		$this->assertEquals(-1, $plist->indexOf($this->pitem1));
-		$this->assertEquals(1, $plist->indexOf($this->pitem2));
+		$this->assertEquals(1, $plist->indexOf($this->pitem2), 'Item 2 was not in the list.');
 		$this->assertEquals(0, $plist->indexOf($this->pfirst));
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$plist->removeAt(3);
 	}
 
@@ -334,18 +389,23 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals($this->pitem1, $this->plist->itemAtIndexInPriority(0, $this->plist->getDefaultPriority()));
 		$this->assertEquals($this->pfirst, $this->plist->itemAtIndexInPriority(0, -10000000));
 		$this->assertEquals($this->pitem3, $this->plist->itemAtIndexInPriority(0, 100));
+		
+		self::expectException(TInvalidDataValueException::class);
+		$this->plist->itemAtIndexInPriority(2);
 	}
 
 
 	public function testInsertAtIndexInPriorityTPriorityList()
 	{
+		// as false
+		
 		$plist = new $this->_baseClass();
-
+		
 		$plist->insertAtIndexInPriority($this->pfirst);
 		$this->assertEquals([
 			$this->pfirst
 		], $plist->toArray());
-
+		
 		$plist->insertAtIndexInPriority($this->pitem1, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1
@@ -354,26 +414,66 @@ class TPriorityListTest extends TListTest
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2
 		], $plist->toArray());
-
+		
 		$plist->insertAtIndexInPriority($this->pitem3, false, null);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3
 		], $plist->toArray());
-		$plist->insertAtIndexInPriority($this->pitem4, 5, null);
+		
+		
+		$plist->insertAtIndexInPriority($this->pitem5, false, 10);
+		$this->assertEquals([
+			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem5
+		], $plist->toArray());
+		
+		$plist->insertAtIndexInPriority($this->item2, false, 100);
+		$this->assertEquals([
+			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem5,$this->item2
+		], $plist->toArray());
+		
+		
+		// as null
+		$plist = new $this->_baseClass();
+
+		$plist->insertAtIndexInPriority($this->pfirst);
+		$this->assertEquals([
+			$this->pfirst
+		], $plist->toArray());
+
+		$plist->insertAtIndexInPriority($this->pitem1, null);
+		$this->assertEquals([
+			$this->pfirst, $this->pitem1
+		], $plist->toArray());
+		$plist->insertAtIndexInPriority($this->pitem2, 2);
+		$this->assertEquals([
+			$this->pfirst, $this->pitem1, $this->pitem2
+		], $plist->toArray());
+
+		$plist->insertAtIndexInPriority($this->pitem3, null, null);
+		$this->assertEquals([
+			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3
+		], $plist->toArray());
+		
+		try {	// Out of range index/priority
+			$plist->insertAtIndexInPriority($this->pitem4, 5, null);
+			$this->fail("failed to assert TInvalidDataValueException when inserting at index out of range for priority.");
+		} catch(TInvalidDataValueException $e){
+		}
+		$plist->insertAtIndexInPriority($this->pitem4, 4, null);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->pitem5, false, 10);
+		$plist->insertAtIndexInPriority($this->pitem5, null, 10);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5
 		], $plist->toArray());
-		$plist->insertAtIndexInPriority($this->item1, 7, 10);
+		$plist->insertAtIndexInPriority($this->item1, 6, 10);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->item2, false, 100);
+		$plist->insertAtIndexInPriority($this->item2, null, 100);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2
 		], $plist->toArray());
@@ -382,14 +482,15 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2, $this->item3
 		], $plist->toArray());
 
+		// Preserve Cache
 		$plist = new $this->_baseClass();
 
-		$plist->insertAtIndexInPriority($this->pfirst, false, null, true);
+		$plist->insertAtIndexInPriority($this->pfirst, null, null, true);
 		$this->assertEquals([
 			$this->pfirst
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->pitem1, false, null, true);
+		$plist->insertAtIndexInPriority($this->pitem1, null, null, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1
 		], $plist->toArray());
@@ -399,27 +500,27 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->pitem3, false, null, true);
+		$plist->insertAtIndexInPriority($this->pitem3, null, null, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->pitem4, 5, null, true);
+		$plist->insertAtIndexInPriority($this->pitem4, 4, null, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->pitem5, false, 10, true);
+		$plist->insertAtIndexInPriority($this->pitem5, null, 10, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->item1, 7, 10, true);
+		$plist->insertAtIndexInPriority($this->item1, 6, 10, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1
 		], $plist->toArray());
 
-		$plist->insertAtIndexInPriority($this->item2, false, 100, true);
+		$plist->insertAtIndexInPriority($this->item2, null, 100, true);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2
 		], $plist->toArray());
@@ -428,14 +529,15 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2, $this->item3
 		], $plist->toArray());
 
-		$plist = new $this->_baseClass();
 
-		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
+		// no preserve cache
+		$plist = new $this->_baseClass();
+		$plist->insertAtIndexInPriority($this->pfirst, null, null, false);
 		$this->assertEquals([
 			$this->pfirst
 		], $plist->toArray());
 		
-		$plist->insertAtIndexInPriority($this->pitem1, false, null, false);
+		$plist->insertAtIndexInPriority($this->pitem1, null, null, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1
 		], $plist->toArray());
@@ -444,25 +546,25 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2
 		], $plist->toArray());
 		
-		$plist->insertAtIndexInPriority($this->pitem3, false, null, false);
+		$plist->insertAtIndexInPriority($this->pitem3, null, null, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3
 		], $plist->toArray());
-		$plist->insertAtIndexInPriority($this->pitem4, 5, null, false);
+		$plist->insertAtIndexInPriority($this->pitem4, 4, null, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4
 		], $plist->toArray());
 		
-		$plist->insertAtIndexInPriority($this->pitem5, false, 10, false);
+		$plist->insertAtIndexInPriority($this->pitem5, null, 10, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5
 		], $plist->toArray());
-		$plist->insertAtIndexInPriority($this->item1, 7, 10, false);
+		$plist->insertAtIndexInPriority($this->item1, 6, 10, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1
 		], $plist->toArray());
 		
-		$plist->insertAtIndexInPriority($this->item2, false, 100, false);
+		$plist->insertAtIndexInPriority($this->item2, null, 100, false);
 		$this->assertEquals([
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2
 		], $plist->toArray());
@@ -471,6 +573,7 @@ class TPriorityListTest extends TListTest
 			$this->pfirst, $this->pitem1, $this->pitem2, $this->pitem3, $this->pitem4, $this->pitem5, $this->item1, $this->item2, $this->item3
 		], $plist->toArray());
 		
+		
 		//test when the flattened array is empty, but an array, then add
 		$plist = new $this->_baseClass();
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, true);
@@ -482,6 +585,7 @@ class TPriorityListTest extends TListTest
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, true);
 		$this->assertEquals([$this->pfirst], $plist->toArray());
 		
+		
 		//test when the flattened array is empty, but an array, then add
 		$plist = new $this->_baseClass();
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
@@ -492,6 +596,8 @@ class TPriorityListTest extends TListTest
 		
 		$plist->insertAtIndexInPriority($this->pfirst, false, null, false);
 		$this->assertEquals([$this->pfirst], $plist->toArray());
+		
+		
 		
 		// Test IPriorityItem
 		$aplistitem = new AutoPriorityListItem("my Data");
@@ -544,7 +650,7 @@ class TPriorityListTest extends TListTest
 	public function testCanNotInsertAtIndexInPriorityWhenReadOnlyTList()
 	{
 		$list = new $this->_baseClass([], true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$list->insertAtIndexInPriority($this->item1);
 	}
 
@@ -573,7 +679,7 @@ class TPriorityListTest extends TListTest
 	public function testCanNotRemoveAtIndexInPriorityWhenReadOnlyTList()
 	{
 		$plist = new $this->_baseClass($this->plist, true);
-		self::expectException('Prado\\Exceptions\\TInvalidOperationException');
+		self::expectException(TInvalidOperationException::class);
 		$plist->removeAtIndexInPriority(0);
 	}
 	
@@ -776,39 +882,128 @@ class TPriorityListTest extends TListTest
 
 	public function testCopyFromTPriorityList()
 	{
-		$plist = new $this->_baseClass();
-		$plist->copyFrom($this->plist);
-		$this->assertEquals(0, $plist->indexOf($this->pfirst));
-		$this->assertEquals(1, $plist->indexOf($this->pitem1));
-		$this->assertEquals(2, $plist->indexOf($this->pitem2));
-		$this->assertEquals(3, $plist->indexOf($this->pitem3));
-		$this->assertEquals(-10000000, $plist->priorityOf($this->pfirst));
-		$this->assertEquals(10, $plist->priorityOf($this->pitem1));
-		$this->assertEquals(10, $plist->priorityOf($this->pitem2));
-		$this->assertEquals(100, $plist->priorityOf($this->pitem3));
-		$this->assertEquals(-1, $plist->indexOf($this->pitem4));
+		// Copy from TPriorityList
+		$pfirst = new $this->_baseItemClass(-10000);
+		$pitem1 = new $this->_baseItemClass(-1);
+		$pitem2 = new $this->_baseItemClass(-2);
+		$pitem3 = new $this->_baseItemClass(-3);
+		
+		$plist = new TPriorityList();
+		$plist->add($pitem3, 100);
+		$plist->add($pitem1);
+		$plist->add($pfirst, -10000000);
+		$plist->add($pitem2);
+		
+		$this->plist->copyFrom($plist);
+		$this->assertEquals($plist->getCount(), $this->plist->getCount());
+		$this->assertEquals(0, $this->plist->indexOf($pfirst));
+		$this->assertEquals(1, $this->plist->indexOf($pitem1));
+		$this->assertEquals(2, $this->plist->indexOf($pitem2));
+		$this->assertEquals(3, $this->plist->indexOf($pitem3));
+		$this->assertEquals(-10000000, $this->plist->priorityOf($pfirst));
+		$this->assertEquals(10, $this->plist->priorityOf($pitem1));
+		$this->assertEquals(10, $this->plist->priorityOf($pitem2));
+		$this->assertEquals(100, $this->plist->priorityOf($pitem3));
+		$this->assertEquals(-1, $this->plist->indexOf($this->pitem1));
+		
+		// Copy from TPriorityMap
+		$map = new TPriorityMap();
+		$map->add('key3', $this->pitem3, 100);
+		$map->add('key1', $this->pitem1);
+		$map->add('key0', $this->pfirst, -10000000);
+		$map->add('key2', $this->pitem2);
+		$this->plist->copyFrom($map);
+		$this->assertEquals($map->getCount(), $this->plist->getCount());
+		$this->assertEquals(0, $this->plist->indexOf($this->pfirst));
+		$this->assertEquals(1, $this->plist->indexOf($this->pitem1));
+		$this->assertEquals(2, $this->plist->indexOf($this->pitem2));
+		$this->assertEquals(3, $this->plist->indexOf($this->pitem3));
+		$this->assertEquals(-10000000, $this->plist->priorityOf($this->pfirst));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem1));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem2));
+		$this->assertEquals(100, $this->plist->priorityOf($this->pitem3));
+		$this->assertEquals(-1, $this->plist->indexOf($pitem1));
+		
+		// copy from Traversable
+		$this->plist->copyFrom(['a' => $this->pitem1, 10 => $this->pitem2]);
+		$this->assertEquals(2, $this->plist->getCount());
+		$this->assertEquals(0, $this->plist->indexOf($this->pitem1));
+		$this->assertEquals(1, $this->plist->indexOf($this->pitem2));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem1));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem2));
+		
+		self::expectException(TInvalidDataTypeException::class);
+		$this->plist->copyFrom($this);
 	}
 
 	public function testMergeWithTPriorityList()
 	{
-		$plist = new $this->_baseClass([
-			$this->item3, $this->item1
-		]);
-		$plist->mergeWith($this->plist);
-		$this->assertEquals(6, $plist->getCount());
-		$this->assertEquals(0, $plist->indexOf($this->pfirst));
-		$this->assertEquals(1, $plist->indexOf($this->item3));
-		$this->assertEquals(2, $plist->indexOf($this->item1));
-		$this->assertEquals(3, $plist->indexOf($this->pitem1));
-		$this->assertEquals(4, $plist->indexOf($this->pitem2));
-		$this->assertEquals(5, $plist->indexOf($this->pitem3));
-		$this->assertEquals(-10000000, $plist->priorityOf($this->pfirst));
-		$this->assertEquals(10, $plist->priorityOf($this->item3));
-		$this->assertEquals(10, $plist->priorityOf($this->item1));
+		// Merge TPriorityList
+		$plist = new TPriorityList();
+		$plist->add($this->item3, 5);
+		$plist->add($this->item1, 15);
+		$this->plist->mergeWith($plist);
+		$this->assertEquals(6, $this->plist->getCount());
+		$this->assertEquals(0, $this->plist->indexOf($this->pfirst));
+		$this->assertEquals(1, $this->plist->indexOf($this->item3));
+		$this->assertEquals(2, $this->plist->indexOf($this->pitem1));
+		$this->assertEquals(3, $this->plist->indexOf($this->pitem2));
+		$this->assertEquals(4, $this->plist->indexOf($this->item1));
+		$this->assertEquals(5, $this->plist->indexOf($this->pitem3));
+		$this->assertEquals(-10000000, $this->plist->priorityOf($this->pfirst));
+		$this->assertEquals(5, $this->plist->priorityOf($this->item3));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem1));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem2));
+		$this->assertEquals(15, $this->plist->priorityOf($this->item1));
+		$this->assertEquals(100, $this->plist->priorityOf($this->pitem3));
+		$this->assertEquals(-1, $this->plist->indexOf($this->pitem4));
+		
+		// Merge Traversable
+		$plist->mergeWith([100 => $this->pitem1, 10 => $this->pitem2]);
+		$this->assertEquals(4, $plist->getCount());
+		$this->assertEquals(0, $plist->indexOf($this->item3));
+		$this->assertEquals(1, $plist->indexOf($this->pitem1));
+		$this->assertEquals(2, $plist->indexOf($this->pitem2));
+		$this->assertEquals(3, $plist->indexOf($this->item1));
+		$this->assertEquals(5, $plist->priorityOf($this->item3));
 		$this->assertEquals(10, $plist->priorityOf($this->pitem1));
 		$this->assertEquals(10, $plist->priorityOf($this->pitem2));
-		$this->assertEquals(100, $plist->priorityOf($this->pitem3));
-		$this->assertEquals(-1, $plist->indexOf($this->pitem4));
+		$this->assertEquals(15, $plist->priorityOf($this->item1));
+		
+		// Merge TPriorityMap, drops keys and keeps priority
+		$item1 = new $this->_baseItemClass(-1);
+		$item2 = new $this->_baseItemClass(-2);
+		$item3 = new $this->_baseItemClass(-3);
+		$map = new TPriorityMap();
+		$map->add('key3', $item3, 15);
+		$map->add('key1', $item1, 5);
+		$map->add('key2', $item2, 10);
+		$this->plist->mergeWith($map);
+		$this->assertEquals(9, $this->plist->getCount());
+		$this->assertEquals(-10000000, $this->plist->priorityOf($this->pfirst));
+		$this->assertEquals(5, $this->plist->priorityOf($this->item3));
+		$this->assertEquals(5, $this->plist->priorityOf($item1));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem1));
+		$this->assertEquals(10, $this->plist->priorityOf($this->pitem2));
+		$this->assertEquals(10, $this->plist->priorityOf($item2));
+		$this->assertEquals(15, $this->plist->priorityOf($this->item1));
+		$this->assertEquals(15, $this->plist->priorityOf($item3));
+		$this->assertEquals(100, $this->plist->priorityOf($this->pitem3));
+		
+		$this->assertEquals(0, $this->plist->indexOf($this->pfirst));
+		$this->assertEquals(1, $this->plist->indexOf($this->item3));
+		$this->assertEquals(2, $this->plist->indexOf($item1));
+		$this->assertEquals(3, $this->plist->indexOf($this->pitem1));
+		$this->assertEquals(4, $this->plist->indexOf($this->pitem2));
+		$this->assertEquals(5, $this->plist->indexOf($item2));
+		$this->assertEquals(6, $this->plist->indexOf($this->item1));
+		$this->assertEquals(7, $this->plist->indexOf($item3));
+		$this->assertEquals(8, $this->plist->indexOf($this->pitem3));
+		
+		$this->assertEquals(-1, $this->plist->indexOf($this->pitem4));
+		
+		self::expectException(TInvalidDataTypeException::class);
+		$this->plist->mergeWith($this);
 	}
 
 	public function testToArrayTPriorityList()
@@ -914,7 +1109,7 @@ class TPriorityListTest extends TListTest
 		$this->assertTrue($this->plist[2] === $this->pitem2);
 		$this->assertTrue($this->plist[3] === $this->pitem3);
 
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$a = $this->plist[4];
 	}
 
@@ -940,7 +1135,8 @@ class TPriorityListTest extends TListTest
 				$found++;
 			}
 		}
-		$this->assertTrue($n == 4 && $found == 4);
+		$this->assertTrue($n == 4, "Not 4 items in the list.");
+		$this->assertTrue($found == 4, "$found of 4 items were in the list.");
 	}
 
 	public function testArrayMiscTPriorityList()

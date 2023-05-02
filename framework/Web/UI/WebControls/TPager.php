@@ -127,7 +127,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function setMode($value)
 	{
-		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TPagerMode'), TPagerMode::NextPrev);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, TPagerMode::class), TPagerMode::NextPrev);
 	}
 
 	/**
@@ -143,7 +143,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 */
 	public function setButtonType($value)
 	{
-		$this->setViewState('ButtonType', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TPagerButtonType'), TPagerButtonType::LinkButton);
+		$this->setViewState('ButtonType', TPropertyValue::ensureEnum($value, TPagerButtonType::class), TPagerButtonType::LinkButton);
 	}
 
 	/**

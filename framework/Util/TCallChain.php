@@ -91,10 +91,10 @@ class TCallChain extends TList implements IDynamicMethods
 	 * When there are no handlers or no handlers left, it returns the first parameter of the
 	 * argument list.
 	 *
+	 * @param array $args The parameters to send the function chain.
 	 */
-	public function call()
+	public function call(...$args)
 	{
-		$args = func_get_args();
 		if ($this->getCount() === 0) {
 			return $args[0] ?? null;
 		}

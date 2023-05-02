@@ -101,8 +101,7 @@ class TParameterModule extends \Prado\TModule
 		if (is_array($config)) {
 			foreach ($config as $id => $parameter) {
 				if (is_array($parameter) && isset($parameter['class'])) {
-					$properties = $parameter['properties'] ?? [];
-					$parameters[$id] = [$parameter['class'], $properties];
+					$parameters[$id] = [$parameter['class'], $parameter['properties'] ?? [], $parameter];
 				} else {
 					$parameters[$id] = $parameter;
 				}
@@ -120,7 +119,7 @@ class TParameterModule extends \Prado\TModule
 						$parameters[$id] = $value;
 					}
 				} else {
-					$parameters[$id] = [$type, $properties->toArray()];
+					$parameters[$id] = [$type, $properties->toArray(), $node];
 				}
 			}
 		}
@@ -132,7 +131,7 @@ class TParameterModule extends \Prado\TModule
 				foreach ($parameter[1] as $name => $value) {
 					$component->setSubProperty($name, $value);
 				}
-				$component->dyInit(null);
+				$component->dyInit($parameter[2]);
 				$appParams->add($id, $component);
 			} else {
 				$appParams->add($id, $parameter);

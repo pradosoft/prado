@@ -93,7 +93,7 @@ class TUrlMapping extends TUrlManager
 
 	private $_urlPrefix = '';
 
-	private $_defaultMappingClass = '\Prado\Web\TUrlMappingPattern';
+	private $_defaultMappingClass = \Prado\Web\TUrlMappingPattern::class;
 
 	/**
 	 * Initializes this module.
@@ -272,7 +272,7 @@ class TUrlMapping extends TUrlManager
 					trigger_error(
 						sPrintF(
 							'%s.RegularExpression property value "%s" for ServiceID="%s" and ServiceParameter="%s" was replaced by node value "%s"',
-							get_class($pattern),
+							$pattern::class,
 							$regExp,
 							$pattern->getServiceID(),
 							$pattern->getServiceParameter(),

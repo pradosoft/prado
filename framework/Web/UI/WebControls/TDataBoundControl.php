@@ -241,7 +241,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	public function setPageSize($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 1) {
-			throw new TInvalidDataValueException('databoundcontrol_pagesize_invalid', get_class($this));
+			throw new TInvalidDataValueException('databoundcontrol_pagesize_invalid', $this::class);
 		}
 		$this->setViewState('PageSize', TPropertyValue::ensureInteger($value), 10);
 	}
@@ -271,7 +271,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	public function setVirtualItemCount($value)
 	{
 		if (($value = TPropertyValue::ensureInteger($value)) < 0) {
-			throw new TInvalidDataValueException('databoundcontrol_virtualitemcount_invalid', get_class($this));
+			throw new TInvalidDataValueException('databoundcontrol_virtualitemcount_invalid', $this::class);
 		}
 		$this->setViewState('VirtualItemCount', $value, 0);
 	}
@@ -487,7 +487,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 		} elseif (($value instanceof \Traversable) || $value === null) {
 			return $value;
 		} else {
-			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid', get_class($this));
+			throw new TInvalidDataTypeException('databoundcontrol_datasource_invalid', $this::class);
 		}
 	}
 

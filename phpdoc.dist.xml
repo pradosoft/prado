@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://www.phpdoc.org"
 >
-    <title>Prado 4.2.1 API Manual</title>
+    <title>Prado 4.2.2 API Manual</title>
     <paths>
         <output>build/docs</output>
         <cache>build/cache</cache>
@@ -16,6 +16,7 @@
             </source>
             <ignore hidden="true" symlinks="true">
                 <path>I18N/core</path>
+                <path>PHPStan</path>
                 <path>Web/Javascripts/source</path>
                 <path>Web/Javascripts/*packages.php</path>
                 <path>Web/UI/WebControls/assets</path>

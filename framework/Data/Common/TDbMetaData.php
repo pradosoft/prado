@@ -77,8 +77,6 @@ abstract class TDbMetaData extends \Prado\TComponent
 				return new TMssqlMetaData($conn);
 			case 'oci':
 				return new TOracleMetaData($conn);
-//			case 'ibm':
-//				return new TIbmDb2MetaData($conn);
 			default:
 				throw new TDbException('ar_invalid_database_driver', $driver);
 		}

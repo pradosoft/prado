@@ -11,15 +11,16 @@ use Prado\Util\Cron\TDbCronModule;
 class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 {
 	protected $obj;
+	protected $writer;
 	
 	protected function getTestClass()
 	{
-		return 'Prado\\Util\\Cron\\TShellDbCronAction';
+		return TShellDbCronAction::class;
 	}
 	
 	protected function getTestCronClass()
 	{
-		return 'Prado\\Util\\Cron\\TDbCronModule';
+		return TDbCronModule::class;
 	}
 
 	protected function setUp(): void
@@ -42,7 +43,7 @@ class TShellDbCronActionTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellDbCronAction', $this->obj);
+		$this->assertInstanceOf(TShellDbCronAction::class, $this->obj);
 	}
 	
 	public function testActionRun()

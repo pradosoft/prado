@@ -56,7 +56,7 @@ abstract class TSqlMapXmlConfigBuilder
 					throw new TSqlMapConfigurationException(
 						'sqlmap_invalid_property',
 						$name,
-						get_class($obj),
+						$obj::class,
 						$node,
 						$this->getConfigFile()
 					);

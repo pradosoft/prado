@@ -60,19 +60,19 @@ class TRpcService extends \Prado\TService
 	/**
 	 * const string base api provider class which every API must extend
 	 */
-	public const BASE_API_PROVIDER = '\Prado\Web\Services\TRpcApiProvider';
+	public const BASE_API_PROVIDER = \Prado\Web\Services\TRpcApiProvider::class;
 
 	/**
 	 * const string base RPC server implementation
 	 */
-	public const BASE_RPC_SERVER = '\Prado\Web\Services\TRpcServer';
+	public const BASE_RPC_SERVER = \Prado\Web\Services\TRpcServer::class;
 
 	/**
 	 * @var array containing mimetype to protocol handler mappings
 	 */
 	protected $protocolHandlers = [
 		'application/json' => 'TJsonRpcProtocol',
-		'text/xml' => 'TXmlRpcProtocol'
+		'text/xml' => 'TXmlRpcProtocol',
 	];
 
 	/**

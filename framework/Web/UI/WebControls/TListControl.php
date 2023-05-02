@@ -521,7 +521,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			}
 			$this->_cachedSelectedIndices = $indices;
 		} else {
-			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
 		}
 
 		if ($this->getAdapter() instanceof IListControlAdapter) {
@@ -637,7 +637,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			}
 			$this->_cachedSelectedValues = $values;
 		} else {
-			throw new TNotSupportedException('listcontrol_multiselect_unsupported', get_class($this));
+			throw new TNotSupportedException('listcontrol_multiselect_unsupported', $this::class);
 		}
 
 		if ($this->getAdapter() instanceof IListControlAdapter) {
@@ -847,7 +847,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 			try {
 				return eval("return $expression;");
 			} catch (Exception $e) {
-				throw new TInvalidDataValueException('listcontrol_expression_invalid', get_class($this), $expression, $e->getMessage());
+				throw new TInvalidDataValueException('listcontrol_expression_invalid', $this::class, $expression, $e->getMessage());
 			}
 		} else {
 			return sprintf($formatString, $value);

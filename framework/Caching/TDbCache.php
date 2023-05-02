@@ -194,7 +194,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			}
 
 			if ($this->_autoCreate && !$this->_createCheck) {
-				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->_connID . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
+				Prado::trace(($force ? 'Force initializing: ' : 'Initializing: ') . $this->_connID . ', ' . $this->_cacheTable, TDbCache::class);
 
 				$sql = 'SELECT 1 FROM ' . $this->_cacheTable . ' WHERE 0=1';
 				$db->createCommand($sql)->queryScalar();
@@ -205,7 +205,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		} catch (\Exception $e) {
 			// DB table not exists
 			if ($this->_autoCreate) {
-				Prado::trace('Autocreate: ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
+				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
 				$driver = $db->getDriverName();
 				if ($driver === 'mysql') {
@@ -251,7 +251,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			if (!$this->_cacheInitialized) {
 				$this->initializeCache();
 			}
-			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this->_connID . ', ' . $this->_cacheTable, '\Prado\Caching\TDbCache');
+			Prado::trace(($force ? 'Force flush of expired items: ' : 'Flush expired items: ') . $this->_connID . ', ' . $this->_cacheTable, TDbCache::class);
 			$sql = 'DELETE FROM ' . $this->_cacheTable . ' WHERE expire<>0 AND expire<' . $now;
 			$this->getDbConnection()->createCommand($sql)->execute();
 			$this->getApplication()->setGlobalState($key, $now);
@@ -403,7 +403,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	/**
 	 * @param string $value the password for establishing DB connection
 	 */
-	public function setPassword($value)
+	public function setPassword(#[\SensitiveParameter] $value)
 	{
 		$this->_password = $value;
 	}

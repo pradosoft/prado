@@ -161,7 +161,6 @@ authmanager_usermanager_invalid		= TAuthManager.UserManager '{0}' tidak merujuk 
 authmanager_usermanager_unchangeable	= TAuthManager.UserManager tidak bisa diubah setelah modul diinisialisasi.
 authmanager_session_required		= TAuthManager memerlukan modul aplikasi sesi.
 
-thememanager_service_unavailable	= TThemeManager memerlukan ketersediaan TPageService. Kesalahan ini sering terjadi saat anda mengkonfigurasi TThemeManager di luar konfigurasi layanan halaman.
 thememanager_basepath_invalid		= TThemeManager.BasePath '{0}' bukan alias path yang benar. Pastikan anda telah mendefinisikan alias ini dalam konfigurasi dan mengarahkan ke direktori yang benar.
 thememanager_basepath_invalid2		= TThemeManager.BasePath '{0}' bukan direktori yang benar.
 thememanager_basepath_unchangeable	= TThemeManager.BasePath tidak bisa diubah setelah modul diinisialisasi.

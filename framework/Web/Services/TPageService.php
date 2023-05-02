@@ -111,12 +111,12 @@ class TPageService extends \Prado\TService
 	/**
 	 * @var string base path class in namespace format
 	 */
-	private $_basePageClass = '\Prado\Web\UI\TPage';
+	private $_basePageClass = \Prado\Web\UI\TPage::class;
 	/**
 	 * @var string clientscript manager class in namespace format
 	 * @since 3.1.7
 	 */
-	private $_clientScriptManagerClass = '\Prado\Web\UI\TClientScriptManager';
+	private $_clientScriptManagerClass = \Prado\Web\UI\TClientScriptManager::class;
 	/**
 	 * @var string default page
 	 */
@@ -137,14 +137,6 @@ class TPageService extends \Prado\TService
 	 * @var bool whether service is initialized
 	 */
 	private $_initialized = false;
-	/**
-	 * @var TThemeManager theme manager
-	 */
-	private $_themeManager;
-	/**
-	 * @var TTemplateManager template manager
-	 */
-	private $_templateManager;
 
 	/**
 	 * Initializes the service.
@@ -153,7 +145,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function init($config)
 	{
-		Prado::trace("Initializing TPageService", '\Prado\Web\Services\TPageService');
+		Prado::trace("Initializing TPageService", TPageService::class);
 
 		$pageConfig = $this->loadPageConfig($config);
 
@@ -295,42 +287,38 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @return TTemplateManager template manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function getTemplateManager()
 	{
-		if (!$this->_templateManager) {
-			$this->_templateManager = new TTemplateManager();
-			$this->_templateManager->init(null);
-		}
-		return $this->_templateManager;
+		return Prado::getApplication()->getTemplateManager();
 	}
 
 	/**
 	 * @param TTemplateManager $value template manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
-		$this->_templateManager = $value;
+		Prado::getApplication()->setTemplateManager($value);
 	}
 
 	/**
 	 * @return TThemeManager theme manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function getThemeManager()
 	{
-		if (!$this->_themeManager) {
-			$this->_themeManager = new TThemeManager();
-			$this->_themeManager->init(null);
-		}
-		return $this->_themeManager;
+		return Prado::getApplication()->getThemeManager();
 	}
 
 	/**
 	 * @param TThemeManager $value theme manager
+	 * @deprecated 4.2.3, removal in 4.3
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{
-		$this->_themeManager = $value;
+		Prado::getApplication()->setThemeManager($value);
 	}
 
 	/**
@@ -460,7 +448,7 @@ class TPageService extends \Prado\TService
 	 */
 	public function run()
 	{
-		Prado::trace("Running page service", 'Prado\Web\Services\TPageService');
+		Prado::trace("Running page service", TPageService::class);
 		$this->_page = $this->createPage($this->getRequestedPagePath());
 		$this->runPage($this->_page, $this->_properties);
 	}
@@ -519,7 +507,7 @@ class TPageService extends \Prado\TService
 			}
 		}
 
-		if ($className !== '\Prado\Web\UI\TPage' && !is_subclass_of($className, '\Prado\Web\UI\TPage')) {
+		if ($className !== TPage::class && !is_subclass_of($className, TPage::class)) {
 			throw new THttpException(404, 'pageservice_page_unknown', $pagePath);
 		}
 

@@ -95,7 +95,7 @@ class TCallbackErrorHandler extends TErrorHandler
 				$data['line'] = $data['trace'][0]['line'];
 			}
 		}
-		$data['type'] = get_class($exception);
+		$data['type'] = $exception::class;
 		$data['message'] = $exception->getMessage();
 		$data['version'] = $_SERVER['SERVER_SOFTWARE'] . ' ' . Prado::getVersion();
 		$data['time'] = @strftime('%Y-%m-%d %H:%M', time());

@@ -1,6 +1,6 @@
 <?php
 
-
+use Prado\Exceptions\TPhpErrorException;
 use Prado\Data\SqlMap\DataMapper\TPropertyAccess;
 
 class TPropertyAccessTest extends PHPUnit\Framework\TestCase
@@ -24,7 +24,7 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'a'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'b'));
 
-		self::expectException('Prado\\Data\SqlMap\DataMapper\\TInvalidPropertyException');
+		self::expectException(\Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 	}
 
@@ -38,8 +38,11 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		TPropertyAccess::set($testobj, 'b', 20);
 		self::assertEquals(20, TPropertyAccess::get($testobj, 'b'));
 
-		TPropertyAccess::set($testobj, 'c', 30);
-		self::assertEquals(30, TPropertyAccess::get($testobj, 'c'));
+		try { // PHP 8.2 throws an error on undefined properties.
+			TPropertyAccess::set($testobj, 'c', 30);
+			self::assertEquals(30, TPropertyAccess::get($testobj, 'c'));
+		} catch(TPhpErrorException $e) {
+		}
 	}
 
 
@@ -63,10 +66,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, TPropertyAccess::get($testobj, 'A'));
 		self::assertEquals(2, TPropertyAccess::get($testobj, 'B'));
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'c');
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -89,10 +92,13 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(100, TPropertyAccess::get($testobj, 'b'));
 		self::assertEquals(100, TPropertyAccess::get($testobj, 'B'));
 
-		TPropertyAccess::set($testobj, 'c', 30);
-		self::assertEquals(30, TPropertyAccess::get($testobj, 'c'));
-
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		try {
+			TPropertyAccess::set($testobj, 'c', 30);
+			self::assertEquals(30, TPropertyAccess::get($testobj, 'c'));
+		} catch(TPhpErrorException $e) {
+		}
+			
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'C');
 	}
 
@@ -175,8 +181,15 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(10, TPropertyAccess::get($testobj, 'a.d.a'));
 		self::assertEquals(10, TPropertyAccess::get($testobj, 'a.e.a'));
 
-		TPropertyAccess::set($testobj, 'a.c.c', 30);
-		TPropertyAccess::set($testobj, 'a.d.c', 30);
+		try { // no public variable $c, error in PHP 8.2
+			TPropertyAccess::set($testobj, 'a.c.c', 30);
+		} catch (TPhpErrorException $e) {
+		}
+		try { // no getter methods for $c, error in PHP 8.2
+			TPropertyAccess::set($testobj, 'a.d.c', 30);
+		} catch (TPhpErrorException $e) {
+		}
+		// But dynamic magic methods accept $c without error as no error is coded into the test class.
 		TPropertyAccess::set($testobj, 'a.e.c', 30);
 
 		self::assertEquals(30, TPropertyAccess::get($testobj, 'a.c.c'));
@@ -185,10 +198,10 @@ class TPropertyAccessTest extends PHPUnit\Framework\TestCase
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.c'));
 		self::assertNull(TPropertyAccess::get($testobj, 'a.e.C'));
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.c.C');
 
-		self::expectException('Prado\\Data\\SqlMap\\DataMapper\\TInvalidPropertyException');
+		self::expectException(Prado\Data\SqlMap\DataMapper\TInvalidPropertyException::class);
 		TPropertyAccess::get($testobj, 'a.d.C');
 	}
 }

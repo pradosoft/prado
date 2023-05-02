@@ -74,7 +74,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content',
 		300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 307 => 'Temporary Redirect',
 		400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Time-out', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Large', 415 => 'Unsupported Media Type', 416 => 'Requested range not satisfiable', 417 => 'Expectation Failed',
-		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported'
+		500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Time-out', 505 => 'HTTP Version not supported',
 	];
 
 	/**
@@ -504,7 +504,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function flushContent($continueBuffering = true)
 	{
-		Prado::trace("Flushing output", 'Prado\Web\THttpResponse');
+		Prado::trace("Flushing output", THttpResponse::class);
 		$this->ensureHeadersSent();
 		if ($this->_bufferOutput) {
 			// avoid forced send of http headers (ob_flush() does that) if there's no output yet
@@ -589,7 +589,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getContents()
 	{
-		Prado::trace("Retrieving output", 'Prado\Web\THttpResponse');
+		Prado::trace("Retrieving output", THttpResponse::class);
 		return $this->_bufferOutput ? ob_get_contents() : '';
 	}
 
@@ -601,7 +601,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_bufferOutput && ob_get_length() > 0) {
 			ob_clean();
 		}
-		Prado::trace("Clearing output", 'Prado\Web\THttpResponse');
+		Prado::trace("Clearing output", THttpResponse::class);
 	}
 
 	/**
@@ -637,7 +637,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function appendHeader($value, $replace = true)
 	{
-		Prado::trace("Sending header '$value'", 'Prado\Web\THttpResponse');
+		Prado::trace("Sending header '$value'", THttpResponse::class);
 		header($value, $replace);
 	}
 
@@ -669,23 +669,11 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$value = $cookie->getValue();
 		}
 
-		if (PHP_VERSION_ID >= 70300) {
-			setcookie(
-				$cookie->getName(),
-				$value,
-				$cookie->getPhpOptions()
-			);
-		} else {
-			setcookie(
-				$cookie->getName(),
-				$value,
-				$cookie->getExpire(),
-				$cookie->getPath(),
-				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
-			);
-		}
+		setcookie(
+			$cookie->getName(),
+			$value,
+			$cookie->getPhpOptions()
+		);
 	}
 
 	/**
@@ -695,25 +683,13 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function removeCookie($cookie)
 	{
-		if (PHP_VERSION_ID >= 70300) {
-			$options = $cookie->getPhpOptions();
-			$options['expires'] = 0;
-			setcookie(
-				$cookie->getName(),
-				null,
-				$options
-			);
-		} else {
-			setcookie(
-				$cookie->getName(),
-				null,
-				0,
-				$cookie->getPath(),
-				$cookie->getDomain(),
-				$cookie->getSecure(),
-				$cookie->getHttpOnly()
-			);
-		}
+		$options = $cookie->getPhpOptions();
+		$options['expires'] = 0;
+		setcookie(
+			$cookie->getName(),
+			null,
+			$options
+		);
 	}
 
 	/**

@@ -36,7 +36,7 @@ class TUserPermissionsBehavior extends TBehavior
 	public function __construct($manager = null)
 	{
 		if ($manager) {
-			$this->setManager($manager);
+			$this->setPermissionsManager($manager);
 		}
 		parent::__construct();
 	}
@@ -48,7 +48,7 @@ class TUserPermissionsBehavior extends TBehavior
 	 */
 	public function can($permission, $extraData = null)
 	{
-		$rules = $this->getManager()->getPermissionRules($permission);
+		$rules = $this->getPermissionsManager()->getPermissionRules($permission);
 		if (!$rules) {
 			return true; //Default from TAuthorizationRuleCollection::isUserAllowed
 		}
@@ -63,7 +63,7 @@ class TUserPermissionsBehavior extends TBehavior
 	 */
 	public function dyDefaultRoles($roles, $callchain)
 	{
-		$roles = array_merge($roles, $this->getManager()->getDefaultRoles() ?? []);
+		$roles = array_merge($roles, $this->getPermissionsManager()->getDefaultRoles() ?? []);
 		return $callchain->dyDefaultRoles($roles);
 	}
 
@@ -76,14 +76,14 @@ class TUserPermissionsBehavior extends TBehavior
 	 */
 	public function dyIsInRole($return, $role, $callchain)
 	{
-		$inRole = $this->getManager()->isInHierarchy($this->getOwner()->getRoles(), $role);
+		$inRole = $this->getPermissionsManager()->isInHierarchy($this->getOwner()->getRoles(), $role);
 		return $callchain->dyIsInRole($return, $role) || $inRole;
 	}
 
 	/**
 	 * @return \Prado\Security\Permissions\TPermissionsManager application permissions manager
 	 */
-	public function getManager()
+	public function getPermissionsManager()
 	{
 		return $this->_manager;
 	}
@@ -91,9 +91,9 @@ class TUserPermissionsBehavior extends TBehavior
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
 	 */
-	public function setManager($manager)
+	public function setPermissionsManager($manager)
 	{
-		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
+		if ($manager instanceof \WeakReference) {
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;

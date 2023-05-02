@@ -1,12 +1,28 @@
+## Version 4.2.3 - TBA
 
-## Version 4.2.2 - ____
+ENH: Issues #824, #838, #851, #891, #910, #917 - General Behaviors Update: Cloning and Serializing supports behaviors.  IBaseBehavior has init($config) method. TClassBehavior tracks their owners.  Behaviors attach their registered event handlers at the behavior priority.  Registered Behavior event can optionally attached and detached automatically when the behavior is enabled or disabled (default).  Behavior events() support Closures. IBehavior are attachable class-wide by cloning. Behaviors for behaviors has better support.  Behaviors are case insensitive.  Supports Anonymous (unnamed/numeric) behaviors.  Wakeup updates the component behaviors with new named class behaviors. (belisoful)
+ENH: ISSUE #848 - TComponent events support Closure (anonymous functions) as handlers. (belisoful)
+ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TComponent::getClassHierarchy.  Class-wide behaviors support attaching to Traits as well as interfaces, classes, and their parents. (belisoful)
+ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
+BUG: Issue #843 - Permissions Manager behaviors rename the method 'getManager' to 'getPermissionsManager' for specificity. (belisoful)
+ENH: Issue #861 - TWebColors lists all the Web Colors in a TEnumerable and implements TPropertyValue::ensureHexColor (belisoful)
 
+## Version 4.2.2 - April 6, 2023
+
+BUG: Issue #811 - Update TSqlCriteria.php for fix phpdoc (zendre4)
+BUG: Issue #814 -  TSkinTemplate: ensure the full-NS class name is returned from the skin to match the one from the template (ctrlaltca)
+BUG: Issue #815 - Cron trigger on first run fix, repeat running fix, and removed time zone code (belisoful)
+BUG: Issue #819 - Support for OFFSET parameter without LIMIT clause in SQL query for TActiveRecord (ganiuszka)
+ENH: Issue #820 - TApplicationComponent::getClassFxEvents Performance Mode should cache all (belisoful)
 ENH: Issue #828 - TApplication::onSetUser raised when setting user. (belisoful)
+ENH: Issues #821, #822, #823, #825, #826, #834, #839, #842 - Behavior updates (belisoful)
+ENH: Issues #840, #847 - TPriority updates (belisoful)
+ENH: Issues #818, #846 - TCallChain updates (belisoful)
 ENH: Issue #866 - HTMLPurifier_Config and cache path (majuca)
 ENH: Issue #868 - RFC: Service detection is fragile (ctrlaltca)
-BUG: Issue #815 - Cron tasks delay until their proper time on first entry. Long running cron tasks no longer repeat further pending tasks. (belisoful)
 ENH: Issue #865 - File and dir permissions were too permissive 0777, now the file permissions are 0644 and 0755 for directory by default. (majuca)
 ENH: Issue #869 - Remove execute permission on all files excepted on php-cli (majuca)
+ENH: Issue #875 - Make Prado::using able to autoload traits defined as prado3 namespaces (ctrlaltca)
 
 ## Version 4.2.1 - May 9, 2022
 

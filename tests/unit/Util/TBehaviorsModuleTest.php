@@ -63,6 +63,8 @@ class TestModuleBM2 extends TModule
 
 class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 {
+	protected $tearDownScripts = [];
+	
 	protected $obj;
 
 	protected function setUp(): void
@@ -72,12 +74,17 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
+		//Closure may do something with the component.
+		foreach ($this->tearDownScripts as $closure) {
+			$closure();
+		}
+		$this->tearDownScripts = [];
 		Prado::getApplication()->onBeginRequest->clear();
 	}
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\TBehaviorsModule', $this->obj);
+		$this->assertInstanceOf(TBehaviorsModule::class, $this->obj);
 	}
 
 	public function testInit()
@@ -85,14 +92,14 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		try {
 			$this->obj->init(null);
 		} catch (Exception $e) {
-			$this->fail(get_class($e) .' should not have been raised on init(null)');
+			$this->fail($e::class .' should not have been raised on init(null)');
 		}
 		$behaviors = '<module id="bmod">
 		<behavior name="testBehavior5" class="TestModuleBehavior5" attachto="behavior:testBehavior1" Priority="19" PropertyA="value5"/>
-		<behavior name="testBehavior6" class="TestModuleBehavior5" attachto="behavior:testBehavior3" Priority="19" PropertyA="value6"/>
+		<behavior name="testBehavior6" class="TestModuleBehavior5" attachto="behavior:testClassBehavior3" Priority="19" PropertyA="value6"/>
 		<behavior name="testBehavior1" class="TestModuleBehavior1" attachto="Application" Priority="1" PropertyA="value1"/>
 		<behavior name="testBehavior2" class="TestModuleBehavior2" attachto="Page" Priority="2" PropertyA="value2"/>
-		<behavior name="testBehavior3" class="TestModuleClassBehavior1" attachtoclass="TestModuleBM2" Priority="3" PropertyA="value3"/>
+		<behavior name="testClassBehavior3" class="TestModuleClassBehavior1" attachtoclass="TestModuleBM2" Priority="3" PropertyA="value3"/>
 		<behavior name="testBehavior4" class="TestModuleBehavior4" attachto="module:modB" Priority="4" PropertyA="value4"/>
 			</module>';
 		$xmldoc = new TXmlDocument('1.0', 'utf-8');
@@ -108,7 +115,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		
 		{ // XML
 			$this->assertNull($app->asa('testBehavior1'));
-			$this->assertNull($log->asa('testBehavior3'));
+			$this->assertNull($log->asa('testClassBehavior3'));
 			$this->assertNull($modB->asa('testBehavior4'));
 			$this->assertEquals(0, count($app->onBeginRequest));
 			
@@ -129,17 +136,17 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleClassBehavior1', $b3 = $log->asa('testBehavior3'));
-			$this->assertEquals('value3', $log->asa('testBehavior3')->propertyA);
+			$this->assertInstanceOf('TestModuleClassBehavior1', $b3 = $log->asa('testClassBehavior3'));
+			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			$this->assertEquals('value6', $b3->asa('testBehavior6')->propertyA);
 			
 			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
-			$log->detachClassBehavior('testBehavior3');
+			$log->detachClassBehavior('testClassBehavior3');
 			$modB->detachBehavior('testBehavior4');
 			$this->assertNull($app->asa('testBehavior1'));
-			$this->assertNull($log->asa('testBehavior3'));
+			$this->assertNull($log->asa('testClassBehavior3'));
 			$this->assertNull($modB->asa('testBehavior4'));
 		}
 		$phpconfig = ['class' => 'TBehaviorsModule', 'properties' => [], 'behaviors' => [
@@ -148,29 +155,39 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 					'complexProp' => 'complexValue'
 				],
 			['name' => 'testBehavior2', 'class' => 'TestModuleBehavior2', 'attachto' => 'Page', 'priority' => '2', 'propertya' => 'value2'],
-			['name' => 'testBehavior3', 'class' => 'TestModuleBehavior3', 'attachtoclass' => 'TestModuleBM2', 'priority' => 3.0, 'propertya' => 'value3'],
-			['name' => 'testBehavior4', 'class' => 'TestModuleBehavior4', 'attachto' => 'module:modB', 'priority' => 4, 'propertya' => 'value4']
+			['name' => 'testClassBehavior3', 'class' => 'TestModuleBehavior3', 'attachtoclass' => 'TestModuleBM2', 'priority' => 3.0, 'propertya' => 'value3'],
+			['name' => 'testBehavior4', 'class' => 'TestModuleBehavior4', 'attachto' => 'module:modB', 'priority' => 4, 'propertya' => 'value4'],
+			['name' => '', 'class' => 'TestModuleBehavior1', 'attachto' => 'Application', 'priority' => 11, 'propertya' => 'blankname'],
+			['name' => '11', 'class' => 'TestModuleBehavior2', 'attachto' => 'Application', 'priority' => 12, 'propertya' => 'numericname'],
+			['class' => 'TestModuleBehavior3', 'attachto' => 'Application', 'priority' => 13, 'propertya' => 'noName'],
 		]];
+		$this->tearDownScripts[] = function() use ($log) {$log->detachClassBehavior('testClassBehavior3');};
+		
 		{ // PHP
 			$this->obj->init($phpconfig);
 			$this->assertInstanceOf('TestModuleBehavior1', $app->asa('testBehavior1'));
 			$this->assertEquals('value1', $app->asa('testBehavior1')->propertyA);
 			$this->assertEquals(['propertya' => 'value1'], $app->testBehavior1->getBehaviorInitConfig());
 			$this->assertEquals(['complexProp' => 'complexValue'], $app->propBehaviorName->getBehaviorInitConfig());
+			$this->assertEquals(['propertya' => 'blankname'], $app->asa(0)->getBehaviorInitConfig());
+			$this->assertEquals(['propertya' => 'numericname'], $app->asa(1)->getBehaviorInitConfig());
+			$this->assertEquals(['propertya' => 'noName'], $app->asa(2)->getBehaviorInitConfig());
 			$this->assertEquals(1, count($app->onBeginRequest));
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testBehavior3'));
-			$this->assertEquals('value3', $log->asa('testBehavior3')->propertyA);
+			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testClassBehavior3'));
+			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			
 			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
-			$log->detachClassBehavior('testBehavior3');
+			$app->detachBehavior('propBehaviorName');
+			$log->detachClassBehavior('testClassBehavior3');
 			$modB->detachBehavior('testBehavior4');
 			$this->assertNull($app->asa('testBehavior1'));
-			$this->assertNull($log->asa('testBehavior3'));
+			$this->assertNull($app->asa('propBehaviorName'));
+			$this->assertNull($log->asa('testClassBehavior3'));
 			$this->assertNull($modB->asa('testBehavior4'));
 		}
 		{ // Additional Behaviors
@@ -182,16 +199,17 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 			$app->onBeginRequest->clear();
 			
 			//This behavior is added via class behaviors for already instanced objects.
-			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testBehavior3'));
-			$this->assertEquals('value3', $log->asa('testBehavior3')->propertyA);
+			$this->assertInstanceOf('TestModuleBehavior3', $log->asa('testClassBehavior3'));
+			$this->assertEquals('value3', $log->asa('testClassBehavior3')->propertyA);
 			
 			$this->assertInstanceOf('TestModuleBehavior4', $modB->asa('testBehavior4'));
 			$this->assertEquals('value4', $modB->asa('testBehavior4')->propertyA);
 			$app->detachBehavior('testBehavior1');
-			$log->detachClassBehavior('testBehavior3');
+			array_pop($this->tearDownScripts);
+			$log->detachClassBehavior('testClassBehavior3');
 			$modB->detachBehavior('testBehavior4');
 			$this->assertNull($app->asa('testBehavior1'));
-			$this->assertNull($log->asa('testBehavior3'));
+			$this->assertNull($log->asa('testClassBehavior3'));
 			$this->assertNull($modB->asa('testBehavior4'));
 			$this->obj->setAdditionalBehaviors(null);
 		}
@@ -248,7 +266,7 @@ class TBehaviorsModuleTest extends PHPUnit\Framework\TestCase
 		
 		// serialized array of behaviors is an array of behaviors
 		$this->obj->setAdditionalBehaviors('<module id="bmod"><behavior name="testBehavior" class="TestModuleBehavior1" attachto="Application" Priority="12" PropertyA="value2"/></module>');
-		$this->assertInstanceOf('\\Prado\\Xml\\TXmlDocument', $this->obj->getAdditionalBehaviors());
+		$this->assertInstanceOf(\Prado\Xml\TXmlDocument::class, $this->obj->getAdditionalBehaviors());
 		
 	}
 }

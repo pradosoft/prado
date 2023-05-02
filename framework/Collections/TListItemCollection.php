@@ -69,7 +69,7 @@ class TListItemCollection extends TList
 			$item = $this->createNewListItem($item);
 		}
 		if (!($item instanceof TListItem)) {
-			throw new TInvalidDataTypeException('listitemcollection_item_invalid', get_class($this));
+			throw new TInvalidDataTypeException('listitemcollection_item_invalid', $this::class);
 		}
 		parent::insertAt($index, $item);
 	}

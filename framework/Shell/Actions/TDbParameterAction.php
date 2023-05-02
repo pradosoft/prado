@@ -185,7 +185,7 @@ class TDbParameterAction extends TShellAction
 		if ($this->_dbparam === false) {
 			$this->_dbparam = null;
 			$app = Prado::getApplication();
-			foreach ($app->getModulesByType('Prado\\Util\\TDbParameterModule') as $id => $module) {
+			foreach ($app->getModulesByType(\Prado\Util\TDbParameterModule::class) as $id => $module) {
 				if ($this->_dbparam = $app->getModule($id)) {
 					break;
 				}

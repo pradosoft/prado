@@ -29,7 +29,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	public function processLogs($logs)
 	{
 		$page = $this->getService()->getRequestedPage();
-		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
+		if (empty($logs) || $this->getApplication()->getMode() === \Prado\TApplicationMode::Performance) {
 			return;
 		}
 		$first = $logs[0][3];
@@ -61,7 +61,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 			$content = $response->createHtmlWriter();
 			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_DEBUG_HEADER);
 			$content->write($blocks);
-			$response->write($content);
+			$response->write($content->flush());
 		}
 	}
 
@@ -69,19 +69,20 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	{
 		$page = $this->getService()->getRequestedPage();
 		if ($page->getIsCallback()) {
-			return <<<EOD
+			return
+<<<EOD
 
-<script>
-/*<![CDATA[*/
-if (typeof(console) == 'object')
-{
-	var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
-	if(typeof log[groupFunc] === "function")
-		log[groupFunc]("Callback logs ("+blocks.length+" entries)");
+	<script>
+	/*<![CDATA[*/
+	if (typeof(console) == 'object')
+	{
+		var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
+		if(typeof log[groupFunc] === "function")
+			log[groupFunc]("Callback logs ("+blocks.length+" entries)");
 
-	console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
+		console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
 
-EOD;
+	EOD;
 		}
 		return '';
 	}
@@ -91,7 +92,7 @@ EOD;
 		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[1]);
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
+		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
@@ -104,7 +105,7 @@ EOD;
 		$logfunc = $this->getFirebugLoggingFunction($log[1]);
 		$total = sprintf('%0.6f', $info['total']);
 		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], ''));
+		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 
 		return [$logfunc, $total, $delta, $msg];
@@ -112,15 +113,15 @@ EOD;
 
 	protected function renderFooter()
 	{
-		$string = <<<EOD
+		$string =
+<<<EOD
+		if(typeof console.groupEnd === "function")
+			console.groupEnd();
 
-	if(typeof console.groupEnd === "function")
-		console.groupEnd();
+	}
+	</script>
 
-}
-</script>
-
-EOD;
+	EOD;
 
 		return $string;
 	}

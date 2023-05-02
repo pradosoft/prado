@@ -48,7 +48,7 @@ class TComponentReflection extends \Prado\TComponent
 		if (is_string($component) && class_exists($component, false)) {
 			$this->_className = $component;
 		} elseif (is_object($component)) {
-			$this->_className = get_class($component);
+			$this->_className = $component::class;
 		} else {
 			throw new TInvalidDataTypeException('componentreflection_class_invalid');
 		}
@@ -102,7 +102,7 @@ class TComponentReflection extends \Prado\TComponent
 				'readonly' => !$class->hasMethod('set' . $name),
 				'protected' => $method->isProtected(),
 				'class' => $method->getDeclaringClass()->getName(),
-				'comments' => $method->getDocComment()
+				'comments' => $method->getDocComment(),
 			];
 			$reserved['get' . strtolower($name)] = 1;
 			$reserved['set' . strtolower($name)] = 1;
@@ -112,7 +112,7 @@ class TComponentReflection extends \Prado\TComponent
 			$this->_events[$name] = [
 				'class' => $method->getDeclaringClass()->getName(),
 				'protected' => $method->isProtected(),
-				'comments' => $method->getDocComment()
+				'comments' => $method->getDocComment(),
 			];
 			$reserved[strtolower($name)] = 1;
 		}
@@ -123,7 +123,7 @@ class TComponentReflection extends \Prado\TComponent
 					'class' => $method->getDeclaringClass()->getName(),
 					'protected' => $method->isProtected(),
 					'static' => $method->isStatic(),
-					'comments' => $method->getDocComment()
+					'comments' => $method->getDocComment(),
 				];
 			}
 		}

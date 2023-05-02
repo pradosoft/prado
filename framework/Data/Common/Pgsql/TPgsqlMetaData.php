@@ -31,7 +31,7 @@ class TPgsqlMetaData extends TDbMetaData
 	 */
 	protected function getTableInfoClass()
 	{
-		return '\Prado\Data\Common\Pgsql\TPgsqlTableInfo';
+		return \Prado\Data\Common\Pgsql\TPgsqlTableInfo::class;
 	}
 
 	/**
@@ -107,34 +107,34 @@ class TPgsqlMetaData extends TDbMetaData
 		// sequence on the field.
 		$sql =
 <<<EOD
-		SELECT
-			a.attname,
-			pg_catalog.format_type(a.atttypid, a.atttypmod) as type,
-			a.atttypmod,
-			a.attnotnull, a.atthasdef, pg_get_expr(adef.adbin, adef.adrelid) AS adsrc,
-			(
-				SELECT 1 FROM pg_catalog.pg_depend pd, pg_catalog.pg_class pc
-				WHERE pd.objid=pc.oid
-				AND pd.classid=pc.tableoid
-				AND pd.refclassid=pc.tableoid
-				AND pd.refobjid=a.attrelid
-				AND pd.refobjsubid=a.attnum
-				AND pd.deptype='i'
-				AND pc.relkind='S'
-			) IS NOT NULL AS attisserial
+	SELECT
+		a.attname,
+		pg_catalog.format_type(a.atttypid, a.atttypmod) as type,
+		a.atttypmod,
+		a.attnotnull, a.atthasdef, pg_get_expr(adef.adbin, adef.adrelid) AS adsrc,
+		(
+			SELECT 1 FROM pg_catalog.pg_depend pd, pg_catalog.pg_class pc
+			WHERE pd.objid=pc.oid
+			AND pd.classid=pc.tableoid
+			AND pd.refclassid=pc.tableoid
+			AND pd.refobjid=a.attrelid
+			AND pd.refobjsubid=a.attnum
+			AND pd.deptype='i'
+			AND pc.relkind='S'
+		) IS NOT NULL AS attisserial
 
-		FROM
-			pg_catalog.pg_attribute a LEFT JOIN pg_catalog.pg_attrdef adef
-			ON a.attrelid=adef.adrelid
-			AND a.attnum=adef.adnum
-			LEFT JOIN pg_catalog.pg_type t ON a.atttypid=t.oid
-		WHERE
-			a.attrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname=:table
-				AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE
-				nspname = :schema))
-			AND a.attnum > 0 AND NOT a.attisdropped
-		ORDER BY a.attnum
-EOD;
+	FROM
+		pg_catalog.pg_attribute a LEFT JOIN pg_catalog.pg_attrdef adef
+		ON a.attrelid=adef.adrelid
+		AND a.attnum=adef.adnum
+		LEFT JOIN pg_catalog.pg_type t ON a.atttypid=t.oid
+	WHERE
+		a.attrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname=:table
+			AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE
+			nspname = :schema))
+		AND a.attnum > 0 AND NOT a.attisdropped
+	ORDER BY a.attnum
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
@@ -191,10 +191,10 @@ EOD;
 	{
 		$sql =
 <<<EOD
-		SELECT count(c.relname) FROM pg_catalog.pg_class c
-		LEFT JOIN pg_catalog.pg_namespace n ON (n.oid = c.relnamespace)
-		WHERE (n.nspname=:schema) AND (c.relkind = 'v'::"char") AND c.relname = :table
-EOD;
+	SELECT count(c.relname) FROM pg_catalog.pg_class c
+	LEFT JOIN pg_catalog.pg_namespace n ON (n.oid = c.relnamespace)
+	WHERE (n.nspname=:schema) AND (c.relkind = 'v'::"char") AND c.relname = :table
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':schema', $schemaName);
@@ -292,46 +292,45 @@ EOD;
 		$sql =
 <<<EOD
 	SELECT conname, consrc, contype, indkey, indisclustered FROM (
-			SELECT
-					conname,
-					pg_catalog.pg_get_constraintdef(oid) AS consrc,
-					CAST(contype AS CHAR),
-					conrelid AS relid,
-					NULL AS indkey,
-					FALSE AS indisclustered
-			FROM
-					pg_catalog.pg_constraint
-			WHERE
-					contype IN ('f', 'c')
-			UNION ALL
-			SELECT
-					pc.relname,
-					NULL,
-					CASE WHEN indisprimary THEN
-							'p'
-					ELSE
-							'u'
-					END,
-					pi.indrelid,
-					indkey,
-					pi.indisclustered
-			FROM
-					pg_catalog.pg_class pc,
-					pg_catalog.pg_index pi
-			WHERE
-					pc.oid=pi.indexrelid
-					AND EXISTS (
-							SELECT 1 FROM pg_catalog.pg_depend d JOIN pg_catalog.pg_constraint c
-							ON (d.refclassid = c.tableoid AND d.refobjid = c.oid)
-							WHERE d.classid = pc.tableoid AND d.objid = pc.oid AND d.deptype = 'i' AND c.contype IN ('u', 'p')
-			)
+		SELECT
+			conname,
+			pg_catalog.pg_get_constraintdef(oid) AS consrc,
+			CAST(contype AS CHAR),
+			conrelid AS relid,
+			NULL AS indkey,
+			FALSE AS indisclustered
+		FROM
+			pg_catalog.pg_constraint
+		WHERE
+			contype IN ('f', 'c')
+		UNION ALL
+		SELECT
+			pc.relname,
+			NULL,
+			CASE WHEN indisprimary THEN
+					'p'
+			ELSE
+					'u'
+			END,
+			pi.indrelid,
+			indkey,
+			pi.indisclustered
+		FROM
+			pg_catalog.pg_class pc,
+			pg_catalog.pg_index pi
+		WHERE
+			pc.oid=pi.indexrelid
+			AND EXISTS (
+				SELECT 1 FROM pg_catalog.pg_depend d JOIN pg_catalog.pg_constraint c
+				ON (d.refclassid = c.tableoid AND d.refobjid = c.oid)
+				WHERE d.classid = pc.tableoid AND d.objid = pc.oid AND d.deptype = 'i' AND c.contype IN ('u', 'p')
+		)
 	) AS sub
 	WHERE relid = (SELECT oid FROM pg_catalog.pg_class WHERE relname=:table
 					AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace
 					WHERE nspname=:schema))
-	ORDER BY
-			1
-EOD;
+	ORDER BY 1
+	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
@@ -365,18 +364,23 @@ EOD;
 		$index = implode(', ', explode(' ', $columnIndex));
 		$sql =
 <<<EOD
-		SELECT attnum, attname FROM pg_catalog.pg_attribute WHERE
+	SELECT attnum, attname
+	FROM pg_catalog.pg_attribute
+	WHERE
 		attrelid=(
-			SELECT oid FROM pg_catalog.pg_class WHERE relname=:table AND relnamespace=(
+			SELECT oid
+			FROM pg_catalog.pg_class
+			WHERE relname=:table
+			AND relnamespace=(
 				SELECT oid FROM pg_catalog.pg_namespace WHERE nspname=:schema
 			)
 		)
-				AND attnum IN ({$index})
-EOD;
+		AND attnum IN ({$index})
+	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':table', $tableName);
 		$command->bindValue(':schema', $schemaName);
-//		$command->bindValue(':columnIndex', join(', ', explode(' ', $columnIndex)));
+		//		$command->bindValue(':columnIndex', join(', ', explode(' ', $columnIndex)));
 		$primary = [];
 		foreach ($command->query() as $row) {
 			$primary[] = $row['attname'];
@@ -432,10 +436,12 @@ EOD;
 		if ($schema === '') {
 			$schema = $this->_defaultSchema;
 		}
-		$sql = <<<EOD
-SELECT table_name, table_schema FROM information_schema.tables
-WHERE table_schema=:schema AND table_type='BASE TABLE'
-EOD;
+		$sql =
+<<<EOD
+	SELECT table_name, table_schema
+	FROM information_schema.tables
+	WHERE table_schema=:schema AND table_type='BASE TABLE'
+	EOD;
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindParameter(':schema', $schema);
 		$rows = $command->query();

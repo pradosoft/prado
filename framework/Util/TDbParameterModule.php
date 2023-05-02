@@ -192,7 +192,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function getPermissions($manager)
 	{
 		return [
-			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction')
+			new TPermissionEvent(static::PERM_PARAM_SHELL, 'Activates parameter shell commands.', 'dyRegisterShellAction'),
 		];
 	}
 
@@ -255,7 +255,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function registerShellAction($sender, $param)
 	{
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
-			$app->addShellActionClass(['class' => 'Prado\\Shell\\Actions\\TDbParameterAction', 'DbParameterModule' => $this]);
+			$app->addShellActionClass(['class' => \Prado\Shell\Actions\TDbParameterAction::class, 'DbParameterModule' => $this]);
 		}
 	}
 

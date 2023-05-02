@@ -182,7 +182,7 @@ class THtmlArea extends TTextBox
 		'visualchars',
 		'wordc',
 		'wordcount',
-		'xhtmlxtras'
+		'xhtmlxtras',
 	];
 
 	/**
@@ -190,7 +190,7 @@ class THtmlArea extends TTextBox
 	 */
 	private static $_themes = [
 		'simple',
-		'advanced'
+		'advanced',
 	];
 
 	/**
@@ -353,7 +353,7 @@ class THtmlArea extends TTextBox
 		$this->loadJavascriptLibrary();
 		$scripts = $this->getPage()->getClientScript();
 		$options = [
-			'EditorOptions' => $this->getEditorOptions()
+			'EditorOptions' => $this->getEditorOptions(),
 		];
 
 		$options = TJavaScript::encode($options, true, true);

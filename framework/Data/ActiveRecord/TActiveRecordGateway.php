@@ -29,7 +29,7 @@ use ReflectionClass;
  */
 class TActiveRecordGateway extends \Prado\TComponent
 {
-	public const DEFAULT_DATA_GATEWAY_CLASS = '\Prado\Data\DataGateway\TDataGatewayCommand';
+	public const DEFAULT_DATA_GATEWAY_CLASS = \Prado\Data\DataGateway\TDataGatewayCommand::class;
 
 	/**
 	 * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
@@ -83,7 +83,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			if (empty($value)) {
 				throw new TActiveRecordException(
 					'ar_invalid_tablename_property',
-					get_class($record),
+					$record::class,
 					self::TABLE_CONST
 				);
 			}
@@ -93,13 +93,13 @@ class TActiveRecordGateway extends \Prado\TComponent
 			if (empty($value)) {
 				throw new TActiveRecordException(
 					'ar_invalid_tablename_method',
-					get_class($record),
+					$record::class,
 					self::TABLE_METHOD
 				);
 			}
 			return $value;
 		} else {
-			return strtolower(get_class($record));
+			return strtolower($record::class);
 		}
 	}
 
@@ -345,7 +345,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			if (!$column->getAllowNull() && $value === null && !$column->hasSequence() && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE)) {
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null',
-					get_class($record),
+					$record::class,
 					$tableInfo->getTableFullName(),
 					$name
 				);
@@ -384,7 +384,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			if (!$column->getAllowNull() && $value === null && ($column->getDefaultValue() === TDbTableColumn::UNDEFINED_VALUE)) {
 				throw new TActiveRecordException(
 					'ar_value_must_not_be_null',
-					get_class($record),
+					$record::class,
 					$tableInfo->getTableFullName(),
 					$name
 				);

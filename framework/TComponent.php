@@ -14,27 +14,29 @@
 
 namespace Prado;
 
-use Prado\Util\IBaseBehavior;
-use Prado\Web\Javascripts\TJavaScriptLiteral;
-use Prado\Web\Javascripts\TJavaScriptString;
-use Prado\Util\TCallChain;
-use Prado\Util\IBehavior;
-use Prado\Util\IDynamicMethods;
-use Prado\Util\IClassBehavior;
-use Prado\Util\TClassBehaviorEventParameter;
+use Prado\Collections\TPriorityMap;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TApplicationException;
-use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Collections\TWeakCallableCollection;
-use Prado\Collections\TPriorityMap;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Util\IBaseBehavior;
+use Prado\Util\IBehavior;
+use Prado\Util\TCallChain;
+use Prado\Util\IClassBehavior;
+use Prado\Util\IDynamicMethods;
+use Prado\Util\TClassBehaviorEventParameter;
+use Prado\Web\Javascripts\TJavaScriptLiteral;
+use Prado\Web\Javascripts\TJavaScriptString;
 
 /**
  * TComponent class
  *
  * TComponent is the base class for all PRADO components.
  * TComponent implements the protocol of defining, using properties, behaviors,
- * and events.
+ * events, dynamic events, and global events.
+ *
+ * Properties
  *
  * A property is defined by a getter method, and/or a setter method.
  * Properties can be accessed in the way like accessing normal object members.
@@ -55,7 +57,8 @@ use Prado\Collections\TPriorityMap;
  * in the format of concatenated words, with the first letter of each word
  * capitalized (e.g. DisplayMode, ItemStyle).
  *
- * Javascript Get and Set
+ *
+ * Javascript Get and Set Properties
  *
  * Since Prado 3.2 a new class of javascript-friendly properties have been introduced
  * to better deal with potential security problems like cross-site scripting issues.
@@ -82,7 +85,8 @@ use Prado\Collections\TPriorityMap;
  * statement and will not be encoded when rendered inside a javascript block.
  * This special handling makes use of the {@link TJavaScriptLiteral} class.
  *
- * Events
+ *
+ * Object Events
  *
  * An event is defined by the presence of a method whose name starts with 'on'.
  * The event name is the method name and is thus case-insensitive.
@@ -118,7 +122,14 @@ use Prado\Collections\TPriorityMap;
  * buttonClicked($sender, $param);
  * </code>
  *
- * an array whose first element refers to an object and second element a method name/path that is reachable by the object
+ * All types of PHP Callables are supported, such as:
+ *  - Simple Callback function string, eg. 'my_callback_function'
+ *  - Static class method call, eg. ['MyClass', 'myCallbackMethod'] and 'MyClass::myCallbackMethod'
+ *  - Object method call, eg. [$object, 'myCallbackMethod']
+ *  - Objects implementing __invoke
+ *  - Closure / anonymous functions
+ *
+ * PRADO can accept method names in PRADO namespace as well.
  * <code>
  * $component->OnClick = [$object, 'buttonClicked'];
  * // will cause the following function to be called
@@ -128,9 +139,13 @@ use Prado\Collections\TPriorityMap;
  * $component->OnClick = [$object, 'MainContent.SubmitButton.buttonClicked'];
  * // will cause the following function to be called
  * $object->MainContent->SubmitButton->buttonClicked($sender, $param);
+ *
+ * // Closure as an event handler
+ * $component->OnClick = function ($sender, $param) { ... };
  * </code
  *
- * Global and dynamic events
+ *
+ * Global and Dynamic Events
  *
  * With the addition of behaviors, a more expansive event model is needed.  There
  * are two new event types (global and dynamic events) as well as a more comprehensive
@@ -173,6 +188,7 @@ use Prado\Collections\TPriorityMap;
  * $component->attachEventHandler('fxGlobalCheck', [$object, 'someMethod']);
  * </code>
  *
+ *
  * Events between Objects and their behaviors, Dynamic Events
  *
  * An intra-object/behavior event is defined by methods that start with 'dy'.  Just as with
@@ -202,18 +218,26 @@ use Prado\Collections\TPriorityMap;
  *
  * Behaviors
  *
- * There are two types of behaviors.  There are individual object behaviors and
- * there are class wide behaviors.  Class behaviors depend upon object behaviors.
+ * PRADO TComponent Behaviors is a method to extend a single component or a class
+ * of components with new properties, methods, features, and fine control over the
+ * owner object.  Behaviors can be attached to single objects or whole classes
+ * (or interfaces, parents, and first level traits).
  *
- * When a new class implements {@link IBehavior} or {@link IClassBehavior} or
- * extends {@link TBehavior} or {@link TClassBehavior}, it may be attached to an
- * object by calling the object's {@link attachBehavior}.  The behaviors associated
- * name can then be used to {@link enableBehavior} or {@link disableBehavior}
- * the specific behavior.
+ * There are two types of behaviors.  There are individual {@link IBehavior} and
+ * there are class wide {IClassBehavior}.  IBehavior has one owner and IClassBehavior
+ * can attach to multiple owners at the same time.  IClassBehavior is designed to be
+ * stateless, like for specific filtering or addition of data.
+ *
+ * When a new class implements {@link IClassBehavior} or {@link IBehavior}, or extends
+ * the PRADO implementations {@link TClassBehavior} and {@link TBehavior}, it may be
+ * attached to a TComponent by calling the object's {@link attachBehavior}. The
+ * behaviors associated name can then be used to {@link enableBehavior} or {@link
+ * disableBehavior} the specific behavior.
  *
  * All behaviors may be turned on and off via {@link enableBehaviors} and
  * {@link disableBehaviors}, respectively.  To check if behaviors are on or off
- * a call to {@link getBehaviorsEnabled} will provide the variable.
+ * a call to {@link getBehaviorsEnabled} will provide the variable.  By default,
+ * a behavior's event handlers will be removed from events when disabled.
  *
  * Attaching and detaching whole sets of behaviors is done using
  * {@link attachBehaviors} and {@link detachBehaviors}.  {@link clearBehaviors}
@@ -226,17 +250,19 @@ use Prado\Collections\TPriorityMap;
  * would then implement {@link IInstanceCheck} to provide the identity of the
  * different class.
  *
- * Class behaviors are similar to object behaviors except that the class behavior
- * is the implementation for all instances of the class.  A class behavior
+ * IClassBehavior are similar to IBehavior except that the class behavior
+ * attaches to multiple owners, like all the instances of a class.  A class behavior
  * will have the object upon which is being called be prepended to the parameter
  * list.  This way the object is known across the class behavior implementation.
  *
  * Class behaviors are attached using {@link attachClassBehavior} and detached
  * using {@link detachClassBehavior}.  Class behaviors are important in that
- * they will be applied to all new instances of a particular class.  In this way
- * class behaviors become default behaviors to a new instances of a class in
- * {@link __construct}.  Detaching a class behavior will remove the behavior
- * from the default set of behaviors created for an object when the object
+ * they will be applied to all new instances of a particular class and all listening
+ * components as well.  Classes, Class Parents, Interfaces, and first level Traits
+ * can be attached by class.
+ * Class behaviors are default behaviors to new instances of a class in and are
+ * received in {@link __construct}.  Detaching a class behavior will remove the
+ * behavior from the default set of behaviors created for an object when the object
  * is instanced.
  *
  * Class behaviors are also added to all existing instances via the global 'fx'
@@ -247,7 +273,22 @@ use Prado\Collections\TPriorityMap;
  * detaching class behaviors.  Any objects listening to the global 'fx' event
  * {@link fxDetachClassBehavior} will have a class behavior removed.
  *
- * Dynamic Intra-Object Events
+ * Anonymous Behaviors are supported where the behavior does not have a name or
+ * the behavior has a numeric for a name.  These cannot be accessed by name because
+ * their names may be different in each request, for different owners, and possibly,
+ * though extremely rarely, even the same object between serialization-sleep and
+ * unserialization-wakeup.
+ *
+ * When serializing a component with behaviors, behaviors are saved and restored.
+ * Named IClassBehavior class behaviors are updated with the current instance
+ * of the named class behavior rather than replicate it from the wake up. {@link
+ * __wakeup} will add any new named class behaviors to the unserializing component.
+ *
+ * IClassBehaviors can only use one given name for all behaviors except when applied
+ * anonymously (with no name or a numeric name).
+ *
+ *
+ * Dynamic Intra-Object Behavior Events
  *
  * Dynamic events start with 'dy'.  This mechanism is used to allow objects
  * to communicate with their behaviors directly.  The entire 'dy' event space
@@ -267,7 +308,7 @@ use Prado\Collections\TPriorityMap;
  * <code>
  * class TObjectBehavior extends TBehavior {
  *     public function dyBehaviorEvent($param1, $callchain) {
- *			//Do something, eg:  $param1 += 13;
+ *			//Do something, eg:  $param1 += $this->getOwner()->getNumber();
  *			return $callchain->dyBehaviorEvent($param1);
  *     }
  * }
@@ -289,7 +330,8 @@ use Prado\Collections\TPriorityMap;
  * When calling a dynamic event, only the parameters are passed.  The host object
  * and the call chain are built into the framework.
  *
- * Global Event and Dynamic event catching
+ *
+ * Global Event and Dynamic Event Catching
  *
  * Given that all global 'fx' events and dynamic 'dy' events are valid and
  * operational, there is a mechanism for catching events called that are not
@@ -309,8 +351,10 @@ use Prado\Collections\TPriorityMap;
  * of when an global and/or undefined dynamic event is executed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
+ * @method void dyClone()
+ * @method void dyWakeUp()
  * @method void dyListen(array $globalEvents)
  * @method void dyUnlisten(array $globalEvents)
  * @method string dyPreRaiseEvent(string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|function $postfunction)
@@ -321,10 +365,10 @@ use Prado\Collections\TPriorityMap;
  * @method string dyEvaluateStatementsFilter(string $statements)
  * @method dyCreatedOnTemplate(\Prado\TComponent $parent)
  * @method void dyAddParsedObject(\Prado\TComponent|string $object)
- * @method void dyAttachBehavior(string $name, IBehavior $behavior)
- * @method void dyDetachBehavior(string $name, IBehavior $behavior)
- * @method void dyEnableBehavior(string $name, IBehavior $behavior)
- * @method void dyDisableBehavior(string $name, IBehavior $behavior)
+ * @method void dyAttachBehavior(string $name, IBaseBehavior $behavior)
+ * @method void dyDetachBehavior(string $name, IBaseBehavior $behavior)
+ * @method void dyEnableBehavior(string $name, IBaseBehavior $behavior)
+ * @method void dyDisableBehavior(string $name, IBaseBehavior $behavior)
  * @method void dyEnableBehaviors()
  * @method void dyDisableBehaviors()
  */
@@ -369,7 +413,7 @@ class TComponent
 
 
 	/**
-	 * The common __construct
+	 * The common __construct.
 	 * If desired by the new object, this will auto install and listen to global event functions
 	 * as defined by the object via 'fx' methods. This also attaches any predefined behaviors.
 	 * This function installs all class behaviors in a class hierarchy from the deepest subclass
@@ -385,9 +429,100 @@ class TComponent
 		array_pop($classes);
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
-				$this->attachBehaviors(self::$_um[$class]);
+				$this->attachBehaviors(self::$_um[$class], true);
 			}
 		}
+	}
+
+	/**
+	 * The common __clone magic method from PHP's "clone".
+	 * This reattaches the behaviors to the cloned object.
+	 * IBehavior objects are cloned, IClassBehaviors are not.
+	 * Clone object events are scrubbed of the old object behaviors' events.
+	 * To finalize the behaviors, dyClone is raised.
+	 * @since 4.2.3
+	 */
+	public function __clone()
+	{
+		foreach ($this->_e as $event => $handlers) {
+			$this->_e[$event] = clone $handlers;
+		}
+		$behaviorArray = array_values(($this->_m !== null) ? $this->_m->toArray() : []);
+		if (count($behaviorArray) && count($this->_e)) {
+			$behaviorArray = array_combine(array_map('spl_object_id', $behaviorArray), $behaviorArray);
+			foreach ($this->_e as $event => $handlers) {
+				foreach ($handlers->toArray() as $handler) {
+					$a = is_array($handler);
+					if ($a && array_key_exists(spl_object_id($handler[0]), $behaviorArray) || !$a && array_key_exists(spl_object_id($handler), $behaviorArray)) {
+						$handlers->remove($handler);
+					}
+				}
+			}
+		}
+		if ($this->_m !== null) {
+			$behaviors = $this->_m;
+			$this->_m = new TPriorityMap();
+			foreach ($behaviors->getPriorities() as $priority) {
+				foreach ($behaviors->itemsAtPriority($priority) as $name => $behavior) {
+					if ($behavior instanceof IBehavior) {
+						$behavior = clone $behavior;
+					}
+					$this->attachBehavior($name, $behavior, $priority);
+				}
+			}
+		}
+		$this->callBehaviorsMethod('dyClone', $return);
+	}
+
+	/**
+	 * The common __wakeup magic method from PHP's "unserialize".
+	 * This reattaches the behaviors to the reconstructed object.
+	 * Any global class behaviors are used rather than their unserialized copy.
+	 * Any global behaviors not found in the object will be added.
+	 * To finalize the behaviors, dyWakeUp is raised.
+	 * If a TModule needs to add events to an object during unserialization,
+	 * the module can use a small IClassBehavior [implementing dyWakeUp]
+	 * (adding the event[s]) attached to the class with {@link
+	 * attachClassBehavior} prior to unserialization.
+	 * @since 4.2.3
+	 */
+	public function __wakeup()
+	{
+		$classes = $this->getClassHierarchy(true);
+		array_pop($classes);
+		$classBehaviors = [];
+		if ($this->_m !== null) {
+			$behaviors = $this->_m;
+			$this->_m = new TPriorityMap();
+			foreach ($behaviors->getPriorities() as $priority) {
+				foreach ($behaviors->itemsAtPriority($priority) as $name => $behavior) {
+					if ($behavior instanceof IClassBehavior && !is_numeric($name)) {
+						//Replace class behaviors with their current instances, if they exist.
+						foreach ($classes as $class) {
+							if (isset(self::$_um[$class]) && array_key_exists($name, self::$_um[$class])) {
+								$behavior = self::$_um[$class][$name]->getBehavior();
+								break;
+							}
+						}
+					}
+					$classBehaviors[$name] = $name;
+					$this->attachBehavior($name, $behavior, $priority);
+				}
+			}
+		}
+		foreach ($classes as $class) {
+			if (isset(self::$_um[$class])) {
+				foreach (self::$_um[$class] as $name => $behavior) {
+					if(is_numeric($name)) {
+						continue;
+					}
+					if (!array_key_exists($name, $classBehaviors)) {
+						$this->attachBehaviors([$name => $behavior], true);
+					}
+				}
+			}
+		}
+		$this->callBehaviorsMethod('dyWakeUp', $return);
 	}
 
 
@@ -411,17 +546,18 @@ class TComponent
 
 	/**
 	 * The common __destruct
-	 * This unlistens from the global event routines if listening
+	 * When listening, this unlistens from the global event routines.  It also detaches
+	 * all the behaviors so they can clean up, eg remove handlers.
 	 *
-	 * PHP 5.3 does not __destruct objects when they are nulled and thus unlisten must be
-	 * called must be explicitly called. PHP 7.4.0 uses WeakReferences and this will be called
-	 * automatically.
+	 * Prior to PHP 7.4, when listening, unlisten must be manually called for objects
+	 * to destruct because circular references will prevent the __destruct process.
 	 */
 	public function __destruct()
 	{
 		if ($this->_listeningenabled) {
 			$this->unlisten();
 		}
+		$this->clearBehaviors();
 	}
 
 
@@ -445,19 +581,20 @@ class TComponent
 	public function getClassHierarchy($lowercase = false)
 	{
 		static $_classhierarchy = [];
-		$class = get_class($this);
+		$class = $this::class;
 		if (isset($_classhierarchy[$class]) && isset($_classhierarchy[$class][$lowercase ? 1 : 0])) {
 			return $_classhierarchy[$class][$lowercase ? 1 : 0];
 		}
-		$classes = array_values(class_implements($class));
-		array_push($classes, $class);
-		while ($class = get_parent_class($class)) {
-			array_push($classes, $class);
-		}
+		$classes = [array_values(class_implements($class))];
+		do {
+			$classes[] = array_values(class_uses($class));
+			$classes[] = [$class];
+		} while ($class = get_parent_class($class));
+		$classes = array_merge(...$classes);
 		if ($lowercase) {
 			$classes = array_map('strtolower', $classes);
 		}
-		$_classhierarchy[$class] = $_classhierarchy[$class] ?? [];
+		$_classhierarchy[$class] ??= [];
 		$_classhierarchy[$class][$lowercase ? 1 : 0] = $classes;
 
 		return $classes;
@@ -471,7 +608,7 @@ class TComponent
 	protected function getClassFxEvents($class)
 	{
 		static $_classfx = [];
-		$className = get_class($class);
+		$className = $class::class;
 		if (isset($_classfx[$className])) {
 			return $_classfx[$className];
 		}
@@ -486,8 +623,10 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyListen($globalEvents[, $chain]) {
-	 * 		$this->listen(); //eg
+	 *	public function dyListen($globalEvents[, ?TCallChain $chain = null]) {
+	 * 		$this->listen($globalEvents); //eg
+	 *      if ($chain)
+	 *          $chain->dyUnlisten($globalEvents);
 	 * }
 	 * </code>
 	 * to be executed when listen is called.  All attached behaviors are notified through dyListen.
@@ -506,14 +645,14 @@ class TComponent
 			$this->getEventHandlers($func)->add([$this, $func]);
 		}
 
-		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+		if (is_a($this, IDynamicMethods::class)) {
 			$this->attachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
 		$this->_listeningenabled = true;
 
-		$this->dyListen($fx);
+		$this->callBehaviorsMethod('dyListen', $return, $fx);
 
 		return count($fx);
 	}
@@ -523,8 +662,10 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyUnlisten($globalEvents[, $chain]) {
+	 *	public function dyUnlisten($globalEvents[, ?TCallChain $chain = null]) {
 	 * 		$this->behaviorUnlisten(); //eg
+	 *      if ($chain)
+	 *          $chain->dyUnlisten($globalEvents);
 	 * }
 	 * </code>
 	 * to be executed when listen is called.  All attached behaviors are notified through dyUnlisten.
@@ -543,14 +684,14 @@ class TComponent
 			$this->detachEventHandler($func, [$this, $func]);
 		}
 
-		if (is_a($this, 'Prado\\Util\\IDynamicMethods')) {
+		if (is_a($this, IDynamicMethods::class)) {
 			$this->detachEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER, [$this, '__dycall']);
 			array_push($fx, TComponent::GLOBAL_RAISE_EVENT_LISTENER);
 		}
 
 		$this->_listeningenabled = false;
 
-		$this->dyUnlisten($fx);
+		$this->callBehaviorsMethod('dyUnlisten', $return, $fx);
 
 		return count($fx);
 	}
@@ -594,60 +735,26 @@ class TComponent
 		if (($getset == 'get') || ($getset == 'set')) {
 			$propname = substr($method, 3);
 			$jsmethod = $getset . 'js' . $propname;
-			if (method_exists($this, $jsmethod)) {
+			if (Prado::method_visible($this, $jsmethod)) {
 				if (count($args) > 0) {
 					if ($args[0] && !($args[0] instanceof TJavaScriptString)) {
 						$args[0] = new TJavaScriptString($args[0]);
 					}
 				}
-				return call_user_func_array([$this, $jsmethod], $args);
+				return $this->$jsmethod(...$args);
 			}
 
-			if (($getset == 'set') && method_exists($this, 'getjs' . $propname)) {
-				throw new TInvalidOperationException('component_property_readonly', get_class($this), $method);
-			}
-		}
-
-		if ($this->_m !== null && $this->_behaviorsenabled) {
-			if (strncasecmp($method, 'dy', 2) === 0) {
-				$callchain = null;
-				foreach ($this->_m->toArray() as $behavior) {
-					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && (method_exists($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
-						$behavior_args = $args;
-						if ($behavior instanceof IClassBehavior) {
-							array_unshift($behavior_args, $this);
-						}
-						if (!$callchain) {
-							$callchain = new TCallChain($method);
-						}
-						$callchain->addCall([$behavior, $method], $behavior_args);
-					}
-				}
-				if ($callchain) {
-					return call_user_func_array([$callchain, 'call'], $args);
-				}
-			} else {
-				foreach ($this->_m->toArray() as $behavior) {
-					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && method_exists($behavior, $method)) {
-						if ($behavior instanceof IClassBehavior) {
-							array_unshift($args, $this);
-						}
-						return call_user_func_array([$behavior, $method], $args);
-					}
-				}
+			if (($getset == 'set') && Prado::method_visible($this, 'getjs' . $propname)) {
+				throw new TInvalidOperationException('component_property_readonly', $this::class, $method);
 			}
 		}
-
-		if (strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
-			if ($this instanceof IDynamicMethods) {
-				return $this->__dycall($method, $args);
-			}
-			return $args[0] ?? null;
+		if ($this->callBehaviorsMethod($method, $return, ...$args)) {
+			return $return;
 		}
 
-		// don't thrown an exception for __magicMethods() or any other weird methods natively implemented by php
+		// don't throw an exception for __magicMethods() or any other weird methods natively implemented by php
 		if (!method_exists($this, $method)) {
-			throw new TApplicationException('component_method_undefined', get_class($this), $method);
+			throw new TApplicationException('component_method_undefined', $this::class, $method);
 		}
 	}
 
@@ -657,17 +764,17 @@ class TComponent
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to read a property:
 	 * <code>
-	 * $value=$component->PropertyName;
-	 * $value=$component->jsPropertyName; // return JavaScript literal
+	 * $value = $component->PropertyName;
+	 * $value = $component->jsPropertyName; // return JavaScript literal
 	 * </code>
 	 * and to obtain the event handler list for an event,
 	 * <code>
-	 * $eventHandlerList=$component->EventName;
+	 * $eventHandlerList = $component->EventName;
 	 * </code>
 	 * This will also return the global event handler list when specifing an 'fx'
 	 * event,
 	 * <code>
-	 * $globalEventHandlerList=$component->fxEventName;
+	 * $globalEventHandlerList = $component->fxEventName;
 	 * </code>
 	 * When behaviors are enabled, this will return the behavior of a specific
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
@@ -677,10 +784,10 @@ class TComponent
 	 */
 	public function __get($name)
 	{
-		if (method_exists($this, $getter = 'get' . $name)) {
+		if (Prado::method_visible($this, $getter = 'get' . $name)) {
 			// getting a property
 			return $this->$getter();
-		} elseif (method_exists($this, $jsgetter = 'getjs' . $name)) {
+		} elseif (Prado::method_visible($this, $jsgetter = 'getjs' . $name)) {
 			// getting a javascript property
 			return (string) $this->$jsgetter();
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
@@ -697,20 +804,20 @@ class TComponent
 				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
-		} elseif ($this->_behaviorsenabled) {
+		} elseif ($this->getBehaviorsEnabled()) {
 			// getting a behavior property/event (handler list)
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return $this->_m[$name];
 			} elseif ($this->_m !== null) {
 				foreach ($this->_m->toArray() as $behavior) {
-					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) &&
-						(property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
+					if ($behavior->getEnabled() && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
 						return $behavior->$name;
 					}
 				}
 			}
 		}
-		throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
+		throw new TInvalidOperationException('component_property_undefined', $this::class, $name);
 	}
 
 	/**
@@ -718,10 +825,11 @@ class TComponent
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to set a property or attach an event handler.
 	 * <code>
-	 * $this->PropertyName=$value;
-	 * $this->jsPropertyName=$value; // $value will be treated as a JavaScript literal
-	 * $this->EventName=$handler;
-	 * $this->fxEventName=$handler; //global event listener
+	 *    $this->PropertyName = $value;
+	 *    $this->jsPropertyName = $value; // $value will be treated as a JavaScript literal
+	 *    $this->EventName = $handler;
+	 *    $this->fxEventName = $handler; //global event listener
+	 *    $this->EventName = function($sender, $param) {...};
 	 * </code>
 	 * When behaviors are enabled, this will also set a behaviors properties and events.
 	 * @param string $name the property name or event name
@@ -730,23 +838,22 @@ class TComponent
 	 */
 	public function __set($name, $value)
 	{
-		if (method_exists($this, $setter = 'set' . $name)) {
+		if (Prado::method_visible($this, $setter = 'set' . $name)) {
 			if (strncasecmp($name, 'js', 2) === 0 && $value && !($value instanceof TJavaScriptLiteral)) {
 				$value = new TJavaScriptLiteral($value);
 			}
 			return $this->$setter($value);
-		} elseif (method_exists($this, $jssetter = 'setjs' . $name)) {
+		} elseif (Prado::method_visible($this, $jssetter = 'setjs' . $name)) {
 			if ($value && !($value instanceof TJavaScriptString)) {
 				$value = new TJavaScriptString($value);
 			}
 			return $this->$jssetter($value);
 		} elseif ((strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) || strncasecmp($name, 'fx', 2) === 0) {
 			return $this->attachEventHandler($name, $value);
-		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
 			$sets = 0;
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) &&
-					(property_exists($behavior, $name) || $behavior->canSetProperty($name) || $behavior->hasEvent($name))) {
+				if ($behavior->getEnabled() && (property_exists($behavior, $name) || $behavior->canSetProperty($name) || $behavior->hasEvent($name))) {
 					$behavior->$name = $value;
 					$sets++;
 				}
@@ -756,10 +863,10 @@ class TComponent
 			}
 		}
 
-		if (method_exists($this, 'get' . $name) || method_exists($this, 'getjs' . $name)) {
-			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+		if (Prado::method_visible($this, 'get' . $name) || Prado::method_visible($this, 'getjs' . $name)) {
+			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		} else {
-			throw new TInvalidOperationException('component_property_undefined', get_class($this), $name);
+			throw new TInvalidOperationException('component_property_undefined', $this::class, $name);
 		}
 	}
 
@@ -777,9 +884,9 @@ class TComponent
 	 */
 	public function __isset($name)
 	{
-		if (method_exists($this, $getter = 'get' . $name)) {
+		if (Prado::method_visible($this, $getter = 'get' . $name)) {
 			return $this->$getter() !== null;
-		} elseif (method_exists($this, $jsgetter = 'getjs' . $name)) {
+		} elseif (Prado::method_visible($this, $jsgetter = 'getjs' . $name)) {
 			return $this->$jsgetter() !== null;
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$name = strtolower($name);
@@ -787,12 +894,13 @@ class TComponent
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$name = strtolower($name);
 			return isset(self::$_ue[$name]) && self::$_ue[$name]->getCount();
-		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				return true;
 			}
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
+				if ($behavior->getEnabled() && (property_exists($behavior, $name) || $behavior->canGetProperty($name) || $behavior->hasEvent($name))) {
 					return isset($behavior->$name);
 				}
 			}
@@ -812,31 +920,32 @@ class TComponent
 	 */
 	public function __unset($name)
 	{
-		if (method_exists($this, $setter = 'set' . $name)) {
+		if (Prado::method_visible($this, $setter = 'set' . $name)) {
 			$this->$setter(null);
-		} elseif (method_exists($this, $jssetter = 'setjs' . $name)) {
+		} elseif (Prado::method_visible($this, $jssetter = 'setjs' . $name)) {
 			$this->$jssetter(null);
 		} elseif (strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) {
 			$this->_e[strtolower($name)]->clear();
 		} elseif (strncasecmp($name, 'fx', 2) === 0) {
 			$this->getEventHandlers($name)->remove([$this, $name]);
-		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->_m->getCount() > 0 && $this->getBehaviorsEnabled()) {
+			$name = strtolower($name);
 			if (isset($this->_m[$name])) {
 				$this->detachBehavior($name);
 			} else {
 				$unset = 0;
 				foreach ($this->_m->toArray() as $behavior) {
-					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled())) {
+					if ($behavior->getEnabled()) {
 						unset($behavior->$name);
 						$unset++;
 					}
 				}
-				if (!$unset && method_exists($this, 'get' . $name)) {
-					throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+				if (!$unset && Prado::method_visible($this, 'get' . $name)) {
+					throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 				}
 			}
-		} elseif (method_exists($this, 'get' . $name)) {
-			throw new TInvalidOperationException('component_property_readonly', get_class($this), $name);
+		} elseif (Prado::method_visible($this, 'get' . $name)) {
+			throw new TInvalidOperationException('component_property_readonly', $this::class, $name);
 		}
 	}
 
@@ -863,11 +972,11 @@ class TComponent
 	 */
 	public function canGetProperty($name)
 	{
-		if (method_exists($this, 'get' . $name) || method_exists($this, 'getjs' . $name)) {
+		if (Prado::method_visible($this, 'get' . $name) || Prado::method_visible($this, 'getjs' . $name)) {
 			return true;
-		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && $behavior->canGetProperty($name)) {
+				if ($behavior->getEnabled() && $behavior->canGetProperty($name)) {
 					return true;
 				}
 			}
@@ -886,11 +995,11 @@ class TComponent
 	 */
 	public function canSetProperty($name)
 	{
-		if (method_exists($this, 'set' . $name) || method_exists($this, 'setjs' . $name)) {
+		if (Prado::method_visible($this, 'set' . $name) || Prado::method_visible($this, 'setjs' . $name)) {
 			return true;
-		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && $behavior->canSetProperty($name)) {
+				if ($behavior->getEnabled() && $behavior->canSetProperty($name)) {
 					return true;
 				}
 			}
@@ -940,6 +1049,82 @@ class TComponent
 	}
 
 	/**
+	 * Calls a method on a component's behaviors.  When the method is a
+	 * dynamic event, it is raised with all the behaviors.  When a class implements
+	 * a dynamic event (eg. for patching), the class can customize raising the
+	 * dynamic event with the classes behaviors using this method.
+	 * Dynamic [dy] and global [fx] events call {@link __dycall} when $this
+	 * implements IDynamicMethods.  Finally, this catches all unexecuted
+	 * Dynamic [dy] and global [fx] events and returns the first $args parameter;
+	 * acting as a passthrough (filter) of the first $args parameter. In dy/fx methods,
+	 * there can be no $args parameters, the first parameter used as a pass through
+	 * filter, or act as a return variable with the first $args parameter being
+	 * the default return value.
+	 * @param string $method The method being called or dynamic/global event being raised.
+	 * @param mixed &$return The return value.
+	 * @param array $args The arguments to the method being called.
+	 * @return bool Was the method handled.
+	 * @since 4.2.3
+	 */
+	public function callBehaviorsMethod($method, &$return, ...$args): bool
+	{
+		if ($this->_m !== null && $this->getBehaviorsEnabled()) {
+			if (strncasecmp($method, 'dy', 2) === 0) {
+				if ($callchain = $this->getCallChain($method, ...$args)) {
+					$return = $callchain->call(...$args);
+					return true;
+				}
+			} else {
+				foreach ($this->_m->toArray() as $behavior) {
+					if ($behavior->getEnabled() && Prado::method_visible($behavior, $method)) {
+						if ($behavior instanceof IClassBehavior) {
+							array_unshift($args, $this);
+						}
+						$return = $behavior->$method(...$args);
+						return true;
+					}
+				}
+			}
+		}
+		if (strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+			if ($this instanceof IDynamicMethods) {
+				$return = $this->__dycall($method, $args);
+				return true;
+			}
+			$return = $args[0] ?? null;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * This gets the chain of methods implemented by attached and enabled behaviors.
+	 * This method disregards the {behaviorsEnabled
+	 * @param string $method The name of the behaviors method being chained.
+	 * @param array $args The arguments to the behaviors method being chained.
+	 * @return ?TCallChain The chain of methods implemented by behaviors or null when
+	 *   there are no methods to call.
+	 * @since 4.2.3
+	 */
+	protected function getCallChain($method, ...$args): ?TCallChain
+	{
+		$classArgs = $callchain = null;
+		foreach ($this->_m->toArray() as $behavior) {
+			if ($behavior->getEnabled() && (Prado::method_visible($behavior, $method) || ($behavior instanceof IDynamicMethods))) {
+				if ($classArgs === null) {
+					$classArgs = $args;
+					array_unshift($classArgs, $this);
+				}
+				if (!$callchain) {
+					$callchain = new TCallChain($method);
+				}
+				$callchain->addCall([$behavior, $method], ($behavior instanceof IClassBehavior) ? $classArgs : $args);
+			}
+		}
+		return $callchain;
+	}
+
+	/**
 	 * Determines whether a method is defined. When behaviors are enabled, this
 	 * will loop through all enabled behaviors checking for the method as well.
 	 * Nested behaviors within behaviors are not supported but the nested behavior can
@@ -951,12 +1136,12 @@ class TComponent
 	 */
 	public function hasMethod($name)
 	{
-		if (method_exists($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
+		if (Prado::method_visible($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
 			return true;
-		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				//method_exists($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && method_exists($behavior, $name)) {
+				//Prado::method_visible($behavior, $name) rather than $behavior->hasMethod($name) b/c only one layer is supported, @4.2.2
+				if ($behavior->getEnabled() && Prado::method_visible($behavior, $name)) {
 					return true;
 				}
 			}
@@ -980,9 +1165,9 @@ class TComponent
 	{
 		if ((strncasecmp($name, 'on', 2) === 0 && method_exists($this, $name)) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
 			return true;
-		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && $behavior->hasEvent($name)) {
+				if ($behavior->getEnabled() && $behavior->hasEvent($name)) {
 					return true;
 				}
 			}
@@ -1005,9 +1190,9 @@ class TComponent
 		} else {
 			if (isset($this->_e[$name]) && $this->_e[$name]->getCount() > 0) {
 				return true;
-			} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+			} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 				foreach ($this->_m->toArray() as $behavior) {
-					if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && $behavior->hasEventHandler($name)) {
+					if ($behavior->getEnabled() && $behavior->hasEventHandler($name)) {
 						return true;
 					}
 				}
@@ -1037,14 +1222,14 @@ class TComponent
 				self::$_ue[$name] = new TWeakCallableCollection();
 			}
 			return self::$_ue[$name];
-		} elseif ($this->_m !== null && $this->_behaviorsenabled) {
+		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				if ((!($behavior instanceof IBehavior) || $behavior->getEnabled()) && $behavior->hasEvent($name)) {
+				if ($behavior->getEnabled() && $behavior->hasEvent($name)) {
 					return $behavior->getEventHandlers($name);
 				}
 			}
 		}
-		throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
+		throw new TInvalidOperationException('component_event_undefined', $this::class, $name);
 	}
 
 	/**
@@ -1074,13 +1259,14 @@ class TComponent
 	 * event handlers. You may also do these operations like
 	 * getting and setting properties, e.g.,
 	 * <code>
-	 * $component->OnClick[]=array($object,'buttonClicked');
-	 * $component->OnClick->insertAt(0,array($object,'buttonClicked'));
+	 *    $component->OnClick[] = array($object,'buttonClicked');
+	 *    $component->OnClick->insertAt(0,array($object,'buttonClicked'));
+	 *    $component->OnClick[] = function ($sender, $param) { ... };
 	 * </code>
 	 * which are equivalent to the following
 	 * <code>
-	 * $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
-	 * $component->getEventHandlers('OnClick')->insertAt(0,array($object,'buttonClicked'));
+	 *    $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
+	 *    $component->getEventHandlers('OnClick')->insertAt(0,array($object,'buttonClicked'));
 	 * </code>
 	 *
 	 * Due to the nature of {@link getEventHandlers}, any active behaviors defining
@@ -1149,23 +1335,27 @@ class TComponent
 	 * with a priority equal or greater than zero are added after the main event handlers being raised.  In this way
 	 * all {@link GLOBAL_RAISE_EVENT_LISTENER} handlers are always called for every raised 'fx' event.
 	 *
-	 * Behaviors may implement the following functions:
+	 * Behaviors may implement the following functions with TBehaviors:
 	 * <code>
-	 *	public function dyPreRaiseEvent($name,$sender,$param,$responsetype,$postfunction[, $chain]) {
-	 *  	return $name; //eg, the event name may be filtered/changed
+	 *	public function dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction[, TCallChain $chain) {
+	 *      ....  //  Your logic
+	 *  	return $chain->dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction); //eg, the event name may be filtered/changed
 	 *  }
-	 *	public function dyIntraRaiseEventTestHandler($handler,$sender,$param,$name[, $chain]) {
-	 *  	return true; //should this particular handler be executed?  true/false
+	 *	public function dyIntraRaiseEventTestHandler($handler, $sender, $param, $name, TCallChain $chain) {
+	 *      ....  //  Your logic
+	 *  	return $chain->dyIntraRaiseEventTestHandler($handler, $sender, $param, $name); //should this particular handler be executed?  true/false
 	 *  }
-	 *  public function dyIntraRaiseEventPostHandler($name,$sender,$param,$handler,$response[, $chain]) {
-	 *		//contains the per handler response
+	 *  public function dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response, TCallChain $chain) {
+	 *      ....  //  Your logic
+	 *		return $chain->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response); //contains the per handler response
 	 *  }
-	 *  public function dyPostRaiseEvent($responses,$name,$sender,$param,$responsetype,$postfunction[, $chain]) {
-	 *		return $responses;
+	 *  public function dyPostRaiseEvent($responses, $name, $sender, $param,$ responsetype, $postfunction, TCallChain $chain) {
+	 *      ....  //  Your logic
+	 *		return $chain->dyPostRaiseEvent($responses, $name, $sender, $param,$ responsetype, $postfunction);
 	 *  }
 	 * </code>
 	 * to be executed when raiseEvent is called.  The 'intra' dynamic events are called per handler in
-	 * the handler loop.
+	 * the handler loop.  TClassBehaviors prepend the object being raised.
 	 *
 	 * dyPreRaiseEvent has the effect of being able to change the event being raised.  This intra
 	 * object/behavior event returns the name of the desired event to be raised.  It will pass through
@@ -1206,7 +1396,7 @@ class TComponent
 		$name = strtolower($name);
 		$responses = [];
 
-		$name = $this->dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction);
+		$this->callBehaviorsMethod('dyPreRaiseEvent', $name, $name, $sender, $param, $responsetype, $postfunction);
 
 		if ($this->hasEventHandler($name) || $this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER)) {
 			$handlers = $this->getEventHandlers($name);
@@ -1217,7 +1407,8 @@ class TComponent
 			}
 			$response = null;
 			foreach ($handlerArray as $handler) {
-				if ($this->dyIntraRaiseEventTestHandler($handler, $sender, $param, $name) === false) {
+				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
+				if ($return === false) {
 					continue;
 				}
 
@@ -1225,14 +1416,14 @@ class TComponent
 					if (($pos = strrpos($handler, '.')) !== false) {
 						$object = $this->getSubProperty(substr($handler, 0, $pos));
 						$method = substr($handler, $pos + 1);
-						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
 								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
 								$response = $object->$method($sender, $param, $name);
 							}
 						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler);
 						}
 					} else {
 						$response = call_user_func($handler, $sender, $param, $name);
@@ -1246,21 +1437,21 @@ class TComponent
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);
 						}
-						if (method_exists($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
+						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
 								$response = $object->__dycall($name, [$sender, $param, $name]);
 							} else {
 								$response = $object->$method($sender, $param, $name);
 							}
 						} else {
-							throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, $handler[1]);
+							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler[1]);
 						}
 					}
 				} else {
-					throw new TInvalidDataValueException('component_eventhandler_invalid', get_class($this), $name, gettype($handler));
+					throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, gettype($handler));
 				}
 
-				$this->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response);
+				$this->callBehaviorsMethod('dyIntraRaiseEventPostHandler', $return, $name, $sender, $param, $handler, $response);
 
 				if ($postfunction) {
 					$response = call_user_func_array($postfunction, [$sender, $param, $this, $response]);
@@ -1277,14 +1468,14 @@ class TComponent
 				}
 			}
 		} elseif (strncasecmp($name, 'on', 2) === 0 && !$this->hasEvent($name)) {
-			throw new TInvalidOperationException('component_event_undefined', get_class($this), $name);
+			throw new TInvalidOperationException('component_event_undefined', $this::class, $name);
 		}
 
 		if ($responsetype & TEventResults::EVENT_RESULT_FILTER) {
 			$responses = array_filter($responses);
 		}
 
-		$responses = $this->dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction);
+		$this->callBehaviorsMethod('dyPostRaiseEvent', $responses, $responses, $name, $sender, $param, $responsetype, $postfunction);
 
 		return $responses;
 	}
@@ -1294,7 +1485,7 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyEvaluateExpressionFilter($expression, $chain) {
+	 *	public function dyEvaluateExpressionFilter($expression, TCallChain $chain) {
 	 * 		return $chain->dyEvaluateExpressionFilter(str_replace('foo', 'bar', $expression)); //example
 	 * }
 	 * </code>
@@ -1308,11 +1499,11 @@ class TComponent
 	 */
 	public function evaluateExpression($expression)
 	{
-		$expression = $this->dyEvaluateExpressionFilter($expression);
+		$this->callBehaviorsMethod('dyEvaluateExpressionFilter', $expression, $expression);
 		try {
 			return eval("return $expression;");
 		} catch (\Exception $e) {
-			throw new TInvalidOperationException('component_expression_invalid', get_class($this), $expression, $e->getMessage());
+			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage());
 		}
 	}
 
@@ -1321,7 +1512,7 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyEvaluateStatementsFilter($statements, $chain) {
+	 *	public function dyEvaluateStatementsFilter($statements, TCallChain $chain) {
 	 * 		return $chain->dyEvaluateStatementsFilter(str_replace('foo', 'bar', $statements)); //example
 	 * }
 	 * </code>
@@ -1335,7 +1526,7 @@ class TComponent
 	 */
 	public function evaluateStatements($statements)
 	{
-		$statements = $this->dyEvaluateStatementsFilter($statements);
+		$this->callBehaviorsMethod('dyEvaluateStatementsFilter', $statements, $statements);
 		try {
 			ob_start();
 			if (eval($statements) === false) {
@@ -1345,7 +1536,7 @@ class TComponent
 			ob_end_clean();
 			return $content;
 		} catch (\Exception $e) {
-			throw new TInvalidOperationException('component_statements_invalid', get_class($this), $statements, $e->getMessage());
+			throw new TInvalidOperationException('component_statements_invalid', $this::class, $statements, $e->getMessage());
 		}
 	}
 
@@ -1358,7 +1549,7 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyCreatedOnTemplate($parent, $chain) {
+	 *	public function dyCreatedOnTemplate($parent, TCallChain $chain) {
 	 * 		return $chain->dyCreatedOnTemplate($parent); //example
 	 *  }
 	 * </code>
@@ -1370,7 +1561,7 @@ class TComponent
 	 */
 	public function createdOnTemplate($parent)
 	{
-		$parent = $this->dyCreatedOnTemplate($parent);
+		$this->callBehaviorsMethod('dyCreatedOnTemplate', $parent, $parent);
 		$parent->addParsedObject($this);
 	}
 
@@ -1382,7 +1573,8 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyAddParsedObject($object[, $chain]) {
+	 *	public function dyAddParsedObject($object, TCallChain $chain) {
+	 *      return $chain-> dyAddParsedObject($object);
 	 *  }
 	 * </code>
 	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
@@ -1393,9 +1585,8 @@ class TComponent
 	 */
 	public function addParsedObject($object)
 	{
-		$this->dyAddParsedObject($object);
+		$this->callBehaviorsMethod('dyAddParsedObject', $return, $object);
 	}
-
 
 	/**
 	 *This is the method registered for all instanced objects should a class behavior be added after
@@ -1408,10 +1599,12 @@ class TComponent
 	public function fxAttachClassBehavior($sender, $param)
 	{
 		if ($this->isa($param->getClass())) {
-			return $this->attachBehavior($param->getName(), $param->getBehavior(), $param->getPriority());
+			if (($behavior = $param->getBehavior()) instanceof IBehavior) {
+				$behavior = clone $behavior;
+			}
+			return $this->attachBehavior($param->getName(), $behavior, $param->getPriority());
 		}
 	}
-
 
 	/**
 	 *	This is the method registered for all instanced objects should a class behavior be removed after
@@ -1446,21 +1639,21 @@ class TComponent
 	 */
 	protected static function instanceBehavior($behavior)
 	{
-		$hasConfig = false;
 		$config = null;
 		$isArray = false;
+		$init = false;
 		if (is_string($behavior) || (($isArray = is_array($behavior)) && isset($behavior['class']))) {
 			if ($isArray && array_key_exists(IBaseBehavior::CONFIG_KEY, $behavior)) {
 				$config = $behavior[IBaseBehavior::CONFIG_KEY];
 				unset($behavior[IBaseBehavior::CONFIG_KEY]);
-				$hasConfig = true;
 			}
 			$behavior = Prado::createComponent($behavior);
+			$init = true;
 		}
 		if (!($behavior instanceof IBaseBehavior)) {
-			throw new TInvalidDataTypeException('component_not_a_behavior', get_class($behavior));
+			throw new TInvalidDataTypeException('component_not_a_behavior', $behavior::class);
 		}
-		if ($hasConfig) {
+		if ($init) {
 			$behavior->init($config);
 		}
 		return $behavior;
@@ -1478,8 +1671,8 @@ class TComponent
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
 	 * <code>
-	 * TPanel::attachClassBehavior('javascripts', new TJsPanelClassBehavior());
-	 * TApplication::attachClassBehavior('jpegize', 'Prado\\Util\\Behaviors\\TJPEGizeAssetBehavior', 'Prado\\Web\\TFileAsset');
+	 *   TPanel::attachClassBehavior('javascripts', new TJsPanelClassBehavior());
+	 *   TApplication::attachClassBehavior('jpegize', \Prado\Util\Behaviors\TJPEGizeAssetBehavior::class, \Prado\Web\TFileAsset::class);
 	 * </code>
 	 * An array is used to initialize values of the behavior. eg. ['class' => '\\MyBehavior', 'property' => 'value'].
 	 * @param null|numeric $priority priority of behavior, default: null the default
@@ -1489,42 +1682,41 @@ class TComponent
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @return array|object the behavior if its an IClassBehavior and an array of all
 	 * behaviors that have been attached from 'fxAttachClassBehavior' when the Class
-	 * Behavior being attached is a per instance IBehavior.
+	 * Behavior being attached is a per instance IBaseBehavior.
 	 * @since 3.2.3
 	 */
 	public static function attachClassBehavior($name, $behavior, $class = null, $priority = null)
 	{
-		if (!$class && function_exists('get_called_class')) {
+		if (!$class) {
 			$class = get_called_class();
 		}
 		if (!$class) {
 			throw new TInvalidOperationException('component_no_class_provided_nor_late_binding');
 		}
 
-		if (!is_string($name)) {
-			$name = get_class($name);
-		}
 		$class = strtolower($class);
-		if ($class === 'prado\\tcomponent') {
+		if ($class === strtolower(TComponent::class)) {
 			throw new TInvalidOperationException('component_no_tcomponent_class_behaviors');
-		}
-		if (is_object($behavior) && $behavior instanceof IBehavior) {
-			throw new TInvalidOperationException('component_tbehavior_cannot_attach_as_class_behavior');
 		}
 		if (empty(self::$_um[$class])) {
 			self::$_um[$class] = [];
 		}
-		if (isset(self::$_um[$class][$name])) {
+		$name = strtolower($name !== null ? $name : '');
+		if (!empty($name) && !is_numeric($name) && isset(self::$_um[$class][$name])) {
 			throw new TInvalidOperationException('component_class_behavior_defined', $class, $name);
 		}
 		$behaviorObject = self::instanceBehavior($behavior);
+		$behaviorObject->setName($name);
 		$isClassBehavior = $behaviorObject instanceof \Prado\Util\IClassBehavior;
 		$param = new TClassBehaviorEventParameter($class, $name, $isClassBehavior ? $behaviorObject : $behavior, $priority);
-		self::$_um[$class] = [$name => $param] + self::$_um[$class];
+		if (empty($name) || is_numeric($name)) {
+			self::$_um[$class][] = $param;
+		} else {
+			self::$_um[$class] = [$name => $param] + self::$_um[$class];
+		}
 		$results = $behaviorObject->raiseEvent('fxAttachClassBehavior', null, $param);
 		return $isClassBehavior ? $behaviorObject : $results;
 	}
-
 
 	/**
 	 *	This will remove a behavior from a class.  It unregisters it from future instances and
@@ -1543,7 +1735,7 @@ class TComponent
 	 */
 	public static function detachClassBehavior($name, $class = null, $priority = false)
 	{
-		if (!$class && function_exists('get_called_class')) {
+		if (!$class) {
 			$class = get_called_class();
 		}
 		if (!$class) {
@@ -1551,17 +1743,19 @@ class TComponent
 		}
 
 		$class = strtolower($class);
-		if (!is_string($name)) {
-			$name = get_class($name);
-		}
+		$name = strtolower($name);
 		if (empty(self::$_um[$class]) || !isset(self::$_um[$class][$name])) {
 			return null;
 		}
 		$param = self::$_um[$class][$name];
 		$behavior = $param->getBehavior();
 		$behaviorObject = self::instanceBehavior($behavior);
-		$isClassBehavior = $behaviorObject instanceof \Prado\Util\IClassBehavior;
+		$behaviorObject->setName($name);
+		$isClassBehavior = $behaviorObject instanceof IClassBehavior;
 		unset(self::$_um[$class][$name]);
+		if(empty(self::$_um[$class])) {
+			unset(self::$_um[$class]);
+		}
 		$results = $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
 		return $isClassBehavior ? $behaviorObject : $results;
 	}
@@ -1570,11 +1764,12 @@ class TComponent
 	 * Returns the named behavior object.
 	 * The name 'asa' stands for 'as a'.
 	 * @param string $behaviorname the behavior name
-	 * @return IBehavior the behavior object, or null if the behavior does not exist
+	 * @return object the behavior object, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
 	{
+		$behaviorname = strtolower($behaviorname);
 		return $this->_m[$behaviorname] ?? null;
 	}
 
@@ -1602,14 +1797,14 @@ class TComponent
 		if ($this instanceof $class) {
 			return true;
 		}
-		if ($this->_m !== null && $this->_behaviorsenabled) {
+		if ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {
-				if (($behavior instanceof IBehavior) && !$behavior->getEnabled()) {
+				if (!$behavior->getEnabled()) {
 					continue;
 				}
 
 				$check = null;
-				if (($behavior->isa('\Prado\Util\IInstanceCheck')) && $check = $behavior->isinstanceof($class, $this)) {
+				if (($behavior->isa(\Prado\Util\IInstanceCheck::class)) && $check = $behavior->isinstanceof($class, $this)) {
 					return true;
 				}
 				if ($check === null && ($behavior->isa($class))) {
@@ -1621,8 +1816,8 @@ class TComponent
 	}
 
 	/**
-	 * Returns all the behaviors attached to the TComponent.  IBehavior[s] may
-	 * be attached but not {@link \Prado\Util\IBehavior::getEnabled Enabled}.
+	 * Returns all the behaviors attached to the TComponent.  IBaseBehavior[s] may
+	 * be attached but not {@link IBaseBehavior::getEnabled Enabled}.
 	 *
 	 * @return array all the behaviors attached to the TComponent
 	 * @since 4.2.2
@@ -1635,17 +1830,26 @@ class TComponent
 	/**
 	 * Attaches a list of behaviors to the component.
 	 * Each behavior is indexed by its name and should be an instance of
-	 * {@link IBehavior}, a string specifying the behavior class, or a
+	 * {@link IBaseBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
 	 * @param array $behaviors list of behaviors to be attached to the component
+	 * @param bool $cloneIBehavior Should IBehavior be cloned before attaching.
+	 *   Default is false.
 	 * @since 3.2.3
 	 */
-	public function attachBehaviors($behaviors)
+	public function attachBehaviors($behaviors, bool $cloneIBehavior = false)
 	{
 		foreach ($behaviors as $name => $behavior) {
 			if ($behavior instanceof TClassBehaviorEventParameter) {
-				$this->attachBehavior($behavior->getName(), $behavior->getBehavior(), $behavior->getPriority());
+				$paramBehavior = $behavior->getBehavior();
+				if ($cloneIBehavior && ($paramBehavior instanceof IBehavior)) {
+					$paramBehavior = clone $paramBehavior;
+				}
+				$this->attachBehavior($behavior->getName(), $paramBehavior, $behavior->getPriority());
 			} else {
+				if ($cloneIBehavior && ($behavior instanceof IBehavior)) {
+					$behavior = clone $behavior;
+				}
 				$this->attachBehavior($name, $behavior);
 			}
 		}
@@ -1654,7 +1858,7 @@ class TComponent
 	/**
 	 * Detaches select behaviors from the component.
 	 * Each behavior is indexed by its name and should be an instance of
-	 * {@link IBehavior}, a string specifying the behavior class, or a
+	 * {@link IBaseBehavior}, a string specifying the behavior class, or a
 	 * {@link TClassBehaviorEventParameter}.
 	 * @param array $behaviors list of behaviors to be detached from the component
 	 * @since 3.2.3
@@ -1679,7 +1883,7 @@ class TComponent
 	public function clearBehaviors()
 	{
 		if ($this->_m !== null) {
-			foreach ($this->_m->toArray() as $name => $behavior) {
+			foreach ($this->_m->getKeys() as $name) {
 				$this->detachBehavior($name);
 			}
 			$this->_m = null;
@@ -1690,58 +1894,71 @@ class TComponent
 	 * Attaches a behavior to this component.
 	 * This method will create the behavior object based on the given
 	 * configuration. After that, the behavior object will be initialized
-	 * by calling its {@link IBehavior::attach} method.
+	 * by calling its {@link IBaseBehavior::attach} method.
 	 *
 	 * Already attached behaviors may implement the function:
 	 * <code>
-	 *	public function dyAttachBehavior($name,$behavior[, $chain]) {
+	 *	public function dyAttachBehavior($name,$behavior[, ?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyDetachBehavior($name, $behavior);
 	 *  }
 	 * </code>
 	 * to be executed when attachBehavior is called.  All attached behaviors are notified through
 	 * dyAttachBehavior.
 	 *
-	 * @param string $name the behavior's name. It should uniquely identify this behavior.
+	 * @param null|numeric|string $name the behavior's name. It should uniquely identify this behavior.
 	 * @param array|IBaseBehavior|string $behavior the behavior configuration. This is the name of the Behavior Class
 	 * instanced by {@link PradoBase::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
 	 * with values.
 	 * @param null|numeric $priority
-	 * @return IBehavior the behavior object
+	 * @return IBaseBehavior the behavior object
 	 * @since 3.2.3
 	 */
 	public function attachBehavior($name, $behavior, $priority = null)
 	{
+		$name = strtolower($name !== null ? $name : '');
+		if ($this->_m && isset($this->_m[$name])) {
+			$this->detachBehavior($name);
+		}
 		$behavior = self::instanceBehavior($behavior);
 		if ($this->_m === null) {
 			$this->_m = new TPriorityMap();
 		}
+		if (empty($name) || is_numeric($name)) {
+			$name = $this->_m->getNextIntegerKey();
+		}
 		$this->_m->add($name, $behavior, $priority);
+		$behavior->setName($name);
 		$behavior->attach($this);
-		$this->dyAttachBehavior($name, $behavior);
+		$this->callBehaviorsMethod('dyAttachBehavior', $return, $name, $behavior);
 		return $behavior;
 	}
 
 	/**
 	 * Detaches a behavior from the component.
-	 * The behavior's {@link IBehavior::detach} method will be invoked.
+	 * The behavior's {@link IBaseBehavior::detach} method will be invoked.
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyDetachBehavior($name,$behavior[, $chain]) {
+	 *	public function dyDetachBehavior($name, $behavior[, ?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyDetachBehavior($name, $behavior);
 	 *  }
 	 * </code>
 	 * to be executed when detachBehavior is called.  All attached behaviors are notified through
 	 * dyDetachBehavior.
 	 *
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
-	 * @param false|numeric $priority the behavior's priority. This defaults to false, aka any priority.
-	 * @return null|IBehavior the detached behavior. Null if the behavior does not exist.
+	 * @param false|numeric $priority the behavior's priority. This defaults to false, which is any priority.
+	 * @return null|IBaseBehavior the detached behavior. Null if the behavior does not exist.
 	 * @since 3.2.3
 	 */
 	public function detachBehavior($name, $priority = false)
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && ($behavior = $this->_m->itemAt($name, $priority))) {
-			$this->dyDetachBehavior($name, $behavior);
+			$this->callBehaviorsMethod('dyDetachBehavior', $return, $name, $behavior);
 			$behavior->detach($this);
 			$this->_m->remove($name, $priority);
 			return $behavior;
@@ -1754,7 +1971,9 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyEnableBehaviors($name,$behavior[, $chain]) {
+	 *	public function dyEnableBehaviors([?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyEnableBehaviors();
 	 *  }
 	 * </code>
 	 * to be executed when enableBehaviors is called.  All attached behaviors are notified through
@@ -1765,7 +1984,7 @@ class TComponent
 	{
 		if (!$this->_behaviorsenabled) {
 			$this->_behaviorsenabled = true;
-			$this->dyEnableBehaviors();
+			$this->callBehaviorsMethod('dyEnableBehaviors', $return);
 		}
 	}
 
@@ -1774,7 +1993,9 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyDisableBehaviors($name,$behavior[, $chain]) {
+	 *	public function dyDisableBehaviors([?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyDisableBehaviors();
 	 *  }
 	 * </code>
 	 * to be executed when disableBehaviors is called.  All attached behaviors are notified through
@@ -1784,8 +2005,11 @@ class TComponent
 	public function disableBehaviors()
 	{
 		if ($this->_behaviorsenabled) {
-			$this->dyDisableBehaviors();
+			$callchain = $this->getCallChain('dyDisableBehaviors');
 			$this->_behaviorsenabled = false;
+			if ($callchain) { // normal dynamic events won't work because behaviors are disabled.
+				$callchain->call();
+			}
 		}
 	}
 
@@ -1807,26 +2031,30 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyEnableBehavior($name,$behavior[, $chain]) {
+	 *	public function dyEnableBehavior($name, $behavior[, ?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyEnableBehavior($name, $behavior);
 	 *  }
 	 * </code>
 	 * to be executed when enableBehavior is called.  All attached behaviors are notified through
 	 * dyEnableBehavior.
 	 *
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @return bool Was the behavior found and enabled.
 	 * @since 3.2.3
 	 */
-	public function enableBehavior($name)
+	public function enableBehavior($name): bool
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && isset($this->_m[$name])) {
-			if ($this->_m[$name] instanceof IBehavior) {
-				$this->_m[$name]->setEnabled(true);
-				$this->dyEnableBehavior($name, $this->_m[$name]);
-				return true;
+			$behavior = $this->_m[$name];
+			if ($behavior->getEnabled() === false) {
+				$behavior->setEnabled(true);
+				$this->callBehaviorsMethod('dyEnableBehavior', $return, $name, $behavior);
 			}
-			return false;
+			return true;
 		}
-		return null;
+		return false;
 	}
 
 	/**
@@ -1835,26 +2063,30 @@ class TComponent
 	 *
 	 * Behaviors may implement the function:
 	 * <code>
-	 *	public function dyDisableBehavior($name,$behavior[, $chain]) {
+	 *	public function dyDisableBehavior($name, $behavior[, ?TCallChain $chain = null]) {
+	 *      if ($chain)
+	 *          return $chain->dyDisableBehavior($name, $behavior);
 	 *  }
 	 * </code>
 	 * to be executed when disableBehavior is called.  All attached behaviors are notified through
 	 * dyDisableBehavior.
 	 *
 	 * @param string $name the behavior's name. It uniquely identifies the behavior.
+	 * @return bool Was the behavior found and disabled.
 	 * @since 3.2.3
 	 */
-	public function disableBehavior($name)
+	public function disableBehavior($name): bool
 	{
+		$name = strtolower($name);
 		if ($this->_m != null && isset($this->_m[$name])) {
-			if ($this->_m[$name] instanceof IBehavior) {
-				$this->_m[$name]->setEnabled(false);
-				$this->dyDisableBehavior($name, $this->_m[$name]);
-				return true;
+			$behavior = $this->_m[$name];
+			if ($behavior->getEnabled() === true) {
+				$behavior->setEnabled(false);
+				$this->callBehaviorsMethod('dyDisableBehavior', $return, $name, $behavior);
 			}
-			return false;
+			return true;
 		}
-		return null;
+		return false;
 	}
 
 	/**
@@ -1886,9 +2118,7 @@ class TComponent
 		if ($this->_behaviorsenabled === true) {
 			$exprops[] = "\0*\0_behaviorsenabled";
 		}
-		if ($this->_e === []) {
-			$exprops[] = "\0*\0_e";
-		}
+		$exprops[] = "\0*\0_e";
 		if ($this->_m === null) {
 			$exprops[] = "\0*\0_m";
 		}

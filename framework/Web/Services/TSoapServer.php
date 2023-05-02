@@ -104,7 +104,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	 */
 	public function fault($title, $details = '', $code = 'SERVER', $actor = '', $name = '')
 	{
-		Prado::trace('SOAP-Fault ' . $code . ' ' . $title . ' : ' . $details, 'Prado\Web\Services\TSoapService');
+		Prado::trace('SOAP-Fault ' . $code . ' ' . $title . ' : ' . $details, TSoapService::class);
 		$this->_server->fault($code, $title, $actor, $details, $name);
 	}
 

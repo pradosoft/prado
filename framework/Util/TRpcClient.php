@@ -99,8 +99,8 @@ class TRpcClient extends \Prado\TApplicationComponent
 			'http' => [
 				'method' => 'POST',
 				'header' => "Content-Type: {$contentType}",
-				'content' => $content
-			]
+				'content' => $content,
+			],
 		]);
 	}
 

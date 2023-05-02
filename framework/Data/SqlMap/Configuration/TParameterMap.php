@@ -192,7 +192,7 @@ class TParameterMap extends \Prado\TComponent
 				'sqlmap_unable_to_get_property_for_parameter',
 				$this->getID(),
 				$property->getProperty(),
-				(is_object($object) ? get_class($object) : gettype($object))
+				(is_object($object) ? $object::class : gettype($object))
 			);
 		}
 	}

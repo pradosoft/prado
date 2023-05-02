@@ -44,7 +44,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	public function __construct($manager = null)
 	{
 		if ($manager) {
-			$this->setManager($manager);
+			$this->setPermissionsManager($manager);
 		}
 		parent::__construct();
 	}
@@ -89,7 +89,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	 */
 	public function dyApplyConfiguration($callchain)
 	{
-		$manager = $this->getManager();
+		$manager = $this->getPermissionsManager();
 		foreach ($this->_permissions as $permission) {
 			$manager->loadPermissionsData($permission);
 		}
@@ -99,7 +99,7 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	/**
 	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
 	 */
-	public function getManager()
+	public function getPermissionsManager()
 	{
 		return $this->_manager;
 	}
@@ -107,9 +107,9 @@ class TPermissionsConfigurationBehavior extends TBehavior
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
 	 */
-	public function setManager($manager)
+	public function setPermissionsManager($manager)
 	{
-		if (class_exists('\WeakReference', false) && $manager instanceof \WeakReference) {
+		if ($manager instanceof \WeakReference) {
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;

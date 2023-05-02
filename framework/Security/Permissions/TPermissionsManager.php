@@ -227,7 +227,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		return [
 			new TPermissionEvent(static::PERM_PERMISSIONS_SHELL, 'Activates permissions shell commands.', 'dyRegisterShellAction'),
 			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_ROLES, 'Manages Db Permissions Role Children.', ['dyAddRoleChildren', 'dyRemoveRoleChildren']),
-			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_RULES, 'Manages Db Permissions Rules.', ['dyAddPermissionRule', 'dyRemovePermissionRule'])
+			new TPermissionEvent(static::PERM_PERMISSIONS_MANAGE_RULES, 'Manages Db Permissions Rules.', ['dyAddPermissionRule', 'dyRemovePermissionRule']),
 		];
 	}
 
@@ -252,10 +252,10 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		}
 		$this->_initialized = true;
 
-		$manager = class_exists('\WeakReference', false) ? \WeakReference::create($this) : $this;
-		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsBehavior', 'manager' => $manager], 'Prado\\Security\\Permissions\\IPermissions', -10);
-		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TUserPermissionsBehavior', 'manager' => $manager], 'Prado\\Security\\IUser', -10);
-		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => 'Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', 'manager' => $manager], 'Prado\\Web\\Services\\TPageConfiguration', -10);
+		$manager = \WeakReference::create($this);
+		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
+		TComponent::attachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, ['class' => TUserPermissionsBehavior::class, 'permissionsmanager' => $manager], \Prado\Security\IUser::class, -10);
+		TComponent::attachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, ['class' => TPermissionsConfigurationBehavior::class, 'permissionsmanager' => $manager], \Prado\Web\Services\TPageConfiguration::class, -10);
 
 		$this->loadPermissionsData($config);
 		if ($this->_permissionFile !== null) {
@@ -366,7 +366,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 					$children = array_map('trim', explode(',', $children));
 				}
 				if (!is_array($children)) {
-					throw new TConfigurationException('permissions_role_children_invalid', $role, is_object($children) ? get_class($children) : $children);
+					throw new TConfigurationException('permissions_role_children_invalid', $role, is_object($children) ? $children::class : $children);
 				}
 			}
 
@@ -388,7 +388,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 				if (!$name) {
 					throw new TConfigurationException('permissions_rules_require_name');
 				}
-				$class = $properties['class'] ?? 'Prado\\Security\\TAuthorizationRule';
+				$class = $properties['class'] ?? TAuthorizationRule::class;
 				$action = $properties['action'] ?? '';
 				$users = $properties['users'] ?? '';
 				$roles = $properties['roles'] ?? '';
@@ -488,7 +488,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	public function registerShellAction($sender, $param)
 	{
 		if ($this->dyRegisterShellAction(false) !== true && ($app = $this->getApplication()) instanceof \Prado\Shell\TShellApplication) {
-			$app->addShellActionClass(['class' => 'Prado\\Security\\Permissions\\TPermissionsAction', 'PermissionsManager' => $this]);
+			$app->addShellActionClass(['class' => TPermissionsAction::class, 'PermissionsManager' => $this]);
 		}
 	}
 
@@ -566,14 +566,14 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? $children::class : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));
 		$this->_hierarchy[$role] = array_merge($this->_hierarchy[$role] ?? [], $children);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['roles'] = $runtimeData['roles'] ?? [];
+		$runtimeData['roles'] ??= [];
 		$runtimeData['roles'][$role] = array_unique(array_merge($runtimeData['roles'][$role] ?? [], $children));
 		$this->_dbParameter->set($this->_parameter, $runtimeData);
 
@@ -596,7 +596,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		if (is_string($children)) {
 			$children = array_map('trim', explode(',', $children));
 		} elseif (!is_array($children)) {
-			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? get_class($children) : $children);
+			throw new TInvalidDataValueException('permissions_children_invalid', is_object($children) ? $children::class : $children);
 		}
 		$role = strtolower($role);
 		$children = array_map('strtolower', array_filter($children));
@@ -630,7 +630,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->addPermissionRuleInternal($permission, $rule);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['permissionrules'] = $runtimeData['permissionrules'] ?? [];
+		$runtimeData['permissionrules'] ??= [];
 		$runtimeData['permissionrules'][$permission][] = $rule;
 		$this->_dbParameter->set($this->_parameter, $runtimeData);
 
@@ -654,7 +654,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$this->removePermissionRuleInternal($permission, $rule);
 
 		$runtimeData = $this->_dbParameter->get($this->_parameter) ?? [];
-		$runtimeData['permissionrules'] = $runtimeData['permissionrules'] ?? [];
+		$runtimeData['permissionrules'] ??= [];
 
 		if (($index = array_search($rule, $runtimeData['permissionrules'][$permission] ?? [], true)) === false) {
 			return false;
@@ -897,7 +897,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('permissions_property_unchangeable', 'DbParameter');
 		}
 		if ($provider !== null && !is_string($provider) && !($provider instanceof TDbParameterModule)) {
-			throw new TConfigurationException('permissions_dbparameter_invalid', is_object($provider) ? get_class($provider) : $provider);
+			throw new TConfigurationException('permissions_dbparameter_invalid', is_object($provider) ? $provider::class : $provider);
 		}
 		$this->_dbParameter = $provider;
 	}
@@ -927,9 +927,9 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function __destruct()
 	{
-		TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, 'Prado\\Security\\Permissions\\IPermissions');
-		TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, 'Prado\\Security\\IUser');
-		TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, 'Prado\\Web\\Services\\TPageConfiguration');
+		TComponent::detachClassBehavior(static::PERMISSIONS_BEHAVIOR, IPermissions::class);
+		TComponent::detachClassBehavior(static::USER_PERMISSIONS_BEHAVIOR, \Prado\Security\IUser::class);
+		TComponent::detachClassBehavior(static::PERMISSIONS_CONFIG_BEHAVIOR, \Prado\Web\Services\TPageConfiguration::class);
 		parent::__destruct();
 	}
 }

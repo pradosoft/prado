@@ -102,7 +102,7 @@ class TPermissionsAction extends TShellAction
 		}
 
 		return ($writer->format($a = $rule->getAction(), [TShellWriter::BOLD, $a === 'allow' ? TShellWriter::GREEN : TShellWriter::RED]) . ': ') .
-			(get_class($rule) === 'Prado\\Security\\Permissions\\TUserOwnerRule' ? 'User Owner- ' : '') .
+			($rule::class === TUserOwnerRule::class ? 'User Owner- ' : '') .
 			(($p = $rule->getPriority()) ? '∆' . $p . ' ' : '') .
 			(($users[0] !== '*') ? 'users="' . implode(', ', $users) . '" ' : '') .
 			((($r = $rule->getRoles()) && (count($r) !== 1 || $r[0] !== '*')) ? 'roles="' . implode(', ', $r) . '" ' : '') .
@@ -279,7 +279,7 @@ class TPermissionsAction extends TShellAction
 		$verb = $args[5] ?? null;
 		$ips = $args[6] ?? null;
 		$priority = (!is_numeric($args[7] ?? null)) ? null : $args[7];
-		$class = $args[8] ?? 'Prado\\Security\\TAuthorizationRule';
+		$class = $args[8] ?? TAuthorizationRule::class;
 
 		if (!$users) {
 			$users = '*';
@@ -394,7 +394,7 @@ class TPermissionsAction extends TShellAction
 		if ($this->_manager === false) {
 			$this->_manager = null;
 			$app = Prado::getApplication();
-			foreach ($app->getModulesByType('Prado\\Security\\Permissions\\TPermissionsManager') as $id => $module) {
+			foreach ($app->getModulesByType(\Prado\Security\Permissions\TPermissionsManager::class) as $id => $module) {
 				if ($this->_manager = $app->getModule($id)) {
 					break;
 				}

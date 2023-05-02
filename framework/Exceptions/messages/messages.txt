@@ -19,16 +19,23 @@ component_tbehavior_cannot_attach_as_class_behavior	= IBehaviors cannot attach t
 component_no_class_provided_nor_late_binding = Adding or Removing Class Behaviors must have PHP feature Late Static Binding or a class provided as a parameter
 
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
+propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
 
 list_index_invalid						= Index '{0}' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
 list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 list_readonly							= {0} is read-only.
+list_readonly_set						= {0} cannot change Read-Only once it is already set.
+prioritylist_index_invalid				= Index '{0}' of '{1}' at Priority '{2}' is out of range.
+prioritytrait_no_set_default_priority	= Default Priority can only be set once or by the object itself.
+prioritytrait_no_set_precision			= Precision can only be set once or by the object itself.
+weak_no_set_discard_invalid				= '{0}'.DiscardInvalid can only be set once or by the object itself.
 
 map_addition_disallowed					= The new item cannot be added to the map.
 map_item_unremovable					= The item cannot be removed from the map.
 map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
 map_readonly							= {0} is read-only.
+map_readonly_set						= {0} cannot change Read-Only once it is already set.
 
 weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
 
@@ -138,7 +145,19 @@ pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attri
 pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
 pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
 
-callchain_bad_dynamic_event				= TCallChain.{0} was raised but {1} was expected..
+basebehavior_cannot_setname_with_owner	= The TBaseBehavior.Name "{0}" cannot be changed (to "{1}") after the behavior is attached.
+basebehavior_sync_no_owner				= The TBaseBehavior "{0}" has no owner and cannot synchronize event handlers on a component without owners.
+basebehavior_sync_not_owner				= The TBaseBehavior "{0}" cannot synchronize event handlers on an object that is not the owner.
+behavior_has_owner						= The TBehavior "{0}" can only attach to one owner.
+behavior_bad_attach_component			= The TBehavior "{0}" can only attach to a TComponent.
+behavior_detach_without_owner			= The TBehavior "{0}" cannot be detached without an owner.
+behavior_detach_wrong_owner				= The TBehavior "{0}" cannot detach from an object that is not its owner.
+classbehavior_owner_attach_once			= The TClassBehavior "{0}" can only be attached to an owner once.  The handlers would not be unique.
+classbehavior_bad_attach_component		= The TClassBehavior "{0}" can only attach to a TComponent.
+classbehavior_detach_without_owner		= The TClassBehavior "{0}" cannot be detached without an owner.
+classbehavior_detach_wrong_owner		= The TClassBehavior "{0}" cannot detach from an object that is not its owner.
+
+callchain_bad_dynamic_event				= TCallChain.{0} was raised but {1} was expected.
 
 behaviormodule_behavior_as_array_required = php <behavior> must be an array.
 behaviormodule_behaviorname_required	= <behavior> must contain a 'name' attribute for attaching the behavior.
@@ -222,7 +241,6 @@ permissions_children_invalid			= TPermissionsManager.*RoleChildren children must
 permissions_property_unchangeable		= TPermissionsManager.{0} cannot be set because it is already initialized.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
 
-thememanager_service_unavailable		= TThemeManager requires TPageService to be available. This error often occurs when you configure TThemeManager outside of the page service configuration.
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
 thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
 thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.
@@ -563,7 +581,10 @@ dbcron_property_unchangeable			= TDbCronModule.{0} is already initialized and ca
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
 
-datasize_no_negative_size				= TDataSize.Size cannot be negative.
+bithelper_bad_fp_format					= TBitHelper cannot work with '{0}' exponent bits, '{1}' mantissa bits, '{2}' exponent bias, in a {3} bit PHP environment.
+bithelper_invalid_color_in				= TBitHelper must have at least one In Bit.  '{0}' was given.
+bithelper_invalid_color_out				= TBitHelper must have at least one Out Bit. '{0}' was given.
+bithelper_bad_mirror_bits				= TBitHelper cannot mirror '{0}' bits in a {1} bit PHP environment.
 
 ar_data_invalid							= {0}.copyFrom() can only take an object or array as parameter.
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.

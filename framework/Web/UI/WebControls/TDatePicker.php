@@ -96,7 +96,7 @@ class TDatePicker extends TTextBox
 	{
 		throw new TNotSupportedException(
 			'tdatepicker_autopostback_unsupported',
-			get_class($this)
+			$this::class
 		);
 	}
 
@@ -157,7 +157,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setInputMode($value)
 	{
-		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDatePickerInputMode'), TDatePickerInputMode::TextBox);
+		$this->setViewState('InputMode', TPropertyValue::ensureEnum($value, TDatePickerInputMode::class), TDatePickerInputMode::TextBox);
 	}
 
 	/**
@@ -173,7 +173,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setMode($value)
 	{
-		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDatePickerMode'), TDatePickerMode::Basic);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, TDatePickerMode::class), TDatePickerMode::Basic);
 	}
 
 	/**
@@ -285,7 +285,7 @@ class TDatePicker extends TTextBox
 	 */
 	public function setPositionMode($value)
 	{
-		$this->setViewState('PositionMode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDatePickerPositionMode'), TDatePickerPositionMode::Bottom);
+		$this->setViewState('PositionMode', TPropertyValue::ensureEnum($value, TDatePickerPositionMode::class), TDatePickerPositionMode::Bottom);
 	}
 
 	/**

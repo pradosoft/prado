@@ -35,14 +35,14 @@ class ActiveRecordDynamicCallTest extends PHPUnit\Framework\TestCase
 	public function test_dynamic_call_missing_parameters_throws_exception()
 	{
 		$finder = DepartmentRecord::finder();
-		self::expectException('Prado\\Exceptions\\TDbException');
+		self::expectException(\Prado\Exceptions\TDbException::class);
 		$rs = $finder->findByNameAndActive('Marketing');
 	}
 
 	public function test_dynamic_call_extras_parameters_ok()
 	{
 		$finder = DepartmentRecord::finder();
-		self::expectException('Prado\\Exceptions\\TDbException');
+		self::expectException(\Prado\Exceptions\TDbException::class);
 		$rs = $finder->findByNameAndActive('Marketing', true, true);
 	}
 

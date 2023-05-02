@@ -28,19 +28,19 @@ if (!defined('PRADO_DIR')) {
 // Defines the default permission for writable directories
 // @todo, the test on PRADO_CHMOD must be remove in the next major release
 if (!defined('PRADO_DIR_CHMOD')) {
-	define('PRADO_DIR_CHMOD', !defined('PRADO_CHMOD') ? 0755 : PRADO_CHMOD);
+	define('PRADO_DIR_CHMOD', !defined('PRADO_CHMOD') ? 0o755 : PRADO_CHMOD);
 }
 
 // Defines the default permission for writable files
 // @todo, the test on PRADO_CHMOD must be removed in the next major release
 if (!defined('PRADO_FILE_CHMOD')) {
-	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0644 : PRADO_CHMOD);
+	define('PRADO_FILE_CHMOD', !defined('PRADO_CHMOD') ? 0o644 : PRADO_CHMOD);
 }
 
 // Defines the default permission for writable directories and files
 // @todo, adding this define must be removed in the next major release
 if (!defined('PRADO_CHMOD')) {
-	define('PRADO_CHMOD', 0777);
+	define('PRADO_CHMOD', 0o777);
 }
 
 // Defines the Composer's vendor/ path.
@@ -73,13 +73,13 @@ class Prado
 	 */
 	private static $_aliases = [
 		'Prado' => PRADO_DIR,
-		'Vendor' => PRADO_VENDORDIR
+		'Vendor' => PRADO_VENDORDIR,
 		];
 	/**
 	 * @var array<string, string> list of namespaces currently in use
 	 */
 	private static $_usings = [
-		'Prado' => PRADO_DIR
+		'Prado' => PRADO_DIR,
 		];
 	/**
 	 * @var array<string, string> list of namespaces currently in use
@@ -102,7 +102,7 @@ class Prado
 	 */
 	public static function getVersion(): string
 	{
-		return '4.2.1';
+		return '4.2.2';
 	}
 
 	/**
@@ -375,15 +375,20 @@ class Prado
 
 		if (isset(self::$_usings[$namespace]) ||
 			class_exists($namespace, false) ||
-			interface_exists($namespace, false)) {
+			interface_exists($namespace, false) ||
+			trait_exists($namespace, false)) {
 			return;
 		}
 
 		if (array_key_exists($namespace, self::$classMap)) {
 			// fast autoload a Prado3 class name
 			$phpNamespace = self::$classMap[$namespace];
-			if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
-				if (!class_exists($namespace) && !interface_exists($namespace)) {
+			if (class_exists($phpNamespace, true) ||
+				interface_exists($phpNamespace, true) ||
+				trait_exists($phpNamespace, true)) {
+				if (!class_exists($namespace) &&
+					!interface_exists($namespace) &&
+					!trait_exists($namespace)) {
 					class_alias($phpNamespace, $namespace);
 				}
 				return;
@@ -394,8 +399,12 @@ class Prado
 				$path = $v . DIRECTORY_SEPARATOR . $namespace . self::CLASS_FILE_EXT;
 				if (file_exists($path)) {
 					$phpNamespace = '\\' . $k . '\\' . $namespace;
-					if (class_exists($phpNamespace, true) || interface_exists($phpNamespace, true)) {
-						if (!class_exists($namespace) && !interface_exists($namespace)) {
+					if (class_exists($phpNamespace, true) ||
+						interface_exists($phpNamespace, true) ||
+						trait_exists($phpNamespace, true)) {
+						if (!class_exists($namespace) &&
+							!interface_exists($namespace) &&
+							!trait_exists($namespace)) {
 							class_alias($phpNamespace, $namespace);
 						}
 						return;
@@ -407,18 +416,76 @@ class Prado
 			if ($className === '*') {  // a directory
 				self::$_usings[substr($namespace, 0, $pos)] = $path;
 			} else {  // a file
-				if (class_exists($className, false) || interface_exists($className, false)) {
+				if (class_exists($className, false) ||
+					interface_exists($className, false) ||
+					trait_exists($className, false)) {
 					return;
 				}
 
 				if (file_exists($path)) {
 					include_once($path);
-					if (!class_exists($className, false) && !interface_exists($className, false)) {
+					if (!class_exists($className, false) &&
+						!interface_exists($className, false) &&
+						!trait_exists($className, false)) {
 						class_alias($namespace, $className);
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * This conforms PHP's Magic Methods to PHP's Visibility standards for public,
+	 * protected, and private properties, methods, and constants. This method checks
+	 * if the object calling your method can access your object's property, method,
+	 * or constant based upon the defined visibility.  External objects can only access
+	 * public properties, methods, and constants.  When calling the self, private
+	 * properties, methods, and constants are allowed to be accessed by the same class.
+	 * @param object|string $object_or_class The object to check for the method within
+	 *   and for visibility to the calling object.
+	 * @param string $method
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function method_visible($object_or_class, string $method): bool
+	{
+		if (method_exists($object_or_class, $method)) {
+			$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+			$reflection = new \ReflectionMethod($object_or_class, $method);
+			if (empty($trace[2]) || empty($trace[1]['object']) || empty($trace[2]['object']) || $trace[1]['object'] !== $trace[2]['object']) {
+				return $reflection->isPublic();
+			} elseif ($reflection->isPrivate()) {
+				return $trace[2]['class'] === $reflection->class;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * This checks if object calling your object method is the same object.  In effect,
+	 * this signifies if self, parents, and children have visibility to "protected"
+	 * properties, methods, and constants.
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function isCallingSelf(): bool
+	{
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		return isset($trace[2]) && isset($trace[1]['object']) && isset($trace[2]['object']) && $trace[1]['object'] === $trace[2]['object'];
+	}
+
+	/**
+	 * This checks if object calling your object method is the same object and same class.
+	 * In effect, this allows only the self to have visibility to "private" properties,
+	 * methods, and constants.
+	 * @return bool Does the method exist and is publicly callable.
+	 * @since 4.2.3
+	 */
+	public static function isCallingSelfClass(): bool
+	{
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		return isset($trace[2]) && isset($trace[1]['object']) && isset($trace[2]['object']) && $trace[1]['object'] === $trace[2]['object'] && $trace[1]['class'] === $trace[2]['class'];
 	}
 
 	/**
@@ -540,7 +607,7 @@ class Prado
 					} elseif (is_int($item) || is_float($item)) {
 						echo $item;
 					} elseif (is_object($item)) {
-						echo get_class($item);
+						echo $item::class;
 					} elseif (is_array($item)) {
 						echo 'array(' . count($item) . ')';
 					} elseif (is_bool($item)) {
@@ -736,4 +803,4 @@ Prado::init();
 /**
  * Defines Prado in global namespace
  */
-class_alias('\Prado\Prado', 'Prado');
+class_alias(\Prado\Prado::class, 'Prado');

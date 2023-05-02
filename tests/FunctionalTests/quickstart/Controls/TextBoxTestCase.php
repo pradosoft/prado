@@ -17,9 +17,9 @@ class QuickstartTextBoxTestCase extends PradoDemosSelenium2Test
 		$this->type("ctl0\$body\$ctl1", "textte");
 
 		// vCard textboxes
-		$this->assertAttribute("ctl0\$body\$ctl2@vcard_name", "vCard.FirstName");
+		$this->assertAttribute("ctl0\$body\$ctl2@autocomplete", "off");
 		$this->type("ctl0\$body\$ctl2", "first");
-		$this->assertAttribute("ctl0\$body\$ctl3@vcard_name", "vCard.LastName");
+		$this->assertAttribute("ctl0\$body\$ctl3@autocomplete", "on");
 		$this->type("ctl0\$body\$ctl3", "last");
 
 		// a disabled textbox

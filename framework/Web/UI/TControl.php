@@ -360,10 +360,10 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		if ($this->_pluginmodule === false) {
 			$this->_pluginmodule = null;
 
-			$reflect = new ReflectionClass(get_class($this));
+			$reflect = new ReflectionClass($this::class);
 			$folder = $reflect->getFileName();
 
-			foreach ($this->getApplication()->getModulesByType('Prado\\Util\\IPluginModule') as $id => $module) {
+			foreach ($this->getApplication()->getModulesByType(\Prado\Util\IPluginModule::class) as $id => $module) {
 				if (!$module) {
 					continue;
 				}
@@ -423,7 +423,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function setID($id)
 	{
 		if (!preg_match(self::ID_FORMAT, $id)) {
-			throw new TInvalidDataValueException('control_id_invalid', get_class($this), $id);
+			throw new TInvalidDataValueException('control_id_invalid', $this::class, $id);
 		}
 		$this->_id = $id;
 		$this->_flags |= self::IS_ID_SET;
@@ -505,7 +505,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function setSkinID($value)
 	{
 		if (($this->_flags & self::IS_SKIN_APPLIED) || $this->_stage >= self::CS_CHILD_INITIALIZED) {
-			throw new TInvalidOperationException('control_skinid_unchangeable', get_class($this));
+			throw new TInvalidOperationException('control_skinid_unchangeable', $this::class);
 		} else {
 			$this->_rf[self::RF_SKIN_ID] = $value;
 		}
@@ -539,7 +539,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	public function setEnableTheming($value)
 	{
 		if ($this->_stage >= self::CS_CHILD_INITIALIZED) {
-			throw new TInvalidOperationException('control_enabletheming_unchangeable', get_class($this), $this->getUniqueID());
+			throw new TInvalidOperationException('control_enabletheming_unchangeable', $this::class, $this->getUniqueID());
 		} elseif (TPropertyValue::ensureBoolean($value)) {
 			$this->_flags &= ~self::IS_DISABLE_THEMING;
 		} else {
@@ -927,7 +927,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function dataBindProperties()
 	{
-		Prado::trace("Data bind properties", 'Prado\Web\UI\TControl');
+		Prado::trace("Data bind properties", TControl::class);
 		if (isset($this->_rf[self::RF_DATA_BINDINGS])) {
 			if (($context = $this->getTemplateControl()) === null) {
 				$context = $this;
@@ -958,7 +958,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	protected function dataBindChildren()
 	{
-		Prado::trace("dataBindChildren()", 'Prado\Web\UI\TControl');
+		Prado::trace("dataBindChildren()", TControl::class);
 		if (isset($this->_rf[self::RF_CONTROLS])) {
 			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
 				if ($control instanceof IBindable) {
@@ -1074,7 +1074,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 		$controls = [];
 		if ($this->getHasControls()) {
 			foreach ($this->_rf[self::RF_CONTROLS] as $control) {
-				if (is_object($control) && (get_class($control) === $type || (!$strict && ($control instanceof $type)))) {
+				if (is_object($control) && ($control::class === $type || (!$strict && ($control instanceof $type)))) {
 					$controls[] = $control;
 				}
 				if (($control instanceof TControl) && $control->getHasControls()) {
@@ -1468,7 +1468,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 */
 	public function onDataBinding($param)
 	{
-		Prado::trace("onDataBinding()", 'Prado\Web\UI\TControl');
+		Prado::trace("onDataBinding()", TControl::class);
 		$this->raiseEvent('OnDataBinding', $this, $param);
 	}
 
@@ -1767,7 +1767,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			$page->applyControlStyleSheet($this);
 			$this->_flags |= self::IS_STYLESHEET_APPLIED;
 		} elseif ($this->_flags & self::IS_STYLESHEET_APPLIED) {
-			throw new TInvalidOperationException('control_stylesheet_applied', get_class($this));
+			throw new TInvalidOperationException('control_stylesheet_applied', $this::class);
 		}
 	}
 
@@ -1822,7 +1822,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 			if ($control instanceof TControl) {
 				if ($control->_id !== '') {
 					if (isset($container->_rf[self::RF_NAMED_CONTROLS][$control->_id])) {
-						throw new TInvalidDataValueException('control_id_nonunique', get_class($control), $control->_id);
+						throw new TInvalidDataValueException('control_id_nonunique', $control::class, $control->_id);
 					} else {
 						$container->_rf[self::RF_NAMED_CONTROLS][$control->_id] = $control;
 					}

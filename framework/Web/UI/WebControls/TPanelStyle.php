@@ -149,7 +149,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setDirection($value)
 	{
-		$this->_direction = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TContentDirection');
+		$this->_direction = TPropertyValue::ensureEnum($value, TContentDirection::class);
 	}
 
 	/**
@@ -183,7 +183,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setHorizontalAlign($value)
 	{
-		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\THorizontalAlign');
+		$this->_horizontalAlign = TPropertyValue::ensureEnum($value, THorizontalAlign::class);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TPanelStyle extends TStyle
 	 */
 	public function setScrollBars($value)
 	{
-		$this->_scrollBars = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TScrollBars');
+		$this->_scrollBars = TPropertyValue::ensureEnum($value, TScrollBars::class);
 	}
 
 	/**

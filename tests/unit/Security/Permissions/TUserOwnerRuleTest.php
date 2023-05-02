@@ -21,7 +21,7 @@ class TUserOwnerRuleTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserOwnerRule', $this->obj);
+		self::assertInstanceOf(TUserOwnerRule::class, $this->obj);
 	}
 
 	public function testIsUserAllowed()

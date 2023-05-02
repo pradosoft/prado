@@ -111,7 +111,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	public function getPluginPath()
 	{
 		if ($this->_pluginPath === null) {
-			$reflect = new ReflectionClass(get_class($this));
+			$reflect = new ReflectionClass($this::class);
 			$this->_pluginPath = dirname($reflect->getFileName());
 		}
 		return $this->_pluginPath;

@@ -30,4 +30,13 @@ class TWizardSideBarListItemTemplate extends \Prado\TComponent implements ITempl
 		$button->setID(TWizard::ID_SIDEBAR_BUTTON);
 		$parent->getControls()->add($button);
 	}
+
+	/**
+	 * TTemplateManager calls this method for caching the included file modification times.
+	 * @return array list of included external template files
+	 */
+	public function getIncludedFiles()
+	{
+		return [];
+	}
 }

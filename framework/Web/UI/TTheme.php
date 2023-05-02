@@ -256,13 +256,13 @@ class TTheme extends \Prado\TApplicationComponent implements ITheme
 	 */
 	public function applySkin($control)
 	{
-		$type = get_class($control);
+		$type = $control::class;
 		if (($id = $control->getSkinID()) === '') {
 			$id = 0;
 		}
 		if (isset($this->_skins[$type][$id])) {
 			foreach ($this->_skins[$type][$id] as $name => $value) {
-				Prado::trace("Applying skin $name to $type", 'Prado\Web\UI\TThemeManager');
+				Prado::trace("Applying skin $name to $type", \Prado\Web\UI\TThemeManager::class);
 				if (is_array($value)) {
 					switch ($value[0]) {
 						case TTemplate::CONFIG_EXPRESSION:

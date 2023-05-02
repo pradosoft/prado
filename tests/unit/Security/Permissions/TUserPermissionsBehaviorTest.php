@@ -22,18 +22,18 @@ class TUserPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TUserPermissionsBehavior', $this->behavior);
+		self::assertInstanceOf(TUserPermissionsBehavior::class, $this->behavior);
 		
 		$this->behavior = new TUserPermissionsBehavior($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testManager()
 	{
-		$this->behavior->setManager($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
-		$this->behavior->setManager(\WeakReference::create($v));
-		self::assertEquals($v, $this->behavior->getManager());
+		$this->behavior->setPermissionsManager($v = new stdClass());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
+		$this->behavior->setPermissionsManager(\WeakReference::create($v));
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testBehavior()
@@ -43,7 +43,7 @@ class TUserPermissionsBehaviorTest extends PHPUnit\Framework\TestCase
 		
 		$manager = new TPermissionsManager();
 		//$manager->init(null);
-		$this->behavior->setManager($manager);
+		$this->behavior->setPermissionsManager($manager);
 		
 		//$manager->addPermissionRule('*', new TAuthorizationRule('deny', '*', '*', '*', '*', 999999));
 		

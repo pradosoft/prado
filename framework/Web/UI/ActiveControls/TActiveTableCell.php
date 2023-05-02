@@ -149,7 +149,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 			// If we update a TActiveTableCell on callback, we shouldn't update all childs,
 			// because the whole content will be replaced by the parent.
 			if ($this->getHasControls()) {
-				foreach ($this->findControlsByType('Prado\Web\UI\ActiveControls\IActiveControl', false) as $control) {
+				foreach ($this->findControlsByType(\Prado\Web\UI\ActiveControls\IActiveControl::class, false) as $control) {
 					$control->getActiveControl()->setEnableUpdate(false);
 				}
 			}
@@ -181,7 +181,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 				return $key;
 			}
 		}
-		throw new TConfigurationException('tactivetablecell_control_notincollection', get_class($this), $this->getUniqueID());
+		throw new TConfigurationException('tactivetablecell_control_notincollection', $this::class, $this->getUniqueID());
 	}
 
 	/**
@@ -199,7 +199,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 			if ($row instanceof TTableRow) {
 				$this->_row = $row;
 			} else {
-				throw new TConfigurationException('tactivetablecell_control_outoftable', get_class($this), $this->getUniqueID());
+				throw new TConfigurationException('tactivetablecell_control_outoftable', $this::class, $this->getUniqueID());
 			}
 		}
 		return $this->_row;

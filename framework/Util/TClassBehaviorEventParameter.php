@@ -29,7 +29,7 @@ class TClassBehaviorEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * Holds the parameters for the Class Behavior Events
-	 *	@param string $class this is the class to get the behavior
+	 *	@param null|numeric|string $class this is the class to get the behavior
 	 *	@param string $name the name of the behavior
 	 *	@param object $behavior this is the behavior to implement the class behavior
 	 * @param mixed $priority
@@ -54,7 +54,7 @@ class TClassBehaviorEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * name of the behavior
-	 * @return string the name to get the behavior
+	 * @return null|numeric|string the name to get the behavior
 	 */
 	public function getName()
 	{

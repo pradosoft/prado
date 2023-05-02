@@ -25,7 +25,7 @@ class TCronTaskInfoTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('\\Prado\\Util\\Cron\\TCronTaskInfo', $this->obj);
+		self::assertInstanceOf(TCronTaskInfo::class, $this->obj);
 		
 		self::assertEquals('name', $this->obj->getName());
 		self::assertEquals('class', $this->obj->getTask());

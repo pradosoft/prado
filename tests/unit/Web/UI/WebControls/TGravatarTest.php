@@ -18,7 +18,7 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('\\Prado\\Web\\UI\\WebControls\\TGravatar', $this->obj);
+		self::assertInstanceOf(TGravatar::class, $this->obj);
 	}
 
 	public function testDefaultImageStyle()

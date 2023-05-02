@@ -65,7 +65,7 @@ class TColorPicker extends TTextBox
 	 */
 	public function setMode($value)
 	{
-		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TColorPickerMode'), TColorPickerMode::Basic);
+		$this->setViewState('Mode', TPropertyValue::ensureEnum($value, TColorPickerMode::class), TColorPickerMode::Basic);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class TColorPicker extends TTextBox
 	protected function publishColorPickerAssets()
 	{
 		$cs = $this->getPage()->getClientScript();
-		$key = "prado:" . get_class($this);
+		$key = "prado:" . $this::class;
 		$imgs['button.gif'] = $this->getAssetUrl('button.gif');
 		$imgs['background.png'] = $this->getAssetUrl('background.png');
 		$options = TJavaScript::encode($imgs);

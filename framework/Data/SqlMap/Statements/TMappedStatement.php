@@ -370,7 +370,6 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		$generatedKey = $this->getPreGeneratedSelectKey($connection, $parameter);
 
 		$command = $this->_command->create($this->_manager, $connection, $this->_statement, $parameter);
-//		var_dump($command,$parameter);
 		$result = $command->execute();
 
 		if ($generatedKey === null) {
@@ -515,7 +514,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		}
 		if (class_exists('TActiveRecord', false) && $obj instanceof TActiveRecord) {
 			//Create a new clean active record.
-			$obj = TActiveRecord::createRecord(get_class($obj), $obj);
+			$obj = TActiveRecord::createRecord($obj::class, $obj);
 		}
 		return $obj;
 	}
@@ -776,7 +775,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 					throw new TSqlMapExecutionException(
 						'sqlmap_non_groupby_array_list_type',
 						$resultMap->getID(),
-						get_class($resultObject),
+						$resultObject::class,
 						$key
 					);
 				}
@@ -881,6 +880,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		if (null === $this->_selectQueue) {
 			$this->_selectQueue = [];
 		}
+		parent::__wakeup();
 	}
 
 	public function __sleep()

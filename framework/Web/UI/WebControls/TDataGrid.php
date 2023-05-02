@@ -448,7 +448,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 */
 	public function setCaptionAlign($value)
 	{
-		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, 'TPrado\\Web\\UI\\WebControls\\TableCaptionAlign'), TTableCaptionAlign::NotSet);
+		$this->setViewState('CaptionAlign', TPropertyValue::ensureEnum($value, TTableCaptionAlign::class), TTableCaptionAlign::NotSet);
 	}
 
 	/**

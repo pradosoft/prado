@@ -298,7 +298,7 @@ class THtmlArea5 extends TTextBox
 		$scripts = $this->getPage()->getClientScript();
 		$options = [
 			'ID' => $this->getClientID(),
-			'EditorOptions' => $this->getEditorOptions()
+			'EditorOptions' => $this->getEditorOptions(),
 		];
 
 		$options = TJavaScript::encode($options, true, true);

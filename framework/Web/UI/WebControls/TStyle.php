@@ -89,6 +89,7 @@ class TStyle extends \Prado\TComponent
 		if ($this->_font !== null) {
 			$this->_font = clone($this->_font);
 		}
+		parent::__clone();
 	}
 
 	/**
@@ -242,7 +243,7 @@ class TStyle extends \Prado\TComponent
 	 */
 	public function setDisplayStyle($value)
 	{
-		$this->_displayStyle = TPropertyValue::ensureEnum($value, 'Prado\\Web\\UI\\WebControls\\TDisplayStyle');
+		$this->_displayStyle = TPropertyValue::ensureEnum($value, TDisplayStyle::class);
 		switch ($this->_displayStyle) {
 			case TDisplayStyle::None:
 				$this->_fields['display'] = 'none';

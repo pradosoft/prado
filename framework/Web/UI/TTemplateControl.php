@@ -70,7 +70,7 @@ class TTemplateControl extends TCompositeControl
 	public function getTemplate()
 	{
 		if ($this->_localTemplate === null) {
-			$class = get_class($this);
+			$class = $this::class;
 			if (!isset(self::$_template[$class])) {
 				self::$_template[$class] = $this->loadTemplate();
 			}
@@ -123,8 +123,8 @@ class TTemplateControl extends TCompositeControl
 	 */
 	protected function loadTemplate()
 	{
-		Prado::trace("Loading template " . get_class($this), '\Prado\Web\UI\TTemplateControl');
-		$template = $this->getService()->getTemplateManager()->getTemplateByClassName(get_class($this));
+		Prado::trace("Loading template " . $this::class, TTemplateControl::class);
+		$template = $this->getService()->getTemplateManager()->getTemplateByClassName($this::class);
 		return $template;
 	}
 
@@ -140,7 +140,7 @@ class TTemplateControl extends TCompositeControl
 				if (is_string($value)) {
 					$this->setSubProperty($name, $value);
 				} else {
-					throw new TConfigurationException('templatecontrol_directive_invalid', get_class($this), $name);
+					throw new TConfigurationException('templatecontrol_directive_invalid', $this::class, $name);
 				}
 			}
 			$tpl->instantiateIn($this);
@@ -246,7 +246,7 @@ class TTemplateControl extends TCompositeControl
 				$master->injectContent($id, $content);
 			}
 		} elseif (!empty($this->_contents)) {
-			throw new TConfigurationException('templatecontrol_mastercontrol_required', get_class($this));
+			throw new TConfigurationException('templatecontrol_mastercontrol_required', $this::class);
 		}
 		parent::initRecursive($namingContainer);
 	}
@@ -260,7 +260,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function tryToUpdateView($arObj, $throwExceptions = false)
 	{
-		$objAttrs = get_class_vars(get_class($arObj));
+		$objAttrs = get_class_vars($arObj::class);
 		foreach (array_keys($objAttrs) as $key) {
 			try {
 				if ($key != "RELATIONS") {
@@ -306,7 +306,7 @@ class TTemplateControl extends TCompositeControl
 	 */
 	public function tryToUpdateAR($arObj, $throwExceptions = false)
 	{
-		$objAttrs = get_class_vars(get_class($arObj));
+		$objAttrs = get_class_vars($arObj::class);
 		foreach (array_keys($objAttrs) as $key) {
 			try {
 				if ($key == "RELATIONS") {

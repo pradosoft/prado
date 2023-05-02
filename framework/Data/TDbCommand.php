@@ -183,7 +183,7 @@ class TDbCommand extends \Prado\TComponent
 	{
 		try {
 			// Do not trace because it will remain even in Performance mode
-			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), 'Prado\Data');
+			// Prado::trace('Execute Command: '.$this->getDebugStatementText(), TDbCommand::class);
 			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 				return $this->_statement->rowCount();
@@ -215,7 +215,7 @@ class TDbCommand extends \Prado\TComponent
 	public function query()
 	{
 		try {
-			// Prado::trace('Query: '.$this->getDebugStatementText(), 'Prado\Data');
+			// Prado::trace('Query: '.$this->getDebugStatementText(), TDbCommand::class);
 			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 			} else {
@@ -238,7 +238,7 @@ class TDbCommand extends \Prado\TComponent
 	public function queryRow($fetchAssociative = true)
 	{
 		try {
-			// Prado::trace('Query Row: '.$this->getDebugStatementText(), 'Prado\Data');
+			// Prado::trace('Query Row: '.$this->getDebugStatementText(), TDbCommand::class);
 			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 			} else {
@@ -262,7 +262,7 @@ class TDbCommand extends \Prado\TComponent
 	public function queryScalar()
 	{
 		try {
-			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), 'Prado\Data');
+			// Prado::trace('Query Scalar: '.$this->getDebugStatementText(), TDbCommand::class);
 			if ($this->_statement instanceof PDOStatement) {
 				$this->_statement->execute();
 			} else {

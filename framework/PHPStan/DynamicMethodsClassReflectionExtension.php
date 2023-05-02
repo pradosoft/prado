@@ -10,7 +10,7 @@ class DynamicMethodsClassReflectionExtension implements MethodsClassReflectionEx
 {
 	public function hasMethod(ClassReflection $classReflection, string $methodName): bool
 	{
-		if (!$classReflection->is('Prado\TComponent')) {
+		if (!$classReflection->is(\Prado\TComponent::class)) {
 			return false;
 		}
 

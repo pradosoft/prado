@@ -38,7 +38,7 @@ class TShellDbCronAction extends TShellCronAction
 		'Displays the registered Cron tasks information.',
 		'Adds a Cron task to the database.',
 		'Updates a Cron task in the database.',
-		'Removes a Cron task from the database.'
+		'Removes a Cron task from the database.',
 	];
 
 	/**
@@ -47,7 +47,7 @@ class TShellDbCronAction extends TShellCronAction
 	 */
 	public function getModuleClass()
 	{
-		return 'Prado\\Util\\Cron\\TDbCronModule';
+		return \Prado\Util\Cron\TDbCronModule::class;
 	}
 
 	/**

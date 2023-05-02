@@ -50,6 +50,15 @@ class TWizardNavigationTemplate extends \Prado\TComponent implements ITemplate
 	}
 
 	/**
+	 * TTemplateManager calls this method for caching the included file modification times.
+	 * @return array list of included external template files
+	 */
+	public function getIncludedFiles()
+	{
+		return [];
+	}
+
+	/**
 	 * Creates a navigation button.
 	 * It creates a {@link TButton}, {@link TLinkButton}, or {@link TImageButton},
 	 * depending on the given parameters.

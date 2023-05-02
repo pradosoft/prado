@@ -30,7 +30,7 @@ class TFlushCachesAction extends TShellAction
 		'Allows you to flush the cache(s).',
 		'Displays the cache modules that can be flushed.',
 		'Flushes the specified ICache modules.',
-		'Flushes all application ICache modules.'
+		'Flushes all application ICache modules.',
 	];
 
 	/**
@@ -46,13 +46,13 @@ class TFlushCachesAction extends TShellAction
 
 		$found = false;
 		array_shift($args); //Shift off the 'action/method'
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			if (in_array($id, $args)) {
 				$module = (!$module) ? $app->getModule($id) : $module;
 				$module->flush();
 				$this->_outWriter->write('  ');
 				$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
-				$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+				$this->_outWriter->writeLine(' (' . $module::class . ')');
 				$found = true;
 			}
 		}
@@ -75,12 +75,12 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine("Flushing All Caches: ");
 
 		$module = null;
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
 			$module->flush();
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::GREEN, TShellWriter::BOLD]);
-			$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+			$this->_outWriter->writeLine(' (' . $module::class . ')');
 		}
 		if (!$module) {
 			$this->_outWriter->writeLine('  (no caches were found)', [TShellWriter::RED, TShellWriter::BOLD]);
@@ -101,11 +101,11 @@ class TFlushCachesAction extends TShellAction
 		$this->_outWriter->writeLine("Available Caches: ");
 
 		$module = null;
-		foreach ($app->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+		foreach ($app->getModulesByType(ICache::class) as $id => $module) {
 			$module = (!$module) ? $app->getModule($id) : $module;
 			$this->_outWriter->write('  ');
 			$this->_outWriter->write($id, [TShellWriter::BLUE, TShellWriter::BOLD]);
-			$this->_outWriter->writeLine(' (' . get_class($module) . ')');
+			$this->_outWriter->writeLine(' (' . $module::class . ')');
 		}
 		if (!$module) {
 			$this->_outWriter->writeLine('  (no caches were found)', [TShellWriter::RED, TShellWriter::BOLD]);

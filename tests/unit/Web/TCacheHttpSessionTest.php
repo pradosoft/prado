@@ -42,14 +42,14 @@ class TCacheHttpSessionTest extends PHPUnit\Framework\TestCase
 	public function testInitOne()
 	{
 		$session = new TCacheHttpSession();
-		self::expectException('Prado\\Exceptions\\TConfigurationException');
+		self::expectException(TConfigurationException::class);
 		$session->init(null);
 	}
 
 	public function testInitTwo()
 	{
 		$session = new TCacheHttpSession();
-		self::expectException('Prado\\Exceptions\\TConfigurationException');
+		self::expectException(TConfigurationException::class);
 		$session->setCacheModuleID('MaiCache');
 		$session->init(null);
 	}

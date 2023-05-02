@@ -29,19 +29,19 @@ class TPermissionsConfigurationBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('Prado\\Security\\Permissions\\TPermissionsConfigurationBehavior', $this->behavior);
-		self::assertNull($this->behavior->getManager());
+		self::assertInstanceOf(TPermissionsConfigurationBehavior::class, $this->behavior);
+		self::assertNull($this->behavior->getPermissionsManager());
 		
 		$this->behavior = new TPermissionsBehavior($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testManager()
 	{
-		$this->behavior->setManager($v = new stdClass());
-		self::assertEquals($v, $this->behavior->getManager());
-		$this->behavior->setManager(\WeakReference::create($v));
-		self::assertEquals($v, $this->behavior->getManager());
+		$this->behavior->setPermissionsManager($v = new stdClass());
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
+		$this->behavior->setPermissionsManager(\WeakReference::create($v));
+		self::assertEquals($v, $this->behavior->getPermissionsManager());
 	}
 	
 	public function testAttachAndEvents()
@@ -50,7 +50,7 @@ class TPermissionsConfigurationBehaviorTest extends PHPUnit\Framework\TestCase
 		$manager = new TPermissionsManager();
 		$manager->setId('perms');
 		$manager->setAutoAllowWithPermission(false);
-		$this->behavior->setManager($manager);
+		$this->behavior->setPermissionsManager($manager);
 		
 		self::assertNull($manager->getPermissionRules($permission));
 		

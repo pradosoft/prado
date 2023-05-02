@@ -137,7 +137,7 @@ class TAttributeCollection extends TMap
 	 * @param mixed $key the key
 	 * @return bool whether the map contains an item with the specified key
 	 */
-	public function contains($key)
+	public function contains($key): bool
 	{
 		return parent::contains($this->_caseSensitive ? $key : strtolower($key));
 	}

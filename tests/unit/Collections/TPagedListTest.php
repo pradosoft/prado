@@ -70,7 +70,7 @@ class TPagedListTest extends PHPUnit\Framework\TestCase
 	public function testCanNotSetInvalidPageSize()
 	{
 		$list = new TPagedList();
-		self::expectException('Prado\\Exceptions\\TInvalidDataValueException');
+		self::expectException(TInvalidDataValueException::class);
 		$list->PageSize = 0;
 	}
 

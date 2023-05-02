@@ -843,7 +843,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 		if (!$this->_attributevalidation) {
 			return $class->getName();
 		}
-		if (is_subclass_of($className, '\Prado\Web\UI\TControl') || $className === '\Prado\Web\UI\TControl') {
+		if (is_subclass_of($className, TControl::class) || $className === TControl::class) {
 			foreach ($attributes as $name => $att) {
 				if (($pos = strpos($name, '.')) !== false) {
 					// a subproperty, so the first segment must be readable
@@ -875,7 +875,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 					}
 				}
 			}
-		} elseif (is_subclass_of($className, '\Prado\TComponent') || $className === '\Prado\TComponent') {
+		} elseif (is_subclass_of($className, TComponent::class) || $className === TComponent::class) {
 			foreach ($attributes as $name => $att) {
 				if (is_array($att) && ($att[0] === self::CONFIG_DATABIND)) {
 					throw new TConfigurationException('template_databind_forbidden', $type, $name);
@@ -988,7 +988,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 */
 	protected function isClassBehaviorMethod(\ReflectionClass $class, $method)
 	{
-		$component = new \ReflectionClass('\Prado\TComponent');
+		$component = new \ReflectionClass(TComponent::class);
 		$behaviors = $component->getStaticProperties();
 		if (!isset($behaviors['_um'])) {
 			return false;

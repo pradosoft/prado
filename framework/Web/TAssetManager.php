@@ -174,7 +174,7 @@ class TAssetManager extends \Prado\TModule
 		} else {
 			$dir = $this->hash($fullpath);
 			if (!is_dir($this->_basePath . DIRECTORY_SEPARATOR . $dir) || $checkTimestamp || $this->getApplication()->getMode() !== TApplicationMode::Performance) {
-				Prado::trace("Publishing directory $fullpath", 'Prado\Web\TAssetManager');
+				Prado::trace("Publishing directory $fullpath", TAssetManager::class);
 				$this->copyDirectory($fullpath, $this->_basePath . DIRECTORY_SEPARATOR . $dir);
 			}
 			return $this->_published[$path] = $this->_baseUrl . '/' . $dir;
@@ -259,7 +259,7 @@ class TAssetManager extends \Prado\TModule
 		}
 		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
 		if (@filemtime($dstFile) < @filemtime($src)) {
-			Prado::trace("Publishing file $src to $dstFile", 'Prado\Web\TAssetManager');
+			Prado::trace("Publishing file $src to $dstFile", TAssetManager::class);
 			@copy($src, $dstFile);
 		}
 	}

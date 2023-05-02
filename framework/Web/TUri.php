@@ -42,7 +42,7 @@ class TUri extends \Prado\TComponent
 		'news' => 119,
 		'nntp' => 119,
 		'wais' => 210,
-		'telnet' => 23
+		'telnet' => 23,
 	];
 	/**
 	 * @var string scheme of the URI

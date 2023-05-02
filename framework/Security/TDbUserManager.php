@@ -106,7 +106,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 * @param string $password password
 	 * @return bool true if validation is successful, false otherwise.
 	 */
-	public function validateUser($username, $password)
+	public function validateUser($username, #[\SensitiveParameter] $password)
 	{
 		return $this->_userFactory->validateUser($username, $password);
 	}

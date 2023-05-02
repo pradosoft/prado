@@ -70,8 +70,8 @@ use Prado\TPropertyValue;
  */
 class TActiveRecordConfig extends TDataSourceConfig
 {
-	public const DEFAULT_MANAGER_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordManager';
-	public const DEFAULT_GATEWAY_CLASS = '\Prado\Data\ActiveRecord\TActiveRecordGateway';
+	public const DEFAULT_MANAGER_CLASS = \Prado\Data\ActiveRecord\TActiveRecordManager::class;
+	public const DEFAULT_GATEWAY_CLASS = \Prado\Data\ActiveRecord\TActiveRecordGateway::class;
 
 	/**
 	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
@@ -196,6 +196,6 @@ class TActiveRecordConfig extends TDataSourceConfig
 	 */
 	public function setInvalidFinderResult($value)
 	{
-		$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, 'Prado\\Data\\ActiveRecord\\TActiveRecordInvalidFinderResult');
+		$this->_invalidFinderResult = TPropertyValue::ensureEnum($value, \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::class);
 	}
 }

@@ -12,6 +12,7 @@ namespace Prado\Collections;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
@@ -44,47 +45,63 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * internal data storage
 	 * @var array
 	 */
-	private $_d = [];
+	protected array $_d = [];
 	/**
 	 * number of items
 	 * @var int
 	 */
-	private $_c = 0;
+	protected int $_c = 0;
 	/**
-	 * @var bool whether this list is read-only
+	 * @var ?bool whether this list is read-only
 	 */
-	private $_r = false;
+	protected ?bool $_r = null;
 
 	/**
 	 * Constructor.
 	 * Initializes the list with an array or an iterable object.
 	 * @param null|array|\Iterator $data the initial data. Default is null, meaning no initialization.
-	 * @param bool $readOnly whether the list is read-only
+	 * @param ?bool $readOnly whether the list is read-only, default null.
 	 * @throws TInvalidDataTypeException If data is not null and neither an array nor an iterator.
 	 */
-	public function __construct($data = null, $readOnly = false)
+	public function __construct($data = null, $readOnly = null)
 	{
+		parent::__construct();
 		if ($data !== null) {
 			$this->copyFrom($data);
+			$readOnly = (bool) $readOnly;
 		}
 		$this->setReadOnly($readOnly);
-		parent::__construct();
 	}
 
 	/**
 	 * @return bool whether this list is read-only or not. Defaults to false.
 	 */
-	public function getReadOnly()
+	public function getReadOnly(): bool
 	{
-		return $this->_r;
+		return (bool) $this->_r;
 	}
 
 	/**
-	 * @param bool $value whether this list is read-only or not
+	 * @param null|bool|string $value whether this list is read-only or not
 	 */
-	protected function setReadOnly($value)
+	public function setReadOnly($value)
 	{
-		$this->_r = TPropertyValue::ensureBoolean($value);
+		if ($value === null) {
+			return;
+		}
+		if($this->_r === null || Prado::isCallingSelf()) {
+			$this->_r = TPropertyValue::ensureBoolean($value);
+		} else {
+			throw new TInvalidOperationException('list_readonly_set', $this::class);
+		}
+	}
+
+	/**
+	 * This sets the read only property.
+	 */
+	protected function collapseReadOnly(): void
+	{
+		$this->_r = (bool) $this->_r;
 	}
 
 	/**
@@ -92,8 +109,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
 	 */
-	#[\ReturnTypeWillChange]
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		return new \ArrayIterator($this->_d);
 	}
@@ -111,7 +127,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	/**
 	 * @return int the number of items in the list
 	 */
-	public function getCount()
+	public function getCount(): int
 	{
 		return $this->_c;
 	}
@@ -155,6 +171,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 */
 	public function insertAt($index, $item)
 	{
+		$this->collapseReadOnly();
 		if (!$this->_r) {
 			if ($index === $this->_c) {
 				$this->_d[$this->_c++] = $item;
@@ -165,7 +182,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -188,7 +205,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -215,7 +232,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 				throw new TInvalidDataValueException('list_index_invalid', $index);
 			}
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -223,9 +240,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * Removes all items in the list.
 	 * @throws TInvalidOperationException if the list is read-only
 	 */
-	public function clear()
+	public function clear(): void
 	{
-		for ($i = $this->_c - 1;$i >= 0;--$i) {
+		for ($i = $this->_c - 1; $i >= 0; --$i) {
 			$this->removeAt($i);
 		}
 	}
@@ -234,9 +251,9 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed $item the item
 	 * @return bool whether the list contains the item
 	 */
-	public function contains($item)
+	public function contains($item): bool
 	{
-		return $this->indexOf($item) >= 0;
+		return $this->indexOf($item) !== -1;
 	}
 
 	/**
@@ -272,7 +289,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 			return $index;
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
@@ -296,14 +313,14 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 			return $index + 1;
 		} else {
-			throw new TInvalidOperationException('list_readonly', get_class($this));
+			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 	}
 
 	/**
 	 * @return array the list of items in array
 	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return $this->_d;
 	}
@@ -314,7 +331,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed $data the data to be copied from, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
 	 */
-	public function copyFrom($data)
+	public function copyFrom($data): void
 	{
 		if (is_array($data) || ($data instanceof \Traversable)) {
 			if ($this->_c > 0) {
@@ -334,7 +351,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @param mixed $data the data to be merged with, must be an array or object implementing Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
 	 */
-	public function mergeWith($data)
+	public function mergeWith($data): void
 	{
 		if (is_array($data) || ($data instanceof \Traversable)) {
 			foreach ($data as $item) {
@@ -363,8 +380,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * @throws TInvalidDataValueException if the offset is invalid
 	 * @return mixed the item at the offset
 	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return $this->itemAt($offset);
 	}
@@ -393,5 +409,24 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	public function offsetUnset($offset): void
 	{
 		$this->removeAt($offset);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * When there are no items in the list, _d and _c are not stored
+	 * @param array $exprops by reference
+	 * @since 4.2.3
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		if ($this->_c === 0) {
+			$exprops[] = "\0*\0_d";
+			$exprops[] = "\0*\0_c";
+		}
+		if ($this->_r === null) {
+			$exprops[] = "\0" . __CLASS__ . "\0_r";
+		}
 	}
 }

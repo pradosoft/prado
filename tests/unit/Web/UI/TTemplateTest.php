@@ -21,7 +21,7 @@ class TTemplateTest extends PHPUnit\Framework\TestCase
 	
 	protected function getTestClass()
 	{
-		return 'Prado\\Web\\UI\\TTemplate';
+		return \Prado\Web\UI\TTemplate::class;
 	}
 	
 	public function testConstruct()

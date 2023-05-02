@@ -9,7 +9,7 @@ use Prado\Util\Cron\TShellCronLogBehavior;
 class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
 {
 	protected $obj;
-	
+	protected $writer;
 
 	protected function setUp(): void
 	{
@@ -24,7 +24,7 @@ class TShellCronLogBehaviorTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		$this->assertInstanceOf('\\Prado\\Util\\Cron\\TShellCronLogBehavior', $this->obj);
+		$this->assertInstanceOf(TShellCronLogBehavior::class, $this->obj);
 		self::assertNull($this->obj->getOutputWriter());
 		
 		$this->obj = new TShellCronLogBehavior($this->writer);

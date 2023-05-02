@@ -186,7 +186,7 @@ class TActiveRecordHasManyAssociation extends TActiveRecordRelation
 	{
 		$criteria = $this->getCriteria();
 		$finder = $this->getContext()->getForeignRecordFinder();
-		$type = get_class($finder);
+		$type = $finder::class;
 		$command = $this->createCommand($criteria, $foreignKeys, $indexValues, $sourceKeys);
 		$srcProps = array_keys($sourceKeys);
 		$collections = [];

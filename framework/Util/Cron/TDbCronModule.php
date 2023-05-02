@@ -103,7 +103,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 */
 	public function __construct()
 	{
-		$this->_shellClass = 'Prado\\Util\\Cron\\TShellDbCronAction';
+		$this->_shellClass = \Prado\Util\Cron\TShellDbCronAction::class;
 		parent::__construct();
 	}
 	/**
@@ -124,7 +124,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	 */
 	public function fxGetCronTaskInfos($cron, $param)
 	{
-		return new TCronTaskInfo('cronclean', 'Prado\\Util\\Cron\\TDbCronCleanLogTask', $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.'));
+		return new TCronTaskInfo('cronclean', \Prado\Util\Cron\TDbCronCleanLogTask::class, $this->getId(), Prado::localize('DbCron Clean Log Task'), Prado::localize('Clears the database of cron log items before the specified time period.'));
 	}
 
 	/**
@@ -139,7 +139,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			new TPermissionEvent(static::PERM_CRON_LOG_DELETE, 'Cron delete Db log.', ['dyClearCronLog', 'dyRemoveCronLogItem']),
 			new TPermissionEvent(static::PERM_CRON_ADD_TASK, 'Cron add Db Task.', ['dyAddTask']),
 			new TPermissionEvent(static::PERM_CRON_UPDATE_TASK, 'Cron update Db task.', ['dyUpdateTask'], $userIsOwnerAllowedRule),
-			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, 'Cron remove Db task.', ['dyRemoveTask'], $userIsOwnerAllowedRule)
+			new TPermissionEvent(static::PERM_CRON_REMOVE_TASK, 'Cron remove Db task.', ['dyRemoveTask'], $userIsOwnerAllowedRule),
 		], parent::getPermissions($manager));
 	}
 
@@ -192,11 +192,11 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			$this->ensureTable();
 			$this->_taskRows = $this->_tasks = [];
 			$cmd = $this->getDbConnection()->createCommand(
-				"SELECT * FROM {$this->_tableName} WHERE active IS NOT NULL"
+				"SELECT * FROM {$this->_tableName} WHERE active IS NOT NULL ORDER BY tabuid"
 			);
 			$results = $cmd->query();
 
-			Prado::log('Reading DB Cron Configuration', TLogger::NOTICE, 'Prado.Cron.TDbCronModule');
+			Prado::log('Reading DB Cron Configuration', TLogger::NOTICE, TDbCronModule::class);
 			foreach ($results->readAll() as $data) {
 				if ($data['active']) {
 					$task = $this->_tasks[$data['name']] = @unserialize($data['options']);
@@ -669,7 +669,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	{
 		$this->ensureTable();
 		$this->ensureTasks(false);
-		$name = is_subclass_of($untask, 'Prado\Util\Cron\TCronTask') ? $untask->getName() : $untask;
+		$name = is_subclass_of($untask, \Prado\Util\Cron\TCronTask::class) ? $untask->getName() : $untask;
 		if (isset($this->_configTasks[$name])) {
 			return false;
 		}
@@ -812,7 +812,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			} else {
 				$limit = " LIMIT {$pageSize}";
 			}
-			$sortingDesc = $sortingDesc ?? true;
+			$sortingDesc ??= true;
 		}
 		if ($sortingDesc !== null) {
 			$sortingDesc = TPropertyValue::ensureBoolean($sortingDesc) ? "DESC" : "ASC";

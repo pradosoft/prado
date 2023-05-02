@@ -27,4 +27,10 @@ interface ITemplate
 	 * @param \Prado\Web\UI\TControl $parent the parent control
 	 */
 	public function instantiateIn($parent);
+
+	/**
+	 * TTemplateManager calls this method for caching the included file modification times.
+	 * @return array list of included external template files
+	 */
+	public function getIncludedFiles();
 }

@@ -19,6 +19,8 @@ use Prado\Web\THttpRequest;
 use Prado\Web\THttpResponse;
 use Prado\Web\THttpSession;
 use Prado\Util\TLogger;
+use Prado\Web\UI\TTemplateManager;
+use Prado\Web\UI\TThemeManager;
 
 /**
  * TApplication class.
@@ -153,7 +155,7 @@ class TApplication extends \Prado\TComponent
 		'onSaveState',
 		'onSaveStateComplete',
 		'onPreFlushOutput',
-		'flushOutput'
+		'flushOutput',
 	];
 
 	/**
@@ -265,6 +267,14 @@ class TApplication extends \Prado\TComponent
 	 */
 	private $_assetManager;
 	/**
+	 * @var \Prado\Web\UI\TTemplateManager template manager module
+	 */
+	private $_templateManager;
+	/**
+	 * @var \Prado\Web\UI\TThemeManager theme manager module
+	 */
+	private $_themeManager;
+	/**
 	 * @var \Prado\Security\TAuthorizationRuleCollection collection of authorization rules
 	 */
 	private $_authRules;
@@ -330,8 +340,8 @@ class TApplication extends \Prado\TComponent
 	protected function resolvePaths($basePath)
 	{
 		// determine configuration path and file
-		if (empty($basePath) || ($basePath = realpath($basePath)) === false) {
-			throw new TConfigurationException('application_basepath_invalid', $basePath);
+		if (empty($errValue = $basePath) || ($basePath = realpath($basePath)) === false) {
+			throw new TConfigurationException('application_basepath_invalid', $errValue);
 		}
 		if (is_dir($basePath) && is_file($basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName())) {
 			$configFile = $basePath . DIRECTORY_SEPARATOR . $this->getConfigurationFileName();
@@ -382,7 +392,7 @@ class TApplication extends \Prado\TComponent
 					break;
 				}
 				$method = self::$_steps[$this->_step];
-				Prado::trace("Executing $method()", 'Prado\TApplication');
+				Prado::trace("Executing $method()", TApplication::class);
 				$this->$method();
 				$this->_step++;
 			}
@@ -534,7 +544,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function setMode($value)
 	{
-		$this->_mode = TPropertyValue::ensureEnum($value, '\Prado\TApplicationMode');
+		$this->_mode = TPropertyValue::ensureEnum($value, TApplicationMode::class);
 	}
 
 	/**
@@ -706,7 +716,7 @@ class TApplication extends \Prado\TComponent
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
 	 * When null modules are found, load them with {@link getModule}. eg.
 	 * <code>
-	 *	foreach (Prado::getApplication()->getModulesByType('Prado\\Caching\\ICache') as $id => $module) {
+	 *	foreach (Prado::getApplication()->getModulesByType(\Prado\Caching\ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
 	 *		...
 	 *	}
@@ -725,7 +735,7 @@ class TApplication extends \Prado\TComponent
 				if ($strict ? ($moduleClass === $type) : ($moduleClass instanceof $type)) {
 					$m[$id] = null;
 				}
-			} elseif ($module !== null && ($strict ? (get_class($module) === $type) : $module->isa($type))) {
+			} elseif ($module !== null && ($strict ? ($module::class === $type) : $module->isa($type))) {
 				$m[$id] = $module;
 			}
 		}
@@ -864,6 +874,46 @@ class TApplication extends \Prado\TComponent
 	}
 
 	/**
+	 * @return TTemplateManager template manager
+	 */
+	public function getTemplateManager()
+	{
+		if (!$this->_templateManager) {
+			$this->_templateManager = new TTemplateManager();
+			$this->_templateManager->init(null);
+		}
+		return $this->_templateManager;
+	}
+
+	/**
+	 * @param TTemplateManager $value template manager
+	 */
+	public function setTemplateManager(TTemplateManager $value)
+	{
+		$this->_templateManager = $value;
+	}
+
+	/**
+	 * @return TThemeManager theme manager
+	 */
+	public function getThemeManager()
+	{
+		if (!$this->_themeManager) {
+			$this->_themeManager = new TThemeManager();
+			$this->_themeManager->init(null);
+		}
+		return $this->_themeManager;
+	}
+
+	/**
+	 * @param TThemeManager $value theme manager
+	 */
+	public function setThemeManager(TThemeManager $value)
+	{
+		$this->_themeManager = $value;
+	}
+
+	/**
 	 * @return IStatePersister application state persister
 	 */
 	public function getApplicationStatePersister()
@@ -966,19 +1016,19 @@ class TApplication extends \Prado\TComponent
 
 	protected function getApplicationConfigurationClass()
 	{
-		return '\Prado\TApplicationConfiguration';
+		return TApplicationConfiguration::class;
 	}
 
 	protected function internalLoadModule($id, $force = false)
 	{
 		[$moduleClass, $initProperties, $configElement] = $this->_lazyModules[$id];
 		if (isset($initProperties['lazy']) && $initProperties['lazy'] && !$force) {
-			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", '\Prado\TApplication');
+			Prado::trace("Postponed loading of lazy module $id ({$moduleClass})", TApplication::class);
 			$this->setModule($id, null);
 			return null;
 		}
 
-		Prado::trace("Loading module $id ({$moduleClass})", '\Prado\TApplication');
+		Prado::trace("Loading module $id ({$moduleClass})", TApplication::class);
 		$module = Prado::createComponent($moduleClass);
 		foreach ($initProperties as $name => $value) {
 			if ($name === 'lazy') {
@@ -1020,7 +1070,7 @@ class TApplication extends \Prado\TComponent
 		}
 
 		if (empty($this->_services)) {
-			$this->_services = [$this->getPageServiceID() => ['Prado\Web\Services\TPageService', [], null]];
+			$this->_services = [$this->getPageServiceID() => [\Prado\Web\Services\TPageService::class, [], null]];
 		}
 
 		// load parameters
@@ -1030,7 +1080,7 @@ class TApplication extends \Prado\TComponent
 				foreach ($parameter[1] as $name => $value) {
 					$component->setSubProperty($name, $value);
 				}
-				$component->dyInit(null);
+				$component->dyInit($parameter[2]);
 				$this->_parameters->add($id, $component);
 			} else {
 				$this->_parameters->add($id, $parameter);
@@ -1084,7 +1134,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	protected function initApplication()
 	{
-		Prado::trace('Initializing application', 'Prado\TApplication');
+		Prado::trace('Initializing application', TApplication::class);
 
 		if ($this->_configFile !== null) {
 			if ($this->_cacheFile === null || @filemtime($this->_cacheFile) < filemtime($this->_configFile)) {
@@ -1157,7 +1207,7 @@ class TApplication extends \Prado\TComponent
 	 */
 	public function onError($param)
 	{
-		Prado::log($param->getMessage(), TLogger::ERROR, 'Prado\TApplication');
+		Prado::log($param->getMessage(), TLogger::ERROR, TApplication::class);
 		$this->raiseEvent('OnError', $this, $param);
 		$this->getErrorHandler()->handleError($this, $param);
 	}

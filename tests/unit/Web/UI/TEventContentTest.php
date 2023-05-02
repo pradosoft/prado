@@ -22,7 +22,7 @@ class TEventContentTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf('\\Prado\\Web\UI\\TEventContent', $this->obj);
+		self::assertInstanceOf(TEventContent::class, $this->obj);
 	}
 
 	public function testBroadcastEvent()
