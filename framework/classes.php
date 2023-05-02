@@ -284,6 +284,8 @@ return [
 'IDynamicMethods' => 'Prado\Util\IDynamicMethods',
 'IInstanceCheck' => 'Prado\Util\IInstanceCheck',
 'IPluginModule' => 'Prado\Util\IPluginModule',
+'TRational' => 'Prado\Util\Math\TRational',
+'TURational' => 'Prado\Util\Math\TURational',
 'TBaseBehavior' => 'Prado\Util\TBaseBehavior',
 'TBehavior' => 'Prado\Util\TBehavior',
 'TBehaviorsModule' => 'Prado\Util\TBehaviorsModule',
