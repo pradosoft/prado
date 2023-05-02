@@ -515,7 +515,7 @@ class TCache_Lite
 			if ($this->_fileLocking) {
 				@flock($fp, LOCK_EX);
 			}
-            @ftruncate($fp, 0);
+			@ftruncate($fp, 0);
 			if ($this->_readControl) {
 				@fwrite($fp, $this->_hash($data, $this->_readControlType), 32);
 			}
