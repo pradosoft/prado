@@ -37,7 +37,9 @@ use Prado\Util\TBitHelper;
  * The numerater and denominator can be accessed by {@link getNumerator} and {@link
  * getDenominator}, respectively.  These values can be accessed by array as well,
  * where the numerator is mapped to `[0]` and `['numerator']` and the denominator is
- * mapped to `[1]` and `['denominator']`.
+ * mapped to `[1]` and `['denominator']`.  By setting `[]` the value can be set
+ * and numerator and denominator computed..  By getting `[null]` the value may be
+ * retrieved.
  *
  * TRational implements {@link __toString} and outputs a string of `$numerator . '/'
  * . $denominator`, the string format for rationals.  eg.  "13/8".
@@ -294,6 +296,8 @@ class TRational implements \ArrayAccess
 			} elseif ($offset == self::DENOMINATOR) {
 				return $this->getDenominator();
 			}
+		} elseif ($offset === null) {
+			return $this->getValue();
 		}
 		throw new TInvalidDataValueException('rational_bad_offset', $offset);
 	}
@@ -324,6 +328,9 @@ class TRational implements \ArrayAccess
 				$this->setDenominator($value);
 				return;
 			}
+		} elseif ($offset === null) {
+			$this->setValue($value);
+			return;
 		}
 		throw new TInvalidDataValueException('rational_bad_offset', $offset);
 	}

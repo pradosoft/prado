@@ -306,6 +306,9 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(3, $this->obj->offsetGet('numerator'));
 		self::assertEquals(2, $this->obj->offsetGet('denominator'));
 		
+		self::assertEquals(1.5, $this->obj->offsetGet(null));
+		self::assertEquals(1.5, $this->obj[null]);
+		
 		self::expectException(TInvalidDataValueException::class);
 		self::assertFalse($this->obj->offsetGet(2));
 	}
@@ -323,6 +326,10 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 		
 		$this->obj[0] = 13;
 		self::assertEquals(13, $this->obj->getNumerator());
+		
+		$this->obj[] = 1.5;
+		self::assertEquals(3, $this->obj->getNumerator());
+		self::assertEquals(2, $this->obj->getDenominator());
 		
 		self::expectException(TInvalidDataValueException::class);
 		self::assertFalse($this->obj->offsetSet(2, 8));
