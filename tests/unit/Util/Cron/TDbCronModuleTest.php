@@ -240,7 +240,7 @@ class TDbCronModuleTest extends TCronModuleTest
 		
 		self::assertEquals(5, $this->obj->getCronLogCount());
 		
-		$log = $this->obj->getCronLog(null, false, false, true);
+		$log = $this->obj->getCronLog(null, false, false, false);
 		self::assertEquals(5, count($log));
 		
 		self::assertEquals('testTaskAA', $log[0]['name']);
