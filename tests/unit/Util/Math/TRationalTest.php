@@ -229,30 +229,6 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(INF, $this->obj->getValue());
 	}
 	
-	public function testInvoke()
-	{
-		$obj = $this->obj;
-		$obj(1.5);
-		self::assertEquals(1.5, $obj());
-			
-		$phi = (1.0 + sqrt(5)) / 2.0; // The "most irrational" number.  1.61803399....
-		$obj($phi);
-		self::assertEquals(987, $this->obj->getNumerator());
-		self::assertEquals(610, $this->obj->getDenominator());
-		self::assertEquals(1.618032786885246, $obj());
-				
-		$obj($phi, 0);
-		self::assertEquals(165580141, $this->obj->getNumerator());
-		self::assertEquals(102334155, $this->obj->getDenominator());
-		self::assertEquals(1.618033988749895, $obj());
-		
-		$obj(NAN);
-		self::assertTrue(is_nan($obj()));
-		
-		$obj(INF);
-		self::assertTrue(is_infinite($obj()));
-	}
-	
 	public function testToString()
 	{
 		$this->obj->setValue(1.5);

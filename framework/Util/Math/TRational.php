@@ -30,19 +30,30 @@ use Prado\Util\TBitHelper;
  * INF is "-1/0" and NAN (Not A Number) has the denominator equal zero (to avoid a
  * divide by zero error).
  *
- * TRational is {@link __invoke invokable} to get and set the value. By invoking
- * a TRational with a parameter, the value is set.  By invoking a TRational without
- * a parameter the value is retrieved.
- *
- * The numerater and denominator can be accessed by {@link getNumerator} and {@link
+ * The numerator and denominator can be accessed by {@link getNumerator} and {@link
  * getDenominator}, respectively.  These values can be accessed by array as well,
  * where the numerator is mapped to `[0]` and `['numerator']` and the denominator is
  * mapped to `[1]` and `['denominator']`.  By setting `[]` the value can be set
- * and numerator and denominator computed..  By getting `[null]` the value may be
- * retrieved.
+ * and numerator and denominator computed.  By getting `[null]` the value may be
+ * retrieved.  Setting the value with a specific tolerance requires {@link setValue}.
  *
  * TRational implements {@link __toString} and outputs a string of `$numerator . '/'
  * . $denominator`, the string format for rationals.  eg.  "13/8".
+ * <code>
+ *		$rational = new TRational(1.618033988749895);
+ *		$value = $rational->getValue();
+ *		$value = $rational[null];
+ *		$numerator = $rational->getNumerator();
+ *		$numerator = $rational[0];
+ *		$denominator = $rational->getDenominator();
+ *		$denominator = $rational[1];
+ *		$rational[] = 1.5;
+ *		$rational[0] === 3;
+ *		$rational[1] === 2;
+ *		$rational[null] = '21/13';
+ *		$rational[0] === 21;
+ *		$rational[1] === 13;
+ * </code>
  *
  * The Rational data format is used by EXIF and, in particular, the GPS Image File
  * Directory of EXIF.
@@ -213,26 +224,6 @@ class TRational implements \ArrayAccess
 			[$this->_numerator, $this->_denominator] = self::float2rational((float) $value, $tolerance, $unsigned);
 		}
 		return $this;
-	}
-
-	/**
-	 * This gets and sets the value of the Rational.  When a parameter is supplied, the
-	 * value is set.  Without the parameter, this method returns the value.
-	 * @param null|mixed $value The Value to set the Rational.  Default null for getting
-	 *   the rational value.
-	 * @param ?float $tolerance The tolerance to compute the numerator and denominator
-	 *   from the $value. Default null for "1.e-6".
-	 * @return float|TRational Returns the Value without a parameter and returns $this
-	 *   when setting with a parameter.
-	 */
-	public function __invoke($value = null, ?float $tolerance = null)
-	{
-		if ($value !== null) {
-			$this->setValue($value, $tolerance);
-			return $this;
-		} else {
-			return $this->getValue();
-		}
 	}
 
 	/**
