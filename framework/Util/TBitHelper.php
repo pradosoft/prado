@@ -64,6 +64,21 @@ use Prado\Exceptions\TInvalidDataValueException;
  */
 class TBitHelper
 {
+	// Defined constants for 32 bit computation
+	public const PHP_INT32_MIN = -2147483648;	// 0x80000000
+	public const PHP_INT32_MAX = 2147483647;	// 0x7FFFFFFF
+	// on 32 bit systems the PHP_INT64_UMAX is a float and not a integer.
+	public const PHP_INT32_UMAX = 4294967295;	// 0xFFFFFFFF (unsigned)
+	public const PHP_INT32_MASK = (PHP_INT_SIZE > 4) ? self::PHP_INT32_UMAX : -1;
+
+	// Defined constants for 64 bit computation
+	//   on 32 bit systems these values are only approximate floats and not integers.
+	public const PHP_INT64_MIN = -9223372036854775808;	// 0x80000000_00000000
+	public const PHP_INT64_MAX = 9223372036854775807;	// 0x7FFFFFFF_FFFFFFFF
+	//PHP_INT64_UMAX is a float that only approximates the maximum, unless using 16 byte int
+	public const PHP_INT64_UMAX = 18446744073709551615;	// 0xFFFFFFFF_FFFFFFFF (unsigned)
+	public const PHP_INT64_MASK = -1; // Assuming 64 bit is validated.
+
 	public const Level1 = (PHP_INT_SIZE >= 8) ? 0x5555555555555555 : 0x55555555;
 	public const NLevel1 = ~self::Level1;
 	public const Mask1 = (PHP_INT_SIZE >= 8) ? 0x7FFFFFFFFFFFFFFF : 0x7FFFFFFF;
