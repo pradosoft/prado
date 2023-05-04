@@ -265,6 +265,7 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 	public function testOffsetExists()
 	{
 		self::assertFalse($this->obj->offsetExists(-1));
+		self::assertTrue($this->obj->offsetExists(null));
 		self::assertTrue($this->obj->offsetExists(0));
 		self::assertTrue($this->obj->offsetExists(1));
 		self::assertFalse($this->obj->offsetExists(2));
@@ -316,7 +317,7 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 		$this->obj->setValue([3, 2]);
 		self::assertEquals(3, $this->obj->getNumerator(), "Numerator was not initialized properly");
 		self::assertEquals(2, $this->obj->getDenominator(), "Denominator was not initialized properly");
-			
+		
 		$this->obj->offsetUnset(0);
 		self::assertEquals(0, $this->obj->getNumerator());
 		$this->obj->offsetUnset(1);
@@ -324,6 +325,12 @@ class TRationalTest extends PHPUnit\Framework\TestCase
 			
 		$this->obj->setValue([3, 2]);
 		$this->obj->offsetUnset('numerator');
+		self::assertEquals(0, $this->obj->getNumerator());
+		$this->obj->offsetUnset('denominator');
+		self::assertEquals(1, $this->obj->getDenominator());
+		
+		$this->obj->setValue([3, 2]);
+		$this->obj->offsetUnset(null);
 		self::assertEquals(0, $this->obj->getNumerator());
 		$this->obj->offsetUnset('denominator');
 		self::assertEquals(1, $this->obj->getDenominator());

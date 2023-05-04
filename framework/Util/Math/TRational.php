@@ -259,7 +259,7 @@ class TRational implements \ArrayAccess
 	 */
 	public function offsetExists(mixed $offset): bool
 	{
-		if (is_numeric($offset) && ($offset == 0 || $offset == 1) || is_string($offset) && ($offset === self::NUMERATOR || $offset === self::DENOMINATOR)) {
+		if ($offset === null || is_numeric($offset) && ($offset == 0 || $offset == 1) || is_string($offset) && ($offset === self::NUMERATOR || $offset === self::DENOMINATOR)) {
 			return true;
 		}
 		return false;
@@ -352,6 +352,10 @@ class TRational implements \ArrayAccess
 				$this->setDenominator(1);
 				return;
 			}
+		} elseif ($offset === null) {
+			$this->setNumerator(0);
+			$this->setDenominator(1);
+			return;
 		}
 		throw new TInvalidDataValueException('rational_bad_offset', $offset);
 	}
