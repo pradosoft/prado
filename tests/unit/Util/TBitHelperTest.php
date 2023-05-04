@@ -151,7 +151,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0x8000, TBitHelper::floatToFp16(-0.0), "TBitHelper::floatToFp16 0x8000 is not converting negative zero");
 		self::assertEquals(0xC000, TBitHelper::floatToFp16(-2), "TBitHelper::floatToFp16 0xC000 is not converting negative two");
 		self::assertEquals(0xFC00, TBitHelper::floatToFp16(-INF), "TBitHelper::floatToFp16 0xFC00 is not converting negative infinity");
-		self::assertEquals(0x7FFF, TBitHelper::floatToFp16(NAN), "TBitHelper::floatToFp16 0xFC01 is not converting Not-A-Number (NaN).");
+		self::assertEquals(0x7E00, TBitHelper::floatToFp16(NAN), "TBitHelper::floatToFp16 0xFC01 is not converting Not-A-Number (NaN).");
 	}
 	
 	public function testFloatToBf16()
@@ -170,7 +170,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0x8000, TBitHelper::floatToBf16(-0.0), "TBitHelper::floatToBf16 0x8000 is not converting negative zero");
 		self::assertEquals(0xC000, TBitHelper::floatToBf16(-2), "TBitHelper::floatToBf16 0xC000 is not converting negative two");
 		self::assertEquals(0xFF80, TBitHelper::floatToBf16(-INF), "TBitHelper::floatToBf16 0xFC00 is not converting negative infinity");
-		self::assertEquals(0x7FFF, TBitHelper::floatToBf16(NAN), "TBitHelper::floatToBf16 0xFC01 is not converting Not-A-Number (NaN).");
+		self::assertEquals(0x7FC0, TBitHelper::floatToBf16(NAN), "TBitHelper::floatToBf16 0xFC01 is not converting Not-A-Number (NaN).");
 	}
 	
 	public function testFloatTFp8Range()
@@ -189,7 +189,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0x80, TBitHelper::floatToFp8Range(-0.0), "TBitHelper::floatToFp8Range 0x80 is not converting negative zero");
 		self::assertEquals(0xC0, TBitHelper::floatToFp8Range(-2), "TBitHelper::floatToFp8Range 0xC0 is not converting negative two");
 		self::assertEquals(0xFC, TBitHelper::floatToFp8Range(-INF), "TBitHelper::floatToFp8Range 0xFC is not converting negative infinity");
-		self::assertEquals(0x7F, TBitHelper::floatToFp8Range(NAN), "TBitHelper::floatToFp8Range 0x7F is not converting Not-A-Number (NaN).");
+		self::assertEquals(0x7E, TBitHelper::floatToFp8Range(NAN), "TBitHelper::floatToFp8Range 0x7F is not converting Not-A-Number (NaN).");
 	}
 	
 	public function testFloatToFp8Precision()
@@ -208,7 +208,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(0x80, TBitHelper::floatToFp8Precision(-0.0), "TBitHelper::floatToFp8Precision 0x80 is not converting negative zero");
 		self::assertEquals(0xC0, TBitHelper::floatToFp8Precision(-2), "TBitHelper::floatToFp8Precision 0xC0 is not converting negative two");
 		self::assertEquals(0xF8, TBitHelper::floatToFp8Precision(-INF), "TBitHelper::floatToFp8Precision 0xF8 is not converting negative infinity");
-		self::assertEquals(0x7F, TBitHelper::floatToFp8Precision(NAN), "TBitHelper::floatToFp8Precision 0x7F is not converting Not-A-Number (NaN).");
+		self::assertEquals(0x7C, TBitHelper::floatToFp8Precision(NAN), "TBitHelper::floatToFp8Precision 0x7F is not converting Not-A-Number (NaN).");
 	}
 	
 	// Convert half and mini bit (float) representations to PHP Float
@@ -228,7 +228,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(-2, TBitHelper::fp16ToFloat(0xC000), "TBitHelper::fp16ToFloat 0xC000 is not converting negative two");
 		self::assertEquals(-INF, TBitHelper::fp16ToFloat(0xFC00), "TBitHelper::fp16ToFloat 0xFC00 is not converting negative infinity");
 		self::assertTrue(is_nan(TBitHelper::fp16ToFloat(0xFC01)), "TBitHelper::fp16ToFloat 0xFC01 is not converting Not-A-Number (NaN)");
-		self::assertTrue(is_nan(TBitHelper::fp16ToFloat(0x7FFF)), "TBitHelper::fp16ToFloat 0x7FFFis not converting Not-A-Number (NaN)");
+		self::assertTrue(is_nan(TBitHelper::fp16ToFloat(0x7E00)), "TBitHelper::fp16ToFloat 0x7FFFis not converting Not-A-Number (NaN)");
 	}
 	
 	public function testBf16ToFloat()
@@ -246,7 +246,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(TBitHelper::isNegativeZero(TBitHelper::bf16ToFloat(0x8000)), "TBitHelper::bf16ToFloat 0x8000 is not converting negative zero");
 		self::assertEquals(-2, TBitHelper::bf16ToFloat(0xC000), "TBitHelper::bf16ToFloat 0xC000 is not converting negative two");
 		self::assertEquals(-INF, TBitHelper::bf16ToFloat(0xFF80), "TBitHelper::bf16ToFloat 0xFF80 is not converting negative infinity");
-		self::assertTrue(is_nan(TBitHelper::bf16ToFloat(0xFF81)), "TBitHelper::bf16ToFloat 0xFF81 is not converting Not-A-Number (NaN)");
+		self::assertTrue(is_nan(TBitHelper::bf16ToFloat(0x7FC0)), "TBitHelper::bf16ToFloat 0xFF81 is not converting Not-A-Number (NaN)");
 	}
 	
 	public function testFp8RangeToFloat()
@@ -264,7 +264,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(TBitHelper::isNegativeZero(TBitHelper::fp8RangeToFloat(0x80)), "TBitHelper::fp8RangeToFloat 0x80 is not converting negative zero");
 		self::assertEquals(-2, TBitHelper::fp8RangeToFloat(0xC0), "TBitHelper::fp8RangeToFloat 0xC0 is not converting negative two");
 		self::assertEquals(-INF, TBitHelper::fp8RangeToFloat(0xFC), "TBitHelper::fp8RangeToFloat 0xFC is not converting negative infinity");
-		self::assertTrue(is_nan(TBitHelper::fp8RangeToFloat(0x7F)), "TBitHelper::fp8RangeToFloat 0x7F is not converting Not-A-Number (NaN)");
+		self::assertTrue(is_nan(TBitHelper::fp8RangeToFloat(0x7E)), "TBitHelper::fp8RangeToFloat 0x7F is not converting Not-A-Number (NaN)");
 	}
 	
 	public function testFp8PrecisionToFloat()
@@ -282,7 +282,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(TBitHelper::isNegativeZero(TBitHelper::fp8PrecisionToFloat(0x80)), "TBitHelper::fp8PrecisionToFloat 0x80 is not converting negative zero");
 		self::assertEquals(-2, TBitHelper::fp8PrecisionToFloat(0xC0), "TBitHelper::fp8PrecisionToFloat 0xC0 is not converting negative two");
 		self::assertEquals(-INF, TBitHelper::fp8PrecisionToFloat(0xF8), "TBitHelper::fp8PrecisionToFloat 0xF8 is not converting negative infinity");
-		self::assertTrue(is_nan(TBitHelper::fp8PrecisionToFloat(0x7F)), "TBitHelper::fp8PrecisionToFloat 0x7F is not converting Not-A-Number (NaN)");
+		self::assertTrue(is_nan(TBitHelper::fp8PrecisionToFloat(0x7C)), "TBitHelper::fp8PrecisionToFloat 0x7F is not converting Not-A-Number (NaN)");
 	}
 	
 	

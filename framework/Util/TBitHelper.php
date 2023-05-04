@@ -177,7 +177,7 @@ class TBitHelper
 
 		if ($IEEEConformance && is_nan($value)) {
 			$exponent = $exponentMaxValue;
-			$mantissa = ~(-1 << $mantissaBits);
+			$mantissa = 1 << ($mantissaBits - 1);
 		} elseif ($IEEEConformance && (is_infinite($value) || $value >= pow(2, ($exponentMaxValue - 1) - $exponentBias) * (1 << $mantissaBits))) {
 			$exponent = $exponentMaxValue;
 		} elseif ($value == 0) {
