@@ -815,8 +815,8 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 			$sortingDesc ??= true;
 		}
 		if ($sortingDesc !== null) {
-			$sortingDesc = TPropertyValue::ensureBoolean($sortingDesc) ? "DESC" : "ASC";
-			$orderby = " ORDER BY lastExecTime $sortingDesc, processCount $sortingDesc";
+			$sortingDesc = TPropertyValue::ensureBoolean($sortingDesc) ? 'DESC' : 'ASC';
+			$orderby = " ORDER BY lastExecTime $sortingDesc, tabuid $sortingDesc, processCount $sortingDesc";
 		}
 		$cmd = $db->createCommand(
 			"SELECT * FROM {$this->_tableName} WHERE {$where}active IS NULL{$orderby}{$limit}"
