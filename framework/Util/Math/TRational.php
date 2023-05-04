@@ -376,7 +376,7 @@ class TRational implements \ArrayAccess
 		if (is_nan($value)) {
 			return [0, 0];
 		}
-		if ($value === 0.0 || ($unsigned && $value < 0.5 / TBitHelper::PHP_INT32_UMAX) || (!$unsigned && abs($value) < 0.5 / TBitHelper::PHP_INT32_MAX)) {
+		if (($unsigned && $value < 0.5 / TBitHelper::PHP_INT32_UMAX) || (!$unsigned && abs($value) < 0.5 / TBitHelper::PHP_INT32_MAX)) {
 			return [0, 1];
 		}
 		if ($unsigned) {
