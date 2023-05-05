@@ -1429,10 +1429,10 @@ class TComponent
 						$response = call_user_func($handler, $sender, $param, $name);
 					}
 				} elseif (is_callable($handler, true)) {
-					[$object, $method] = $handler;
-					if (is_string($object)) {
+					if (is_object($handler) || is_string($handler[0])) {
 						$response = call_user_func($handler, $sender, $param, $name);
 					} else {
+						[$object, $method] = $handler;
 						if (($pos = strrpos($method, '.')) !== false) {
 							$object = $object->getSubProperty(substr($method, 0, $pos));
 							$method = substr($method, $pos + 1);

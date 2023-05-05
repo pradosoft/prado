@@ -2475,6 +2475,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	public function testRaiseEvent()
 	{
 		$component = new NewComponent();
+		
+		// object method callable
 		$component->attachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
 		$this->assertFalse($this->component->isEventHandled());
 		$this->assertFalse($this->component->Object->isEventHandled());
@@ -2486,7 +2488,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->component->Object->resetEventHandled();
 		$component->detachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
 		
-		
+		// object sub-property method
 		$component->attachEventHandler('OnMyEvent', [$this->component, 'Object.myEventHandler']);
 		$this->assertFalse($this->component->isEventHandled());
 		$this->assertFalse($this->component->Object->isEventHandled());
@@ -2495,6 +2497,21 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->component->Object->isEventHandled());
 		
 		$component->detachEventHandler('OnMyEvent', [$this->component, 'myEventHandler']);
+		$this->component->resetEventHandled();
+		$this->component->Object->resetEventHandled();
+		
+		// closure
+		$raised = false;
+		$eventCount = $component->OnMyEvent->count();
+		$component->attachEventHandler('OnMyEvent', $closure = function () use (&$raised) {
+			$raised = true;
+		});
+		$this->assertEquals($eventCount + 1, $component->OnMyEvent->count());
+		$component->raiseEvent('OnMyEvent', $this, null);
+		$this->assertTrue($raised);
+		
+		$component->detachEventHandler('OnMyEvent', $closure);
+		$this->assertEquals($eventCount, $component->OnMyEvent->count());
 		$this->component->resetEventHandled();
 		$this->component->Object->resetEventHandled();
 
