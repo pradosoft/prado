@@ -9,6 +9,7 @@
 
 namespace Prado\Web\UI;
 
+use Prado\TEventParameter;
 use Prado\TPropertyValue;
 
 /**
@@ -32,7 +33,7 @@ class TEventContent extends TCompositeControl
 	public function createChildControls()
 	{
 		if ($event = $this->getBroadcastEvent()) {
-			$this->raiseEvent($event, $this, $this->getControls());
+			$this->raiseEvent($event, $this, new TEventParameter($this->getControls()));
 		}
 	}
 

@@ -6,6 +6,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TPhpErrorException;
 use Prado\TComponent;
+use Prado\TEventHandler;
 
 class TWeakCallableCollectionUnit extends TWeakCallableCollection
 {
@@ -193,7 +194,8 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 	public function testVariousCallable_TWCC()
 	{
 		$list = new $this->_baseClass();
-		$component = new TComponent;
+		$component = new TComponent();
+		$object = new CallableListItem();
 		
 		//Test for that only callables can be inserted into the collection
 		$item1 = $list[] = 'foo';
@@ -202,13 +204,18 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$item4 = $list[] = CallableListItem::class . '::staticHandler';
 		$item5 = $list[] = [CallableListItemChild::class,'staticHandler'];
 		$item6 = $list[] = $this->item2;
-		$item7 = $list[] = function($n) { return $n + $n; };
+		$item7 = $list[] = function($n) { return $n + $n; };  //Test retaining of Closure
 		self::assertNotEquals(6, count($list), "Closure is wrongly being WeakReferenced.");
-		self::assertEquals(7, count($list));
-		self::assertEquals(3, $list->getWeakCount(), "Weak Callable Objects not added to the WeakMap");
+		$list[] = new TEventHandler($handler = [$object, 'eventHandler'], 3); // Test Retaining of IWeakRetainable
+		self::assertNotEquals(7, count($list), "TEventHandler/IWeakRetainable is wrongly being WeakReferenced.");
+		$item8 = $list[7];
+		$list[] = $item9 = new TEventHandler($item8);
+		self::assertEquals(9, count($list));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item2));
 		self::assertEquals(1, $list->getWeakObjectCount($item7));
+		self::assertEquals(2, $list->getWeakObjectCount($object));
+		self::assertEquals(4, $list->getWeakCount(), "Weak Callable Objects adding too many to the WeakMap");
 		
 		// Check callables that have proper syntax but error because they aren't referencing
 		//   Valid callables/objects/methods.
@@ -239,7 +246,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		} catch(TInvalidDataValueException $e){}
 		
 		//There should still only be 6 items in the list
-		self::assertEquals(7, count($list));
+		self::assertEquals(9, count($list));
 		
 		$p = $list->toPriorityArrayWeak();
 		
@@ -257,6 +264,8 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		//$this->assertEquals($p[$priority][4], ['CallableListItemChild','parent::staticHandler']);
 		$this->assertEquals($this->item2, $p[$priority][5]->get());
 		$this->assertEquals($item7, $p[$priority][6]);
+		$this->assertEquals($item8, $p[$priority][7]);
+		$this->assertEquals($item9, $p[$priority][8]);
 	}
 	
 	public function testConstructTWCC()
@@ -267,6 +276,9 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 	
 	public function testScrubInvalidWeakReference_TWCC()
 	{
+		$object1 = new CallableListItem();
+		$object2 = new CallableListItem();
+		
 		$list = new $this->_baseClass();
 		$list->add([$this->item4, 'eventHandler'], 20);
 		$list->add($this->item1, 5);
@@ -274,12 +286,23 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->add($this->item2, 10);
 		$list->add($closure = function ($n) { return $n + $n; });
 		self::assertEquals(5, $list->getWeakCount());
+		
+		$item1 = $list[] = new TEventHandler($handler1 = [$object1, 'eventHandler'], 3);
+		$item2 = $list[] = new TEventHandler($handler2 = [$object2, 'eventHandler'], 4); 
+		$item3 = $list[] = new TEventHandler($item2, 5);  // Scrub nested TEventHandler.
+		
+		self::assertEquals(8, $list->getCount());
+		self::assertEquals(7, $list->getWeakCount());
+			
 		$this->item2 = null;
 		$this->item3 = null;
-		self::assertEquals(3, $list->getWeakCount());
-		self::assertEquals(3, $list->getCount());
-		self::assertEquals([$this->item1, $closure, [$this->item4, 'eventHandler']], $list->toArray());
+		$handler2 = $object2 = null;
+		
+		self::assertEquals(4, $list->getWeakCount());
+		self::assertEquals(4, $list->getCount());
+		self::assertEquals([$this->item1, $closure, $item1, [$this->item4, 'eventHandler']], $list->toArray());
 		self::assertEquals(5, $list->priorityOf($this->item1));
+		self::assertEquals(10, $list->priorityOf($item1));
 		self::assertEquals(10, $list->priorityOf($closure));
 		self::assertEquals(20, $list->priorityOf([$this->item4, 'eventHandler']));
 		self::assertEquals(false, $list->priorityOf($this->item2));
@@ -287,19 +310,29 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		
 		$this->item2 = new $this->_baseItemClass(2);
 		$this->item3 = new $this->_baseItemClass(3);
+		$object2 = new CallableListItem();
+		$item2 = new TEventHandler($handler2 = [$object2, 'eventHandler'], 4); 
+		$item3 = new TEventHandler($item2, 5);  // Scrub nested TEventHandler.
 		
-		$list = new $this->_baseClass([$this->item1, $this->pitem2, $this->pitem3, $this->item4], true);
+		$list = new $this->_baseClass([$this->item1, $this->pitem2, $this->pitem3, $this->item4, $item1, $item3], true);
 		$this->pitem2 = null;
 		$this->pitem3 = null;
-		self::assertEquals(4, $list->getCount(), "Read only list incorrectly scrubbed.");
+		$handler1 = $object1 = null;
+		$handler2 = $object2 = null;
+		self::assertEquals(6, $list->getCount(), "Read only list incorrectly scrubbed.");
 		self::assertEquals($this->item1, $list[0]);
-		self::assertTrue($list[1] === null);
-		self::assertTrue($list[2] === null);
+		self::assertNull($list[1]);
+		self::assertNull($list[2]);
 		self::assertEquals($this->item4, $list[3]);
+		self::assertNull($list[4]); // TEventHandler is removed if the callable is invalidated.
+		self::assertNull($list[5]); // Nested TEventHandler is removed if the callable is invalidated.
 	}
 	
 	public function testDiscardInvalid_TWCC()
 	{
+		$object1 = new CallableListItem();
+		$object2 = new CallableListItem();
+		
 		$list = new $this->_baseClass();
 		self::assertEquals(0, $list->getWeakCount());
 		$list->resetDiscardInvalid(false);
@@ -310,31 +343,40 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->add([$this->item4, 'eventHandler'], 20);
 		$list->add([$this->item3, 'eventHandler'], 15);
 		$list->add($closure = function ($n) {return $n + $n;});
+		$eventHandler1 = new TEventHandler($handler1 = [$object1, 'eventHandler'], 3); // Test Retaining of IWeakRetainable
+		$eventHandler2 = new TEventHandler($handler2 = [$object2, 'eventHandler'], 4); // Test Retaining of IWeakRetainable
+		$list->add($eventHandler1);
+		$list->add($eventHandler2);
 		
 		$this->item2 = null;
 		$this->item3 = null;
+		$handler2 = $object2 = null;
 		
-		self::assertEquals(5, $list->getCount());
+		self::assertEquals(7, $list->getCount());
 		self::assertEquals($this->item1, $list[0]);
-		self::assertTrue($list[1] === null);
+		self::assertNull($list[1]);
 		self::assertEquals($closure, $list[2]);
-		self::assertTrue($list[3] === null);
-		self::assertEquals([$this->item4, 'eventHandler'], $list[4]);
+		self::assertEquals($eventHandler1, $list[3]);
+		self::assertNull($list[4]);
+		self::assertNull($list[5]);
+		self::assertEquals([$this->item4, 'eventHandler'], $list[6]);
 		
 		$list->setScrubError(true);
 		$list->resetDiscardInvalid(true);
 		$list->setScrubError(false);
 		
 		self::assertTrue($list->getDiscardInvalid());
-		self::assertEquals(3, $list->getWeakCount());
+		self::assertEquals(4, $list->getWeakCount());
 		self::assertEquals(1, $list->getWeakObjectCount($closure));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item4));
+		self::assertEquals(1, $list->getWeakObjectCount($object1));
 		
-		self::assertEquals(3, $list->getCount());
+		self::assertEquals(4, $list->getCount());
 		self::assertEquals($this->item1, $list[0]);
 		self::assertEquals($closure, $list[1]);
-		self::assertEquals([$this->item4, 'eventHandler'], $list[2]);
+		self::assertEquals($eventHandler1, $list[2]);
+		self::assertEquals([$this->item4, 'eventHandler'], $list[3]);
 		
 		$list = new $this->_baseClass();
 		$list->setDiscardInvalid(true);
@@ -638,6 +680,17 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals(1, $list->getWeakCount());
 	}
 	
+	public function testInsert_RemoveAtIndexInPriority_TEventHandler_TWCC() 
+	{
+		$list = new $this->_baseClass();
+		$list->insertAtIndexInPriority($refHandler = new TEventHandler($this->item1), 0, 5);
+		self::assertEquals(1, $list->getWeakCount());
+		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
+		self::assertEquals($refHandler, $list->removeAtIndexInPriority(0, 5));
+		self::assertEquals(0, $list->getWeakCount());
+		self::assertEquals(0, $list->getWeakObjectCount($this->item1));
+	}
+	
 	public function testClear_TWCC()
 	{
 		$list = new $this->_baseClass();
@@ -666,7 +719,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$this->item2 = null;
 		$this->item3 = null;
 		
-		$list->setScrubError(true);
+		$list->setScrubError(1);
 		self::assertTrue($list->contains($this->item1));
 		$list->setScrubError(false);
 		
@@ -677,6 +730,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->toArray();
 		
 		$list->_containWithout_fd = 0;
+		$list->_containWith_fd = 0;
 		self::assertTrue($list->contains($this->item1));
 		self::assertEquals(0, $list->_containWithout_fd);
 		self::assertEquals(1, $list->_containWith_fd);
@@ -701,6 +755,48 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertEquals(0, $list->indexOf($this->item1));
 	}
 	
+	public function testIndexOf_TEventHandler_TWCC()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$this->item1, 'eventHandler'];
+		$handler2 = [$this->item2, 'eventHandler'];
+		$handler3 = [$this->item3, 'eventHandler'];
+		$handler4 = [$this->item4, 'eventHandler'];
+		
+		$eventHandler5 = new TEventHandler($handler4, 55);
+		
+		$handler6 = [$object6 = new CallableListItem(), 'eventHandler'];
+		$eventHandler6 = new TEventHandler($handler6, 14);
+		$eventHandler7 = new TEventHandler($eventHandler6, 15);
+		$eventHandler8 = new TEventHandler($eventHandler7, 16);
+		
+		$this->list[] = $handler1;
+		$this->list[] = $handler2;
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		$this->list[] = $eventHandler3 = new TEventHandler($handler3, 21);
+		$this->list[] = $eventHandler4 = new TEventHandler($handler4, 34);
+		$this->list[] = $eventHandler8;
+		$this->list[] = $handler4;
+		
+		self::assertEquals(0, $this->list->indexOf($handler1));
+		self::assertEquals(1, $this->list->indexOf($handler2));
+		self::assertEquals(3, $this->list->indexOf($handler3), "Handler, not directly in the list, but in TEventHandler should be found");
+		self::assertEquals(6, $this->list->indexOf($handler4), "Raw Handler takes precedence over being found in TEventHandler");
+		self::assertEquals(5, $this->list->indexOf($handler6), "Nested TEventHandler didn't match the callable.");
+		
+		self::assertEquals(2, $this->list->indexOf($eventHandler1));
+		self::assertEquals(3, $this->list->indexOf($eventHandler3));
+		self::assertEquals(4, $this->list->indexOf($eventHandler4));
+		
+		self::assertEquals(5, $this->list->indexOf($eventHandler6));
+		self::assertEquals(5, $this->list->indexOf($eventHandler7));
+		self::assertEquals(5, $this->list->indexOf($eventHandler8));
+		
+		self::assertEquals(-1, $this->list->indexOf($eventHandler5));
+	}
+	
+	
 	public function testPriorityOf_TWCC()
 	{
 		$list = new $this->_baseClass();
@@ -722,6 +818,48 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->setScrubError(false);
 		
 		self::assertEquals(5, $list->priorityOf($this->item1));
+	}
+	
+	public function testPriorityOf_TEventHandler_TWCC()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$this->item1, 'eventHandler'];
+		$handler2 = [$this->item2, 'eventHandler'];
+		$handler3 = [$this->item3, 'eventHandler'];
+		$handler4 = [$this->item4, 'eventHandler'];
+		
+		$eventHandler5 = new TEventHandler($handler4, 55);
+		
+		$handler6 = [$object6 = new CallableListItem(), 'eventHandler'];
+		$eventHandler6 = new TEventHandler($handler6, 14);
+		$eventHandler7 = new TEventHandler($eventHandler6, 15);
+		$eventHandler8 = new TEventHandler($eventHandler7, 16);
+		
+		$this->list->add($handler1, 1);
+		$this->list->add($handler2, 2);
+		$this->list->add($eventHandler1 = new TEventHandler($handler1, 13), 3);
+		$this->list->add($eventHandler3 = new TEventHandler($handler3, 21), 5);
+		$this->list->add($eventHandler4 = new TEventHandler($handler4, 34), 8);
+		$this->list->add($eventHandler8, 11);
+		$this->list->add($handler4, 13);
+		$eventHandler5 = new TEventHandler($handler4, 55);
+		
+		self::assertEquals(1, $this->list->priorityOf($handler1));
+		self::assertEquals(2, $this->list->priorityOf($handler2));
+		self::assertEquals(5, $this->list->priorityOf($handler3), "Handler, not directly in the list, but in TEventHandler should be found");
+		self::assertEquals(13, $this->list->priorityOf($handler4), "Raw Handler takes precedence over being found in TEventHandler");
+		self::assertEquals(11, $this->list->priorityOf($handler6), "Nested TEventHandler didn't match the callable.");
+		
+		self::assertEquals(3, $this->list->priorityOf($eventHandler1));
+		self::assertEquals(5, $this->list->priorityOf($eventHandler3));
+		self::assertEquals(8, $this->list->priorityOf($eventHandler4));
+		
+		self::assertEquals(11, $this->list->priorityOf($eventHandler6));
+		self::assertEquals(11, $this->list->priorityOf($eventHandler7));
+		self::assertEquals(11, $this->list->priorityOf($eventHandler8));
+		
+		self::assertEquals(-1, $this->list->indexOf($eventHandler5));
 	}
 	
 	

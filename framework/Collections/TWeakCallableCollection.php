@@ -13,6 +13,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\TEventHandler;
 use Prado\TPropertyValue;
 
 use Closure;
@@ -29,6 +30,17 @@ use WeakReference;
  * otherwise block object destruction, and thus removal of the callable in __destruct.
  * All data out has the callable objects converted back to the regular object reference
  * in a callable.
+ *
+ * Closure and {@link IWeakRetainable} are not converted into WeakReference as they
+ * may be the only instance in the application.  This increments their PHP use counter
+ * resulting in them being retained.
+ *
+ * When searching by a {@link TEventHandler} object, it will only find itself and
+ * will not match on its {@link TEventHandler::getHandler}.  However, if searching
+ * for a callable handler, it will first match direct callable handlers in the list,
+ * and then search for matching TEventHandlers' Handler regardless of the data.
+ * Put another way, searching for callable handlers will find TEventHandlers that
+ * use the handler.
  *
  * This uses PHP 8 WeakMap to track any system changes to the weak references of
  * objects the list is using -when {@link getDiscardInvalid DiscardInvalid} is true.
@@ -48,6 +60,9 @@ class TWeakCallableCollection extends TPriorityList
 
 	/** @var ?bool Should invalid WeakReferences automatically be deleted from the list */
 	private ?bool $_discardInvalid = null;
+
+	/** @var int The number of TEventHandlers in the list */
+	private int $_eventHandlerCount = 0;
 
 	/**
 	 * Constructor.
@@ -113,6 +128,38 @@ class TWeakCallableCollection extends TPriorityList
 	}
 
 	/**
+	 * This is a custom function for adding objects to the weak map.  Specifically,
+	 * if the object being added is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * object instead of the TEventHandler itself.
+	 * @param object $object The object to add to the managed weak map.
+	 * @since 4.2.3
+	 */
+	protected function weakCustomAdd(object $object)
+	{
+		if($object instanceof TEventHandler) {
+			$object = $object->getHandlerObject();
+			$this->_eventHandlerCount++;
+		}
+		return $this->weakAdd($object);
+	}
+
+	/**
+	 * This is a custom function for removing objects to the weak map.  Specifically,
+	 * if the object being removed is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * object instead of the TEventHandler itself.
+	 * @param object $object The object to remove to the managed weak map.
+	 * @since 4.2.3
+	 */
+	protected function weakCustomRemove(object $object)
+	{
+		if($object instanceof TEventHandler) {
+			$object = $object->getHandlerObject();
+			$this->_eventHandlerCount--;
+		}
+		return $this->weakRemove($object);
+	}
+
+	/**
 	 * This converts the $items array of callable with WeakReferences back into the
 	 * actual callable.
 	 * @param array &$items an array of callable where objects are WeakReference
@@ -141,8 +188,12 @@ class TWeakCallableCollection extends TPriorityList
 			} else {
 				$handler = null;
 			}
-		} elseif (is_object($handler) && ($handler instanceof WeakReference)) {
-			$handler = $handler->get();
+		} elseif (is_object($handler)) {
+			if($handler instanceof WeakReference) {
+				$handler = $handler->get();
+			} elseif (($handler instanceof TEventHandler) && !$handler->hasHandler()) {
+				$handler = null;
+			}
 		}
 	}
 
@@ -159,7 +210,7 @@ class TWeakCallableCollection extends TPriorityList
 		}
 		if (is_array($handler) && is_object($handler[0])) {
 			$handler[0] = WeakReference::create($handler[0]);
-		} elseif (is_object($handler) && !($handler instanceof Closure)) {
+		} elseif (is_object($handler) && !($handler instanceof Closure) && !($handler instanceof IWeakRetainable)) {
 			$handler = WeakReference::create($handler);
 		}
 	}
@@ -179,14 +230,25 @@ class TWeakCallableCollection extends TPriorityList
 		foreach (array_keys($this->_d) as $priority) {
 			for ($c = $i = count($this->_d[$priority]), $i--; $i >= 0; $i--) {
 				$a = is_array($this->_d[$priority][$i]);
-				if ($a && is_object($this->_d[$priority][$i][0]) && ($this->_d[$priority][$i][0] instanceof WeakReference) && $this->_d[$priority][$i][0]->get() === null ||
-				!$a && is_object($this->_d[$priority][$i]) && ($this->_d[$priority][$i] instanceof WeakReference) && $this->_d[$priority][$i]->get() === null) {
+				$isEventHandler = $weakRefInvalid = false;
+				$arrayInvalid = $a && is_object($this->_d[$priority][$i][0]) && ($this->_d[$priority][$i][0] instanceof WeakReference) && $this->_d[$priority][$i][0]->get() === null;
+				if (is_object($this->_d[$priority][$i])) {
+					$object = $this->_d[$priority][$i];
+					if ($isEventHandler = ($object instanceof TEventHandler)) {
+						$object = $object->getHandlerObject(true);
+					}
+					$weakRefInvalid = ($object instanceof WeakReference) && $object->get() === null;
+				}
+				if ($arrayInvalid || $weakRefInvalid) {
 					$c--;
 					$this->_c--;
 					if ($i === $c) {
 						array_pop($this->_d[$priority]);
 					} else {
 						array_splice($this->_d[$priority], $i, 1);
+					}
+					if ($isEventHandler) {
+						$this->_eventHandlerCount--;
 					}
 				}
 			}
@@ -204,14 +266,14 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function getDiscardInvalid(): bool
 	{
-		$this->ensureDiscardInvalid();
+		$this->collapseDiscardInvalid();
 		return (bool) $this->_discardInvalid;
 	}
 
 	/**
 	 * Ensures that DiscardInvalid is set.
 	 */
-	protected function ensureDiscardInvalid()
+	protected function collapseDiscardInvalid()
 	{
 		if ($this->_discardInvalid === null) {
 			$this->setDiscardInvalid(!$this->getReadOnly());
@@ -240,11 +302,18 @@ class TWeakCallableCollection extends TPriorityList
 					$a = is_array($this->_d[$priority][$i]);
 					if ($a && is_object($this->_d[$priority][$i][0]) || !$a && is_object($this->_d[$priority][$i])) {
 						$obj = $a ? $this->_d[$priority][$i][0] : $this->_d[$priority][$i];
+						$isEventHandler = false;
+						if (!$a && ($isEventHandler = ($obj instanceof TEventHandler))) {
+							$obj = $obj->getHandlerObject(true);
+						}
 						if ($obj instanceof WeakReference) {
 							if($obj = $obj->get()) {
 								$this->weakAdd($obj);
 							} else {
 								parent::removeAtIndexInPriority($i, $priority);
+							}
+							if ($isEventHandler) {
+								$this->_eventHandlerCount--;
 							}
 						} else { // Closure
 							$this->weakAdd($obj);
@@ -441,7 +510,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	protected function internalInsertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
 	{
-		$this->ensureDiscardInvalid();
+		$this->collapseDiscardInvalid();
 		$itemPriority = null;
 		if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
 			$itemPriority = $priority = $item->getPriority();
@@ -451,7 +520,7 @@ class TWeakCallableCollection extends TPriorityList
 			$item->setPriority($priority);
 		}
 		if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
-			$this->weakAdd($isObj ? $item : $item[0]);
+			$this->weakCustomAdd($isObj ? $item : $item[0]);
 		}
 		$this->filterItemForInput($item, true);
 		return parent::insertAtIndexInPriority($item, $index, $priority, $preserveCache);
@@ -542,7 +611,7 @@ class TWeakCallableCollection extends TPriorityList
 		$item = parent::removeAtIndexInPriority($index, $priority);
 		$this->filterItemForOutput($item);
 		if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
-			$this->weakRemove($obj = $isObj ? $item : $item[0]);
+			$this->weakCustomRemove($obj = $isObj ? $item : $item[0]);
 		}
 		return $item;
 	}
@@ -577,17 +646,7 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function contains($item): bool
 	{
-		$this->filterItemForInput($item);
-		if ($this->_fd !== null) {
-			return array_search($item, $this->_fd, true) !== false;
-		} else {
-			foreach (array_keys($this->_d) as $priority) {
-				if (array_search($item, $this->_d[$priority], true) !== false) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return $this->indexOf($item) !== -1;
 	}
 
 	/**
@@ -597,9 +656,18 @@ class TWeakCallableCollection extends TPriorityList
 	 */
 	public function indexOf($item)
 	{
-		$this->flattenPriorities();
 		$this->filterItemForInput($item);
-		if (($index = array_search($item, $this->_fd, true)) === false) {
+		$this->flattenPriorities();
+
+		if (($index = array_search($item, $this->_fd, true)) === false && $this->_eventHandlerCount) {
+			foreach($this->_fd as $index => $pItem) {
+				if (($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+					break;
+				}
+				$index = false;
+			}
+		}
+		if ($index === false) {
 			return -1;
 		} else {
 			return $index;
@@ -625,7 +693,41 @@ class TWeakCallableCollection extends TPriorityList
 			$this->scrubWeakReferences();
 		}
 		$this->filterItemForInput($item);
-		return parent::priorityOf($item, $withindex);
+		$this->sortPriorities();
+
+		$absindex = 0;
+		foreach (array_keys($this->_d) as $priority) {
+			if (($index = array_search($item, $this->_d[$priority], true)) !== false) {
+				$absindex += $index;
+				return $withindex ? [$priority, $index, $absindex,
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
+			} else {
+				$absindex += count($this->_d[$priority]);
+			}
+		}
+		if (!$this->_eventHandlerCount) {
+			return false;
+		}
+
+		$absindex = 0;
+		foreach (array_keys($this->_d) as $priority) {
+			$index = false;
+			foreach($this->_d[$priority] as $index => $pItem) {
+				if(($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+					break;
+				}
+				$index = false;
+			}
+			if ($index !== false) {
+				$absindex += $index;
+				return $withindex ? [$priority, $index, $absindex,
+						'priority' => $priority, 'index' => $index, 'absindex' => $absindex, ] : $priority;
+			} else {
+				$absindex += count($this->_d[$priority]);
+			}
+		}
+
+		return false;
 	}
 
 	/**
