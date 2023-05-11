@@ -22,19 +22,15 @@ namespace Prado\Web\UI;
  */
 class TBroadcastEventParameter extends \Prado\TEventParameter
 {
-	private $_name;
-	private $_param;
-
 	/**
 	 * Constructor.
 	 * @param string $name name of the broadcast event
 	 * @param null|mixed $parameter parameter of the broadcast event
 	 */
-	public function __construct($name = '', $parameter = null)
+	public function __construct(string $name = '', mixed $parameter = null)
 	{
-		$this->_name = $name;
-		$this->_param = $parameter;
-		parent::__construct();
+		parent::setEventName($name);
+		parent::__construct($parameter);
 	}
 
 	/**
@@ -42,7 +38,7 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return parent::getEventName();
 	}
 
 	/**
@@ -50,22 +46,18 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 	 */
 	public function setName($value)
 	{
-		$this->_name = $value;
+		parent::setEventName($value);
 	}
 
 	/**
-	 * @return mixed parameter of the broadcast event
+	 * @param string $value name of the broadcast event
+	 * @since 4.2.3
 	 */
-	public function getParameter()
+	public function setEventName(string $value)
 	{
-		return $this->_param;
+		if ($this->getEventName() === '') {
+			parent::setEventName($value);
+		}
 	}
 
-	/**
-	 * @param mixed $value parameter of the broadcast event
-	 */
-	public function setParameter($value)
-	{
-		$this->_param = $value;
-	}
 }

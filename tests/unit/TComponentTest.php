@@ -157,23 +157,23 @@ class GlobalRaiseComponent extends NewComponent implements IDynamicMethods
 		}
 		$this->_callorder[] = 'fxcall';
 	}
-	public function fxGlobalListener($sender, $param, $name)
+	public function fxGlobalListener($sender, $param)
 	{
 		$this->_callorder[] = 'fxGL';
 	}
-	public function fxPrimaryGlobalEvent($sender, $param, $name)
+	public function fxPrimaryGlobalEvent($sender, $param)
 	{
 		$this->_callorder[] = 'primary';
 	}
-	public function commonRaiseEventListener($sender, $param, $name)
+	public function commonRaiseEventListener($sender, $param)
 	{
 		$this->_callorder[] = 'com';
 	}
-	public function postglobalRaiseEventListener($sender, $param, $name)
+	public function postglobalRaiseEventListener($sender, $param)
 	{
 		$this->_callorder[] = 'postgl';
 	}
-	public function preglobalRaiseEventListener($sender, $param, $name)
+	public function preglobalRaiseEventListener($sender, $param)
 	{
 		$this->_callorder[] = 'pregl';
 	}

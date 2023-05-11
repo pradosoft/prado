@@ -13,6 +13,7 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
+use Prado\TEventHandler;
 use Prado\TPropertyValue;
 
 use ArrayAccess;
@@ -36,13 +37,18 @@ use WeakReference;
  * objects and replace the object with null -maintaining the count and item locations-.
  *
  * List items do not need to be objects.  TWeakList is similar to TList except list
- * items that are objects (except Closure) are stored as WeakReference.  List items
- * that are arrays are recursively traversed for replacement of objects with WeakReference
- * before storing.  In this way, TWeakList will not retain objects (incrementing
- * their use/reference counter) that it contains.  Only primary list items are tracked
- * with the WeakMap, and objects in arrays has no effect on the whole.   If an object
- * in an array is invalidated, it well be replaced by "null".  Arrays in the TWeakList
- * are kept regardless of the use/reference count of contained objects.
+ * items that are objects (except Closure and IWeakRetainable) are stored as WeakReference.
+ * List items that are arrays are recursively traversed for replacement of objects
+ * with WeakReference before storing.  In this way, TWeakList will not retain objects
+ * (incrementing their use/reference counter) that it contains.  Only primary list
+ * items are tracked with the WeakMap, and objects in arrays has no effect on the whole.
+ * If an object in an array is invalidated, it well be replaced by "null".  Arrays
+ * in the TWeakList are kept regardless of the use/reference count of contained objects.
+ *
+ * When searching by a {@link TEventHandler} object, it will only find itself and
+ * will not match on its {@link TEventHandler::getHandler}.  However, if searching
+ * for a callable handler, it will first match direct callable handlers in the list,
+ * and then search for matching TEventHandlers' Handler regardless of the data.
  *
  * {@link TWeakCollectionTrait} implements a PHP 8 WeakMap used to track any changes
  * in WeakReference objects in the TWeakList and optionally scrubs the list of invalid
@@ -65,6 +71,9 @@ class TWeakList extends TList
 	 *    Default True.
 	 */
 	private ?bool $_discardInvalid = null;
+
+	/** @var int The number of TEventHandlers in the list */
+	private int $_eventHandlerCount = 0;
 
 	/**
 	 * Constructor.
@@ -104,6 +113,38 @@ class TWeakList extends TList
 	}
 
 	/**
+	 * This is a custom function for adding objects to the weak map.  Specifically,
+	 * if the object being added is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * object instead of the TEventHandler itself.
+	 * @param object $object The object to add to the managed weak map.
+	 * @since 4.2.3
+	 */
+	protected function weakCustomAdd(object $object)
+	{
+		if($object instanceof TEventHandler) {
+			$object = $object->getHandlerObject();
+			$this->_eventHandlerCount++;
+		}
+		return $this->weakAdd($object);
+	}
+
+	/**
+	 * This is a custom function for removing objects to the weak map.  Specifically,
+	 * if the object being removed is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * object instead of the TEventHandler itself.
+	 * @param object $object The object to remove to the managed weak map.
+	 * @since 4.2.3
+	 */
+	protected function weakCustomRemove(object $object)
+	{
+		if($object instanceof TEventHandler) {
+			$object = $object->getHandlerObject();
+			$this->_eventHandlerCount--;
+		}
+		return $this->weakRemove($object);
+	}
+
+	/**
 	 * Converts the $item callable that has WeakReference rather than the actual object
 	 * back into a regular callable.
 	 * @param mixed &$item
@@ -114,8 +155,12 @@ class TWeakList extends TList
 			foreach (array_keys($item) as $key) {
 				$this->filterItemForOutput($item[$key]);
 			}
-		} elseif (is_object($item) && ($item instanceof WeakReference)) {
-			$item = $item->get();
+		} elseif (is_object($item)) {
+			if($item instanceof WeakReference) {
+				$item = $item->get();
+			} elseif (($item instanceof TEventHandler) && !$item->hasHandler()) {
+				$item = null;
+			}
 		}
 	}
 
@@ -133,7 +178,7 @@ class TWeakList extends TList
 			foreach (array_keys($item) as $key) {
 				$this->filterItemForInput($item[$key]);
 			}
-		} elseif (is_object($item) && !($item instanceof Closure)) {
+		} elseif (is_object($item) && !($item instanceof Closure) && !($item instanceof IWeakRetainable)) {
 			$item = WeakReference::create($item);
 		}
 	}
@@ -147,12 +192,21 @@ class TWeakList extends TList
 			return;
 		}
 		for ($i = $this->_c - 1; $i >= 0; $i--) {
-			if (is_object($this->_d[$i]) && ($this->_d[$i] instanceof WeakReference) && $this->_d[$i]->get() === null) {
-				$this->_c--;
-				if ($i === $this->_c) {
-					array_pop($this->_d);
-				} else {
-					array_splice($this->_d, $i, 1);
+			if (is_object($this->_d[$i])) {
+				$object = $this->_d[$i];
+				if ($isEventHandler = ($object instanceof TEventHandler)) {
+					$object = $object->getHandlerObject(true);
+				}
+				if(($object instanceof WeakReference) && $object->get() === null) {
+					$this->_c--;
+					if ($i === $this->_c) {
+						array_pop($this->_d);
+					} else {
+						array_splice($this->_d, $i, 1);
+					}
+					if ($isEventHandler) {
+						$this->_eventHandlerCount--;
+					}
 				}
 			}
 		}
@@ -164,14 +218,14 @@ class TWeakList extends TList
 	 */
 	public function getDiscardInvalid(): bool
 	{
-		$this->ensureDiscardInvalid();
+		$this->collapseDiscardInvalid();
 		return $this->_discardInvalid;
 	}
 
 	/**
 	 * Ensures that DiscardInvalid is set.
 	 */
-	protected function ensureDiscardInvalid()
+	protected function collapseDiscardInvalid()
 	{
 		if ($this->_discardInvalid === null) {
 			$this->setDiscardInvalid(!$this->getReadOnly());
@@ -193,16 +247,26 @@ class TWeakList extends TList
 		if ($value && !$this->_discardInvalid) {
 			$this->weakStart();
 			for ($i = $this->_c - 1; $i >= 0; $i--) {
-				$object = false;
-				if (is_object($this->_d[$i]) && ($this->_d[$i] instanceof WeakReference) && ($object = $this->_d[$i]->get()) !== null) {
-					$this->weakAdd($object);
-				}
-				if ($object === null) {
-					$this->_c--;	//on read only, parent::removeAt won't remove for scrub.
-					if ($i === $this->_c) {
-						array_pop($this->_d);
+				if (is_object($this->_d[$i])) {
+					$object = $this->_d[$i];
+					if ($isEventHandler = ($object instanceof TEventHandler)) {
+						$object = $object->getHandlerObject(true);
+					}
+					if ($object instanceof WeakReference) {
+						$object = $object->get();
+					}
+					if ($object === null) {
+						$this->_c--;	//on read only, parent::removeAt won't remove for scrub.
+						if ($i === $this->_c) {
+							array_pop($this->_d);
+						} else {
+							array_splice($this->_d, $i, 1);
+						}
+						if ($isEventHandler) {
+							$this->_eventHandlerCount--;
+						}
 					} else {
-						array_splice($this->_d, $i, 1);
+						$this->weakAdd($object);
 					}
 				}
 			}
@@ -259,10 +323,10 @@ class TWeakList extends TList
 	 */
 	public function add($item)
 	{
-		$this->ensureDiscardInvalid();
+		$this->collapseDiscardInvalid();
 		$this->scrubWeakReferences();
 		if (is_object($item)) {
-			$this->weakAdd($item);
+			$this->weakCustomAdd($item);
 		}
 		$this->filterItemForInput($item);
 		parent::insertAt($this->_c, $item);
@@ -281,10 +345,10 @@ class TWeakList extends TList
 	 */
 	public function insertAt($index, $item)
 	{
-		$this->ensureDiscardInvalid();
+		$this->collapseDiscardInvalid();
 		$this->scrubWeakReferences();
 		if (is_object($item)) {
-			$this->weakAdd($item);
+			$this->weakCustomAdd($item);
 		}
 		$this->filterItemForInput($item);
 		parent::insertAt($index, $item);
@@ -305,7 +369,7 @@ class TWeakList extends TList
 		if (!$this->getReadOnly()) {
 			if (($index = $this->indexOf($item)) !== -1) {
 				if (is_object($item)) {
-					$this->weakRemove($item);
+					$this->weakCustomRemove($item);
 				}
 				parent::removeAt($index);
 				return $index;
@@ -331,7 +395,7 @@ class TWeakList extends TList
 		$item = parent::removeAt($index);
 		$this->filterItemForOutput($item);
 		if (is_object($item)) {
-			$this->weakRemove($item);
+			$this->weakCustomRemove($item);
 		}
 		return $item;
 	}
@@ -357,8 +421,7 @@ class TWeakList extends TList
 	 */
 	public function contains($item): bool
 	{
-		$this->filterItemForInput($item);
-		return parent::indexOf($item) !== -1;
+		return $this->indexOf($item) !== -1;
 	}
 
 	/**
@@ -370,7 +433,20 @@ class TWeakList extends TList
 	{
 		$this->scrubWeakReferences();
 		$this->filterItemForInput($item);
-		return parent::indexOf($item);
+		if (($index = parent::indexOf($item)) === -1 && $this->_eventHandlerCount) {
+			$index = false;
+			foreach($this->_d as $index => $dItem) {
+				if (($dItem instanceof TEventHandler) && $dItem->isSameHandler($item, true)) {
+					break;
+				}
+				$index = false;
+			}
+		}
+		if ($index === false) {
+			return -1;
+		} else {
+			return $index;
+		}
 	}
 
 	/**
@@ -389,7 +465,7 @@ class TWeakList extends TList
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
 			if (is_object($item)) {
-				$this->weakAdd($item);
+				$this->weakCustomAdd($item);
 			}
 			$this->filterItemForInput($item);
 			parent::insertAt($index, $item);
@@ -415,7 +491,7 @@ class TWeakList extends TList
 				throw new TInvalidDataValueException('list_item_inexistent');
 			}
 			if (is_object($item)) {
-				$this->weakAdd($item);
+				$this->weakCustomAdd($item);
 			}
 			$this->filterItemForInput($item);
 			parent::insertAt($index + 1, $item);
@@ -451,7 +527,7 @@ class TWeakList extends TList
 			}
 			foreach ($data as $item) {
 				if (is_object($item)) {
-					$this->weakAdd($item);
+					$this->weakCustomAdd($item);
 				}
 				$this->filterItemForInput($item);
 				parent::insertAt($this->_c, $item);
@@ -472,7 +548,7 @@ class TWeakList extends TList
 		if (is_array($data) || ($data instanceof Traversable)) {
 			foreach ($data as $item) {
 				if (is_object($item)) {
-					$this->weakAdd($item);
+					$this->weakCustomAdd($item);
 				}
 				$this->filterItemForInput($item);
 				parent::insertAt($this->_c, $item);
@@ -506,7 +582,7 @@ class TWeakList extends TList
 		$this->scrubWeakReferences();
 		if ($offset === null || $offset === $this->_c) {
 			if (is_object($item)) {
-				$this->weakAdd($item);
+				$this->weakCustomAdd($item);
 			}
 			$this->filterItemForInput($item);
 			parent::insertAt($this->_c, $item);
@@ -514,10 +590,10 @@ class TWeakList extends TList
 			$removed = parent::removeAt($offset);
 			$this->filterItemForOutput($removed);
 			if (is_object($removed)) {
-				$this->weakRemove($removed);
+				$this->weakCustomRemove($removed);
 			}
 			if (is_object($item)) {
-				$this->weakAdd($item);
+				$this->weakCustomAdd($item);
 			}
 			$this->filterItemForInput($item);
 			parent::insertAt($offset, $item);

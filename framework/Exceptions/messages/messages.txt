@@ -21,6 +21,10 @@ component_no_class_provided_nor_late_binding = Adding or Removing Class Behavior
 propertyvalue_enumvalue_invalid			= Value '{0}' is a not valid enumeration value ({1}).
 propertyvalue_invalid_hex_color			= Value '{0}' is a not valid hex color value.  eg. "#112233"
 
+eventhandler_lost_weak_ref				= TEventHandler cannot invoke the event handler because the callable object WeakReference was lost.
+eventhandler_no_set_handler				= TEventHandler cannot set the event handler, index "{0}".
+eventhandler_bad_offset					= TEventHandler does not have offset "{0}".
+
 list_index_invalid						= Index '{0}' is out of range.
 list_item_inexistent					= The item cannot be found in the list.
 list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.

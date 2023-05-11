@@ -32,10 +32,10 @@ class TEventContentTest extends PHPUnit\Framework\TestCase
 		self::assertEquals('fxTestContentEvent', $this->obj->getBroadcastEvent());
 	}
 	
-	public function callHandler($sender, $param, $event)
+	public function callHandler($sender, $param)
 	{
-		$this->_call = $event;
-		$param[0] = 'value';
+		$this->_call = $param->getEventName();
+		$param->getParameter()[0] = 'value';
 	}
 	
 	public function testCreateChildControls()

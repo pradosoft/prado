@@ -1,5 +1,6 @@
 <?php
 
+use Prado\Collections\IWeakRetainable;
 use Prado\Collections\TWeakList;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -25,6 +26,35 @@ class TWeakListUnit extends TWeakList
 	}
 }
 
+class WeakListInvokableItem // implements IWeakRetainable
+{
+	public $data;
+	public $calledData;
+	public function __construct($data = null)
+	{
+		$this->data = $data;
+	}
+	public function __invoke($sender, $param, $data = null)
+	{
+		$this->calledData = $data;
+	}
+	
+	public function myHandler($sender, $param, $data = null)
+	{
+		$this->calledData = $data;
+	}
+}
+
+class WeakListListItem extends PriorityListItem
+{
+	public $calledData;
+	
+	public function myHandler($sender, $param, $data = null)
+	{
+		$this->calledData = $data;
+	}
+}
+
 /**
  *	All Test cases for the TList are here.  The TPriorityList should act just like a TList when used exactly like a TList
  *
@@ -44,7 +74,7 @@ class TWeakListTest extends TListTest
 	}
 	protected function newListItem()
 	{
-		return 'PriorityListItem';
+		return WeakListListItem::class;
 	}
 	protected function getCanAddNull()
 	{
@@ -122,18 +152,24 @@ class TWeakListTest extends TListTest
 		$this->list = new $this->_baseClass(null, true, false);
 		self::assertFalse($this->list->getDiscardInvalid());
 		
-		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4], true);
+		$eventHandler1 = new TEventHandler([$this->item3, 'myHandler'], 77);
+		$eventHandler2 = new TEventHandler($eventHandler1, 88);
+		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4, $eventHandler1, $eventHandler2], true);
 		$this->item2 = null;
 		$this->item3 = null;
-		self::assertEquals(4, $list->getCount());
+		self::assertEquals(6, $list->getCount());
 		self::assertEquals($this->item1, $list[0]);
-		self::assertTrue($list[1] === null);
-		self::assertTrue($list[2] === null);
+		self::assertNull($list[1]);
+		self::assertNull($list[2]);
 		self::assertEquals($this->item4, $list[3]);
+		self::assertNull($list[4]);
+		self::assertNull($list[5]);
 		
 		$this->item2 = new $this->_baseItemClass(2);
 		$this->item3 = new $this->_baseItemClass(3);
-		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4], false);
+		$eventHandler1 = new TEventHandler([$this->item3, 'myHandler'], 70);
+		$eventHandler2 = new TEventHandler($eventHandler1, 71);
+		$list = new $this->_baseClass([$this->item1, $this->item2, $this->item3, $this->item4, $eventHandler1, $eventHandler2], false);
 		$this->item2 = null;
 		$this->item3 = null;
 		self::assertEquals(2, $list->getCount());
@@ -246,6 +282,19 @@ class TWeakListTest extends TListTest
 		self::assertEquals(2, $this->list->getWeakObjectCount($this->item4));
 	}
 	
+	public function testAddTWeakList_TEventHandler()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list->add($eventHandler1 = new TEventHandler($handler1, 13));
+		$this->list->add($eventHandler2 = new TEventHandler($eventHandler1, 21));
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(2, $this->list->getWeakObjectCount($object1));
+		self::assertEquals($eventHandler1, $this->list[0]);
+		self::assertEquals($eventHandler2, $this->list[1]);
+	}
+	
 	public function testInsertAtTWeakList()
 	{
 		$this->list->insertAt(0, $this->item3);
@@ -259,6 +308,17 @@ class TWeakListTest extends TListTest
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(2, $this->list->getWeakObjectCount($this->item4));
 		self::assertEquals(2, $this->list->getWeakCount());
+	}
+	
+	public function testInsertAtTWeakList_TEventHandler()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list->insertAt(0, $eventHandler1 = new TEventHandler($handler1, 13));
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($object1));
+		self::assertEquals($eventHandler1, $this->list[0]);
 	}
 	
 	
@@ -288,6 +348,30 @@ class TWeakListTest extends TListTest
 		self::assertEquals(1, $this->list->getWeakCount());
 	}
 	
+	public function testRemoveTWeakList_TEventHandler()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		$this->list[] = $eventHandler2 = new TEventHandler($eventHandler1, 21);
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(2, $this->list->getWeakObjectCount($object1));
+		
+		self::assertEquals(0, $this->list->remove($eventHandler1));
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($object1));
+			
+		self::assertEquals(0, $this->list->remove($eventHandler2));
+		self::assertEquals(0, $this->list->getWeakCount());
+		
+		$this->list[] = $eventHandler1;
+		self::assertEquals(0, $this->list->remove($handler1));
+			
+		$this->list[] = $eventHandler2;
+		self::assertEquals(0, $this->list->remove($handler1));
+	}
+	
 	
 	public function testRemoveAtTWeakList()
 	{
@@ -312,6 +396,19 @@ class TWeakListTest extends TListTest
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($item5));
 		self::assertEquals(2, $this->list->getWeakCount());
+	}
+	
+	public function testRemoveAtTWeakList_TEventHandler()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($object1));
+		
+		$this->list->removeAt(0);
+		self::assertEquals(0, $this->list->getWeakCount());
 	}
 	
 	
@@ -344,6 +441,48 @@ class TWeakListTest extends TListTest
 	}
 	
 	
+	public function testIndexOfTWeakList_TEventHandler()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$handler2 = [$object2 = new WeakListInvokableItem(2), 'myHandler'];
+		$handler3 = [$object3 = new WeakListInvokableItem(3), 'myHandler'];
+		$handler4 = [$object4 = new WeakListInvokableItem(5), 'myHandler'];
+		
+		$eventHandler5 = new TEventHandler($handler4, 55);
+		
+		$handler6 = [$object6 = new WeakListInvokableItem(8), 'myHandler'];
+		$eventHandler6 = new TEventHandler($handler6, 14);
+		$eventHandler7 = new TEventHandler($eventHandler6, 15);
+		$eventHandler8 = new TEventHandler($eventHandler7, 16);
+		
+		$this->list[] = $handler1;
+		$this->list[] = $handler2;
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		$this->list[] = $eventHandler3 = new TEventHandler($handler3, 21);
+		$this->list[] = $eventHandler4 = new TEventHandler($handler4, 34);
+		$this->list[] = $eventHandler8;
+		$this->list[] = $handler4;
+		
+		self::assertEquals(0, $this->list->indexOf($handler1));
+		self::assertEquals(1, $this->list->indexOf($handler2));
+		self::assertEquals(3, $this->list->indexOf($handler3), "Handler, not directly in the list, but in TEventHandler should be found");
+		self::assertEquals(6, $this->list->indexOf($handler4), "Raw Handler takes precedence over being found in TEventHandler");
+		self::assertEquals(5, $this->list->indexOf($handler6), "Nested TEventHandler didn't match the callable.");
+		
+		self::assertEquals(2, $this->list->indexOf($eventHandler1));
+		self::assertEquals(3, $this->list->indexOf($eventHandler3));
+		self::assertEquals(4, $this->list->indexOf($eventHandler4));
+			
+		self::assertEquals(5, $this->list->indexOf($eventHandler6));
+		self::assertEquals(5, $this->list->indexOf($eventHandler7));
+		self::assertEquals(5, $this->list->indexOf($eventHandler8));
+		
+		self::assertEquals(-1, $this->list->indexOf($eventHandler5));
+	}
+	
+	
 	public function testInsertBeforeTWeakList()
 	{
 		unset($this->item1);
@@ -352,11 +491,31 @@ class TWeakListTest extends TListTest
 	}
 	
 	
+	public function testInsertBeforeTWeakList_TEventHandler()
+	{
+		self::assertEquals(1, $this->list->insertBefore($this->item2, new TEventHandler($object = new WeakListInvokableItem())));
+		self::assertEquals(3, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item2));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object));
+	}
+	
+	
 	public function testInsertAfterTWeakList()
 	{
 		unset($this->item1);
 		
 		self::assertEquals(1, $this->list->insertAfter($this->item2, $this->item3));
+	}
+	
+	
+	public function testInsertAfterTWeakList_TEventHandler()
+	{
+		self::assertEquals(1, $this->list->insertAfter($this->item1, new TEventHandler($object = new WeakListInvokableItem())));
+		self::assertEquals(3, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item2));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object));
 	}
 	
 	
@@ -378,24 +537,26 @@ class TWeakListTest extends TListTest
 		self::assertEquals(2, $this->list->getWeakCount());
 		unset($this->item2);
 		self::assertEquals(1, $this->list->getWeakCount());
-		$this->list->copyFrom([$this->item3, $this->item4]);
+		$this->list->copyFrom([$this->item3, $this->item4, new TEventHandler($object = new WeakListInvokableItem())]);
 		
-		self::assertEquals(2, $this->list->getWeakCount());
+		self::assertEquals(3, $this->list->getWeakCount());
 		self::assertNull($this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object));
 	}
 	
 	
 	public function testMergeWithTWeakList()
 	{
-		$this->list->mergeWith([$this->item3, $this->item4]);
+		$this->list->mergeWith([$this->item3, $this->item4, new TEventHandler($object = new WeakListInvokableItem())]);
 		
-		self::assertEquals(4, $this->list->getWeakCount());
+		self::assertEquals(5, $this->list->getWeakCount());
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item2));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object));
 	}
 	
 	
@@ -416,6 +577,28 @@ class TWeakListTest extends TListTest
 		self::assertNull($this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($item5));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+	}
+	
+	
+	
+	public function testOffsetSetTWeakList_TEventHandler()
+	{
+		$item1 = new WeakListInvokableItem(1);
+		$item2 = new WeakListInvokableItem(2);
+		$this->item2 = new TEventHandler($item1, 2);
+		$this->item3 = new TEventHandler($item2, 3);
+		self::assertEquals(1, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
+		
+		$this->list[] = $this->item2; // [1]
+		self::assertEquals(2, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
+		self::assertEquals(1, $this->list->getWeakObjectCount($item1));
+		
+		$this->list[1] = $this->item3;
+		self::assertEquals(2, $this->list->getWeakCount());
+		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
+		self::assertEquals(1, $this->list->getWeakObjectCount($item2));
 	}
 	
 	public function testClosureTWeakList()
@@ -441,6 +624,21 @@ class TWeakListTest extends TListTest
 		self::assertEquals([$this->item1, [null, $this->item4]], $this->list->toArray());
 	}
 	
+	public function testTEventHandlerAsItemTWeakList()
+	{
+		$this->list->clear();
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		$this->list[] = new TEventHandler([$object2 = new WeakListInvokableItem(2), 'myHandler'], 13);
+		
+		self::assertEquals(2, $this->list->getCount(), "TEventHandler is an IWeakRetainable that is not being retained.");
+		
+		$object2 = null;
+		
+		self::assertEquals(1, $this->list->getCount());
+	}
+	
 	public function testDiscardInvalid()
 	{
 		$list = new $this->_baseClass();
@@ -451,13 +649,21 @@ class TWeakListTest extends TListTest
 		
 		$this->list->add($this->item3);
 		$this->list->add($this->item4);
+		
+		$handler1 = [$object1 = new WeakListInvokableItem(1), 'myHandler'];
+		$this->list[] = $eventHandler1 = new TEventHandler($handler1, 13);
+		$handler2 = [$object2 = new WeakListInvokableItem(2), 'myHandler'];
+		$this->list[] = $eventHandler2 = new TEventHandler($handler2, 13);
+		
 		self::assertTrue($this->list->getDiscardInvalid());
 		
-		self::assertEquals(4, $this->list->getWeakCount());
+		self::assertEquals(6, $this->list->getWeakCount());
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item2));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item3));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object1));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object2));
 		
 		$this->list->resetDiscardInvalid(false);
 		self::assertNull($this->list->weakCount());
@@ -465,12 +671,14 @@ class TWeakListTest extends TListTest
 		
 		unset($this->item2);
 		unset($this->item3);
+		$eventHandler2 = $handler2 = $object2 = null;
 		
 		$this->list->resetDiscardInvalid(true);
 		self::assertTrue($this->list->getDiscardInvalid());
-		self::assertEquals(2, $this->list->getWeakCount());
+		self::assertEquals(3, $this->list->getWeakCount());
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $this->list->getWeakObjectCount($this->item4));
+		self::assertEquals(1, $this->list->getWeakObjectCount($object1));
 		
 		self::expectException(TInvalidOperationException::class);
 		$list->setDiscardInvalid(true);

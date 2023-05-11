@@ -1396,6 +1396,10 @@ class TComponent
 		$name = strtolower($name);
 		$responses = [];
 
+		if($param instanceof IEventParameter) {
+			$param->setEventName($name);
+		}
+
 		$this->callBehaviorsMethod('dyPreRaiseEvent', $name, $name, $sender, $param, $responsetype, $postfunction);
 
 		if ($this->hasEventHandler($name) || $this->hasEventHandler(TComponent::GLOBAL_RAISE_EVENT_LISTENER)) {
@@ -1418,19 +1422,19 @@ class TComponent
 						$method = substr($handler, $pos + 1);
 						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender, $param, $name]);
+								$response = $object->__dycall($name, [$sender, $param]);
 							} else {
-								$response = $object->$method($sender, $param, $name);
+								$response = $object->$method($sender, $param);
 							}
 						} else {
 							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler);
 						}
 					} else {
-						$response = call_user_func($handler, $sender, $param, $name);
+						$response = call_user_func($handler, $sender, $param);
 					}
 				} elseif (is_callable($handler, true)) {
 					if (is_object($handler) || is_string($handler[0])) {
-						$response = call_user_func($handler, $sender, $param, $name);
+						$response = call_user_func($handler, $sender, $param);
 					} else {
 						[$object, $method] = $handler;
 						if (($pos = strrpos($method, '.')) !== false) {
@@ -1439,9 +1443,9 @@ class TComponent
 						}
 						if (Prado::method_visible($object, $method) || strncasecmp($method, 'dy', 2) === 0 || strncasecmp($method, 'fx', 2) === 0) {
 							if ($method == '__dycall') {
-								$response = $object->__dycall($name, [$sender, $param, $name]);
+								$response = $object->__dycall($name, [$sender, $param]);
 							} else {
-								$response = $object->$method($sender, $param, $name);
+								$response = $object->$method($sender, $param);
 							}
 						} else {
 							throw new TInvalidDataValueException('component_eventhandler_invalid', $this::class, $name, $handler[1]);

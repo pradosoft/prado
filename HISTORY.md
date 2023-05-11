@@ -1,12 +1,14 @@
 ## Version 4.2.3 - TBA
 
 ENH: Issues #824, #838, #851, #891, #910, #917 - General Behaviors Update: Cloning and Serializing supports behaviors.  IBaseBehavior has init($config) method. TClassBehavior tracks their owners.  Behaviors attach their registered event handlers at the behavior priority.  Registered Behavior event can optionally attached and detached automatically when the behavior is enabled or disabled (default).  Behavior events() support Closures. IBehavior are attachable class-wide by cloning. Behaviors for behaviors has better support.  Behaviors are case insensitive.  Supports Anonymous (unnamed/numeric) behaviors.  Wakeup updates the component behaviors with new named class behaviors. (belisoful)
-ENH: Issue #848 - TComponent events support Closure (anonymous functions) as handlers. (belisoful)
-ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TComponent::getClassHierarchy.  Class-wide behaviors support attaching to Traits as well as interfaces, classes, and their parents. (belisoful)
-ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
 BUG: Issue #843 - Permissions Manager behaviors rename the method 'getManager' to 'getPermissionsManager' for specificity. (belisoful)
+ENH: Issue #845 - PHP Clone and Unserialize of TComponent objects supports behaviors. (belisoful)
+ENH: Issue #848 - TComponent events support Closure (anonymous functions) as handlers. (belisoful)
 ENH: Issue #861 - TWebColors lists all the Web Colors in a TEnumerable and implements TPropertyValue::ensureHexColor (belisoful)
+ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TComponent::getClassHierarchy.  Class-wide behaviors support attaching to Traits as well as interfaces, classes, and their parents. (belisoful)
+ENH: Issue #904 - TRational and TURational for reading, writing, and computing EXIF-Tiff (GPS) Rational and URational unit types; in Prado\Util\Math. (belisoful)
 BUG: Issue #911 - Protect the message cache file to be thread safe. (majuca)
+ENH: Issue #939 - TEventHandler for embedding data with a specific event handler callable. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
