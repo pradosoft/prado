@@ -111,7 +111,7 @@ class TEventHandler implements IWeakRetainable, \ArrayAccess, \Countable
 			throw new TInvalidDataTypeException('eventhandler_not_callable');
 		}
 
-		if (is_array($handler) && is_object($handler[0])) {
+		if (is_array($handler) && is_object($handler[0]) && !($handler[0] instanceof IWeakRetainable)) {
 			$handler[0] = WeakReference::create($handler[0]);
 			$this->_weakObject = true;
 		} elseif (is_object($handler) && !($handler instanceof Closure) && !($handler instanceof IWeakRetainable)) {
