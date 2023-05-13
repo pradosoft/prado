@@ -12,6 +12,8 @@ namespace Prado\Exceptions;
 use Prado\Prado;
 use Prado\TPropertyValue;
 
+use Throwable;
+
 /**
  * TException class
  *
@@ -41,22 +43,28 @@ class TException extends \Exception
 	/**
 	 * Constructor.
 	 * @param string $errorMessage error message. This can be a string that is listed
-	 * in the message file. If so, the message in the preferred language
-	 * will be used as the error message. Any rest parameters will be used
-	 * to replace placeholders ({0}, {1}, {2}, etc.) in the message.
+	 *   in the message file. If so, the message in the preferred language
+	 *   will be used as the error message.
+	 * @param array $args These are used to replace placeholders ({0}, {1}, {2}, etc.)
+	 *   in the message except the last argument.  If the last argument is a Throwable
+	 *   it is treated as the $previous Exception for exception chaining.
 	 */
-	public function __construct($errorMessage)
+	public function __construct($errorMessage, ...$args)
 	{
 		$this->_errorCode = $errorMessage;
 		$errorMessage = $this->translateErrorMessage($errorMessage);
-		$args = func_get_args();
 		array_shift($args);
 		$n = count($args);
+		$previous = null;
+		if($n > 0 && ($args[$n - 1] instanceof Throwable)) {
+			$previous = array_pop($args);
+			$n--;
+		}
 		$tokens = [];
 		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($errorMessage, $tokens));
+		parent::__construct(strtr($errorMessage, $tokens), 0, $previous);
 	}
 
 	/**

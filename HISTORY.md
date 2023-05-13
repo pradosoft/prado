@@ -9,6 +9,7 @@ ENH: Issue #886 - Lists the 1st level traits of the class and its parents in TCo
 ENH: Issue #904 - TRational and TURational for reading, writing, and computing EXIF-Tiff (GPS) Rational and URational unit types; in Prado\Util\Math. (belisoful)
 BUG: Issue #911 - Protect the message cache file to be thread safe. (majuca)
 ENH: Issue #939 - TEventHandler for embedding data with a specific event handler callable. (belisoful)
+ENH: Issue #944 - TExitException for gracefully exiting the application anywhere. Exception chaining with the last parameter being the previous Exception. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
