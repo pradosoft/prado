@@ -10,6 +10,7 @@
 namespace Prado;
 
 use Prado\Exceptions\TErrorHandler;
+use Prado\Exceptions\TExitException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TConfigurationException;
 use Prado\I18N\TGlobalization;
@@ -396,6 +397,9 @@ class TApplication extends \Prado\TComponent
 				$this->$method();
 				$this->_step++;
 			}
+		} catch (TExitException $e) {
+			$this->onEndRequest();
+			exit($e->getExitCode());
 		} catch (\Exception $e) {
 			$this->onError($e);
 		}

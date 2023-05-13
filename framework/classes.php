@@ -175,6 +175,7 @@ return [
 'TDbException' => 'Prado\Exceptions\TDbException',
 'TErrorHandler' => 'Prado\Exceptions\TErrorHandler',
 'TException' => 'Prado\Exceptions\TException',
+'TExitException' => 'Prado\Exceptions\TExitException',
 'THttpException' => 'Prado\Exceptions\THttpException',
 'TInvalidDataTypeException' => 'Prado\Exceptions\TInvalidDataTypeException',
 'TInvalidDataValueException' => 'Prado\Exceptions\TInvalidDataValueException',
