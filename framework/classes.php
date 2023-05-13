@@ -185,6 +185,7 @@ return [
 'TPhpErrorException' => 'Prado\Exceptions\TPhpErrorException',
 'TSystemException' => 'Prado\Exceptions\TSystemException',
 'TTemplateException' => 'Prado\Exceptions\TTemplateException',
+'TUserException' => 'Prado\Exceptions\TUserException',
 'ChoiceFormat' => 'Prado\I18N\core\ChoiceFormat',
 'CultureInfo' => 'Prado\I18N\core\CultureInfo',
 'TGettext' => 'Prado\I18N\core\Gettext\TGettext',
