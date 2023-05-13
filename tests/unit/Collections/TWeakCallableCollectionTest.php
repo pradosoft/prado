@@ -104,6 +104,10 @@ class CallableListItemChild extends CallableListItem
 	}
 }
 
+class RetainableCallableListItem extends CallableListItem implements IWeakRetainable
+{
+}
+
 /**
  *	All Test cases for the TList are here.  The TWeakCallableCollection should act just like a TList when used exactly like a TList
  *
@@ -210,12 +214,17 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		self::assertNotEquals(7, count($list), "TEventHandler/IWeakRetainable is wrongly being WeakReferenced.");
 		$item8 = $list[7];
 		$list[] = $item9 = new TEventHandler($item8);
-		self::assertEquals(9, count($list));
+		$list[] = [new CallableListItem(), 'eventHandler']; // immediately dropped because it's not retainable.
+		$list[] = [$retainObject= new RetainableCallableListItem(), 'eventHandler'];
+		self::assertEquals(10, count($list));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item1));
 		self::assertEquals(1, $list->getWeakObjectCount($this->item2));
 		self::assertEquals(1, $list->getWeakObjectCount($item7));
 		self::assertEquals(2, $list->getWeakObjectCount($object));
-		self::assertEquals(4, $list->getWeakCount(), "Weak Callable Objects adding too many to the WeakMap");
+		self::assertEquals(1, $list->getWeakObjectCount($retainObject));
+		self::assertEquals(5, $list->getWeakCount(), "Weak Callable Objects adding too many to the WeakMap");
+		$retainObject = null;
+		self::assertEquals(10, count($list));
 		
 		// Check callables that have proper syntax but error because they aren't referencing
 		//   Valid callables/objects/methods.
@@ -246,7 +255,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		} catch(TInvalidDataValueException $e){}
 		
 		//There should still only be 6 items in the list
-		self::assertEquals(9, count($list));
+		self::assertEquals(10, count($list));
 		
 		$p = $list->toPriorityArrayWeak();
 		
@@ -284,7 +293,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$list->add($this->item1, 5);
 		$list->add([$this->item3, 'eventHandler'], 15);
 		$list->add($this->item2, 10);
-		$list->add($closure = function ($n) { return $n + $n; });
+		$list->add(function ($n) { return $n + $n; });
 		self::assertEquals(5, $list->getWeakCount());
 		
 		$item1 = $list[] = new TEventHandler($handler1 = [$object1, 'eventHandler'], 3);
@@ -298,6 +307,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		$this->item3 = null;
 		$handler2 = $object2 = null;
 		
+		self::assertInstanceof(Closure::class, $closure = $list[1]);
 		self::assertEquals(4, $list->getWeakCount());
 		self::assertEquals(4, $list->getCount());
 		self::assertEquals([$this->item1, $closure, $item1, [$this->item4, 'eventHandler']], $list->toArray());

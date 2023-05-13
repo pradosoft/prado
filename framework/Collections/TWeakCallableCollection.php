@@ -208,7 +208,7 @@ class TWeakCallableCollection extends TPriorityList
 		if ($validate && !is_callable($handler)) {
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
 		}
-		if (is_array($handler) && is_object($handler[0])) {
+		if (is_array($handler) && is_object($handler[0]) && !($handler[0] instanceof IWeakRetainable)) {
 			$handler[0] = WeakReference::create($handler[0]);
 		} elseif (is_object($handler) && !($handler instanceof Closure) && !($handler instanceof IWeakRetainable)) {
 			$handler = WeakReference::create($handler);

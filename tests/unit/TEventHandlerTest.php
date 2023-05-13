@@ -64,26 +64,53 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 	{
 		$handler = new TEventHandler($callable = 'trim', $data = 5);
 		self::assertEquals($callable, $handler->getHandler());
+		self::assertFalse($handler->hasWeakObject());
 		self::assertEquals($data, $handler->getData());
 		
 		$handler = new TEventHandler($callable = [$this::class, 'myTestFunction'], $data = ['key0' => 'element0']);
 		self::assertEquals($callable, $handler->getHandler());
+		self::assertFalse($handler->hasWeakObject());
 		self::assertEquals($data, $handler->getData());
 			
 		$handler = new TEventHandler($callable = function() {return -1;}, $data = 8);
 		self::assertEquals($callable, $handler->getHandler());
+		self::assertFalse($handler->hasWeakObject());
 		self::assertEquals($data, $handler->getData());
 		
 		$handler2 = new TEventHandler($callable = [$this, 'myTestFunction'], $data = 13);
 		self::assertEquals($callable, $handler2->getHandler());
+		self::assertTrue($handler2->hasWeakObject());
 		self::assertEquals($data, $handler2->getData());
 		
 		$handler = new TEventHandler($handler2, $data = 21);
 		self::assertEquals($handler2, $handler->getHandler());
+		self::assertTrue($handler->hasWeakObject());
+		self::assertEquals($data, $handler->getData());
+		
+		$invokable = new EventHandlerObject();
+		$handler = new TEventHandler($invokable, $data = 22);
+		self::assertEquals($invokable, $handler->getHandler());
+		self::assertTrue($handler->hasWeakObject());
+		self::assertEquals($data, $handler->getData());
+			
+		$handler = new TEventHandler($callable = [$invokable, 'myHandler'], $data = 23);
+		self::assertEquals($callable, $handler->getHandler());
+		self::assertTrue($handler->hasWeakObject());
+		self::assertEquals($data, $handler->getData());
+		
+		$invokableRetainable = new RetainableEventHandlerObject();
+		$handler = new TEventHandler($invokableRetainable, $data = 24);
+		self::assertEquals($invokableRetainable, $handler->getHandler());
+		self::assertFalse($handler->hasWeakObject());
+		self::assertEquals($data, $handler->getData());
+			
+		$handler = new TEventHandler($callable = [$invokableRetainable, 'myHandler'], $data = 25);
+		self::assertEquals($callable, $handler->getHandler());
+		self::assertFalse($handler->hasWeakObject());
 		self::assertEquals($data, $handler->getData());
 		
 		self::expectException(TInvalidDataTypeException::class);
-		$handler = new TEventHandler([$this, 'nonexistingMethod'], 34);
+		$handler = new TEventHandler([$this, 'nonexistingMethod'], 26);
 	}
 	
 	public function testInvoke()
