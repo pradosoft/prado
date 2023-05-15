@@ -53,7 +53,6 @@ class TException extends \Exception
 	{
 		$this->_errorCode = $errorMessage;
 		$errorMessage = $this->translateErrorMessage($errorMessage);
-		array_shift($args);
 		$n = count($args);
 		$previous = null;
 		if($n > 0 && ($args[$n - 1] instanceof Throwable)) {
