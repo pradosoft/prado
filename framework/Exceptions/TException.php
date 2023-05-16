@@ -51,6 +51,11 @@ class TException extends \Exception
 	 */
 	public function __construct($errorMessage, ...$args)
 	{
+		$intCode = 0;
+		if(($pos = strrpos($errorMessage, '=')) !== false && is_numeric($data = substr($errorMessage, $pos + 1))) {
+			$intCode = (int) $data;
+			$errorMessage = substr($errorMessage, 0, $pos);
+		}
 		$this->_errorCode = $errorMessage;
 		$errorMessage = $this->translateErrorMessage($errorMessage);
 		$n = count($args);
@@ -63,7 +68,7 @@ class TException extends \Exception
 		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($errorMessage, $tokens), 0, $previous);
+		parent::__construct(strtr($errorMessage, $tokens), $intCode, $previous);
 	}
 
 	/**

@@ -18,6 +18,6 @@ namespace Prado\Exceptions;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-class TUserException extends TException
+class TUserException extends TApplicationException
 {
 }
