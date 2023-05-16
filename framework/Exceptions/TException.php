@@ -25,6 +25,23 @@ use Throwable;
  * the error code so that the translated message contains more detailed
  * information.
  *
+ * Old style TException only have an error Message Code as follows:
+ * <code>
+ *   throw new TException('component_error_message_code'[, $param1, $param2, ..., $chainedException]);
+ * <code>
+ * The parameters and $chainedException are optional. $chainedException
+ * may be entirely left out.
+ *
+ * To include an actual integer error Code, new style PRADO Exceptions
+ * should be used.  The new style is as follows:
+ * <code>
+ *   throw new TException($errorCode, 'component_error_message_code'[, $param1, $param2, ..., $chainedException]);
+ * <code>
+ *
+ * Please note that the Error Code and Error Message/Message-Code is swapped
+ * to the Normal PHP Exceptions (where the $message is the first parameter and $code
+ * is the second).  This done to support Error Message Parameters.
+ *
  * By default, TException looks for a message file by calling
  * {@link getErrorMessageFile()} method, which uses the "message-xx.txt"
  * file located under "Prado\Exceptions" folder, where "xx" is the
@@ -42,19 +59,25 @@ class TException extends \Exception
 
 	/**
 	 * Constructor.
-	 * @param string $errorMessage error message. This can be a string that is listed
-	 *   in the message file. If so, the message in the preferred language
-	 *   will be used as the error message.
+	 * @param int|string $errorCode The Optional PHP Exception Error Code.  In old style
+	 *   Exceptions this is a string error Message Code.  If this is a string, then the
+	 *   $errorCode acts as and $errorMessage becomes a parameter in $args.
+	 * @param string $errorMessage The error message code when $errorCode is an integer.
+	 *   This can be a string that is listed in the message file. If so, the message in
+	 *   the preferred language will be used as the error message.
 	 * @param array $args These are used to replace placeholders ({0}, {1}, {2}, etc.)
 	 *   in the message except the last argument.  If the last argument is a Throwable
 	 *   it is treated as the $previous Exception for exception chaining.
 	 */
-	public function __construct($errorMessage, ...$args)
+	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{
-		$intCode = 0;
-		if(($pos = strrpos($errorMessage, '=')) !== false && is_numeric($data = substr($errorMessage, $pos + 1))) {
-			$intCode = (int) $data;
-			$errorMessage = substr($errorMessage, 0, $pos);
+		if(!is_int($errorCode)) {
+			//assume old code
+			if ($errorMessage !== null || !empty($args)) {
+				array_unshift($args, $errorMessage);
+			}
+			$errorMessage = $errorCode;
+			$errorCode = 0;
 		}
 		$this->_errorCode = $errorMessage;
 		$errorMessage = $this->translateErrorMessage($errorMessage);
@@ -68,7 +91,7 @@ class TException extends \Exception
 		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($errorMessage, $tokens), $intCode, $previous);
+		parent::__construct(strtr($errorMessage, $tokens), $errorCode, $previous);
 	}
 
 	/**

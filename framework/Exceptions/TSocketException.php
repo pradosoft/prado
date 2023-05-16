@@ -33,6 +33,6 @@ class TSocketException extends TNetworkException
 		if ($errorMessage === null) {
 			$errorMessage = socket_strerror($errorCode);
 		}
-		parent::__construct($errorMessage . '=' . $errorCode);
+		parent::__construct($errorCode, $errorMessage);
 	}
 }
