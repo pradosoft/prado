@@ -1,6 +1,6 @@
 <?php
 
-use Prado\Util\TBitHelper;
+use Prado\Util\Helpers\TBitHelper;
 use Prado\Exceptions\TInvalidDataValueException;
 
 class TBitHelperTest extends PHPUnit\Framework\TestCase
