@@ -1,6 +1,6 @@
 <?php
 /**
- * TUserException file
+ * TNetworkException class file
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
@@ -10,14 +10,14 @@
 namespace Prado\Exceptions;
 
 /**
- * TUserException class
+ * TNetworkException class
  *
- * The TUserException is the base class for designed for display to end users.
- * These are usually thrown because of a mistake made by the end user.
+ * TNetworkException is the base class for all streaming, socket, and network level
+ * exceptions.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-class TUserException extends TApplicationException
+class TNetworkException extends TException
 {
 }

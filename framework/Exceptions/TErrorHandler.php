@@ -212,6 +212,7 @@ class TErrorHandler extends \Prado\TModule
 		$tokens = [
 			'%%StatusCode%%' => "$statusCode",
 			'%%ErrorMessage%%' => htmlspecialchars($errorMessage),
+			'%%ErrorCode%%' => $exception->getCode(),
 			'%%ServerAdmin%%' => $serverAdmin,
 			'%%Version%%' => $version,
 			'%%Time%%' => @strftime('%Y-%m-%d %H:%M', time()),
@@ -300,6 +301,7 @@ class TErrorHandler extends \Prado\TModule
 		$tokens = [
 			'%%ErrorType%%' => $exception::class,
 			'%%ErrorMessage%%' => $this->addLink(htmlspecialchars($exception->getMessage())),
+			'%%ErrorCode%%' => $exception->getCode(),
 			'%%SourceFile%%' => htmlspecialchars($this->hidePrivatePathParts($fileName)) . ' (' . $errorLine . ')',
 			'%%SourceCode%%' => $source,
 			'%%StackTrace%%' => htmlspecialchars($this->getExactTraceAsString($exception)),
