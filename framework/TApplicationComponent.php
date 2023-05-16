@@ -46,34 +46,43 @@ class TApplicationComponent extends \Prado\TComponent
 
 	/**
 	 * This caches the 'fx' events for PRADO classes in the application cache
-	 * @param object $class
+	 * @param object $objectClass The object to get the 'fx' events.
 	 * @return string[] fx events from a specific class
 	 */
-	protected function getClassFxEvents($class)
+	protected function getClassFxEvents($objectClass)
 	{
 		static $_classfx = null;
 
 		$app = $this->getApplication();
-		$mode = $className = $cache = null;
-		if ($app && (($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && ($cache = $app->getCache())) {
-			if ($_classfx === null) {
+		$mode = $cache = null;
+		if ($_classfx === null) {
+			if ($app && (($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && ($cache = $app->getCache())) {
 				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
-			}
-			$className = $class::class;
-			if (isset($_classfx[$className])) {
-				return $_classfx[$className];
+			} else {
+				$_classfx = [];
 			}
 		}
-		$fx = parent::getClassFxEvents($class);
+		$className = $objectClass::class;
+		if (array_key_exists($className, $_classfx)) {
+			return $_classfx[$className];
+		}
+		$fx = parent::getClassFxEvents($objectClass);
+		$_classfx[$className] = $fx;
 		if ($cache) {
-			if ($pos = strrpos($className, '\\')) {
-				$baseClassName = substr($className, $pos + 1);
-			} else {
-				$baseClassName = $className;
-			}
-			if ($mode === TApplicationMode::Performance || isset(Prado::$classMap[$baseClassName])) {
-				$_classfx[$className] = $fx;
+			if ($mode === TApplicationMode::Performance) {
 				$cache->set(self::APP_COMPONENT_FX_CACHE, $_classfx);
+			} else {
+				static $_flipClassMap = null;
+				static $_saveCount = 0;
+
+				if ($_flipClassMap === null) {
+					$_flipClassMap = array_flip(Prado::$classMap);
+				}
+				$classData = array_intersect_key($_classfx, $_flipClassMap);
+				if (($c = count($classData)) !== $_saveCount) {
+					$_saveCount = $c;
+					$cache->set(self::APP_COMPONENT_FX_CACHE, $classData);
+				}
 			}
 		}
 		return $fx;
