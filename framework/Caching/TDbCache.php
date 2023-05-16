@@ -496,7 +496,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 			$this->initializeCache();
 		}
 		$expire = ($expire <= 0) ? 0 : time() + $expire;
-		$sql = "INSERT OR REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
+		$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
 		$command = $this->getDbConnection()->createCommand($sql);
 		$command->bindValue(':key', $key, \PDO::PARAM_STR);
 		$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
