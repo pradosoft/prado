@@ -9,7 +9,7 @@
 
 namespace Prado\Util\Math;
 
-use Prado\Util\TBitHelper;
+use Prado\Util\Helpers\TBitHelper;
 
 /**
  * TURational class.

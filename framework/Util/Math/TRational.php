@@ -10,7 +10,7 @@
 namespace Prado\Util\Math;
 
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Util\TBitHelper;
+use Prado\Util\Helpers\TBitHelper;
 
 /**
  * TRational class.

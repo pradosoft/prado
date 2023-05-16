@@ -7,7 +7,7 @@
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
-namespace Prado\Util;
+namespace Prado\Util\Helpers;
 
 /**
  * TEscCharsetConverter class.
