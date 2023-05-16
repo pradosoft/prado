@@ -492,8 +492,27 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		$this->deleteValue($key);
-		return $this->addValue($key, $value, $expire);
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
+		}
+		$expire = ($expire <= 0) ? 0 : time() + $expire;
+		$sql = "INSERT INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire) ON DUPLICATE KEY UPDATE value=VALUES(value), expire=VALUES(expire)";
+		$command = $this->getDbConnection()->createCommand($sql);
+		$command->bindValue(':key', $key, \PDO::PARAM_STR);
+		$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
+
+		try {
+			$command->execute();
+			return true;
+		} catch (\Exception $e) {
+			try {
+				$this->initializeCache(true);
+				$command->execute();
+				return true;
+			} catch (\Exception $e) {
+				return false;
+			}
+		}
 	}
 
 	/**
