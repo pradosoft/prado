@@ -342,6 +342,7 @@ class TErrorHandler extends \Prado\TModule
 	 * The following tokens in the template will be replaced with corresponding content:
 	 * %%StatusCode%% : the status code of the exception
 	 * %%ErrorMessage%% : the error message (HTML encoded).
+	 * %%ErrorCode%% : the exception error code.
 	 * %%ServerAdmin%% : the server admin information (retrieved from Web server configuration)
 	 * %%Version%% : the version information of the Web server.
 	 * %%Time%% : the time the exception occurs at
