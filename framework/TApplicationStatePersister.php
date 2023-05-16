@@ -41,7 +41,7 @@ class TApplicationStatePersister extends \Prado\TModule implements IStatePersist
 	 */
 	protected function getStateFilePath()
 	{
-		return $this->getApplication()->getRuntimePath() . '/global.cache';
+		return $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'global.cache';
 	}
 
 	/**
