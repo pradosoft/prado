@@ -834,4 +834,13 @@ class TPermissionsManagerTest extends PHPUnit\Framework\TestCase
 		$userManager = null;
 	}
 
+	//  The last test because it sets the permissions module in the application
+	public function testGetManager()
+	{
+		$app = Prado::getApplication();
+		$manager = new TPermissionsManager();
+		self::assertNull(TPermissionsManager::getManager());
+		$app->setModule('permissionsManager', $manager);
+		self::assertEquals($manager, TPermissionsManager::getManager());
+	}
 }

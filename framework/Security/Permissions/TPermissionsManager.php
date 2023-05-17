@@ -216,7 +216,20 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var numeric the priority of the module Rule, usually these are Allow User As Owner */
 	private $_parameter = 'configuration:TPermissionsManager:runtime';
 
-	// hierarchy from parameter
+	/**
+	 * @returtn ?TPermissionsManager The PermissionsManager for the application.
+	 */
+	public static function getManager(): ?TPermissionsManager
+	{
+		$app = Prado::getApplication();
+		if ($app) {
+			$modules = $app->getModulesByType(self::class);
+			if (count($modules)) {
+				return array_values($modules)[0];
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager

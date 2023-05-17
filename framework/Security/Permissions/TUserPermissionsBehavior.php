@@ -27,19 +27,7 @@ use Prado\Util\TBehavior;
  */
 class TUserPermissionsBehavior extends TBehavior
 {
-	/** @var \Prado\Security\Permissions\TPermissionsManager manager object for the behavior */
-	private $_manager;
-
-	/**
-	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
-	 */
-	public function __construct($manager = null)
-	{
-		if ($manager) {
-			$this->setPermissionsManager($manager);
-		}
-		parent::__construct();
-	}
+	use TPermissionsManagerPropertyTrait;
 
 	/**
 	 * Gets all the rules for the permission and checks against the TUser.
@@ -78,24 +66,5 @@ class TUserPermissionsBehavior extends TBehavior
 	{
 		$inRole = $this->getPermissionsManager()->isInHierarchy($this->getOwner()->getRoles(), $role);
 		return $callchain->dyIsInRole($return, $role) || $inRole;
-	}
-
-	/**
-	 * @return \Prado\Security\Permissions\TPermissionsManager application permissions manager
-	 */
-	public function getPermissionsManager()
-	{
-		return $this->_manager;
-	}
-
-	/**
-	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
-	 */
-	public function setPermissionsManager($manager)
-	{
-		if ($manager instanceof \WeakReference) {
-			$manager = $manager->get();
-		}
-		$this->_manager = $manager;
 	}
 }

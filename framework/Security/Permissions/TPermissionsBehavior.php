@@ -74,25 +74,13 @@ use Prado\Util\TLogger;
  */
 class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 {
-	/** @var TPermissionsManager manager object for the behavior */
-	private $_manager;
+	use TPermissionsManagerPropertyTrait;
 
 	/** @var array<string, string[]> key is the dynamic event, values are the permission names to check */
 	private $_permissionEvents;
 
 	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
 	private $_events;
-
-	/**
-	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
-	 */
-	public function __construct($manager = null)
-	{
-		if ($manager) {
-			$this->setPermissionsManager($manager);
-		}
-		parent::__construct();
-	}
 
 	/**
 	 * @param \Prado\TComponent $owner the object being attached to
@@ -102,6 +90,9 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		parent::attach($owner);
 		if (method_exists($owner, 'getPermissions')) {
 			$manager = $this->getPermissionsManager();
+			if (!$manager) {
+				return;
+			}
 			$this->_permissionEvents = [];
 			$this->_events = $owner->getPermissions($manager) ?? [];
 			foreach ($this->_events as $permEvent) {
@@ -124,7 +115,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	public function __dycall($method, $args)
 	{
 		$callchain = array_pop($args);
-		if (!$callchain instanceof \Prado\Util\TCallChain) {
+		if (!($callchain instanceof \Prado\Util\TCallChain)) {
 			array_push($args, $callchain);
 			return $args[0] ?? null;
 		}
@@ -154,27 +145,6 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	public function getPermissionEvents()
 	{
 		return $this->_events ?? [];
-	}
-
-	/**
-	 * Gets the TPermissionsManager for the behavior
-	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
-	 */
-	public function getPermissionsManager()
-	{
-		return $this->_manager;
-	}
-
-	/**
-	 * Sets the TPermissionsManager for the behavior
-	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
-	 */
-	public function setPermissionsManager($manager)
-	{
-		if ($manager instanceof \WeakReference) {
-			$manager = $manager->get();
-		}
-		$this->_manager = $manager;
 	}
 
 	/**

@@ -32,22 +32,10 @@ use Prado\Util\TBehavior;
  */
 class TPermissionsConfigurationBehavior extends TBehavior
 {
-	/** @var \Prado\Security\Permissions\TPermissionsManager manager object for the behavior */
-	private $_manager;
+	use TPermissionsManagerPropertyTrait;
 
 	/** @var array|\Prado\Xml\TXmlElement permissions data to parse */
 	private $_permissions = [];
-
-	/**
-	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
-	 */
-	public function __construct($manager = null)
-	{
-		if ($manager) {
-			$this->setPermissionsManager($manager);
-		}
-		parent::__construct();
-	}
 
 	/**
 	 * Loads the configuration specific for page service. This may be called multiple
@@ -94,24 +82,5 @@ class TPermissionsConfigurationBehavior extends TBehavior
 			$manager->loadPermissionsData($permission);
 		}
 		return $callchain->dyApplyConfiguration();
-	}
-
-	/**
-	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
-	 */
-	public function getPermissionsManager()
-	{
-		return $this->_manager;
-	}
-
-	/**
-	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
-	 */
-	public function setPermissionsManager($manager)
-	{
-		if ($manager instanceof \WeakReference) {
-			$manager = $manager->get();
-		}
-		$this->_manager = $manager;
 	}
 }
