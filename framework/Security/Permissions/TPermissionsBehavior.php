@@ -74,34 +74,13 @@ use Prado\Util\TLogger;
  */
 class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 {
-	/** @var TPermissionsManager manager object for the behavior */
-	private $_manager;
+	use TPermissionsManagerPropertyTrait;
 
 	/** @var array<string, string[]> key is the dynamic event, values are the permission names to check */
 	private $_permissionEvents;
 
 	/** @var \Prado\Security\Permissions\TPermissionEvent[] */
 	private $_events;
-
-	/**
-	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
-	 */
-	public function __construct($manager = null)
-	{
-		if ($manager) {
-			$this->setPermissionsManager($manager);
-		}
-		parent::__construct();
-	}
-
-	/**
-	 * Sets the TPermissionsManager to the current singleton instance.
-	 */
-	public function __wakeup()
-	{
-		$this->setPermissionsManager(TPermissionsManager::getManager());
-		parent::__wakeup();
-	}
 
 	/**
 	 * @param \Prado\TComponent $owner the object being attached to
@@ -169,27 +148,6 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	}
 
 	/**
-	 * Gets the TPermissionsManager for the behavior
-	 * @return \Prado\Security\Permissions\TPermissionsManager manages application permissions
-	 */
-	public function getPermissionsManager()
-	{
-		return $this->_manager;
-	}
-
-	/**
-	 * Sets the TPermissionsManager for the behavior
-	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
-	 */
-	public function setPermissionsManager($manager)
-	{
-		if ($manager instanceof \WeakReference) {
-			$manager = $manager->get();
-		}
-		$this->_manager = $manager;
-	}
-
-	/**
 	 * This logs permissions failures in the Prado::log and with the shell when
 	 * the Application is a TShellApplication.  When the Application is in Debug
 	 * mode, the failed permission is written to shell-cli, otherwise the exact
@@ -219,18 +177,5 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 			$writer->writeError('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"');
 		}
 		return $callchain->dyLogPermissionFailed($permission, $action);
-	}
-
-	/**
-	 * Returns an array with the names of all variables of this object that should NOT be serialized
-	 * because their value is the default one or useless to be cached for the next page loads.
-	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
-	 * implementation first.
-	 * @param array $exprops by reference
-	 */
-	protected function _getZappableSleepProps(&$exprops)
-	{
-		parent::_getZappableSleepProps($exprops);
-		$exprops[] = "\0" . __CLASS__ . "\0_manager";
 	}
 }

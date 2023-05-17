@@ -231,6 +231,7 @@ return [
 'TPermissionsBehavior' => 'Prado\Security\Permissions\TPermissionsBehavior',
 'TPermissionsConfigurationBehavior' => 'Prado\Security\Permissions\TPermissionsConfigurationBehavior',
 'TPermissionsManager' => 'Prado\Security\Permissions\TPermissionsManager',
+'TPermissionsManagerPropertyTrait' => 'Prado\Security\Permissions\TPermissionsManagerPropertyTrait',
 'TUserOwnerRule' => 'Prado\Security\Permissions\TUserOwnerRule',
 'TUserPermissionsBehavior' => 'Prado\Security\Permissions\TUserPermissionsBehavior',
 'TAuthManager' => 'Prado\Security\TAuthManager',

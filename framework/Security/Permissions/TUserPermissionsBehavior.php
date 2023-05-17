@@ -27,31 +27,7 @@ use Prado\Util\TBehavior;
  */
 class TUserPermissionsBehavior extends TBehavior
 {
-	/** @var \Prado\Security\Permissions\TPermissionsManager manager object for the behavior */
-	private $_manager;
-
-	/**
-	 * @param null|\Prado\Security\Permissions\TPermissionsManager $manager
-	 */
-	public function __construct($manager = null)
-	{
-		if ($manager) {
-			$this->setPermissionsManager($manager);
-		}
-		parent::__construct();
-	}
-
-	/**
-	 * Sets the TPermissionsManager to the current singleton instance.
-	 */
-	public function __wakeup()
-	{
-		$this->setPermissionsManager(TPermissionsManager::getManager());
-		parent::__wakeup();
-		if(!$this->getPermissionsManager()) {
-			$this->getOwner()->detachBehavior($this->getName());
-		}
-	}
+	use TPermissionsManagerPropertyTrait;
 
 	/**
 	 * Gets all the rules for the permission and checks against the TUser.
@@ -90,37 +66,5 @@ class TUserPermissionsBehavior extends TBehavior
 	{
 		$inRole = $this->getPermissionsManager()->isInHierarchy($this->getOwner()->getRoles(), $role);
 		return $callchain->dyIsInRole($return, $role) || $inRole;
-	}
-
-	/**
-	 * @return \Prado\Security\Permissions\TPermissionsManager application permissions manager
-	 */
-	public function getPermissionsManager()
-	{
-		return $this->_manager;
-	}
-
-	/**
-	 * @param \Prado\Security\Permissions\TPermissionsManager|\WeakReference $manager manages application permissions
-	 */
-	public function setPermissionsManager($manager)
-	{
-		if ($manager instanceof \WeakReference) {
-			$manager = $manager->get();
-		}
-		$this->_manager = $manager;
-	}
-
-	/**
-	 * Returns an array with the names of all variables of this object that should NOT be serialized
-	 * because their value is the default one or useless to be cached for the next page loads.
-	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
-	 * implementation first.
-	 * @param array $exprops by reference
-	 */
-	protected function _getZappableSleepProps(&$exprops)
-	{
-		parent::_getZappableSleepProps($exprops);
-		$exprops[] = "\0" . __CLASS__ . "\0_manager";
 	}
 }
