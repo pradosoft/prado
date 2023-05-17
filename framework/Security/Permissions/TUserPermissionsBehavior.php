@@ -42,6 +42,18 @@ class TUserPermissionsBehavior extends TBehavior
 	}
 
 	/**
+	 * Sets the TPermissionsManager to the current singleton instance.
+	 */
+	public function __wakeup()
+	{
+		$this->setPermissionsManager(TPermissionsManager::getManager());
+		parent::__wakeup();
+		if(!$this->getPermissionsManager()) {
+			$this->getOwner()->detachBehavior($this->getName());
+		}
+	}
+
+	/**
 	 * Gets all the rules for the permission and checks against the TUser.
 	 * @param string $permission
 	 * @param null|mixed $extraData
@@ -97,5 +109,18 @@ class TUserPermissionsBehavior extends TBehavior
 			$manager = $manager->get();
 		}
 		$this->_manager = $manager;
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . __CLASS__ . "\0_manager";
 	}
 }

@@ -95,6 +95,15 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	}
 
 	/**
+	 * Sets the TPermissionsManager to the current singleton instance.
+	 */
+	public function __wakeup()
+	{
+		$this->setPermissionsManager(TPermissionsManager::getManager());
+		parent::__wakeup();
+	}
+
+	/**
 	 * @param \Prado\TComponent $owner the object being attached to
 	 */
 	public function attach($owner)
@@ -102,6 +111,9 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 		parent::attach($owner);
 		if (method_exists($owner, 'getPermissions')) {
 			$manager = $this->getPermissionsManager();
+			if (!$manager) {
+				return;
+			}
 			$this->_permissionEvents = [];
 			$this->_events = $owner->getPermissions($manager) ?? [];
 			foreach ($this->_events as $permEvent) {
@@ -124,7 +136,7 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 	public function __dycall($method, $args)
 	{
 		$callchain = array_pop($args);
-		if (!$callchain instanceof \Prado\Util\TCallChain) {
+		if (!($callchain instanceof \Prado\Util\TCallChain)) {
 			array_push($args, $callchain);
 			return $args[0] ?? null;
 		}
@@ -207,5 +219,18 @@ class TPermissionsBehavior extends TBehavior implements IDynamicMethods
 			$writer->writeError('@' . $name . ' failed permission' . $permission . ' when "' . $action . '"');
 		}
 		return $callchain->dyLogPermissionFailed($permission, $action);
+	}
+
+	/**
+	 * Returns an array with the names of all variables of this object that should NOT be serialized
+	 * because their value is the default one or useless to be cached for the next page loads.
+	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
+	 * implementation first.
+	 * @param array $exprops by reference
+	 */
+	protected function _getZappableSleepProps(&$exprops)
+	{
+		parent::_getZappableSleepProps($exprops);
+		$exprops[] = "\0" . __CLASS__ . "\0_manager";
 	}
 }

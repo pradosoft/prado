@@ -216,7 +216,12 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var numeric the priority of the module Rule, usually these are Allow User As Owner */
 	private $_parameter = 'configuration:TPermissionsManager:runtime';
 
-	// hierarchy from parameter
+	private static $_singleton;
+
+	public static function getManager()
+	{
+		return self::$_singleton;
+	}
 
 	/**
 	 * @param \Prado\Security\Permissions\TPermissionsManager $manager
@@ -251,6 +256,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			throw new TInvalidOperationException('permissions_init_once');
 		}
 		$this->_initialized = true;
+		self::$_singleton = $this;
 
 		$manager = \WeakReference::create($this);
 		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
