@@ -1,7 +1,6 @@
 <?php
 
 use Prado\Data\SqlMap\TSqlMapManager;
-use Prado\TApplicationComponent;
 
 class Ticket589Test extends PHPUnit\Framework\TestCase
 {
