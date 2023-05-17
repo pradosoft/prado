@@ -33,7 +33,7 @@ use Prado\TApplicationMode;
  */
 class TApplicationComponent extends \Prado\TComponent
 {
-	public const APP_COMPONENT_FX_CACHE = 'prado:applicationcomponent:fxcache';
+	public const FX_CACHE_FILE = 'fxevent.cache';
 	/**
 	 * TApplicationComponents auto listen to global events.
 	 *
@@ -46,34 +46,47 @@ class TApplicationComponent extends \Prado\TComponent
 
 	/**
 	 * This caches the 'fx' events for PRADO classes in the application cache
-	 * @param object $class
+	 * @param object $class The object to get the 'fx' events.
 	 * @return string[] fx events from a specific class
 	 */
 	protected function getClassFxEvents($class)
 	{
-		static $_classfx = null;
+		static $_classfx = [];
+		static $_classfxSize = 0;
+		static $_loaded = false;
 
 		$app = $this->getApplication();
-		$mode = $className = $cache = null;
-		if ($app && (($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && ($cache = $app->getCache())) {
-			if ($_classfx === null) {
-				$_classfx = $cache->get(self::APP_COMPONENT_FX_CACHE) ?? [];
-			}
-			$className = $class::class;
-			if (isset($_classfx[$className])) {
-				return $_classfx[$className];
+		$cacheFile = $mode = null;
+		if ($app) {
+			$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
+			if((($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && !$_loaded) {
+				$_loaded = true;
+				if (($content = @file_get_contents($cacheFile)) !== false) {
+					$_classfx = @unserialize($content) ?? [];
+					$_classfxSize = count($_classfx);
+				}
 			}
 		}
+		$className = $class::class;
+		if (array_key_exists($className, $_classfx)) {
+			return $_classfx[$className];
+		}
 		$fx = parent::getClassFxEvents($class);
-		if ($cache) {
-			if ($pos = strrpos($className, '\\')) {
-				$baseClassName = substr($className, $pos + 1);
-			} else {
-				$baseClassName = $className;
-			}
-			if ($mode === TApplicationMode::Performance || isset(Prado::$classMap[$baseClassName])) {
-				$_classfx[$className] = $fx;
-				$cache->set(self::APP_COMPONENT_FX_CACHE, $_classfx);
+		$_classfx[$className] = $fx;
+		if ($cacheFile) {
+			if ($mode === TApplicationMode::Performance) {
+				file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
+			} elseif ($mode === TApplicationMode::Normal) {
+				static $_flipClassMap = null;
+
+				if ($_flipClassMap === null) {
+					$_flipClassMap = array_flip(Prado::$classMap);
+				}
+				$classData = array_intersect_key($_classfx, $_flipClassMap);
+				if (($c = count($classData)) > $_classfxSize) {
+					$_classfxSize = $c;
+					file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
+				}
 			}
 		}
 		return $fx;

@@ -492,8 +492,57 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 */
 	protected function setValue($key, $value, $expire)
 	{
-		$this->deleteValue($key);
-		return $this->addValue($key, $value, $expire);
+		if (!$this->_cacheInitialized) {
+			$this->initializeCache();
+		}
+		$db = $this->getDbConnection();
+		$driver = $db->getDriverName();
+		if (in_array($driver, ['mysql', 'mysqli', 'sqlite', 'ibm', 'oci', 'sqlsrv', 'mssql', 'dblib', 'pgsql'])) {
+			$expire = ($expire <= 0) ? 0 : time() + $expire;
+			if (in_array($driver, ['mysql', 'mysqli', 'sqlite'])) {
+				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
+			} elseif ($driver === 'pgsql') {
+				$sql = "INSERT INTO {$this->_cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
+					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
+			} else {
+				$sql = "MERGE INTO {$this->_cacheTable} AS c " .
+				"USING (SELECT :key AS itemkey, :value AS value, $expire AS expire) AS data " .
+				"ON c.itemkey = data.itemkey " .
+				"WHEN MATCHED THEN " .
+					"UPDATE SET c.value = data.value, c.expire = data.expire " .
+				"WHEN NOT MATCHED THEN " .
+					"INSERT (itemkey, value, expire) " .
+					"VALUES (data.itemkey, data.value, data.expire)";
+			}
+			$command = $db->createCommand($sql);
+			$command->bindValue(':key', $key, \PDO::PARAM_STR);
+			$command->bindValue(':value', serialize($value), \PDO::PARAM_LOB);
+
+			try {
+				$command->execute();
+				return true;
+			} catch (\Exception $e) {
+				try {
+					$this->initializeCache(true);
+					$command->execute();
+					return true;
+				} catch (\Exception $e) {
+					return false;
+				}
+			}
+		} else {
+			$isCurrentTransaction = $this->getDbConnection()->getCurrentTransaction();
+			$transaction = $this->getDbConnection()->getCurrentTransaction() ?? $this->getDbConnection()->beginTransaction();
+
+			$this->deleteValue($key);
+			$return = $this->addValue($key, $value, $expire);
+
+			if (!$isCurrentTransaction) {
+				$transaction->commit();
+			}
+
+			return $return;
+		}
 	}
 
 	/**
