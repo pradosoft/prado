@@ -497,7 +497,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		}
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
-		if (0 && in_array($driver, ['mysql', 'mysqli', 'sqlite', 'ibm', 'oci', 'sqlsrv', 'mssql', 'dblib', 'pgsql'])) {
+		if (in_array($driver, ['mysql', 'mysqli', 'sqlite', 'ibm', 'oci', 'sqlsrv', 'mssql', 'dblib', 'pgsql'])) {
 			$expire = ($expire <= 0) ? 0 : time() + $expire;
 			if (in_array($driver, ['mysql', 'mysqli', 'sqlite'])) {
 				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
