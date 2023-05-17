@@ -195,9 +195,9 @@ trait TPriorityCollectionTrait
 		}
 		$this->sortPriorities();
 		if ($this->getPriorityCombineStyle()) {
-			$this->_fd = array_merge(...$this->_d);
+			$this->_fd = array_merge(...array_values($this->_d));
 		} else {
-			$this->_fd = array_replace(...$this->_d);
+			$this->_fd = array_replace(...array_values($this->_d));
 		}
 	}
 
