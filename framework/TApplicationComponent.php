@@ -76,7 +76,7 @@ class TApplicationComponent extends \Prado\TComponent
 		if ($cacheFile) {
 			if ($mode === TApplicationMode::Performance) {
 				file_put_contents($cacheFile, serialize($_classfx), LOCK_EX);
-			} else {
+			} elseif ($mode === TApplicationMode::Normal) {
 				static $_flipClassMap = null;
 
 				if ($_flipClassMap === null) {
