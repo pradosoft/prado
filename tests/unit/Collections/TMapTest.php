@@ -151,7 +151,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 	{
 		$map = new $this->_baseClass([], true);
 		self::expectException(TInvalidOperationException::class);
-		$map->add('key', 'value');
+		$map->add('key', $this->item3);
 	}
 
 	public function testRemove()
@@ -175,9 +175,28 @@ class TMapTest extends PHPUnit\Framework\TestCase
 
 	public function testCanNotRemoveWhenReadOnly()
 	{
-		$map = new $this->_baseClass(['key' => 'value'], true);
+		$map = new $this->_baseClass(['key1' => $this->item1], true);
 		self::expectException(TInvalidOperationException::class);
-		$map->remove('key');
+		$map->remove('key1');
+	}
+	
+	public function testRemoveItem()
+	{
+		$this->map->add('key1-1', $this->item1);
+		$this->assertEquals(['key1' => $this->item1, 'key1-1' => $this->item1], $this->map->removeItem($this->item1));
+		
+		$this->assertTrue($this->map->getCount() == 1);
+		$this->assertFalse($this->map->contains('key1'));
+		$this->assertFalse($this->map->contains('key1-1'));
+		
+		$this->assertEquals([], $this->map->removeItem($this->item1));
+	}
+
+	public function testCanNotRemoveItemWhenReadOnly()
+	{
+		$map = new $this->_baseClass(['key' => $this->item1], true);
+		self::expectException(TInvalidOperationException::class);
+		$map->removeItem($this->item3);
 	}
 
 	public function testClear()
