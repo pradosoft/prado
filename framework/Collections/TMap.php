@@ -189,6 +189,27 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
+	 * Removes an item from the map.  This removes all of an item from the map.
+	 * @param mixed $item the item to be removed
+	 * @throws TInvalidOperationException if the map is read-only
+	 * @return array The array of keys and the item removed.
+	 */
+	public function removeItem(mixed $item): array
+	{
+		if (!$this->_r) {
+			$return = [];
+			foreach ($this->toArray() as $key => $value) {
+				if ($item === $value) {
+					$return[$key] = $this->remove($key);
+				}
+			}
+			return $return;
+		} else {
+			throw new TInvalidOperationException('map_readonly', $this::class);
+		}
+	}
+
+	/**
 	 * Removes all items in the map.
 	 */
 	public function clear(): void
