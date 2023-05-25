@@ -22,6 +22,7 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(crc32('012'), TBitHelper::crc32(['0123456789', 3]));
 		self::assertEquals(crc32('3456789'), TBitHelper::crc32(['0123456789', null, 3]));
 		self::assertEquals(crc32('345'), TBitHelper::crc32(['0123456789', 3, 3]));
+		self::assertEquals(crc32('345'), TBitHelper::crc32(['source' => '0123456789', 'length' => 3, 'offset' => 3]));
 		
 		$filename = realpath(__DIR__ . '/../../Web/data/pradoheader.gif');
 		$fileContents = file_get_contents($filename);
