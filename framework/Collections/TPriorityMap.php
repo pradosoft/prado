@@ -328,15 +328,26 @@ class TPriorityMap extends TMap
 		return isset($this->_fd[$key]) || array_key_exists($key, $this->_fd);
 	}
 
-	/**
-	 * @param mixed $item the item
-	 * @return false|mixed the key of the item in the map, false if not found.
-	 */
-	public function keyOf($item)
-	{
-		$this->flattenPriorities();
-		return array_search($item, $this->_fd, true);
-	}
+	 /**
+	  * @param mixed $item the item
+	  * @param bool $multiple Return an array of all the keys. Default true.
+	  * @return false|mixed the key of the item in the map, false if not found.
+	  */
+	 public function keyOf($item, bool $multiple = true): mixed
+	 {
+	 	$this->flattenPriorities();
+	 	if ($multiple) {
+	 		$return = [];
+	 		foreach ($this->_fd as $key => $value) {
+	 			if ($item === $value) {
+	 				$return[$key] = $item;
+	 			}
+	 		}
+	 		return $return;
+	 	} else {
+	 		return array_search($item, $this->_fd, true);
+	 	}
+	 }
 
 	/**
 	 * Copies iterable data into the map.
