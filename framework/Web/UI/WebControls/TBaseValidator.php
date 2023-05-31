@@ -24,11 +24,11 @@ use Prado\Web\UI\IValidator;
  * Validation is performed when a postback control, such as a TButton, a TLinkButton
  * or a TTextBox (under AutoPostBack mode) is submitting the page and
  * its <b>CausesValidation</b> property is true.
- * You can also manually perform validation by calling {@link TPage::validate()}.
- * The input control to be validated is specified by {@link setControlToValidate ControlToValidate}.
+ * You can also manually perform validation by calling {@see TPage::validate()}.
+ * The input control to be validated is specified by {@see setControlToValidate ControlToValidate}.
  *
  * Validator controls always validate the associated input control on the serve side.
- * In addition, if {@link getEnableClientScript EnableClientScript} is true,
+ * In addition, if {@see getEnableClientScript EnableClientScript} is true,
  * validation will also be performed on the client-side using javascript.
  * Client-side validation will validate user input before it is sent to the server.
  * The form data will not be submitted if any error is detected. This avoids
@@ -38,37 +38,37 @@ use Prado\Web\UI\IValidator;
  * each responsible for validating against a different criteria.
  * For example, on a user registration form, you may want to make sure the user
  * enters a value in the username text box, and the input must consist of only word
- * characters. You can use a {@link TRequiredFieldValidator} to ensure the input
- * of username and a {@link TRegularExpressionValidator} to ensure the proper input.
+ * characters. You can use a {@see TRequiredFieldValidator} to ensure the input
+ * of username and a {@see TRegularExpressionValidator} to ensure the proper input.
  *
- * If an input control fails validation, the text specified by the {@link setErrorMessage ErrorMessage}
- * property is displayed in the validation control. However, if the {@link setText Text}
- * property is set, it will be displayed instead. If both {@link setErrorMessage ErrorMessage}
- * and {@link setText Text} are empty, the body content of the validator will
- * be displayed. Error display is controlled by {@link setDisplay Display} property.
+ * If an input control fails validation, the text specified by the {@see setErrorMessage ErrorMessage}
+ * property is displayed in the validation control. However, if the {@see setText Text}
+ * property is set, it will be displayed instead. If both {@see setErrorMessage ErrorMessage}
+ * and {@see setText Text} are empty, the body content of the validator will
+ * be displayed. Error display is controlled by {@see setDisplay Display} property.
  *
  * You can also customized the client-side behaviour by adding javascript
- * code to the subproperties of the {@link getClientSide ClientSide}
+ * code to the subproperties of the {@see getClientSide ClientSide}
  * property. See quickstart documentation for further details.
  *
- * You can also place a {@link TValidationSummary} control on a page to display error messages
- * from the validators together. In this case, only the {@link setErrorMessage ErrorMessage}
- * property of the validators will be displayed in the {@link TValidationSummary} control.
+ * You can also place a {@see TValidationSummary} control on a page to display error messages
+ * from the validators together. In this case, only the {@see setErrorMessage ErrorMessage}
+ * property of the validators will be displayed in the {@see TValidationSummary} control.
  *
  * Validators can be partitioned into validation groups by setting their
- * {@link setValidationGroup ValidationGroup} property. If the control causing the
+ * {@see setValidationGroup ValidationGroup} property. If the control causing the
  * validation also sets its ValidationGroup property, only those validators having
  * the same ValidationGroup value will do input validation.
  *
- * Note, the {@link TPage::getIsValid IsValid} property of the current {@link TPage}
+ * Note, the {@see TPage::getIsValid IsValid} property of the current {@see TPage}
  * instance will be automatically updated by the validation process which occurs
- * after {@link TPage::onLoad onLoad} of {@link TPage} and before the postback events.
- * Therefore, if you use the {@link TPage::getIsValid()} property in
- * the {@link TPage::onLoad()} method, you must first explicitly call
- * the {@link TPage::validate()} method.
+ * after {@see TPage::onLoad onLoad} of {@see TPage} and before the postback events.
+ * Therefore, if you use the {@see TPage::getIsValid()} property in
+ * the {@see TPage::onLoad()} method, you must first explicitly call
+ * the {@see TPage::validate()} method.
  *
  * <b>Notes to Inheritors</b>  When you inherit from TBaseValidator, you must
- * override the method {@link evaluateIsValid}.
+ * override the method {@see evaluateIsValid}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -328,7 +328,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * This method overrides parent's implementation by setting {@link setIsValid IsValid} to true if disabled.
+	 * This method overrides parent's implementation by setting {@see setIsValid IsValid} to true if disabled.
 	 * @param bool $value whether the validator is enabled.
 	 */
 	public function setEnabled($value)
@@ -425,8 +425,8 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Gets the ID of the HTML element that will receive focus if validation fails and {@link getFocusOnError FocusOnError} is true.
-	 * Defaults to the client ID of the {@link getControlToValidate ControlToValidate}.
+	 * Gets the ID of the HTML element that will receive focus if validation fails and {@see getFocusOnError FocusOnError} is true.
+	 * Defaults to the client ID of the {@see getControlToValidate ControlToValidate}.
 	 * @return string the ID of the HTML element to receive focus
 	 */
 	public function getFocusElementID()
@@ -446,7 +446,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * Sets the ID of the HTML element that will receive focus if validation fails and {@link getFocusOnError FocusOnError} is true.
+	 * Sets the ID of the HTML element that will receive focus if validation fails and {@see getFocusOnError FocusOnError} is true.
 	 * @param string $value the ID of the HTML element to receive focus
 	 */
 	public function setFocusElementID($value)
@@ -488,7 +488,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	}
 
 	/**
-	 * @throws TConfigurationException if {@link getControlToValidate
+	 * @throws TConfigurationException if {@see getControlToValidate
 	 * ControlToValidate} is empty or does not point to a valid control
 	 * @return \Prado\Web\UI\TControl control to be validated. Null if no control is found.
 	 */
@@ -504,7 +504,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 	/**
 	 * Retrieves the property value of the control being validated.
 	 * @param \Prado\Web\UI\TControl $control control being validated
-	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@link \Prado\Web\UI\IValidatable}.
+	 * @throws TInvalidDataTypeException if the control to be validated does not implement {@see \Prado\Web\UI\IValidatable}.
 	 * @return string property value to be validated
 	 */
 	protected function getValidationValue($control)
@@ -518,7 +518,7 @@ abstract class TBaseValidator extends TLabel implements IValidator
 
 	/**
 	 * Validates the specified control.
-	 * Do not override this method. Override {@link evaluateIsValid} instead.
+	 * Do not override this method. Override {@see evaluateIsValid} instead.
 	 * @return bool whether the validation succeeds
 	 */
 	public function validate()

@@ -22,21 +22,21 @@ use Prado\Util\TCallChain;
  * handlers on each owner.
  *
  * TClassBehavior is one of two types of behaviors in PRADO. The other type is the
- * {@link TBehavior} where each instance can have only one owner and has per object
+ * {@see TBehavior} where each instance can have only one owner and has per object
  * state.
  *
  * TClassBehavior must attach to owner components with the same behavior name.
  *
- * Behaviors can be attached to instanced objects, with {@link TComponent::attachbehavior},
+ * Behaviors can be attached to instanced objects, with {@see TComponent::attachbehavior},
  * or to each class, the parent classes, interfaces, and first level traits used by
- * the class(es) with {@link TComponent::attachClassBehavior}. Class-wide behaviors
- * cannot be attached to the root class {@link TComponent} but can attach to any subclass.
+ * the class(es) with {@see TComponent::attachClassBehavior}. Class-wide behaviors
+ * cannot be attached to the root class {@see TComponent} but can attach to any subclass.
  * All new components with an attached class behavior will receive the behavior on
  * instancing.  Instances of a class will receive the class behavior if they are
- * {@link TComponent::listen}ing.
+ * {@see TComponent::listen}ing.
  *
- * TClassBehavior is a subclass of {@link TBaseBehavior} that implements the core
- * behavior functionality.  See {@link IClassBehavior} for implementation details.
+ * TClassBehavior is a subclass of {@see TBaseBehavior} that implements the core
+ * behavior functionality.  See {@see IClassBehavior} for implementation details.
  *
  * The interface IClassBehavior is used by TComponent to inject the owner as the
  * first method parameter, when the behavior method is called on the owner, so the
@@ -79,11 +79,11 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 
 	/**
 	 * Attaches the behavior object to a new owner component.  This is normally called
-	 * by the new owner when attaching a behavior, by {@link TComponent::attachBehavior},
+	 * by the new owner when attaching a behavior, by {@see TComponent::attachBehavior},
 	 * and not directly called.
 	 *
-	 * The default implementation will add the new owner to the {@link getOwners} and
-	 * synchronize the behavior event handlers (cached in {@link eventsLog}) with the
+	 * The default implementation will add the new owner to the {@see getOwners} and
+	 * synchronize the behavior event handlers (cached in {@see eventsLog}) with the
 	 * new owner. Make sure you call this parent implementation if you override this
 	 * method.
 	 * @param TComponent $component The component this behavior is being attached to.
@@ -108,11 +108,11 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 
 	/**
 	 * Detaches the behavior object from an owner component.  This is normally called
-	 * by the owner when detaching a behavior, by {@link TComponent::detachBehavior},
+	 * by the owner when detaching a behavior, by {@see TComponent::detachBehavior},
 	 * and not directly called.
 	 *
 	 * The default implementation will remove the behavior event handlers (cached in
-	 * {@link eventsLog}) from the owner and remove the owner from the {@link getOwners}.
+	 * {@see eventsLog}) from the owner and remove the owner from the {@see getOwners}.
 	 * Make sure you call this parent implementation if you override this method.
 	 * @param TComponent $component The component this behavior is being detached from.
 	 * @throws TInvalidOperationException When detaching without an owner or from a

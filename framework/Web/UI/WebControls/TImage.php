@@ -13,10 +13,10 @@ namespace Prado\Web\UI\WebControls;
  * TImage class
  *
  * TImage displays an image on a page. The image is specified via the
- * {@link setImageUrl ImageUrl} property which takes a relative or absolute
+ * {@see setImageUrl ImageUrl} property which takes a relative or absolute
  * URL to the image file. The style of the image displayed can be set using
- * the {@link setStyle Style} property. To set an alternative text
- * use the {@link setAlternateText AlternateText} property.
+ * the {@see setStyle Style} property. To set an alternative text
+ * use the {@see setAlternateText AlternateText} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -114,8 +114,8 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Returns the URL of the image file.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getImageUrl()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getImageUrl()}.
 	 * @return string the URL of the image file.
 	 * @see getImageUrl
 	 * @since 3.1.0
@@ -127,8 +127,8 @@ class TImage extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Sets the URL of the image.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setImageUrl()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setImageUrl()}.
 	 * @param string $value the URL of the image file.
 	 * @see setImageUrl
 	 * @since 3.1.0

@@ -27,18 +27,18 @@ use Prado\TPropertyValue;
  *
  * A cache module has to be loaded in order to use TCachePageStatePersister.
  * By default, TCachePageStatePersister will use the primary cache module.
- * A non-primary cache module can be used by setting {@link setCacheModuleID CacheModuleID}.
- * Any cache module, as long as it implements the interface {@link ICache}, may be used.
- * For example, one can use {@link TDbCache}, {@link TMemCache}, {@link TAPCCache}, etc.
+ * A non-primary cache module can be used by setting {@see setCacheModuleID CacheModuleID}.
+ * Any cache module, as long as it implements the interface {@see ICache}, may be used.
+ * For example, one can use {@see TDbCache}, {@see TMemCache}, {@see TAPCCache}, etc.
  *
- * TCachePageStatePersister uses {@link setCacheTimeout CacheTimeout} to limit the data
+ * TCachePageStatePersister uses {@see setCacheTimeout CacheTimeout} to limit the data
  * that stores in cache.
  *
  * Since server resource is often limited, be cautious if you plan to use TCachePageStatePersister
- * for high-traffic Web pages. You may consider using a small {@link setCacheTimeout CacheTimeout}.
+ * for high-traffic Web pages. You may consider using a small {@see setCacheTimeout CacheTimeout}.
  *
  * There are a couple of ways to use TCachePageStatePersister.
- * One can override the page's {@link TPage::getStatePersister()} method and
+ * One can override the page's {@see TPage::getStatePersister()} method and
  * create a TCachePageStatePersister instance there.
  * Or one can configure the pages to use TCachePageStatePersister in page configurations
  * as follows,

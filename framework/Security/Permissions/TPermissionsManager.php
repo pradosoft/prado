@@ -27,19 +27,19 @@ use Prado\Xml\TXmlElement;
  *
  * TPermissionsManager handles Permissions authorization and Roll Based
  * Access Control (RBAC).  Each registered Permission is given a set of
- * {@link \Prado\Security\TAuthorizationRule}s.  The RBAC is based on roles
+ * {@see \Prado\Security\TAuthorizationRule}s.  The RBAC is based on roles
  * having children roles and permissions, with permissions being thought of
  * as special roles themselves.
  *
- * TPermissionsManager attaches {@link TPermissionsBehavior} to all classes
- * that implement {@link IPermissions}.  This is the main mechanism
+ * TPermissionsManager attaches {@see TPermissionsBehavior} to all classes
+ * that implement {@see IPermissions}.  This is the main mechanism
  * by which application permissions are registered.
  *
  * The role hierarchy and permission rules are unique to each application.  The
  * permissions configuration is defined in the TPermissionsManager application
- * configuration or in a separate {@link PermissionsFile}. {@link TPermissionsConfigurationBehavior}
+ * configuration or in a separate {@see PermissionsFile}. {@see TPermissionsConfigurationBehavior}
  * enables a page configuration to have Permission Configurations as well.
- * A {@link TDbParameterModule} can be specified with {@link getDbParameter} for
+ * A {@see TDbParameterModule} can be specified with {@see getDbParameter} for
  * loading dynamic roles and permissions.
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
@@ -95,9 +95,9 @@ use Prado\Xml\TXmlElement;
  *
  * A special role "All" is automatically created to contain all the permissions.
  * Specifying "all" as a child, is the same as specifying a role as a super role
- * via {@link setSuperRoles}.
+ * via {@see setSuperRoles}.
  *
- * All users get the roles specified by {@link getDefaultRoles}.  This changes
+ * All users get the roles specified by {@see getDefaultRoles}.  This changes
  * the default Prado behavior for guest users having no roles.
  *
  * Intermediate roles, that are not defined in the user system, may be defined in
@@ -106,7 +106,7 @@ use Prado\Xml\TXmlElement;
  *
  * Permission Rules can have multiple rules. they are
  * ordered by natural specified configuration order unless the rule property
- * {@link TAuthorizationRule::setPriority} is set.
+ * {@see TAuthorizationRule::setPriority} is set.
  *
  * Permissions authorization rules may use the '*' or 'perm_*' to add the rules to all
  * matching permission names.  Anything before the * is matched as a permission.
@@ -115,21 +115,21 @@ use Prado\Xml\TXmlElement;
  *
  * A permission name must list itself as a role in TAuthorizationRule for the user to be
  * validated for that permission name for authorization.  This is handled automatically
- * by TPermissionManager with the {@link getAutoAllowWithPermission} property.
+ * by TPermissionManager with the {@see getAutoAllowWithPermission} property.
  * By default getAutoAllowWithPermission is true, and allows any user with
  * that permission in their hierarchy to allow access to the functionality.
- * This rule priority can be set with {@link getAutoRulePriority},
+ * This rule priority can be set with {@see getAutoRulePriority},
  * where the default is 5, and -thus- before user defined rules.
  *
  * The second automatic rules includes Modules have their own preset rules that can
- * be automatically added via {@link getAutoPresetRules}.  By default this
+ * be automatically added via {@see getAutoPresetRules}.  By default this
  * is true. These rules typically allow owners of the data to be permitted without having
  * a permission-role.  Preset rules can define their own priorities but those
- * without set priorities receive the priority from {@link getAutoRulePriority}.
+ * without set priorities receive the priority from {@see getAutoRulePriority}.
  *
- * The third, and last, auto-Rule is the final {@link getAutoDenyAll DenyAll}
+ * The third, and last, auto-Rule is the final {@see getAutoDenyAll DenyAll}
  * rule. This is the last rule that denies all by default.  The AutoDenyAll
- * gets its rule priority from {@link getAutoDenyAllPriority}.  By default,
+ * gets its rule priority from {@see getAutoDenyAllPriority}.  By default,
  * deny all to all permissions is enabled and thus blocking all permissions.
  *
  * Recursive hierarchy is gracefully handled, in case of any loop structures.

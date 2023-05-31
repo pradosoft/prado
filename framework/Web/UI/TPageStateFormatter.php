@@ -15,12 +15,12 @@ namespace Prado\Web\UI;
  * TPageStateFormatter is a utility class to transform the page state
  * into and from a string that can be properly saved in persistent storage.
  *
- * Depending on the {@link TPage::getEnableStateValidation() EnableStateValidation}
- * and {@link TPage::getEnableStateEncryption() EnableStateEncryption},
+ * Depending on the {@see TPage::getEnableStateValidation() EnableStateValidation}
+ * and {@see TPage::getEnableStateEncryption() EnableStateEncryption},
  * TPageStateFormatter may do HMAC validation and encryption to prevent
  * the state data from being tampered or viewed.
  * The private keys and hashing/encryption methods are determined by
- * {@link TApplication::getSecurityManager() SecurityManager}.
+ * {@see TApplication::getSecurityManager() SecurityManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1

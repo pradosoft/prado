@@ -16,8 +16,8 @@ use Prado\TPropertyValue;
  * THotSpot class.
  *
  * THotSpot implements the basic functionality common to all hot spot shapes.
- * Derived classes include {@link TCircleHotSpot}, {@link TPolygonHotSpot}
- * and {@link TRectangleHotSpot}.
+ * Derived classes include {@see TCircleHotSpot}, {@see TPolygonHotSpot}
+ * and {@see TRectangleHotSpot}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

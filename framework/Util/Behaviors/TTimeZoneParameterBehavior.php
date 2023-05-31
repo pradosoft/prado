@@ -17,7 +17,7 @@ use Prado\Util\TBehavior;
  * TTimeZoneParameterBehavior class.
  *
  * TTimeZoneParameterBehavior sets the date_default_timezone_set.
- * This parameterizes the TimeZone.   {@link TimeZoneParameter} is
+ * This parameterizes the TimeZone.   {@see TimeZoneParameter} is
  * the key to the Application Parameter for setting the TimeZone.
  *
  * This Behavior is designed to attach to TApplication, but can be
@@ -31,8 +31,8 @@ use Prado\Util\TBehavior;
  * precedence.  Setting the TimeZoneParameter to "" will disable the
  * parameter functionality and set the TimeZone from the attribute TimeZone.
  *
- * This routes changes in the Application Parameter {@link TimeZoneParameter}
- * to {@link setTimeZone}. The default TimeZoneParameter is 'prop:TimeZone'.
+ * This routes changes in the Application Parameter {@see TimeZoneParameter}
+ * to {@see setTimeZone}. The default TimeZoneParameter is 'prop:TimeZone'.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -55,7 +55,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	private $_timeZoneParameter = self::TIMEZONE_PARAMETER_NAME;
 
 	/**
-	 * @var object {@link TMapRouteBehavior} that routes changes to the parameter
+	 * @var object {@see TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setTimeZone.
 	 */
 	private $_paramBehavior;

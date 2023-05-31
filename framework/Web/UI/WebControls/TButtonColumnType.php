@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TButtonColumnType class.
  * TButtonColumnType defines the enumerable type for the possible types of buttons
- * that can be used in a {@link TButtonColumn}.
+ * that can be used in a {@see TButtonColumn}.
  *
  * The following enumerable values are defined:
  * - LinkButton: link buttons

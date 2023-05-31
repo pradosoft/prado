@@ -14,7 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * TAPCCache class
  *
- * TAPCCache implements a cache application module based on {@link http://www.php.net/apcu APCu}.
+ * TAPCCache implements a cache application module based on {@see http://www.php.net/apcu APCu}.
  *
  * By definition, cache does not ensure the existence of a value
  * even if it never expires. Cache is not meant to be an persistent storage.
@@ -29,8 +29,8 @@ use Prado\Exceptions\TConfigurationException;
  * $object2=$cache->get('object');
  * ```
  *
- * If loaded, TAPCCache will register itself with {@link TApplication} as the
- * cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded, TAPCCache will register itself with {@see \Prado\TApplication} as the
+ * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TAPCCache may be configured in application configuration file as follows
  * ```php

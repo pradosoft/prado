@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  * You can specify whether you want to keep buffering of the output
  * (if it was enabled) till the next occourence of a <com: TFlushOutput />
  * or the end of the page rendering, or stop buffering, by using the
- * {@link setContinueBuffering ContinueBuffering}.
+ * {@see setContinueBuffering ContinueBuffering}.
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @since 3.1

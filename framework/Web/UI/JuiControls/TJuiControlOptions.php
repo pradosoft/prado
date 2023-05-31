@@ -20,11 +20,11 @@ use Prado\Web\UI\TControl;
  * TJuiControlOptions interface
  *
  * TJuiControlOptions is an helper class that can collect a list of options
- * for a control. The control must implement {@link IJuiOptions}.
+ * for a control. The control must implement {@see IJuiOptions}.
  * The options are validated againg an array of valid options provided by the control itself.
  * Since component properties are case insensitive, the array of valid options is used
  * to ensure the option name has the correct case.
- * The options array can then get retrieved using {@link toArray} and applied to the jQuery-ui widget.
+ * The options array can then get retrieved using {@see ToArray} and applied to the jQuery-ui widget.
  * In addition to the options, this class will render the needed javascript to raise a callback
  * for any event for which an handler is defined in the control.
  *

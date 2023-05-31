@@ -14,11 +14,11 @@ namespace Prado\Web\UI\WebControls;
  *
  * TExpression evaluates a PHP expression and renders the result.
  * The expression is evaluated during the rendering stage. The expression being
- * evaluated can be set via the property {@link setExpression Expression}.
+ * evaluated can be set via the property {@see setExpression Expression}.
  * The context of the expression evaluated is the TExpression object itself.
  *
  * Note, since TExpression allows evaluation of arbitrary PHP expression,
- * make sure {@link setExpression Expression} does not come directly from user input.
+ * make sure {@see setExpression Expression} does not come directly from user input.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

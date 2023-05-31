@@ -63,7 +63,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_localize;
 
 	/**
-	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
+	 * @var object {@see TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
 
@@ -77,7 +77,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 
 	/**
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
-	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
+	 * {@see getRouteBehaviorName} is set, a {@see TMapRouteBehavior} is attached to
 	 * the Application Parameter on the key so any changes are also routed to the Property.
 	 * @param object $owner the object to which this behavior is being attached
 	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set

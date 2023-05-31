@@ -21,7 +21,7 @@ class TWizardSideBarTemplate extends \Prado\TComponent implements ITemplate
 {
 	/**
 	 * Instantiates the template.
-	 * It creates a {@link TDataList} control.
+	 * It creates a {@see TDataList} control.
 	 * @param \Prado\Web\UI\TControl $parent parent to hold the content within the template
 	 */
 	public function instantiateIn($parent)

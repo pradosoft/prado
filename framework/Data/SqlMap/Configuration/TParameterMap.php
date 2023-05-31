@@ -161,7 +161,7 @@ class TParameterMap extends \Prado\TComponent
 
 
 	/**
-	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
+	 * Create type handler from {@see Type setType()} or {@see TypeHandler setTypeHandler}.
 	 * @param TParameterProperty $property parameter property
 	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler.
@@ -198,7 +198,7 @@ class TParameterMap extends \Prado\TComponent
 	}
 
 	/**
-	 * When the actual value matches the {@link NullValue TParameterProperty::setNullValue()},
+	 * When the actual value matches the {@see NullValue TParameterProperty::setNullValue()},
 	 * set the current value to null.
 	 * @param TParameterProperty $property parameter property.
 	 * @param mixed $value current property value

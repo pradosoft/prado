@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 /**
  * TShellWriter class.
  *
- * Similar to the {@link THtmlWriter}, the TShellWriter writes and formats text
+ * Similar to the {@see THtmlWriter}, the TShellWriter writes and formats text
  * with color, and processes other commands to the terminal to another ITextWriter.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -409,7 +409,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * Saves the current cursor position by sending ANSI control code SCP to the terminal.
-	 * Position can then be restored with {@link restoreCursorPosition}.
+	 * Position can then be restored with {@see restoreCursorPosition}.
 	 */
 	public function saveCursorPosition()
 	{
@@ -417,7 +417,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Restores the cursor position saved with {@link saveCursorPosition} by sending ANSI control code RCP to the terminal.
+	 * Restores the cursor position saved with {@see saveCursorPosition} by sending ANSI control code RCP to the terminal.
 	 */
 	public function restoreCursorPosition()
 	{
@@ -426,7 +426,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * Hides the cursor by sending ANSI DECTCEM code ?25l to the terminal.
-	 * Use {@link showCursor} to bring it back.
+	 * Use {@see showCursor} to bring it back.
 	 * Do not forget to show cursor when your application exits. Cursor might stay hidden in terminal after exit.
 	 */
 	public function hideCursor()
@@ -435,7 +435,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * Will show a cursor again when it has been hidden by {@link hideCursor}  by sending ANSI DECTCEM code ?25h to the terminal.
+	 * Will show a cursor again when it has been hidden by {@see hideCursor}  by sending ANSI DECTCEM code ?25h to the terminal.
 	 */
 	public function showCursor()
 	{
@@ -573,7 +573,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 * @param string $text the text to be wrapped
 	 * @param int $indent number of spaces to use for indentation.
 	 * @param bool $refresh whether to force refresh of screen size.
-	 * This will be passed to {@link getScreenSize}.
+	 * This will be passed to {@see getScreenSize}.
 	 * @return string the wrapped text.
 	 */
 	public function wrapText($text, $indent = 0, $refresh = false)

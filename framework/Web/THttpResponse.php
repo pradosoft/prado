@@ -20,31 +20,31 @@ use Prado\TPropertyValue;
  *
  * THttpResponse implements the mechanism for sending output to client users.
  *
- * To output a string to client, use {@link write()}. By default, the output is
- * buffered until {@link flush()} is called or the application ends. The output in
- * the buffer can also be cleaned by {@link clear()}. To disable output buffering,
+ * To output a string to client, use {@see write()}. By default, the output is
+ * buffered until {@see flush()} is called or the application ends. The output in
+ * the buffer can also be cleaned by {@see clear()}. To disable output buffering,
  * set BufferOutput property to false.
  *
- * To send cookies to client, use {@link getCookies()}.
- * To redirect client browser to a new URL, use {@link redirect()}.
- * To send a file to client, use {@link writeFile()}.
+ * To send cookies to client, use {@see getCookies()}.
+ * To redirect client browser to a new URL, use {@see redirect()}.
+ * To send a file to client, use {@see writeFile()}.
  *
- * By default, THttpResponse is registered with {@link TApplication} as the
- * response module. It can be accessed via {@link TApplication::getResponse()}.
+ * By default, THttpResponse is registered with {@see TApplication} as the
+ * response module. It can be accessed via {@see TApplication::getResponse()}.
  *
  * THttpResponse may be configured in application configuration file as follows
  *
  * <module id="response" class="Prado\Web\THttpResponse" CacheExpire="20" CacheControl="nocache" BufferOutput="true" />
  *
- * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
- * and {@link getBufferOutput BufferOutput} are optional properties of THttpResponse.
+ * where {@see getCacheExpire CacheExpire}, {@see getCacheControl CacheControl}
+ * and {@see getBufferOutput BufferOutput} are optional properties of THttpResponse.
  *
- * THttpResponse sends charset header if either {@link setCharset() Charset}
- * or {@link TGlobalization::setCharset() TGlobalization.Charset} is set.
+ * THttpResponse sends charset header if either {@see setCharset() Charset}
+ * or {@see TGlobalization::setCharset() TGlobalization.Charset} is set.
  *
- * Since 3.1.2, HTTP status code can be set with the {@link setStatusCode StatusCode} property.
+ * Since 3.1.2, HTTP status code can be set with the {@see setStatusCode StatusCode} property.
  *
- * Note: Some HTTP Status codes can require additional header or body information. So, if you use {@link setStatusCode StatusCode}
+ * Note: Some HTTP Status codes can require additional header or body information. So, if you use {@see setStatusCode StatusCode}
  * in your application, be sure to add theses informations.
  * E.g : to make an http authentication :
  * ```php
@@ -68,7 +68,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
-	 * @var array<int, string> The differents defined status code by RFC 2616 {@link http://www.faqs.org/rfcs/rfc2616}
+	 * @var array<int, string> The differents defined status code by RFC 2616 {@see http://www.faqs.org/rfcs/rfc2616}
 	 */
 	private static $HTTP_STATUS_CODES = [
 		100 => 'Continue', 101 => 'Switching Protocols',
@@ -273,7 +273,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Set the HTTP status code for the response.
-	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@link THttpRequest::getHttpProtocolVersion})
+	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@see THttpRequest::getHttpProtocolVersion})
 	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
 	 *
 	 * @param int $status HTTP status code
@@ -422,10 +422,10 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Redirect the browser to another URL and exists the current application.
-	 * This method is used internally. Please use {@link redirect} instead.
+	 * This method is used internally. Please use {@see redirect} instead.
 	 *
 	 * @since 3.1.5
-	 * You can set the set {@link setStatusCode StatusCode} to a value between 300 and 399 before
+	 * You can set the set {@see setStatusCode StatusCode} to a value between 300 and 399 before
 	 * calling this function to change the type of redirection.
 	 * If not specified, StatusCode will be 302 (Found) by default
 	 *
@@ -500,7 +500,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Outputs the buffered content, sends content-type and charset header.
-	 * This method is used internally. Please use {@link flush} instead.
+	 * This method is used internally. Please use {@see flush} instead.
 	 * @param bool $continueBuffering whether to continue buffering after flush if buffering was active
 	 */
 	public function flushContent($continueBuffering = true)
@@ -585,7 +585,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * Returns the content in the output buffer.
 	 * The buffer will NOT be cleared after calling this method.
-	 * Use {@link clear()} is you want to clear the buffer.
+	 * Use {@see clear()} is you want to clear the buffer.
 	 * @return string output that is in the buffer.
 	 */
 	public function getContents()
@@ -606,7 +606,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * @param null|int $case Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|int $case Either {@see CASE_UPPER} or {@see CASE_LOWER} or as is null (default)
 	 * @return array
 	 */
 	public function getHeaders($case = null)
@@ -658,7 +658,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Sends a cookie.
-	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
+	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
 	 * @param THttpCookie $cookie cook to be sent
 	 */
 	public function addCookie($cookie)
@@ -679,7 +679,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Deletes a cookie.
-	 * Do not call this method directly. Operate with the result of {@link getCookies} instead.
+	 * Do not call this method directly. Operate with the result of {@see getCookies} instead.
 	 * @param THttpCookie $cookie cook to be deleted
 	 */
 	public function removeCookie($cookie)
@@ -711,8 +711,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Creates a new instance of HTML writer.
-	 * If the type of the HTML writer is not supplied, {@link getHtmlWriterType HtmlWriterType} will be assumed.
-	 * @param string $type type of the HTML writer to be created. If null, {@link getHtmlWriterType HtmlWriterType} will be assumed.
+	 * If the type of the HTML writer is not supplied, {@see getHtmlWriterType HtmlWriterType} will be assumed.
+	 * @param string $type type of the HTML writer to be created. If null, {@see getHtmlWriterType HtmlWriterType} will be assumed.
 	 */
 	public function createHtmlWriter($type = null)
 	{
@@ -728,7 +728,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Create a new html writer instance.
-	 * This method is used internally. Please use {@link createHtmlWriter} instead.
+	 * This method is used internally. Please use {@see createHtmlWriter} instead.
 	 * @param string $type type of HTML writer to be created.
 	 * @param \Prado\IO\ITextWriter $writer text writer holding the contents.
 	 */

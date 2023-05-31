@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
  *
  * Customize the parent TControl class for active control classes.
  * TActiveControlAdapter instantiates a common base active control class
- * throught the {@link getBaseActiveControl BaseActiveControl} property.
+ * throught the {@see getBaseActiveControl BaseActiveControl} property.
  * The type of BaseActiveControl can be provided in the second parameter in the
  * constructor. Default is TBaseActiveControl or TBaseActiveCallbackControl if
  * the control adapted implements ICallbackEventHandler.

@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * Class TPolygonHotSpot.
  *
- * TPolygonHotSpot defines a polygon hot spot region in a {@link
+ * TPolygonHotSpot defines a polygon hot spot region in a {@see
  * TImageMap} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

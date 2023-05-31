@@ -20,10 +20,10 @@ use Prado\Web\UI\WebControls\TRepeater;
 /**
  * TJuiSortable class.
  *
- * TJuiSortable is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/sortable/ Sortable} interaction.
- * The panel can be feed a {@link setDataSource DataSource} and will interally
- * render a {@link TRepeater} that displays items in an unordered list.
+ * TJuiSortable is an extension to {@see TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/sortable/ Sortable} interaction.
+ * The panel can be feed a {@see setDataSource DataSource} and will interally
+ * render a {@see TRepeater} that displays items in an unordered list.
  * Items can be sortered dragging and dropping them.
  *
  * ```php
@@ -136,7 +136,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */
@@ -271,7 +271,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * Overrides parent implementation. Callback {@link renderSortables()} when
+	 * Overrides parent implementation. Callback {@see renderSortables()} when
 	 * page's IsCallback property is true.
 	 */
 	public function dataBind()

@@ -18,12 +18,12 @@ use Prado\TPropertyValue;
  * TFileLogRoute class.
  *
  * TFileLogRoute records log messages in files.
- * The log files are stored under {@link setLogPath LogPath} and the file name
- * is specified by {@link setLogFile LogFile}. If the size of the log file is
- * greater than {@link setMaxFileSize MaxFileSize} (in kilo-bytes), a rotation
+ * The log files are stored under {@see setLogPath LogPath} and the file name
+ * is specified by {@see setLogFile LogFile}. If the size of the log file is
+ * greater than {@see setMaxFileSize MaxFileSize} (in kilo-bytes), a rotation
  * is performed, which renames the current log file by suffixing the file name
  * with '.1'. All existing log files are moved backwards one place, i.e., '.2'
- * to '.3', '.1' to '.2'. The property {@link setMaxLogFiles MaxLogFiles}
+ * to '.3', '.1' to '.2'. The property {@see setMaxLogFiles MaxLogFiles}
  * specifies how many files to be kept.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

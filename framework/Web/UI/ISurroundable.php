@@ -13,8 +13,8 @@ namespace Prado\Web\UI;
  * ISurroundable interface
  *
  * Identifies controls that may create an additional surrounding tag. The id of the
- * tag can be obtained with {@link getSurroundingTagID}, the tag used to render the
- * surrounding container is obtained by {@link getSurroundingTag}.
+ * tag can be obtained with {@see getSurroundingTagID}, the tag used to render the
+ * surrounding container is obtained by {@see getSurroundingTag}.
  *
  * @since 3.1.2
  */

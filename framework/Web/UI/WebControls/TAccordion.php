@@ -21,31 +21,31 @@ use Prado\Web\Javascripts\TJavaScript;
  * TAccordion displays an accordion control. Users can click on the view headers to switch among
  * different accordion views. Each accordion view is an independent panel that can contain arbitrary content.
  *
- * A TAccordion control consists of one or several {@link TAccordionView} controls representing the possible
+ * A TAccordion control consists of one or several {@see TAccordionView} controls representing the possible
  * accordion views. At any time, only one accordion view is visible (active), which is specified by any of
  * the following properties:
- * - {@link setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
- * - {@link setActiveViewID ActiveViewID} - the text ID of the visible view.
- * - {@link setActiveView ActiveView} - the visible view instance.
- * If both {@link setActiveViewIndex ActiveViewIndex} and {@link setActiveViewID ActiveViewID}
+ * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
+ * - {@see setActiveViewID ActiveViewID} - the text ID of the visible view.
+ * - {@see setActiveView ActiveView} - the visible view instance.
+ * If both {@see setActiveViewIndex ActiveViewIndex} and {@see setActiveViewID ActiveViewID}
  * are set, the latter takes precedence.
  *
  * TAccordion uses CSS to specify the appearance of the accordion headers and panel. By default,
  * an embedded CSS file will be published which contains the default CSS for TTabPanel.
- * You may also use your own CSS file by specifying the {@link setCssUrl CssUrl} property.
+ * You may also use your own CSS file by specifying the {@see setCssUrl CssUrl} property.
  * The following properties specify the CSS classes used for elements in a TAccordion:
- * - {@link setCssClass CssClass} - the CSS class name for the outer-most div element (defaults to 'accordion');
- * - {@link setHeaderCssClass HeaderCssClass} - the CSS class name for nonactive accordion div elements (defaults to 'accordion-header');
- * - {@link setActiveHeaderCssClass ActiveHeaderCssClass} - the CSS class name for the active accordion div element (defaults to 'accordion-header-active');
- * - {@link setViewCssClass ViewCssClass} - the CSS class for the div element enclosing view content (defaults to 'accordion-view');
+ * - {@see setCssClass CssClass} - the CSS class name for the outer-most div element (defaults to 'accordion');
+ * - {@see setHeaderCssClass HeaderCssClass} - the CSS class name for nonactive accordion div elements (defaults to 'accordion-header');
+ * - {@see setActiveHeaderCssClass ActiveHeaderCssClass} - the CSS class name for the active accordion div element (defaults to 'accordion-header-active');
+ * - {@see setViewCssClass ViewCssClass} - the CSS class for the div element enclosing view content (defaults to 'accordion-view');
  *
  * When the user clicks on a view header, the switch between the old visible view and the clicked one is animated.
- * You can use the {@link setAnimationDuration AnimationDuration} property to set the animation length in seconds;
+ * You can use the {@see setAnimationDuration AnimationDuration} property to set the animation length in seconds;
  * it defaults to 1 second, and when set to 0 it will produce an immediate switch with no animation.
  *
  * The TAccordion auto-sizes itself to the largest of all views, so it can encompass all of them without scrolling.
- * If you want to specify a fixed height (in pixels), use the {@link setViewHeight ViewHeight} property.
- * When a TAccordion is nested inside another, it's adviced to manually specify a {@link setViewHeight ViewHeight} for the internal TAccordion
+ * If you want to specify a fixed height (in pixels), use the {@see setViewHeight ViewHeight} property.
+ * When a TAccordion is nested inside another, it's adviced to manually specify a {@see setViewHeight ViewHeight} for the internal TAccordion
  *
  * To use TAccordion, write a template like following:
  * ```php
@@ -79,7 +79,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@link TAccordionView} objects into the {@link getViews Views} collection.
+	 * This method adds only {@see TAccordionView} objects into the {@see getViews Views} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -93,7 +93,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Returns the index of the active accordion view.
 	 * Note, this property may not return the correct index.
-	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * To ensure the correctness, call {@see getActiveView()} first.
 	 * @return int the zero-based index of the active accordion view. If -1, it means no active accordion view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()
@@ -114,7 +114,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	/**
 	 * Returns the ID of the active accordion view.
 	 * Note, this property may not return the correct ID.
-	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * To ensure the correctness, call {@see getActiveView()} first.
 	 * @return string The ID of the active accordion view. Defaults to '', meaning not set.
 	 */
 	public function getActiveViewID()
@@ -367,8 +367,8 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getActiveViewIndex ActiveViewIndex} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getActiveViewIndex ActiveViewIndex} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */
@@ -413,7 +413,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Registers the CSS relevant to the TAccordion.
-	 * It will register the CSS file specified by {@link getCssUrl CssUrl}.
+	 * It will register the CSS file specified by {@see getCssUrl CssUrl}.
 	 * If that is not set, it will use the default CSS.
 	 */
 	protected function registerStyleSheet()
@@ -498,7 +498,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TAccordionViewCollection list of {@link TAccordionView} controls
+	 * @return TAccordionViewCollection list of {@see TAccordionView} controls
 	 */
 	public function getViews()
 	{

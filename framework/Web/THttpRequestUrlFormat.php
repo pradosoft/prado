@@ -12,7 +12,7 @@ namespace Prado\Web;
 /**
  * THttpRequestUrlFormat class.
  * THttpRequestUrlFormat defines the enumerable type for the possible URL formats
- * that can be recognized by {@link THttpRequest}.
+ * that can be recognized by {@see THttpRequest}.
  *
  * The following enumerable values are defined:
  * - Get: the URL format is like /path/to/index.php?name1=value1&name2=value2...

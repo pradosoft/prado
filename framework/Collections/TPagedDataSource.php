@@ -23,7 +23,7 @@ use Prado\TPropertyValue;
  * ```php
  * foreach($pagedDataSource as $dataItem)
  * ```
- * The data are fetched from {@link setDataSource DataSource}. Only the items
+ * The data are fetched from {@see setDataSource DataSource}. Only the items
  * within the specified page will be returned and traversed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

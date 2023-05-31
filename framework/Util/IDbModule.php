@@ -26,14 +26,14 @@ interface IDbModule extends \Prado\IModule
 	public function getDbConnection();
 
 	/**
-	 * @return string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return string the ID of a {@see TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID();
 
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.
-	 * @param string $value ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@see TDataSourceConfig} module
 	 */
 	public function setConnectionID($value);
 }

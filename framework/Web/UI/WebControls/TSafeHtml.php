@@ -17,14 +17,14 @@ use Prado\Prado;
  * TSafeHtml class
  *
  * TSafeHtml is a control that strips down all potentially dangerous HTML content.
- * It is mainly a wrapper of {@link http://htmlpurifier.org/ HTMLPurifier} project.
+ * It is mainly a wrapper of {@see http://htmlpurifier.org/ HTMLPurifier} project.
  *
  * To use TSafeHtml, simply enclose the content to be secured within
  * the body of TSafeHtml in a template.
  *
  * You can specify a custom configuration for HTMLPurifier using the
- * {@link setConfig Config} property. Please refer to the
- * {@link http://htmlpurifier.org/docs HTMLPurifier documentation} for the
+ * {@see setConfig Config} property. Please refer to the
+ * {@see http://htmlpurifier.org/docs HTMLPurifier documentation} for the
  * possibile configuration parameters.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

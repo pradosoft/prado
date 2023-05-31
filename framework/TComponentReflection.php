@@ -21,7 +21,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TComponentReflection provides functionalities to inspect the public/protected
  * properties, events and methods defined in a class.
  *
- * The following code displays the properties and events defined in {@link TDataGrid},
+ * The following code displays the properties and events defined in {@see TDataGrid},
  * ```php
  *   $reflection=new TComponentReflection('TDataGrid');
  *   Prado::varDump($reflection->getProperties());

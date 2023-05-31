@@ -20,21 +20,21 @@ use Prado\Util\TSimpleDateFormatter;
  * TCompareValidator compares the value entered by the user into an input
  * control with the value entered into another input control or a constant value.
  * To compare the associated input control with another input control,
- * set the {@link setControlToCompare ControlToCompare} property to the ID path
+ * set the {@see setControlToCompare ControlToCompare} property to the ID path
  * of the control to compare with. To compare the associated input control with
  * a constant value, specify the constant value to compare with by setting the
- * {@link setValueToCompare ValueToCompare} property.
+ * {@see setValueToCompare ValueToCompare} property.
  *
- * The {@link setDataType DataType} property is used to specify the data type
+ * The {@see setDataType DataType} property is used to specify the data type
  * of both comparison values. Both values are automatically converted to this data
  * type before the comparison operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Date</b> A date data type. The format can be specified by the
- * {@link setDateFormat DateFormat} property
+ * {@see setDateFormat DateFormat} property
  * - <b>String</b> A string data type.
  *
- * Use the {@link setOperator Operator} property to specify the type of comparison
+ * Use the {@see setOperator Operator} property to specify the type of comparison
  * to perform. Valid operators include Equal, NotEqual, GreaterThan, GreaterThanEqual,
  * LessThan and LessThanEqual.
  *

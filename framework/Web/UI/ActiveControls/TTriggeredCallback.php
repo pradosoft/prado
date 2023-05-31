@@ -16,7 +16,7 @@ use Prado\Web\UI\TControl;
 /**
  * TTriggeredCallback abstract Class
  *
- * Base class for triggered callback controls. The {@link setControlID ControlID}
+ * Base class for triggered callback controls. The {@see setControlID ControlID}
  * property sets the control ID to observe the trigger.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

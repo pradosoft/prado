@@ -16,15 +16,15 @@ use Prado\TPropertyValue;
  * TLabel class
  *
  * TLabel displays a piece of text on a Web page.
- * Use {@link setText Text} property to set the text to be displayed.
+ * Use {@see setText Text} property to set the text to be displayed.
  * TLabel will render the contents enclosed within its component tag
- * if {@link setText Text} is empty.
+ * if {@see setText Text} is empty.
  * To use TLabel as a form label, associate it with a control by setting the
- * {@link setForControl ForControl} property.
+ * {@see setForControl ForControl} property.
  * The associated control must be locatable within the label's naming container.
  * If the associated control is not visible, the label will not be rendered, either.
  *
- * Note, {@link setText Text} will NOT be encoded for rendering.
+ * Note, {@see setText Text} will NOT be encoded for rendering.
  * Make sure it does not contain dangerous characters that you want to avoid.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -108,8 +108,8 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Returns the text value of the label.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string the text value of the label
 	 * @see getText
 	 * @since 3.1.0
@@ -121,8 +121,8 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Sets the text value of the label.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value the text value of the label
 	 * @see setText
 	 * @since 3.1.0
@@ -142,7 +142,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Sets the ID of the control that the label is associated with.
-	 * The control must be locatable via {@link TControl::findControl} using the ID.
+	 * The control must be locatable via {@see TControl::findControl} using the ID.
 	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)

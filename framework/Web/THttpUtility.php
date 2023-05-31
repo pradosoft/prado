@@ -25,7 +25,7 @@ class THttpUtility
 	 * HTML-encodes a string.
 	 * This method translates the following characters to their corresponding
 	 * HTML entities: <, >, "
-	 * Note, unlike {@link htmlspecialchars}, & is not translated.
+	 * Note, unlike {@see htmlspecialchars}, & is not translated.
 	 * @param string $s string to be encoded
 	 * @return string encoded string
 	 */
@@ -36,7 +36,7 @@ class THttpUtility
 
 	/**
 	 * HTML-decodes a string.
-	 * It is the inverse of {@link htmlEncode}.
+	 * It is the inverse of {@see htmlEncode}.
 	 * @param string $s string to be decoded
 	 * @return string decoded string
 	 */

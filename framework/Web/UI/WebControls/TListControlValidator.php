@@ -19,10 +19,10 @@ use Prado\TPropertyValue;
  * for a <b>TListControl that allows multiple selection</b>.
  *
  * You can specify the minimum or maximum (or both) number of selections
- * required using the {@link setMinSelection MinSelection} and
- * {@link setMaxSelection MaxSelection} properties, respectively. In addition,
+ * required using the {@see setMinSelection MinSelection} and
+ * {@see setMaxSelection MaxSelection} properties, respectively. In addition,
  * you can specify a comma separated list of required selected values via the
- * {@link setRequiredSelections RequiredSelections} property.
+ * {@see setRequiredSelections RequiredSelections} property.
  *
  * Examples
  * - At least two selections

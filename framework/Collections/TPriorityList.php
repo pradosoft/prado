@@ -19,7 +19,7 @@ use Prado\TPropertyValue;
  *
  * TPriorityList implements a priority ordered list collection class.  It allows you to specify
  * any numeric for priorities down to a specific precision.  The lower the numeric, the high the priority of the item in the
- * list.  Thus -10 has a higher priority than -5, 0, 10 (the default), 18, 10005, etc.  Per {@link round}, precision may be negative and
+ * list.  Thus -10 has a higher priority than -5, 0, 10 (the default), 18, 10005, etc.  Per {@see round}, precision may be negative and
  * thus rounding can go by 10, 100, 1000, etc, instead of just .1, .01, .001, etc. The default precision allows for 8 decimal
  * places. There is also a default priority of 10, if no different default priority is specified or no item specific priority is indicated.
  * If you replace TList with this class it will  work exactly the same with items inserted set to the default priority, until you start
@@ -30,8 +30,8 @@ use Prado\TPropertyValue;
  * When an array of items are needed and the cache is outdated, the cache is recreated from the items and their priorities
  *
  * You can access, append, insert, remove an item by using
- * {@link itemAt}, {@link add}, {@link insertAt}, and {@link remove}.
- * To get the number of the items in the list, use {@link getCount}.
+ * {@see itemAt}, {@see add}, {@see insertAt}, and {@see remove}.
+ * To get the number of the items in the list, use {@see getCount}.
  * TPriorityList can also be used like a regular array as follows,
  * ```php
  * $list[]=$item;  // append with the default priority.  It may not be the last item if other items in the list are prioritized after the default priority
@@ -44,7 +44,7 @@ use Prado\TPropertyValue;
  * ```
  *
  * To extend TPriorityList for doing your own operations with each addition or removal,
- * override {@link insertAtIndexInPriority()} and {@link removeAtIndexInPriority()} and then call the parent.
+ * override {@see insertAtIndexInPriority()} and {@see removeAtIndexInPriority()} and then call the parent.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2a
@@ -83,7 +83,7 @@ class TPriorityList extends TList implements IPriorityCollection
 
 	/**
 	 * Returns the item at the index of a flattened priority list.
-	 * {@link offsetGet} calls this method.
+	 * {@see offsetGet} calls this method.
 	 * @param int $index the index of the item to get
 	 * @throws TInvalidDataValueException Issued when the index is invalid
 	 * @return mixed the element at the offset

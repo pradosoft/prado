@@ -18,12 +18,12 @@ use Prado\TPropertyValue;
 /**
  * TTimeTriggeredCallback class.
  *
- * TTimeTriggeredCallback sends callback request every {@link setInterval Interval} seconds.
- * Upon each callback request, the {@link onCallback OnCallback} event is raised.
+ * TTimeTriggeredCallback sends callback request every {@see setInterval Interval} seconds.
+ * Upon each callback request, the {@see onCallback OnCallback} event is raised.
  *
- * The timer can be started by calling {@link startTimer()} and stopped using
- * {@link stopTimer()}. The timer can be automatically started when
- * {@link setStartTimerOnLoad StartTimerOnLoad} is true.
+ * The timer can be started by calling {@see startTimer()} and stopped using
+ * {@see stopTimer()}. The timer can be automatically started when
+ * {@see setStartTimerOnLoad StartTimerOnLoad} is true.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

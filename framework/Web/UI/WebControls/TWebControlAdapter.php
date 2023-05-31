@@ -25,8 +25,8 @@ class TWebControlAdapter extends \Prado\Web\UI\TControlAdapter
 {
 	/**
 	 * Renders the control to which the adapter is attached.
-	 * It calls {@link renderBeginTag}, {@link renderContents} and
-	 * {@link renderEndTag} in order.
+	 * It calls {@see renderBeginTag}, {@see renderContents} and
+	 * {@see renderEndTag} in order.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)

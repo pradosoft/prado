@@ -13,7 +13,7 @@ namespace Prado\Exceptions;
  * TExitException class
  *
  * Throwing TExitException will interrupt the application and gracefully terminate.
- * The application will exit with the specified {@link getExitCode Exit Code}.
+ * The application will exit with the specified {@see getExitCode Exit Code}.
  *
  * This exception is not designed to be caught by any class other than TApplication.
  * If this exception is caught, it may interfere with the graceful termination of

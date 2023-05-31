@@ -16,13 +16,13 @@ use Prado\TPropertyValue;
  * TInlineFrame class
  *
  * TInlineFrame displays an inline frame (iframe) on a Web page.
- * The location of the frame content is specified by {@link setFrameUrl FrameUrl}.
- * The frame's alignment is specified by {@link setAlign Align}.
- * The {@link setMarginWidth MarginWidth} and {@link setMarginHeight MarginHeight}
+ * The location of the frame content is specified by {@see setFrameUrl FrameUrl}.
+ * The frame's alignment is specified by {@see setAlign Align}.
+ * The {@see setMarginWidth MarginWidth} and {@see setMarginHeight MarginHeight}
  * properties define the number of pixels to use as the left/right margins and
  * top/bottom margins, respectively, within the inline frame.
- * The {@link setScrollBars ScrollBars} property specifies whether scrollbars are
- * provided for the inline frame. And {@link setDescriptionUrl DescriptionUrl}
+ * The {@see setScrollBars ScrollBars} property specifies whether scrollbars are
+ * provided for the inline frame. And {@see setDescriptionUrl DescriptionUrl}
  * gives the URI of a long description of the frame's contents.
  *
  * Original Prado v2 IFrame Author Information
@@ -112,8 +112,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * Returns the URL that this iframe will load content from
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getFrameUrl()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getFrameUrl()}.
 	 * @return string the URL that this iframe will load content from
 	 * @see getFrameUrl
 	 * @since 3.1.0
@@ -125,8 +125,8 @@ class TInlineFrame extends \Prado\Web\UI\WebControls\TWebControl implements \Pra
 
 	/**
 	 * Sets the URL that this iframe will load content from.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setFrameUrl()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setFrameUrl()}.
 	 * @param string $value the URL that this iframe will load content from
 	 * @see setFrameUrl
 	 * @since 3.1.0

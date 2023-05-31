@@ -15,11 +15,11 @@ use Prado\Util\TBehavior;
 /**
  * TUserPermissionsBehavior class.
  *
- * TUserPermissionsBehavior is designed to attach to {@link TUser}.
- * This class adds {@link can} permissions functionality. It also
- * handles {@link dyDefaultRoles} and {@link dyIsInRole} of TUser.
+ * TUserPermissionsBehavior is designed to attach to {@see TUser}.
+ * This class adds {@see can} permissions functionality. It also
+ * handles {@see dyDefaultRoles} and {@see dyIsInRole} of TUser.
  *
- * This passes through dyDefaultRoles and dyIsInRole to the {@link TPermissionsManager}.
+ * This passes through dyDefaultRoles and dyIsInRole to the {@see TPermissionsManager}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

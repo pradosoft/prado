@@ -70,10 +70,10 @@ use Prado\Xml\TXmlDocument;
  * ```
  *
  * Each <soap> element in the application specification actually configures
- * the properties of a SOAP server which defaults to {@link TSoapServer}.
- * Therefore, any writable property of {@link TSoapServer} may appear as an attribute
+ * the properties of a SOAP server which defaults to {@see TSoapServer}.
+ * Therefore, any writable property of {@see TSoapServer} may appear as an attribute
  * in the <soap> element. For example, the "provider" attribute refers to
- * the {@link TSoapServer::setProvider Provider} property of {@link TSoapServer}.
+ * the {@see TSoapServer::setProvider Provider} property of {@see TSoapServer}.
  * The following configuration specifies that the SOAP server is persistent within
  * the user session (that means a MyStockQuote object will be stored in session)
  * ```php
@@ -113,7 +113,7 @@ class TSoapService extends \Prado\TService
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
 	 */
 	public function init($config)
 	{

@@ -18,8 +18,8 @@ namespace Prado\Web\UI\WebControls;
  * TDataGridItemEventParameter class
  *
  * TDataGridItemEventParameter encapsulates the parameter data for
- * {@link TDataGrid::onItemCreated OnItemCreated} event of {@link TDataGrid} controls.
- * The {@link getItem Item} property indicates the datagrid item related with the event.
+ * {@see TDataGrid::onItemCreated OnItemCreated} event of {@see TDataGrid} controls.
+ * The {@see getItem Item} property indicates the datagrid item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

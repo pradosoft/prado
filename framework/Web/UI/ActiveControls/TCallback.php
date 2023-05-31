@@ -20,8 +20,8 @@ use Prado\Web\UI\TControl;
  *
  * The TCallback provides a basic callback handler that can be invoked from the
  * client side by running the javascript code obtained from the
- * {@link TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property.
- * The event {@link onCallback OnCallback} is raised when a callback is requested made.
+ * {@see TBaseActiveCallbackControl::getJavascript ActiveControl.Javascript} property.
+ * The event {@see onCallback OnCallback} is raised when a callback is requested made.
  *
  * Example usage:
  * ```php
@@ -71,10 +71,10 @@ class TCallback extends TControl implements IActiveControl, ICallbackEventHandle
 
 	/**
 	 * Raises the callback event. This method is required by
-	 * {@link ICallbackEventHandler ICallbackEventHandler} interface. If
-	 * {@link getCausesValidation ActiveControl.CausesValidation} is true,
-	 * it will invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onCallback OnCallback} event. This method is mainly
+	 * {@see ICallbackEventHandler ICallbackEventHandler} interface. If
+	 * {@see getCausesValidation ActiveControl.CausesValidation} is true,
+	 * it will invoke the page's {@see TPage::validate validate} method first.
+	 * It will raise {@see onCallback OnCallback} event. This method is mainly
 	 * used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */

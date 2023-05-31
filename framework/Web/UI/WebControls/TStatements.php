@@ -15,11 +15,11 @@ namespace Prado\Web\UI\WebControls;
  * TStatements executes one or several PHP statements and renders the display
  * generated during the execution. The execution happens during the rendering stage.
  * The PHP statements being executed can be set via the property
- * {@link setStatements Statements}. The context of the statemenets executed
+ * {@see setStatements Statements}. The context of the statemenets executed
  * is the TStatements object itself.
  *
  * Note, since TStatements allows execution of arbitrary PHP statements,
- * make sure {@link setStatements Statements} does not come directly from user input.
+ * make sure {@see setStatements Statements} does not come directly from user input.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

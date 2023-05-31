@@ -17,7 +17,7 @@ use Prado\TPropertyValue;
  * TDbTransaction class.
  *
  * TDbTransaction represents a DB transaction.
- * It is usually created by calling {@link TDbConnection::beginTransaction}.
+ * It is usually created by calling {@see TDbConnection::beginTransaction}.
  *
  * The following code is a common scenario of using transactions:
  * ```php

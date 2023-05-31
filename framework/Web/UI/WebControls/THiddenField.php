@@ -16,8 +16,8 @@ use Prado\TPropertyValue;
  * THiddenField class
  *
  * THiddenField displays a hidden input field on a Web page.
- * The value of the input field can be accessed via {@link getValue Value} property.
- * If upon postback the value is changed, a {@link onValueChanged OnValueChanged}
+ * The value of the input field can be accessed via {@see getValue Value} property.
+ * If upon postback the value is changed, a {@see onValueChanged OnValueChanged}
  * event will be raised.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -133,7 +133,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 
 	/**
 	 * Raises postdata changed event.
-	 * This method calls {@link onValueChanged} method.
+	 * This method calls {@see onValueChanged} method.
 	 * This method is primarly used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()
@@ -142,7 +142,7 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 	}
 
 	/**
-	 * This method is invoked when the value of the {@link getValue Value} property changes between posts to the server.
+	 * This method is invoked when the value of the {@see getValue Value} property changes between posts to the server.
 	 * The method raises 'OnValueChanged' event to fire up the event delegates.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the attached event handlers can be invoked.
@@ -172,8 +172,8 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 
 	/**
 	 * Returns the value of the hidden field.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return string value of the hidden field
 	 * @see getValue
 	 * @since 3.1.0
@@ -185,8 +185,8 @@ class THiddenField extends \Prado\Web\UI\TControl implements \Prado\Web\UI\IPost
 
 	/**
 	 * Sets the value of the hidden field.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value value of the hidden field
 	 * @see setValue
 	 * @since 3.1.0

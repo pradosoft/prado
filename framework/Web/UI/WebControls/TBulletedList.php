@@ -17,17 +17,17 @@ use Prado\Web\THttpUtility;
  * TBulletedList class
  *
  * TBulletedList displays items in a bullet format.
- * The bullet style is specified by {@link setBulletStyle BulletStyle}. When
- * the style is 'CustomImage', the {@link setBackImageUrl BulletImageUrl}
+ * The bullet style is specified by {@see setBulletStyle BulletStyle}. When
+ * the style is 'CustomImage', the {@see setBackImageUrl BulletImageUrl}
  * specifies the image used as bullets.
  *
  * TBulletedList displays the item texts in three different modes, specified
- * via {@link setDisplayMode DisplayMode}. When the mode is Text, the item texts
+ * via {@see setDisplayMode DisplayMode}. When the mode is Text, the item texts
  * are displayed as static texts; When the mode is 'HyperLink', each item
  * is displayed as a hyperlink whose URL is given by the item value, and the
- * {@link setTarget Target} property can be used to specify the target browser window;
+ * {@see setTarget Target} property can be used to specify the target browser window;
  * When the mode is 'LinkButton', each item is displayed as a link button which
- * posts back to the page if a user clicks on that and the event {@link onClick OnClick}
+ * posts back to the page if a user clicks on that and the event {@see onClick OnClick}
  * will be raised under such a circumstance.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -48,10 +48,10 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@link IPostBackEventHandler} interface.
-	 * If {@link getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onClick OnClick} events.
+	 * This method is required by {@see IPostBackEventHandler} interface.
+	 * If {@see getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@see TPage::validate validate} method first.
+	 * It will raise {@see onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param mixed $param the event parameter
 	 */
@@ -143,7 +143,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @return string image URL used for bullets when {@link getBulletStyle BulletStyle} is 'CustomImage'.
+	 * @return string image URL used for bullets when {@see getBulletStyle BulletStyle} is 'CustomImage'.
 	 */
 	public function getBulletImageUrl()
 	{
@@ -151,7 +151,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param string $value image URL used for bullets when {@link getBulletStyle BulletStyle} is 'CustomImage'.
+	 * @param string $value image URL used for bullets when {@see getBulletStyle BulletStyle} is 'CustomImage'.
 	 */
 	public function setBulletImageUrl($value)
 	{
@@ -191,7 +191,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @return int starting index when {@link getBulletStyle BulletStyle} is one of
+	 * @return int starting index when {@see getBulletStyle BulletStyle} is one of
 	 * the following: 'Numbered', 'LowerAlpha', 'UpperAlpha', 'LowerRoman', 'UpperRoman'.
 	 * Defaults to 1.
 	 */
@@ -201,7 +201,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 	}
 
 	/**
-	 * @param int $value starting index when {@link getBulletStyle BulletStyle} is one of
+	 * @param int $value starting index when {@see getBulletStyle BulletStyle} is one of
 	 * the following: 'Numbered', 'LowerAlpha', 'UpperAlpha', 'LowerRoman', 'UpperRoman'.
 	 */
 	public function setFirstBulletNumber($value)
@@ -211,7 +211,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Raises 'OnClick' event.
-	 * This method is invoked when the {@link getDisplayMode DisplayMode} is 'LinkButton'
+	 * This method is invoked when the {@see getDisplayMode DisplayMode} is 'LinkButton'
 	 * and end-users click on one of the buttons.
 	 * @param TBulletedListEventParameter $param event parameter.
 	 */
@@ -222,7 +222,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @return string the target window or frame to display the Web page content
-	 * linked to when {@link getDisplayMode DisplayMode} is 'HyperLink' and one of
+	 * linked to when {@see getDisplayMode DisplayMode} is 'HyperLink' and one of
 	 * the hyperlinks is clicked.
 	 */
 	public function getTarget()
@@ -232,7 +232,7 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * @param string $value the target window or frame to display the Web page content
-	 * linked to when {@link getDisplayMode DisplayMode} is 'HyperLink' and one of
+	 * linked to when {@see getDisplayMode DisplayMode} is 'HyperLink' and one of
 	 * the hyperlinks is clicked.
 	 */
 	public function setTarget($value)

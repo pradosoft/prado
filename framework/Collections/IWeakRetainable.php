@@ -12,8 +12,8 @@ namespace Prado\Collections;
 /**
  * IWeakRetainable interface
  *
- * Classes that implement IWeakRetainable will be retained by {@link TWeakList},
- * {@link TWeakCallableCollection}, and {@link TEventHandler}
+ * Classes that implement IWeakRetainable will be retained by {@see TWeakList},
+ * {@see TWeakCallableCollection}, and {@see TEventHandler}
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3

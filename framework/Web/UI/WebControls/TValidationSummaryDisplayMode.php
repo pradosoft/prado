@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TValidationSummaryDisplayMode class.
  * TValidationSummaryDisplayMode defines the enumerable type for the possible modes
- * that a {@link TValidationSummary} can organize and display the collected error messages.
+ * that a {@see TValidationSummary} can organize and display the collected error messages.
  *
  * The following enumerable values are defined:
  * - SimpleList: the error messages are displayed as a list without any decorations.

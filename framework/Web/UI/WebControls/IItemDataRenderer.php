@@ -13,9 +13,9 @@ namespace Prado\Web\UI\WebControls;
  * IItemDataRenderer interface.
  *
  * IItemDataRenderer defines the interface that an item renderer
- * needs to implement. Besides the {@link getData Data} property, a list item
- * renderer also needs to provide {@link getItemIndex ItemIndex} and
- * {@link getItemType ItemType} property.
+ * needs to implement. Besides the {@see getData Data} property, a list item
+ * renderer also needs to provide {@see getItemIndex ItemIndex} and
+ * {@see getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0

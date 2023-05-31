@@ -16,12 +16,12 @@ use Prado\Web\THttpUtility;
  *
  * THead displays a head element on a page. It displays the content
  * enclosed in its body and the page title set by the
- * {@link setTitle Title} property. In addition, stylesheets and JavaScripts registered via
- * {@link TClientScriptManager::registerStyleSheet}, {@link TClientScriptManager::registerStyleSheetFile}
- * {@link TClientScriptManager::registerHeadJavaScript}, and
- * {@link TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
+ * {@see setTitle Title} property. In addition, stylesheets and JavaScripts registered via
+ * {@see TClientScriptManager::registerStyleSheet}, {@see TClientScriptManager::registerStyleSheetFile}
+ * {@see TClientScriptManager::registerHeadJavaScript}, and
+ * {@see TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
  * in the head.
- * THead also manages and displays meta tags through its {@link getMetaTags MetaTags}
+ * THead also manages and displays meta tags through its {@see getMetaTags MetaTags}
  * property. You can add a meta object to the collection in code dynamically,
  * or add it in template using the following syntax,
  * ```php
@@ -31,7 +31,7 @@ use Prado\Web\THttpUtility;
  * </com:THead>
  * ```
  *
- * Note, {@link TPage} has a property {@link TPage::getHead Head} that refers to
+ * Note, {@see TPage} has a property {@see TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most one THead
  * control. Although not required, it is recommended to place a THead on your page.
  * Without a THead on the page, stylesheets and javascripts in the current page
@@ -58,7 +58,7 @@ class THead extends \Prado\Web\UI\TControl
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * This method adds TMetaTag components into the {@link getMetaTags MetaTags}
+	 * This method adds TMetaTag components into the {@see getMetaTags MetaTags}
 	 * collection of the head control.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
@@ -82,7 +82,7 @@ class THead extends \Prado\Web\UI\TControl
 
 	/**
 	 * Sets the page title.
-	 * This title will be rendered only if the {@link TPage::getTitle Title} property
+	 * This title will be rendered only if the {@see TPage::getTitle Title} property
 	 * of the page is empty.
 	 * @param string $value the page title.
 	 */

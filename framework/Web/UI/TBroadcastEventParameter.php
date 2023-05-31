@@ -14,8 +14,8 @@ namespace Prado\Web\UI;
  *
  * TBroadcastEventParameter encapsulates the parameter data for
  * events that are broadcasted. The name of of the event is specified via
- * {@link setName Name} property while the event parameter is via
- * {@link setParameter Parameter} property.
+ * {@see setName Name} property while the event parameter is via
+ * {@see setParameter Parameter} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

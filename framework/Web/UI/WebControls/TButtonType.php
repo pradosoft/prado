@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * TButtonType class.
- * TButtonType defines the enumerable type for the possible types that a {@link TButton} can take.
+ * TButtonType defines the enumerable type for the possible types that a {@see TButton} can take.
  *
  * The following enumerable values are defined:
  * - Submit: a normal submit button

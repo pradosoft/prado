@@ -16,16 +16,16 @@ use Prado\Web\UI\WebControls\TCustomValidator;
 /**
  * TActiveCustomValidator Class
  *
- * Performs custom validation using only server-side {@link onServerValidate onServerValidate}
+ * Performs custom validation using only server-side {@see onServerValidate onServerValidate}
  * validation event. The client-side uses callbacks to raise
- * the {@link onServerValidate onServerValidate} event.
+ * the {@see onServerValidate onServerValidate} event.
  *
- * Beware that the {@link onServerValidate onServerValidate} may be
+ * Beware that the {@see onServerValidate onServerValidate} may be
  * raised when the control to validate on the client side
  * changes value, that is, the server validation may be called many times.
  *
- * After the callback or postback, the {@link onServerValidate onServerValidate}
- * is raised once more. The {@link getIsCallback IsCallback} property
+ * After the callback or postback, the {@see onServerValidate onServerValidate}
+ * is raised once more. The {@see getIsCallback IsCallback} property
  * will be true when validation is made during a callback request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -88,10 +88,10 @@ class TActiveCustomValidator extends TCustomValidator implements IActiveControl,
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
-	 * ICallbackEventHandler} interface. The {@link onServerValidate
+	 * Raises the callback event. This method is required by {@see
+	 * ICallbackEventHandler} interface. The {@see onServerValidate
 	 * OnServerValidate} event is raised first and then the
-	 * {@link onCallback OnCallback} event.
+	 * {@see onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */

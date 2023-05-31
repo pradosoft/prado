@@ -15,7 +15,7 @@ use Prado\Util\TBehavior;
  * TPermissionsConfigurationBehavior class.
  *
  * TPermissionsConfigurationBehavior is designed specifically to attach to the
- * {@link TPageConfiguration} class objects.  It reads and parses the
+ * {@see TPageConfiguration} class objects.  It reads and parses the
  * permissions role hierarchy and permissions rules from a page configuration
  * file.  Within the config.xml for a page, for example, add the following:
  * ```xml

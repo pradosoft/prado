@@ -15,10 +15,10 @@ use Prado\Util\Helpers\TBitHelper;
 /**
  * TRational class.
  *
- * TRational implements a fraction in the form of one integer {@link getNumerator
- * Numerator} divided by another integer {@link getDenominator Denominator}.
+ * TRational implements a fraction in the form of one integer {@see getNumerator
+ * Numerator} divided by another integer {@see getDenominator Denominator}.
  *
- * The class can be {@link __construct initialized} or its {@link setValue Value}
+ * The class can be {@see __construct initialized} or its {@see setValue Value}
  * set as a string, a float value, or an array.  A string in the format
  * `$numerator . '/' . $denominator`, eg. "21/13", will set the both the numerator
  * and denominator.  A string that is simply a numeric will be interpreted as a
@@ -30,14 +30,14 @@ use Prado\Util\Helpers\TBitHelper;
  * INF is "-1/0" and NAN (Not A Number) has the denominator equal zero (to avoid a
  * divide by zero error).
  *
- * The numerator and denominator can be accessed by {@link getNumerator} and {@link
+ * The numerator and denominator can be accessed by {@see getNumerator} and {@see
  * getDenominator}, respectively.  These values can be accessed by array as well,
  * where the numerator is mapped to `[0]` and `['numerator']` and the denominator is
  * mapped to `[1]` and `['denominator']`.  By setting `[]` the value can be set
  * and numerator and denominator computed.  By getting `[null]` the value may be
- * retrieved.  Setting the value with a specific tolerance requires {@link setValue}.
+ * retrieved.  Setting the value with a specific tolerance requires {@see setValue}.
  *
- * TRational implements {@link __toString} and outputs a string of `$numerator . '/'
+ * TRational implements {@see __toString} and outputs a string of `$numerator . '/'
  * . $denominator`, the string format for rationals.  eg.  "13/8".
  * ```php
  *		$rational = new TRational(1.618033988749895);
@@ -145,9 +145,9 @@ class TRational implements \ArrayAccess
 
 	/**
 	 * This returns the float value of the Numerator divided by the denominator.
-	 * Returns INF (Infinity) float value if the {@link getNumerator Numerator} is
-	 * 0xFFFFFFFF (-1) and {@link getDenominator Denominator} is 0.   Returns NAN
-	 * (Not A Number) float value if the {@link getDenominator Denominator} is zero.
+	 * Returns INF (Infinity) float value if the {@see getNumerator Numerator} is
+	 * 0xFFFFFFFF (-1) and {@see getDenominator Denominator} is 0.   Returns NAN
+	 * (Not A Number) float value if the {@see getDenominator Denominator} is zero.
 	 * @return float The float value of the Numerator divided by denominator.
 	 */
 	public function getValue(): float
@@ -267,8 +267,8 @@ class TRational implements \ArrayAccess
 
 	/**
 	 * This is a convenience method for getting the numerator and denominator.
-	 * Index '0' and 'numerator' will get the {@link getNumerator Numerator}, and
-	 * Index '1' and 'denominator' will get the {@link getDenominator Denominator}.
+	 * Index '0' and 'numerator' will get the {@see getNumerator Numerator}, and
+	 * Index '1' and 'denominator' will get the {@see getDenominator Denominator}.
 	 * @param mixed $offset Which property of the Rational to retrieve.
 	 * @throws TInvalidDataValueException When $offset is not a property of the Rational.
 	 * @return mixed The numerator or denominator.
@@ -295,8 +295,8 @@ class TRational implements \ArrayAccess
 
 	/**
 	 * This is a convenience method for setting the numerator and denominator.
-	 * Index '0' and 'numerator' will set the {@link setNumerator Numerator}, and
-	 * Index '1' and 'denominator' will set the {@link setDenominator Denominator}.
+	 * Index '0' and 'numerator' will set the {@see setNumerator Numerator}, and
+	 * Index '1' and 'denominator' will set the {@see setDenominator Denominator}.
 	 * @param mixed $offset Which property to set.
 	 * @param mixed $value The numerator or denominator.
 	 * @throws TInvalidDataValueException When $offset is not a property of the Rational.
@@ -328,8 +328,8 @@ class TRational implements \ArrayAccess
 
 	/**
 	 * This is a convenience method for resetting the numerator and denominator to
-	 * default.  Index '0' and 'numerator' will reset the {@link setNumerator Numerator}
-	 * to "0", and Index '1' and 'denominator' will reset the {@link setDenominator
+	 * default.  Index '0' and 'numerator' will reset the {@see setNumerator Numerator}
+	 * to "0", and Index '1' and 'denominator' will reset the {@see setDenominator
 	 * Denominator} to "1".
 	 * @param mixed $offset Which property to reset.
 	 * @throws TInvalidDataValueException When $offset is not a property of the Rational.

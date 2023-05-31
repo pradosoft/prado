@@ -13,8 +13,8 @@ namespace Prado\Data\SqlMap\Configuration;
  * TParameterProperty corresponds to the <property> tag and defines
  * one object property for the <parameterMap>
  *
- * The {@link NullValue setNullValue()} attribute can be set to any valid
- * value (based on property type). The {@link NullValue setNullValue()} attribute
+ * The {@see NullValue setNullValue()} attribute can be set to any valid
+ * value (based on property type). The {@see NullValue setNullValue()} attribute
  * is used to specify an inbound null value replacement. What this means is
  * that when the value is detected in the object property, a NULL will be written
  * to the database (the opposite behavior of an inbound null value replacement).

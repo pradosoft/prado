@@ -19,7 +19,7 @@ use Prado\Xml\TXmlElement;
 /**
  * TBehaviorsModule class.
  *
- * TBehaviorsModule loads and attaches {@link TBehavior}.  This attaches
+ * TBehaviorsModule loads and attaches {@see TBehavior}.  This attaches
  * Behaviors to classes and to application components like the TApplication,
  * individual modules, and TPage of the TPageService.
  *
@@ -36,7 +36,7 @@ use Prado\Xml\TXmlElement;
  *
  * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.
  *
- * When {@link setAdditionalBehaviors AdditionalBehaviors} is set, this module
+ * When {@see setAdditionalBehaviors AdditionalBehaviors} is set, this module
  * loads the behaviors from that property. It can be an array of php behavior definition arrays.
  * or a string that is then passed through unserialize or json_decode; otherwise is treated as
  * an xml document of behavior like above.
@@ -118,8 +118,8 @@ class TBehaviorsModule extends \Prado\TModule
 	}
 
 	/**
-	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * TApplication::onBeginRequest Handler that adds {@see attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@see attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
 	 * @param mixed $param parameter of the event

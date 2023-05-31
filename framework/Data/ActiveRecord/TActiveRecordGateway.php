@@ -32,7 +32,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	public const DEFAULT_DATA_GATEWAY_CLASS = \Prado\Data\DataGateway\TDataGatewayCommand::class;
 
 	/**
-	 * Defaults to {@link TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * Defaults to {@see TActiveRecordGateway::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 * @var string
 	 */
 	private $_dataGatewayClass = self::DEFAULT_DATA_GATEWAY_CLASS;
@@ -177,7 +177,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string the implementation class of DataGatewayCommand. Defaults to {@link TActiveRecordGateway::DEFAULT_DATA_GATEWAY_CLASS DEFAULT_DATA_GATEWAY_CLASS}
+	 * @return string the implementation class of DataGatewayCommand. Defaults to {@see TActiveRecordGateway::DEFAULT_DATA_GATEWAY_CLASS DEFAULT_DATA_GATEWAY_CLASS}
 	 */
 	public function getDataGatewayClass()
 	{
@@ -187,7 +187,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 * This method also raises the OnCreateCommand event on the ActiveRecord
 	 * object calling this gateway.
@@ -205,9 +205,9 @@ class TActiveRecordGateway extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
 	 * This method also raises the OnCreateCommand event on the ActiveRecord
 	 * object calling this gateway.
 	 * @param TDataGatewayCommand $sender originator

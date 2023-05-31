@@ -23,10 +23,10 @@ use Prado\TPropertyValue;
  * ```
  * will output "476 MB".
  *
- * The TDataSize output depends on {@link getAbbreviate Abbreviate} and
- * {@link getUseMarketingSize UseMarketingSize}.
+ * The TDataSize output depends on {@see getAbbreviate Abbreviate} and
+ * {@see getUseMarketingSize UseMarketingSize}.
  *
- * {@link getUseMarketingSize UseMarketingSize} will change the size of a
+ * {@see getUseMarketingSize UseMarketingSize} will change the size of a
  * kilobyte to be 1000 rather the technical 1024.  This changes the output
  * between bytes, kilobytes, megabytes, gigabytes, terabytes, petabytes,
  * exabytes, zettabytes, and yottabytes for UseMarketingSize="True" (base 1000) and
@@ -34,7 +34,7 @@ use Prado\TPropertyValue;
  * exbibytes, zebibytes, and yobibytes for UseMarketingSize="False" (base 1024).
  * The singular and plural of these these outputted words are localized.
  *
- * For {@link getAbbreviate Abbreviate} that is true, with UseMarketingSize="True"
+ * For {@see getAbbreviate Abbreviate} that is true, with UseMarketingSize="True"
  * then B, KB, MB, GB, TB, PB, EB, ZB, YB is outputted. Otherwise with
  * UseMarketingSize="False" then B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB is
  * outputted.  These outputted abbreviations are localized.

@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * TButtonTag class.
- * TButtonTag defines the enumerable type for the possible tag names that a {@link TButton} can use for rendering.
+ * TButtonTag defines the enumerable type for the possible tag names that a {@see TButton} can use for rendering.
  *
  * The following enumerable values are defined:
  * - Input: an input tag is rendered

@@ -17,7 +17,7 @@ use Prado\TPropertyValue;
  *
  * Writes the amount of time taken from Request start to rendering the contents of this control.
  * This is the longest possible time to wait.  Localize the suffix "s" with
- * {@link setSecondSuffix} or use PRADO localization.
+ * {@see setSecondSuffix} or use PRADO localization.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

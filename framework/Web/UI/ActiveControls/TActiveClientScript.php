@@ -14,7 +14,7 @@ use Prado\Web\UI\WebControls\TClientScript;
 /**
  * TActiveClientScript class
  *
- * This is the active counterpart of the {@link TClientScript} class.
+ * This is the active counterpart of the {@see TClientScript} class.
  *
  * TActiveClientScript has the ability to render itself on ajax
  * callbacks. This means that every variable or function declared in javascript

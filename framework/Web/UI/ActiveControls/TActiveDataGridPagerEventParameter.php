@@ -15,8 +15,8 @@ use Prado\Web\UI\WebControls\TDataGridPagerEventParameter;
  * TActiveDataGridPagerEventParameter class
  *
  * TActiveDataGridPagerEventParameter encapsulates the parameter data for
- * {@link TActiveDataGrid::onPagerCreated OnPagerCreated} event of {@link TActiveDataGrid} controls.
- * The {@link getPager Pager} property indicates the datagrid pager related with the event.
+ * {@see TActiveDataGrid::onPagerCreated OnPagerCreated} event of {@see TActiveDataGrid} controls.
+ * The {@see getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @since 3.2.1

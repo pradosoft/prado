@@ -22,13 +22,13 @@ use Prado\Web\UI\WebControls\TButton;
  * edit button is clicked). Futher more, the "add" button can be clicked
  * that shows an empty data TScaffoldListView for creating new records.
  *
- * The {@link getListView ListView} property gives a TScaffoldListView for
- * display the record data. The {@link getEditView EditView} is the
+ * The {@see getListView ListView} property gives a TScaffoldListView for
+ * display the record data. The {@see getEditView EditView} is the
  * TScaffoldEditView that renders the
- * inputs for editing and adding records. The {@link getSearchControl SearchControl}
+ * inputs for editing and adding records. The {@see getSearchControl SearchControl}
  * is a TScaffoldSearch responsible to the search user interface.
  *
- * Set the {@link setRecordClass RecordClass} property to the name of
+ * Set the {@see setRecordClass RecordClass} property to the name of
  * the Active Record class to be displayed/edited/added.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

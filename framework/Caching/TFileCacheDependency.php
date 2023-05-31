@@ -13,7 +13,7 @@ namespace Prado\Caching;
  * TFileCacheDependency class.
  *
  * TFileCacheDependency performs dependency checking based on the
- * last modification time of the file specified via {@link setFileName FileName}.
+ * last modification time of the file specified via {@see setFileName FileName}.
  * The dependency is reported as unchanged if and only if the file's
  * last modification time remains unchanged.
  *

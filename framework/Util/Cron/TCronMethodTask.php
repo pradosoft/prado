@@ -84,7 +84,7 @@ class TCronMethodTask extends TCronTask
 	}
 
 	/**
-	 * Gets the module for the task based upon the {@link getModuleId}.
+	 * Gets the module for the task based upon the {@see getModuleId}.
 	 * This verifies that the module does exist.
 	 * @throws TConfigurationException when no module is found
 	 * @return \Prado\IModule returns the module (from the application) of ModuleId

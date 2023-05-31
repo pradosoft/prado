@@ -19,19 +19,19 @@ use Prado\TPropertyValue;
  *
  * TEditCommandColumn will create an edit button if a cell is not in edit mode.
  * Otherwise an update button and a cancel button will be created within the cell.
- * The button captions are specified using {@link setEditText EditText},
- * {@link setUpdateText UpdateText}, and {@link setCancelText CancelText}.
+ * The button captions are specified using {@see setEditText EditText},
+ * {@see setUpdateText UpdateText}, and {@see setCancelText CancelText}.
  *
  * The buttons in the column can be set to display as hyperlinks, push or image buttons
- * by setting the {@link setButtonType ButtonType} property.
+ * by setting the {@see setButtonType ButtonType} property.
  *
  * When an edit button is clicked, the datagrid will generate an
- * {@link onEditCommand OnEditCommand} event. When an update/cancel button
+ * {@see onEditCommand OnEditCommand} event. When an update/cancel button
  * is clicked, the datagrid will generate an
- * {@link onUpdateCommand OnUpdateCommand} or an {@link onCancelCommand OnCancelCommand}
+ * {@see onUpdateCommand OnUpdateCommand} or an {@see onCancelCommand OnCancelCommand}
  * You can write these event handlers to change the state of specific datagrid item.
  *
- * The {@link setCausesValidation CausesValidation} and {@link setValidationGroup ValidationGroup}
+ * The {@see setCausesValidation CausesValidation} and {@see setValidationGroup ValidationGroup}
  * properties affect the corresponding properties of the edit and update buttons.
  * The cancel button does not cause validation by default.
  *
@@ -223,7 +223,7 @@ class TEditCommandColumn extends TDataGridColumn
 
 	/**
 	 * Creates a button and initializes its properties.
-	 * The button type is determined by {@link getButtonType ButtonType}.
+	 * The button type is determined by {@see getButtonType ButtonType}.
 	 * @param string $commandName command name associated with the button
 	 * @param string $text button caption
 	 * @param bool $causesValidation whether the button should cause validation

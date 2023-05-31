@@ -16,7 +16,7 @@ use Prado\Exceptions\TNotSupportedException;
  *
  * TRadioButtonList displays a list of radiobuttons on a Web page.
  *
- * TRadioButtonList inherits all properties and events of {@link TCheckBoxList}.
+ * TRadioButtonList inherits all properties and events of {@see TCheckBoxList}.
  * Each TRadioButtonList displays one group of radiobuttons, i.e., at most
  * one radiobutton can be selected at a time.
  *

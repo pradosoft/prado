@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TWizardNavigationButtonType class.
  * TWizardNavigationButtonType defines the enumerable type for the possible types of buttons
- * that can be used in the navigation part of a {@link TWizard}.
+ * that can be used in the navigation part of a {@see TWizard}.
  *
  * The following enumerable values are defined:
  * - Button: a regular click button

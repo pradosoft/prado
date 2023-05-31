@@ -21,8 +21,8 @@ use Prado\TPropertyValue;
  * TList implements an integer-indexed collection class.
  *
  * You can access, append, insert, remove an item by using
- * {@link itemAt}, {@link add}, {@link insertAt}, {@link remove}, and {@link removeAt}.
- * To get the number of the items in the list, use {@link getCount}.
+ * {@see itemAt}, {@see add}, {@see insertAt}, {@see remove}, and {@see removeAt}.
+ * To get the number of the items in the list, use {@see getCount}.
  * TList can also be used like a regular array as follows,
  * ```php
  * $list[]=$item;  // append at the end
@@ -34,7 +34,7 @@ use Prado\TPropertyValue;
  * ```
  *
  * To extend TList by doing additional operations with each addition or removal
- * operation, override {@link insertAt()}, and {@link removeAt()}.
+ * operation, override {@see insertAt()}, and {@see removeAt()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -134,7 +134,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 
 	/**
 	 * Returns the item at the specified offset.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * @param int $index the index of the item
 	 * @throws TInvalidDataValueException if the index is out of the range
 	 * @return mixed the item at the index

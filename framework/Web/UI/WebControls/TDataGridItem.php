@@ -19,11 +19,11 @@ use Prado\TPropertyValue;
 /**
  * TDataGridItem class
  *
- * A TDataGridItem control represents an item in the {@link TDataGrid} control,
+ * A TDataGridItem control represents an item in the {@see TDataGrid} control,
  * such as heading section, footer section, or a data item.
- * The index and data value of the item can be accessed via {@link getItemIndex ItemIndex}>
- * and {@link getData Data} properties, respectively. The type of the item
- * is given by {@link getItemType ItemType} property. Property {@link getDataSourceIndex DataSourceIndex}
+ * The index and data value of the item can be accessed via {@see getItemIndex ItemIndex}>
+ * and {@see getData Data} properties, respectively. The type of the item
+ * is given by {@see getItemType ItemType} property. Property {@see getDataSourceIndex DataSourceIndex}
  * gives the index of the item from the bound data source.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

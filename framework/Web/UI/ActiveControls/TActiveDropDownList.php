@@ -19,11 +19,11 @@ use Prado\Web\UI\WebControls\TDropDownList;
  * TActiveDropDownList class.
  *
  * The active control counter part to drop down list control.
- * The {@link setAutoPostBack AutoPostBack} property is set to true by default.
- * Thus, when the drop down list selection is changed the {@link onCallback OnCallback} event is
- * raised after {@link OnSelectedIndexChanged} event.
+ * The {@see setAutoPostBack AutoPostBack} property is set to true by default.
+ * Thus, when the drop down list selection is changed the {@see onCallback OnCallback} event is
+ * raised after {@see OnSelectedIndexChanged} event.
  *
- * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
+ * With {@see TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
  * set to true (default is true), changes to the selection, <b>after</b> OnLoad event has
  * been raised, will be updated.
  * on the client side.
@@ -90,7 +90,7 @@ class TActiveDropDownList extends TDropDownList implements IActiveControl, ICall
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
@@ -115,7 +115,7 @@ class TActiveDropDownList extends TDropDownList implements IActiveControl, ICall
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

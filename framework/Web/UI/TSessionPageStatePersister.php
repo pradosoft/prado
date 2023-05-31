@@ -22,10 +22,10 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * TSessionPageStatePersister keeps limited number of history states in session,
  * mainly to preserve the precious server storage. The number is specified
- * by {@link setHistorySize HistorySize}, which defaults to 10.
+ * by {@see setHistorySize HistorySize}, which defaults to 10.
  *
  * There are a couple of ways to use TSessionPageStatePersister.
- * One can override the page's {@link TPage::getStatePersister()} method and
+ * One can override the page's {@see TPage::getStatePersister()} method and
  * create a TSessionPageStatePersister instance there.
  * Or one can configure the pages to use TSessionPageStatePersister in page configurations
  * as follows,

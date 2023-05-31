@@ -17,7 +17,7 @@ use Prado\Prado;
  * TGlobalStateCacheDependency checks if a global state is changed or not.
  * If the global state is changed, the dependency is reported as changed.
  * To specify which global state this dependency should check with,
- * set {@link setStateName StateName} to the name of the global state.
+ * set {@see setStateName StateName} to the name of the global state.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0

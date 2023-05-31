@@ -22,8 +22,8 @@ use Prado\Util\TSimpleDateFormatter;
  *
  * TJuiDatePicker is a textbox that provides a date input. When the text box receives focus,
  * a calendar will pop up and users can pick up from it a date that will be automatically
- * entered into the text box. TJuiDatePicker is an extension to {@link TActivePanel} based on
- * jQuery-UI's {@link http://jqueryui.com/dialog/ Dialog} widget.
+ * entered into the text box. TJuiDatePicker is an extension to {@see TActivePanel} based on
+ * jQuery-UI's {@see http://jqueryui.com/dialog/ Dialog} widget.
  *
  * ```php
  * <com:TJuiDatePicker ID="datepicker1" />
@@ -131,7 +131,7 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 	}
 
 	/**
-	 * @return TTextBoxMode the behavior mode of the underlying {@link TTextBox} component.
+	 * @return TTextBoxMode the behavior mode of the underlying {@see TTextBox} component.
 	 * Fixed to TTextBoxMode::SingleLine for the TJuiDatePicker.
 	 */
 	public function getTextMode()
@@ -196,8 +196,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Returns the timestamp selected by the user.
-	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link getTimeStamp()}.
+	 * This method is required by {@see IDataRenderer}.
+	 * It is the same as {@see getTimeStamp()}.
 	 * @return int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
@@ -209,8 +209,8 @@ class TJuiDatePicker extends TActiveTextBox implements INamingContainer, IJuiOpt
 
 	/**
 	 * Sets the timestamp represented by this control.
-	 * This method is required by {@link IDataRenderer}.
-	 * It is the same as {@link setTimeStamp()}.
+	 * This method is required by {@see IDataRenderer}.
+	 * It is the same as {@see setTimeStamp()}.
 	 * @param int $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2

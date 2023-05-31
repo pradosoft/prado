@@ -18,7 +18,7 @@ use Prado\Web\UI\WebControls\TListItem;
 /**
  * TListItemCollection class.
  *
- * TListItemCollection maintains a list of {@link TListItem} for {@link TListControl}.
+ * TListItemCollection maintains a list of {@see TListItem} for {@see TListControl}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -13,7 +13,7 @@ namespace Prado\Web\UI\JuiControls;
  * IJuiOptions interface
  *
  * IJuiOptions is the interface that must be implemented by controls using
- * {@link TJuiControlOptions}.
+ * {@see TJuiControlOptions}.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @since 3.3

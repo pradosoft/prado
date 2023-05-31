@@ -19,7 +19,7 @@ use Prado\Data\TSqlMapManager;
  * SqlMap compares the data found in the discriminator column to the different
  * <submap> values using the column value's string equivalence. When the string values
  * matches a particular <submap>, SqlMap will use the <resultMap> defined by
- * {@link resultMapping TSubMap::setResultMapping()} property for loading
+ * {@see resultMapping TSubMap::setResultMapping()} property for loading
  * the object data.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

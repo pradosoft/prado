@@ -15,11 +15,11 @@ use Prado\Web\UI\WebControls\TCheckBoxList;
  * TActiveCheckBoxList class.
  *
  * The active control counter part to checkbox list control.
- * The {@link setAutoPostBack AutoPostBack} property is set to true by default.
- * Thus, when a checkbox is clicked a {@link onCallback OnCallback} event is
- * raised after {@link OnSelectedIndexChanged} event.
+ * The {@see setAutoPostBack AutoPostBack} property is set to true by default.
+ * Thus, when a checkbox is clicked a {@see onCallback OnCallback} event is
+ * raised after {@see OnSelectedIndexChanged} event.
  *
- * With {@link TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
+ * With {@see TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
  * set to true (default is true), changes to the selection will be updated
  * on the client side.
  *
@@ -72,7 +72,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
@@ -91,7 +91,7 @@ class TActiveCheckBoxList extends TCheckBoxList implements IActiveControl, ICall
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

@@ -102,8 +102,8 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the numberic value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return string number
 	 * @see getValue
 	 * @since 3.1.2
@@ -115,8 +115,8 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the numberic value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value the number value
 	 * @see setValue
 	 * @since 3.1.2

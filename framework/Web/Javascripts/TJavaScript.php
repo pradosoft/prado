@@ -103,7 +103,7 @@ class TJavaScript
 	/**
 	 * @param mixed $js
 	 * @return TJavaScriptLiteral Marks a string as a javascript function. Once marke, the string is considered as a
-	 * raw javascript function that is not supposed to be encoded by {@link encode}
+	 * raw javascript function that is not supposed to be encoded by {@see encode}
 	 */
 	public static function quoteJsLiteral($js)
 	{
@@ -117,7 +117,7 @@ class TJavaScript
 	/**
 	 * @param mixed $js
 	 * @return bool true if the parameter is marked as a javascript function, i.e. if it's considered as a
-	 * raw javascript function that is not supposed to be encoded by {@link encode}
+	 * raw javascript function that is not supposed to be encoded by {@see encode}
 	 */
 	public static function isJsLiteral($js)
 	{
@@ -136,7 +136,7 @@ class TJavaScript
 	 * // {'onLoading':'doit','onComplete':'more'}
 	 * ```
 	 *
-	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
+	 * For higher complexity data structures use {@see jsonEncode} and {@see jsonDecode}
 	 * to serialize and unserialize.
 	 *
 	 * @param mixed $value PHP variable to be encoded

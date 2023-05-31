@@ -16,9 +16,9 @@ use Prado\Collections\TListItemCollection;
  *
  * Allows TActiveDropDownList and TActiveListBox to add new options
  * during callback response. New options can only be added <b>after</b> the
- * {@link TControl::onLoad OnLoad} event.
+ * {@see TControl::onLoad OnLoad} event.
  *
- * The {@link getListHasChanged ListHasChanged} property is true when the
+ * The {@see getListHasChanged ListHasChanged} property is true when the
  * list items has changed. The control responsible for the list needs to
  * repopulate the client-side options.
  *

@@ -20,14 +20,14 @@ use Prado\TPropertyValue;
  *
  * There are two ways of loading a template, either by the associated template
  * control class name, or the template file name.
- * The former is via calling {@link getTemplateByClassName}, which tries to
+ * The former is via calling {@see getTemplateByClassName}, which tries to
  * locate the corresponding template file under the directory containing
  * the class file. The name of the template file is the class name with
  * the extension '.tpl'. To load a template from a template file path,
- * call {@link getTemplateByFileName}.
+ * call {@see getTemplateByFileName}.
  *
- * By default, TTemplateManager is registered with {@link TPageService} as the
- * template manager module that can be accessed via {@link TPageService::getTemplateManager()}.
+ * By default, TTemplateManager is registered with {@see TPageService} as the
+ * template manager module that can be accessed via {@see TPageService::getTemplateManager()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

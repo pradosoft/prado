@@ -54,7 +54,7 @@ class TPluginModule extends \Prado\TModule implements IPluginModule
 	private $_relativePagesPath = self::PAGES_DIRECTORY;
 
 	/**
-	 * initializes the plugin module, looks for a Pages directory and adds a new {@link TBehavior}
+	 * initializes the plugin module, looks for a Pages directory and adds a new {@see TBehavior}
 	 * to help TPageService find any plugin module pages
 	 * @param array $config this is the manifest for the plugin module
 	 */

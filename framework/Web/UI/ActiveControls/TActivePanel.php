@@ -19,7 +19,7 @@ use Prado\Web\UI\WebControls\TPanel;
  * TActivePanel is the TPanel active control counterpart.
  *
  * TActivePanel allows the client-side panel contents to be updated during a
- * callback response using the {@link render} method.
+ * callback response using the {@see render} method.
  *
  * Example: Assume $param is an instance of TCallbackEventParameter attached to
  * the OnCallback event of a TCallback with ID "callback1", and

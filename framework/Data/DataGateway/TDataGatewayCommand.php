@@ -25,13 +25,13 @@ use Prado\Exceptions\TDbException;
  * classes are used).
  *
  * Once the command is built and the query parameters are binded, the
- * {@link OnCreateCommand} event is raised. Event handlers for the OnCreateCommand
+ * {@see OnCreateCommand} event is raised. Event handlers for the OnCreateCommand
  * event should not alter the Command property nor the Criteria property of the
  * TDataGatewayEventParameter.
  *
  * TDataGatewayCommand excutes the TDbCommands and returns the result obtained from the
  * database (returned value depends on the method executed). The
- * {@link OnExecuteCommand} event is raised after the command is executed and resulting
+ * {@see OnExecuteCommand} event is raised after the command is executed and resulting
  * data is set in the TDataGatewayResultEventParameter object's Result property.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
@@ -440,7 +440,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 * @param TDataGatewayCommand $command originator $sender
 	 * @param mixed $criteria TDataGatewayEventParameter
@@ -453,9 +453,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
 	 * @param TDataGatewayCommand $command originator sender
 	 * @param mixed $result TDataGatewayResultEventParameter
 	 */

@@ -155,8 +155,8 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the date-time value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return string date time value.
 	 * @see getValue
 	 * @since 3.1.2
@@ -168,8 +168,8 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the date-time value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value the date-time value.
 	 * @see setValue
 	 * @since 3.1.2

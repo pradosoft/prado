@@ -14,8 +14,8 @@ namespace Prado\Web\UI\WebControls;
  *
  * TWizardNavigationContainer represents a control containing
  * a wizard navigation. The navigation may contain a few buttons, including
- * {@link getPreviousButton PreviousButton}, {@link getNextButton NextButton},
- * {@link getCancelButton CancelButton}, {@link getCompleteButton CompleteButton}.
+ * {@see getPreviousButton PreviousButton}, {@see getNextButton NextButton},
+ * {@see getCancelButton CancelButton}, {@see getCompleteButton CompleteButton}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

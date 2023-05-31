@@ -53,15 +53,15 @@ use Prado\Prado;
  *
  * The OnCreateCommand event is raised when a command is prepared and parameter
  * binding is completed. The parameter object is a TDataGatewayEventParameter of which the
- * {@link TDataGatewayEventParameter::getCommand Command} property can be
+ * {@see TDataGatewayEventParameter::getCommand Command} property can be
  * inspected to obtain the sql query to be executed.
  *
  * The OnExecuteCommand	event is raised when a command is executed and the result
  * from the database was returned. The parameter object is a
  * TDataGatewayResultEventParameter of which the
- * {@link TDataGatewayEventParameter::getResult Result} property contains
+ * {@see TDataGatewayEventParameter::getResult Result} property contains
  * the data return from the database. The data returned can be changed
- * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+ * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
  *
  * ```php
  * $table->OnCreateCommand[] = 'log_it'; //any valid PHP callback statement
@@ -142,7 +142,7 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 * @param TDataGatewayCommand $sender originator
 	 * @param TDataGatewayEventParameter $param
@@ -155,9 +155,9 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
 	 * @param TDataGatewayCommand $sender originator
 	 * @param TDataGatewayResultEventParameter $param
 	 */

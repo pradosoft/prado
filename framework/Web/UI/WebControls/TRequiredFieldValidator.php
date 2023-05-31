@@ -16,13 +16,13 @@ use Prado\TPropertyValue;
  *
  * TRequiredFieldValidator makes the associated input control a required field.
  * The input control fails validation if its value does not change from
- * the {@link setInitialValue InitialValue} property upon losing focus.
+ * the {@see setInitialValue InitialValue} property upon losing focus.
  *
  * Validation will also succeed if input is of TListControl type and the number
  * of selected values different from the initial value is greater than zero.
  *
- * If the input is of TListControl type and has a {@link TListControl::setPromptValue PromptValue}
- * set, it will be automatically considered as the validator's {@link setInitialValue InitialValue}.
+ * If the input is of TListControl type and has a {@see TListControl::setPromptValue PromptValue}
+ * set, it will be automatically considered as the validator's {@see setInitialValue InitialValue}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -76,7 +76,7 @@ class TRequiredFieldValidator extends TBaseValidator
 	/**
 	 * This method overrides the parent's implementation.
 	 * The validation succeeds if the input component changes its data
-	 * from the {@link getInitialValue InitialValue} or the input control is not given.
+	 * from the {@see getInitialValue InitialValue} or the input control is not given.
 	 *
 	 * Validation will also succeed if input is of TListControl type and the
 	 * number of selected values different from the initial value is greater

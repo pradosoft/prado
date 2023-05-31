@@ -29,8 +29,8 @@ use Prado\Web\THttpUtility;
  *  // ... render contents enclosed within the tag here
  *  $writer->renderEndTag();
  * ```
- * Make sure each invocation of {@link renderBeginTag} is accompanied with
- * a {@link renderEndTag} and they are properly nested, like nesting
+ * Make sure each invocation of {@see renderBeginTag} is accompanied with
+ * a {@see renderEndTag} and they are properly nested, like nesting
  * tags in HTML and XHTML.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

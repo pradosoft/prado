@@ -14,8 +14,8 @@ use Prado\Web\UI\WebControls\TImage;
 /**
  * TActiveImage class.
  *
- * TActiveImage allows the {@link setAlternateText AlternateText},
- * {@link setImageUrl ImageUrl}, and {@link setDescriptionUrl DescriptionUrl}
+ * TActiveImage allows the {@see setAlternateText AlternateText},
+ * {@see setImageUrl ImageUrl}, and {@see setDescriptionUrl DescriptionUrl}
  * to be updated during a callback request.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

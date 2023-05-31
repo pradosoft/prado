@@ -25,21 +25,21 @@ use Prado\Web\UI\ITemplate;
  *
  * TDataGrid represents a data bound and updatable grid control.
  *
- * To populate data into the datagrid, sets its {@link setDataSource DataSource}
- * to a tabular data source and call {@link dataBind()}.
- * Each row of data will be represented by an item in the {@link getItems Items}
+ * To populate data into the datagrid, sets its {@see setDataSource DataSource}
+ * to a tabular data source and call {@see dataBind()}.
+ * Each row of data will be represented by an item in the {@see getItems Items}
  * collection of the datagrid.
  *
  * An item can be at one of three states: browsing, selected and edit.
  * The state determines how the item will be displayed. For example, if an item
  * is in edit state, it may be displayed as a table row with input text boxes
- * if the columns are of type {@link TBoundColumn}; and if in browsing state,
+ * if the columns are of type {@see TBoundColumn}; and if in browsing state,
  * they are displayed as static text.
  *
- * To change the state of an item, set {@link setEditItemIndex EditItemIndex}
- * or {@link setSelectedItemIndex SelectedItemIndex} property.
+ * To change the state of an item, set {@see setEditItemIndex EditItemIndex}
+ * or {@see setSelectedItemIndex SelectedItemIndex} property.
  *
- * Each datagrid item has a {@link TDataGridItem::getItemType type}
+ * Each datagrid item has a {@see TDataGridItem::getItemType type}
  * which tells the position and state of the item in the datalist. An item in the header
  * of the repeater is of type Header. A body item may be of either
  * Item, AlternatingItem, SelectedItem or EditItem, depending whether the item
@@ -49,18 +49,18 @@ use Prado\Web\UI\ITemplate;
  * table column will be displayed. For example, the header/footer text of that column,
  * the cells in that column, and so on. The following column types are currently
  * provided by the framework,
- * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
- * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
- * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
- * - {@link TDropDownListColumn}, displaying a dropdown list when the item is in edit state
- * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
- * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
- * - {@link TTemplateColumn}, displaying content based on templates.
+ * - {@see TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@see TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@see TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@see TDropDownListColumn}, displaying a dropdown list when the item is in edit state
+ * - {@see THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@see TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@see TTemplateColumn}, displaying content based on templates.
  *
  * There are three ways to specify columns for a datagrid.
  * <ul>
  *  <li>Automatically generated based on data source.
- *  By setting {@link setAutoGenerateColumns AutoGenerateColumns} to true,
+ *  By setting {@see setAutoGenerateColumns AutoGenerateColumns} to true,
  *  a list of columns will be automatically generated based on the schema of the data source.
  *  Each column corresponds to a column of the data.</li>
  *  <li>Specified in template. For example,
@@ -72,7 +72,7 @@ use Prado\Web\UI\ITemplate;
  *  ```
  *  </li>
  *  <li>Manually created in code. Columns can be manipulated via
- *  the {@link setColumns Columns} property of the datagrid. For example,
+ *  the {@see setColumns Columns} property of the datagrid. For example,
  * ```php
  *    $column=new TBoundColumn;
  *    $datagrid->Columns[]=$column;
@@ -80,39 +80,39 @@ use Prado\Web\UI\ITemplate;
  *  </li>
  * </ul>
  * Note, automatically generated columns cannot be accessed via
- * the {@link getColumns Columns} property.
+ * the {@see getColumns Columns} property.
  *
- * TDataGrid supports sorting. If the {@link setAllowSorting AllowSorting}
- * is set to true, a column with nonempty {@link setSortExpression SortExpression}
+ * TDataGrid supports sorting. If the {@see setAllowSorting AllowSorting}
+ * is set to true, a column with nonempty {@see setSortExpression SortExpression}
  * will have its header text displayed as a clickable link button.
- * Clicking on the link button will raise {@link onSortCommand OnSortCommand}
+ * Clicking on the link button will raise {@see onSortCommand OnSortCommand}
  * event. You can respond to this event, sort the data source according
- * to the event parameter, and then invoke {@link databind()} on the datagrid
+ * to the event parameter, and then invoke {@see databind()} on the datagrid
  * to show to end users the sorted data.
  *
- * TDataGrid supports paging. If the {@link setAllowPaging AllowPaging}
+ * TDataGrid supports paging. If the {@see setAllowPaging AllowPaging}
  * is set to true, a pager will be displayed on top and/or bottom of the table.
- * How the pager will be displayed is determined by the {@link getPagerStyle PagerStyle}
- * property. Clicking on a pager button will raise an {@link onPageIndexChanged OnPageIndexChanged}
+ * How the pager will be displayed is determined by the {@see getPagerStyle PagerStyle}
+ * property. Clicking on a pager button will raise an {@see onPageIndexChanged OnPageIndexChanged}
  * event. You can respond to this event, specify the page to be displayed by
- * setting {@link setCurrentPageIndex CurrentPageIndex}</b> property,
- * and then invoke {@link databind()} on the datagrid to show to end users
+ * setting {@see setCurrentPageIndex CurrentPageIndex}</b> property,
+ * and then invoke {@see databind()} on the datagrid to show to end users
  * a new page of data.
  *
  * TDataGrid supports two kinds of paging. The first one is based on the number of data items in
- * datasource. The number of pages {@link getPageCount PageCount} is calculated based
- * the item number and the {@link setPageSize PageSize} property.
+ * datasource. The number of pages {@see getPageCount PageCount} is calculated based
+ * the item number and the {@see setPageSize PageSize} property.
  * The datagrid will manage which section of the data source to be displayed
- * based on the {@link setCurrentPageIndex CurrentPageIndex} property.
+ * based on the {@see setCurrentPageIndex CurrentPageIndex} property.
  * The second approach calculates the page number based on the
- * {@link setVirtualItemCount VirtualItemCount} property and
- * the {@link setPageSize PageSize} property. The datagrid will always
+ * {@see setVirtualItemCount VirtualItemCount} property and
+ * the {@see setPageSize PageSize} property. The datagrid will always
  * display from the beginning of the datasource up to the number of
- * {@link setPageSize PageSize} data items. This approach is especially
+ * {@see setPageSize PageSize} data items. This approach is especially
  * useful when the datasource may contain too many data items to be managed by
  * the datagrid efficiently.
  *
- * When the datagrid contains a button control that raises an {@link onCommand OnCommand}
+ * When the datagrid contains a button control that raises an {@see onCommand OnCommand}
  * event, the event will be bubbled up to the datagrid control.
  * If the event's command name is recognizable by the datagrid control,
  * a corresponding item event will be raised. The following item events will be
@@ -124,17 +124,17 @@ use Prado\Web\UI\ITemplate;
  * - OnUpdateCommand, if CommandName=update
  * - onPageIndexChanged, if CommandName=page
  * - OnSortCommand, if CommandName=sort
- * Note, an {@link onItemCommand OnItemCommand} event is raised in addition to
+ * Note, an {@see onItemCommand OnItemCommand} event is raised in addition to
  * the above specific command events.
  *
- * TDataGrid also raises an {@link onItemCreated OnItemCreated} event for
+ * TDataGrid also raises an {@see onItemCreated OnItemCreated} event for
  * every newly created datagrid item. You can respond to this event to customize
  * the content or style of the newly created item.
  *
  * Note, the data bound to the datagrid are reset to null after databinding.
  * There are several ways to access the data associated with a datagrid row:
- * - Access the data in {@link onItemDataBound OnItemDataBound} event
- * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
+ * - Access the data in {@see onItemDataBound OnItemDataBound} event
+ * - Use {@see getDataKeys DataKeys} to obtain the data key associated with
  * the specified datagrid row and use the key to fetch the corresponding data
  * from some persistent storage such as DB.
  * - Save the data in viewstate and get it back during postbacks.
@@ -217,7 +217,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Adds objects parsed in template to datagrid.
-	 * Datagrid columns are added into {@link getColumns Columns} collection.
+	 * Datagrid columns are added into {@see getColumns Columns} collection.
 	 * @param mixed $object object parsed in template
 	 */
 	public function addParsedObject($object)
@@ -272,7 +272,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableStyle} to be used by datagrid.
+	 * This method creates a {@see TTableStyle} to be used by datagrid.
 	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()
@@ -498,7 +498,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return int the zero-based index of the selected item in {@link getItems Items}.
+	 * @return int the zero-based index of the selected item in {@see getItems Items}.
 	 * A value -1 means no item selected.
 	 */
 	public function getSelectedItemIndex()
@@ -507,7 +507,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * Selects an item by its index in {@link getItems Items}.
+	 * Selects an item by its index in {@see getItems Items}.
 	 * Previously selected item will be un-selected.
 	 * If the item to be selected is already in edit mode, it will remain in edit mode.
 	 * If the index is less than 0, any existing selection will be cleared up.
@@ -552,7 +552,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * @return int the zero-based index of the edit item in {@link getItems Items}.
+	 * @return int the zero-based index of the edit item in {@see getItems Items}.
 	 * A value -1 means no item is in edit mode.
 	 */
 	public function getEditItemIndex()
@@ -561,7 +561,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	}
 
 	/**
-	 * Edits an item by its index in {@link getItems Items}.
+	 * Edits an item by its index in {@see getItems Items}.
 	 * Previously editting item will change to normal item state.
 	 * If the index is less than 0, any existing edit item will be cleared up.
 	 * @param int $value the edit item index
@@ -658,7 +658,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datagrid
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -671,12 +671,12 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * This method overrides parent's implementation to handle
-	 * {@link onItemCommand OnItemCommand} event which is bubbled from
-	 * {@link TDataGridItem} child controls.
-	 * If the event parameter is {@link TDataGridCommandEventParameter} and
+	 * {@see onItemCommand OnItemCommand} event which is bubbled from
+	 * {@see TDataGridItem} child controls.
+	 * If the event parameter is {@see TDataGridCommandEventParameter} and
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
-	 * corresponding command event is also raised (such as {@link onEditCommand OnEditCommand}).
+	 * corresponding command event is also raised (such as {@see onEditCommand OnEditCommand}).
 	 * This method should only be used by control developers.
 	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
@@ -976,7 +976,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Performs databinding to populate datagrid items from data source.
-	 * This method is invoked by {@link dataBind()}.
+	 * This method is invoked by {@see dataBind()}.
 	 * You may override this function to provide your own way of data population.
 	 * @param \Traversable $data the bound data
 	 */
@@ -1374,10 +1374,10 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	 * Item styles are applied in a hierarchical way. Style in higher hierarchy
 	 * will inherit from styles in lower hierarchy.
 	 * Starting from the lowest hierarchy, the item styles include
-	 * item's own style, {@link getItemStyle ItemStyle}, {@link getAlternatingItemStyle AlternatingItemStyle},
-	 * {@link getSelectedItemStyle SelectedItemStyle}, and {@link getEditItemStyle EditItemStyle}.
-	 * Therefore, if background color is set as red in {@link getItemStyle ItemStyle},
-	 * {@link getEditItemStyle EditItemStyle} will also have red background color
+	 * item's own style, {@see getItemStyle ItemStyle}, {@see getAlternatingItemStyle AlternatingItemStyle},
+	 * {@see getSelectedItemStyle SelectedItemStyle}, and {@see getEditItemStyle EditItemStyle}.
+	 * Therefore, if background color is set as red in {@see getItemStyle ItemStyle},
+	 * {@see getEditItemStyle EditItemStyle} will also have red background color
 	 * unless it is set to a different value explicitly.
 	 */
 	protected function applyItemStyles()

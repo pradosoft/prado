@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TColorPickerMode class.
  * TColorPickerMode defines the enumerable type for the possible UI mode
- * that a {@link TColorPicker} control can take.
+ * that a {@see TColorPicker} control can take.
  *
  * The following enumerable values are defined:
  * # Simple - Grid with 12 simple colors.

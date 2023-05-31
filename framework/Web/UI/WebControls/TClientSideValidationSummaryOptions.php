@@ -14,9 +14,9 @@ use Prado\Web\UI\TClientSideOptions;
 /**
  * TClientSideValidationSummaryOptions class.
  *
- * Client-side validation summary events such as {@link setOnHideSummary
- * OnHideSummary} and {@link setOnShowSummary OnShowSummary} can be modified
- * through the {@link TBaseValidator:: getClientSide ClientSide} property of a
+ * Client-side validation summary events such as {@see setOnHideSummary
+ * OnHideSummary} and {@see setOnShowSummary OnShowSummary} can be modified
+ * through the {@see TBaseValidator:: getClientSide ClientSide} property of a
  * validation summary.
  *
  * The <tt>OnHideSummary</tt> event is raise when the validation summary

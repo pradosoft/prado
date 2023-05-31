@@ -17,13 +17,13 @@ use Prado\Util\TSimpleDateFormatter;
  * TDataTypeValidator class
  *
  * TDataTypeValidator verifies if the input data is of the type specified
- * by {@link setDataType DataType}.
+ * by {@see setDataType DataType}.
  * The following data types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Date</b> A date data type.
  * - <b>String</b> A string data type.
- * For <b>Date</b> type, the property {@link setDateFormat DateFormat}
+ * For <b>Date</b> type, the property {@see setDateFormat DateFormat}
  * will be used to determine how to parse the date string. If it is not
  * provided, the string will be assumed to be in GNU datetime format.
  *

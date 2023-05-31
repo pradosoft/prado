@@ -16,7 +16,7 @@ use Prado\Exceptions\TConfigurationException;
  * TEtcdCache class
  *
  * TEtcdCache implements a cache application module based on the distributed,
- * consistent key-value store {@link https://github.com/coreos/etcd etcd}.
+ * consistent key-value store {@see https://github.com/coreos/etcd etcd}.
  * etcd is high performance key-value store written in Go which uses the Raft
  * consensus algorithm to manage a highly-available replicated log.
  *
@@ -24,9 +24,9 @@ use Prado\Exceptions\TConfigurationException;
  * even if it never expires. Cache is not meant to be an persistent storage.
  *
  * To use this module, an etcd instance must be running and reachable on the host
- * specified by {@link setHost} and the port specified by {@link setPort} which
+ * specified by {@see setHost} and the port specified by {@see setPort} which
  * default to 'localhost:2379'. All values are stored within a directory set by
- * {@link setDir} which defaults to 'pradocache'.
+ * {@see setDir} which defaults to 'pradocache'.
  *
  * TEtcdCache only supports etcd API v2 and uses cURL to fire the HTTP
  * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
@@ -39,8 +39,8 @@ use Prado\Exceptions\TConfigurationException;
  * $value = $cache->get('value');
  * ```
  *
- * If loaded, TEtcdCache will register itself with {@link TApplication} as the
- * cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded, TEtcdCache will register itself with {@see TApplication} as the
+ * cache module. It can be accessed via {@see TApplication::getCache()}.
  *
  * TEtcdCache may be configured in application configuration file as follows
  * ```php

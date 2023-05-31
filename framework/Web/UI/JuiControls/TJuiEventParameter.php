@@ -21,11 +21,11 @@ use Prado\Web\UI\TControl;
  * events of TJui* components.
  * Any parameter representing a control is identified by its
  * clientside ID.
- * TJuiEventParameter contains a {@link getControl} helper method
+ * TJuiEventParameter contains a {@see getControl} helper method
  * that retrieves an existing PRADO control on che current page from its
  * clientside ID as returned by the callback.
  * For example, if the parameter contains a "draggable" item (as returned in
- * {@link TJuiDroppable}::OnDrop event), the relative PRADO control can be
+ * {@see TJuiDroppable}::OnDrop event), the relative PRADO control can be
  * retrieved using:
  * ```php
  * $draggable = $param->getControl($param->getCallbackParameter()->draggable);

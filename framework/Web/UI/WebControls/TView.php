@@ -16,12 +16,12 @@ use Prado\TPropertyValue;
  * TView class
  *
  * TView is a container for a group of controls. TView must be contained
- * within a {@link TMultiView} control in which only one view can be active
+ * within a {@see TMultiView} control in which only one view can be active
  * at one time.
  *
- * To activate a view, set {@link setActive Active} to true.
- * When a view is activated, it raises {@link onActivate OnActivate} event;
- * and when a view is deactivated, it raises {@link onDeactivate OnDeactivate}.
+ * To activate a view, set {@see setActive Active} to true.
+ * When a view is activated, it raises {@see onActivate OnActivate} event;
+ * and when a view is deactivated, it raises {@see onDeactivate OnDeactivate}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

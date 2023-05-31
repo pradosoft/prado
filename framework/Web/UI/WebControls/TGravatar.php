@@ -18,7 +18,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TGravatar extends TImage and outputs a gravatar ImageUrl based
  * upon an email address, size, rating, and default style of the gravatar.
  *
- * {@link setDefaultImageStyle} allows for various styles of gravatar:
+ * {@see setDefaultImageStyle} allows for various styles of gravatar:
  *		• mp - Mystery Person
  *		• identicon - identicon style
  *		• monsterid - monster style
@@ -33,11 +33,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * The size must be between 1 and 512, inclusive.
  *
- * {@link TParameterizeBehavior} can be attached to TGravatar to give
+ * {@see TParameterizeBehavior} can be attached to TGravatar to give
  * default values for various properties like DefaultImageStyle and Rating.
  * PRADO Skins can also be used to provide default values.
  *
- * See {@link https://gravatar.com} for more information.
+ * See {@see https://gravatar.com} for more information.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

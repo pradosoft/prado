@@ -19,13 +19,13 @@ use Prado\Web\THttpUtility;
  * TLiteral is similar to the TLabel control, except that the TLiteral
  * control does not have style properties (e.g. BackColor, Font, etc.)
  * You can programmatically control the text displayed in the control by setting
- * the {@link setText Text} property. The text displayed may be HTML-encoded
- * if the {@link setEncode Encode} property is set true (defaults to false).
+ * the {@see setText Text} property. The text displayed may be HTML-encoded
+ * if the {@see setEncode Encode} property is set true (defaults to false).
  *
  * TLiteral will render the contents enclosed within its component tag
- * if {@link setText Text} is empty.
+ * if {@see setText Text} is empty.
  *
- * Note, if {@link setEncode Encode} is false, make sure {@link setText Text}
+ * Note, if {@see setEncode Encode} is false, make sure {@see setText Text}
  * does not contain unwanted characters that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -52,8 +52,8 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 
 	/**
 	 * Returns the static text of the TLiteral.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string the static text of the TLiteral
 	 * @see getText
 	 * @since 3.1.0
@@ -65,8 +65,8 @@ class TLiteral extends \Prado\Web\UI\TControl implements \Prado\IDataRenderer
 
 	/**
 	 * Sets the static text of the TLiteral.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value the static text of the TLiteral
 	 * @see setText
 	 * @since 3.1.0

@@ -13,7 +13,7 @@ namespace Prado\I18N;
  * TGlobalizationAutoDetect class will automatically try to resolve the default
  * culture using the user browser language settings.
  *
- * You can specify the list of available cultures on the website by setting the {@link setAvailableLanguages AvailableLanguages} property, eg:
+ * You can specify the list of available cultures on the website by setting the {@see setAvailableLanguages AvailableLanguages} property, eg:
  * ```xml
  * <module id="globalization" class="TGlobalizationAutoDetect" charset="UTF-8" DefaultCulture="it" TranslateDefaultCulture="false" AvailableLanguages="it, en">
  * ```

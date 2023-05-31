@@ -19,7 +19,7 @@ use Prado\Util\IDbModule;
  * TDbUserManager class
  *
  * TDbUserManager manages user accounts that are stored in a database.
- * TDbUserManager is mainly designed to be used together with {@link TAuthManager}
+ * TDbUserManager is mainly designed to be used together with {@see TAuthManager}
  * which manages how users are authenticated and authorized in a Prado application.
  *
  * To use TDbUserManager together with TAuthManager, configure them in
@@ -36,9 +36,9 @@ use Prado\Util\IDbModule;
  *     UserManager="users" LoginPage="Path\To\LoginPage" />
  * ```
  *
- * In the above, {@link setUserClass UserClass} specifies what class will be used
- * to create user instance. The class must extend from {@link TDbUser}.
- * {@link setConnectionID ConnectionID} refers to the ID of a {@link TDataSourceConfig} module
+ * In the above, {@see setUserClass UserClass} specifies what class will be used
+ * to create user instance. The class must extend from {@see TDbUser}.
+ * {@see setConnectionID ConnectionID} refers to the ID of a {@see TDataSourceConfig} module
  * which specifies how to establish database connection to retrieve user information.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -77,7 +77,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	}
 
 	/**
-	 * @param string $value the user class name in namespace format. The user class must extend from {@link TDbUser}.
+	 * @param string $value the user class name in namespace format. The user class must extend from {@see TDbUser}.
 	 */
 	public function setUserClass($value)
 	{

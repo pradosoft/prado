@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TScrollBars class.
  * TScrollBars defines the enumerable type for the possible scroll bar mode
- * that a {@link TPanel} control could use.
+ * that a {@see TPanel} control could use.
  *
  * The following enumerable values are defined:
  * - None: no scroll bars.

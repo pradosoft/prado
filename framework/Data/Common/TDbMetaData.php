@@ -21,7 +21,7 @@ use Prado\Prado;
  * TDbMetaData is the base class for retrieving metadata information, such as
  * table and columns information, from a database connection.
  *
- * Use the {@link getTableInfo} method to retrieve a table information.
+ * Use the {@see getTableInfo} method to retrieve a table information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

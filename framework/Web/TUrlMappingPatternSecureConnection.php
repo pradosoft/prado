@@ -13,7 +13,7 @@ namespace Prado\Web;
  * TUrlMappingPatternSecureConnection class
  *
  * TUrlMappingPatternSecureConnection defines the enumerable type for the possible SecureConnection
- * URL prefix behavior that can be used by {@link TUrlMappingPattern::constructUrl()}.
+ * URL prefix behavior that can be used by {@see TUrlMappingPattern::constructUrl()}.
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @since 3.2

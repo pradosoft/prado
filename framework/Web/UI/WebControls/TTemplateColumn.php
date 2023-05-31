@@ -17,16 +17,16 @@ use Prado\Prado;
  * TTemplateColumn class
  *
  * TTemplateColumn customizes the layout of controls in the column with templates.
- * In particular, you can specify {@link setItemTemplate ItemTemplate},
- * {@link setEditItemTemplate EditItemTemplate}, {@link setHeaderTemplate HeaderTemplate}
- * and {@link setFooterTemplate FooterTemplate} to customize specific
+ * In particular, you can specify {@see setItemTemplate ItemTemplate},
+ * {@see setEditItemTemplate EditItemTemplate}, {@see setHeaderTemplate HeaderTemplate}
+ * and {@see setFooterTemplate FooterTemplate} to customize specific
  * type of cells in the column.
  *
- * Since v3.1.0, TTemplateColumn has introduced two new properties {@link setItemRenderer ItemRenderer}
- * and {@link setEditItemRenderer EditItemRenderer} which can be used to specify
+ * Since v3.1.0, TTemplateColumn has introduced two new properties {@see setItemRenderer ItemRenderer}
+ * and {@see setEditItemRenderer EditItemRenderer} which can be used to specify
  * the layout of the datagrid cells in browsing and editing mode.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@link TRepeater} and {@link TDataList}.
+ * For more details, see {@see TRepeater} and {@see TDataList}.
  *
  * When a renderer and a template are both defined for a type of item, the former
  * takes precedence.
@@ -59,7 +59,7 @@ class TTemplateColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
 	 *
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
 	 * @param string $value the renderer class name in namespace format.
@@ -84,7 +84,7 @@ class TTemplateColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
 	 *
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the row of the data associated with the datagrid item that this cell resides in.
 	 *
 	 * @param string $value the renderer class name in namespace format.
@@ -105,7 +105,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the edit item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
@@ -126,7 +126,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -147,7 +147,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the header template.
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -168,7 +168,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{

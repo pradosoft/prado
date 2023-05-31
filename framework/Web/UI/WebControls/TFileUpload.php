@@ -16,30 +16,30 @@ use Prado\TPropertyValue;
  * TFileUpload class
  *
  * TFileUpload displays a file upload field on a page. Upon postback, the selected
- * files will be uploaded to the server. The property {@link getHasFile HasFile}
+ * files will be uploaded to the server. The property {@see getHasFile HasFile}
  * indicates whether the file upload is successful. If successful, the file
- * may be obtained by calling {@link saveAs} to save it at a specified place.
- * You can use {@link getFileName FileName}, {@link getFileType FileType},
- * {@link getFileSize FileSize} to get the original client-side file name,
+ * may be obtained by calling {@see saveAs} to save it at a specified place.
+ * You can use {@see getFileName FileName}, {@see getFileType FileType},
+ * {@see getFileSize FileSize} to get the original client-side file name,
  * the file mime type, and the file size information. If the upload is not
- * successful, {@link getErrorCode ErrorCode} contains the error code
+ * successful, {@see getErrorCode ErrorCode} contains the error code
  * describing the cause of failure.
  *
  * Since Prado 4.0 the TFileUpload supports uploading multiple files at once by
- * setting {@link setMultiple Multiple} to true which renders the additional HTML5
+ * setting {@see setMultiple Multiple} to true which renders the additional HTML5
  * attribute and adds square brackets to the name attribute. A new method
- * {@link getFiles} is introduced which returns an array of {@link TFileUploadItem}
+ * {@see getFiles} is introduced which returns an array of {@see TFileUploadItem}
  * representing each uploaded file.
  *
  * All (old) methods mentioned in the first paragraph (getHasFile, getFileName, getFileType,
  * getFileSize, getErrorCode and saveAs) also take a new optional parameter specifying
  * the file index to get the desired information from. This is for backward compatibility
- * so that old, single file uploads will still work - internally a {@link TFileUploadItem}
+ * so that old, single file uploads will still work - internally a {@see TFileUploadItem}
  * is also used for a single file upload.
- * If more than one file is uploaded {@link getValidationPropertyValue} returns a comma
+ * If more than one file is uploaded {@see getValidationPropertyValue} returns a comma
  * separated list of original file names instead of a single file name for validation.
  *
- * TFileUpload raises {@link onFileUpload OnFileUpload} event if one or more files are
+ * TFileUpload raises {@see onFileUpload OnFileUpload} event if one or more files are
  * uploaded (whether it succeeds or not).
  *
  * @author Marcus Nyeholt <tanus@users.sourceforge.net>, Qiang Xue <qiang.xue@gmail.com>
@@ -60,11 +60,11 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	private $_multiple = false;
 	/**
-	 * @var array the list of uploaded files represented by {@link TFileUploadItem}
+	 * @var array the list of uploaded files represented by {@see TFileUploadItem}
 	 */
 	private $_files = [];
 	/**
-	 * @var string class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@see TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = \Prado\Web\UI\WebControls\TFileUploadItem::class;
 
@@ -259,7 +259,7 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Raises postdata changed event.
-	 * This method calls {@link onFileUpload} method.
+	 * This method calls {@see onFileUpload} method.
 	 * This method is primarly used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()

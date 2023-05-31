@@ -16,11 +16,11 @@ use Prado\TPropertyValue;
 /**
  * TListItem class.
  *
- * TListItem represents an item in a list control. Each item has a {@link setText Text}
- * property and a {@link setValue Value} property. If either one of them is not set,
+ * TListItem represents an item in a list control. Each item has a {@see setText Text}
+ * property and a {@see setValue Value} property. If either one of them is not set,
  * it will take the value of the other property.
- * An item can be {@link setSelected Selected} or {@link setEnabled Enabled},
- * and it can have additional {@link getAttributes Attributes} which may be rendered
+ * An item can be {@see setSelected Selected} or {@see setEnabled Enabled},
+ * and it can have additional {@see getAttributes Attributes} which may be rendered
  * if the list control supports so.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

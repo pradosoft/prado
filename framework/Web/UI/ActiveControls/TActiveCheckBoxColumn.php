@@ -20,10 +20,10 @@ use Prado\Web\UI\WebControls\TListItemType;
  *
  * TActiveCheckBoxColumn represents a checkbox column that is bound to a field in a data source.
  *
- * This is the active counterpart to the {@link TCheckBoxColumn} control. For that purpose,
+ * This is the active counterpart to the {@see TCheckBoxColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@link TCheckBoxColumn} for usage.
+ * Please refer to the original documentation of the {@see TCheckBoxColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

@@ -12,9 +12,9 @@ namespace Prado\Data\SqlMap\Configuration;
 /**
  * TSubMap class defines a submapping value and the corresponding <resultMap>
  *
- * The {@link Value setValue()} property is used for comparison with the
- * discriminator column value. When the {@link Value setValue()} matches
- * that of the discriminator column value, the corresponding {@link ResultMapping setResultMapping}
+ * The {@see Value setValue()} property is used for comparison with the
+ * discriminator column value. When the {@see Value setValue()} matches
+ * that of the discriminator column value, the corresponding {@see ResultMapping setResultMapping}
  * is used inplace of the current result map.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

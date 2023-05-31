@@ -15,7 +15,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TMetaTagCollection class
  *
  * TMetaTagCollection represents a collection of meta tags
- * contained in a {@link THead} control.
+ * contained in a {@see THead} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -28,7 +28,7 @@ class TMetaTagCollection extends \Prado\Collections\TList
 	 * check on the item being added.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TMetaTag}
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@see TMetaTag}
 	 */
 	public function insertAt($index, $item)
 	{

@@ -18,7 +18,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * active controls that can perform callback requests.
  *
  * The properties of TBaseActiveCallbackControl can be accessed and changed from
- * each individual active controls' {@link getActiveControl ActiveControl}
+ * each individual active controls' {@see getActiveControl ActiveControl}
  * property.
  *
  * The following example sets the validation group property of a TCallback component.
@@ -27,7 +27,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * ```
  *
  * Additional client-side options and events can be set using the
- * {@link getClientSide ClientSide} property. The following example shows
+ * {@see getClientSide ClientSide} property. The following example shows
  * an alert box when a TCallback component response returns successfully.
  * ```php
  * 	<com:TCallback ActiveControl.ClientSide.OnSuccess="alert('ok!')" ... />
@@ -41,7 +41,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	/**
 	 * Callback client-side options can be set by setting the properties of
 	 * the ClientSide property. E.g. <com:TCallback ActiveControl.ClientSide.OnSuccess="..." />
-	 * See {@link TCallbackClientSide} for details on the properties of ClientSide.
+	 * See {@see TCallbackClientSide} for details on the properties of ClientSide.
 	 * @return TCallbackClientSide client-side callback options.
 	 */
 	public function getClientSide()
@@ -80,7 +80,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	/**
 	 * Sets default callback options. Takes the ID of a TCallbackOptions
 	 * component to duplicate the client-side
-	 * options for this control. The {@link getClientSide ClientSide}
+	 * options for this control. The {@see getClientSide ClientSide}
 	 * subproperties takes precedence over the CallbackOptions property.
 	 * @param string $value ID of a TCallbackOptions control from which ClientSide
 	 * options are cloned.
@@ -102,7 +102,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	/**
 	 * Returns an array of default callback client-side options. The default options
 	 * are obtained from the client-side options of a TCallbackOptions control with
-	 * ID specified by {@link setCallbackOptions CallbackOptions}.
+	 * ID specified by {@see setCallbackOptions CallbackOptions}.
 	 * @return array list of default callback client-side options.
 	 */
 	protected function getDefaultClientSideOptions()
@@ -224,7 +224,7 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * merged and passed to the javascript code. This method should be called by
 	 * Active component developers wanting to register the javascript to initialize
 	 * the active component with additional options offered by the
-	 * {@link getClientSide ClientSide} property.
+	 * {@see getClientSide ClientSide} property.
 	 * @param string $class client side javascript class name.
 	 * @param null|array $options additional callback options.
 	 */

@@ -19,14 +19,14 @@ use Prado\TPropertyValue;
  * TWebControl is the base class for controls that share a common set
  * of UI-related properties and methods. TWebControl-derived controls
  * are usually associated with HTML tags. They thus have tag name, attributes
- * and body contents. You can override {@link getTagName} to specify the tag name,
- * {@link addAttributesToRender} to specify the attributes to be rendered,
- * and {@link renderContents} to customize the body content rendering.
+ * and body contents. You can override {@see getTagName} to specify the tag name,
+ * {@see addAttributesToRender} to specify the attributes to be rendered,
+ * and {@see renderContents} to customize the body content rendering.
  * TWebControl encapsulates a set of properties related with CSS style fields,
- * such as {@link getBackColor BackColor}, {@link getBorderWidth BorderWidth}, etc.
+ * such as {@see getBackColor BackColor}, {@see getBorderWidth BorderWidth}, etc.
  *
- * Subclasses of TWebControl typically needs to override {@link addAttributesToRender}
- * and {@link renderContents}. The former is used to render the attributes
+ * Subclasses of TWebControl typically needs to override {@see addAttributesToRender}
+ * and {@see renderContents}. The former is used to render the attributes
  * of the HTML tag associated with the control, while the latter is to render
  * the body contents enclosed within the HTML tag.
  *
@@ -459,9 +459,9 @@ class TWebControl extends \Prado\Web\UI\TControl implements IStyleable
 	 * Renders the control.
 	 * This method overrides the parent implementation by replacing it with
 	 * the following sequence:
-	 * - {@link renderBeginTag}
-	 * - {@link renderContents}
-	 * - {@link renderEndTag}
+	 * - {@see renderBeginTag}
+	 * - {@see renderContents}
+	 * - {@see renderEndTag}
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)

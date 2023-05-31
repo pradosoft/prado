@@ -14,7 +14,7 @@ namespace Prado\Collections;
  *
  * TDummyDataSource implements a dummy data collection with a specified number
  * of dummy data items. The number of virtual items can be set via
- * {@link setCount Count} property. You can traverse it using <b>foreach</b>
+ * {@see setCount Count} property. You can traverse it using <b>foreach</b>
  * PHP statement like the following,
  * ```php
  * foreach($dummyDataSource as $dataItem)

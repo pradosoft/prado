@@ -39,7 +39,7 @@ use Prado\TApplication;
  * ```
  *
  * The properties of <connection> are those of the class TDbConnection.
- * Set {@link setConnectionClass} attribute for a custom database connection class
+ * Set {@see setConnectionClass} attribute for a custom database connection class
  * that extends the TDbConnection class.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
@@ -76,8 +76,8 @@ class TDataSourceConfig extends \Prado\TModule
 	}
 
 	/**
-	 * The module ID of another TDataSourceConfig. The {@link getDbConnection DbConnection}
-	 * property of this configuration will equal to {@link getDbConnection DbConnection}
+	 * The module ID of another TDataSourceConfig. The {@see getDbConnection DbConnection}
+	 * property of this configuration will equal to {@see getDbConnection DbConnection}
 	 * of the given TDataSourceConfig module.
 	 * @param string $value module ID.
 	 */
@@ -95,9 +95,9 @@ class TDataSourceConfig extends \Prado\TModule
 	}
 
 	/**
-	 * Gets the TDbConnection from another module if {@link setConnectionID ConnectionID}
+	 * Gets the TDbConnection from another module if {@see setConnectionID ConnectionID}
 	 * is supplied and valid. Otherwise, a connection of type given by
-	 * {@link setConnectionClass ConnectionClass} is created.
+	 * {@see setConnectionClass ConnectionClass} is created.
 	 * @return \Prado\Data\TDbConnection database connection.
 	 */
 	public function getDbConnection()
@@ -130,10 +130,10 @@ class TDataSourceConfig extends \Prado\TModule
 	}
 
 	/**
-	 * The database connection class name to be created when {@link getDbConnection}
-	 * method is called <b>and</b> {@link setConnectionID ConnectionID} is null. The
-	 * {@link setConnectionClass ConnectionClass} property must be set before
-	 * calling {@link getDbConnection} if you wish to create the connection using the
+	 * The database connection class name to be created when {@see getDbConnection}
+	 * method is called <b>and</b> {@see setConnectionID ConnectionID} is null. The
+	 * {@see setConnectionClass ConnectionClass} property must be set before
+	 * calling {@see getDbConnection} if you wish to create the connection using the
 	 * given class name.
 	 * @param string $value Database connection class name.
 	 * @throws TConfigurationException when database connection is already established.

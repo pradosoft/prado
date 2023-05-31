@@ -19,7 +19,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * TJsonService class provides to end-users javascript content response in
  * JSON format.
  *
- * TJsonService manages a set of {@link TJsonResponse}, each
+ * TJsonService manages a set of {@see TJsonResponse}, each
  * representing specific response with javascript content.
  * The service parameter, referring to the ID of the service, specifies
  * which javascript content to be provided to end-users.

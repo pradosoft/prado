@@ -20,13 +20,13 @@ use Prado\Web\UI\WebControls\TEditCommandColumn;
  *
  * TActiveEditCommandColumn will create an edit button if a cell is not in edit mode.
  * Otherwise an update button and a cancel button will be created within the cell.
- * The button captions are specified using {@link setEditText EditText},
- * {@link setUpdateText UpdateText}, and {@link setCancelText CancelText}.
+ * The button captions are specified using {@see setEditText EditText},
+ * {@see setUpdateText UpdateText}, and {@see setCancelText CancelText}.
  *
- * This is the active counterpart to the {@link TEditCommandColumn} control. The buttons for
+ * This is the active counterpart to the {@see TEditCommandColumn} control. The buttons for
  * interaction are replaced by active buttons.
  *
- * Please refer to the original documentation of the {@link TEditCommandColumn} for usage.
+ * Please refer to the original documentation of the {@see TEditCommandColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

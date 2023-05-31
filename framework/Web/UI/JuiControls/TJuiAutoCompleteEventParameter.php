@@ -12,10 +12,10 @@ namespace Prado\Web\UI\JuiControls;
 use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 
 /**
- * TJuiAutoCompleteEventParameter contains the {@link getToken Token} requested by
+ * TJuiAutoCompleteEventParameter contains the {@see getToken Token} requested by
  * the user for a partial match of the suggestions.
  *
- * The {@link getSelectedIndex SelectedIndex} is a zero-based index of the
+ * The {@see getSelectedIndex SelectedIndex} is a zero-based index of the
  * suggestion selected by the user, -1 if not suggestion is selected.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

@@ -21,9 +21,9 @@ use Prado\Web\UI\ITemplate;
  * TRepeater class.
  *
  * TRepeater displays its content repeatedly based on the data fetched from
- * {@link setDataSource DataSource}.
+ * {@see setDataSource DataSource}.
  * The repeated contents in TRepeater are called items, which are controls and
- * can be accessed through {@link getItems Items}. When {@link dataBind()} is invoked,
+ * can be accessed through {@see getItems Items}. When {@see dataBind()} is invoked,
  * TRepeater creates an item for each row of data and binds the data row to the item.
  * Optionally, a repeater can have a header, a footer and/or separators between items.
  *
@@ -36,51 +36,51 @@ use Prado\Web\UI\ITemplate;
  * as an external template (in fact, it can also be non-templated controls).
  *
  * A renderer can be any control class.
- * - If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b>
+ * - If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
- * implement this interface, such as {@link TLabel}, {@link TTextBox}, etc.
- * - If the class implements {@link IItemDataRenderer}, the <b>ItemIndex</b> property will be set
+ * implement this interface, such as {@see TLabel}, {@see TTextBox}, etc.
+ * - If the class implements {@see IItemDataRenderer}, the <b>ItemIndex</b> property will be set
  * as the zero-based index of the item in the repeater item collection, and
  * the <b>ItemType</b> property as the item's type (such as TListItemType::Item).
- * {@link TRepeaterItemRenderer} may be used as the convenient base class which
- * already implements {@link IDataItemRenderer}.
+ * {@see TRepeaterItemRenderer} may be used as the convenient base class which
+ * already implements {@see IDataItemRenderer}.
  *
  * The following properties are used to specify different types of template and renderer
  * for a repeater:
- * - {@link setItemTemplate ItemTemplate}, {@link setItemRenderer ItemRenderer}:
+ * - {@see setItemTemplate ItemTemplate}, {@see setItemRenderer ItemRenderer}:
  * for each repeated row of data
- * - {@link setAlternatingItemTemplate AlternatingItemTemplate}, {@link setAlternatingItemRenderer AlternatingItemRenderer}:
- * for each alternating row of data. If not set, {@link setItemTemplate ItemTemplate} or {@link setItemRenderer ItemRenderer}
+ * - {@see setAlternatingItemTemplate AlternatingItemTemplate}, {@see setAlternatingItemRenderer AlternatingItemRenderer}:
+ * for each alternating row of data. If not set, {@see setItemTemplate ItemTemplate} or {@see setItemRenderer ItemRenderer}
  * will be used instead.
- * - {@link setHeaderTemplate HeaderTemplate}, {@link setHeaderRenderer HeaderRenderer}:
+ * - {@see setHeaderTemplate HeaderTemplate}, {@see setHeaderRenderer HeaderRenderer}:
  * for the repeater header.
- * - {@link setFooterTemplate FooterTemplate}, {@link setFooterRenderer FooterRenderer}:
+ * - {@see setFooterTemplate FooterTemplate}, {@see setFooterRenderer FooterRenderer}:
  * for the repeater footer.
- * - {@link setSeparatorTemplate SeparatorTemplate}, {@link setSeparatorRenderer SeparatorRenderer}:
+ * - {@see setSeparatorTemplate SeparatorTemplate}, {@see setSeparatorRenderer SeparatorRenderer}:
  * for content to be displayed between items.
- * - {@link setEmptyTemplate EmptyTemplate}, {@link setEmptyRenderer EmptyRenderer}:
+ * - {@see setEmptyTemplate EmptyTemplate}, {@see setEmptyRenderer EmptyRenderer}:
  * used when data bound to the repeater is empty.
  *
  * If a content type is defined with both a template and a renderer, the latter takes precedence.
  *
- * When {@link dataBind()} is being called, TRepeater undergoes the following lifecycles for each row of data:
+ * When {@see dataBind()} is being called, TRepeater undergoes the following lifecycles for each row of data:
  * - create item based on templates or renderers
  * - set the row of data to the item
- * - raise {@link onItemCreated OnItemCreated}:
+ * - raise {@see onItemCreated OnItemCreated}:
  * - add the item as a child control
  * - call dataBind() of the item
- * - raise {@link onItemDataBound OnItemDataBound}:
+ * - raise {@see onItemDataBound OnItemDataBound}:
  *
- * TRepeater raises an {@link onItemCommand OnItemCommand} whenever a button control
+ * TRepeater raises an {@see onItemCommand OnItemCommand} whenever a button control
  * within some repeater item raises a <b>OnCommand</b> event. Therefore,
  * you can handle all sorts of <b>OnCommand</b> event in a central place by
- * writing an event handler for {@link onItemCommand OnItemCommand}.
+ * writing an event handler for {@see onItemCommand OnItemCommand}.
  *
  * When a page containing a repeater is post back, the repeater will restore automatically
  * all its contents, including items, header, footer and separators.
  * However, the data row associated with each item will not be recovered and become null.
  * To access the data, use one of the following ways:
- * - Use {@link getDataKeys DataKeys} to obtain the data key associated with
+ * - Use {@see getDataKeys DataKeys} to obtain the data key associated with
  * the specified repeater item and use the key to fetch the corresponding data
  * from some persistent storage such as DB.
  * - Save the whole dataset in viewstate, which will restore the dataset automatically upon postback.
@@ -143,7 +143,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Sets the item renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as repeater items.
-	 * This property takes precedence over {@link getItemTemplate ItemTemplate}.
+	 * This property takes precedence over {@see getItemTemplate ItemTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setItemTemplate
@@ -167,7 +167,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Sets the alternative item renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as alternative repeater items.
-	 * This property takes precedence over {@link getAlternatingItemTemplate AlternatingItemTemplate}.
+	 * This property takes precedence over {@see getAlternatingItemTemplate AlternatingItemTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setAlternatingItemTemplate
@@ -191,7 +191,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Sets the repeater item separator renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as repeater item separators.
-	 * This property takes precedence over {@link getSeparatorTemplate SeparatorTemplate}.
+	 * This property takes precedence over {@see getSeparatorTemplate SeparatorTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setSeparatorTemplate
@@ -215,7 +215,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Sets the repeater header renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as repeater header item.
-	 * This property takes precedence over {@link getHeaderTemplate HeaderTemplate}.
+	 * This property takes precedence over {@see getHeaderTemplate HeaderTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setHeaderTemplate
@@ -239,7 +239,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 * Sets the repeater footer renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as repeater footer item.
-	 * This property takes precedence over {@link getFooterTemplate FooterTemplate}.
+	 * This property takes precedence over {@see getFooterTemplate FooterTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setFooterTemplate
@@ -264,7 +264,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 	 *
 	 * The empty renderer is created as the child of the repeater
 	 * if data bound to the repeater is empty.
-	 * This property takes precedence over {@link getEmptyTemplate EmptyTemplate}.
+	 * This property takes precedence over {@see getEmptyTemplate EmptyTemplate}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @see setEmptyTemplate
@@ -285,7 +285,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template for repeater items
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -306,7 +306,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the alternative item template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
@@ -327,7 +327,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the header template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -348,7 +348,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
@@ -369,7 +369,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the repeater
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -390,7 +390,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the separator template
-	 * @throws TInvalidDataTypeException if the input is not an {@link ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{
@@ -458,7 +458,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * Creates a repeater item.
-	 * This method invokes {@link createItem} to create a new repeater item.
+	 * This method invokes {@see createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @return \Prado\Web\UI\TControl the created item, null if item is not created
@@ -477,7 +477,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * Creates a repeater item and performs databinding.
-	 * This method invokes {@link createItem} to create a new repeater item.
+	 * This method invokes {@see createItem} to create a new repeater item.
 	 * @param int $itemIndex zero-based item index.
 	 * @param TListItemType $itemType item type
 	 * @param mixed $dataItem data to be associated with the item
@@ -685,7 +685,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * This method overrides parent's implementation to handle
-	 * {@link onItemCommand OnItemCommand} event which is bubbled from
+	 * {@see onItemCommand OnItemCommand} event which is bubbled from
 	 * repeater items and their child controls.
 	 * This method should only be used by control developers.
 	 * @param \Prado\Web\UI\TControl $sender the sender of the event

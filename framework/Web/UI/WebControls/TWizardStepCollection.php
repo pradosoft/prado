@@ -15,7 +15,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TWizardStepCollection class.
  *
  * TWizardStepCollection represents the collection of wizard steps owned
- * by a {@link TWizard}.
+ * by a {@see TWizard}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -40,7 +40,7 @@ class TWizardStepCollection extends \Prado\Collections\TList
 	/**
 	 * Inserts an item at the specified position.
 	 * This method overrides the parent implementation by checking if
-	 * the item being added is a {@link TWizardStep}.
+	 * the item being added is a {@see TWizardStep}.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item being added is not TWizardStep.

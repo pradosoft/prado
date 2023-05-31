@@ -12,7 +12,7 @@ namespace Prado;
 /**
  * TApplicationMode class.
  * TApplicationMode defines the possible mode that an application can be set at by
- * setting {@link TApplication::setMode Mode}.
+ * setting {@see TApplication::setMode Mode}.
  * In particular, the following modes are defined
  * - Off: the application is not running. Any request to the application will obtain an error.
  * - Debug: the application is running in debug mode.

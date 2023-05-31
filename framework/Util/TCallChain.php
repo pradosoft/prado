@@ -14,7 +14,7 @@ use Prado\Collections\TList;
 
 /**
  * TCallChain is a recursive event calling mechanism.  This class implements
- * the {@link IDynamicMethods} class so that any 'dy' event calls can be caught
+ * the {@see IDynamicMethods} class so that any 'dy' event calls can be caught
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
  * @since 3.2.3
@@ -70,10 +70,10 @@ class TCallChain extends TList implements IDynamicMethods
 	 * $behavior->dyExampleMethod('alt1', 'alt2', 'param3', $callchainobject)
 	 * ```
 	 *
-	 * When dealing with {@link IClassBehaviors}, the first parameter of the stored argument
+	 * When dealing with {@see IClassBehaviors}, the first parameter of the stored argument
 	 * list in 'dy' event calls is always the object containing the behavior.  This modifies
 	 * the parameter replacement mechanism slightly to leave the object containing the behavior
-	 * alone and only replacing the other parameters in the argument list.  As per {@link __call},
+	 * alone and only replacing the other parameters in the argument list.  As per {@see __call},
 	 * any calls to a 'dy' event do not need the object containing the behavior as the addition of
 	 * the object to the argument list as the first element is automatic for IClassBehaviors.
 	 *
@@ -124,7 +124,7 @@ class TCallChain extends TList implements IDynamicMethods
 	/**
 	 * This catches all the unpatched dynamic events.  When the method call matches the
 	 * call chain method, it passes the arguments to the original __call (of the dynamic
-	 * event being unspecified in TCallChain) and funnels into the method {@link call},
+	 * event being unspecified in TCallChain) and funnels into the method {@see call},
 	 * so the next dynamic event handler can be called.
 	 * If the original method call has these parameters
 	 * ```php

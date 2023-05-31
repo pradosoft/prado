@@ -17,16 +17,16 @@ use Prado\TPropertyValue;
  *
  * Notice: while this class is easy to use and implement, it does not provide full security.
  * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
- * A better alternative is provided by {@link TReCaptchaValidator}.
+ * A better alternative is provided by {@see TReCaptchaValidator}.
  *
  * TCaptchaValidator validates user input against a CAPTCHA represented by
- * a {@link TCaptcha} control. The input control fails validation if its value
+ * a {@see TCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in CAPTCHA. Note, if the user does
  * not enter any thing, it is still considered as failing the validation.
  *
- * To use TCaptchaValidator, specify the {@link setControlToValidate ControlToValidate}
- * to be the ID path of the input control (usually a {@link TTextBox} control}.
- * Also specify the {@link setCaptchaControl CaptchaControl} to be the ID path of
+ * To use TCaptchaValidator, specify the {@see setControlToValidate ControlToValidate}
+ * to be the ID path of the input control (usually a {@see TTextBox} control}.
+ * Also specify the {@see setCaptchaControl CaptchaControl} to be the ID path of
  * the CAPTCHA control that the user input should be compared with.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -78,7 +78,7 @@ class TCaptchaValidator extends TBaseValidator
 	}
 
 	/**
-	 * @throws TConfigurationException if the CAPTCHA cannot be found according to {@link setCaptchaControl CaptchaControl}
+	 * @throws TConfigurationException if the CAPTCHA cannot be found according to {@see setCaptchaControl CaptchaControl}
 	 * @return TCaptcha the CAPTCHA control to be validated against
 	 */
 	protected function findCaptchaControl()

@@ -35,7 +35,7 @@ use Prado\Web\UI\WebControls\TListControl;
  * $this->getPage()->getCallbackClient()->hide($myTextBox);
  * ```
  *
- * To call a specific jQuery method on an element, use the {@link jQuery} method:
+ * To call a specific jQuery method on an element, use the {@see jQuery} method:
  * ```php
  * // simple example: focus a textbox
  * $this->getCallbackClient()->jQuery($myTextBox, 'focus');
@@ -49,7 +49,7 @@ use Prado\Web\UI\WebControls\TListControl;
  *		));
  * ```
  *
- * To call a jQueryUI effect on an element, use the {@link juiEffect} method:
+ * To call a jQueryUI effect on an element, use the {@see juiEffect} method:
  * ```php
  * // simple example: focus a textbox
  * $this->getCallbackClient()->juiEffect($myTextBox, 'highlight');

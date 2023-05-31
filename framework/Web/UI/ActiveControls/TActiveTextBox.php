@@ -18,10 +18,10 @@ use Prado\Web\UI\WebControls\TTextBox;
 /**
  * TActiveTextBox class.
  *
- * TActiveTextBox allows the {@link setText Text} property of the textbox to
- * be changed during callback. When {@link setAutoPostBack AutoPostBack} property
+ * TActiveTextBox allows the {@see setText Text} property of the textbox to
+ * be changed during callback. When {@see setAutoPostBack AutoPostBack} property
  * is true, changes to the textbox contents will perform a callback request causing
- * {@link onTextChanged OnTextChanged} to be fired first followed by {@link onCallback OnCallback}
+ * {@see onTextChanged OnTextChanged} to be fired first followed by {@see onCallback OnCallback}
  * event.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -74,7 +74,7 @@ class TActiveTextBox extends TTextBox implements IActiveControl, ICallbackEventH
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -108,7 +108,7 @@ class TActiveTextBox extends TTextBox implements IActiveControl, ICallbackEventH
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)

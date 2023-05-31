@@ -16,14 +16,14 @@ use Prado\TPropertyValue;
  * TItemDataRenderer class
  *
  * TItemDataRenderer is the convient base class for template-based item data renderers.
- * It implements the {@link IItemDataRenderer} interface, and because
- * TItemDataRenderer extends from {@link TTemplateControl}, derived child
+ * It implements the {@see IItemDataRenderer} interface, and because
+ * TItemDataRenderer extends from {@see TTemplateControl}, derived child
  * classes can have templates to define their presentational layout.
  *
  * The following properties are provided by TItemDataRenderer:
- * - {@link getItemIndex ItemIndex}: zero-based index of this renderer in the item list collection.
- * - {@link getItemType ItemType}: item type of this renderer, such as TListItemType::AlternatingItem
- * - {@link getData Data}: data associated with this renderer
+ * - {@see getItemIndex ItemIndex}: zero-based index of this renderer in the item list collection.
+ * - {@see getItemType ItemType}: item type of this renderer, such as TListItemType::AlternatingItem
+ * - {@see getData Data}: data associated with this renderer
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.2

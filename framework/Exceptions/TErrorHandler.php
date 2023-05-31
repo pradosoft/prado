@@ -22,7 +22,7 @@ use Prado\Prado;
  *
  * The templates used to format the error output are stored under Prado\Exceptions.
  * You may choose to use your own templates, should you not like the templates
- * provided by Prado. Simply set {@link setErrorTemplatePath ErrorTemplatePath}
+ * provided by Prado. Simply set {@see setErrorTemplatePath ErrorTemplatePath}
  * to the path (in namespace format) storing your own templates.
  *
  * There are two sets of templates, one for errors to be displayed to client users
@@ -30,7 +30,7 @@ use Prado\Prado;
  * (called internal errors). The template file name for the former is
  * <b>error[StatusCode][-LanguageCode].html</b>, and for the latter it is
  * <b>exception[-LanguageCode].html</b>, where StatusCode refers to response status
- * code (e.g. 404, 500) specified when {@link THttpException} is thrown,
+ * code (e.g. 404, 500) specified when {@see THttpException} is thrown,
  * and LanguageCode is the client user preferred language code (e.g. en, zh, de).
  * The templates <b>error.html</b> and <b>exception.html</b> are default ones
  * that are used if no other appropriate templates are available.
@@ -38,8 +38,8 @@ use Prado\Prado;
  * html files with keywords (e.g. %%ErrorMessage%%, %%Version%%)
  * to be replaced with the corresponding information.
  *
- * By default, TErrorHandler is registered with {@link TApplication} as the
- * error handler module. It can be accessed via {@link TApplication::getErrorHandler()}.
+ * By default, TErrorHandler is registered with {@see TApplication} as the
+ * error handler module. It can be accessed via {@see TApplication::getErrorHandler()}.
  * You seldom need to deal with the error handler directly. It is mainly used
  * by the application object to handle errors.
  *
@@ -113,7 +113,7 @@ class TErrorHandler extends \Prado\TModule
 	/**
 	 * Handles PHP user errors and exceptions.
 	 * This is the event handler responding to the <b>Error</b> event
-	 * raised in {@link TApplication}.
+	 * raised in {@see TApplication}.
 	 * The method mainly uses appropriate template to display the error/exception.
 	 * It terminates the application immediately after the error is displayed.
 	 * @param mixed $sender sender of the event

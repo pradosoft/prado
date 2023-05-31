@@ -20,33 +20,33 @@ use Prado\Exceptions\TConfigurationException;
  *
  * TTextBox displays a text box on the Web page for user input.
  * The text displayed in the TTextBox control is determined by the
- * {@link setText Text} property. You can create a <b>SingleLine</b>,
+ * {@see setText Text} property. You can create a <b>SingleLine</b>,
  * a <b>MultiLine</b>, or a <b>Password</b> text box by setting
- * the {@link setTextMode TextMode} property. If the TTextBox control
+ * the {@see setTextMode TextMode} property. If the TTextBox control
  * is a multiline text box, the number of rows it displays is determined
- * by the {@link setRows Rows} property, and the {@link setWrap Wrap} property
+ * by the {@see setRows Rows} property, and the {@see setWrap Wrap} property
  * can be used to determine whether to wrap the text in the component.
- * Additional {@link setTextMode TextMode} types enable the use of new input types
+ * Additional {@see setTextMode TextMode} types enable the use of new input types
  * added with html5, eg. <b>Color</b>, <b>Date</b>, <b>Email</b>.
  *
  * To specify the display width of the text box, in characters, set
- * the {@link setColumns Columns} property. To prevent the text displayed
- * in the component from being modified, set the {@link setReadOnly ReadOnly}
+ * the {@see setColumns Columns} property. To prevent the text displayed
+ * in the component from being modified, set the {@see setReadOnly ReadOnly}
  * property to true. If you want to limit the user input to a specified number
- * of characters, set the {@link setMaxLength MaxLength} property.
- * To use AutoComplete feature, set the {@link setAutoCompleteType AutoCompleteType} property.
+ * of characters, set the {@see setMaxLength MaxLength} property.
+ * To use AutoComplete feature, set the {@see setAutoCompleteType AutoCompleteType} property.
  *
- * If {@link setAutoPostBack AutoPostBack} is set true, updating the text box
+ * If {@see setAutoPostBack AutoPostBack} is set true, updating the text box
  * and then changing the focus out of it will cause postback action.
- * And if {@link setCausesValidation CausesValidation} is true, validation will
+ * And if {@see setCausesValidation CausesValidation} is true, validation will
  * also be processed, which can be further restricted within
- * a {@link setValidationGroup ValidationGroup}.
+ * a {@see setValidationGroup ValidationGroup}.
  *
  * WARNING: Be careful if you want to display the text collected via TTextBox.
- * Malicious cross-site script may be injected in. You may use {@link getSafeText SafeText}
+ * Malicious cross-site script may be injected in. You may use {@see getSafeText SafeText}
  * to prevent this problem.
  *
- * NOTE: If you set {@link setWrap Wrap} to false or use {@link setAutoCompleteType AutoCompleteType},
+ * NOTE: If you set {@see setWrap Wrap} to false or use {@see setAutoCompleteType AutoCompleteType},
  * the generated HTML output for the textbox will not be XHTML-compatible.
  * Currently, no alternatives are available.
  *
@@ -306,7 +306,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Raises <b>OnTextChanged</b> event.
-	 * This method is invoked when the value of the {@link getText Text}
+	 * This method is invoked when the value of the {@see getText Text}
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
@@ -319,8 +319,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getText Text} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getText Text} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */
@@ -530,8 +530,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Returns the text content of the TTextBox control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string the text content of the TTextBox control.
 	 * @see getText
 	 * @since 3.1.0
@@ -543,8 +543,8 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 
 	/**
 	 * Sets the text content of the TTextBox control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value the text content of the TTextBox control.
 	 * @see setText
 	 * @since 3.1.0

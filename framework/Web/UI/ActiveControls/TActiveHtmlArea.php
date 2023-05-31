@@ -58,7 +58,7 @@ class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEven
 
 	/**
 	 * Client-side Text property can only be updated after the OnLoad stage. Setting WYSIWYG
-	 * text editor content is only available if {@link getEnableVisualEdit} is enabled.
+	 * text editor content is only available if {@see getEnableVisualEdit} is enabled.
 	 * @param string $value text content for the textbox
 	 */
 	public function setText($value)
@@ -76,7 +76,7 @@ class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

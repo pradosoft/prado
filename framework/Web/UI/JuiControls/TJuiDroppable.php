@@ -17,11 +17,11 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiDroppable class.
  *
- * TJuiDroppable is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/droppable/ Droppable} interaction.
- * When a {@link TJuiDraggable} is dropped over a TJuiDroppable panel, the
- * {@link onDrop OnDrop} event will be triggered. The event hanler will receive
- * a {@link TJuiEventParameter} object containing a reference to the dropped control
+ * TJuiDroppable is an extension to {@see TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/droppable/ Droppable} interaction.
+ * When a {@see TJuiDraggable} is dropped over a TJuiDroppable panel, the
+ * {@see onDrop OnDrop} event will be triggered. The event hanler will receive
+ * a {@see TJuiEventParameter} object containing a reference to the dropped control
  * in the <tt>DraggableControl</tt> property.
  *
  * ```php
@@ -143,7 +143,7 @@ class TJuiDroppable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

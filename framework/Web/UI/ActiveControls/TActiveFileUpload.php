@@ -30,27 +30,27 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * TActiveFileUpload displays a file upload field on a page. Upon postback,
  * the text entered into the field will be treated as the name of the file
- * that will be uploaded to the server. The property {@link getHasFile HasFile}
+ * that will be uploaded to the server. The property {@see getHasFile HasFile}
  * indicates whether the file upload is successful. If successful, the file
- * may be obtained by calling {@link saveAs} to save it at a specified place.
- * You can use {@link getFileName FileName}, {@link getFileType FileType},
- * {@link getFileSize FileSize} to get the original client-side file name,
+ * may be obtained by calling {@see saveAs} to save it at a specified place.
+ * You can use {@see getFileName FileName}, {@see getFileType FileType},
+ * {@see getFileSize FileSize} to get the original client-side file name,
  * the file mime type, and the file size information. If the upload is not
- * successful, {@link getErrorCode ErrorCode} contains the error code
+ * successful, {@see getErrorCode ErrorCode} contains the error code
  * describing the cause of failure.
  *
- * TActiveFileUpload raises {@link onFileUpload OnFileUpload} event if a file is uploaded
+ * TActiveFileUpload raises {@see onFileUpload OnFileUpload} event if a file is uploaded
  * (whether it succeeds or not).
  *
  * TActiveFileUpload actually does a postback in a hidden IFrame, and then does a callback.
- * This callback then raises the {@link onFileUpload OnFileUpload} event. After the postback
+ * This callback then raises the {@see onFileUpload OnFileUpload} event. After the postback
  * a status icon is displayed; either a green checkmark if the upload is successful,
  * or a red x if there was an error.
  *
  * TActiveFileUpload needs either an application level cache or a security manager to work securely.
  *
  * Since Prado 4.0 the TActiveFileUpload supports HTML5 multiple file uploads by setting the
- * {@link setMultiple Multiple} attribute to true. See the description of the parent class
+ * {@see setMultiple Multiple} attribute to true. See the description of the parent class
  * {@see TFileUpload} for further details.
  *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
@@ -83,7 +83,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 */
 	private $_target;
 	/**
-	 * @var string class name used to instantiate items for uploaded files: {@link TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@see TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = \Prado\Web\UI\ActiveControls\TActiveFileUploadItem::class;
 
@@ -184,7 +184,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	}
 
 	/**
-	 * @return string A chuck of javascript that will need to be called if {{@link getAutoPostBack AutoPostBack} is set to false}
+	 * @return string A chuck of javascript that will need to be called if {{@see getAutoPostBack AutoPostBack} is set to false}
 	 */
 	public function getCallbackJavascript()
 	{
@@ -193,7 +193,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * @param mixed $sender
-	 * @throws TInvalidDataValueException if the {@link getTempPath TempPath} is not writable.
+	 * @throws TInvalidDataValueException if the {@see getTempPath TempPath} is not writable.
 	 */
 	public function onInit($sender)
 	{
@@ -213,7 +213,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * Raises <b>OnFileUpload</b> event.
 	 *
-	 * This method is required by {@link ICallbackEventHandler} interface.
+	 * This method is required by {@see ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
@@ -237,7 +237,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 
 	/**
 	 * Raises postdata changed event.
-	 * This method calls {@link onFileUpload} method
+	 * This method calls {@see onFileUpload} method
 	 * This method is primarily used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()

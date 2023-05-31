@@ -18,9 +18,9 @@ use Prado\Web\UI\WebControls\TMultiView;
 /**
  * TActiveMultiView class.
  *
- * TActiveMultiView is the active counterpart to the original {@link TMultiView} control.
- * It re-renders on Callback when {@link setActiveView ActiveView} or
- * {@link setActiveViewIndex ActiveViewIndex} is called.
+ * TActiveMultiView is the active counterpart to the original {@see TMultiView} control.
+ * It re-renders on Callback when {@see setActiveView ActiveView} or
+ * {@see setActiveViewIndex ActiveViewIndex} is called.
  *
  * Please refer to the original documentation of the regular counterpart for usage.
  *
@@ -60,7 +60,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	/**
 	 * Renders the TActiveMultiView.
 	 * If the MutliView did not pass the prerender phase yet, it will register itself for rendering later.
-	 * Else it will call the {@link renderMultiView()} method which will do the rendering of the MultiView.
+	 * Else it will call the {@see renderMultiView()} method which will do the rendering of the MultiView.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
@@ -76,7 +76,7 @@ class TActiveMultiView extends TMultiView implements IActiveControl
 	}
 
 	/**
-	 * Renders the TActiveMultiView by writing a span tag with the container id obtained from {@link getContainerID()}
+	 * Renders the TActiveMultiView by writing a span tag with the container id obtained from {@see getContainerID()}
 	 * which will be called by the replacement method of the client script to update it's content.
 	 * @param \Prado\Web\UI\THtmlWriter $writer THtmlWriter writer for the rendering purpose
 	 */

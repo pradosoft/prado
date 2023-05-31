@@ -31,7 +31,7 @@ use Prado\Web\UI\TControl;
  * Depending on the culture set on the page, the phrase "Goodbye" will
  * be translated.
  *
- * The {@link getParameters Parameters} property can be use to add name values pairs for
+ * The {@see getParameters Parameters} property can be use to add name values pairs for
  * substitution. Substrings enclosed with "{" and "}" in the translation message are consider as the
  * parameter names during substitution lookup. The following example will substitute the substring
  * "{time}" with the value of the parameter attribute "Parameters.time=<%= time() %>. Note that

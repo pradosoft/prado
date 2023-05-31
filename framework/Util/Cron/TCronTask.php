@@ -19,7 +19,7 @@ use Prado\TPropertyValue;
  * TCronTask class.
  *
  * TCronTask is the base class for all cron tasks.  Subclasses need to implement the
- * abstract method {@link execute} to run tasks.
+ * abstract method {@see execute} to run tasks.
  * If a task is not run at the schedule time, it is run at the next available task sweep.
  *
  * @author Brad Anderson <belisoful@icloud.com>

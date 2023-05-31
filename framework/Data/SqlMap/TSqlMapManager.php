@@ -26,7 +26,7 @@ use Prado\Prado;
  * TSqlMapManager class holds the sqlmap configuation result maps, statements
  * parameter maps and a type handler factory.
  *
- * Use {@link SqlMapGateway getSqlMapGateway()} property to obtain the gateway
+ * Use {@see SqlMapGateway getSqlMapGateway()} property to obtain the gateway
  * instance used for querying statements defined in the SqlMap configuration files.
  *
  * ```php
@@ -130,7 +130,7 @@ class TSqlMapManager extends \Prado\TComponent
 
 	/**
 	 * Configures the current TSqlMapManager using the given xml configuration file
-	 * defined in {@link ConfigFile setConfigFile()}.
+	 * defined in {@see ConfigFile setConfigFile()}.
 	 * @return TSqlMapGateway create and configure a new TSqlMapGateway.
 	 */
 	protected function createSqlMapGateway()

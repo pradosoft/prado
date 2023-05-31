@@ -20,7 +20,7 @@ use Prado\Security\TAuthorizationRule;
  * This class acts as a data container object for the Permission, Description,
  * and module preset rules.  Preset Rules can be turned off from the
  * TPermissionManager with setting setAutoPresetRules to false.
- * This class works with {@link \Prado\Security\Permissions\TPermissionsBehavior}
+ * This class works with {@see \Prado\Security\Permissions\TPermissionsBehavior}
  * to register the Permission, Description, and Preset Rules and also to
  * link the dynamic events to check user permission.
  *

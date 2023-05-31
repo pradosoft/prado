@@ -34,7 +34,7 @@ use Prado\Xml\TXmlElement;
  * the parameters in an applied pattern will be replaced with the corresponding
  * GET variable values.
  *
- * Since it is derived from {@link TUrlManager}, it should be configured globally
+ * Since it is derived from {@see TUrlManager}, it should be configured globally
  * in the application configuration like the following,
  * ```xml
  *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
@@ -46,11 +46,11 @@ use Prado\Xml\TXmlElement;
  * ```
  *
  * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented
- * as a {@link TUrlMappingPattern} internally. You may create your own pattern classes
- * by extending {@link TUrlMappingPattern} and specifying the <tt>&lt;class&gt;</tt> attribute
+ * as a {@see TUrlMappingPattern} internally. You may create your own pattern classes
+ * by extending {@see TUrlMappingPattern} and specifying the <tt>&lt;class&gt;</tt> attribute
  * in the element.
  *
- * The patterns can be also be specified in an external file using the {@link setConfigFile ConfigFile} property.
+ * The patterns can be also be specified in an external file using the {@see setConfigFile ConfigFile} property.
  *
  * The URL mapping are evaluated in order, only the first mapping that matches
  * the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
@@ -60,12 +60,12 @@ use Prado\Xml\TXmlElement;
  * is strict in the sense that the whole pattern must match the whole PATH_INFO of the URL.
  *
  * From PRADO v3.1.1, TUrlMapping also provides support for constructing URLs according to
- * the specified pattern. You may enable this functionality by setting {@link setEnableCustomUrl EnableCustomUrl} to true.
+ * the specified pattern. You may enable this functionality by setting {@see setEnableCustomUrl EnableCustomUrl} to true.
  * When you call THttpRequest::constructUrl() (or via TPageService::constructUrl()),
- * TUrlMapping will examine the available URL mapping patterns using their {@link TUrlMappingPattern::getServiceParameter ServiceParameter}
- * and {@link TUrlMappingPattern::getPattern Pattern} properties. A pattern is applied if its
- * {@link TUrlMappingPattern::getServiceParameter ServiceParameter} matches the service parameter passed
- * to constructUrl() and every parameter in the {@link getPattern Pattern} is found
+ * TUrlMapping will examine the available URL mapping patterns using their {@see TUrlMappingPattern::getServiceParameter ServiceParameter}
+ * and {@see TUrlMappingPattern::getPattern Pattern} properties. A pattern is applied if its
+ * {@see TUrlMappingPattern::getServiceParameter ServiceParameter} matches the service parameter passed
+ * to constructUrl() and every parameter in the {@see getPattern Pattern} is found
  * in the GET variables.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -127,7 +127,7 @@ class TUrlMapping extends TUrlManager
 
 	/**
 	 * Initialize the module from configuration file.
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
 	 */
 	protected function loadConfigFile()
 	{
@@ -328,16 +328,16 @@ class TUrlMapping extends TUrlManager
 	/**
 	 * Constructs a URL that can be recognized by PRADO.
 	 *
-	 * This method provides the actual implementation used by {@link THttpRequest::constructUrl}.
+	 * This method provides the actual implementation used by {@see THttpRequest::constructUrl}.
 	 * Override this method if you want to provide your own way of URL formatting.
-	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
+	 * If you do so, you may also need to override {@see parseUrl} so that the URL can be properly parsed.
 	 *
 	 * The URL is constructed as the following format:
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
-	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
+	 * If {@see THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
 	 * the following format is used instead:
 	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
-	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
+	 * If {@see THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
 	 * the following format is used instead:
 	 * /serviceID/serviceParameter/get1,value1/get2,value2...
 	 * @param string $serviceID service ID

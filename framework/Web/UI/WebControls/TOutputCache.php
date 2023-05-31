@@ -33,28 +33,28 @@ use Prado\Exceptions\TInvalidDataValueException;
  * where content to be cached can be static text and/or component tags.
  *
  * The validity of the cached content is determined based on two factors:
- * the {@link setDuration Duration} and the cache dependency.
+ * the {@see setDuration Duration} and the cache dependency.
  * The former specifies the number of seconds that the data can remain
  * valid in cache (defaults to 60s), while the latter specifies conditions
  * that the cached data depends on. If a dependency changes,
  * (e.g. relevant data in DB are updated), the cached data will be invalidated.
  *
  * There are two ways to specify cache dependency. One may write event handlers
- * to respond to the {@link onCheckDependency OnCheckDependency} event and set
- * the event parameter's {@link TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
+ * to respond to the {@see onCheckDependency OnCheckDependency} event and set
+ * the event parameter's {@see TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
  * property to indicate whether the cached data remains valid or not.
- * One can also extend TOutputCache and override its {@link getCacheDependency}
+ * One can also extend TOutputCache and override its {@see getCacheDependency}
  * function. While the former is easier to use, the latter offers more extensibility.
  *
  * The content fetched from cache may be variated with respect to
  * some parameters. It supports variation with respect to request parameters,
- * which is specified by {@link setVaryByParam VaryByParam} property.
+ * which is specified by {@see setVaryByParam VaryByParam} property.
  * If a specified request parameter is different, a different version of
  * cached content is used. This is extremely useful if a page's content
  * may be variated according to some GET parameters.
  * The content being cached may also be variated with user sessions if
- * {@link setVaryBySession VaryBySession} is set true.
- * To variate the cached content by other factors, override {@link calculateCacheKey()} method.
+ * {@see setVaryBySession VaryBySession} is set true.
+ * To variate the cached content by other factors, override {@see calculateCacheKey()} method.
  *
  * Output caches can be nested. An outer cache takes precedence over an
  * inner cache. This means, if the content cached by the inner cache expires
@@ -65,7 +65,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * and when cache module is enabled.
  *
  * Do not attempt to address child controls of TOutputCache when the cached
- * content is to be used. Use {@link getContentCached ContentCached} property
+ * content is to be used. Use {@see getContentCached ContentCached} property
  * to determine whether the content is cached or not.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -263,8 +263,8 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	/**
 	 * Calculates the cache key.
 	 * The key is calculated based on the unique ID of this control
-	 * and the request parameters specified via {@link setVaryByParam VaryByParam}.
-	 * If {@link getVaryBySession VaryBySession} is true, the session ID
+	 * and the request parameters specified via {@see setVaryByParam VaryByParam}.
+	 * If {@see getVaryBySession VaryBySession} is true, the session ID
 	 * will also participate in the key calculation.
 	 * This method may be overriden to support other variations in
 	 * the calculated cache key.
@@ -317,7 +317,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 	/**
 	 * Sets the prefix of the cache key.
-	 * This method is used internally by {@link TTemplate}.
+	 * This method is used internally by {@see TTemplate}.
 	 * @param string $value key prefix
 	 */
 	public function setCacheKeyPrefix($value)
@@ -435,7 +435,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	/**
 	 * This event is raised when the output cache is checking cache dependency.
 	 * An event handler may be written to check customized dependency conditions.
-	 * The checking result should be saved by setting {@link TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
+	 * The checking result should be saved by setting {@see TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
 	 * property of the event parameter (which defaults to true).
 	 * @param TOutputCacheCheckDependencyEventParameter $param event parameter
 	 */
@@ -448,7 +448,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This event is raised when the output cache is calculating cache key.
 	 * By varying cache keys, one can obtain different versions of cached content.
 	 * An event handler may be written to add variety of the key calculation.
-	 * The value set in {@link TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
+	 * The value set in {@see TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
 	 * this event parameter will be appended to the default key calculation scheme.
 	 * @param TOutputCacheCalculateKeyEventParameter $param event parameter
 	 */

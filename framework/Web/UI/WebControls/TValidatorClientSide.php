@@ -15,7 +15,7 @@ use Prado\Web\UI\TClientSideOptions;
 /**
  * TValidatorClientSide class.
  *
- * Client-side validator events can be modified through the {@link
+ * Client-side validator events can be modified through the {@see
  * TBaseValidator::getClientSide ClientSide} property of a validator. The
  * subproperties of ClientSide are those of the TValidatorClientSide
  * properties. The client-side validator supports the following events.

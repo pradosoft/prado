@@ -17,14 +17,14 @@ use Prado\Web\UI\ITemplate;
  * TConditional class.
  *
  * TConditional displays appropriate content based on the evaluation result
- * of a PHP expression specified via {@link setCondition Condition}.
- * If the result is true, it instantiates the template {@link getTrueTemplate TrueTemplate};
- * otherwise, the template {@link getFalseTemplate FalseTemplate} is instantiated.
- * The PHP expression is evaluated right before {@link onInit} stage of the control lifecycle.
+ * of a PHP expression specified via {@see setCondition Condition}.
+ * If the result is true, it instantiates the template {@see getTrueTemplate TrueTemplate};
+ * otherwise, the template {@see getFalseTemplate FalseTemplate} is instantiated.
+ * The PHP expression is evaluated right before {@see onInit} stage of the control lifecycle.
  *
- * Since {@link setCondition Condition} is evaluated at a very early stage, it is recommended
- * you set {@link setCondition Condition} in template and the expression should not refer to
- * objects that are available on or after {@link onInit} lifecycle.
+ * Since {@see setCondition Condition} is evaluated at a very early stage, it is recommended
+ * you set {@see setCondition Condition} in template and the expression should not refer to
+ * objects that are available on or after {@see onInit} lifecycle.
  *
  * A typical usage of TConditional is shown as following:
  * ```php
@@ -38,8 +38,8 @@ use Prado\Web\UI\ITemplate;
  * </com:TConditional>
  * ```
  *
- * TConditional is very light. It instantiates either {@link getTrueTemplate TrueTemplate}
- * or {@link getFalseTemplate FalseTemplate}, but never both. And the condition is evaluated only once.
+ * TConditional is very light. It instantiates either {@see getTrueTemplate TrueTemplate}
+ * or {@see getFalseTemplate FalseTemplate}, but never both. And the condition is evaluated only once.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
@@ -67,7 +67,7 @@ class TConditional extends \Prado\Web\UI\TControl
 
 	/**
 	 * Creates child controls.
-	 * This method overrides the parent implementation. It evaluates {@link getCondition Condition}
+	 * This method overrides the parent implementation. It evaluates {@see getCondition Condition}
 	 * and instantiate the corresponding template.
 	 */
 	public function createChildControls()
@@ -108,7 +108,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return \Prado\Web\UI\ITemplate the template applied when {@link getCondition Condition} is true.
+	 * @return \Prado\Web\UI\ITemplate the template applied when {@see getCondition Condition} is true.
 	 */
 	public function getTrueTemplate()
 	{
@@ -116,7 +116,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@link getCondition Condition} is true.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@see getCondition Condition} is true.
 	 */
 	public function setTrueTemplate(ITemplate $value)
 	{
@@ -124,7 +124,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @return \Prado\Web\UI\ITemplate the template applied when {@link getCondition Condition} is false.
+	 * @return \Prado\Web\UI\ITemplate the template applied when {@see getCondition Condition} is false.
 	 */
 	public function getFalseTemplate()
 	{
@@ -132,7 +132,7 @@ class TConditional extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@link getCondition Condition} is false.
+	 * @param \Prado\Web\UI\ITemplate $value the template applied when {@see getCondition Condition} is false.
 	 */
 	public function setFalseTemplate(ITemplate $value)
 	{

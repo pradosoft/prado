@@ -12,7 +12,7 @@ namespace Prado\Web\UI;
 /**
  * TCompositeLiteral class
  *
- * TCompositeLiteral is used internally by {@link TTemplate} for representing
+ * TCompositeLiteral is used internally by {@see TTemplate} for representing
  * consecutive static strings, expressions and statements.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -87,7 +87,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 
 	/**
 	 * Performs databindings.
-	 * This method is required by {@link IBindable}
+	 * This method is required by {@see IBindable}
 	 */
 	public function dataBind()
 	{
@@ -99,7 +99,7 @@ class TCompositeLiteral extends \Prado\TComponent implements IRenderable, IBinda
 
 	/**
 	 * Renders the content stored in this component.
-	 * This method is required by {@link IRenderable}
+	 * This method is required by {@see IRenderable}
 	 * @param \Prado\IO\ITextWriter $writer
 	 */
 	public function render($writer)

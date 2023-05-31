@@ -14,8 +14,8 @@ namespace Prado\Util;
  *
  * TFirePhpLogRoute prints log messages in the firebug log console via firephp.
  *
- * {@link http://www.getfirebug.com/ FireBug Website}
- * {@link http://www.firephp.org/ FirePHP Website}
+ * {@see http://www.getfirebug.com/ FireBug Website}
+ * {@see http://www.firephp.org/ FirePHP Website}
  *
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @since 3.1.5

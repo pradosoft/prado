@@ -22,9 +22,9 @@ use Prado\TPropertyValue;
  * The messages being retrieved may be filtered first before being sent
  * to the destination. The filters include log level filter and log category filter.
  *
- * To specify level filter, set {@link setLevels Levels} property,
+ * To specify level filter, set {@see setLevels Levels} property,
  * which takes a string of comma-separated desired level names (e.g. 'Error, Debug').
- * To specify category filter, set {@link setCategories Categories} property,
+ * To specify category filter, set {@see setCategories Categories} property,
  * which takes a string of comma-separated desired category names (e.g. 'Prado\Web, Prado\IO').
  *
  * The categories filter can use '!' or '~', e.g. '!Prado\Web\UI' or '~Prado\Web\UI',
@@ -116,7 +116,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the route.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@link TLogRouter}.
+	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see TLogRouter}.
 	 */
 	public function init($config)
 	{

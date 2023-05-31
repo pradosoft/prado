@@ -12,7 +12,7 @@ namespace Prado\Data\ActiveRecord;
 /**
  * TActiveRecordInvalidFinderResult class.
  * TActiveRecordInvalidFinderResult defines the enumerable type for possible results
- * if an invalid {@link TActiveRecord::__call magic-finder} invoked.
+ * if an invalid {@see TActiveRecord::__call magic-finder} invoked.
  *
  * The following enumerable values are defined:
  * - Null: return null (default)

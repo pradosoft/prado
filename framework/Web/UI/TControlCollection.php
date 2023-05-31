@@ -84,7 +84,7 @@ class TControlCollection extends \Prado\Collections\TList
 	}
 
 	/**
-	 * Overrides the parent implementation by invoking {@link TControl::clearNamingContainer}
+	 * Overrides the parent implementation by invoking {@see TControl::clearNamingContainer}
 	 */
 	public function clear(): void
 	{

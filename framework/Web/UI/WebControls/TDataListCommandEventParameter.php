@@ -15,10 +15,10 @@ use Prado\Web\UI\TControl;
  * TDataListCommandEventParameter class
  *
  * TDataListCommandEventParameter encapsulates the parameter data for
- * {@link TDataList::onItemCommand ItemCommand} event of {@link TDataList} controls.
+ * {@see TDataList::onItemCommand ItemCommand} event of {@see TDataList} controls.
  *
- * The {@link getItem Item} property indicates the DataList item related with the event.
- * The {@link getCommandSource CommandSource} refers to the control that originally
+ * The {@see getItem Item} property indicates the DataList item related with the event.
+ * The {@see getCommandSource CommandSource} refers to the control that originally
  * raises the Command event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

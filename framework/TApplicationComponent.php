@@ -18,15 +18,15 @@ use Prado\TApplicationMode;
  * application-related, such as controls, modules, services, etc.
  *
  * TApplicationComponent mainly defines a few properties that are shortcuts
- * to some commonly used methods. The {@link getApplication Application}
+ * to some commonly used methods. The {@see getApplication Application}
  * property gives the application instance that this component belongs to;
- * {@link getService Service} gives the current running service;
- * {@link getRequest Request}, {@link getResponse Response} and {@link getSession Session}
+ * {@see getService Service} gives the current running service;
+ * {@see getRequest Request}, {@see getResponse Response} and {@see getSession Session}
  * return the request and response modules, respectively;
- * And {@link getUser User} gives the current user instance.
+ * And {@see getUser User} gives the current user instance.
  *
  * Besides, TApplicationComponent defines two shortcut methods for
- * publishing private files: {@link publishAsset} and {@link publishFilePath}.
+ * publishing private files: {@see publishAsset} and {@see publishFilePath}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

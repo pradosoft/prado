@@ -26,22 +26,22 @@ use Prado\TPropertyValue;
  * default, 8 [decimal places]) _p.
  *
  * The trait adds methods:
- *	- {@link getDefaultPriority} returns the default priority of items without priority.
- *	- {@link setDefaultPriority} sets the default priority. (protected)
- *	- {@link getPrecision} returns the precision of priorities.
- *	- {@link setPrecision} sets the precision of priorities. (protected)
- *	- {@link ensurePriority} standardize and round priorities. (protected)
- *	- {@link sortPriorities} sorts _d and flags as sorted. (protected)
- *	- {@link flattenPriorities} flattens the priority items, in order into cache.. (protected)
- *	- {@link getPriorities} gets the priorities of the collection.
- *	- {@link getPriorityCount} gets the number of items at a priority.
- *	- {@link itemsAtPriority} gets the items at a given priority.
- *	- {@link getIterator} overrides subclasses for an iterator of the flattened array.
- *	- {@link toArray} the flattened collection in order.
- *	- {@link toPriorityArray} the array of priorities (keys) and array of items (value).
- *	- {@link toArrayBelowPriority} the items below a Priority, default is not inclusive
- *	- {@link toArrayAbovePriority} the items above a priority, default is inclusive.
- *	- {@link _priorityZappableSleepProps} to add the excluded trait properties on sleep.
+ *	- {@see getDefaultPriority} returns the default priority of items without priority.
+ *	- {@see setDefaultPriority} sets the default priority. (protected)
+ *	- {@see getPrecision} returns the precision of priorities.
+ *	- {@see setPrecision} sets the precision of priorities. (protected)
+ *	- {@see ensurePriority} standardize and round priorities. (protected)
+ *	- {@see sortPriorities} sorts _d and flags as sorted. (protected)
+ *	- {@see flattenPriorities} flattens the priority items, in order into cache.. (protected)
+ *	- {@see getPriorities} gets the priorities of the collection.
+ *	- {@see getPriorityCount} gets the number of items at a priority.
+ *	- {@see itemsAtPriority} gets the items at a given priority.
+ *	- {@see getIterator} overrides subclasses for an iterator of the flattened array.
+ *	- {@see ToArray} the flattened collection in order.
+ *	- {@see ToPriorityArray} the array of priorities (keys) and array of items (value).
+ *	- {@see ToArrayBelowPriority} the items below a Priority, default is not inclusive
+ *	- {@see ToArrayAbovePriority} the items above a priority, default is inclusive.
+ *	- {@see _priorityZappableSleepProps} to add the excluded trait properties on sleep.
  *
  * The priorities are implemented as numeric strings.
  *
@@ -213,7 +213,7 @@ trait TPriorityCollectionTrait
 
 	/**
 	 * Gets the number of items at a priority within the list
-	 * @param null|numeric $priority optional priority at which to count items.  if no parameter, it will be set to the default {@link getDefaultPriority}
+	 * @param null|numeric $priority optional priority at which to count items.  if no parameter, it will be set to the default {@see getDefaultPriority}
 	 * @return int the number of items in the list at the specified priority
 	 */
 	public function getPriorityCount($priority = null)

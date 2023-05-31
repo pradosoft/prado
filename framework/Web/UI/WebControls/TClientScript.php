@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TClientScript class
  *
  * Allows importing of Prado Client Scripts from template via the
- * {@link setPradoScripts PradoScripts} property. Multiple Prado
+ * {@see setPradoScripts PradoScripts} property. Multiple Prado
  * client-scripts can be specified using comma delimited string of the
  * javascript library to include on the page. For example,
  *
@@ -23,7 +23,7 @@ use Prado\TPropertyValue;
  * <com:TClientScript PradoScripts="effects, rico" />
  * ```
  *
- * Custom javascript files can be register using the {@link setScriptUrl ScriptUrl}
+ * Custom javascript files can be register using the {@see setScriptUrl ScriptUrl}
  * property.
  * ```php
  * <com:TClientScript ScriptUrl=<%~ test.js %> />
@@ -32,11 +32,11 @@ use Prado\TPropertyValue;
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.
  *
- * Since Prado 3.2 the property {@link setFlushScriptFiles FlushScriptFiles} controls
+ * Since Prado 3.2 the property {@see setFlushScriptFiles FlushScriptFiles} controls
  * whether Prado will flush the script files defined in the page before rendering the
  * TClientScript contents.
  * If you're not using any external functions in your TClientScript block, you should
- * set the {@link setFlushScriptFiles FlushScriptFiles} property to false, so Prado
+ * set the {@see setFlushScriptFiles FlushScriptFiles} property to false, so Prado
  * can postpone the loading of all the referenced script files further down the page
  * generation cycle.
  *
@@ -118,7 +118,7 @@ class TClientScript extends \Prado\Web\UI\TControl
 	/**
 	 * Renders the body content as javascript block.
 	 * Overrides parent implementation, parent renderChildren method is called during
-	 * {@link registerCustomScript}.
+	 * {@see registerCustomScript}.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the renderer
 	 */
 	public function render($writer)

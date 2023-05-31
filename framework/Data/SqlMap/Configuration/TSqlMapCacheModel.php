@@ -16,13 +16,13 @@ use Prado\TPropertyValue;
  * TSqlMapCacheModel corresponds to the <cacheModel> sql mapping configuration tag.
  *
  * The results from a query Mapped Statement can be cached simply by specifying
- * the {@link CacheModel TSqlMapStatement::setCacheModel()} property in <statement> tag.
+ * the {@see CacheModel TSqlMapStatement::setCacheModel()} property in <statement> tag.
  * A cache model is a configured cache that is defined within the sql map
  * configuration file. Cache models are configured using the <cacheModel> element.
  *
  * The cache model uses a pluggable framework for supporting different types of
- * caches. The choice of cache is specified by the {@link Implementation setImplementation()}
- * property. The class name specified must be one of {@link TSqlMapCacheTypes}.
+ * caches. The choice of cache is specified by the {@see Implementation setImplementation()}
+ * property. The class name specified must be one of {@see TSqlMapCacheTypes}.
  *
  * The cache implementations, LRU and FIFO cache below do not persist across
  * requests. That is, once the request is complete, all cache data is lost.

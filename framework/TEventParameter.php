@@ -18,8 +18,8 @@ namespace Prado;
  *
  * TEventParameter is the base class for all event parameter classes.
  * When raising an event, this class captures the event name being raised by being
- * an {@link IEventParameter}. TEventParameter encapsulates the parameter data for
- * events. The event parameter is set via {@link setParameter Parameter} property
+ * an {@see IEventParameter}. TEventParameter encapsulates the parameter data for
+ * events. The event parameter is set via {@see setParameter Parameter} property
  * or by constructor parameter.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

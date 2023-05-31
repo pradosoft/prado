@@ -1,28 +1,28 @@
 /*! PRADO client-side javascript validation fascade | github.com/pradosoft/prado */
 
 /**
- * <p>There are 4 basic classes: {@link Prado.Validation},
- * {@link Prado.ValidationManager}, {@link Prado.WebUI.TValidationSummary}
- * and {@link Prado.WebUI.TBaseValidator},
+ * <p>There are 4 basic classes: {@see Prado.Validation},
+ * {@see Prado.ValidationManager}, {@see Prado.WebUI.TValidationSummary}
+ * and {@see Prado.WebUI.TBaseValidator},
  * that interact together to perform validation.
- * The {@link Prado.Validation} class co-ordinates together the
+ * The {@see Prado.Validation} class co-ordinates together the
  * validation scheme and is responsible for maintaining references
  * to ValidationManagers.</p>
  *
- * <p>The {@link Prado.ValidationManager} class is responsible for
+ * <p>The {@see Prado.ValidationManager} class is responsible for
  * maintaining refereneces
  * to individual validators, validation summaries and their associated
  * groupings.</p>
  *
- * <p>The {@link Prado.WebUI.TValidationSummary} takes care of displaying
+ * <p>The {@see Prado.WebUI.TValidationSummary} takes care of displaying
  * the validator error messages
  * as html output or an alert output.</p>
  *
- * <p>The {@link Prado.WebUI.TBaseValidator} is the base class for all
+ * <p>The {@see Prado.WebUI.TBaseValidator} is the base class for all
  * validators and contains
  * methods to interact with the actual inputs, data type conversion.</p>
  *
- * <p>An instance of {@link Prado.ValidationManager} must be instantiated first for a
+ * <p>An instance of {@see Prado.ValidationManager} must be instantiated first for a
  * particular form before instantiating validators and summaries.</p>
  *
  * <p>Usage example: adding a required field to a text box input with
@@ -68,14 +68,14 @@ Prado.Validation =  jQuery.klass();
  *
  * <p>To validate the inputs of a particular form, call
  * ```js
- * {@link Prado.Validation.validate}(formID, groupID)
+ * {@see Prado.Validation.validate}(formID, groupID)
  * ```
  * where <tt>formID</tt> is the HTML form ID, and the optional
  * <tt>groupID</tt> if present will only validate the validators
  * in a particular group.</p>
  * <p>Use
  * ```js
- * {@link Prado.Validation.validateControl}(controlClientID)
+ * {@see Prado.Validation.validateControl}(controlClientID)
  * ```
  * to trigger validation for a single control.</p>
  *
@@ -241,7 +241,7 @@ jQuery.extend(Prado.Validation,
  *
  * <p>The manager contains references to all the validators
  * summaries, and their groupings for a particular form.
- * Generally, {@link Prado.Validation} methods should be called rather
+ * Generally, {@see Prado.Validation} methods should be called rather
  * than calling directly the ValidationManager.</p>
  *
  * @class Prado.ValidationManager

@@ -23,7 +23,7 @@ use Prado\Web\UI\WebControls\TDatePickerInputMode;
  * TActiveDatePicker class
  *
  * The active control counter part to date picker control.
- * When the date selection is changed, the {@link onCallback OnCallback} event is
+ * When the date selection is changed, the {@see onCallback OnCallback} event is
  * raised.
  *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
@@ -114,7 +114,7 @@ class TActiveDatePicker extends TDatePicker implements IActiveControl, ICallback
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

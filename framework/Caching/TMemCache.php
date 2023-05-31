@@ -19,21 +19,21 @@ use Prado\Xml\TXmlElement;
 /**
  * TMemCache class
  *
- * TMemCache implements a cache application module based on {@link http://www.danga.com/memcached/ memcached}.
+ * TMemCache implements a cache application module based on {@see http://www.danga.com/memcached/ memcached}.
  *
  * TMemCache can be configured with the Host and Port properties, which
  * specify the host and port of the memcache server to be used.
  * By default, they take the value 'localhost' and 11211, respectively.
- * These properties must be set before {@link init} is invoked.
+ * These properties must be set before {@see init} is invoked.
  *
  * The following basic cache operations are implemented:
- * - {@link get} : retrieve the value with a key (if any) from cache
- * - {@link set} : store the value with a key into cache
- * - {@link add} : store the value only if cache does not have this key
- * - {@link delete} : delete the value with the specified key from cache
- * - {@link flush} : delete all values from cache
+ * - {@see get} : retrieve the value with a key (if any) from cache
+ * - {@see set} : store the value with a key into cache
+ * - {@see add} : store the value only if cache does not have this key
+ * - {@see delete} : delete the value with the specified key from cache
+ * - {@see flush} : delete all values from cache
  *
- * Each value is associated with an expiration time. The {@link get} operation
+ * Each value is associated with an expiration time. The {@see get} operation
  * ensures that any expired value will not be returned. The expiration time can
  * be specified by the number of seconds (maximum 60*60*24*30)
  * or a UNIX timestamp. A expiration time 0 represents never expire.
@@ -68,19 +68,19 @@ use Prado\Xml\TXmlElement;
  * </module>
  * ```
  *
- * If loaded, TMemCache will register itself with {@link TApplication} as the
- * cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded, TMemCache will register itself with {@see TApplication} as the
+ * cache module. It can be accessed via {@see TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
  * ```php
  * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
  * ```
- * where {@link getHost Host} and {@link getPort Port} are configurable properties
+ * where {@see getHost Host} and {@see getPort Port} are configurable properties
  * of TMemCache.
  *
  * By default the Memcached instances are destroyed at the end of the request.
  * To create an instance that persists between requests, set a persistent ID using
- * {@link setPersistentID PersistentID}.
+ * {@see setPersistentID PersistentID}.
  * All instances created with the same persistent_id will share the same connection.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

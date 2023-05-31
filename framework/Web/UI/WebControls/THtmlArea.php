@@ -20,7 +20,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * THtmlArea class
  *
  * THtmlArea wraps the visual editting functionalities provided by the
- * TinyMCE project {@link http://tinymce.moxiecode.com/}.
+ * TinyMCE project {@see http://tinymce.moxiecode.com/}.
  *
  * THtmlArea displays a WYSIWYG text area on the Web page for user input
  * in the HTML format. The text displayed in the THtmlArea component is
@@ -34,7 +34,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * under the situation.
  *
  * The default editor gives only the basic tool bar. To change or add
- * additional tool bars, use the {@link setOptions Options} property to add additional
+ * additional tool bars, use the {@see setOptions Options} property to add additional
  * editor options with each options on a new line.
  * See http://tinymce.moxiecode.com/tinymce/docs/index.html
  * for a list of options. The options can be change/added as shown in the

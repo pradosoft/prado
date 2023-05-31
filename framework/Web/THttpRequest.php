@@ -45,18 +45,18 @@ use Prado\TEventResults;
  * If a variable name appears in both POST and GET data, then POST data
  * takes precedence.
  *
- * To construct a URL that can be recognized by Prado, use {@link constructUrl()}.
+ * To construct a URL that can be recognized by Prado, use {@see constructUrl()}.
  * The format of the recognizable URLs is determined according to
- * {@link setUrlManager UrlManager}. By default, the following two formats
+ * {@see setUrlManager UrlManager}. By default, the following two formats
  * are recognized:
  * ```php
  * /index.php?ServiceID=ServiceParameter&Name1=Value1&Name2=Value2
  * /index.php/ServiceID,ServiceParameter/Name1,Value1/Name2,Value2
  * ```
  * The first format is called 'Get' while the second 'Path', which is specified
- * via {@link setUrlFormat UrlFormat}. For advanced users who want to use
+ * via {@see setUrlFormat UrlFormat}. For advanced users who want to use
  * their own URL formats, they can write customized URL management modules
- * and install the managers as application modules and set {@link setUrlManager UrlManager}.
+ * and install the managers as application modules and set {@see setUrlManager UrlManager}.
  *
  * The ServiceID in the above URLs is as defined in the application configuration
  * (e.g. the default page service's service ID is 'page').
@@ -66,8 +66,8 @@ use Prado\TEventResults;
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
  *
- * By default, THttpRequest is registered with {@link TApplication} as the
- * request module. It can be accessed via {@link TApplication::getRequest()}.
+ * By default, THttpRequest is registered with {@see TApplication} as the
+ * request module. It can be accessed via {@see TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -303,7 +303,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the URL manager module.
-	 * By default, {@link TUrlManager} is used for managing URLs.
+	 * By default, {@see TUrlManager} is used for managing URLs.
 	 * You may specify a different module for URL managing tasks
 	 * by loading it as an application module and setting this property
 	 * with the module ID.
@@ -351,7 +351,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Sets the format of URLs constructed and interpretted by the request module.
 	 * A Get URL format is like index.php?name1=value1&name2=value2
 	 * while a Path URL format is like index.php/name1,value1/name2,value.
-	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
+	 * Changing the UrlFormat will affect {@see constructUrl} and how GET variables
 	 * are parsed.
 	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 */
@@ -461,7 +461,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * @param null|int $case Either {@link CASE_UPPER} or {@link CASE_LOWER} or as is null (default)
+	 * @param null|int $case Either {@see CASE_UPPER} or {@see CASE_LOWER} or as is null (default)
 	 * @return array
 	 */
 	public function getHeaders($case = null)
@@ -726,11 +726,11 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * Constructs a URL that can be recognized by PRADO.
 	 * The actual construction work is done by the URL manager module.
 	 * This method may append session information to the generated URL if needed.
-	 * You may provide your own URL manager module by setting {@link setUrlManager UrlManager}
+	 * You may provide your own URL manager module by setting {@see setUrlManager UrlManager}
 	 * to provide your own URL scheme.
 	 *
 	 * Note, the constructed URL does not contain the protocol and hostname part.
-	 * You may obtain an absolute URL by prepending the constructed URL with {@link getBaseUrl BaseUrl}.
+	 * You may obtain an absolute URL by prepending the constructed URL with {@see getBaseUrl BaseUrl}.
 	 * @param string $serviceID service ID
 	 * @param string $serviceParam service parameter
 	 * @param null|array $getItems GET parameters, null if not needed
@@ -920,7 +920,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Returns the item with the specified key.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * @param mixed $key the key
 	 * @return mixed the element at the offset, null if no element is found at the offset
 	 */

@@ -21,32 +21,32 @@ use Prado\Exceptions\TInvalidDataValueException;
  * floats including negative zero.
  *
  * Shifting bits for color accuracy requires repeating the bits rather than
- * just adding extra 0/1 bits.  {@link colorBitShift} properly adds and removes bits
+ * just adding extra 0/1 bits.  {@see colorBitShift} properly adds and removes bits
  * to an integer color value by replicating the bits for new bits.
  *
  * There are specific floating point conversion methods for converting float to:
- *   - Fp16 with {@link floatToFp16} and back with {@link fp16ToFloat}.
- *   - Bf16 with {@link floatToBf16} and back with {@link bf16ToFloat}.
- *   - Fp8-e5m2 with {@link floatToFp8Range} and back with {@link fp8RangeToFloat}.
- *   - Fp8-e4m3 with {@link floatToFp8Precision} and back with {@link fp8PrecisionToFloat}.
- * These functions use the general conversion functions {@link floatToFpXX} and
- * {@link fpXXToFloat} where the number of bits for the exponent and mantissa are
+ *   - Fp16 with {@see floatToFp16} and back with {@see fp16ToFloat}.
+ *   - Bf16 with {@see floatToBf16} and back with {@see bf16ToFloat}.
+ *   - Fp8-e5m2 with {@see floatToFp8Range} and back with {@see fp8RangeToFloat}.
+ *   - Fp8-e4m3 with {@see floatToFp8Precision} and back with {@see fp8PrecisionToFloat}.
+ * These functions use the general conversion functions {@see floatToFpXX} and
+ * {@see fpXXToFloat} where the number of bits for the exponent and mantissa are
  * parameters. For example, 24 bit floats or 14 bit floats can be created.
  *
- * {@link mirrorBits} can mirror arbitrary runs of bits in an integer.  There is
- * quick mirroring for specific exponents of two: {@link mirrorByte} for 8 bits,
- * {@link mirrorShort} for 16 bits, {@link mirrorLong} for 32 bits, and, on 64 bit
- * instances of PHP, {@link mirrorLongLong} for 64 bits.
+ * {@see mirrorBits} can mirror arbitrary runs of bits in an integer.  There is
+ * quick mirroring for specific exponents of two: {@see mirrorByte} for 8 bits,
+ * {@see mirrorShort} for 16 bits, {@see mirrorLong} for 32 bits, and, on 64 bit
+ * instances of PHP, {@see mirrorLongLong} for 64 bits.
  *
- * There are endian byte reversal functions: {@link flipEndianShort}, {@link flipEndianLong},
- * and, on 64 bit instances of PHP, {@link flipEndianLongLong}.
+ * There are endian byte reversal functions: {@see flipEndianShort}, {@see flipEndianLong},
+ * and, on 64 bit instances of PHP, {@see flipEndianLongLong}.
  *
- * {@link bitCount} calculates the number of bits required to represent a specific
+ * {@see bitCount} calculates the number of bits required to represent a specific
  * number. 255 return 8 bits, 256 returns 9 bits.
  *
- * {@link isNegativeFloat} is used to determine if a float has the negative bit
+ * {@see isNegativeFloat} is used to determine if a float has the negative bit
  * set.  It will return true on any negative float number, including negative zero.
- * {@link isNegativeZero} can check if a float is a negative zero.  PHP cannot normally
+ * {@see isNegativeZero} can check if a float is a negative zero.  PHP cannot normally
  * check for negative zero float and requires these special functions to so.
  *
  * The Levels and Masks are for O(1) time bit reversals of 8, 16, 32, and 64 bit integers.
@@ -624,7 +624,7 @@ class TBitHelper
 	/**
 	 * This quickly mirrors the 64 bits of $n.  This only works with 64 bit PHP systems.
 	 * For speed, there is no check to validate that the system is 64 bit PHP.  You
-	 * must do the validation if/when needed with method {@link hasLongLong}.
+	 * must do the validation if/when needed with method {@see hasLongLong}.
 	 * @param int $n The 8 byte integer to mirror the bits of.
 	 * @return int reversed 64 bits of $n.
 	 */
@@ -665,7 +665,7 @@ class TBitHelper
 	 * fail.
 	 *
 	 * For speed, there is no check to validate that the system is 64 bit PHP.  You
-	 * must do the validation if/when needed with method {@link hasLongLong}.
+	 * must do the validation if/when needed with method {@see hasLongLong}.
 	 * @param int $n The 8 byte long long to reverse the endian.
 	 * @return int reversed 8 bytes endian of $n.
 	 */

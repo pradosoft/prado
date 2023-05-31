@@ -19,14 +19,14 @@ use Prado\Web\UI\WebControls\TTextBox;
 
 /**
  * TScaffoldSearch provide a simple textbox and a button that is used
- * to perform search on a TScaffoldListView with ID given by {@link setListViewID ListViewID}.
+ * to perform search on a TScaffoldListView with ID given by {@see setListViewID ListViewID}.
  *
- * The {@link getSearchText SearchText} property is a TTextBox and the
- * {@link getSearchButton SearchButton} property is a TButton with label value "Search".
+ * The {@see getSearchText SearchText} property is a TTextBox and the
+ * {@see getSearchButton SearchButton} property is a TButton with label value "Search".
  *
  * Searchable fields of the Active Record can be restricted by specifying
  * a comma delimited string of allowable fields in the
- * {@link setSearchableFields SearchableFields} property. The default is null,
+ * {@see setSearchableFields SearchableFields} property. The default is null,
  * meaning that most text type fields are searched (the default searchable fields
  * are database dependent).
  *

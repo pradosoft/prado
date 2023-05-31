@@ -13,12 +13,12 @@ namespace Prado\Collections;
  * TPagedListFetchDataEventParameter class.
  *
  * TPagedListFetchDataEventParameter is used as the parameter for
- * {@link TPagedList::onFetchData OnFetchData} event.
- * To obtain the new page index, use {@link getNewPageIndex NewPageIndex}.
- * The {@link getOffset Offset} property refers to the index
- * of the first item in the new page, while {@link getLimit Limit}
+ * {@see TPagedList::onFetchData OnFetchData} event.
+ * To obtain the new page index, use {@see getNewPageIndex NewPageIndex}.
+ * The {@see getOffset Offset} property refers to the index
+ * of the first item in the new page, while {@see getLimit Limit}
  * specifies how many items are requested for the page.
- * Newly fetched data should be saved in {@link setData Data} property.
+ * Newly fetched data should be saved in {@see setData Data} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

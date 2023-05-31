@@ -22,19 +22,19 @@ use XSLTProcessor;
  * TXmlTransform class
  *
  * TXmlTransform uses the PHP's XSL extension to perform
- * {@link http://www.w3.org/TR/xslt XSL transformations} using the
- * {@link http://xmlsoft.org/XSLT/ libxslt library}.
+ * {@see http://www.w3.org/TR/xslt XSL transformations} using the
+ * {@see http://xmlsoft.org/XSLT/ libxslt library}.
  *
  * To associate an XML style sheet with TXmlTransform set the
- * {@link setTransformPath TransformPath} property to the namespace or path to the style sheet
- * or set the {@link setTransformContent TransformContent} property to the XML style sheet
+ * {@see setTransformPath TransformPath} property to the namespace or path to the style sheet
+ * or set the {@see setTransformContent TransformContent} property to the XML style sheet
  * data as a string.
  *
- * To associate the XML data to be transformed set the {@link setDocumentPath DocumentPath}
+ * To associate the XML data to be transformed set the {@see setDocumentPath DocumentPath}
  * property to the namespace or path to the XML document or set the
- * {@link setDocumentContent DocumentContent} property to the XML data as a string.
+ * {@see setDocumentContent DocumentContent} property to the XML data as a string.
  *
- * To add additional parameters to the transformation process you can use the {@link getParameters Parameters}
+ * To add additional parameters to the transformation process you can use the {@see getParameters Parameters}
  * property.
  *
  * @author Knut Urdalen <knut.urdalen@gmail.com>
@@ -130,7 +130,7 @@ class TXmlTransform extends \Prado\Web\UI\TControl
 	}
 
 	/**
-	 * @param string $value XML data. If not empty, it takes precedence over {@link setDocumentPath DocumentPath}.
+	 * @param string $value XML data. If not empty, it takes precedence over {@see setDocumentPath DocumentPath}.
 	 */
 	public function setDocumentContent($value)
 	{

@@ -18,12 +18,12 @@ use Prado\Web\UI\TControl;
 /**
  * TMultiView class
  *
- * TMultiView serves as a container for a group of {@link TView} controls.
- * The view collection can be retrieved by {@link getViews Views}.
+ * TMultiView serves as a container for a group of {@see TView} controls.
+ * The view collection can be retrieved by {@see getViews Views}.
  * Each view contains child controls. TMultiView determines which view and its
  * child controls are visible. At any time, at most one view is visible (called
- * active). To make a view active, set {@link setActiveView ActiveView} or
- * {@link setActiveViewIndex ActiveViewIndex}.
+ * active). To make a view active, set {@see setActiveView ActiveView} or
+ * {@see setActiveViewIndex ActiveViewIndex}.
  *
  * TMultiView also responds to specific command events raised from button controls
  * contained in current active view. A command event with name 'NextView'
@@ -31,9 +31,9 @@ use Prado\Web\UI\TControl;
  * Other command names recognized by TMultiView include
  * - PreviousView : switch to previous view
  * - SwitchViewID : switch to a view by its ID path
- * - SwitchViewIndex : switch to a view by its index in the {@link getViews Views} collection.
+ * - SwitchViewIndex : switch to a view by its index in the {@see getViews Views} collection.
  *
- * TMultiView raises {@link OnActiveViewChanged OnActiveViewChanged} event
+ * TMultiView raises {@see OnActiveViewChanged OnActiveViewChanged} event
  * when its active view is changed during a postback.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -50,11 +50,11 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * This method overrides the parent implementation by adding only {@link TView}
+	 * This method overrides the parent implementation by adding only {@see TView}
 	 * controls as children.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
-	 * @throws TConfigurationException if controls other than {@link TView} is being added
+	 * @throws TConfigurationException if controls other than {@see TView} is being added
 	 */
 	public function addParsedObject($object)
 	{

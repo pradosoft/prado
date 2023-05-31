@@ -13,7 +13,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TInlineFrameScrollBars class.
  * TInlineFrameScrollBars defines the enumerable type for the possible scroll bar mode
- * that a {@link TInlineFrame} control could use.
+ * that a {@see TInlineFrame} control could use.
  *
  * The following enumerable values are defined:
  * - None: no scroll bars.

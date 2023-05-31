@@ -17,25 +17,25 @@ use Prado\TPropertyValue;
  *
  * TSlider displays a slider for numeric input purpose. A slider consists of a 'track',
  * which define the range of possible value, and a 'handle' which can slide on the track, to select
- * a value in the range. The track can be either Horizontal or Vertical, depending of the {@link SetDirection Direction}
+ * a value in the range. The track can be either Horizontal or Vertical, depending of the {@see SetDirection Direction}
  * property. By default, it's horizontal.
  *
- * The range boundaries are defined by {@link SetMinValue MinValue} and {@link SetMaxValue MaxValue} properties.
+ * The range boundaries are defined by {@see SetMinValue MinValue} and {@see SetMaxValue MaxValue} properties.
  * The default range is from 0 to 100.
- * The {@link SetStepSize StepSize} property can be used to define the <b>step</b> between 2 values inside the range.
+ * The {@see SetStepSize StepSize} property can be used to define the <b>step</b> between 2 values inside the range.
  * Notice that this step will be recomputed if there is more than 200 values between the range boundaries.
- * You can also provide the allowed values by setting the {@link SetValues Values} array.
+ * You can also provide the allowed values by setting the {@see SetValues Values} array.
  *
- * A 'Progress Indicator' can be displayed within the track with the {@link SetProgressIndicator ProgressIndicator} property.
+ * A 'Progress Indicator' can be displayed within the track with the {@see SetProgressIndicator ProgressIndicator} property.
  *
  * The TSlider control can be easily customized using CssClasses. You can provide your own css file, using the
- * {@link SetCssUrl CssUrl} property.
- * The css class for TSlider can be set by the {@link setCssClass CssClass} property. Default value is "Slider HorizontalSlider"
+ * {@see SetCssUrl CssUrl} property.
+ * The css class for TSlider can be set by the {@see setCssClass CssClass} property. Default value is "Slider HorizontalSlider"
  * for an horizontal slider, and "Slider VerticalSlider" for a vertical one.
  *
- * If {@link SetAutoPostBack AutoPostBack} property is true, postback is sent as soon as the value changed.
+ * If {@see SetAutoPostBack AutoPostBack} property is true, postback is sent as soon as the value changed.
  *
- * TSlider raises the {@link onValueChanged} event when the value of the slider has changed during postback.
+ * TSlider raises the {@see onValueChanged} event when the value of the slider has changed during postback.
  *
  * You can also attach ClientSide javascript events handler to the slider :
  * - ClientSide.onSlide is called when the handle is slided on the track. You can get the current value in the <b>value</b>
@@ -132,8 +132,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	/**
 	 * Sets the step size used to determine the places where the slider handle can stop at.
 	 * An evenly distributed stop marks will be generated according to
-	 * {@link getMinValue MinValue}, {@link getMaxValue MaxValue} and StepSize.
-	 * To use uneven stop marks, set {@link setValues Values}.
+	 * {@see getMinValue MinValue}, {@see getMaxValue MaxValue} and StepSize.
+	 * To use uneven stop marks, set {@see setValues Values}.
 	 * @param float $value Step size.
 	 */
 	public function setStepSize($value)
@@ -174,8 +174,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Returns the value of the TSlider control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return float the value of the TSlider control.
 	 * @see getValue
 	 */
@@ -186,8 +186,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Sets the value of the TSlider control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value the value of the TSlider control.
 	 * @see setValue
 	 */
@@ -206,7 +206,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Sets the possible values that the slider can take.
-	 * If this is set, {@link setStepSize StepSize} will be ignored. The latter
+	 * If this is set, {@see setStepSize StepSize} will be ignored. The latter
 	 * generates a set of evenly distributed candidate values.
 	 * @param array $value list of allowed values the slider can take
 	 */
@@ -257,8 +257,8 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getValue Value} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getValue Value} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */
@@ -269,7 +269,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Raises <b>OnValueChanged</b> event.
-	 * This method is invoked when the {@link getValue Value}
+	 * This method is invoked when the {@see getValue Value}
 	 * property changes on postback.
 	 * If you override this method, be sure to call the parent implementation to ensure
 	 * the invocation of the attached event handlers.
@@ -403,7 +403,7 @@ class TSlider extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Registers the CSS relevant to the TSlider.
-	 * It will register the CSS file specified by {@link getCssUrl CssUrl}.
+	 * It will register the CSS file specified by {@see getCssUrl CssUrl}.
 	 * If that is not set, it will use the default CSS.
 	 */
 	protected function registerStyleSheet()

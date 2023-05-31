@@ -13,18 +13,18 @@ namespace Prado\Collections;
  * TWeakCollectionTrait trait
  *
  * This is the common WeakMap caching implementation for Weak Collections. It constructs
- * a WeakMap, where available, and tracks the number of times an object is {@link
- * weakAdd added} to and {@link weakRemove removed} from the Collection.
+ * a WeakMap, where available, and tracks the number of times an object is {@see
+ * weakAdd added} to and {@see weakRemove removed} from the Collection.
  *
  * When the PHP environment invalidates a WeakReference, it is no longer linked in
  * the WeakMap.  The number of known objects is tracked and upon deviations in the
- * WeakMap count then {@link weakChanged} becomes true.  When weakChanged is true
+ * WeakMap count then {@see weakChanged} becomes true.  When weakChanged is true
  * the implementing class can scrub the list of invalidated WeakReference.
  *
- * There are utility functions for managing the WeakMap to {@link weakStart start},
- * {@link weakRestart restart}, {@link weakClone clone}, and {@link weakStop stop}
+ * There are utility functions for managing the WeakMap to {@see weakStart start},
+ * {@see weakRestart restart}, {@see weakClone clone}, and {@see weakStop stop}
  * the WeakMap.  The total number of objects in the WeakMap can be retrieved with
- * {@link weakCount} and the count of each object with {@link weakObjectCount}.
+ * {@see weakCount} and the count of each object with {@see weakObjectCount}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3

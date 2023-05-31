@@ -27,26 +27,26 @@ use Prado\Web\UI\WebControls\TPanel;
  *
  * TJuiAutoComplete is a textbox that provides a list of suggestion on
  * the current partial word typed in the textbox. The suggestions are
- * requested using callbacks, and raises the {@link onSuggestion OnSuggestion}
+ * requested using callbacks, and raises the {@see onSuggestion OnSuggestion}
  * event. The events of the TActiveText (from which TJuiAutoComplete is extended from)
- * and {@link onSuggestion OnSuggestion} are mutually exculsive. That is,
- * if {@link onTextChange OnTextChange} and/or {@link onCallback OnCallback}
- * events are raise, then {@link onSuggestion OnSuggestion} will not be raise, and
+ * and {@see onSuggestion OnSuggestion} are mutually exculsive. That is,
+ * if {@see onTextChange OnTextChange} and/or {@see onCallback OnCallback}
+ * events are raise, then {@see onSuggestion OnSuggestion} will not be raise, and
  * vice versa.
  *
- * The list of suggestions should be set in the {@link onSuggestion OnSuggestion}
+ * The list of suggestions should be set in the {@see onSuggestion OnSuggestion}
  * event handler. The partial word to match the suggestion is in the
- * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
- * property. The datasource of the TJuiAutoComplete must be set using {@link setDataSource}
+ * {@see TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
+ * property. The datasource of the TJuiAutoComplete must be set using {@see setDataSource}
  * method. This sets the datasource for the suggestions repeater, available through
- * the {@link getSuggestions Suggestions} property. Header, footer templates and
- * other properties of the repeater can be access via the {@link getSuggestions Suggestions}
+ * the {@see getSuggestions Suggestions} property. Header, footer templates and
+ * other properties of the repeater can be access via the {@see getSuggestions Suggestions}
  * property and its sub-properties.
  *
- * The {@link setTextCssClass TextCssClass} property if set is used to find
+ * The {@see setTextCssClass TextCssClass} property if set is used to find
  * the element within the Suggestions.ItemTemplate and Suggestions.AlternatingItemTemplate
  * that contains the actual text for the suggestion selected. That is,
- * only text inside elements with CSS class name equal to {@link setTextCssClass TextCssClass}
+ * only text inside elements with CSS class name equal to {@see setTextCssClass TextCssClass}
  * will be used as suggestions.
  *
  * To return the list of suggestions back to the browser, supply a non-empty data source
@@ -60,25 +60,25 @@ use Prado\Web\UI\WebControls\TPanel;
  * }
  * ```
  *
- * The suggestion will be rendered when the {@link dataBind()} method is called
+ * The suggestion will be rendered when the {@see dataBind()} method is called
  * <strong>during a callback request</strong>.
  *
  * When an suggestion is selected, that is, when the use has clicked, pressed
- * the "Enter" key, or pressed the "Tab" key, the {@link onSuggestionSelected OnSuggestionSelected}
+ * the "Enter" key, or pressed the "Tab" key, the {@see onSuggestionSelected OnSuggestionSelected}
  * event is raised. The
- * {@link TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
+ * {@see TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
  * property contains the index of the selected suggestion.
  *
  * TJuiAutoComplete allows multiple suggestions within one textbox with each
  * word or phrase separated by any characters specified in the
- * {@link setSeparator Separator} property. The {@link setFrequency Frequency}
- * and {@link setMinChars MinChars} properties sets the delay and minimum number
+ * {@see setSeparator Separator} property. The {@see setFrequency Frequency}
+ * and {@see setMinChars MinChars} properties sets the delay and minimum number
  * of characters typed, respectively, before requesting for sugggestions.
  *
- * Use {@link onTextChange OnTextChange} and/or {@link onCallback OnCallback} events
- * to handle post backs due to {@link setAutoPostBack AutoPostBack}.
+ * Use {@see onTextChange OnTextChange} and/or {@see onCallback OnCallback} events
+ * to handle post backs due to {@see setAutoPostBack AutoPostBack}.
  *
- * In the {@link getSuggestions Suggestions} TRepater item template, all HTML text elements
+ * In the {@see getSuggestions Suggestions} TRepater item template, all HTML text elements
  * are considered as text for the suggestion. Text within HTML elements with CSS class name
  * "informal" are ignored as text for suggestions.
  *
@@ -223,11 +223,11 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Raises the callback event. This method is overrides the parent implementation.
-	 * If {@link setAutoPostBack AutoPostBack} is enabled it will raise
-	 * {@link onTextChanged OnTextChanged} event event and then the
-	 * {@link onCallback OnCallback} event. The {@link onSuggest OnSuggest} event is
-	 * raise if the request is to find sugggestions, the {@link onTextChanged OnTextChanged}
-	 * and {@link onCallback OnCallback} events are <b>NOT</b> raised.
+	 * If {@see setAutoPostBack AutoPostBack} is enabled it will raise
+	 * {@see onTextChanged OnTextChanged} event event and then the
+	 * {@see onCallback OnCallback} event. The {@see onSuggest OnSuggest} event is
+	 * raise if the request is to find sugggestions, the {@see onTextChanged OnTextChanged}
+	 * and {@see onCallback OnCallback} events are <b>NOT</b> raised.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
@@ -280,7 +280,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 	}
 
 	/**
-	 * Overrides parent implementation. Callback {@link renderSuggestions()} when
+	 * Overrides parent implementation. Callback {@see renderSuggestions()} when
 	 * page's IsCallback property is true.
 	 */
 	public function dataBind()
@@ -413,7 +413,7 @@ class TJuiAutoComplete extends TActiveTextBox implements INamingContainer, IJuiO
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)

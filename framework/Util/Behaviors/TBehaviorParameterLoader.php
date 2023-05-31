@@ -32,7 +32,7 @@ use Prado\Util\IBaseBehavior;
  * ```
  *
  * TBehaviorParameterLoader can be used in parameters to load behaviors through the
- * application configuration parameters, {@link TParameterModule}, as well in each
+ * application configuration parameters, {@see TParameterModule}, as well in each
  * folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -117,8 +117,8 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * TApplication::onBeginRequest Handler that adds {@see attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@see attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
 	 * @param mixed $param parameter of the event

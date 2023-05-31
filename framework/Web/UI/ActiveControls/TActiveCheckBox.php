@@ -19,11 +19,11 @@ use Prado\Web\UI\WebControls\TCheckBox;
 /**
  * TActiveCheckBox class.
  *
- * The active control counter part to checkbox. The {@link setAutoPostBack AutoPostBack}
+ * The active control counter part to checkbox. The {@see setAutoPostBack AutoPostBack}
  * property is set to true by default. Thus, when the checkbox is clicked a
- * {@link onCallback OnCallback} event is raise after {@link OnCheckedChanged} event.
+ * {@see onCallback OnCallback} event is raise after {@see OnCheckedChanged} event.
  *
- * The {@link setText Text} and {@link setChecked Checked} properties can be
+ * The {@see setText Text} and {@see setChecked Checked} properties can be
  * changed during a callback.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -61,7 +61,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -85,7 +85,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 
 	/**
 	 * Updates the button text on the client-side if the
-	 * {@link setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true.
 	 * @param string $value caption of the button
 	 */
 	public function setText($value)
@@ -106,7 +106,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 	/**
 	 * Sets a value indicating whether the checkbox is to be checked or not.
 	 * Updates checkbox checked state on the client-side if the
-	 * {@link setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true.
 	 * @param bool $value whether the checkbox is to be checked or not.
 	 */
 	public function setChecked($value)
@@ -124,7 +124,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)
@@ -135,7 +135,7 @@ class TActiveCheckBox extends TCheckBox implements IActiveControl, ICallbackEven
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control.
 	 *
-	 * Since 3.1.4, the javascript code is not rendered if {@link setAutoPostBack AutoPostBack} is false
+	 * Since 3.1.4, the javascript code is not rendered if {@see setAutoPostBack AutoPostBack} is false
 	 *
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer for the rendering purpose
 	 * @param string $clientID checkbox id

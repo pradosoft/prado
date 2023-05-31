@@ -18,8 +18,8 @@ use Prado\Prado;
  * THttpSession class
  *
  * THttpSession provides session-level data management and the related configurations.
- * To start the session, call {@link open}; to complete and send out session data, call {@link close};
- * to destroy the session, call {@link destroy}. If AutoStart is true, then the session
+ * To start the session, call {@see open}; to complete and send out session data, call {@see close};
+ * to destroy the session, call {@see destroy}. If AutoStart is true, then the session
  * will be started once the session module is loaded and initialized.
  *
  * To access data stored in session, use THttpSession like an associative array. For example,
@@ -33,20 +33,20 @@ use Prado\Prado;
  * ```
  *
  * The following configurations are available for session:
- * {@link setAutoStart AutoStart}, {@link setCookieMode CookieMode},
- * {@link setSavePath SavePath},
- * {@link setUseCustomStorage UseCustomStorage}, {@link setGCProbability GCProbability},
- * {@link setTimeout Timeout}.
+ * {@see setAutoStart AutoStart}, {@see setCookieMode CookieMode},
+ * {@see setSavePath SavePath},
+ * {@see setUseCustomStorage UseCustomStorage}, {@see setGCProbability GCProbability},
+ * {@see setTimeout Timeout}.
  * See the corresponding setter and getter documentation for more information.
  * Note, these properties must be set before the session is started.
  *
  * THttpSession can be inherited with customized session storage method.
- * Override {@link _open}, {@link _close}, {@link _read}, {@link _write}, {@link _destroy} and {@link _gc}
- * and set {@link setUseCustomStorage UseCustomStorage} to true.
+ * Override {@see _open}, {@see _close}, {@see _read}, {@see _write}, {@see _destroy} and {@see _gc}
+ * and set {@see setUseCustomStorage UseCustomStorage} to true.
  * Then, the session data will be stored using the above methods.
  *
- * By default, THttpSession is registered with {@link TApplication} as the
- * request module. It can be accessed via {@link TApplication::getSession()}.
+ * By default, THttpSession is registered with {@see TApplication} as the
+ * request module. It can be accessed via {@see TApplication::getSession()}.
  *
  * THttpSession may be configured in application configuration file as follows,
  * ```xml
@@ -54,11 +54,11 @@ use Prado\Prado;
  *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
  * ```
- * where {@link getSessionName SessionName}, {@link getSavePath SavePath},
- * {@link getCookieMode CookieMode}, {@link getUseCustomStorage
- * UseCustomStorage}, {@link getAutoStart AutoStart}, {@link getGCProbability
- * GCProbability}, {@link getUseTransparentSessionID UseTransparentSessionID}
- * and {@link getTimeout TimeOut} are configurable properties of THttpSession.
+ * where {@see getSessionName SessionName}, {@see getSavePath SavePath},
+ * {@see getCookieMode CookieMode}, {@see getUseCustomStorage
+ * UseCustomStorage}, {@see getAutoStart AutoStart}, {@see getGCProbability
+ * GCProbability}, {@see getUseTransparentSessionID UseTransparentSessionID}
+ * and {@see getTimeout TimeOut} are configurable properties of THttpSession.
  *
  * To avoid the possibility of identity theft through some variants of XSS attacks,
  * THttpSessionshould always be configured to enforce HttpOnly setting on session cookie.
@@ -272,8 +272,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * @param bool $value whether to use user-specified handlers to store session data.
-	 * If true, make sure the methods {@link _open}, {@link _close}, {@link _read},
-	 * {@link _write}, {@link _destroy}, and {@link _gc} are overridden in child
+	 * If true, make sure the methods {@see _open}, {@see _close}, {@see _read},
+	 * {@see _write}, {@see _destroy}, and {@see _gc} are overridden in child
 	 * class, because they will be used as the callback handlers.
 	 */
 	public function setUseCustomStorage($value)
@@ -388,7 +388,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	}
 
 	/**
-	 * Ensure that {@link setCookieMode CookieMode} is not set to "None" before enabling
+	 * Ensure that {@see setCookieMode CookieMode} is not set to "None" before enabling
 	 * the use of transparent session ids. Refer to the main documentation of the class
 	 * THttpSession class for a configuration example.
 	 *
@@ -430,7 +430,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session open handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $savePath session save path
 	 * @param string $sessionName session name
 	 * @return bool whether session is opened successfully
@@ -442,7 +442,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session close handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @return bool whether session is closed successfully
 	 */
 	public function _close()
@@ -452,7 +452,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session read handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
 	 * @return string the session data
 	 */
@@ -463,7 +463,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session write handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
 	 * @param string $data session data
 	 * @return bool whether session write is successful
@@ -475,7 +475,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session destroy handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
 	 * @return bool whether session is destroyed successfully
 	 */
@@ -486,7 +486,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Session GC (garbage collection) handler.
-	 * This method should be overridden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overridden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param int $maxLifetime the number of seconds after which data will be seen as 'garbage' and cleaned up.
 	 * @return bool whether session is GCed successfully
 	 */
@@ -536,7 +536,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Returns the session variable value with the session variable name.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * @param mixed $key the session variable name
 	 * @return mixed the session variable value, null if no such variable exists
 	 */

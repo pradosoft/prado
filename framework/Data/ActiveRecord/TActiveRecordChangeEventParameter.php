@@ -16,8 +16,8 @@ use Prado\TPropertyValue;
  *
  * TActiveRecordChangeEventParameter encapsulates the parameter data for
  * ActiveRecord change commit events that are broadcasted. The following change events
- * may be raise: {@link TActiveRecord::OnInsert}, {@link TActiveRecord::OnUpdate} and
- * {@link TActiveRecord::OnDelete}. The {@link setIsValid IsValid} parameter can
+ * may be raise: {@see TActiveRecord::OnInsert}, {@see TActiveRecord::OnUpdate} and
+ * {@see TActiveRecord::OnDelete}. The {@see setIsValid IsValid} parameter can
  * be set to false to prevent the requested change event to be performed.
  *
  * @author Wei Zhuo<weizhuo@gmail.com>

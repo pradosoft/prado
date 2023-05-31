@@ -13,10 +13,10 @@ namespace Prado\Web\UI\WebControls;
  * TStyleSheet class.
  *
  * TStyleSheet represents the link to a stylesheet file and/or a piece of
- * stylesheet code. To specify the link to a CSS file, set {@link setStyleSheetUrl
+ * stylesheet code. To specify the link to a CSS file, set {@see setStyleSheetUrl
  * StyleSheetUrl}.
  * Since Prado 3.3.1, it' possible to import css libraries bundled with
- * Prado from template via the {@link setPradoStyles PradoStyles} property.
+ * Prado from template via the {@see setPradoStyles PradoStyles} property.
  * Multiple Prado libraries can be specified using comma delimited string of the
  * css library to include on the page. For example,
  *

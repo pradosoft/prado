@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * IRepeatInfoUser interface.
- * This interface must be implemented by classes who want to use {@link TRepeatInfo}.
+ * This interface must be implemented by classes who want to use {@see TRepeatInfo}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

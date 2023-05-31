@@ -31,7 +31,7 @@ class TCallbackOptions extends TControl
 	/**
 	 * Callback client-side options can be set by setting the properties of
 	 * the ClientSide property. E.g. <com:TCallbackOptions ClientSide.OnSuccess="..." />
-	 * See {@link TCallbackClientSide} for details on the properties of
+	 * See {@see TCallbackClientSide} for details on the properties of
 	 * ClientSide.
 	 * @return TCallbackClientSide client-side callback options.
 	 */

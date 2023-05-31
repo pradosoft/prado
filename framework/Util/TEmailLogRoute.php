@@ -16,9 +16,9 @@ use Prado\Exceptions\TLogException;
  * TEmailLogRoute class.
  *
  * TEmailLogRoute sends selected log messages to email addresses.
- * The target email addresses may be specified via {@link setEmails Emails} property.
- * Optionally, you may set the email {@link setSubject Subject} and the
- * {@link setSentFrom SentFrom} address.
+ * The target email addresses may be specified via {@see setEmails Emails} property.
+ * Optionally, you may set the email {@see setSubject Subject} and the
+ * {@see setSentFrom SentFrom} address.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -48,8 +48,8 @@ class TEmailLogRoute extends TLogRoute
 
 	/**
 	 * Initializes the route.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@link TLogRouter}.
-	 * @throws TConfigurationException if {@link getSentFrom SentFrom} is empty and
+	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see TLogRouter}.
+	 * @throws TConfigurationException if {@see getSentFrom SentFrom} is empty and
 	 *   'sendmail_from' in php.ini is also empty.
 	 */
 	public function init($config)

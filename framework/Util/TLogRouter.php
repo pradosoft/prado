@@ -20,12 +20,12 @@ use Prado\Xml\TXmlDocument;
  * TLogRouter class.
  *
  * TLogRouter manages routes that record log messages in different media different ways.
- * For example, a file log route {@link TFileLogRoute} records log messages
- * in log files. An email log route {@link TEmailLogRoute} sends log messages
+ * For example, a file log route {@see TFileLogRoute} records log messages
+ * in log files. An email log route {@see TEmailLogRoute} sends log messages
  * to email addresses.
  *
  * Log routes may be configured in application or page folder configuration files
- * or an external configuration file specified by {@link setConfigFile ConfigFile}.
+ * or an external configuration file specified by {@see setConfigFile ConfigFile}.
  * The format is as follows,
  * ```xml
  *   <route class="TFileLogRoute" Categories="Prado\Web\UI" Levels="Warning" />
@@ -54,7 +54,7 @@ class TLogRouter extends \Prado\TModule
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
 	 * @param mixed $config configuration for this module, can be null
-	 * @throws TConfigurationException if {@link getConfigFile ConfigFile} is invalid.
+	 * @throws TConfigurationException if {@see getConfigFile ConfigFile} is invalid.
 	 */
 	public function init($config)
 	{
