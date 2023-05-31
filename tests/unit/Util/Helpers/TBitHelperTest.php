@@ -10,6 +10,58 @@ class TBitHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(PHP_INT_SIZE >= 8, TBitHelper::hasLongLong());
 	}
 	
+	public function testCrc32()
+	{
+		self::assertEquals(crc32(''), TBitHelper::crc32(''));
+		self::assertEquals(crc32(''), TBitHelper::crc32('', false));
+		self::assertEquals(crc32('test'), $crc = TBitHelper::crc32('test'));
+		self::assertEquals(crc32('1234'), TBitHelper::crc32('1234', false));
+		self::assertEquals(crc32('test1234'), TBitHelper::crc32('1234', $crc));
+		self::assertEquals(crc32('test1234'), TBitHelper::crc32('1234', false, $crc));
+		self::assertEquals(crc32('0123456789'), TBitHelper::crc32(['0123456789', null]));
+		self::assertEquals(crc32('012'), TBitHelper::crc32(['0123456789', 3]));
+		self::assertEquals(crc32('3456789'), TBitHelper::crc32(['0123456789', null, 3]));
+		self::assertEquals(crc32('345'), TBitHelper::crc32(['0123456789', 3, 3]));
+		self::assertEquals(crc32('345'), TBitHelper::crc32(['source' => '0123456789', 'length' => 3, 'offset' => 3]));
+		
+		$filename = realpath(__DIR__ . '/../../Web/data/pradoheader.gif');
+		$fileContents = file_get_contents($filename);
+		
+		self::assertEquals($fileCrc32 = crc32($fileContents), TBitHelper::crc32($filename, true));
+		self::assertEquals(crc32(substr($fileContents, 0, 10)), TBitHelper::crc32([$filename, 10], true));
+		self::assertEquals(crc32(substr($fileContents, 2)), TBitHelper::crc32([$filename, null, 2], true));
+		self::assertEquals(crc32(substr($fileContents, 2, 10)), TBitHelper::crc32([$filename, 10, 2], true));
+		self::assertEquals(crc32('data' . substr($fileContents, 2, 10)), TBitHelper::crc32([$filename, 10, 2], true, crc32('data')));
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals($fileCrc32, TBitHelper::crc32($handle, true));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals($fileCrc32, TBitHelper::crc32($handle));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals($fileCrc32, TBitHelper::crc32($handle, false));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals(crc32(substr($fileContents, 0, 10)), TBitHelper::crc32([$handle, 10]));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals(crc32(substr($fileContents, 2)), TBitHelper::crc32([$handle, null, 2]));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals(crc32(substr($fileContents, 2, 10)), TBitHelper::crc32([$handle, 10, 2]));
+		fclose($handle);
+		
+		$handle = fopen($filename, 'rb');
+		self::assertEquals(crc32(substr($fileContents, 2, 10)), TBitHelper::crc32([$handle, 10, 2]));
+		fclose($handle);
+	}
+	
 	public function testIsNegativeFloat()
 	{
 		self::assertEquals(false, TBitHelper::isNegativeFloat(0.0));
