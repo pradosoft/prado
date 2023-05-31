@@ -22,14 +22,14 @@ namespace Prado\Web\Javascripts;
  * Sometimes there's the need to bypass this encoding and send raw javascript code.
  * To ensure that a string doesn't get encoded by {@link TJavaScript::encode() },
  * construct a new TJavaScriptLiteral:
- * <code>
+ * ```php
  * // a javascript test string
  * $js="alert('hello')";
  * // the string in $raw will not be encoded when sent clientside inside a javascript block
  * $raw=new TJavaScriptLiteral($js);
  * // shortened form
  * $raw=_js($js);
- * </code>
+ * ```
  *
  * @since 3.2.0
  */

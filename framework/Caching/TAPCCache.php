@@ -22,20 +22,20 @@ use Prado\Exceptions\TConfigurationException;
  * To use this module, the APCu PHP extension must be loaded and set in the php.ini file.
  *
  * Some usage examples of TAPCCache are as follows,
- * <code>
+ * ```php
  * $cache=new TAPCCache;  // TAPCCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
  * If loaded, TAPCCache will register itself with {@link TApplication} as the
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TAPCCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TAPCCache" />
- * </code>
+ * ```
  *
  * @author Alban Hanry <compte_messagerie@hotmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>

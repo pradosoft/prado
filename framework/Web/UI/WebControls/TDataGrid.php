@@ -64,19 +64,19 @@ use Prado\Web\UI\ITemplate;
  *  a list of columns will be automatically generated based on the schema of the data source.
  *  Each column corresponds to a column of the data.</li>
  *  <li>Specified in template. For example,
- *    <code>
+ *  ```php
  *     <com:TDataGrid ...>
  *        <com:TBoundColumn .../>
  *        <com:TEditCommandColumn .../>
  *     </com:TDataGrid>
- *    </code>
+ *  ```
  *  </li>
  *  <li>Manually created in code. Columns can be manipulated via
  *  the {@link setColumns Columns} property of the datagrid. For example,
- *  <code>
+ * ```php
  *    $column=new TBoundColumn;
  *    $datagrid->Columns[]=$column;
- *  </code>
+ * ```
  *  </li>
  * </ul>
  * Note, automatically generated columns cannot be accessed via

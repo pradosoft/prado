@@ -42,17 +42,17 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * Properties can be accessed in the way like accessing normal object members.
  * Reading or writing a property will cause the invocation of the corresponding
  * getter or setter method, e.g.,
- * <code>
+ * ```php
  * $a=$this->Text;     // equivalent to $a=$this->getText();
  * $this->Text='abc';  // equivalent to $this->setText('abc');
- * </code>
+ * ```
  * The signatures of getter and setter methods are as follows,
- * <code>
+ * ```php
  * // getter, defines a readable property 'Text'
  * function getText() { ... }
  * // setter, defines a writable property 'Text', with $value being the value to be set to the property
  * function setText($value) { ... }
- * </code>
+ * ```
  * Property names are case-insensitive. It is recommended that they are written
  * in the format of concatenated words, with the first letter of each word
  * capitalized (e.g. DisplayMode, ItemStyle).
@@ -66,19 +66,19 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * Sometimes there's the need to bypass this encoding and be able to send raw javascript code.
  * This new class of javascript-friendly properties are identified by their name
  * starting with 'js' (case insensitive):
- * <code>
+ * ```php
  * // getter, defines a readable property 'Text'
  * function getJsText() { ... }
  * // setter, defines a writable property 'Text', with $value being the value to be set to the property
  * function setJsText(TJavaScriptLiteral $value) { ... }
- * </code>
+ * ```
  * Js-friendly properties can be accessed using both their Js-less name and their Js-enabled name:
- * <code>
+ * ```php
  * // set some simple text as property value
  * $component->Text = 'text';
  * // set some javascript code as property value
  * $component->JsText = 'raw javascript';
- * </code>
+ * ```
  * In the first case, the property value will automatically gets encoded when sent
  * clientside inside a javascript block.
  * In the second case, the property will be 'marked' as being a safe javascript
@@ -94,33 +94,33 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * An event can be raised by calling {@link raiseEvent} method, upon which
  * the attached event handlers will be invoked automatically in the order they
  * are attached to the event. Event handlers must have the following signature,
- * <code>
+ * ```php
  * function eventHandlerFuncName($sender, $param) { ... }
- * </code>
+ * ```
  * where $sender refers to the object who is responsible for the raising of the event,
  * and $param refers to a structure that may contain event-specific information.
  * To raise an event (assuming named as 'Click') of a component, use
- * <code>
+ * ```php
  * $component->raiseEvent('OnClick');
  * $component->raiseEvent('OnClick', $this, $param);
- * </code>
+ * ```
  * To attach an event handler to an event, use one of the following ways,
- * <code>
+ * ```php
  * $component->OnClick = $callback;
  * $component->OnClick->add($callback);
  * $component->attachEventHandler('OnClick', $callback);
- * </code>
+ * ```
  * The first two ways make use of the fact that $component->OnClick refers to
  * the event handler list {@link TWeakCallableCollection} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
  * be either:
  *
  * a string referring to a global function name
- * <code>
+ * ```php
  * $component->OnClick = 'buttonClicked';
  * // will cause the following function to be called
  * buttonClicked($sender, $param);
- * </code>
+ * ```
  *
  * All types of PHP Callables are supported, such as:
  *  - Simple Callback function string, eg. 'my_callback_function'
@@ -130,7 +130,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  *  - Closure / anonymous functions
  *
  * PRADO can accept method names in PRADO namespace as well.
- * <code>
+ * ```php
  * $component->OnClick = [$object, 'buttonClicked'];
  * // will cause the following function to be called
  * $object->buttonClicked($sender, param);
@@ -142,7 +142,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  *
  * // Closure as an event handler
  * $component->OnClick = function ($sender, $param) { ... };
- * </code
+ * ```
  *
  *
  * Global and Dynamic Events
@@ -182,11 +182,11 @@ use Prado\Web\Javascripts\TJavaScriptString;
  *
  * An object may listen to a global event without defining an 'fx' method of the same name by
  * adding an object method to the global event list.  For example
- * <code>
+ * ```php
  * $component->fxGlobalCheck=$callback;
  * $component->fxGlobalCheck->add($callback);
  * $component->attachEventHandler('fxGlobalCheck', [$object, 'someMethod']);
- * </code>
+ * ```
  *
  *
  * Events between Objects and their behaviors, Dynamic Events
@@ -297,36 +297,36 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * implementation or behaviors, this returns null when no parameters are
  * supplied and will return the first parameter when there is at least one
  * parameter in the dynamic event.
- * <code>
+ * ```php
  *	 null == $this->dyBehaviorEvent();
  *	 5 == $this->dyBehaviorEvent(5); //when no behaviors implement this dynamic event
- * </code>
+ * ```
  *
  * Dynamic events can be chained together within behaviors to allow for data
  * filtering. Dynamic events are implemented within behaviors by defining the
  * event as a method.
- * <code>
+ * ```php
  * class TObjectBehavior extends TBehavior {
  *     public function dyBehaviorEvent($param1, $callchain) {
  *			//Do something, eg:  $param1 += $this->getOwner()->getNumber();
  *			return $callchain->dyBehaviorEvent($param1);
  *     }
  * }
- * </code>
+ * ```
  * This implementation of a behavior and dynamic event will flow through to the
  * next behavior implementing the dynamic event.  The first parameter is always
  * return when it is supplied.  Otherwise a dynamic event returns null.
  *
  * In the case of a class behavior, the object is also prepended to the dynamic
  * event.
- * <code>
+ * ```php
  * class TObjectClassBehavior extends TClassBehavior {
  *     public function dyBehaviorEvent($hostobject, $param1, $callchain) {
  *			//Do something, eg:  $param1 += $hostobject->getNumber();
  *			return $callchain->dyBehaviorEvent($param1);
  *     }
  * }
- * </code>
+ * ```
  * When calling a dynamic event, only the parameters are passed.  The host object
  * and the call chain are built into the framework.
  *
@@ -622,13 +622,13 @@ class TComponent
 	 * broadcast global events called through {@link raiseEvent}
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyListen($globalEvents[, ?TCallChain $chain = null]) {
 	 * 		$this->listen($globalEvents); //eg
 	 *      if ($chain)
 	 *          $chain->dyUnlisten($globalEvents);
 	 * }
-	 * </code>
+	 * ```
 	 * to be executed when listen is called.  All attached behaviors are notified through dyListen.
 	 *
 	 * @return numeric the number of global events that were registered to the global event registry
@@ -661,13 +661,13 @@ class TComponent
 	 * this removes an object's fx events from the global broadcaster
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyUnlisten($globalEvents[, ?TCallChain $chain = null]) {
 	 * 		$this->behaviorUnlisten(); //eg
 	 *      if ($chain)
 	 *          $chain->dyUnlisten($globalEvents);
 	 * }
-	 * </code>
+	 * ```
 	 * to be executed when listen is called.  All attached behaviors are notified through dyUnlisten.
 	 *
 	 * @return numeric the number of global events that were unregistered from the global event registry
@@ -712,10 +712,10 @@ class TComponent
 	 * to allow behaviors, dynamic events (intra-object/behavior events),
 	 * undefined dynamic and global events, and
 	 * to allow using the following syntax to call a property setter or getter.
-	 * <code>
+	 * ```php
 	 * $this->getPropertyName($value); // if there's a $this->getjsPropertyName() method
 	 * $this->setPropertyName($value); // if there's a $this->setjsPropertyName() method
-	 * </code>
+	 * ```
 	 *
 	 * Additional object behaviors override class behaviors.
 	 * dynamic and global events do not fail even if they aren't implemented.
@@ -763,19 +763,19 @@ class TComponent
 	 * Returns a property value or an event handler list by property or event name.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to read a property:
-	 * <code>
+	 * ```php
 	 * $value = $component->PropertyName;
 	 * $value = $component->jsPropertyName; // return JavaScript literal
-	 * </code>
+	 * ```
 	 * and to obtain the event handler list for an event,
-	 * <code>
+	 * ```php
 	 * $eventHandlerList = $component->EventName;
-	 * </code>
+	 * ```
 	 * This will also return the global event handler list when specifing an 'fx'
 	 * event,
-	 * <code>
+	 * ```php
 	 * $globalEventHandlerList = $component->fxEventName;
-	 * </code>
+	 * ```
 	 * When behaviors are enabled, this will return the behavior of a specific
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string $name the property name or the event name
@@ -824,13 +824,13 @@ class TComponent
 	 * Sets value of a component property.
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using the following syntax to set a property or attach an event handler.
-	 * <code>
+	 * ```php
 	 *    $this->PropertyName = $value;
 	 *    $this->jsPropertyName = $value; // $value will be treated as a JavaScript literal
 	 *    $this->EventName = $handler;
 	 *    $this->fxEventName = $handler; //global event listener
 	 *    $this->EventName = function($sender, $param) {...};
-	 * </code>
+	 * ```
 	 * When behaviors are enabled, this will also set a behaviors properties and events.
 	 * @param string $name the property name or event name
 	 * @param mixed $value the property value or event handler
@@ -1243,10 +1243,10 @@ class TComponent
 	 * uses a method path that refers to the method $object->Parent->buttonClicked(...).
 	 *
 	 * The event handler must be of the following signature,
-	 * <code>
+	 * ```php
 	 * function handlerName($sender, $param) {}
 	 * function handlerName($sender, $param, $name) {}
-	 * </code>
+	 * ```
 	 * where $sender represents the object that raises the event,
 	 * and $param is the event parameter. $name refers to the event name
 	 * being handled.
@@ -1258,16 +1258,16 @@ class TComponent
 	 * {@link TWeakCallableCollection} operations to append, insert or remove
 	 * event handlers. You may also do these operations like
 	 * getting and setting properties, e.g.,
-	 * <code>
+	 * ```php
 	 *    $component->OnClick[] = array($object,'buttonClicked');
 	 *    $component->OnClick->insertAt(0,array($object,'buttonClicked'));
 	 *    $component->OnClick[] = function ($sender, $param) { ... };
-	 * </code>
+	 * ```
 	 * which are equivalent to the following
-	 * <code>
+	 * ```php
 	 *    $component->getEventHandlers('OnClick')->add(array($object,'buttonClicked'));
 	 *    $component->getEventHandlers('OnClick')->insertAt(0,array($object,'buttonClicked'));
-	 * </code>
+	 * ```
 	 *
 	 * Due to the nature of {@link getEventHandlers}, any active behaviors defining
 	 * new 'on' events, this method will pass through to the behavior transparently.
@@ -1315,9 +1315,9 @@ class TComponent
 	 * all event responses are stored in an array, filtered for null responses, and returned.
 	 * If {@link EVENT_RESULT_ALL} is specified, all returned results will be stored along
 	 * with the sender and param in an array
-	 * <code>
+	 * ```php
 	 * 		$result[] = array('sender'=>$sender,'param'=>$param,'response'=>$response);
-	 * </code>
+	 * ```
 	 *
 	 * If {@link EVENT_RESULT_FEED_FORWARD} is specified, then each handler result is then
 	 * fed forward as the parameters for the next event.  This allows for events to filter data
@@ -1336,7 +1336,7 @@ class TComponent
 	 * all {@link GLOBAL_RAISE_EVENT_LISTENER} handlers are always called for every raised 'fx' event.
 	 *
 	 * Behaviors may implement the following functions with TBehaviors:
-	 * <code>
+	 * ```php
 	 *	public function dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction[, TCallChain $chain) {
 	 *      ....  //  Your logic
 	 *  	return $chain->dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction); //eg, the event name may be filtered/changed
@@ -1353,7 +1353,7 @@ class TComponent
 	 *      ....  //  Your logic
 	 *		return $chain->dyPostRaiseEvent($responses, $name, $sender, $param,$ responsetype, $postfunction);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when raiseEvent is called.  The 'intra' dynamic events are called per handler in
 	 * the handler loop.  TClassBehaviors prepend the object being raised.
 	 *
@@ -1495,11 +1495,11 @@ class TComponent
 	 * Evaluates a PHP expression in the context of this control.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyEvaluateExpressionFilter($expression, TCallChain $chain) {
 	 * 		return $chain->dyEvaluateExpressionFilter(str_replace('foo', 'bar', $expression)); //example
 	 * }
-	 * </code>
+	 * ```
 	 * to be executed when evaluateExpression is called.  All attached behaviors are notified through
 	 * dyEvaluateExpressionFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
@@ -1522,11 +1522,11 @@ class TComponent
 	 * Evaluates a list of PHP statements.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyEvaluateStatementsFilter($statements, TCallChain $chain) {
 	 * 		return $chain->dyEvaluateStatementsFilter(str_replace('foo', 'bar', $statements)); //example
 	 * }
-	 * </code>
+	 * ```
 	 * to be executed when evaluateStatements is called.  All attached behaviors are notified through
 	 * dyEvaluateStatementsFilter.  The chaining is important in this function due to the filtering
 	 * pass-through effect.
@@ -1559,11 +1559,11 @@ class TComponent
 	 * This method can be overridden.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyCreatedOnTemplate($parent, TCallChain $chain) {
 	 * 		return $chain->dyCreatedOnTemplate($parent); //example
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when createdOnTemplate is called.  All attached behaviors are notified through
 	 * dyCreatedOnTemplate.
 	 *
@@ -1583,11 +1583,11 @@ class TComponent
 	 * Only framework developers and control developers should use this method.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyAddParsedObject($object, TCallChain $chain) {
 	 *      return $chain-> dyAddParsedObject($object);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when addParsedObject is called.  All attached behaviors are notified through
 	 * dyAddParsedObject.
 	 *
@@ -1635,11 +1635,11 @@ class TComponent
 	/**
 	 * instanceBehavior is an internal method that takes a Behavior Object, a class name, or array of
 	 * ['class' => 'MyBehavior', 'property1' => 'Value1'...] and creates a Behavior in return. eg.
-	 * <code>
+	 * ```php
 	 *		$b = $this->instanceBehavior('MyBehavior');
 	 * 		$b = $this->instanceBehavior(['class' => 'MyBehavior', 'property1' => 'Value1']);
 	 * 		$b = $this->instanceBehavior(new MyBehavior);
-	 * </code>
+	 * ```
 	 * If the behavior is an array, the key IBaseBehavior::CONFIG_KEY is stripped and used to initialize
 	 * the behavior.
 	 *
@@ -1681,10 +1681,10 @@ class TComponent
 	 * @param null|array|IBaseBehavior|string $class string of class or class on which to attach this behavior.  Defaults to null which will error
 	 *	but more important, if this is on PHP 5.3 it will use Late Static Binding to derive the class
 	 * it should extend.
-	 * <code>
+	 * ```php
 	 *   TPanel::attachClassBehavior('javascripts', new TJsPanelClassBehavior());
 	 *   TApplication::attachClassBehavior('jpegize', \Prado\Util\Behaviors\TJPEGizeAssetBehavior::class, \Prado\Web\TFileAsset::class);
-	 * </code>
+	 * ```
 	 * An array is used to initialize values of the behavior. eg. ['class' => '\\MyBehavior', 'property' => 'value'].
 	 * @param null|numeric $priority priority of behavior, default: null the default
 	 *  priority of the {@link TWeakCallableCollection}  Optional.
@@ -1925,12 +1925,12 @@ class TComponent
 	 * by calling its {@link IBaseBehavior::attach} method.
 	 *
 	 * Already attached behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyAttachBehavior($name,$behavior[, ?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyDetachBehavior($name, $behavior);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when attachBehavior is called.  All attached behaviors are notified through
 	 * dyAttachBehavior.
 	 *
@@ -1968,12 +1968,12 @@ class TComponent
 	 * The behavior's {@link IBaseBehavior::detach} method will be invoked.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyDetachBehavior($name, $behavior[, ?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyDetachBehavior($name, $behavior);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when detachBehavior is called.  All attached behaviors are notified through
 	 * dyDetachBehavior.
 	 *
@@ -1998,12 +1998,12 @@ class TComponent
 	 * Enables all behaviors attached to this component independent of the behaviors
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyEnableBehaviors([?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyEnableBehaviors();
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when enableBehaviors is called.  All attached behaviors are notified through
 	 * dyEnableBehaviors.
 	 * @since 3.2.3
@@ -2020,12 +2020,12 @@ class TComponent
 	 * Disables all behaviors attached to this component independent of the behaviors
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyDisableBehaviors([?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyDisableBehaviors();
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when disableBehaviors is called.  All attached behaviors are notified through
 	 * dyDisableBehaviors.
 	 * @since 3.2.3
@@ -2058,12 +2058,12 @@ class TComponent
 	 * A behavior is enabled when first attached.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyEnableBehavior($name, $behavior[, ?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyEnableBehavior($name, $behavior);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when enableBehavior is called.  All attached behaviors are notified through
 	 * dyEnableBehavior.
 	 *
@@ -2090,12 +2090,12 @@ class TComponent
 	 * A behavior is only effective when it is enabled.
 	 *
 	 * Behaviors may implement the function:
-	 * <code>
+	 * ```php
 	 *	public function dyDisableBehavior($name, $behavior[, ?TCallChain $chain = null]) {
 	 *      if ($chain)
 	 *          return $chain->dyDisableBehavior($name, $behavior);
 	 *  }
-	 * </code>
+	 * ```
 	 * to be executed when disableBehavior is called.  All attached behaviors are notified through
 	 * dyDisableBehavior.
 	 *

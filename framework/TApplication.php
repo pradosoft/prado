@@ -89,10 +89,10 @@ use Prado\Web\UI\TThemeManager;
  *
  * Examples:
  * - Create and run a Prado application:
- * <code>
+ * ```php
  * $application=new TApplication($configFile);
  * $application->run();
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -719,12 +719,12 @@ class TApplication extends \Prado\TComponent
 	 * Returns a list of application modules of a specific class.
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
 	 * When null modules are found, load them with {@link getModule}. eg.
-	 * <code>
+	 * ```php
 	 *	foreach (Prado::getApplication()->getModulesByType(\Prado\Caching\ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
 	 *		...
 	 *	}
-	 * </code>
+	 * ```
 	 * @param string $type class name of the modules to look for.
 	 * @param bool $strict should the module be the class or can the module be a subclass
 	 * @return array keys are the ids of the module and values are module of a specific class

@@ -21,9 +21,9 @@ use Prado\Prado;
  * This component performs message/string choice translation. The translation
  * source is set in the TGlobalization module. The following example
  * demonstrates a simple 2 choice message translation.
- * <code>
+ * ```php
  * <com:TChoiceFormat Value="1">[1] One Apple. |[2] Two Apples</com:TChoiceFormat>
- * </code>
+ * ```
  *
  * The Choice has <b>Value</b> "1" (one), thus the translated string
  * is "One Apple". If the <b>Value</b> is "2", then it will show

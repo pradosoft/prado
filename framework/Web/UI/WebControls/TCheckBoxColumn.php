@@ -22,10 +22,10 @@ use Prado\TPropertyValue;
  *
  * The checkbox control in the TCheckBoxColumn can be accessed by one of
  * the following two methods:
- * <code>
+ * ```php
  * $datagridItem->CheckBoxColumnID->CheckBox
  * $datagridItem->CheckBoxColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the checkbox control created within the
  * datagrid cell is the first child.
  *

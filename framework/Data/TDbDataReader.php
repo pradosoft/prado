@@ -21,10 +21,10 @@ use Prado\Exceptions\TDbException;
  * returns all the rows in a single array.
  *
  * One can also retrieve the rows of data in TDbDataReader by using foreach:
- * <code>
+ * ```php
  * foreach($reader as $row)
  *     // $row represents a row of data
- * </code>
+ * ```
  * Since TDbDataReader is a forward-only stream, you can only traverse it once.
  *
  * It is possible to use a specific mode of data fetching by setting

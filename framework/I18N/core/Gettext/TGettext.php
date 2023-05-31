@@ -189,7 +189,7 @@ class TGettext
 	 * toArray
 	 *
 	 * Returns meta info and strings as an array of a structure like that:
-	 * <code>
+	 * ```php
 	 *   array(
 	 *       'meta' => array(
 	 *           'Content-Type'      => 'text/plain; charset=iso-8859-1',
@@ -203,7 +203,7 @@ class TGettext
 	 *           // ...
 	 *       )
 	 *   )
-	 * </code>
+	 * ```
 	 *
 	 * @see     fromArray()
 	 * @access  protected
@@ -218,7 +218,7 @@ class TGettext
 	 * fromArray
 	 *
 	 * Assigns meta info and strings from an array of a structure like that:
-	 * <code>
+	 * ```php
 	 *   array(
 	 *       'meta' => array(
 	 *           'Content-Type'      => 'text/plain; charset=iso-8859-1',
@@ -232,7 +232,7 @@ class TGettext
 	 *           // ...
 	 *       )
 	 *   )
-	 * </code>
+	 * ```
 	 *
 	 * @see     toArray()
 	 * @access  protected

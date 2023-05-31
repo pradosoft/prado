@@ -23,9 +23,9 @@ use Prado\Util\TBehavior;
  * This Behavior is designed to attach to TApplication, but can be
  * attached to any TComponent.
  *
- * <code>
+ * ```php
  *		<behavior name="TimeZoneParameter" Class="Prado\Util\Behaviors\TTimeZoneParameterBehavior" AttachTo="Application" TimeZoneParameter="TimeZone" TimeZone="America/New_York"/>
- * </code>
+ * ```
  * This code will set the default timeZone to "America/New_York", and then
  * if there is any Application Parameter in "TimeZone", then that takes
  * precedence.  Setting the TimeZoneParameter to "" will disable the

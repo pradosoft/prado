@@ -39,14 +39,14 @@ use Prado\Web\Javascripts\TJavaScript;
  * See http://tinymce.moxiecode.com/tinymce/docs/index.html
  * for a list of options. The options can be change/added as shown in the
  * following example.
- * <code>
+ * ```php
  * <com:THtmlArea>
  *      <prop:Options>
  *           plugins : "contextmenu,paste"
  *           language : "zh_cn"
  *      </prop:Options>
  * </com:THtmlArea>
- * </code>
+ * ```
  *
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

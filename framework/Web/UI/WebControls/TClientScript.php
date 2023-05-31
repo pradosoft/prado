@@ -19,15 +19,15 @@ use Prado\TPropertyValue;
  * client-scripts can be specified using comma delimited string of the
  * javascript library to include on the page. For example,
  *
- * <code>
+ * ```php
  * <com:TClientScript PradoScripts="effects, rico" />
- * </code>
+ * ```
  *
  * Custom javascript files can be register using the {@link setScriptUrl ScriptUrl}
  * property.
- * <code>
+ * ```php
  * <com:TClientScript ScriptUrl=<%~ test.js %> />
- * </code>
+ * ```
  *
  * Contents within TClientScript will be treated as javascript code and will be
  * rendered in place.

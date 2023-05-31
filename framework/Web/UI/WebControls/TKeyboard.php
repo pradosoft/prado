@@ -21,10 +21,10 @@ use Prado\Web\Javascripts\TJavaScript;
  * an associated text box. It helps to reduce the keyboard recording hacking.
  *
  * To use TKeyboard, write a template like following:
- * <code>
+ * ```php
  * <com:TTextBox ID="PasswordInput" />
  * <com:TKeyboard ForControl="PasswordInput" />
- * </code>
+ * ```
  *
  * A TKeyboard control is associated with a {@link TTextBox} control by specifying {@link setForControl ForControl}
  * to be the ID of that control. When the textbox is in focus, a virtual keyboard will pop up; and when

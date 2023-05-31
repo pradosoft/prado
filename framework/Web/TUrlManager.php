@@ -37,22 +37,28 @@ class TUrlManager extends \Prado\TModule
 	 * If you do so, you may also need to override {@link parseUrl} so that the URL can be properly parsed.
 	 *
 	 * The URL is constructed as the following format:
+	 * ```
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
+	 * ```
 	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
 	 * the following format is used instead:
+	 * ```
 	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
+	 * ```
 	 * If {@link THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
 	 * then entryscript.php will be hidden and the following format is used instead:
+	 * ```
 	 * /serviceID/serviceParameter/get1,value1/get2,value2...
+	 * ```
 	 * In order to use the 'HiddenPath' format you need proper url rewrite configuration;
 	 * here's an example for Apache's .htaccess:
-	 * <cdde>
+	 * ```
 	 * Options +FollowSymLinks
 	 * RewriteEngine On
 	 * RewriteCond %{REQUEST_FILENAME} !-d
 	 * RewriteCond %{REQUEST_FILENAME} !-f
 	 * RewriteRule ^(.*)$ index.php/$1 [L]
-	 * </code>
+	 * ```
 	 * @param string $serviceID service ID
 	 * @param string $serviceParam service parameter
 	 * @param array $getItems GET parameters, null if not provided

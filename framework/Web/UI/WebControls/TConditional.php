@@ -27,7 +27,7 @@ use Prado\Web\UI\ITemplate;
  * objects that are available on or after {@link onInit} lifecycle.
  *
  * A typical usage of TConditional is shown as following:
- * <code>
+ * ```php
  * <com:TConditional Condition="$this->User->IsGuest">
  *   <prop:TrueTemplate>
  *     <a href="path/to/login">Login</a>
@@ -36,7 +36,7 @@ use Prado\Web\UI\ITemplate;
  *     <a href="path/to/logout">Logout</a>
  *   </prop:FalseTemplate>
  * </com:TConditional>
- * </code>
+ * ```
  *
  * TConditional is very light. It instantiates either {@link getTrueTemplate TrueTemplate}
  * or {@link getFalseTemplate FalseTemplate}, but never both. And the condition is evaluated only once.

@@ -128,13 +128,13 @@ class TJavaScript
 	 * Encodes a PHP variable into javascript representation.
 	 *
 	 * Example:
-	 * <code>
+	 * ```php
 	 * $options['onLoading'] = "doit";
 	 * $options['onComplete'] = "more";
 	 * echo TJavaScript::encode($options);
 	 * //expects the following javascript code
 	 * // {'onLoading':'doit','onComplete':'more'}
-	 * </code>
+	 * ```
 	 *
 	 * For higher complexity data structures use {@link jsonEncode} and {@link jsonDecode}
 	 * to serialize and unserialize.

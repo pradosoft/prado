@@ -51,14 +51,14 @@ use Prado\Web\UI\WebControls\TPanel;
  *
  * To return the list of suggestions back to the browser, supply a non-empty data source
  * and call databind. For example,
- * <code>
+ * ```php
  * function autocomplete_suggestion($sender, $param)
  * {
  *   $token = $param->getToken(); //the partial word to match
  *   $sender->setDataSource($this->getSuggestionsFor($token)); //set suggestions
  *   $sender->dataBind();
  * }
- * </code>
+ * ```
  *
  * The suggestion will be rendered when the {@link dataBind()} method is called
  * <strong>during a callback request</strong>.

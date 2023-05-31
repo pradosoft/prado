@@ -24,12 +24,12 @@ use Prado\Web\UI\WebControls\TPanel;
  * Example: Assume $param is an instance of TCallbackEventParameter attached to
  * the OnCallback event of a TCallback with ID "callback1", and
  * "panel1" is the ID of a TActivePanel.
- * <code>
+ * ```php
  * function callback1_requested($sender, $param)
  * {
  * 	   $this->panel1->render($param->getNewWriter());
  * }
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

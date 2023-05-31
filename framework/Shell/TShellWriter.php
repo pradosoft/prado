@@ -224,13 +224,13 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 
 	/**
 	 * renders a table widget.
-	 * <code>
+	 * ```php
 	 *  $writer->tableWidget(
 	 *		'headers' => ['title 1', 'title 2', 'count'],
 	 *		'rows' => [['a', 'b', 1], ['s', 't', 2], ['c', 'd', 3], ['e', 'f', 10],
 	 *			['span' => 'text spanning all columns']]
 	 * );
-	 * </code>
+	 * ```
 	 *
 	 * @param array $table
 	 */
@@ -503,9 +503,9 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 *
 	 * Usage:
 	 *
-	 * <code>
+	 * ```php
 	 * [$width, $height] = TShellWriter::getScreenSize();
-	 * </code>
+	 * ```
 	 *
 	 * @param bool $refresh whether to force checking and not re-use cached size value.
 	 * This is useful to detect changing window size while the application is running but may
@@ -564,11 +564,11 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 * The first line will **not** be indented, so `TShellWriter::wrapText("Lorem ipsum dolor sit amet.", 4)` will result in the
 	 * following output, given the screen width is 16 characters:
 	 *
-	 * <code>
+	 * ```
 	 * Lorem ipsum
 	 *     dolor sit
 	 *     amet.
-	 * </code>
+	 * ```
 	 *
 	 * @param string $text the text to be wrapped
 	 * @param int $indent number of spaces to use for indentation.

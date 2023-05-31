@@ -27,14 +27,14 @@ use Prado\Web\UI\TControl;
  * For example, if the parameter contains a "draggable" item (as returned in
  * {@link TJuiDroppable}::OnDrop event), the relative PRADO control can be
  * retrieved using:
- * <code>
+ * ```php
  * $draggable = $param->getControl($param->getCallbackParameter()->draggable);
- * </code>
+ * ```
  *
  * A shortcut __get() method is implemented, too:
- * <code>
+ * ```php
  * $draggable = $param->DraggableControl;
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE

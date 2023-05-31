@@ -20,9 +20,9 @@ use Prado\Exceptions\TInvalidDataValueException;
  * recursive display of some peculiar variables.
  *
  * TVarDumper can be used as follows,
- * <code>
+ * ```php
  *   echo TVarDumper::dump($var);
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

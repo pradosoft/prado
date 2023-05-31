@@ -33,11 +33,11 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * are parameterized.  Set them to your application specific values.
  *
  * The following will load the options from a WordPress Database:
- * <code>
+ * ```xml
  *		<module id="dbparams" class="Prado\Util\TDbParameterModule"
  * ConnectionID="DB" KeyField="option_name" ValueField="option_value" TableName="wp_options" Serializer="php"
  * autoLoadField="autoload" autoLoadValue="'yes'" autoLoadValueFalse="'no'"/>
- * </code>
+ * ```
  *
  * This allows for setting and removal of application parameters
  * into and from the database through {@link set} and
@@ -47,9 +47,9 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  *
  * setting {@link setSerializer} to your own function that has the
  * following format:
- * <code>
+ * ```php
  *		function mySerializerFunction($data, $encode) {...}
- * </code>
+ * ```
  * If $encode is true, then encode, otherwise decode, to text.
  *
  * When {@link getCaptureParameterChanges} is true, the default,
@@ -66,10 +66,10 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * The role and rule management functions only work when the TDbParameter Module is specified.
  * The following gives user "admin" and all users with "Administrators" role the
  * permission to access permissions shell and its full functionality:
- * <code>
+ * ```xml
  *   <permissionrule name="param_shell" action="allow" users="admin" />
  *   <permissionrule name="param_shell" action="allow" roles="Administrators" />
- * <code>
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

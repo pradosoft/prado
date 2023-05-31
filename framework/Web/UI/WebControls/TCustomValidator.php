@@ -28,7 +28,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * To create a client-side validation function, add the client-side
  * validation javascript function to the page template.
  * The function should have the following signature:
- * <code>
+ * ```php
  * <script><!--
  * function ValidationFunctionName(sender, parameter)
  * {
@@ -38,7 +38,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  *    //    return false;
  * }
  * --></script>
- * </code>
+ * ```
  * Use the {@link setClientValidationFunction ClientValidationFunction} property
  * to specify the name of the client-side validation script function associated
  * with the TCustomValidator.

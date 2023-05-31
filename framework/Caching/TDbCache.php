@@ -35,11 +35,11 @@ use Prado\Util\Cron\TCronTaskInfo;
  * The cached data is stored in a table in the specified database.
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
- * <code>
+ * ```php
  * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
  * CREATE INDEX IX_itemkey ON pradocache (itemkey)
  * CREATE INDEX IX_expire ON pradocache (expire)
- * </code>
+ * ```
  *
  * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
  * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
@@ -70,20 +70,20 @@ use Prado\Util\Cron\TCronTaskInfo;
  * Also note, cache is shared by all user sessions of an application.
  *
  * Some usage examples of TDbCache are as follows,
- * <code>
+ * ```php
  * $cache=new TDbCache;  // TDbCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
  * If loaded, TDbCache will register itself with {@link TApplication} as the
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TDbCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TDbCache" />
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
@@ -422,11 +422,11 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 * Note, if {@link setAutoCreateCacheTable AutoCreateCacheTable} is false
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
-	 * <code>
+	 * ```php
 	 * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
 	 * CREATE INDEX IX_itemkey ON pradocache (itemkey)
 	 * CREATE INDEX IX_expire ON pradocache (expire)
-	 * </code>
+	 * ```
 	 *
 	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
 	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)

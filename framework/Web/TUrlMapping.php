@@ -25,7 +25,10 @@ use Prado\Xml\TXmlElement;
  * TUrlMapping consists of a list of URL patterns which are used to match
  * against the currently requested URL. The first matching pattern will then
  * be used to decompose the URL into request parameters (accessible through
- * <code>$this->Request['paramname']</code>).
+ * ```php
+ * $this->Request['paramname']
+ * ```
+ * )
  *
  * The patterns can also be used to construct customized URLs. In this case,
  * the parameters in an applied pattern will be replaced with the corresponding
@@ -33,14 +36,14 @@ use Prado\Xml\TXmlElement;
  *
  * Since it is derived from {@link TUrlManager}, it should be configured globally
  * in the application configuration like the following,
- * <code>
+ * ```xml
  *  <module id="request" class="THttpRequest" UrlManager="friendly-url" />
  *  <module id="friendly-url" class="Prado\Web.TUrlMapping" EnableCustomUrl="true">
  *    <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
  *    <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
  *    <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
  *  </module>
- * </code>
+ * ```
  *
  * In the above, each <tt>&lt;url&gt;</tt> element specifies a URL pattern represented
  * as a {@link TUrlMappingPattern} internally. You may create your own pattern classes

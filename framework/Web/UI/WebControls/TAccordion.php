@@ -48,7 +48,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * When a TAccordion is nested inside another, it's adviced to manually specify a {@link setViewHeight ViewHeight} for the internal TAccordion
  *
  * To use TAccordion, write a template like following:
- * <code>
+ * ```php
  * <com:TAccordion>
  *   <com:TAccordionView Caption="View 1">
  *     content for view 1
@@ -60,7 +60,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *     content for view 3
  *   </com:TAccordionView>
  * </com:TAccordion>
- * </code>
+ * ```
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @since 3.2

@@ -27,12 +27,12 @@ use Prado\TPropertyValue;
  * tools that share the same configurations as their Web application counterparts.
  *
  * A typical usage of TShellApplication in a command-line PHP script is as follows:
- * <code>
+ * ```php
  * require 'path/to/vendor/autoload.php';
  * $application=new TShellApplication('path/to/application.xml');
  * $application->run($_SERVER);
  * // perform command-line tasks here
- * </code>
+ * ```
  *
  * Since the application instance has access to all configurations, including
  * path aliases, modules and parameters, the command-line script has nearly the same

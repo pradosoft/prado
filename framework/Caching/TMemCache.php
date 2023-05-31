@@ -47,34 +47,34 @@ use Prado\Xml\TXmlElement;
  * To use this module, the memcached PHP extension must be loaded.
  *
  * Some usage examples of TMemCache are as follows,
- * <code>
+ * ```php
  * $cache=new TMemCache;  // TMemCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
  * You can configure TMemCache two different ways. If you only need one memcache server
  * you may use the method as follows.
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
- * </code>
+ * ```
  *
  * If you want a more complex configuration, you may use the method as follows.
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TMemCache">
  *     <server Host="localhost" Port="11211" Weight="1" />
  *     <server Host="anotherhost" Port="11211" Weight="1" />
  * </module>
- * </code>
+ * ```
  *
  * If loaded, TMemCache will register itself with {@link TApplication} as the
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
- * </code>
+ * ```
  * where {@link getHost Host} and {@link getPort Port} are configurable properties
  * of TMemCache.
  *

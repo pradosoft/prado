@@ -47,14 +47,14 @@ use Prado\TPropertyValue;
  * Note: Some HTTP Status codes can require additional header or body information. So, if you use {@link setStatusCode StatusCode}
  * in your application, be sure to add theses informations.
  * E.g : to make an http authentication :
- * <code>
+ * ```php
  *  public function clickAuth ($sender, $param)
  *  {
  *     $response=$this->getResponse();
  *     $response->setStatusCode(401);
  *     $response->appendHeader('WWW-Authenticate: Basic realm="Test"');
  *  }
- * </code>
+ * ```
  *
  * This event handler will sent the 401 status code (Unauthorized) to the browser, with the WWW-Authenticate header field. This
  * will force the browser to ask for a username and a password.

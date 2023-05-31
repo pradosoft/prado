@@ -21,7 +21,7 @@ use Prado\Exceptions\TIOException;
  * the Version and Encoding properties.
  *
  * To construct an XML string, you may do the following:
- * <code>
+ * ```php
  * $doc=new TXmlDocument('1.0','utf-8');
  * $doc->TagName='Root';
  *
@@ -42,9 +42,9 @@ use Prado\Exceptions\TIOException;
  * $attr->setAttribute('Name','bbb');
  * $attr->Value='1';
  * $query->Elements[]=$attr;
- * </code>
+ * ```
  * The above code represents the following XML string:
- * <code>
+ * ```xml
  * <?xml version="1.0" encoding="utf-8"?>
  * <Root>
  *   <Proc Name="xxxx">
@@ -54,7 +54,7 @@ use Prado\Exceptions\TIOException;
  *     </Query>
  *   </Proc>
  * </Root>
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -212,17 +212,17 @@ class TXmlDocument extends TXmlElement
 
 	/**
 	 * Magic-method override. Called whenever this document is used as a string.
-	 * <code>
+	 * ```php
 	 * $document = new TXmlDocument();
 	 * $document->TagName = 'root';
 	 * echo $document;
-	 * </code>
+	 * ```
 	 * or
-	 * <code>
+	 * ```php
 	 * $document = new TXmlDocument();
 	 * $document->TagName = 'root';
 	 * $xml = (string)$document;
-	 * </code>
+	 * ```
 	 * @return string string representation of this document
 	 */
 	public function __toString()

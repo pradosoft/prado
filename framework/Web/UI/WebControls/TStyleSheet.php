@@ -20,9 +20,9 @@ namespace Prado\Web\UI\WebControls;
  * Multiple Prado libraries can be specified using comma delimited string of the
  * css library to include on the page. For example,
  *
- * <code>
+ * ```php
  * <com:TStyleSheet PradoStyles="jquery.ui.dialog, jquery.ui.progressbar" />
- * </code>
+ * ```
  *
  * The child rendering result of TStyleSheet is treated as CSS code and
  * is rendered within an appropriate style HTML element.

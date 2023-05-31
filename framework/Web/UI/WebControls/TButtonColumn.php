@@ -33,10 +33,10 @@ use Prado\TPropertyValue;
  * are determined by the column's corresponding properties.
  *
  * The buttons in the column can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->ButtonColumnID->Button
  * $datagridItem->ButtonColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the button control created within the
  * datagrid cell is the first child.
  *

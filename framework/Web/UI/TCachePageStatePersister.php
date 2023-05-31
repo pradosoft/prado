@@ -42,22 +42,22 @@ use Prado\TPropertyValue;
  * create a TCachePageStatePersister instance there.
  * Or one can configure the pages to use TCachePageStatePersister in page configurations
  * as follows,
- * <code>
+ * ```xml
  *   <pages StatePersisterClass="Prado\Web\UI\TCachePageStatePersister"
  *          StatePersister.CacheModuleID="mycache"
  *          StatePersister.CacheTimeout="3600" />
- * </code>
+ * ```
  * Note in the above, we use StatePersister.CacheModuleID to configure the cache module ID
  * for the TCachePageStatePersister instance.
  *
  * The above configuration will affect the pages under the directory containing
  * this configuration and all its subdirectories.
  * To configure individual pages to use TCachePageStatePersister, use
- * <code>
+ * ```xml
  *   <pages>
  *     <page id="PageID" StatePersisterClass="Prado\Web\UI\TCachePageStatePersister" />
  *   </pages>
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1

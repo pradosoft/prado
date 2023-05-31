@@ -22,16 +22,16 @@ use Prado\Web\Javascripts\TJavaScript;
  * property.
  *
  * The following example sets the validation group property of a TCallback component.
- * <code>
+ * ```php
  * 	<com:TCallback ActiveControl.ValidationGroup="group1" ... />
- * </code>
+ * ```
  *
  * Additional client-side options and events can be set using the
  * {@link getClientSide ClientSide} property. The following example shows
  * an alert box when a TCallback component response returns successfully.
- * <code>
+ * ```php
  * 	<com:TCallback ActiveControl.ClientSide.OnSuccess="alert('ok!')" ... />
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -248,18 +248,18 @@ class TBaseActiveCallbackControl extends TBaseActiveControl
 	 * Returns the javascript callback request instance. To invoke a callback
 	 * request for this control call the <tt>dispatch()</tt> method on the
 	 * request instance. Example code in javascript
-	 * <code>
+	 * ```js
 	 *   var request = <%= $this->mycallback->ActiveControl->Javascript %>;
 	 *   request.setParameter('hello');
 	 *   request.dispatch(); //make the callback request.
-	 * </code>
+	 * ```
 	 *
 	 * Alternatively,
-	 * <code>
+	 * ```js
 	 * //dispatches immediately
 	 * Prado.Callback("<%= $this->mycallback->UniqueID %>",
 	 *    $this->mycallback->ActiveControl->JsCallbackOptions);
-	 * </code>
+	 * ```
 	 * @return string javascript client-side callback request object (javascript
 	 * code)
 	 */

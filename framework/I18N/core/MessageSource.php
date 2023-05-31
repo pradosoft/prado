@@ -41,11 +41,11 @@ require_once(__DIR__ . '/MessageCache.php');
  *
  * A custom message source can be instantiated by specifying the filename
  * parameter to point to the custom class file. E.g.
- * <code>
+ * ```php
  *   $resource = '...'; //custom message source resource
  *   $classfile = '../MessageSource_MySource.php'; //custom message source
  *   $source = MessageSource::factory('MySource', $resource, $classfile);
- * </code>
+ * ```
  *
  * If you are writting your own message sources, pay attention to the
  * loadCatalogue method. It details how the resources are loaded and cached.
@@ -55,7 +55,7 @@ require_once(__DIR__ . '/MessageCache.php');
  * set the cache handler, and use the source in a message formatter.
  * The messages are stored using an existing connection. The source parameter
  * for the factory method must contain a valid ConnectionID.
- * <code>
+ * ```php
  *   // db1 must be already configured
  *   $source = MessageSource::factory('Database', 'db1');
  *
@@ -64,7 +64,7 @@ require_once(__DIR__ . '/MessageCache.php');
  *   $source->setCache(new MessageCache('/tmp'));
  *
  *   $formatter = new MessageFormat($source);
- * </code>
+ * ```
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  */

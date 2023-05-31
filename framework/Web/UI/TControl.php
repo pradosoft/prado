@@ -193,9 +193,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
 	 * a control via its ID using the following syntax,
-	 * <code>
+	 * ```php
 	 * $menuBar=$this->menuBar;
-	 * </code>
+	 * ```
 	 * Note, the control must be configured in the template
 	 * with explicit ID. If the name matches both a property and a control ID,
 	 * the control ID will take the precedence.
@@ -218,9 +218,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Checks for the existance of a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing checking for the
 	 * existance of a control via its ID using the following syntax,
-	 * <code>
+	 * ```php
 	 * $menuBarExists = isset($this->menuBar);
-	 * </code>
+	 * ```
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using isset() to detect if a component property is set or not.
 	 * Note, the control must be configured in the template
@@ -1581,9 +1581,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * A post-callback is invoked after traversing child controls.
 	 * Callback functions can be global functions or class methods.
 	 * They must be of the following signature:
-	 * <code>
+	 * ```php
 	 * function callback_func($control,$param) {...}
-	 * </code>
+	 * ```
 	 * where $control refers to the control being visited and $param
 	 * is the parameter that is passed originally when calling this traverse function.
 	 *

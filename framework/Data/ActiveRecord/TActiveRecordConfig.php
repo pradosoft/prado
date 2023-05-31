@@ -19,27 +19,27 @@ use Prado\TPropertyValue;
  * Database configuration for the default ActiveRecord manager instance.
  *
  * Example: application.xml configuration
- * <code>
+ * ```xml
  * <modules>
  * 	<module class="Prado\Data\Data\ActiveRecord\TActiveRecordConfig" EnableCache="true">
  * 		<database ConnectionString="mysql:host=localhost;dbname=test"
  * 			Username="dbuser" Password="dbpass" />
  * 	</module>
  * </modules>
- * </code>
+ * ```
  *
  * MySQL database definition:
- * <code>
+ * ```sql
  * CREATE TABLE `blogs` (
  *  `blog_id` int(10) unsigned NOT NULL auto_increment,
  *  `blog_name` varchar(255) NOT NULL,
  *  `blog_author` varchar(255) NOT NULL,
  *  PRIMARY KEY  (`blog_id`)
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
- * </code>
+ * ```
  *
  * Record php class:
- * <code>
+ * ```php
  * class Blogs extends TActiveRecord
  * {
  * 	public $blog_id;
@@ -51,10 +51,10 @@ use Prado\TPropertyValue;
  *		return parent::finder($className);
  *	}
  * }
- * </code>
+ * ```
  *
  * Usage example:
- * <code>
+ * ```php
  * class Home extends TPage
  * {
  * 	function onLoad($param)
@@ -63,7 +63,7 @@ use Prado\TPropertyValue;
  *      print_r($blogs);
  * 	}
  * }
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

@@ -28,15 +28,15 @@ use Prado\Xml\TXmlDocument;
  * automatically for the SOAP providers by default.
  *
  * To use TSoapService, configure it in the application specification like following:
- * <code>
+ * ```xml
  *   <services>
  *     <service id="soap" class="Prado\Web\Services\TSoapService">
  *       <soap id="stockquote" provider="MyStockQuote" />
  *     </service>
  *   </services>
- * </code>
+ * ```
  * PHP configuration style:
- * <code>
+ * ```php
  *  'services' => array(
  *    'soap' => array(
  *     'class' => 'Prado\Web\Services\TSoapService'
@@ -45,13 +45,13 @@ use Prado\Xml\TXmlDocument;
  *	   )
  *    )
  *  )
- * </code>
+ * ```
  *
  * The WSDL for the provider class "MyStockQuote" is generated based on special
  * comment tags in the class. In particular, if a class method's comment
  * contains the keyword "@soapmethod", it is considered to be a SOAP method
  * and will be exposed to SOAP clients. For example,
- * <code>
+ * ```php
  *   class MyStockQuote {
  *      / **
  *       * @param string $symbol the stock symbol
@@ -60,14 +60,14 @@ use Prado\Xml\TXmlDocument;
  *       * /
  *      public function getQuote($symbol) {...}
  *   }
- * </code>
+ * ```
  *
  * With the above SOAP provider, a typical SOAP client may call the method "getQuote"
  * remotely like the following:
- * <code>
+ * ```php
  *   $client=new SoapClient("http://hostname/path/to/index.php?soap=stockquote.wsdl");
  *   echo $client->getQuote("ibm");
- * </code>
+ * ```
  *
  * Each <soap> element in the application specification actually configures
  * the properties of a SOAP server which defaults to {@link TSoapServer}.
@@ -76,13 +76,13 @@ use Prado\Xml\TXmlDocument;
  * the {@link TSoapServer::setProvider Provider} property of {@link TSoapServer}.
  * The following configuration specifies that the SOAP server is persistent within
  * the user session (that means a MyStockQuote object will be stored in session)
- * <code>
+ * ```php
  *   <services>
  *     <service id="soap" class="Prado\Web\Services\TSoapService">
  *       <soap id="stockquote" provider="MyStockQuote" SessionPersistent="true" />
  *     </service>
  *   </services>
- * </code>
+ * ```
  *
  * You may also use your own SOAP server class by specifying the "class" attribute of <soap>.
  *

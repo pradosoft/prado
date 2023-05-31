@@ -49,12 +49,12 @@ use Prado\TPropertyValue;
  * determine if arrays are merged or replaced to combine together.
  *
  * For example, something like this is required in your class:
- * <code>
+ * ```php
  *		private function getPriorityCombineStyle(): bool
  *		{
  *			return true; // for merge (list style), and false for replace (map style)
  *		}
- * </code>
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3

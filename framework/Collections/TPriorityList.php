@@ -33,7 +33,7 @@ use Prado\TPropertyValue;
  * {@link itemAt}, {@link add}, {@link insertAt}, and {@link remove}.
  * To get the number of the items in the list, use {@link getCount}.
  * TPriorityList can also be used like a regular array as follows,
- * <code>
+ * ```php
  * $list[]=$item;  // append with the default priority.  It may not be the last item if other items in the list are prioritized after the default priority
  * $list[$index]=$item; // $index must be between 0 and $list->Count-1.  This sets the element regardless of priority.  Priority stays the same.
  * $list[$index]=$item; // $index is $list->Count.  This appends the item to the end of the list with the same priority as the last item in the list.
@@ -41,7 +41,7 @@ use Prado\TPropertyValue;
  * if(isset($list[$index])) // if the list has an item at $index
  * foreach($list as $index=>$item) // traverse each item in the list in proper priority order and add/insert order
  * $n=count($list); // returns the number of items in the list
- * </code>
+ * ```
  *
  * To extend TPriorityList for doing your own operations with each addition or removal,
  * override {@link insertAtIndexInPriority()} and {@link removeAtIndexInPriority()} and then call the parent.

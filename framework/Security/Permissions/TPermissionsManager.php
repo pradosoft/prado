@@ -43,7 +43,7 @@ use Prado\Xml\TXmlElement;
  * loading dynamic roles and permissions.
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
- * <code>
+ * ```xml
  * <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
  *	<role name="Developer" children="all, param_shell_permission, cron" />
  *	<role name="Manager" children="editor, change_user_role_permission, cron_shell" />
@@ -60,10 +60,10 @@ use Prado\Xml\TXmlElement;
  *	<permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
  *	<permissionrule name="*" action="deny" priority="1000" />
  * </module>
- * </code>
+ * ```
  *
  * and in PHP the same file would follow the following format, eg:
- * <code>
+ * ```php
  * 'modules' => [
  * 'permissions' => ['class' => 'Prado\Security\Permissions\TPermissionsManager',
  * 		'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => "Administrator"],
@@ -86,7 +86,7 @@ use Prado\Xml\TXmlElement;
  *			[name => '*', 'action' => 'deny', 'priority' => 1000]
  *		]
  * ]
- * </code>
+ * ```
  *
  * In this example, "cron" is not a permission, but when used as a permission,
  * all children roles/permissions will receive the rule.  Permissions with children,
@@ -143,11 +143,11 @@ use Prado\Xml\TXmlElement;
  * The role and rule management functions only work when the TDbParameter Module is specified.
  * The following gives user "admin" and all users with "Administrators" role the
  * permission to access permissions shell and its full functionality:
- * <code>
+ * ```php
  *	 <role name="permissions_shell" children="permissions_manage_roles, permissions_manage_rules" />
  *   <permissionrule name="permissions_shell" action="allow" users="admin" />
  *   <permissionrule name="permissions_shell" action="allow" roles="Administrators" />
- * <code>
+ * ```php
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @method bool dyRegisterShellAction($returnValue)

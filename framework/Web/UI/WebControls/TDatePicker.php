@@ -28,7 +28,7 @@ use Prado\I18N\core\CultureInfo;
  * the <b>DateFormat</b> property. Valid formats are the combination of the
  * following tokens,
  *
- * <code>
+ * ```
  *  Character Format Pattern (en-US)
  *  -----------------------------------------
  *  d          day digit
@@ -39,7 +39,7 @@ use Prado\I18N\core\CultureInfo;
  *  yy         2 digit year
  *  yyyy       4 digit year
  *  -----------------------------------------
- * </code>
+ * ```
  *
  * TDatePicker has four <b>Mode</b> to show the date picker popup.
  *

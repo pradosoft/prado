@@ -16,7 +16,7 @@ namespace Prado\Web\Services;
  * {@link registerMethods} method in order to declare the available methods, their
  * names and the associated callback.
  *
- * <code>
+ * ```php
  * public function registerMethods()
  * {
  *   return array(
@@ -24,7 +24,7 @@ namespace Prado\Web\Services;
  *     'apiMethodName2' => array('method' => array('ClassName', 'staticMethodName')),
  *   );
  * }
- * </code>
+ * ```
  *
  * In this example, two api method have been defined. The first refers to an object
  * method that must be implemented in the same class, the second to a static method

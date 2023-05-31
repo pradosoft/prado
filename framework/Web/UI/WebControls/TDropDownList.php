@@ -20,10 +20,10 @@ use Prado\TPropertyValue;
  *
  * Since v3.0.3, TDropDownList starts to support optgroup. To specify an option group for
  * a list item, set a Group attribute with it,
- * <code>
+ * ```php
  *  $listitem->Attributes->Group="Group Name";
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
- * </code>
+ * ```
  *
  * Since v3.1.1, TDropDownList starts to support prompt text. That is, a prompt item can be
  * displayed as the first list item by specifying either {@link setPromptText PromptText} or

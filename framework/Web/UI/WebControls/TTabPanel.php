@@ -43,7 +43,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * - {@link setViewCssClass ViewCssClass} - the CSS class for the div element enclosing view content (defaults to 'tab-view');
  *
  * To use TTabPanel, write a template like following:
- * <code>
+ * ```php
  * <com:TTabPanel>
  *   <com:TTabView Caption="View 1">
  *     content for view 1
@@ -55,7 +55,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *     content for view 3
  *   </com:TTabView>
  * </com:TTabPanel>
- * </code>
+ * ```
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1

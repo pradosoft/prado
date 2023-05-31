@@ -37,9 +37,9 @@ use Prado\IO\TTarFileExtractor;
  * very useful during development.
  *
  * TAssetManager may be configured in application configuration file as follows,
- * <code>
+ * ```xml
  * <module id="asset" BasePath="Application.assets" BaseUrl="/assets" />
- * </code>
+ * ```
  * where {@link getBasePath BasePath} and {@link getBaseUrl BaseUrl} are
  * configurable properties of TAssetManager. Make sure that BasePath is a namespace
  * pointing to a valid directory writable by the Web server process.

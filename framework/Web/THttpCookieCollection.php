@@ -18,9 +18,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * Besides using all functionalities from {@link TList}, you can also
  * retrieve a cookie by its name using either {@link findCookieByName} or
  * simply:
- * <code>
+ * ```php
  *   $cookie=$collection[$cookieName];
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

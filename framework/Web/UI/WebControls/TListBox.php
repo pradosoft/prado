@@ -22,10 +22,10 @@ use Prado\TPropertyValue;
  *
  * Since v3.0.3, TListBox starts to support optgroup. To specify an option group for
  * a list item, set a Group attribute with it,
- * <code>
+ * ```php
  *  $listitem->Attributes->Group="Group Name";
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

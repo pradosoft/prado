@@ -24,7 +24,7 @@ use Prado\Util\IDbModule;
  *
  * To use TDbUserManager together with TAuthManager, configure them in
  * the application configuration like following:
- * <code>
+ * ```xml
  * <module id="db"
  *     class="Prado\Data\TDataSourceConfig" ..../>
  * <module id="users"
@@ -34,7 +34,7 @@ use Prado\Util\IDbModule;
  * <module id="auth"
  *     class="Prado\Security\TAuthManager"
  *     UserManager="users" LoginPage="Path\To\LoginPage" />
- * </code>
+ * ```
  *
  * In the above, {@link setUserClass UserClass} specifies what class will be used
  * to create user instance. The class must extend from {@link TDbUser}.

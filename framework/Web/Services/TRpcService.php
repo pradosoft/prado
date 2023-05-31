@@ -38,14 +38,14 @@ use Prado\Xml\TXmlElement;
  *
  * To define an rpc service, add the proper application configuration:
  *
- * <code>
+ * ```xml
  * <service id="rpc" class="Prado\Web\Services\TRpcService">
  * 	 <rpcapi id="customers" class="Application.Api.CustomersApi" />
  *   <modules>
  *     <!--  register any module needed by the service here -->
  *   </modules>
  * </service>
- * </code>
+ * ```
  *
  * An api can be registered adding a proper <rpcapi ..> definition inside the service
  * configuration. Each api definition must contain an id property and a class name

@@ -24,7 +24,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * a {@link TJuiEventParameter} object containing a reference to the dropped control
  * in the <tt>DraggableControl</tt> property.
  *
- * <code>
+ * ```php
  * <com:TJuiDraggable
  * 	ID="drag1"
  * 	Style="border: 1px solid red; width:100px;height:100px;background-color: #fff"
@@ -39,9 +39,9 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * >
  * drop it over me
  * </com:TJuiDroppable>
- * </code>
+ * ```
  *
- * <code>
+ * ```php
  *	public function drop1_ondrop($sender, $param)
  *	{
  * 		$draggable=$param->DraggableControl;
@@ -51,7 +51,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  *		$left=$offset->left - $target->left;
  *		$this->label1->Text="Dropped ".$draggable->getID()." at: <br/>Top=".$top." Left=".$left;
  *	}
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3

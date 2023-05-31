@@ -25,9 +25,9 @@ use Prado\Util\TSimpleDateFormatter;
  * entered into the text box. TJuiDatePicker is an extension to {@link TActivePanel} based on
  * jQuery-UI's {@link http://jqueryui.com/dialog/ Dialog} widget.
  *
- * <code>
+ * ```php
  * <com:TJuiDatePicker ID="datepicker1" />
- * </code>
+ * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.3

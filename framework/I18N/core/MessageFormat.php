@@ -28,7 +28,7 @@ use Prado\Util\TUtf8Converter;
  * in simplified Chinese. This assumes that the word "Hello"
  * is translated in the database.
  *
- * <code>
+ * ```php
  *   // db1 must be already configured
  *  $source = MessageSource::factory('Database', 'db1');
  *	$source->setCulture('zh_CN');
@@ -37,7 +37,7 @@ use Prado\Util\TUtf8Converter;
  * 	$formatter = new MessageFormat($source);
  *
  *	echo $formatter->format('Hello');
- * </code>
+ * ```
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  */

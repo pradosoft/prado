@@ -41,14 +41,14 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  * you store the result till the end of the processing.
  *
  * The following template shows a typical use of TReCaptcha control:
- * <code>
+ * ```php
  * <com:TReCaptcha ID="Captcha"
  *                 PublicKey="..."
  *                 PrivateKey="..."
  * />
  * <com:TReCaptchaValidator ControlToValidate="Captcha"
  *                          ErrorMessage="You are challenged!" />
- * </code>
+ * ```
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2

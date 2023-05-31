@@ -25,11 +25,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * To use TOutputCache, simply enclose the content to be cached
  * within the TOutputCache component tag on a template, e.g.,
- * <code>
+ * ```php
  * <com:TOutputCache>
  *   content to be cached
  * </com:TOutputCache>
- * </code>
+ * ```
  * where content to be cached can be static text and/or component tags.
  *
  * The validity of the cached content is determined based on two factors:

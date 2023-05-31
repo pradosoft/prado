@@ -18,11 +18,11 @@ use Prado\TPropertyValue;
  *
  * This class will evaluate a specific method with parameters when
  * running the task the specified module.
- * <code>
+ * ```php
  *		<job schedule="* * * * *" task="dbcache->flushCacheExpired(true)" / >
  *		<job schedule="* * * * *" task="dbcache->flushCacheExpired" / >
  *		<job schedule="* * * * *" task="amodule->taskmethod($this->getModule()->getProperty())" / >
- * </code>
+ * ```
  *
  * The parenthesis may be omitted, or parameters may be functions themselves.
  *

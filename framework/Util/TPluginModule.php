@@ -22,20 +22,20 @@ use ReflectionClass;
  * its own Pages, where available, and its own error message file for the module.
  *
  * Plugin pages should implement their *.page with the following page code:
- * <code>
+ * ```php
  *	<com:TContent ID=<%$ PluginContentId %>>
  *		...  your page content ...
  * 	</com:TContent>
- * </code>
+ * ```
  * The 'PluginContentId' application parameter is what all plugin pages should implement as
  * the page TContent ID.  This way all plugin pages can be changed to the page MasterClass
  * layout TContentPlaceHolder for the application and layout. For example in the application
  * configuration file:
- * <code>
+ * ```xml
  *	<parameters>
  *	 <parameter id="PluginContentId" value="Main" />
  *  </parameters>
- * </code>
+ * ```
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */

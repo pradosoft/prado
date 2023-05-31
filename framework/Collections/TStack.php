@@ -24,9 +24,9 @@ use Prado\Exceptions\TInvalidOperationException;
  * check the {@link getCount Count} property.
  *
  * Items in the stack may be traversed using foreach as follows,
- * <code>
+ * ```php
  * foreach($stack as $item) ...
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -24,12 +24,12 @@ use Prado\Web\THttpUtility;
  * THead also manages and displays meta tags through its {@link getMetaTags MetaTags}
  * property. You can add a meta object to the collection in code dynamically,
  * or add it in template using the following syntax,
- * <code>
+ * ```php
  * <com:THead>
  *   <com:TMetaTag HttpEquiv="Pragma" Content="no-cache" />
  *   <com:TMetaTag Name="keywords" Content="Prado" />
  * </com:THead>
- * </code>
+ * ```
  *
  * Note, {@link TPage} has a property {@link TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most one THead

@@ -20,14 +20,14 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * TJuiProgressbar is an extension to {@link TActivePanel} based on jQuery-UI's
  * {@link http://jqueryui.com/progressbar/ Progressbar} widget.
  *
- * <code>
+ * ```php
  * <com:TJuiProgressbar
  *	ID="pbar1"
  *	Options.Max="100"
  *	Options.Value="75"
  *  OnChange="pbar1_changed"
  * />
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3

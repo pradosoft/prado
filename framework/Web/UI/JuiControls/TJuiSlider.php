@@ -20,7 +20,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * TJuiSlider is an extension to {@link TActivePanel} based on jQuery-UI's
  * {@link http://jqueryui.com/slider/ Slider} widget.
  *
- * <code>
+ * ```php
  * <com:TJuiSlider
  *	ID="slider1"
  *	Options.Min="0"
@@ -29,16 +29,16 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  *	Options.Value="50"
  *  OnStop="slider1_changed"
  * />
- * </code>
+ * ```
  *
  * To retrieve the current value of the slider during callback, get the value
  * property of the callback request parameter within the {@link TJuiEventParameter}.
  *
- * <code>
+ * ```php
  * public function slider1_changed($sender, $param) {
  *   $value = $param->getCallbackParameter()->value;
  * }
- * </code>
+ * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

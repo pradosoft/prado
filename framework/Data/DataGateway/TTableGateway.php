@@ -27,7 +27,7 @@ use Prado\Prado;
  * (with respect to the data and data objects), as its role is to push data back and forth.
  *
  * Example usage:
- * <code>
+ * ```php
  * //create a connection
  * $dsn = 'pgsql:host=localhost;dbname=test';
  * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
@@ -46,7 +46,7 @@ use Prado\Prado;
  *
  * //update the row
  * $table->updateByPk($record1, $id);
- * </code>
+ * ```
  *
  * All methods that may return more than one row of data will return an
  * TDbDataReader iterator.
@@ -63,7 +63,7 @@ use Prado\Prado;
  * the data return from the database. The data returned can be changed
  * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
  *
- * <code>
+ * ```php
  * $table->OnCreateCommand[] = 'log_it'; //any valid PHP callback statement
  * $table->OnExecuteCommand[] = array($obj, 'method_name'); // calls 'method_name' on $obj
  *
@@ -71,7 +71,7 @@ use Prado\Prado;
  * {
  *     var_dump($param); //TDataGatewayEventParameter object.
  * }
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -212,14 +212,14 @@ class TTableGateway extends \Prado\TComponent
 	 * Find one single record that matches the criteria.
 	 *
 	 * Usage:
-	 * <code>
+	 * ```php
 	 * $table->find('username = :name AND password = :pass',
 	 * 					array(':name'=>$name, ':pass'=>$pass));
 	 * $table->find('username = ? AND password = ?', array($name, $pass));
 	 * $table->find('username = ? AND password = ?', $name, $pass);
 	 * //$criteria is of TSqlCriteria
 	 * $table->find($criteria); //the 2nd parameter for find() is ignored.
-	 * </code>
+	 * ```
 	 *
 	 * @param string|TSqlCriteria $criteria SQL condition or criteria object.
 	 * @param mixed $parameters parameter values.
@@ -250,11 +250,11 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Find one record using only the primary key or composite primary keys. Usage:
 	 *
-	 * <code>
+	 * ```php
 	 * $table->findByPk($primaryKey);
 	 * $table->findByPk($key1, $key2, ...);
 	 * $table->findByPk(array($key1,$key2,...));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $keys primary keys
 	 * @return array matching record.
@@ -271,16 +271,16 @@ class TTableGateway extends \Prado\TComponent
 	 * Similar to findByPk(), but returns TDbDataReader instead.
 	 *
 	 * For scalar primary keys:
-	 * <code>
+	 * ```php
 	 * $table->findAllByPk($key1, $key2, ...);
 	 * $table->findAllByPk(array($key1, $key2, ...));
-	 * </code>
+	 * ```
 	 *
 	 * For composite keys:
-	 * <code>
+	 * ```php
 	 * $table->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
 	 * $table->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
-	 * </code>
+	 * ```
 	 * @param mixed $keys primary keys
 	 * @return TDbDataReader data reader.
 	 */
@@ -296,9 +296,9 @@ class TTableGateway extends \Prado\TComponent
 	 * Delete records from the table with condition given by $where and
 	 * binding values specified by $parameter argument.
 	 * This method uses additional arguments as $parameters. E.g.
-	 * <code>
+	 * ```php
 	 * $table->delete('age > ? AND location = ?', $age, $location);
-	 * </code>
+	 * ```
 	 * @param string $criteria delete condition.
 	 * @param array $parameters condition parameters.
 	 * @return int number of records deleted.
@@ -313,14 +313,14 @@ class TTableGateway extends \Prado\TComponent
 	/**
 	 * Delete records by primary key. Usage:
 	 *
-	 * <code>
+	 * ```php
 	 * $table->deleteByPk($primaryKey); //delete 1 record
 	 * $table->deleteByPk($key1,$key2,...); //delete multiple records
 	 * $table->deleteByPk(array($key1,$key2,...)); //delete multiple records
-	 * </code>
+	 * ```
 	 *
 	 * For composite primary keys (determined from the table definitions):
-	 * <code>
+	 * ```php
 	 * $table->deleteByPk(array($key1,$key2)); //delete 1 record
 	 *
 	 * //delete multiple records
@@ -328,7 +328,7 @@ class TTableGateway extends \Prado\TComponent
 	 *
 	 * //delete multiple records
 	 * $table->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $keys primary key values.
 	 * @return int number of records deleted.
@@ -374,9 +374,9 @@ class TTableGateway extends \Prado\TComponent
 	 * specified by the $where argument and additional binding values can be
 	 * specified using the $parameter argument.
 	 * This method uses additional arguments as $parameters. E.g.
-	 * <code>
+	 * ```php
 	 * $gateway->update($data, 'age > ? AND location = ?', $age, $location);
-	 * </code>
+	 * ```
 	 * @param array $data new record data.
 	 * @param string $criteria update condition
 	 * @param array $parameters additional binding name-value pairs.
@@ -439,23 +439,23 @@ class TTableGateway extends \Prado\TComponent
 	 * or "deleteBy".
 	 *
 	 * The following are equivalent:
-	 * <code>
+	 * ```php
 	 * $table->findByName($name)
 	 * $table->find('Name = ?', $name);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $table->findByUsernameAndPassword($name,$pass); // OR may be used
 	 * $table->findBy_Username_And_Password($name,$pass); // _OR_ may be used
 	 * $table->find('Username = ? AND Password = ?', $name, $pass);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $table->findAllByAge($age);
 	 * $table->findAll('Age = ?', $age);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $table->deleteAll('Name = ?', $name);
 	 * $table->deleteByName($name);
-	 * </code>
+	 * ```
 	 * @param mixed $method
 	 * @param mixed $args
 	 * @return mixed single record if method name starts with "findBy", 0 or more records

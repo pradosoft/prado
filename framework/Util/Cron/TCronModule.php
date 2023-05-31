@@ -30,13 +30,13 @@ use Prado\Xml\TXmlDocument;
  * task at a given time.  A task can be a task class or a module Id followed by
  * '->' followed by a method with or without parameters. eg.
  *
- * <code>
+ * ```xml
  * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
  *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
  *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
  *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
- * </code>
+ * ```
  *
  * The schedule is formatted like a linux crontab schedule expression.
  * {@link TTimeSchedule} parses the schedule and supports 8 different
@@ -48,9 +48,9 @@ use Prado\Xml\TXmlDocument;
  *
  * The following is an example for your system cron tab to run the PRADO
  * application cron.
- * <code>
+ * ```
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
- * </code>
+ * ```
  *
  * The default cron user can be set with {@link set$DefaultUserName} with its
  * default being 'cron' user.  The default user is used when no task specific

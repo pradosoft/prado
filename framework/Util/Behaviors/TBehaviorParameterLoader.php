@@ -23,13 +23,13 @@ use Prado\Util\IBaseBehavior;
  * TBehaviorParameterLoader implements attaching Behaviors from Parameters
  * before any work has been done.  Here is an example of how to attach a behavior
  * via parameter within an application.xml:
- * <code>
+ * ```xml
  * <application id="prado-app">
  *		<parameters>
  *		<parameter id="pagethemebehaviorloader" class="Prado\Util\Behaviors\TBehaviorParameterLoader" BehaviorName="testBehavior" BehaviorClass="Prado\Util\Behaviors\TParameterizeBehavior" Priority="10" AttachToClass="Prado\Web\UI\TPage" Parameter="ThemeName" Property="Theme" DefaultValue="ColoradoBlue2022" />
  *		<parameters>
  * 	  ...
- * </code>
+ * ```
  *
  * TBehaviorParameterLoader can be used in parameters to load behaviors through the
  * application configuration parameters, {@link TParameterModule}, as well in each

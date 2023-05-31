@@ -29,10 +29,10 @@ use Prado\TPropertyValue;
  * parameter names enclosed between a left brace '{' and a right brace '}'.
  * The patterns for each parameter can be set using {@link getParameters Parameters}
  * attribute collection. For example
- * <code>
+ * ```php
  * <url ... pattern="articles/{year}/{month}/{day}"
  *          parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
- * </code>
+ * ```
  *
  * In the above example, the pattern contains 3 parameters named "year",
  * "month" and "day". The pattern for these parameters are, respectively,
@@ -44,9 +44,9 @@ use Prado\TPropertyValue;
  * For more complicated patterns, one may specify the pattern using a regular expression
  * by {@link setRegularExpression RegularExpression}. For example, the above pattern
  * is equivalent to the following regular expression-based pattern:
- * <code>
+ * ```
  * #^articles/(?P<year>\d{4})/(?P<month>\d{2})\/(?P<day>\d+)$#u
- * </code>
+ * ```
  * The above regular expression used the "named group" feature available in PHP.
  * If you intended to use the <tt>RegularExpression</tt> property or
  * regular expressions in CDATA sections, notice that you need to escape the slash,

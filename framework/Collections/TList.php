@@ -24,14 +24,14 @@ use Prado\TPropertyValue;
  * {@link itemAt}, {@link add}, {@link insertAt}, {@link remove}, and {@link removeAt}.
  * To get the number of the items in the list, use {@link getCount}.
  * TList can also be used like a regular array as follows,
- * <code>
+ * ```php
  * $list[]=$item;  // append at the end
  * $list[$index]=$item; // $index must be between 0 and $list->Count
  * unset($list[$index]); // remove the item at $index
  * if(isset($list[$index])) // if the list has an item at $index
  * foreach($list as $index=>$item) // traverse each item in the list
  * $n=count($list); // returns the number of items in the list
- * </code>
+ * ```
  *
  * To extend TList by doing additional operations with each addition or removal
  * operation, override {@link insertAt()}, and {@link removeAt()}.

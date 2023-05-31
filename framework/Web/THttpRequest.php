@@ -26,21 +26,21 @@ use Prado\TEventResults;
  *
  * User post data can be retrieved from THttpRequest by using it like an associative array.
  * For example, to test if a user supplies a variable named 'param1', you can use,
- * <code>
+ * ```php
  *   if(isset($request['param1'])) ...
  *   // equivalent to:
  *   // if($request->contains('param1')) ...
- * </code>
+ * ```
  * To get the value of 'param1', use,
- * <code>
+ * ```php
  *   $value=$request['param1'];
  *   // equivalent to:
  *   //   $value=$request->itemAt('param1');
- * </code>
+ * ```
  * To traverse the user post data, use
- * <code>
+ * ```php
  *   foreach($request as $name=>$value) ...
- * </code>
+ * ```
  * Note, POST and GET variables are merged together in THttpRequest.
  * If a variable name appears in both POST and GET data, then POST data
  * takes precedence.
@@ -49,10 +49,10 @@ use Prado\TEventResults;
  * The format of the recognizable URLs is determined according to
  * {@link setUrlManager UrlManager}. By default, the following two formats
  * are recognized:
- * <code>
+ * ```php
  * /index.php?ServiceID=ServiceParameter&Name1=Value1&Name2=Value2
  * /index.php/ServiceID,ServiceParameter/Name1,Value1/Name2,Value2
- * </code>
+ * ```
  * The first format is called 'Get' while the second 'Path', which is specified
  * via {@link setUrlFormat UrlFormat}. For advanced users who want to use
  * their own URL formats, they can write customized URL management modules

@@ -18,9 +18,9 @@ use Prado\TPropertyValue;
  * default active record gateway, and table meta data inspector.
  *
  * The default connection can be set as follows:
- * <code>
+ * ```php
  * TActiveRecordManager::getInstance()->setDbConnection($conn);
- * </code>
+ * ```
  * All new active record created after setting the
  * {@link DbConnection setDbConnection()} will use that connection unless
  * the custom ActiveRecord class overrides the ActiveRecord::getDbConnection().

@@ -22,7 +22,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * The panel can be moved using the mouse, and eventually dropped over a
  * {@link TJuiDroppable}.
  *
- * <code>
+ * ```php
  * <com:TJuiDraggable
  *	ID="drag1"
  *	Style="border: 1px solid red; width:100px;height:100px"
@@ -31,7 +31,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * >
  * drag me
  * </com:TJuiDraggable>
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3

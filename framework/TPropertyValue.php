@@ -25,12 +25,12 @@ use Prado\Web\Javascripts\TJavaScript;
  * TPropertyValue is commonly used in component setter methods to ensure
  * the new property value is of specific type.
  * For example, a boolean-typed property setter method would be as follows,
- * <code>
+ * ```php
  * function setPropertyName($value) {
  *     $value=TPropertyValue::ensureBoolean($value);
  *     // $value is now of boolean type
  * }
- * </code>
+ * ```
  *
  * Properties can be of the following types with specific type conversion rules:
  * - string: a boolean value will be converted to 'true' or 'false'.

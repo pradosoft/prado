@@ -81,7 +81,10 @@ abstract class TClientSideOptions extends \Prado\TComponent
 
 	/**
 	 * Ensure that the javascript statements are wrapped in a javascript
-	 * function block as <code>function(sender, parameter){ //code }</code>.
+	 * function block as
+	 * ```js
+	 * function(sender, parameter){ //code }
+	 * ```
 	 * @param mixed $javascript
 	 */
 	protected function ensureFunction($javascript)

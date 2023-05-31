@@ -34,9 +34,9 @@ use Prado\Collections\IPriorityProperty;
  * events are an optional event system between owners and behaviors.  When an owner
  * calls a method starting with "dy", all attached enabled behaviors implementing
  * the dynamic event are raised. For example:
- * <code>
+ * ```php
  *		$filteredData = $componentObject->dyFilterData($data);
- * </code>
+ * ```
  * would automatically call all enabled behaviors attached to $componentObject implementing
  * dyFilterData(..., ?TCallchain $chain = null).  The first parameter in "dy" dynamic
  * events is passed through as the return value and so acts like a filter or default

@@ -27,14 +27,10 @@ use Prado\Xml\TXmlDocument;
  * Log routes may be configured in application or page folder configuration files
  * or an external configuration file specified by {@link setConfigFile ConfigFile}.
  * The format is as follows,
- * <code>
+ * ```xml
  *   <route class="TFileLogRoute" Categories="Prado\Web\UI" Levels="Warning" />
  *   <route class="TEmailLogRoute" Categories="Application" Levels="Fatal" Emails="admin@prado.local" />
- * </code>
- * PHP configuration style:
- * <code>
- *
- * </code>
+ * ```
  * You can specify multiple routes with different filtering conditions and different
  * targets, even if the routes are of the same type.
  *

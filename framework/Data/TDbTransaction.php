@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * It is usually created by calling {@link TDbConnection::beginTransaction}.
  *
  * The following code is a common scenario of using transactions:
- * <code>
+ * ```php
  * try
  * {
  *    $transaction=$connection->beginTransaction();
@@ -33,7 +33,7 @@ use Prado\TPropertyValue;
  * {
  *    $transaction->rollBack();
  * }
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

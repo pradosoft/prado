@@ -24,9 +24,9 @@ use Prado\Web\UI\TControl;
  * This component performs message/string translation. The translation
  * source is set in the TGlobalization handler. The following example
  * demonstrated a simple message translation.
- * <code>
+ * ```php
  * <com:TTranslate Text="Goodbye" />
- * </code>
+ * ```
  *
  * Depending on the culture set on the page, the phrase "Goodbye" will
  * be translated.
@@ -36,11 +36,11 @@ use Prado\Web\UI\TControl;
  * parameter names during substitution lookup. The following example will substitute the substring
  * "{time}" with the value of the parameter attribute "Parameters.time=<%= time() %>. Note that
  * the value of the parameter named "time" is evaluated.
- * <code>
+ * ```php
  * <com:TTranslate Parameters.time=<%= time() %> >
  *   The unix-time is "{time}".
  * </com:TTranslate>
- * </code>
+ * ```
  *
  * More complex string substitution can be applied using the
  * TTranslateParameter component.

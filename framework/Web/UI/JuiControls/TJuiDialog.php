@@ -22,13 +22,13 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * {@link http://jqueryui.com/dialog/ Dialog} widget.
  *
  *
- * <code>
+ * ```php
  * <com:TJuiDialog
  *	ID="dlg1"
  * >
  * contents
  * </com:TJuiDialog>
- * </code>
+ * ```
  *
  * @author David Otto <ottodavid[at]gmx[dot]net>
  * @since 3.3

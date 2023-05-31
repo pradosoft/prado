@@ -171,28 +171,28 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 *
 	 * array
 	 * - Column names will be quoted if used as key or value of array
-	 * 	<code>
-	 * 	array('col1', 'col2', 'col2')
-	 * 	// SELECT `col1`, `col2`, `col3` FROM...
-	 * 	</code>
+	 * ```php
+	 * array('col1', 'col2', 'col2')
+	 * // SELECT `col1`, `col2`, `col3` FROM...
+	 * ```
 	 *
 	 * - Column aliasing
-	 * <code>
+	 * ```php
 	 * array('mycol1' => 'col1', 'mycol2' => 'COUNT(*)')
 	 * // SELECT `col1` AS mycol1, COUNT(*) AS mycol2 FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - NULL and scalar values (strings will be quoted depending on database)
-	 * <code>
+	 * ```php
 	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
 	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
-	 * <code>
+	 * ```php
 	 * array('col1' => 'NULL', '*')
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
-	 * </code>
+	 * ```
 	 * @param mixed $data
 	 * @return array of generated fields - use implode(', ', $selectfieldlist) to collapse field list for usage
 	 * @since 3.1.7

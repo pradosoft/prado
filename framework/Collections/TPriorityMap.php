@@ -30,13 +30,13 @@ use Prado\TPropertyValue;
  *
  * To get the number of the items in the map, use {@link getCount}.
  * TPriorityMap can also be used like a regular array as follows,
- * <code>
+ * ```php
  * $map[$key]=$value; // add a key-value pair
  * unset($map[$key]); // remove the value with the specified key
  * if(isset($map[$key])) // if the map contains the key
  * foreach($map as $key=>$value) // traverse the items in the map
  * $n=count($map);  // returns the number of items in the map
- * </code>
+ * ```
  * Using standard array access method like these will always use
  * the default priority.
  *

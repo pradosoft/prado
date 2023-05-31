@@ -36,13 +36,13 @@ use Prado\TPropertyValue;
  *
  * The following example shows how to create a TDbConnection instance and establish
  * the actual connection:
- * <code>
+ * ```php
  * $connection=new TDbConnection($dsn,$username,$password);
  * $connection->Active=true;
- * </code>
+ * ```
  *
  * After the DB connection is established, one can execute an SQL statement like the following:
- * <code>
+ * ```php
  * $command=$connection->createCommand($sqlStatement);
  * $command->execute();   // a non-query SQL statement execution
  * // or execute an SQL query and fetch the result set
@@ -50,18 +50,18 @@ use Prado\TPropertyValue;
  *
  * // each $row is an array representing a row of data
  * foreach($reader as $row) ...
- * </code>
+ * ```
  *
  * One can do prepared SQL execution and bind parameters to the prepared SQL:
- * <code>
+ * ```php
  * $command=$connection->createCommand($sqlStatement);
  * $command->bindParameter($name1,$value1);
  * $command->bindParameter($name2,$value2);
  * $command->execute();
- * </code>
+ * ```
  *
  * To use transaction, do like the following:
- * <code>
+ * ```php
  * $transaction=$connection->beginTransaction();
  * try
  * {
@@ -74,7 +74,7 @@ use Prado\TPropertyValue;
  * {
  *    $transaction->rollBack();
  * }
- * </code>
+ * ```
  *
  * TDbConnection provides a set of methods to support setting and querying
  * of certain DBMS attributes, such as {@link getNullConversion NullConversion}.

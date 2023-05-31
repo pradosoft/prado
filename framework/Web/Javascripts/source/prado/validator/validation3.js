@@ -67,11 +67,16 @@ Prado.Validation =  jQuery.klass();
  * Global Validation Object.
  *
  * <p>To validate the inputs of a particular form, call
- * <code>{@link Prado.Validation.validate}(formID, groupID)</code>
+ * ```js
+ * {@link Prado.Validation.validate}(formID, groupID)
+ * ```
  * where <tt>formID</tt> is the HTML form ID, and the optional
  * <tt>groupID</tt> if present will only validate the validators
  * in a particular group.</p>
- * <p>Use <code>{@link Prado.Validation.validateControl}(controlClientID)</code>
+ * <p>Use
+ * ```js
+ * {@link Prado.Validation.validateControl}(controlClientID)
+ * ```
  * to trigger validation for a single control.</p>
  *
  * @object {static} Prado.Validation

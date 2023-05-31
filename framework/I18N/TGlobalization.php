@@ -193,7 +193,7 @@ class TGlobalization extends \Prado\TModule
 
 	/**
 	 * Sets the translation configuration. Example configuration:
-	 * <code>
+	 * ```php
 	 * $config['type'] = 'XLIFF'; //XLIFF, gettext, PHP or Database
 	 * $config['source'] = 'Path\to\directory'; // for types XLIFF, PHP and gettext
 	 * $config['source'] = 'connectionId'; // for type Database
@@ -201,7 +201,7 @@ class TGlobalization extends \Prado\TModule
 	 * $config['autosave'] = 'true'; //save untranslated message
 	 * $config['cache'] = 'true'; //cache translated message
 	 * $config['marker'] = '@@'; // surround untranslated text with '@@'
-	 * </code>
+	 * ```
 	 * Throws exception is source is not found.
 	 * @param array|\Prado\Collections\TMap $config configuration options
 	 */
@@ -277,9 +277,9 @@ class TGlobalization extends \Prado\TModule
 
 	/**
 	 * Returns a list of possible localized files. Example
-	 * <code>
+	 * ```php
 	 * $files = $app->getLocalizedResource("path/to/Home.page","en_US");
-	 * </code>
+	 * ```
 	 * will return
 	 * <pre>
 	 * array

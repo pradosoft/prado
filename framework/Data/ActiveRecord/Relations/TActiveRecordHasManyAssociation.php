@@ -19,15 +19,15 @@ use Prado\Prado;
  * Implements the M-N (many to many) relationship via association table.
  * Consider the <b>entity</b> relationship between Articles and Categories
  * via the association table <tt>Article_Category</tt>.
- * <code>
+ * ```php
  * +---------+            +------------------+            +----------+
  * | Article | * -----> * | Article_Category | * <----- * | Category |
  * +---------+            +------------------+            +----------+
- * </code>
+ * ```
  * Where one article may have 0 or more categories and each category may have 0
  * or more articles. We may model Article-Category <b>object</b> relationship
  * as active record as follows.
- * <code>
+ * ```php
  * class ArticleRecord
  * {
  *     const TABLE='Article';
@@ -62,16 +62,16 @@ use Prado\Prado;
  *         return parent::finder($className);
  *     }
  * }
- * </code>
+ * ```
  *
  * The static <tt>$RELATIONS</tt> property of ArticleRecord defines that the
  * property <tt>$Categories</tt> has many <tt>CategoryRecord</tt>s. Similar, the
  * static <tt>$RELATIONS</tt> property of CategoryRecord defines many ArticleRecords.
  *
  * The articles with categories list may be fetched as follows.
- * <code>
+ * ```php
  * $articles = TeamRecord::finder()->withCategories()->findAll();
- * </code>
+ * ```
  * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
  * name, in this case, <tt>Categories</tt>) fetchs the corresponding CategoryRecords using
  * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same

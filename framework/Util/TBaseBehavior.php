@@ -106,9 +106,9 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 *
 	 * Subclasses should use {@link mergeHandlers} to combine event handlers with the
 	 * parent's event handlers.  For example:
-	 * <code>
+	 * ```php
 	 *	return self::mergeHandlers(parent::events(), ['onEvent' => 'myHandler', ...]]);
-	 * </code>
+	 * ```
 	 *
 	 * Acceptable array values are string name of behavior method, callable, or
 	 * an array of string behavior method names or callables.

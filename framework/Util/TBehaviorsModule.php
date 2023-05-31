@@ -24,7 +24,7 @@ use Prado\Xml\TXmlElement;
  * individual modules, and TPage of the TPageService.
  *
  * Contents enclosed within the module tag are treated as behaviors, e.g.,
- * <code>
+ * ```xml
  * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
  *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
  *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
@@ -32,7 +32,7 @@ use Prado\Xml\TXmlElement;
  *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
  *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
  * </module>
- * </code>
+ * ```
  *
  * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.
  *
@@ -42,9 +42,9 @@ use Prado\Xml\TXmlElement;
  * an xml document of behavior like above.
  *
  * The format is in the PHP style module configuration:
- * </code>
+ * ```
  *		[['name' => 'behaviorname', 'class' => 'TMyBehaviorClass', 'attachto' => 'page', 'priority' => '10', 'behaviorProperty'=>"value1'], ...]
- * </code>
+ * ```
  *
  * This allows TBehaviorsModule to load behaviors, dynamically, from parameters with the TParameterizeBehavior.
  *

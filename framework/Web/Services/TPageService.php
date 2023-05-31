@@ -539,12 +539,12 @@ class TPageService extends \Prado\TService
 	 * This event is raised if the page is not found in the BasePath.
 	 * This provides additional possible Page Paths to look for the page.
 	 * The typical handler would look like:
-	 * <code>
+	 * ```php
 	 * public function additionalPagePaths($service, $pagePath)
 	 * {
 	 *	 return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
 	 * }
-	 * </code>
+	 * ```
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */

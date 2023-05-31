@@ -25,10 +25,10 @@ use Prado\TPropertyValue;
  *
  * When a datagrid row is in edit mode, the textbox control in the TBoundColumn
  * can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->BoundColumnID->TextBox
  * $datagridItem->BoundColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the textbox control created within the
  * datagrid cell is the first child.
  *

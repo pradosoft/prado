@@ -23,14 +23,14 @@ use Prado\Prado;
  * will be started once the session module is loaded and initialized.
  *
  * To access data stored in session, use THttpSession like an associative array. For example,
- * <code>
+ * ```php
  *   $session=new THttpSession;
  *   $session->open();
  *   $value1=$session['name1'];  // get session variable 'name1'
  *   $value2=$session['name2'];  // get session variable 'name2'
  *   foreach($session as $name=>$value) // traverse all session variables
  *   $session['name3']=$value3;  // set session variable 'name3'
- * </code>
+ * ```
  *
  * The following configurations are available for session:
  * {@link setAutoStart AutoStart}, {@link setCookieMode CookieMode},
@@ -49,11 +49,11 @@ use Prado\Prado;
  * request module. It can be accessed via {@link TApplication::getSession()}.
  *
  * THttpSession may be configured in application configuration file as follows,
- * <code>
+ * ```xml
  * <module id="session" class="THttpSession" SessionName="SSID" SavePath="/tmp"
  *         CookieMode="Allow" UseCustomStorage="false" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
- * </code>
+ * ```
  * where {@link getSessionName SessionName}, {@link getSavePath SavePath},
  * {@link getCookieMode CookieMode}, {@link getUseCustomStorage
  * UseCustomStorage}, {@link getAutoStart AutoStart}, {@link getGCProbability
@@ -64,9 +64,9 @@ use Prado\Prado;
  * THttpSessionshould always be configured to enforce HttpOnly setting on session cookie.
  * The HttpOnly setting is disabled by default. To enable it, configure the THttpSession
  * module as follows,
- * <code>
+ * ```xml
  * <module id="session" class="THttpSession" Cookie.HttpOnly="true" >
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

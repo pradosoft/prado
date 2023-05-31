@@ -32,7 +32,7 @@ use Prado\TPropertyValue;
  * To populate the table {@link getRows Rows}, you may either use control template
  * or dynamically create {@link TTableRow} in code.
  * In template, do as follows to create the table rows and cells,
- * <code>
+ * ```php
  *   <com:TTable>
  *     <com:TTableRow>
  *       <com:TTableCell Text="content" />
@@ -43,9 +43,9 @@ use Prado\TPropertyValue;
  *       <com:TTableCell Text="content" />
  *     </com:TTableRow>
  *   </com:TTable>
- * </code>
+ * ```
  * The above can also be accomplished in code as follows,
- * <code>
+ * ```php
  *   $table=new TTable;
  *   $row=new TTableRow;
  *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
@@ -55,7 +55,7 @@ use Prado\TPropertyValue;
  *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
  *   $cell=new TTableCell; $cell->Text="content"; $row->Cells->add($cell);
  *   $table->Rows->add($row);
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

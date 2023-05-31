@@ -26,13 +26,13 @@ use Prado\TPropertyValue;
  *
  * There are two approaches to specify the list items available for selection.
  * The first approach uses template syntax as follows,
- * <code>
+ * ```php
  *   <com:TDropDownListColumn ....>
  *     <com:TListItem Value="1" Text="first item" />
  *     <com:TListItem Value="2" Text="second item" />
  *     <com:TListItem Value="3" Text="third item" />
  *   </com:TDropDownListColumn>
- * </code>
+ * ```
  * The second approach specifies a data source to be bound to the dropdown lists
  * by setting {@link setListDataSource ListDataSource}. Like generic list controls,
  * you may also want to specify which data fields are used for item values and texts
@@ -44,10 +44,10 @@ use Prado\TPropertyValue;
  *
  * The dropdown list control in the TDropDownListColumn can be accessed by one of
  * the following two methods:
- * <code>
+ * ```php
  * $datagridItem->DropDownListColumnID->DropDownList
  * $datagridItem->DropDownListColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the dropdown list control created within the
  * datagrid cell is the first child.
  *

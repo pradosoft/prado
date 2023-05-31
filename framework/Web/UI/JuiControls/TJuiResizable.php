@@ -23,7 +23,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * A small handle is shown on the bottom right corner of the panel, that permits
  * the panel to be resized using the mouse.
  *
- * <code>
+ * ```php
  * <com:TJuiResizable
  *     ID="resize1"
  *     Style="border: 1px solid green; width:100px;height:100px;background-color: #00dd00"
@@ -34,7 +34,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * >
  * resize me
  * </com:TJuiResizable>
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3

@@ -49,13 +49,13 @@ use Prado\TPropertyValue;
  * {@link regenerateToken()} manually.
  *
  * The following template shows a typical use of TCaptcha control:
- * <code>
+ * ```php
  * <com:TCaptcha ID="Captcha" />
  * <com:TTextBox ID="Input" />
  * <com:TCaptchaValidator CaptchaControl="Captcha"
  *                        ControlToValidate="Input"
  *                        ErrorMessage="You are challenged!" />
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1

@@ -18,9 +18,9 @@ use Prado\TPropertyValue;
  *
  * TDataSize produces the size of a file in its natural size for human
  * readability rather than bytes.
- * <code>
+ * ```php
  *		<com:TDataSize Size="475837458" UseMarketingSize="true" Abbreviate="true"/>
- * </code>
+ * ```
  * will output "476 MB".
  *
  * The TDataSize output depends on {@link getAbbreviate Abbreviate} and

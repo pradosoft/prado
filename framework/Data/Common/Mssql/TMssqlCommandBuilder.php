@@ -43,7 +43,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 * The modification is done with reference to the notes from
 	 * http://troels.arvin.dk/db/rdbms/#select-limit-offset
 	 *
-	 * <code>
+	 * ```sql
 	 * SELECT * FROM (
 	 *  SELECT TOP n * FROM (
 	 *    SELECT TOP z columns      -- (z=n+skip)
@@ -51,7 +51,7 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	 *    ORDER BY key ASC
 	 *  ) AS FOO ORDER BY key DESC -- ('FOO' may be anything)
 	 * ) AS BAR ORDER BY key ASC    -- ('BAR' may be anything)
-	 * </code>
+	 * ```
 	 *
 	 * <b>Regular expressions are used to alter the SQL query. The resulting SQL query
 	 * may be malformed for complex queries.</b> The following restrictions apply

@@ -24,7 +24,7 @@ use Prado\Web\UI\TControl;
  * The event {@link onCallback OnCallback} is raised when a callback is requested made.
  *
  * Example usage:
- * <code>
+ * ```php
  * 	<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
  *  <script>
  * 		function do_callback1()
@@ -34,7 +34,7 @@ use Prado\Web\UI\TControl;
  *      }
  *  </script>
  *  <div onclick="do_callback1()">Click Me!</div>
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

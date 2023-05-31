@@ -26,17 +26,17 @@ use Throwable;
  * information.
  *
  * Old style TException only have an error Message Code as follows:
- * <code>
+ * ```php
  *   throw new TException('component_error_message_code'[, $param1, $param2, ..., $chainedException]);
- * <code>
+ * ```
  * The parameters and $chainedException are optional. $chainedException
  * may be entirely left out.
  *
  * To include an actual integer error Code, new style PRADO Exceptions
  * should be used.  The new style is as follows:
- * <code>
+ * ```php
  *   throw new TException($errorCode, 'component_error_message_code'[, $param1, $param2, ..., $chainedException]);
- * <code>
+ * ```
  *
  * Please note that the Error Code and Error Message/Message-Code is swapped
  * to the Normal PHP Exceptions (where the $message is the first parameter and $code

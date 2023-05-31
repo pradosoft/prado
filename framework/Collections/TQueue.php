@@ -24,9 +24,9 @@ use Prado\Exceptions\TInvalidOperationException;
  * check the {@link getCount Count} property.
  *
  * Items in the queue may be traversed using foreach as follows,
- * <code>
+ * ```php
  * foreach($queue as $item) ...
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>

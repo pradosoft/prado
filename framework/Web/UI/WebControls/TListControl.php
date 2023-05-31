@@ -44,26 +44,26 @@ use Prado\Exceptions\TInvalidDataValueException;
  * using {@link setDataSource DataSource} and using {@link setDataSourceID DataSourceID}.
  * The latter two are covered in {@link TDataBoundControl}. To specify items via
  * template, using the following template syntax:
- * <code>
+ * ```php
  * <com:TListControl>
  *   <com:TListItem Value="xxx" Text="yyy" >
  *   <com:TListItem Value="xxx" Text="yyy" Selected="true" >
  *   <com:TListItem Value="xxx" Text="yyy" >
  * </com:TListControl>
- * </code>
+ * ```
  *
  * When {@link setDataSource DataSource} or {@link setDataSourceID DataSourceID}
  * is used to populate list items, the {@link setDataTextField DataTextField} and
  * {@link setDataValueField DataValueField} properties are used to specify which
  * columns of the data will be used to populate the text and value of the items.
  * For example, if a data source is as follows,
- * <code>
+ * ```php
  * $dataSource=array(
  *    array('name'=>'John', 'age'=>31),
  *    array('name'=>'Cary', 'age'=>28),
  *    array('name'=>'Rose', 'age'=>35),
  * );
- * </code>
+ * ```
  * setting {@link setDataTextField DataTextField} and {@link setDataValueField DataValueField}
  * to 'name' and 'age' will make the first item's text be 'John', value be 31,
  * the second item's text be 'Cary', value be 28, and so on.

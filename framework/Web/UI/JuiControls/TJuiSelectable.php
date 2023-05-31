@@ -26,18 +26,18 @@ use Prado\Web\UI\WebControls\TRepeater;
  * render a {@link TRepeater} that displays items in an unordered list.
  * Items can be selected by clicking on them, individually or in a group.
  *
- * <code>
+ * ```php
  * <style>
  * .ui-selecting { background: #FECA40; }
  * .ui-selected { background: #F39814; color: white; }
  * </style>
  * <com:TJuiSelectable ID="repeater1" />
- * </code>
+ * ```
  *
- * <code>
+ * ```php
  * $this->repeater1->DataSource=array('home', 'office', 'car', 'boat', 'plane');
  * $this->repeater1->dataBind();
- * </code>
+ * ```
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3
  */

@@ -17,17 +17,17 @@ use Prado\TApplication;
  * TDataSourceConfig module class provides <module> configuration for database connections.
  *
  * Example usage: mysql connection
- * <code>
+ * ```php
  * <modules>
  * 	<module id="db1">
  * 		<database ConnectionString="mysqli:host=localhost;dbname=test"
  * 			username="dbuser" password="dbpass" />
  * 	</module>
  * </modules>
- * </code>
+ * ```
  *
  * Usage in php:
- * <code>
+ * ```php
  * class Home extends TPage
  * {
  * 		function onLoad($param)
@@ -36,7 +36,7 @@ use Prado\TApplication;
  * 			$db->createCommand('...'); //...
  * 		}
  * }
- * </code>
+ * ```
  *
  * The properties of <connection> are those of the class TDbConnection.
  * Set {@link setConnectionClass} attribute for a custom database connection class

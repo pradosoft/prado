@@ -502,7 +502,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 * CSS styles in themes you need to register it after this event is completed.
 	 *
 	 * Example:
-	 * <code>
+	 * ```php
 	 * <?php
 	 * class BasePage extends TPage {
 	 *   public function onPreRenderComplete($param) {
@@ -511,7 +511,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 *     $this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	 *   }
 	 * }
-	 * </code>
+	 * ```
 	 *
 	 * @param string $key a unique key identifying the file
 	 * @param string $url URL to the CSS file

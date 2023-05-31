@@ -29,17 +29,17 @@ use Prado\Exceptions\TInvalidDataValueException;
  * create a TSessionPageStatePersister instance there.
  * Or one can configure the pages to use TSessionPageStatePersister in page configurations
  * as follows,
- * <code>
+ * ```xml
  *   <pages StatePersisterClass="Prado\Web\UI\TSessionPageStatePersister" />
- * </code>
+ * ```
  * The above configuration will affect the pages under the directory containing
  * this configuration and all its subdirectories.
  * To configure individual pages to use TSessionPageStatePersister, use
- * <code>
+ * ```xml
  *   <pages>
  *     <page id="PageID" StatePersisterClass="Prado\Web\UI\TSessionPageStatePersister" />
  *   </pages>
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1

@@ -25,7 +25,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * The smaller forms are called wizard steps ({@link TWizardStep}, which can be accessed via
  * {@link getWizardSteps WizardSteps}. In template, wizard steps can be added
  * into a wizard using the following syntax,
- * <code>
+ * ```php
  *   <com:TWizard>
  *      <com:TWizardStep Title="step 1">
  *          content in step 1, may contain other controls
@@ -34,7 +34,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *          content in step 2, may contain other controls
  *      </com:TWizardStep>
  *   </com:TWizard>
- * </code>
+ * ```
  *
  * Each wizard step can be one of the following types:
  * - Start : the first step in the wizard.

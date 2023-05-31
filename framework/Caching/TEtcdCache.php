@@ -32,20 +32,20 @@ use Prado\Exceptions\TConfigurationException;
  * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
  *
  * Some usage examples of TEtcdCache are as follows,
- * <code>
+ * ```php
  * $cache = new TEtcdCache(); // TEtcdCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('value', $value);
  * $value = $cache->get('value');
- * </code>
+ * ```
  *
  * If loaded, TEtcdCache will register itself with {@link TApplication} as the
  * cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TEtcdCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
- * </code>
+ * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

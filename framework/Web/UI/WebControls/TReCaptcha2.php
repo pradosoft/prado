@@ -43,14 +43,14 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * you store the result till the end of the processing.
  *
  * The following template shows a typical use of TReCaptcha control:
- * <code>
+ * ```php
  * <com:TReCaptcha2 ID="Captcha"
  *                 SiteKey="..."
  *                 SecretKey="..."
  * />
  * <com:TReCaptcha2Validator ControlToValidate="Captcha"
  *                          ErrorMessage="You are challenged!" />
- * </code>
+ * ```
  *
  * @author Cristian Camilo Naranjo Valencia
  * @since 3.3.1

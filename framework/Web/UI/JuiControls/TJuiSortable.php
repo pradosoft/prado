@@ -26,14 +26,14 @@ use Prado\Web\UI\WebControls\TRepeater;
  * render a {@link TRepeater} that displays items in an unordered list.
  * Items can be sortered dragging and dropping them.
  *
- * <code>
+ * ```php
  * <com:TJuiSortable ID="repeater1" />
- * </code>
+ * ```
  *
- * <code>
+ * ```php
  * $this->repeater1->DataSource=array('home', 'office', 'car', 'boat', 'plane');
  * $this->repeater1->dataBind();
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3

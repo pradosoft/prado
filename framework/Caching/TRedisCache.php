@@ -53,24 +53,24 @@ use Prado\Xml\TXmlElement;
  * To use this module, the php-redis extension must be loaded.
  *
  * Some usage examples of TRedisCache are as follows,
- * <code>
+ * ```php
  * $cache=new TRedisCache;  // TRedisache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
  * If loaded as module, TRedisCache will register itself with {@link TApplication} as the
  * default cache module. It can be accessed via {@link TApplication::getCache()}.
  *
  * TRedisCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
- * </code>
+ * ```
  * or
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TRedisCache" Socket="var/run/redis/redis.sock" Index="2" />
- * </code>
+ * ```
  * where {@link setHost Host} and {@link setPort Port} or {@link setSocket Socket} are configurable properties
  * of TRedisCache.
  *

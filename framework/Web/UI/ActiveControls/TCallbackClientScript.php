@@ -31,12 +31,12 @@ use Prado\Web\UI\WebControls\TListControl;
  * property available in TPage.
  *
  * For example, to hide "$myTextBox" element during callback response, do
- * <code>
+ * ```php
  * $this->getPage()->getCallbackClient()->hide($myTextBox);
- * </code>
+ * ```
  *
  * To call a specific jQuery method on an element, use the {@link jQuery} method:
- * <code>
+ * ```php
  * // simple example: focus a textbox
  * $this->getCallbackClient()->jQuery($myTextBox, 'focus');
  *
@@ -47,18 +47,18 @@ use Prado\Web\UI\WebControls\TListControl;
  *			),
  *		array('duration' => 1000)
  *		));
- * </code>
+ * ```
  *
  * To call a jQueryUI effect on an element, use the {@link juiEffect} method:
- * <code>
+ * ```php
  * // simple example: focus a textbox
  * $this->getCallbackClient()->juiEffect($myTextBox, 'highlight');
- * </code>
+ * ```
  *
  * In order to use the jQueryUI effects, the jqueryui script must be registered:
- * <code>
+ * ```php
  * $this->getPage()->getClientScript()->registerPradoScript('jqueryui');
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>

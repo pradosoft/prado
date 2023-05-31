@@ -20,13 +20,13 @@ use Prado\TPropertyValue;
  * URL. The hotspots defined may be accessed via {@link getHotSpots HotSpots}.
  * Each hotspot is described as a {@link THotSpot}, which can be a circle,
  * rectangle, polygon, etc. To add hotspot in a template, use the following,
- * <code>
+ * ```php
  *  <com:TImageMap>
  *    <com:TCircleHotSpot ... />
  *    <com:TRectangleHotSpot ... />
  *    <com:TPolygonHotSpot ... />
  *  </com:TImageMap>
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -36,10 +36,10 @@ use Prado\TPropertyValue;
  * The cancel button does not cause validation by default.
  *
  * The command buttons in the column can be accessed by one of the following methods:
- * <code>
+ * ```php
  * $datagridItem->ButtonColumnID->EditButton (or UpdateButton, CancelButton)
  * $datagridItem->ButtonColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the button control created within the
  * datagrid cell is the first child.
  *

@@ -27,10 +27,10 @@ namespace Prado\Web\UI\WebControls;
  * {@link setDataNavigateUrlField DataNavigateUrlField} properties.
  *
  * The hyperlinks in the column can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->HyperLinkColumnID->HyperLink
  * $datagridItem->HyperLinkColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the hyperlink control created within the
  * datagrid cell is the first child.
  *

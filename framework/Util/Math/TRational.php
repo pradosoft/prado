@@ -39,7 +39,7 @@ use Prado\Util\Helpers\TBitHelper;
  *
  * TRational implements {@link __toString} and outputs a string of `$numerator . '/'
  * . $denominator`, the string format for rationals.  eg.  "13/8".
- * <code>
+ * ```php
  *		$rational = new TRational(1.618033988749895);
  *		$value = $rational->getValue();
  *		$value = $rational[null];
@@ -53,7 +53,7 @@ use Prado\Util\Helpers\TBitHelper;
  *		$rational[null] = '21/13';
  *		$rational[0] === 21;
  *		$rational[1] === 13;
- * </code>
+ * ```
  *
  * The Rational data format is used by EXIF and, in particular, the GPS Image File
  * Directory of EXIF.

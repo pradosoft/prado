@@ -242,9 +242,9 @@ class TPermissionsAction extends TShellAction
 	 * arguments.
 	 * 'perm/add-rule' permission_name action users roles verb ips priority
 	 * and can be use like this:
-	 * <code>
+	 * ```sh
 	 * 	prado-cli perm/add-rule '*' deny '*' 'Default' '*' '192.168.*' 1000
-	 * </code>
+	 * ```
 	 * @param array $args parameters
 	 * @return bool is the action handled
 	 */

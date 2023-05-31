@@ -29,7 +29,7 @@ use WeakReference;
  * with the specified data.
  *
  * A TEventHandler handler method would be implemented as such:
- * <code>
+ * ```php
  *    $handler = new TEventHandler([$object, 'myHandler'], ['key' => 'data']);
  *    $handler($sender, $param); // <- invokable
  *    $component->attachEventHandler('onMyEvent', $handler, $priority);
@@ -40,7 +40,7 @@ use WeakReference;
  *	 	// $data === ['key' => 'data']
  *       ....
  *    }
- * </code>
+ * ```
  * In this instance, $data is default to null so it can be called on a raised
  * attached event without TEventHandler.  If you will only have a your handler use
  * TEventHandler, then $data can be required (without the null default).
@@ -50,7 +50,7 @@ use WeakReference;
  * WeakReference.
  *
  * The event handler can be accessed by ArrayAccess as well.  For example:
- * <code>
+ * ```php
  *		$handler = new TEventHandler('TMyClass::myStaticHandler', ['data' => 2, ...]);
  *		$handler[null] === 'TMyClass::myStaticHandler' === $handler->getHandler();
  *		$handler[0] === 'TMyClass::myStaticHandler';
@@ -65,7 +65,7 @@ use WeakReference;
  *
  *		// Add the handler to the event at priority 12 (the default is 10)
  *		$component->attachEventHandler('onMyEvent', $handler, 12);
- * </code>
+ * ```
  *
  * PRADO event handler objects are stored as WeakReference to improve PHP garbage
  * collection.  To enable this functionality, TEventHandler holds its callable object

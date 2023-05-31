@@ -18,10 +18,10 @@ use Prado\Exceptions\TInvalidDataTypeException;
  *
  * TMapLazyLoadBehavior handles Application Parameters when there is
  * no parameter key found.  This allows for lazy loading of the parameter.
- * <code>
+ * ```php
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapLazyLoadBehavior([$obj, 'getParam']));
- * </code>
+ * ```
  * This behavior will call $obj->getParam($key) every time the key
  * is not found in the TMap or TPriorityMap.
  *

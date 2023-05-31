@@ -16,9 +16,9 @@ namespace Prado\Collections;
  * of dummy data items. The number of virtual items can be set via
  * {@link setCount Count} property. You can traverse it using <b>foreach</b>
  * PHP statement like the following,
- * <code>
+ * ```php
  * foreach($dummyDataSource as $dataItem)
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

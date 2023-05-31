@@ -35,12 +35,12 @@ use Prado\Web\UI\WebControls\TTableRow;
  * TActiveTableCell allows the client-side cell contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the
  * output, similar to a {@link TActivePanel} control.
- * <code>
+ * ```php
  * function callback_request($sender, $param)
  * {
  *     $this->active_cell->render($param->getNewWriter());
  * }
- * </code>
+ * ```
  *
  * Please refer to the original documentation of the regular counterpart for usage.
  *

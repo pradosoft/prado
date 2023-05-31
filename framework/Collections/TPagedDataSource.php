@@ -20,9 +20,9 @@ use Prado\TPropertyValue;
  *
  * Data items in TPagedDataSource can be traversed using <b>foreach</b>
  * PHP statement like the following,
- * <code>
+ * ```php
  * foreach($pagedDataSource as $dataItem)
- * </code>
+ * ```
  * The data are fetched from {@link setDataSource DataSource}. Only the items
  * within the specified page will be returned and traversed.
  *

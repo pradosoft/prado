@@ -29,13 +29,13 @@ use Prado\Prado;
  * Use {@link SqlMapGateway getSqlMapGateway()} property to obtain the gateway
  * instance used for querying statements defined in the SqlMap configuration files.
  *
- * <code>
+ * ```php
  * $conn = new TDbConnection($dsn,$dbuser,$dbpass);
  * $manager = new TSqlMapManager($conn);
  * $manager->configureXml('mydb-sqlmap.xml');
  * $sqlmap = $manager->getSqlMapGateway();
  * $result = $sqlmap->queryForObject('Products');
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

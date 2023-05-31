@@ -27,7 +27,7 @@ use Prado\TPropertyValue;
  *   event will be raised if the list changes to a different page.
  *   Developers can attach a handler to the event and supply the needed data.
  *   The event handler can be written as follows,
- * <code>
+ * ```php
  *  public function fetchData($sender,$param)
  *  {
  *    $offset=$param->Offset; // beginning index of the data needed
@@ -35,16 +35,16 @@ use Prado\TPropertyValue;
  *    // get data according to the above two parameters
  *    $param->Data=$data;
  *  }
- * </code>
+ * ```
  *
  * Data in TPagedList can be accessed like an integer-indexed array and can
  * be traversed using foreach. For example,
- * <code>
+ * ```php
  * $count=$list->Count;
  * for($index=0;$index<$count;++$index)
  *     echo $list[$index];
  * foreach($list as $index=>$item) // traverse each item in the list
- * </code>
+ * ```
  *
  * The {@link setPageSize PageSize} property specifies the number of items in each page.
  * To access different page of data in the list, set {@link setCurrentPageIndex CurrentPageIndex}

@@ -30,7 +30,7 @@ use Exception;
  * ChoiceFormat is generally used in a MessageFormat for displaying
  * grammatically correct plurals such as "There are 2 files."
  *
- * <code>
+ * ```php
  *	$string = '[0] are no files |[1] is one file |(1,Inf] are {number} files';
  *
  *  $formatter = new MessageFormat(...); //init for a source
@@ -38,7 +38,7 @@ use Exception;
  *
  *  $choice = new ChoiceFormat();
  * 	echo $choice->format($translated, 0); //shows "are no files"
- * </code>
+ * ```
  *
  * The message/string choices are separated by the pipe "|" followed
  * by a set notation of the form

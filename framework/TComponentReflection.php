@@ -22,11 +22,11 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * properties, events and methods defined in a class.
  *
  * The following code displays the properties and events defined in {@link TDataGrid},
- * <code>
+ * ```php
  *   $reflection=new TComponentReflection('TDataGrid');
  *   Prado::varDump($reflection->getProperties());
  *   Prado::varDump($reflection->getEvents());
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
