@@ -235,12 +235,15 @@ class TPriorityMapTest extends TMapTest
 		
 		$this->map[10] = $this->item5;
 		
-		$this->assertEquals('key1', $this->map->keyOf($this->item1), "keyOf did not find the first instance of item1 properly.");
-		$this->assertEquals(0, $this->map->keyOf($this->item2), "keyOf did not find the first _priority_ instance of item2 properly.");
-		$this->assertEquals(2, $this->map->keyOf($this->item3));
-		$this->assertEquals(1, $this->map->keyOf($this->item4));
-		$this->assertEquals(10, $this->map->keyOf($this->item5));
-		$this->assertFalse($this->map->keyOf($this));
+		$this->assertEquals('key1', $this->map->keyOf($this->item1, false), "keyOf did not find the first instance of item1 properly.");
+		$this->assertEquals(['key1' => $this->item1, 3 => $this->item1], $this->map->keyOf($this->item1), "keyOf did not find the all of item1 properly.");
+		$this->assertEquals(0, $this->map->keyOf($this->item2, false), "keyOf did not find the first _priority_ instance of item2 properly.");
+		$this->assertEquals(2, $this->map->keyOf($this->item3, false));
+		$this->assertEquals([2 => $this->item3], $this->map->keyOf($this->item3, true));
+		$this->assertEquals([2 => $this->item3], $this->map->keyOf($this->item3));
+		$this->assertEquals(1, $this->map->keyOf($this->item4, false));
+		$this->assertEquals(10, $this->map->keyOf($this->item5, false));
+		$this->assertFalse($this->map->keyOf($this, false));
 	}
 	
 	public function testCopyFromTPriorityMap()
