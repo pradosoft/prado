@@ -496,7 +496,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * Inserts an item at the specified index within a priority.  This does not scrub the
 	 * list of WeakReference.  This converts the item into a WeakReference if it is an object
 	 * or contains an object in its callable.  This does not convert Closure into WeakReference.
-	 * @param mixed $item item to add within the list.
+	 * @param mixed $items item or array of items to add within the list.
 	 * @param null|false|int $index index within the priority to add the item, defaults to null
 	 *    which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it
@@ -508,22 +508,41 @@ class TWeakCallableCollection extends TPriorityList
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
 	 * @since 4.2.3
 	 */
-	protected function internalInsertAtIndexInPriority($item, $index = null, $priority = null, $preserveCache = false)
+	protected function internalInsertAtIndexInPriority($items, $index = null, $priority = null, $preserveCache = false)
 	{
 		$this->collapseDiscardInvalid();
-		$itemPriority = null;
-		if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
-			$itemPriority = $priority = $item->getPriority();
+		if (is_callable($items, true)) {
+			$items = [$items];
+		} elseif (!is_array($items)) {
+			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
 		}
-		$priority = $this->ensurePriority($priority);
-		if (($item instanceof IPriorityCapture) && (!$isPriorityItem || $itemPriority !== $priority)) {
-			$item->setPriority($priority);
+		$return = null;
+		foreach($items as $item) {
+			$itemPriority = null;
+			if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
+				$itemPriority = $priority = $item->getPriority();
+			}
+			$priority = $this->ensurePriority($priority);
+			if (($item instanceof IPriorityCapture) && (!$isPriorityItem || $itemPriority !== $priority)) {
+				$item->setPriority($priority);
+			}
+			if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
+				$this->weakCustomAdd($isObj ? $item : $item[0]);
+			}
+			$this->filterItemForInput($item, true);
+			$result = parent::insertAtIndexInPriority($item, $index, $priority, $preserveCache);
+			if ($return === null) {
+				$return = $result;
+			} elseif(!is_array($return)) {
+				$return = [$return, $result];
+			} else {
+				$return[] = $result;
+			}
+			if (is_int($index)) {
+				$index++;
+			}
 		}
-		if (($isObj = is_object($item)) || is_array($item) && is_object($item[0])) {
-			$this->weakCustomAdd($isObj ? $item : $item[0]);
-		}
-		$this->filterItemForInput($item, true);
-		return parent::insertAtIndexInPriority($item, $index, $priority, $preserveCache);
+		return $return;
 	}
 
 	/**
