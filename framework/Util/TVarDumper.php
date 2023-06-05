@@ -110,7 +110,7 @@ class TVarDumper
 					self::$_output .= "$className#$id\n" . $spaces . '(';
 					if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__debugInfo')) {
 						$members = $var->__debugInfo();
-						if (!is_array($dumpValues)) {
+						if (!is_array($members)) {
 							throw new TInvalidDataValueException('vardumper_not_array');
 						}
 					} else {
