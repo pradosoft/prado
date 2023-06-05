@@ -9,7 +9,7 @@
 
 namespace Prado\Util;
 
-use Prado\Collections\TPriorityItemTrait;
+use Prado\Collections\TPriorityPropertyTrait;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplicationComponent;
 use Prado\TComponent;
@@ -27,7 +27,7 @@ use Prado\TPropertyValue;
  * syncEventHandlers} and {@link detachEventHandlers}, respectively, to manage the
  * behaviors' handlers in the owner[s] events.
  *
- * Behaviors use the {@link TPriorityItemTrait} to receive priority information
+ * Behaviors use the {@see TPriorityPropertyTrait} to receive priority information
  * from insertion into the owner's {@link TPriorityMap} of behaviors.  When attaching
  * events to an owner, the event handlers receive the same priority as the behavior
  * in the owner.
@@ -48,7 +48,7 @@ use Prado\TPropertyValue;
  */
 abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehavior
 {
-	use TPriorityItemTrait;
+	use TPriorityPropertyTrait;
 
 	/** @var ?string The name of the behavior in the owner[s] */
 	protected ?string $_name = null;

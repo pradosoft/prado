@@ -8,7 +8,9 @@
 
 namespace Prado;
 
+use Prado\Collections\IPriorityProperty;
 use Prado\Collections\IWeakRetainable;
+use Prado\Collections\TPriorityPropertyTrait;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -89,8 +91,10 @@ use WeakReference;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-class TEventHandler implements IWeakRetainable, \ArrayAccess, \Countable
+class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess, \Countable
 {
+	use TPriorityPropertyTrait;
+
 	/** @var mixed The callable event handler being managed. */
 	private mixed $_handler;
 
