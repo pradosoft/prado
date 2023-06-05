@@ -1,6 +1,6 @@
 <?php
 /**
- * TPriorityItemTrait class
+ * TPriorityPropertyTrait class
  *
  * @author Brad Anderson <javalizard@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -12,7 +12,7 @@ namespace Prado\Collections;
 use Prado\TPropertyValue;
 
 /**
- * TPriorityItemTrait class
+ * TPriorityPropertyTrait class
  *
  * This trait implements the common properties and methods of IPriorityItem. You still
  * must "implement IPriorityItem" in your class when you use this trait as they go
@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-trait TPriorityItemTrait
+trait TPriorityPropertyTrait
 {
 	/** @var ?float The set Priority of the item. Default null */
 	private ?float $_priority = null;

@@ -1,6 +1,7 @@
 <?php
 
 use Prado\Collections\IWeakRetainable;
+use Prado\Collections\TWeakCallableCollection;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -112,7 +113,23 @@ class TEventHandlerTest extends PHPUnit\Framework\TestCase
 		self::expectException(TInvalidDataTypeException::class);
 		$handler = new TEventHandler([$this, 'nonexistingMethod'], 26);
 	}
-	
+
+	public function testPriority()
+	{
+		$object = new EventHandlerObject();
+		$handler = new TEventHandler($object,  $referenceData = ['key1' => 'value1']);
+		
+		$list = new TWeakCallableCollection();
+		
+		self::assertEquals(null, $handler->getPriority());
+		$list->add($handler, 11);
+		self::assertEquals(11, $handler->getPriority());
+		$list->removeAt(0);
+		$handler->setPriority(5);
+		$list->add($handler);
+		self::assertEquals(5, $list->priorityOf($handler));
+	}
+
 	public function testInvoke()
 	{
 		$object = new EventHandlerObject();

@@ -10,7 +10,7 @@
 
 namespace Prado\Util\Behaviors;
 
-use Prado\Collections\TPriorityItemTrait;
+use Prado\Collections\TPriorityPropertyTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 use Prado\TComponent;
@@ -40,7 +40,7 @@ use Prado\Util\IBaseBehavior;
  */
 class TBehaviorParameterLoader extends TComponent
 {
-	use TPriorityItemTrait;
+	use TPriorityPropertyTrait;
 
 	/** @var string name of the behavior attaching to the owner */
 	private $_behaviorName;
