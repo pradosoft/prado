@@ -217,6 +217,8 @@ return [
 'IModule' => 'Prado\IModule',
 'ITextWriter' => 'Prado\IO\ITextWriter',
 'TOutputWriter' => 'Prado\IO\TOutputWriter',
+'TStreamNotificationCallback' => 'Prado\IO\TStreamNotificationCallback',
+'TStreamNotificationParameter' => 'Prado\IO\TStreamNotificationParameter',
 'TTarFileExtractor' => 'Prado\IO\TTarFileExtractor',
 'TTextWriter' => 'Prado\IO\TTextWriter',
 'IService' => 'Prado\IService',
