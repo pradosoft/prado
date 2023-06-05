@@ -496,7 +496,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * Inserts an item at the specified index within a priority.  This does not scrub the
 	 * list of WeakReference.  This converts the item into a WeakReference if it is an object
 	 * or contains an object in its callable.  This does not convert Closure into WeakReference.
-	 * @param mixed $items item to add within the list.
+	 * @param mixed $items item or array of items to add within the list.
 	 * @param null|false|int $index index within the priority to add the item, defaults to null
 	 *    which appends the item at the priority
 	 * @param null|numeric $priority priority of the item.  defaults to null, which sets it
