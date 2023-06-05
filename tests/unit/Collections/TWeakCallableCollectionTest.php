@@ -204,8 +204,7 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 		//Test for that only callables can be inserted into the collection
 		$item1 = $list[] = 'foo';
 		$item2 = $list[] = [CallableListItem::class, 'staticHandler'];
-		$item3 = $list[] = [$this->item1, 'eventHandler'];
-		$item4 = $list[] = CallableListItem::class . '::staticHandler';
+		$item3 = $list[] = [$item3 = [$this->item1, 'eventHandler'], $item4 = CallableListItem::class . '::staticHandler'];
 		$item5 = $list[] = [CallableListItemChild::class,'staticHandler'];
 		$item6 = $list[] = $this->item2;
 		$item7 = $list[] = function($n) { return $n + $n; };  //Test retaining of Closure
@@ -232,23 +231,28 @@ class TWeakCallableCollectionTest extends TPriorityListTest
 			$list[] = 'notAFunctionCallable';
 			$this->fail('TInvalidDataValueException string that is not a function did not throw error');
 		} catch(TInvalidDataValueException $e){}
+		self::assertEquals(10, count($list));
 		try {
 			$list[] = ['CallableListItem', 'noStaticMethod'];
 			$this->fail('TInvalidDataValueException [valid static object, \'noStaticMethod\'] that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e){}
+		self::assertEquals(10, count($list));
 		try {
 			$list[] = [$this->item1, 'noMethod'];
 			$this->fail('TInvalidDataValueException [valid  object, \'noMethod\'] that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e){}
+		self::assertEquals(10, count($list));
 		try {
 			$list[] = 'CallableListItem::noStaticMethod';
 			$this->fail('TInvalidDataValueException string of \'object::nostaticmethod\' that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e){}
+		self::assertEquals(10, count($list));
 		try {
 			$list[] = ['CallableListItemChild','parent::noMethod'];
 			$this->fail('TInvalidDataValueException string of [valid static object, \'parent::nostaticmethod\'] that is not a method did not throw error');
 		} catch(TInvalidDataValueException $e) {// Catch PHP 8.1
 		} catch(TPhpErrorException $e) {} // Catch PHP 8.2+
+		self::assertEquals(10, count($list));
 		try {
 			$list[] = $component;
 			$this->fail('TInvalidDataValueException object without  __invocke did not throw error');

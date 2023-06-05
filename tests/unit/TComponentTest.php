@@ -1997,6 +1997,10 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $this->component->getEventHandlers('onMyEvent')->getCount());
 		$this->component->onMyEvent[] = [$this->component, 'Object.myEventHandler'];
 		$this->assertEquals(2, $this->component->getEventHandlers('onMyEvent')->getCount());
+		$c1 = new NewComponent();
+		$c2 = new NewComponent();
+		$this->component->onMyEvent = [[$c1, 'myEventHandler'], [$c2, 'myEventHandler']];
+		$this->assertEquals(4, $this->component->getEventHandlers('onMyEvent')->getCount());
 
 		$this->component->getEventHandlers('onMyEvent')->clear();
 
