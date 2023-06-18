@@ -9,6 +9,7 @@
 
 namespace Prado\Web;
 
+use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -459,7 +460,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		}
 
 		if (!$this->getApplication()->getRequestCompleted()) {
-			$this->getApplication()->onEndRequest();
+			throw new TExitException();
 		}
 
 		exit();

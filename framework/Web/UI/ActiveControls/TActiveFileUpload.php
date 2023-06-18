@@ -14,6 +14,7 @@ namespace Prado\Web\UI\ActiveControls;
  * Load TActiveControlAdapter and TFileUpload.
  */
 use Exception;
+use Prado\Exceptions\TExitException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -142,7 +143,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
           	 parent.Prado.WebUI.TActiveFileUpload.onFileUpload(Options);
            </script>";
 
-			exit();
+			throw new TExitException();
 		}
 	}
 

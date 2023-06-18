@@ -10,6 +10,7 @@
 
 namespace Prado\Shell;
 
+use Prado\Exceptions\TExitException;
 use Prado\Prado;
 
 /**
@@ -113,7 +114,7 @@ class TShellLoginBehavior extends \Prado\Util\TBehavior
 		if (!$this->getOwner()->login($this->_username, $password)) {
 			$writer->writeError("Could not Authenticate the user");
 			$writer->flush();
-			exit();
+			throw new TExitException(0);
 		}
 	}
 
