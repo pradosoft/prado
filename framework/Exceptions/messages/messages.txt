@@ -629,4 +629,6 @@ control_adapter_not_active				= BaseActiveControl property called on a non-activ
 gravatar_bad_default					= TGravatar DefaultImageStyle property value '{0}' is not supported
 gravatar_bad_size						= TGravatar Size is not between [1 .. 512] but is '{0}'
 
+vardumper_not_array						= __debuginfo() must return an array.
+
 htmlpurifier_source_path_failed		    = Unable to create html purifier cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.

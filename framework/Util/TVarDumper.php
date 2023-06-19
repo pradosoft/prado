@@ -9,6 +9,8 @@
 
 namespace Prado\Util;
 
+use Prado\Exceptions\TInvalidDataValueException;
+
 /**
  * TVarDumper class.
  *
@@ -67,7 +69,7 @@ class TVarDumper
 				self::$_output .= "$var";
 				break;
 			case 'string':
-				self::$_output .= "'$var'";
+				self::$_output .= "'" . addslashes($var) . "'";
 				break;
 			case 'resource':
 				self::$_output .= '{resource}';
@@ -88,8 +90,10 @@ class TVarDumper
 					$spaces = str_repeat(' ', $level * 4);
 					self::$_output .= "array\n" . $spaces . '(';
 					foreach ($keys as $key) {
-						self::$_output .= "\n" . $spaces . "    [$key] => ";
-						self::$_output .= self::dumpInternal($var[$key], $level + 1);
+						self::$_output .= "\n" . $spaces . '    ';
+						self::dumpInternal($key, 0);
+						self::$_output .= ' => ';
+						self::dumpInternal($var[$key], $level + 1);
 					}
 					self::$_output .= "\n" . $spaces . ')';
 				}
@@ -102,14 +106,20 @@ class TVarDumper
 				} else {
 					$id = array_push(self::$_objects, $var);
 					$className = $var::class;
-					$members = (array) $var;
-					$keys = array_keys($members);
 					$spaces = str_repeat(' ', $level * 4);
 					self::$_output .= "$className#$id\n" . $spaces . '(';
-					foreach ($keys as $key) {
+					if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__debugInfo')) {
+						$members = $var->__debugInfo();
+						if (!is_array($members)) {
+							throw new TInvalidDataValueException('vardumper_not_array');
+						}
+					} else {
+						$members = (array) $var;
+					}
+					foreach ($members as $key => $value) {
 						$keyDisplay = strtr(trim($key), ["\0" => ':']);
 						self::$_output .= "\n" . $spaces . "    [$keyDisplay] => ";
-						self::$_output .= self::dumpInternal($members[$key], $level + 1);
+						self::$_output .= self::dumpInternal($value, $level + 1);
 					}
 					self::$_output .= "\n" . $spaces . ')';
 				}
