@@ -554,10 +554,10 @@ class TComponent
 	 */
 	public function __destruct()
 	{
+		$this->clearBehaviors();
 		if ($this->_listeningenabled) {
 			$this->unlisten();
 		}
-		$this->clearBehaviors();
 	}
 
 
@@ -1370,6 +1370,10 @@ class TComponent
 	 * When handling a catch-all {@link __dycall}, the method name is the name of the event
 	 * and the parameters are the sender, the param, and then the name of the event.
 	 *
+	 * In the rare circumstance that the event handlers need to be raised in reverse order, then
+	 * specifying {@see TEventResults::EVENT_REVERSE} can be used to reverse the order of the
+	 * handlers.
+	 *
 	 * @param string $name the event name
 	 * @param mixed $sender the event sender object
 	 * @param \Prado\TEventParameter $param the event parameter
@@ -1410,6 +1414,9 @@ class TComponent
 				$handlerArray = array_merge($globalhandlers->toArrayBelowPriority(0), $handlerArray, $globalhandlers->toArrayAbovePriority(0));
 			}
 			$response = null;
+			if ($responsetype & TEventResults::EVENT_REVERSE) {
+				$handlerArray = array_reverse($handlerArray);
+			}
 			foreach ($handlerArray as $handler) {
 				$this->callBehaviorsMethod('dyIntraRaiseEventTestHandler', $return, $handler, $sender, $param, $name);
 				if ($return === false) {
@@ -1765,21 +1772,33 @@ class TComponent
 	}
 
 	/**
-	 * Returns the named behavior object.
+	 * Returns the named behavior object.  If the $behaviorname is not found, but is
+	 * an existing class or interface, this will return the first instanceof.
 	 * The name 'asa' stands for 'as a'.
-	 * @param string $behaviorname the behavior name
-	 * @return object the behavior object, or null if the behavior does not exist
+	 * @param string $behaviorname the behavior name or the class name of the behavior.
+	 * @return object the behavior object of name or class, or null if the behavior does not exist
 	 * @since 3.2.3
 	 */
 	public function asa($behaviorname)
 	{
 		$behaviorname = strtolower($behaviorname);
-		return $this->_m[$behaviorname] ?? null;
+		if (isset($this->_m[$behaviorname])) {
+			return $this->_m[$behaviorname];
+		}
+		if ((class_exists($behaviorname, false) || interface_exists($behaviorname, false)) && $this->_m) {
+			foreach($this->_m->toArray() as $behavior) {
+				if ($behavior instanceof $behaviorname) {
+					return $behavior;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * Returns whether or not the object or any of the behaviors are of a particular class.
 	 * The name 'isa' stands for 'is a'.  This first checks if $this is an instanceof the class.
+	 * Then it checks if the $class is in the hierarchy, which includes first level traits.
 	 * It then checks each Behavior.  If a behavior implements {@link IInstanceCheck},
 	 * then the behavior can determine what it is an instanceof.  If this behavior function returns true,
 	 * then this method returns true.  If the behavior instance checking function returns false,
@@ -1798,7 +1817,7 @@ class TComponent
 	 */
 	public function isa($class)
 	{
-		if ($this instanceof $class) {
+		if ($this instanceof $class || in_array(strtolower(is_object($class) ? $class::class : $class), $this->getClassHierarchy(true))) {
 			return true;
 		}
 		if ($this->_m !== null && $this->getBehaviorsEnabled()) {
@@ -1822,13 +1841,18 @@ class TComponent
 	/**
 	 * Returns all the behaviors attached to the TComponent.  IBaseBehavior[s] may
 	 * be attached but not {@link IBaseBehavior::getEnabled Enabled}.
-	 *
-	 * @return array all the behaviors attached to the TComponent
+	 * @param ?string $class Filters the result by class, default null for no filter.
+	 * @return array The behaviors [optionally filtered] attached to the TComponent.
 	 * @since 4.2.2
 	 */
-	public function getBehaviors()
+	public function getBehaviors(?string $class = null)
 	{
-		return isset($this->_m) ? $this->_m->toArray() : [];
+		if ($class === null) {
+			return isset($this->_m) ? $this->_m->toArray() : [];
+		} elseif (class_exists($class, false) || interface_exists($class, false)) {
+			return array_filter($this->_m->toArray(), fn ($b) => $b instanceof $class);
+		}
+		return [];
 	}
 
 	/**
