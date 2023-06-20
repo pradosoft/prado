@@ -10,6 +10,7 @@ ENH: Issue #904 - TRational and TURational for reading, writing, and computing E
 BUG: Issue #911 - Protect the message cache file to be thread safe. (majuca)
 ENH: Issue #939 - TEventHandler for embedding data with a specific event handler callable. (belisoful)
 ENH: Issue #944 - TExitException for gracefully exiting the application anywhere. Exception chaining with the last parameter being the previous Exception. (belisoful)
+ENH: Issue #979 - TComponent::raiseEvent optionally execute handlers in reverse; asa() and getBehaviors() searches for behaviors based on class after failing on name. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
