@@ -520,7 +520,7 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request = new THttpRequest();
 		$request->init(null);
 		$_GET['page'] = 'Home';
-		$request->resolveRequest(['page']);
+		self::assertEquals('page', $request->resolveRequest(['page']));
 		self::assertEquals('Home', $request->getServiceParameter());
 	}
 
@@ -533,6 +533,58 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request->resolveRequest(['page']);
 		self::assertTrue($request->getRequestResolved());
 	}
+	
+	
+	public function testOnResolveRequest()
+	{
+		$request = new THttpRequest();
+		$request->init(null);
+		
+		$_GET['page'] = 'Home';
+		self::assertEquals('page', $request->resolveRequest(['page', 'websocket', 'testService']));
+		
+		$return = null;
+		$request->onResolveRequest[] = function($sender, $param) use (&$return) {
+			if ($return === true) {
+				$urlParams = $param->getParameter();
+				$urlParams['websocket'] = 0;
+				return $urlParams;
+			}
+			return $return;
+		};
+		
+		self::assertEquals('page', $request->resolveRequest(['page', 'websocket', 'testService']));
+		
+		$return = false;
+		self::assertNull($request->resolveRequest(['page', 'websocket', 'testService']));
+		
+		$reference = $return = 'testService';
+		self::assertEquals('testService', $request->resolveRequest(['page', 'websocket', 'testService']));
+		$return = 'invalid';
+		self::assertEquals('page', $request->resolveRequest(['page', 'websocket', 'testService']));
+		
+		$return = true;
+		$reference = 'websocket';
+		self::assertEquals($reference, $request->resolveRequest(['page', 'websocket', 'testService']));
+		
+		$return = ['testService' => 'param'];
+		$reference = 'testService';
+		self::assertEquals($reference, $request->resolveRequest(['page', 'websocket', 'testService']));
+		self::assertEquals('param', $request->getServiceParameter());
+		
+		$request->onResolveRequest[] = function($sender, $param)  {
+			return 'websocket';
+		};
+		self::assertEquals('testService', $request->resolveRequest(['page', 'websocket', 'testService']));
+		$request->onResolveRequest->clear();
+		$request->onResolveRequest[] = function($sender, $param)  {
+			return 'invalid';
+		};
+		$request->onResolveRequest[] = function($sender, $param)  {
+			return 'websocket';
+		};
+		self::assertEquals('websocket', $request->resolveRequest(['page', 'websocket', 'testService']));
+	}
 
 	public function testRequestWithUrlMapping()
 	{
@@ -544,6 +596,8 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		if (isset($_GET['page'])) {
 			unset($_GET['page']);
 		} // Remove service from a previous test !
+		$resolveKey = 'resolveRequestKey';
+		$_GET[$resolveKey] = $referenceValue = 'resolve Value';
 		$_SERVER['REQUEST_URI'] = '/index.php/test/value2';
 		$_SERVER['SCRIPT_NAME'] = '/index.php';
 		$_SERVER['PHP_SELF'] = '/index.php/test/value2';
@@ -554,6 +608,15 @@ class THttpRequestTest extends PHPUnit\Framework\TestCase
 		$request->setUrlFormat(THttpRequestUrlFormat::Path);
 		$request->init(null);
 		$module->init($config);
+		$request->onResolveRequest[0] = function($sender, $param) use (&$return, $resolveKey, $referenceValue) {
+			$this->assertInstanceOf(THttpRequest::class, $sender);
+			$this->assertEquals($referenceValue, $sender[$resolveKey]);
+			$this->assertInstanceOf(\Prado\Web\THttpRequestParameter::class, $param);
+			$this->assertEquals('value2', $param->getParameter()['param']);
+			$this->assertEquals('testServiceParam', $param->getParameter()['testService']);
+		};
 		self::assertEquals('testService', $request->resolveRequest(['page', 'testService']));
+		
+		unset($_GET[$resolveKey]);
 	}
 }

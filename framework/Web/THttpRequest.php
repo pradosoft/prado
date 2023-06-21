@@ -16,6 +16,7 @@ use Prado\Exceptions\TPhpErrorException;
 use Prado\Prado;
 use Prado\TPropertyValue;
 use Prado\TApplicationMode;
+use Prado\TEventResults;
 
 /**
  * THttpRequest class
@@ -767,7 +768,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	 * This method implements a URL-based service resolution.
 	 * A URL in the format of /index.php?sp=serviceID.serviceParameter
 	 * will be resolved with the serviceID and the serviceParameter.
-	 * You may override this method to provide your own way of service resolution.
+	 * Attach an event handler on onResolveRequest to provide your own service resolution.
 	 * @param array $serviceIDs list of valid service IDs
 	 * @return string the currently requested service ID, null if no service ID is found
 	 * @see constructUrl
@@ -775,35 +776,65 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function resolveRequest($serviceIDs)
 	{
 		Prado::trace("Resolving request from " . $_SERVER['REMOTE_ADDR'], THttpRequest::class);
-		$getParams = $this->parseUrl();
+		$urlParams = $this->parseUrl();
+		$serviceID = null;
 
-		if ($this->_resolveMethod == THttpRequestResolveMethod::ServiceOrder) {
-			foreach ($getParams as $name => $value) {
-				$_GET[$name] = $value;
+		// Prepend parameters extracted from the URL so they are first in the parameters array
+		$this->_items = array_merge($urlParams, $_GET, $_POST);
+		$urlParams = $this->onResolveRequest($serviceIDs, $original = $urlParams);
+		if (is_string($urlParams)) {
+			$serviceID = $urlParams;
+		} elseif ($urlParams !== false) {
+			if ($urlParams !== $original) {
+				$this->_items = array_merge($urlParams, $_GET, $_POST);
 			}
-			$this->_items = array_merge($_GET, $_POST);
-			$this->_requestResolved = true;
-			foreach ($serviceIDs as $serviceID) {
-				if ($this->contains($serviceID)) {
-					$this->setServiceID($serviceID);
-					$this->setServiceParameter($this->itemAt($serviceID));
-					return $serviceID;
+			if ($this->_resolveMethod == THttpRequestResolveMethod::ServiceOrder) {
+				foreach ($serviceIDs as $id) {
+					if ($this->contains($id)) {
+						$serviceID = $id;
+						break;
+					}
 				}
-			}
-		} else {
-			// THttpRequestResolveMethod::ParameterOrder
-			// Prepend parameters extracted from the URL so they gets first in the parameters array
-			$this->_items = array_merge($getParams, $_GET, $_POST);
-			$this->_requestResolved = true;
-			foreach ($this->_items as $serviceID => $value) {
-				if (in_array($serviceID, $serviceIDs)) {
-					$this->setServiceID($serviceID);
-					$this->setServiceParameter($this->itemAt($serviceID));
-					return $serviceID;
+			} else {
+				// THttpRequestResolveMethod::ParameterOrder
+				foreach ($this->_items as $key => $value) {
+					if (in_array($key, $serviceIDs)) {
+						$serviceID = $key;
+						break;
+					}
 				}
 			}
 		}
-		return null;
+		$this->_requestResolved = true;
+		if ($serviceID !== null) {
+			$this->setServiceID($serviceID);
+			$this->setServiceParameter($this->itemAt($serviceID));
+		}
+		return $serviceID;
+	}
+
+	/**
+	 * Raised when resolving the request.  This is for application specific request
+	 * resolution.  Event Handlers can return `false` for no service, a `string` of the
+	 * service id to use, or an array replacing the $urlParams.  By returning null,
+	 * the result is skipped and has no effect.  Event Handler results are stacked and
+	 * results are popped until a valid result is found.  The only invalid result is
+	 * if a string is provided that is not in the $serviceIDs.
+	 * The lower priorities of event handlers are more important and so should be last.
+	 * @param array $serviceIDs The Service IDs of the application.
+	 * @param array $urlParams The decoded url parameters to be updated or replaced
+	 * @return array|false|string
+	 */
+	public function onResolveRequest(array $serviceIDs, array $urlParams): false|string|array
+	{
+		$results = $this->raiseEvent('onResolveRequest', $this, new THttpRequestParameter($serviceIDs, $urlParams), TEventResults::EVENT_REVERSE);
+		while (count($results)) {
+			$return = array_pop($results);
+			if (is_string($return) && in_array($return, $serviceIDs) || is_array($return) || $return === false) {
+				return $return;
+			}
+		}
+		return $urlParams;
 	}
 
 	/**
