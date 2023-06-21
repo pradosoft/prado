@@ -463,6 +463,20 @@ class Prado
 	}
 
 	/**
+	 * This method return the object that is calling your method.
+	 * @return ?object The parent object calling your code block.
+	 * @since 4.2.3
+	 */
+	public static function callingObject(): ?object
+	{
+		$trace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+		if (!empty($trace[2]) && !empty($trace[2]['object'])) {
+			return $trace[2]['object'];
+		}
+		return null;
+	}
+
+	/**
 	 * This checks if object calling your object method is the same object.  In effect,
 	 * this signifies if self, parents, and children have visibility to "protected"
 	 * properties, methods, and constants.
@@ -685,14 +699,17 @@ class Prado
 	 * When the application is in Performance mode, this method does nothing.
 	 * Otherwise, the message is logged at INFO level.
 	 * @param string $msg message to be logged
-	 * @param string $category category of the message
+	 * @param ?string $category category of the message, null fills is with the calling class
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
 	 * @see log, getLogger
 	 */
-	public static function trace($msg, $category = 'Uncategorized', $ctl = null): void
+	public static function trace($msg, $category = null, $ctl = null): void
 	{
 		if (self::$_application && self::$_application->getMode() === TApplicationMode::Performance) {
 			return;
+		}
+		if ($category === null) {
+			$category = self::callingObject()::class;
 		}
 		if (!self::$_application || self::$_application->getMode() === TApplicationMode::Debug) {
 			$trace = debug_backtrace();
@@ -704,6 +721,111 @@ class Prado
 			$level = TLogger::INFO;
 		}
 		self::log($msg, $level, $category, $ctl);
+	}
+
+	/**
+	 * Writes a debug log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function debug($msg, $category = null, $ctl = null): void
+	{
+		if (self::$_application && self::$_application->getMode() !== TApplicationMode::Debug) {
+			return;
+		}
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		$trace = debug_backtrace();
+		if (isset($trace[0]['file']) && isset($trace[0]['line'])) {
+			$msg .= " (line {$trace[0]['line']}, {$trace[0]['file']})";
+		}
+		self::log($msg, TLogger::DEBUG, $category, $ctl);
+	}
+
+	/**
+	 * Writes an info log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function info($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::INFO, $category, $ctl);
+	}
+
+	/**
+	 * Writes a notice log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function notice($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::NOTICE, $category, $ctl);
+	}
+
+	/**
+	 * Writes a warning log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function warning($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::WARNING, $category, $ctl);
+	}
+
+	/**
+	 * Writes an error log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function error($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::ERROR, $category, $ctl);
+	}
+
+	/**
+	 * Writes an alert log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function alert($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::ALERT, $category, $ctl);
+	}
+
+	/**
+	 * Writes a fatal log message.
+	 * @param string $msg message to be logged
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function fatal($msg, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($msg, TLogger::FATAL, $category, $ctl);
 	}
 
 	/**
@@ -722,6 +844,9 @@ class Prado
 	{
 		if (self::$_logger === null) {
 			self::$_logger = new TLogger();
+		}
+		if ($category === null) {
+			$category = self::callingObject()::class;
 		}
 		self::$_logger->log($msg, $level, $category, $ctl);
 	}

@@ -373,6 +373,18 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$instance->testMethodVisibleFromClassB($this, $instance);
 	}
 	
+	public function testCallingObject()
+	{
+		// Create a new object that calls Prado::callingObject()
+		$object = new class {
+			public function getCallingObject()
+			{
+				return Prado::callingObject();
+			}
+		};
+		$this->assertEquals($this, $object->getCallingObject());
+	}
+	
 	public function testIsCallingSelf()
 	{
 		$instance = new MethodVisibleTestClassB();
@@ -393,6 +405,199 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		
 		$instance->testIsCallingSelfClassFromClassA($this, $instance);
 		$instance->testIsCallingSelfClassFromClassB($this, $instance);
+	}
+	
+	public function testTrace()
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::trace('msg', 'Category', 'ctlClass');
+		$app->setMode(TApplicationMode::Normal);
+		Prado::trace('msg2');
+		$logs = $logger->getLogs();
+		$this->assertTrue(str_starts_with($logs[0][0], 'msg'));
+		$this->assertEquals(TLogger::DEBUG, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::INFO, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+		$app->setMode($mode);
+	}
+	
+	public function testDebug()
+	{
+		$app = Prado::getApplication();
+		$mode = $app->getMode();
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		$app->setMode(TApplicationMode::Debug);
+		
+		Prado::debug('msg', 'Category', 'ctlClass');
+		Prado::debug('msg2');
+		$app->setMode(TApplicationMode::Normal);
+		Prado::debug('msg3');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertTrue(str_starts_with($logs[0][0], 'msg'));
+		$this->assertEquals(TLogger::DEBUG, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertTrue(str_starts_with($logs[1][0], 'msg2'));
+		$this->assertEquals(TLogger::DEBUG, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+		$app->setMode($mode);
+	}
+	
+	public function testInfo()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::info('msg', 'Category', 'ctlClass');
+		Prado::info('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::INFO, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::INFO, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testNotice()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::notice('msg', 'Category', 'ctlClass');
+		Prado::notice('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::NOTICE, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::NOTICE, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testWarning()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::warning('msg', 'Category', 'ctlClass');
+		Prado::warning('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::WARNING, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::WARNING, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testError()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::error('msg', 'Category', 'ctlClass');
+		Prado::error('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::ERROR, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::ERROR, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testAlert()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::alert('msg', 'Category', 'ctlClass');
+		Prado::alert('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::ALERT, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::ALERT, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testFatal()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::fatal('msg', 'Category', 'ctlClass');
+		Prado::fatal('msg2');
+		$logs = $logger->getLogs();
+		$this->assertEquals(2, count($logs));
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::FATAL, $logs[0][1]);
+		$this->assertEquals('Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::FATAL, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testLog()
+	{
+		$logger = Prado::getLogger();
+		$logger->deleteLogs();
+		
+		Prado::log('msg', TLogger::WARNING, 'My Category', 'ctlClass');
+		Prado::log('msg2', TLogger::DEBUG, null);
+		$logs = $logger->getLogs();
+		$this->assertEquals('msg', $logs[0][0]);
+		$this->assertEquals(TLogger::WARNING, $logs[0][1]);
+		$this->assertEquals('My Category', $logs[0][2]);
+		$this->assertEquals('ctlClass', $logs[0][5]);
+		
+		$this->assertEquals('msg2', $logs[1][0]);
+		$this->assertEquals(TLogger::DEBUG, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertEquals(null, $logs[1][5]);
+	}
+	
+	public function testGetLogger()
+	{
+		$this->assertInstanceOf(\Prado\Util\TLogger::class, Prado::getLogger());
 	}
 
 	public function testCreateComponentWithNamespace()

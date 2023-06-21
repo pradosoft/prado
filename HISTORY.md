@@ -11,6 +11,7 @@ BUG: Issue #911 - Protect the message cache file to be thread safe. (majuca)
 ENH: Issue #939 - TEventHandler for embedding data with a specific event handler callable. (belisoful)
 ENH: Issue #944 - TExitException for gracefully exiting the application anywhere. Exception chaining with the last parameter being the previous Exception. (belisoful)
 ENH: Issue #979 - TComponent::raiseEvent optionally execute handlers in reverse; asa() and getBehaviors() searches for behaviors based on class after failing on name. (belisoful)
+ENH: Issue #975 - Prado base object methods for each log type and automatic discovery of calling object for log category. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
