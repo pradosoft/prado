@@ -830,7 +830,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 		$results = $this->raiseEvent('onResolveRequest', $this, new THttpRequestParameter($serviceIDs, $urlParams), TEventResults::EVENT_REVERSE);
 		while (count($results)) {
 			$return = array_pop($results);
-			if (is_string($return) && in_array($return, $serviceIDs) || is_array($return) || $return === false) {
+			if ((is_string($return) && in_array($return, $serviceIDs)) || is_array($return) || $return === false) {
 				return $return;
 			}
 		}
