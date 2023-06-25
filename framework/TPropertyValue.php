@@ -200,16 +200,16 @@ class TPropertyValue
 	 * In instance (A), $green is treated as a boolean flag for whether to convert
 	 * any web colors to their # hex color.  When red, green, or blue colors are specified
 	 * they are assumed be be bound [0...255], inclusive.
-	 * @param array|int|string $value String Web Color name or Hex Color (eg. '#336699'),
+	 * @param array|float|int|string $value String Web Color name or Hex Color (eg. '#336699'),
 	 *   array of [$r, $g, $b] or ['red' => $red, 'green' => $green, 'blue' = $blue], or
 	 *   int color (0x00RRGGBB [$blue is null]), or int red [0..255] when $blue is not null.
-	 * @param bool|int $green When $blue !== null, $green is an int color, otherwise its
+	 * @param bool|float|int $green When $blue !== null, $green is an int color, otherwise its
 	 *   the flag to allow converting Web Color names to their web colors. Default true,
 	 *	 for allow web colors to translate into their # hex color.
-	 * @param ?int $blue The blue color. Default null for (A) or (B)
+	 * @param null|float|int $blue The blue color. Default null for (A) or (B)
 	 * @return string The valid # hex color.
 	 */
-	public static function ensureHexColor($value, $green = true, ?int $blue = null)
+	public static function ensureHexColor($value, $green = true, $blue = null)
 	{
 		if (is_array($value)) {
 			$blue = array_key_exists('blue', $value) ? $value['blue'] : (array_key_exists(2, $value) ? $value[2] : null);
@@ -217,10 +217,14 @@ class TPropertyValue
 			$value = array_key_exists('red', $value) ? $value['red'] : (array_key_exists(0, $value) ? $value[0] : null);
 		}
 		if (is_numeric($value)) {
+			$value = (int) $value;
 			if ($blue === null) {
 				$blue = $value & 0xFF;
 				$green = ($value >> 8) & 0xFF;
 				$value = ($value >> 16) & 0xFF;
+			} else {
+				$green = (int) $green;
+				$blue = (int) $blue;
 			}
 			return '#' . strtoupper(
 				str_pad(dechex(max(0, min($value, 255))), 2, '0', STR_PAD_LEFT) .

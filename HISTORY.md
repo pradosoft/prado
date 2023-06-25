@@ -13,6 +13,7 @@ ENH: Issue #944 - TExitException for gracefully exiting the application anywhere
 ENH: Issue #979 - TComponent::raiseEvent optionally execute handlers in reverse; asa() and getBehaviors() searches for behaviors based on class after failing on name. (belisoful)
 ENH: Issue #975 - Prado base object methods for each log type and automatic discovery of calling object for log category. (belisoful)
 ENH: Issue #977 - THttpRequest::onResolveRequest for custom service resolution and TRequestConnectionUpgrade behavior for selecting service on http headers for "websocket". (belisoful)
+ENH: Issue #982 General Logging update: Profiling, Flushing large logs for long running processes, optional Tracing, tracks PID for multi-threaded logging, TBrowserLogRoute colorizes the time delta, TDbLogRoute adds a new DB field 'prefix' and functions for getting the DB log, DB log count, and deleting DB logs, TDBLogRoute also adds a RetainPeriod for automatically removing old logs, Adds an event TLogger::OnFlushLogs and flushes as a register_shutdown_function, adds the TSysLogRoute, and adds unit tests for logging
 
 ## Version 4.2.2 - April 6, 2023
 

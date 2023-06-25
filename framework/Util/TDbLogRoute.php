@@ -13,6 +13,7 @@ use Exception;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TLogException;
 use Prado\TPropertyValue;
 
 /**
@@ -25,18 +26,23 @@ use Prado\TPropertyValue;
  * under the runtime directory.
  *
  * By default, the database table name is 'pradolog'. It has the following structure:
- * <code>
+ * ```sql
  *	CREATE TABLE pradolog
  *  (
  *		log_id INTEGER NOT NULL PRIMARY KEY,
  *		level INTEGER,
  *		category VARCHAR(128),
+ *		prefix VARCHAR(128),
  *		logtime VARCHAR(20),
  *		message VARCHAR(255)
  *   );
- * </code>
+ * ```
+ *
+ * 4.2.3 Notes: Add the `prefix` to the log table:
+ * `ALTER TABLE pradolog ADD COLUMN prefix VARCHAR(128) AFTER category;`
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.1.2
  */
 class TDbLogRoute extends TLogRoute
@@ -56,7 +62,13 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * @var bool whether the log DB table should be created automatically
 	 */
-	private $_autoCreate = true;
+	private bool $_autoCreate = true;
+	/**
+	 * @var ?float The number of seconds of the log to retain.  Default null for logs are
+	 *   not deleted.
+	 * @since 4.2.3
+	 */
+	private ?float $_retainPeriod = null;
 
 	/**
 	 * Destructor.
@@ -90,7 +102,7 @@ class TDbLogRoute extends TLogRoute
 			if ($this->_autoCreate) {
 				$this->createDbTable();
 			} else {
-				throw new TConfigurationException('db_logtable_inexistent', $this->_logTable);
+				throw new TConfigurationException('dblogroute_table_nonexistent', $this->_logTable);
 			}
 		}
 
@@ -100,23 +112,174 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Stores log messages into database.
 	 * @param array $logs list of log messages
+	 * @param bool $final is the final flush
+	 * @param array $meta the meta data for the logs.
+	 * @throws TLogException when the DB insert fails.
 	 */
-	protected function processLogs($logs)
+	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		$sql = 'INSERT INTO ' . $this->_logTable . '(level, category, logtime, message) VALUES (:level, :category, :logtime, :message)';
+		$sql = 'INSERT INTO ' . $this->_logTable . '(level, category, prefix, logtime, message) VALUES (:level, :category, :prefix, :logtime, :message)';
 		$command = $this->getDbConnection()->createCommand($sql);
 		foreach ($logs as $log) {
-			$command->bindValue(':message', $log[0]);
-			$command->bindValue(':level', $log[1]);
-			$command->bindValue(':category', $log[2]);
-			$command->bindValue(':logtime', $log[3]);
-			$command->execute();
+			$command->bindValue(':message', (string) $log[TLogger::LOG_MESSAGE]);
+			$command->bindValue(':level', $log[TLogger::LOG_LEVEL]);
+			$command->bindValue(':category', $log[TLogger::LOG_CATEGORY]);
+			$command->bindValue(':prefix', $this->getLogPrefix($log));
+			$command->bindValue(':logtime', sprintf('%F', $log[TLogger::LOG_TIME]));
+			if(!$command->execute()) {
+				throw new TLogException('dblogroute_insert_failed', $this->_logTable);
+			}
+		}
+		if (!empty($seconds = $this->getRetainPeriod())) {
+			$this->deleteDbLog(null, null, null, microtime(true) - $seconds);
 		}
 	}
 
 	/**
+	 * Computes the where SQL clause based upon level, categories, minimum time and maximum time.
+	 * @param ?int $level  The bit mask of log levels to search for
+	 * @param null|null|array|string $categories The categories to search for.  Strings
+	 *   are exploded with ','.
+	 * @param ?float $minTime All logs after this time are found
+	 * @param ?float $maxTime All logs before this time are found
+	 * @param mixed $values the values to fill in.
+	 * @return string The where clause for the various SQL statements.
+	 * @since 4.2.3
+	 */
+	protected function getLogWhere(?int $level, null|string|array $categories, ?float $minTime, ?float $maxTime, &$values): string
+	{
+		$where = '';
+		$values = [];
+		if ($level !== null) {
+			$where .= '((level & :level) > 0)';
+			$values[':level'] = $level;
+		}
+		if ($categories !== null) {
+			if(is_string($categories)) {
+				$categories = array_map('trim', explode(',', $categories));
+			}
+			$i = 0;
+			$or = '';
+			foreach($categories as $category) {
+				$c = $category[0] ?? 0;
+				if ($c === '!' || $c === '~') {
+					if ($where) {
+						$where .= ' AND ';
+					}
+					$category = substr($category, 1);
+					$where .= "(category NOT LIKE :category{$i})";
+				} else {
+					if ($or) {
+						$or .= ' OR ';
+					}
+					$or .= "(category LIKE :category{$i})";
+				}
+				$category = str_replace('*', '%', $category);
+				$values[':category' . ($i++)] = $category;
+			}
+			if ($or) {
+				if ($where) {
+					$where .= ' AND ';
+				}
+				$where .= '(' . $or . ')';
+			}
+		}
+		if ($minTime !== null) {
+			if ($where) {
+				$where .= ' AND ';
+			}
+			$where .= 'logtime >= :mintime';
+			$values[':mintime'] = sprintf('%F', $minTime);
+		}
+		if ($maxTime !== null) {
+			if ($where) {
+				$where .= ' AND ';
+			}
+			$where .= 'logtime < :maxtime';
+			$values[':maxtime'] = sprintf('%F', $maxTime);
+		}
+		if ($where) {
+			$where = ' WHERE ' . $where;
+		}
+		return $where;
+	}
+
+	/**
+	 * Gets the number of logs in the database fitting the provided criteria.
+	 * @param ?int $level  The bit mask of log levels to search for
+	 * @param null|null|array|string $categories The categories to search for.  Strings
+	 *   are exploded with ','.
+	 * @param ?float $minTime All logs after this time are found
+	 * @param ?float $maxTime All logs before this time are found
+	 * @return string The where clause for the various SQL statements..
+	 * @since 4.2.3
+	 */
+	public function getDBLogCount(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null)
+	{
+		$values = [];
+		$where = $this->getLogWhere($level, $categories, $minTime, $maxTime, $values);
+		$sql = 'SELECT COUNT(*) FROM ' . $this->_logTable . $where;
+		$command = $this->getDbConnection()->createCommand($sql);
+		foreach ($values as $key => $value) {
+			$command->bindValue($key, $value);
+		}
+		return $command->queryScalar();
+	}
+
+	/**
+	 * Gets the number of logs in the database fitting the provided criteria.
+	 * @param ?int $level  The bit mask of log levels to search for
+	 * @param null|null|array|string $categories The categories to search for.  Strings
+	 *   are exploded with ','.
+	 * @param ?float $minTime All logs after this time are found
+	 * @param ?float $maxTime All logs before this time are found
+	 * @param string $order The order statement.
+	 * @param string $limit The limit statement.
+	 * @return \Prado\Data\TDbDataReader the logs from the database.
+	 * @since 4.2.3
+	 */
+	public function getDBLogs(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null, string $order = '', string $limit = '')
+	{
+		$values = [];
+		if ($order) {
+			$order .= ' ORDER BY ' . $order;
+		}
+		if ($limit) {
+			$limit .= ' LIMIT ' . $limit;
+		}
+		$where = $this->getLogWhere($level, $categories, $minTime, $maxTime, $values);
+		$sql = 'SELECT * FROM ' . $this->_logTable . $where . $order . $limit;
+		$command = $this->getDbConnection()->createCommand($sql);
+		foreach ($values as $key => $value) {
+			$command->bindValue($key, $value);
+		}
+		return $command->query();
+	}
+
+	/**
+	 * Deletes log items from the database that match the criteria.
+	 * @param ?int $level  The bit mask of log levels to search for
+	 * @param null|null|array|string $categories The categories to search for.  Strings
+	 *   are exploded with ','.
+	 * @param ?float $minTime All logs after this time are found
+	 * @param ?float $maxTime All logs before this time are found
+	 * @return int the number of logs in the database.
+	 * @since 4.2.3
+	 */
+	public function deleteDBLog(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null)
+	{
+		$values = [];
+		$where = $this->getLogWhere($level, $categories, $minTime, $maxTime, $values);
+		$sql = 'DELETE FROM ' . $this->_logTable . $where;
+		$command = $this->getDbConnection()->createCommand($sql);
+		foreach ($values as $key => $value) {
+			$command->bindValue($key, $value);
+		}
+		return $command->execute();
+	}
+
+	/**
 	 * Creates the DB table for storing log messages.
-	 * @todo create sequence for PostgreSQL
 	 */
 	protected function createDbTable()
 	{
@@ -126,11 +289,17 @@ class TDbLogRoute extends TLogRoute
 		if ($driver === 'mysql') {
 			$autoidAttributes = 'AUTO_INCREMENT';
 		}
+		if ($driver === 'pgsql') {
+			$param = 'SERIAL';
+		} else {
+			$param = 'INTEGER NOT NULL';
+		}
 
 		$sql = 'CREATE TABLE ' . $this->_logTable . ' (
-			log_id INTEGER NOT NULL PRIMARY KEY ' . $autoidAttributes . ',
+			log_id ' . $param . ' PRIMARY KEY ' . $autoidAttributes . ',
 			level INTEGER,
 			category VARCHAR(128),
+			prefix VARCHAR(128),
 			logtime VARCHAR(20),
 			message VARCHAR(255))';
 		$db->createCommand($sql)->execute();
@@ -182,10 +351,13 @@ class TDbLogRoute extends TLogRoute
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.
 	 * @param string $value ID of the {@link TDataSourceConfig} module
+	 * @return static The current object.
 	 */
-	public function setConnectionID($value)
+	public function setConnectionID($value): static
 	{
 		$this->_connID = $value;
+
+		return $this;
 	}
 
 	/**
@@ -204,11 +376,14 @@ class TDbLogRoute extends TLogRoute
 	 * you need to make sure the DB table is of the following structure:
 	 * (key CHAR(128) PRIMARY KEY, value BLOB, expire INT)
 	 * @param string $value the name of the DB table to store log content
+	 * @return static The current object.
 	 * @see setAutoCreateLogTable
 	 */
-	public function setLogTableName($value)
+	public function setLogTableName($value): static
 	{
 		$this->_logTable = $value;
+
+		return $this;
 	}
 
 	/**
@@ -222,10 +397,70 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * @param bool $value whether the log DB table should be automatically created if not exists.
+	 * @return static The current object.
 	 * @see setLogTableName
 	 */
-	public function setAutoCreateLogTable($value)
+	public function setAutoCreateLogTable($value): static
 	{
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
+
+		return $this;
 	}
+
+	/**
+	 * @return ?float The seconds to retain.  Null is no end.
+	 * @since 4.2.3
+	 */
+	public function getRetainPeriod(): ?float
+	{
+		return $this->_retainPeriod;
+	}
+
+	/**
+	 * @param null|int|string $value Number of seconds or "PT" period time.
+	 * @throws TConfigurationException when the time span is not a valid "PT" string.
+	 * @return static The current object.
+	 * @since 4.2.3
+	 */
+	public function setRetainPeriod($value): static
+	{
+		if (is_numeric($value)) {
+			$value = (float) $value;
+			if ($value === 0.0) {
+				$value = null;
+			}
+			$this->_retainPeriod = $value;
+			return $this;
+		}
+		if (!($value = TPropertyValue::ensureString($value))) {
+			$value = null;
+		}
+		$seconds = false;
+		if ($value && ($seconds = static::timespanToSeconds($value)) === false) {
+			throw new TConfigurationException('dblogroute_bad_retain_period', $value);
+		}
+
+		$this->_retainPeriod = ($seconds !== false) ? $seconds : $value;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $timespan The time span to compute the number of seconds.
+	 * @retutrn ?int the number of seconds of the time span.
+	 * @since 4.2.3
+	 */
+	public static function timespanToSeconds(string $timespan): ?int
+	{
+		if (($interval = new \DateInterval($timespan)) === false) {
+			return null;
+		}
+
+		$datetime1 = new \DateTime();
+		$datetime2 = clone $datetime1;
+		$datetime2->add($interval);
+		$diff = $datetime2->getTimestamp() - $datetime1->getTimestamp();
+		return $diff;
+	}
+
 }

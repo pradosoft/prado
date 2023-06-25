@@ -11,11 +11,12 @@ Upgrading from v4.2.2
 ---------------------
 - Deprecated TTextBoxAutoCompleteType values have been removed since they are not supported anymore by no browser.
   The only permitted values are None, Enabled or Disabled.
+- TDbLogRoute updates the table fields by adding the `prefix` field:  `ALTER TABLE pradolog ADD COLUMN prefix VARCHAR(128) AFTER category;`
 
 Upgrading from v4.2.1
 ---------------------
 - The Prado::getDefaultPermissions() function is now deprecated and has been replaced by Prado::getDefaultDirPermissions() and Prado::getDefaultFilePermissions(). If you have defined PRADO_CHMOD in your index.php file, please replace it with PRADO_DIR_CHMOD and PRADO_FILE_CHMOD.
-- The way PRADO determines what service to instanciate when receiving a request has been changed. If you experience problems, the old behavior can be restored setting the "request" module to use the "ServiceOrder" ResolveMethod in application configuration.
+- The way PRADO determines what service to instantiate when receiving a request has been changed. If you experience problems, the old behavior can be restored setting the "request" module to use the "ServiceOrder" ResolveMethod in application configuration.
 
 Upgrading from v4.1.2
 ---------------------

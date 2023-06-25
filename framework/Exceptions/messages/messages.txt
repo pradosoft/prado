@@ -332,11 +332,21 @@ logrouter_configfile_invalid			= TLogRouter.ConfigFile '{0}' does not exist.
 logrouter_routeclass_required			= Class attribute is required in <route> configuration.
 logrouter_routetype_required			= Log route must be an instance of TLogRoute or its derived class.
 
+dblogroute_connectionid_invalid			= TDbLogRoute unable to create the Database Connection ID '{0}'.
+dblogroute_insert_failed				= TDbLogRoute unable to insert the log into the '{0}'.
+dblogroute_bad_retain_period			= TDbLogRoute.RetainPeriod '{0}' is not valid
+dblogroute_table_nonexistent			= TDbLogRoute table '{0}' does not exist and must be created.
+
 filelogroute_logpath_invalid			= TFileLogRoute.LogPath '{0}' must be a directory in namespace format and must be writable by the Web server process.
 filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater than 0.
 filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater than 0.
 
 emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
+emaillogroute_mail_failed				= TEmailLogRoute failed to log to send to '{0}'.
+
+syslogroute_log_failed					= TSysLogRout failed to write to SysLog().
+syslogroute_bad_flags					= TSysLogRoute.SysLogFlags are not valid, '{0}'.
+syslogroute_bad_facility				= TSysLogRoute.Facility is not valid, '{0}'.
 
 repeatinfo_repeatcolumns_invalid		= TRepeatInfo.RepeatColumns must be no less than 0.
 

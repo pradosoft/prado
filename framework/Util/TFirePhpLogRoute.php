@@ -9,8 +9,6 @@
 
 namespace Prado\Util;
 
-use Prado\Prado;
-
 /**
  * TFirePhpLogRoute class.
  *
@@ -22,16 +20,22 @@ use Prado\Prado;
  * @author Yves Berkholz <godzilla80[at]gmx[dot]net>
  * @since 3.1.5
  */
-class TFirePhpLogRoute extends TLogRoute
+class TFirePhpLogRoute extends TLogRoute implements IOutputLogRoute
 {
 	/**
 	 * Default group label
 	 */
-	public const DEFAULT_LABEL = 'Prado\Util\TLogRouter(TFirePhpLogRoute)';
+	public const DEFAULT_LABEL = TLogRouter::class . '(TFirePhpLogRoute)';
 
 	private $_groupLabel;
 
-	public function processLogs($logs)
+	/**
+	 * Logs via FirePhp.
+	 * @param array $logs list of log messages
+	 * @param bool $final is the final flush
+	 * @param array $meta the meta data for the logs.
+	 */
+	protected function processLogs(array $logs, bool $final, array $meta)
 	{
 		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
 			return;
@@ -45,7 +49,7 @@ class TFirePhpLogRoute extends TLogRoute
 				</div>
 			';
 			$fallback = new TBrowserLogRoute();
-			$fallback->processLogs($logs);
+			$fallback->processLogs($logs, $final, $meta);
 			return;
 		}
 
@@ -54,26 +58,18 @@ class TFirePhpLogRoute extends TLogRoute
 		$firephp->group($this->getGroupLabel(), ['Collapsed' => true]);
 		$firephp->log('Time,  Message');
 
-		$first = $logs[0][3];
-		$total = 0;
+		$startTime = $_SERVER["REQUEST_TIME_FLOAT"];
 		$c = count($logs);
 		for ($i = 0, $n = $c; $i < $n; ++$i) {
-			$message = $logs[$i][0];
-			$level = $logs[$i][1];
-			$category = $logs[$i][2];
-
-			if ($i < $n - 1) {
-				$delta = $logs[$i + 1][3] - $logs[$i][3];
-				$total = $logs[$i + 1][3] - $first;
-			} else {
-				$delta = '?';
-				$total = $logs[$i][3] - $first;
-			}
+			$message = $logs[$i][TLogger::LOG_MESSAGE];
+			$level = $logs[$i][TLogger::LOG_LEVEL];
+			$category = $logs[$i][TLogger::LOG_CATEGORY];
+			$delta = $logs[$i]['delta'];
 
 			$message = sPrintF('+%0.6f: %s', $delta, preg_replace('/\(line[^\)]+\)$/', '', $message));
 			$firephp->fb($message, $category, self::translateLogLevel($level));
 		}
-		$firephp->log(sPrintF('%0.6f', $total), 'Cumulated Time');
+		$firephp->log(sPrintF('%0.6f', $meta['total']), 'Cumulated Time');
 		$firephp->groupEnd();
 	}
 
@@ -87,6 +83,9 @@ class TFirePhpLogRoute extends TLogRoute
 		switch ($level) {
 			case TLogger::INFO:
 				return \FirePHP::INFO;
+			case TLogger::PROFILE:
+			case TLogger::PROFILE_BEGIN:
+			case TLogger::PROFILE_END:
 			case TLogger::DEBUG:
 			case TLogger::NOTICE:
 				return \FirePHP::LOG;
@@ -115,9 +114,11 @@ class TFirePhpLogRoute extends TLogRoute
 
 	/**
 	 * @param string $value group label.
+	 * @return static The current object.
 	 */
-	public function setGroupLabel($value)
+	public function setGroupLabel($value): static
 	{
 		$this->_groupLabel = $value;
+		return $this;
 	}
 }

@@ -9,18 +9,8 @@
 
 namespace Prado\Util;
 
-/**
- * TEmailLogRoute class.
- *
- * TEmailLogRoute sends selected log messages to email addresses.
- * The target email addresses may be specified via {@link setEmails Emails} property.
- * Optionally, you may set the email {@link setSubject Subject} and the
- * {@link setSentFrom SentFrom} address.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 3.0
- */
 use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TLogException;
 
 /**
  * TEmailLogRoute class.
@@ -60,7 +50,7 @@ class TEmailLogRoute extends TLogRoute
 	 * Initializes the route.
 	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@link TLogRouter}.
 	 * @throws TConfigurationException if {@link getSentFrom SentFrom} is empty and
-	 * 'sendmail_from' in php.ini is also empty.
+	 *   'sendmail_from' in php.ini is also empty.
 	 */
 	public function init($config)
 	{
@@ -75,17 +65,23 @@ class TEmailLogRoute extends TLogRoute
 	/**
 	 * Sends log messages to specified email addresses.
 	 * @param array $logs list of log messages
+	 * @param bool $final is the final flush
+	 * @param array $meta the meta data for the logs.
+	 * @throws TLogException When the mail fails to send.
 	 */
-	protected function processLogs($logs)
+	protected function processLogs(array $logs, bool $final, array $meta)
 	{
 		$message = '';
+
 		foreach ($logs as $log) {
-			$message .= $this->formatLogMessage($log[0], $log[1], $log[2], $log[3]);
+			$message .= $this->formatLogMessage($log);
 		}
 		$message = wordwrap($message, 70);
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';
 		foreach ($this->_emails as $email) {
-			mail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}");
+			if (!mail($email, $this->getSubject(), $message, "From:{$this->_from}\r\n{$returnPath}")) {
+				throw new TLogException('emaillogroute_mail_failed', $email);
+			}
 		}
 	}
 
