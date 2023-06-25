@@ -21,7 +21,7 @@ use Prado\Web\UI\TControl;
  * log categories, and by control.
  *
  * Filtering categories and controls can use a '!' or '~' prefix and the element
- * will be excluded rather than included.  Using a trailing '*' will include 
+ * will be excluded rather than included.  Using a trailing '*' will include
  * elements starting with the specified text.
  *
  * The log message, log level, log category (class), microtime Time stamp
