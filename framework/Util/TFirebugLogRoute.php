@@ -89,7 +89,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[TLogger::LOG_LEVEL]);
 		$total = sprintf('%0.6f', $log['total']);
 		$delta = sprintf('%0.6f', $log['delta']);
-		$msg = trim($this->formatLogMessage($log));
+		$msg = trim($this->formatFirebugLogMessage($log));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
@@ -102,7 +102,7 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		$logfunc = $this->getFirebugLoggingFunction($log[TLogger::LOG_LEVEL]);
 		$total = sprintf('%0.6f', $log['total']);
 		$delta = sprintf('%0.6f', $log['delta']);
-		$msg = trim($this->formatLogMessage($log));
+		$msg = trim($this->formatFirebugLogMessage($log));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 
 		return [$logfunc, $total, $delta, $msg];
@@ -121,6 +121,36 @@ class TFirebugLogRoute extends TBrowserLogRoute
 	EOD;
 
 		return $string;
+	}
+
+
+	/**
+	 * Formats a log message given different fields.
+	 * @param array $log The log to format
+	 * @return string formatted message
+	 */
+	public function formatFirebugLogMessage(array $log): string
+	{
+		$traces = [];
+		if (!is_string($log[TLogger::LOG_MESSAGE])) {
+			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
+				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
+			} else {
+				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
+			}
+		}
+		if (!is_string($log[TLogger::LOG_MESSAGE])) {
+			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
+				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
+			} else {
+				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
+			}
+		}
+		if (isset($log[TLogger::LOG_TRACES])) {
+			$traces = array_map(fn ($trace) => "in {$trace['file']}:{$trace['line']}", $log[TLogger::LOG_TRACES]);
+		}
+		return '[' . $this->getLevelName($log[TLogger::LOG_LEVEL]) . '] [' . $log[TLogger::LOG_CATEGORY] . '] ' . $log[TLogger::LOG_MESSAGE]
+			. (empty($traces) ? '' : "\n    " . implode("\n    ", $traces));
 	}
 
 	protected function getFirebugLoggingFunction($level)

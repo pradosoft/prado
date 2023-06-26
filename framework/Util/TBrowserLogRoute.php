@@ -185,7 +185,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 		} else {
 			$bgcolor = $log['even'] ? "#fff" : "#e8e8e8";
 			if ($this->getColorizeDelta()) {
-				$normalizedTime = $delta / ($meta['maxdelta'] === 0 ? 1 : $meta['maxdelta']);
+				$normalizedTime = $delta / ($meta['maxdelta'] === 0.0 ? 1 : $meta['maxdelta']);
 				$textColor = 'color:' . TPropertyValue::ensureHexColor(static::getLogColor($normalizedTime));
 				$weightCutOff = 0.75;
 				$weightLightCutOff = 0.4;

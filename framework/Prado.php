@@ -20,7 +20,7 @@ use Prado\Util\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
 
-// Defines the PRADO framework installation path.
+// Defines the initialization run time of Prado if no start time is defined.
 if (empty($_SERVER["REQUEST_TIME_FLOAT"])) {
 	$time = $_SERVER["REQUEST_TIME_FLOAT"] = microtime(true);
 	$_SERVER["REQUEST_TIME"] = (int) $time;

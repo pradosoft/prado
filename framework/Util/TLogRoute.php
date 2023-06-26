@@ -348,10 +348,10 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
 			}
 		}
-		if (isset($log[6])) {
-			$traces = array_map(fn ($trace) => "in {$trace['file']}:{$trace['line']}", $log[6]);
+		if (isset($log[TLogger::LOG_TRACES])) {
+			$traces = array_map(fn ($trace) => "in {$trace['file']}:{$trace['line']}", $log[TLogger::LOG_TRACES]);
 		}
-		return $this->getTime($log[TLogger::LOG_TIME]) . ' ' . $prefix . '[' . $this->getLevelName($log[TLogger::LOG_LEVEL]) . '] [' . $log[2] . '] ' . $log[TLogger::LOG_MESSAGE]
+		return $this->getTime($log[TLogger::LOG_TIME]) . ' ' . $prefix . '[' . $this->getLevelName($log[TLogger::LOG_LEVEL]) . '] [' . $log[TLogger::LOG_CATEGORY] . '] ' . $log[TLogger::LOG_MESSAGE]
 			. (empty($traces) ? '' : "\n    " . implode("\n    ", $traces));
 	}
 
