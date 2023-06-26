@@ -13,6 +13,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\TPropertyValue;
 use Prado\Xml\TXmlDocument;
 
 /**
@@ -39,6 +40,7 @@ use Prado\Xml\TXmlDocument;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
  */
 class TLogRouter extends \Prado\TModule
@@ -75,7 +77,7 @@ class TLogRouter extends \Prado\TModule
 			}
 		}
 		$this->loadConfig($config);
-		$this->getApplication()->attachEventHandler('OnEndRequest', [$this, 'collectLogs']);
+		Prado::getLogger()->attachEventHandler('onFlushLogs', [$this, 'collectLogs']);
 		parent::init($config);
 	}
 
@@ -100,8 +102,7 @@ class TLogRouter extends \Prado\TModule
 					foreach ($properties as $name => $value) {
 						$route->setSubproperty($name, $value);
 					}
-					$this->_routes[] = $route;
-					$route->init($route);
+					$this->addRoute($route, $route);
 				}
 			}
 		} else {
@@ -117,25 +118,67 @@ class TLogRouter extends \Prado\TModule
 				foreach ($properties as $name => $value) {
 					$route->setSubproperty($name, $value);
 				}
-				$this->_routes[] = $route;
-				$route->init($routeConfig);
+				$this->addRoute($route, $routeConfig);
 			}
 		}
 	}
 
 	/**
 	 * Adds a TLogRoute instance to the log router.
-	 *
-	 * @param TLogRoute $route $route
+	 * @param TLogRoute $route the route being added.
+	 * @param mixed $config the configuration for the route.
 	 * @throws TInvalidDataTypeException if the route object is invalid
 	 */
-	public function addRoute($route)
+	public function addRoute($route, $config = null)
 	{
 		if (!($route instanceof TLogRoute)) {
 			throw new TInvalidDataTypeException('logrouter_routetype_invalid');
 		}
 		$this->_routes[] = $route;
-		$route->init(null);
+		$route->init($config);
+	}
+
+	/**
+	 * Gets the number of log routes.
+	 * @return int The number of routes.
+	 * @since 4.2.3
+	 */
+	public function getRoutesCount(): int
+	{
+		return count($this->_routes);
+	}
+
+	/**
+	 * Gets the log routes.
+	 * @return TLogRoute[] The routes for the Router
+	 * @since 4.2.3
+	 */
+	public function getRoutes(): array
+	{
+		return $this->_routes;
+	}
+
+	/**
+	 * Removes a TLogRoute instance to the log router.
+	 * @param mixed $route the Route or Route Key to remove
+	 * @return ?TLogRoute The routes for the Router
+	 * @since 4.2.3
+	 */
+	public function removeRoute($route): ?TLogRoute
+	{
+		if (!is_array($route) && !is_object($route) && isset($this->_routes[$route])) {
+			$removed = $this->_routes[$route];
+			unset($this->_routes[$route]);
+			$this->_routes = array_values($this->_routes);
+			return $removed;
+		}
+		if (($key = array_search($route, $this->_routes, true)) !== false) {
+			$removed = $this->_routes[$key];
+			unset($this->_routes[$key]);
+			$this->_routes = array_values($this->_routes);
+			return $removed;
+		}
+		return null;
 	}
 
 	/**
@@ -161,13 +204,64 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Collects log messages from a logger.
 	 * This method is an event handler to application's EndRequest event.
-	 * @param mixed $param event parameter
+	 * @param TLogger $logger
+	 * @param bool $final
 	 */
-	public function collectLogs($param)
+	public function collectLogs($logger, bool $final)
 	{
-		$logger = Prado::getLogger();
-		foreach ($this->_routes as $route) {
-			$route->collectLogs($logger);
+		if (!($logger instanceof TLogger)) {
+			$logger = Prado::getLogger();
 		}
+		foreach ($this->_routes as $route) {
+			if ($route->getEnabled()) {
+				$route->collectLogs($logger, $final);
+			}
+		}
+	}
+
+	/**
+	 * This is a passthrough to the Application TLogger.
+	 * @return int The number of logs before triggering {@see self::onFlushLogs()}, default 1000.
+	 * @since 4.2.3
+	 */
+	public function getFlushCount(): int
+	{
+		return Prado::getLogger()->getFlushCount();
+	}
+
+	/**
+	 * This is a passthrough to the Application TLogger.
+	 * @param int|string $value the number of logs before triggering {@see self::onFlushLogs()}
+	 * @return static $this
+	 * @since 4.2.3
+	 */
+	public function setFlushCount($value): static
+	{
+		Prado::getLogger()->setFlushCount(TPropertyValue::ensureInteger($value));
+
+		return $this;
+	}
+
+	/**
+	 * This is a passthrough to the Application TLogger.
+	 * @return int How much debug trace stack information to include. Default 0.
+	 * @since 4.2.3
+	 */
+	public function getTraceLevel(): int
+	{
+		return Prado::getLogger()->getTraceLevel();
+	}
+
+	/**
+	 * This is a passthrough to the Application TLogger.
+	 * @param null|int|string $value How much debug trace stack information to include.
+	 * @return static $this
+	 * @since 4.2.3
+	 */
+	public function setTraceLevel($value): static
+	{
+		Prado::getLogger()->setTraceLevel(TPropertyValue::ensureInteger($value));
+
+		return $this;
 	}
 }

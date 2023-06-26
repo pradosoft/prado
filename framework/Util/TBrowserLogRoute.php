@@ -20,42 +20,43 @@ use Prado\Web\THttpUtility;
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0
  */
-class TBrowserLogRoute extends TLogRoute
+class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 {
 	/**
-	 * @var string css class for indentifying the table structure in the dom tree
+	 * @var string css class for identifying the table structure in the dom tree
 	 */
 	private $_cssClass;
-
-	public function processLogs($logs)
-	{
-		if (empty($logs) || $this->getApplication()->getMode() === 'Performance') {
-			return;
-		}
-		$first = $logs[0][3];
-		$even = true;
-		$response = $this->getApplication()->getResponse();
-		$response->write($this->renderHeader());
-		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
-			if ($i < $n - 1) {
-				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];
-				$timing['total'] = $logs[$i + 1][3] - $first;
-			} else {
-				$timing['delta'] = '?';
-				$timing['total'] = $logs[$i][3] - $first;
-			}
-			$timing['even'] = !($even = !$even);
-			$response->write($this->renderMessage($logs[$i], $timing));
-		}
-		$response->write($this->renderFooter());
-	}
+	/**
+	 * @var bool colorize the deltas.
+	 * @since 4.2.3
+	 */
+	private bool $_colorizeDelta = true;
+	/**
+	 * @var bool add the prefix to the message
+	 * @since 4.2.3
+	 */
+	private bool $_addPrefix = false;
 
 	/**
-	 * @param string $value the css class of the control
+	 * Renders the logs in HTML to the browser.
+	 * @param array $logs list of log messages
+	 * @param bool $final is the final flush
+	 * @param array $meta the meta data for the logs.
 	 */
-	public function setCssClass($value)
+	protected function processLogs(array $logs, bool $final, array $meta)
 	{
-		$this->_cssClass = TPropertyValue::ensureString($value);
+		$app = $this->getApplication();
+		if (empty($logs) || $app->getMode() === 'Performance' || $app instanceof \Prado\Shell\TShellApplication) {
+			return;
+		}
+		$response = $this->getApplication()->getResponse();
+		$response->write($this->renderHeader());
+		$even = false;
+		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
+			$logs[$i]['even'] = ($even = !$even);
+			$response->write($this->renderMessage($logs[$i], $meta));
+		}
+		$response->write($this->renderFooter());
 	}
 
 	/**
@@ -63,7 +64,54 @@ class TBrowserLogRoute extends TLogRoute
 	 */
 	public function getCssClass()
 	{
-		return TPropertyValue::ensureString($this->_cssClass);
+		return $this->_cssClass;
+	}
+
+	/**
+	 * @param string $value the css class of the control
+	 */
+	public function setCssClass($value): static
+	{
+		$this->_cssClass = TPropertyValue::ensureString($value);
+		return $this;
+	}
+
+	/**
+	 * @return bool Colorize the Deltas
+	 * @since 4.2.3
+	 */
+	public function getColorizeDelta(): bool
+	{
+		return $this->_colorizeDelta;
+	}
+
+	/**
+	 * @param bool|string $value Colorize the Deltas
+	 * @since 4.2.3
+	 */
+	public function setColorizeDelta($value): static
+	{
+		$this->_colorizeDelta = TPropertyValue::ensureBoolean($value);
+		return $this;
+	}
+
+	/**
+	 * @return bool Adds the prefix to the message
+	 * @since 4.2.3
+	 */
+	public function getAddPrefix(): bool
+	{
+		return $this->_addPrefix;
+	}
+
+	/**
+	 * @param bool|string $value Adds the prefix to the message
+	 * @since 4.2.3
+	 */
+	public function setAddPrefix($value): static
+	{
+		$this->_addPrefix = TPropertyValue::ensureBoolean($value);
+		return $this;
 	}
 
 	/**
@@ -104,37 +152,63 @@ class TBrowserLogRoute extends TLogRoute
 
 	/**
 	 * @param array $log
-	 * @param array $info
+	 * @param array $meta
 	 * @return string
+	 * @author Brad Anderson <belisoful@icloud.com> Colorization/weight of time deltas.
 	 */
-	protected function renderMessage($log, $info)
+	protected function renderMessage($log, $meta)
 	{
 		$string = '';
-		$total = sprintf('%0.6f', $info['total']);
-		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = preg_replace('/\(line[^\)]+\)$/', '', $log[0]); //remove line number info
+		$total = sprintf('%0.6f', $log['total']);
+		$delta = sprintf('%0.6f', $log['delta']);
+		if ($this->_addPrefix) {
+			$msg = $this->formatLogMessage($log);
+		} else {
+			$msg = $log[0];
+		}
+		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
+
 		$msg = THttpUtility::htmlEncode($msg);
 		if ($this->getCssClass()) {
-			$colorCssClass = $log[1];
-			$messageCssClass = $info['even'] ? 'even' : 'odd';
+			$colorCssClass = $log[TLogger::LOG_LEVEL];
+			$messageCssClass = $log['even'] ? 'even' : 'odd';
+			$category = $log[TLogger::LOG_CATEGORY];
 			$string = <<<EOD
 					<tr class="message level$colorCssClass $messageCssClass">
 						<td class="code">&nbsp;</td>
-						<td class="category">{$log[2]}</td>
+						<td class="category">{$category}</td>
 						<td class="message">{$msg}</td>
 						<td class="time">{$delta}</td>
 						<td class="cumulatedtime">{$total}</td>
 					</tr>
 				EOD;
 		} else {
-			$bgcolor = $info['even'] ? "#fff" : "#eee";
-			$color = $this->getColorLevel($log[1]);
+			$bgcolor = $log['even'] ? "#fff" : "#e8e8e8";
+			if ($this->getColorizeDelta()) {
+				$normalizedTime = $delta / ($meta['maxdelta'] === 0.0 ? 1 : $meta['maxdelta']);
+				$textColor = 'color:' . TPropertyValue::ensureHexColor(static::getLogColor($normalizedTime));
+				$weightCutOff = 0.75;
+				$weightLightCutOff = 0.4;
+				if ($normalizedTime > $weightCutOff) {
+					$weight = '; font-weight: ' . round(400 + 500 * ($normalizedTime - $weightCutOff) / (1 - $weightCutOff));
+				} elseif($normalizedTime < $weightLightCutOff) {
+					$weight = '; font-weight: ' . round(400 - 300 * ($weightLightCutOff - $normalizedTime) / ($weightLightCutOff));
+				} else {
+					$weight = '';
+				}
+			} else {
+				$textColor = '';
+				$weight = '';
+			}
+
+			$color = $this->getColorLevel($log[TLogger::LOG_LEVEL]);
+			$category = $log[TLogger::LOG_CATEGORY];
 			$string = <<<EOD
 					<tr style="background-color: {$bgcolor}; color:#000">
-						<td style="border:1px solid silver;background-color: $color;">&nbsp;</td>
-						<td>{$log[2]}</td>
+						<td style="border:1px solid silver;background-color: {$color}">&nbsp;</td>
+						<td>{$category}</td>
 						<td>{$msg}</td>
-						<td style="text-align:center">{$delta}</td>
+						<td style="text-align:center; {$textColor}{$weight}">{$delta}</td>
 						<td style="text-align:center">{$total}</td>
 					</tr>
 				EOD;
@@ -145,6 +219,11 @@ class TBrowserLogRoute extends TLogRoute
 	protected function getColorLevel($level)
 	{
 		switch ($level) {
+			case TLogger::PROFILE:
+			case TLogger::PROFILE_BEGIN_SELECT:
+			case TLogger::PROFILE_BEGIN:
+			case TLogger::PROFILE_END_SELECT:
+			case TLogger::PROFILE_END: return 'lime';
 			case TLogger::DEBUG: return 'green';
 			case TLogger::INFO: return 'black';
 			case TLogger::NOTICE: return '#3333FF';

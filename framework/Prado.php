@@ -20,6 +20,12 @@ use Prado\Util\TLogger;
 use Prado\Util\TVarDumper;
 use Prado\I18N\Translation;
 
+// Defines the initialization run time of Prado if no start time is defined.
+if (empty($_SERVER["REQUEST_TIME_FLOAT"])) {
+	$time = $_SERVER["REQUEST_TIME_FLOAT"] = microtime(true);
+	$_SERVER["REQUEST_TIME"] = (int) $time;
+}
+
 // Defines the PRADO framework installation path.
 if (!defined('PRADO_DIR')) {
 	define('PRADO_DIR', __DIR__);
@@ -692,6 +698,35 @@ class Prado
 	}
 
 	/**
+	 * Writes a profile begin message.
+	 * @param string $token The profile token.
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 */
+	public static function profileBegin($token, $category = null, $ctl = null): void
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		self::log($token, TLogger::PROFILE_BEGIN, $category, $ctl);
+	}
+
+	/**
+	 * Writes a profile end message.
+	 * @param string $token The profile token.
+	 * @param ?string $category category of the message, default null for the calling class.
+	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message, default null
+	 * @return ?float The time spent since the PROFILE_BEGIN of the same token.
+	 */
+	public static function profileEnd($token, $category = null, $ctl = null): ?float
+	{
+		if ($category === null) {
+			$category = self::callingObject()::class;
+		}
+		return self::log($token, TLogger::PROFILE_END, $category, $ctl);
+	}
+
+	/**
 	 * Writes a log message.
 	 * This method wraps {@link log()} by checking the application mode.
 	 * When the application is in Debug mode, debug backtrace information is appended
@@ -839,8 +874,10 @@ class Prado
 	 * TLogger::ERROR, TLogger::ALERT, TLogger::FATAL.
 	 * @param string $category category of the message
 	 * @param null|\Prado\Web\UI\TControl|string $ctl control of the message
+	 * @return ?float When the $level is PROFILE_END, this returns the delta time
+	 *   since the PROFILE_BEGIN of the same $msg.
 	 */
-	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null): void
+	public static function log($msg, $level = TLogger::INFO, $category = 'Uncategorized', $ctl = null): ?float
 	{
 		if (self::$_logger === null) {
 			self::$_logger = new TLogger();
@@ -848,7 +885,7 @@ class Prado
 		if ($category === null) {
 			$category = self::callingObject()::class;
 		}
-		self::$_logger->log($msg, $level, $category, $ctl);
+		return self::$_logger->log($msg, $level, $category, $ctl);
 	}
 
 	/**

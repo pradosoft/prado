@@ -407,6 +407,57 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$instance->testIsCallingSelfClassFromClassB($this, $instance);
 	}
 	
+	public function testProfileBegin()
+	{
+		$logger = Prado::getLogger();
+			
+		$logger->deleteLogs();
+		Prado::profileBegin('token');
+		$this->assertEquals(1, $logger->getLogCount());
+		$this->assertEquals(1, count($logs = $logger->getLogs()));
+		$this->assertEquals('token', $logs[0][0]);
+		$this->assertEquals(TLogger::PROFILE_BEGIN, $logs[0][1]);
+		$this->assertEquals($this::class, $logs[0][2]);
+		$this->assertNull($logs[0][5]);
+		
+		Prado::profileBegin('token', \Prado\TApplication::class, 'ctl1');
+		$this->assertEquals(1, $logger->getLogCount());
+		$this->assertEquals(1, count($logs = $logger->getLogs()));
+		$this->assertEquals('token', $logs[0][0]);
+		$this->assertEquals(TLogger::PROFILE_BEGIN, $logs[0][1]);
+		$this->assertEquals(\Prado\TApplication::class, $logs[0][2]);
+		$this->assertEquals('ctl1', $logs[0][5]);
+		
+		$logger->deleteProfileLogs();
+	}
+	
+	public function testProfileEnd()
+	{
+		$logger = Prado::getLogger();
+			
+		$logger->deleteLogs();
+		$this->assertNull(Prado::profileBegin('token'));
+		usleep(10);
+		$this->assertNotNull($profileTime = Prado::profileEnd('token'));
+		
+		$this->assertEquals(2, $logger->getLogCount());
+		$this->assertEquals(2, count($logs = $logger->getLogs()));
+		$this->assertEquals('token', $logs[0][0]);
+		$this->assertEquals(TLogger::PROFILE_BEGIN, $logs[0][1]);
+		$this->assertEquals($this::class, $logs[0][2]);
+		$this->assertNull($logs[0][5]);
+		
+		$this->assertEquals('token', $logs[1][0]);
+		$this->assertEquals(TLogger::PROFILE_END, $logs[1][1]);
+		$this->assertEquals($this::class, $logs[1][2]);
+		$this->assertNull($logs[1][5]);
+		
+		$this->assertNotNull($profileTime2 = Prado::profileEnd('token'));
+		$this->assertGreaterThan($profileTime, $profileTime2);
+		
+		$this->assertEquals(0, $logger->getLogCount(false));
+	}
+	
 	public function testTrace()
 	{
 		$app = Prado::getApplication();
@@ -427,6 +478,7 @@ class PradoBaseTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals(TLogger::INFO, $logs[1][1]);
 		$this->assertEquals($this::class, $logs[1][2]);
 		$this->assertEquals(null, $logs[1][5]);
+		$this->assertEquals(getmypid(), $logs[1][7]);
 		$app->setMode($mode);
 	}
 	

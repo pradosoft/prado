@@ -9,7 +9,6 @@
 
 namespace Prado\Util;
 
-use Prado\Exceptions\TException;
 use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\ActiveControls\TActivePageAdapter;
 
@@ -26,26 +25,24 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  */
 class TFirebugLogRoute extends TBrowserLogRoute
 {
-	public function processLogs($logs)
+	/**
+	 * Logs via Firebug.
+	 * @param array $logs list of log messages
+	 * @param bool $final is the final flush
+	 * @param array $meta the meta data for the logs.
+	 */
+	protected function processLogs(array $logs, bool $final, array $meta)
 	{
 		$page = $this->getService()->getRequestedPage();
 		if (empty($logs) || $this->getApplication()->getMode() === \Prado\TApplicationMode::Performance) {
 			return;
 		}
-		$first = $logs[0][3];
-		$even = true;
+		$even = false;
 
 		$blocks = [['info', 'Tot Time', 'Time    ', '[Level] [Category] [Message]']];
 		for ($i = 0, $n = count($logs); $i < $n; ++$i) {
-			if ($i < $n - 1) {
-				$timing['delta'] = $logs[$i + 1][3] - $logs[$i][3];
-				$timing['total'] = $logs[$i + 1][3] - $first;
-			} else {
-				$timing['delta'] = '?';
-				$timing['total'] = $logs[$i][3] - $first;
-			}
-			$timing['even'] = !($even = !$even);
-			$blocks[] = $this->renderMessageCallback($logs[$i], $timing);
+			$logs[$i]['even'] = ($even = !$even);
+			$blocks[] = $this->renderMessageCallback($logs[$i]);
 		}
 
 		try {
@@ -87,12 +84,12 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		return '';
 	}
 
-	protected function renderMessage($log, $info)
+	protected function renderMessage($log, $meta)
 	{
-		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[1]);
-		$total = sprintf('%0.6f', $info['total']);
-		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
+		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[TLogger::LOG_LEVEL]);
+		$total = sprintf('%0.6f', $log['total']);
+		$delta = sprintf('%0.6f', $log['delta']);
+		$msg = trim($this->formatFirebugLogMessage($log));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
 		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
@@ -100,12 +97,12 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		return $string;
 	}
 
-	protected function renderMessageCallback($log, $info)
+	protected function renderMessageCallback($log)
 	{
-		$logfunc = $this->getFirebugLoggingFunction($log[1]);
-		$total = sprintf('%0.6f', $info['total']);
-		$delta = sprintf('%0.6f', $info['delta']);
-		$msg = trim($this->formatLogMessage($log[0], $log[1], $log[2], time()));
+		$logfunc = $this->getFirebugLoggingFunction($log[TLogger::LOG_LEVEL]);
+		$total = sprintf('%0.6f', $log['total']);
+		$delta = sprintf('%0.6f', $log['delta']);
+		$msg = trim($this->formatFirebugLogMessage($log));
 		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
 
 		return [$logfunc, $total, $delta, $msg];
@@ -126,9 +123,42 @@ class TFirebugLogRoute extends TBrowserLogRoute
 		return $string;
 	}
 
+
+	/**
+	 * Formats a log message given different fields.
+	 * @param array $log The log to format
+	 * @return string formatted message
+	 */
+	public function formatFirebugLogMessage(array $log): string
+	{
+		$traces = [];
+		if (!is_string($log[TLogger::LOG_MESSAGE])) {
+			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
+				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
+			} else {
+				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
+			}
+		}
+		if (!is_string($log[TLogger::LOG_MESSAGE])) {
+			if ($log[TLogger::LOG_MESSAGE] instanceof \Exception || $log[TLogger::LOG_MESSAGE] instanceof \Throwable) {
+				$log[TLogger::LOG_MESSAGE] = (string) $log[TLogger::LOG_MESSAGE];
+			} else {
+				$log[TLogger::LOG_MESSAGE] = \Prado\Util\TVarDumper::dump($log[TLogger::LOG_MESSAGE]);
+			}
+		}
+		if (isset($log[TLogger::LOG_TRACES])) {
+			$traces = array_map(fn ($trace) => "in {$trace['file']}:{$trace['line']}", $log[TLogger::LOG_TRACES]);
+		}
+		return '[' . $this->getLevelName($log[TLogger::LOG_LEVEL]) . '] [' . $log[TLogger::LOG_CATEGORY] . '] ' . $log[TLogger::LOG_MESSAGE]
+			. (empty($traces) ? '' : "\n    " . implode("\n    ", $traces));
+	}
+
 	protected function getFirebugLoggingFunction($level)
 	{
 		switch ($level) {
+			case TLogger::PROFILE:
+			case TLogger::PROFILE_BEGIN:
+			case TLogger::PROFILE_END:
 			case TLogger::DEBUG:
 			case TLogger::INFO:
 			case TLogger::NOTICE:
