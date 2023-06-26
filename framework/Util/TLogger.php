@@ -145,6 +145,7 @@ class TLogger extends \Prado\TComponent
 		if($flushShutdown) {
 			register_shutdown_function(function () {
 				$this->onFlushLogs();
+				// flush any logs in the shutdown function.
 				register_shutdown_function([$this, 'onFlushLogs'], $this, true);
 			});
 		}
@@ -394,7 +395,7 @@ class TLogger extends \Prado\TComponent
 	 */
 	public function onFlushLogs(mixed $sender = null, mixed $final = null)
 	{
-		if ($this->_flushing || !count($this->_logs)) {
+		if ($this->_flushing || !$final && !count($this->_logs)) {
 			return;
 		}
 

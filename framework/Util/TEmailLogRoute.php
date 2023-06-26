@@ -74,7 +74,7 @@ class TEmailLogRoute extends TLogRoute
 		$message = '';
 
 		foreach ($logs as $log) {
-			$message .= $this->formatLogMessage($log);
+			$message .= $this->formatLogMessage($log) . "\n";
 		}
 		$message = wordwrap($message, 70);
 		$returnPath = ini_get('sendmail_path') ? "Return-Path:{$this->_from}\r\n" : '';

@@ -150,7 +150,7 @@ class TFileLogRoute extends TLogRoute
 			$this->rotateFiles();
 		}
 		foreach ($logs as $log) {
-			error_log($this->formatLogMessage($log), 3, $logFile);
+			error_log($this->formatLogMessage($log) . "\n", 3, $logFile);
 		}
 	}
 
