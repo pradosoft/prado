@@ -50,11 +50,13 @@ class TAuthorizationRuleCollection extends \Prado\Collections\TPriorityList
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a TAuthorizationRule object.
+	 * @return ?float The priority of the item inserted at the index.
 	 */
 	public function insertAt($index, $item)
 	{
 		if ($item instanceof TAuthorizationRule) {
 			parent::insertAtIndexInPriority($item, $index);
+			return $item->getPriority();
 		} else {
 			throw new TInvalidDataTypeException('authorizationrulecollection_authorizationrule_required');
 		}

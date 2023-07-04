@@ -42,11 +42,20 @@ trait TPriorityPropertyTrait
 	}
 
 	/**
-	 * @param numeric $value The priority of the item.
+	 * @param ?numeric $value The priority of the item.
+	 * @return static The current object.
 	 */
-	public function setPriority($value)
+	public function setPriority($value): static
 	{
-		$this->_priority = TPropertyValue::ensureFloat($value);
+		if ($value === '') {
+			$value = null;
+		}
+		if ($value !== null) {
+			$value = TPropertyValue::ensureFloat($value);
+		}
+		$this->_priority = $value;
+
+		return $this;
 	}
 
 	/**

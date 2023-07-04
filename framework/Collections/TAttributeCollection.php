@@ -114,10 +114,11 @@ class TAttributeCollection extends TMap
 	 * This overrides the parent implementation by converting the key to lower case first if CaseSensitive is false.
 	 * @param mixed $key
 	 * @param mixed $value
+	 * @return mixed inserted key
 	 */
-	public function add($key, $value)
+	public function add($key, $value): mixed
 	{
-		parent::add($this->_caseSensitive ? $key : strtolower($key), $value);
+		return parent::add($this->_caseSensitive ? $key : strtolower($key), $value);
 	}
 
 	/**

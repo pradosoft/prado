@@ -1,3 +1,4 @@
+@@ -0,0 +1,682 @@
 <?php
 
 use Prado\Collections\IPriorityItem;
@@ -350,10 +351,10 @@ class TPriorityMapTest extends TMapTest
 		$this->assertEquals(5, $this->map->getDefaultPriority());
 
 		$this->assertEquals(8, $this->map->Precision);
-		$this->assertEquals(5.4, $this->map->add('key1', $this->item1, 5.4));
-		$this->assertEquals(5.5, $this->map->add(11, $this->item2, 5.5));
-		$this->assertEquals(5.6, $this->map->add('key3', $this->item3, 5.6));
-		$this->assertEquals(5.3, $this->map->add('key4', $this->item4, 5.3));
+		$this->assertEquals('key1', $this->map->add('key1', $this->item1, 5.4));
+		$this->assertEquals(11, $this->map->add(11, $this->item2, 5.5));
+		$this->assertEquals('key3', $this->map->add('key3', $this->item3, 5.6));
+		$this->assertEquals('key4', $this->map->add('key4', $this->item4, 5.3));
 		
 		$this->map->_setPrecision(0);
 		$this->assertEquals(0, $this->map->getPrecision());
@@ -365,12 +366,17 @@ class TPriorityMapTest extends TMapTest
 		$this->assertEquals(5, $this->map->priorityOf($this->item4));
 		$this->map->clear();
 
-		$this->assertEquals(5, $this->map->add('key3', $this->item3));
-		$this->assertEquals(10, $this->map->add('key4', $this->item1, 10));
-		$this->assertEquals(10, $this->map->add('key4', $this->item1, 10.01));
-		$this->assertEquals(100, $this->map->add('key4', $this->item1, 100));
+		$this->assertEquals('key3', $this->map->add('key3', $this->item3));
+		$this->assertEquals(5, $this->map->priorityOf($this->item3));
+		$this->assertEquals('key4', $this->map->add('key4', $this->item1, 10));
+		$this->assertEquals(10, $this->map->priorityOf($this->item1));
+		$this->assertEquals('key4', $this->map->add('key4', $this->item1, 10.01));
+		$this->assertEquals(10, $this->map->priorityOf($this->item1));
+		$this->assertEquals('key4', $this->map->add('key4', $this->item1, 100));
+		$this->assertEquals(100, $this->map->priorityOf($this->item1));
 		$this->map->_setPrecision(1);
-		$this->assertEquals(10.2, $this->map->add('key6', $this->item1, 10.15));
+		$this->assertEquals('key6', $this->map->add('key6', $this->item1, 10.15));
+		$this->assertEquals(10.2, $this->map->priorityOf($this->item1));
 
 		$this->assertEquals(3, $this->map->getCount());
 	}

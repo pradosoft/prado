@@ -71,7 +71,7 @@ class TAttributeCollectionTest extends PHPUnit\Framework\TestCase
 	public function testAdd()
 	{
 		$collection = new TAttributeCollection();
-		$collection->add('Property', 'value');
+		self::assertEquals('property', $collection->add('Property', 'value'));
 		self::assertEquals('value', $collection->itemAt('Property'));
 	}
 

@@ -63,7 +63,7 @@ use WeakReference;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
-class TWeakList extends TList
+class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 {
 	use TWeakCollectionTrait;
 
@@ -149,11 +149,16 @@ class TWeakList extends TList
 	 * back into a regular callable.
 	 * @param mixed &$item
 	 */
-	protected function filterItemForOutput(&$item): void
+	public static function filterItemForOutput(&$item): void
 	{
-		if (is_array($item) || ($item instanceof Traversable && $item instanceof ArrayAccess)) {
+		if (is_array($item)) {
 			foreach (array_keys($item) as $key) {
-				$this->filterItemForOutput($item[$key]);
+				static::filterItemForOutput($item[$key]);
+			}
+		} elseif ($item instanceof Traversable && $item instanceof ArrayAccess) {
+			foreach ($item as $key => $element) {
+				static::filterItemForOutput($element);
+				$item[$key] = $element;
 			}
 		} elseif (is_object($item)) {
 			if($item instanceof WeakReference) {
@@ -172,13 +177,18 @@ class TWeakList extends TList
 	 * invalidation.
 	 * @param mixed &$item object to convert into a WeakReference where needed.
 	 */
-	protected function filterItemForInput(&$item): void
+	public static function filterItemForInput(&$item): void
 	{
-		if (is_array($item) || ($item instanceof Traversable && $item instanceof ArrayAccess)) {
+		if (is_array($item)) {
 			foreach (array_keys($item) as $key) {
-				$this->filterItemForInput($item[$key]);
+				static::filterItemForInput($item[$key]);
 			}
-		} elseif (is_object($item) && !($item instanceof Closure) && !($item instanceof IWeakRetainable)) {
+		} elseif ($item instanceof Traversable && $item instanceof ArrayAccess) {
+			foreach ($item as $key => $element) {
+				static::filterItemForInput($element);
+				$item[$key] = $element;
+			}
+		} elseif (is_object($item) && !($item instanceof WeakReference) && !($item instanceof Closure) && !($item instanceof IWeakRetainable)) {
 			$item = WeakReference::create($item);
 		}
 	}

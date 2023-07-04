@@ -141,7 +141,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function itemAt($key)
 	{
-		return array_key_exists($key, $this->_d) ? $this->_d[$key] : $this->dyNoItem(null, $key);
+		return (isset($this->_d[$key]) || array_key_exists($key, $this->_d)) ? $this->_d[$key] : $this->dyNoItem(null, $key);
 	}
 
 	/**
@@ -150,17 +150,20 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $key
 	 * @param mixed $value
 	 * @throws TInvalidOperationException if the map is read-only
+	 * @return mixed The key of the item, which is calculated when the $key is null.
 	 */
-	public function add($key, $value)
+	public function add($key, $value): mixed
 	{
 		$this->collapseReadOnly();
 		if (!$this->_r) {
 			if ($key === null) {
 				$this->_d[] = $value;
+				$key = array_key_last($this->_d);
 			} else {
 				$this->_d[$key] = $value;
 			}
 			$this->dyAddItem($key, $value);
+			return $key;
 		} else {
 			throw new TInvalidOperationException('map_readonly', $this::class);
 		}

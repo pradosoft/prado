@@ -43,6 +43,12 @@ map_readonly_set						= {0} cannot change Read-Only once it is already set.
 
 weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
 
+arraysubscription_no_change				= TArraySubscription.{0} cannot be changed after being subscribed.
+arraysubscription_no_null_key			= TArraySubscription cannot subscribe to a null key on an ArrayAccess object.
+arraysubscription_index_invalid			= TArraySubscription is in List mode (isAssociative = false) but the key '{0}' is not valid (count: {1}).
+eventsubscription_no_setcollection		= TEventSubscription.Array cannot be set directly.
+eventsubscription_no_change				= TEventSubscription.{0} cannot be changed after being subscribed.
+
 application_includefile_invalid			= Unable to find application configuration {0}. Make sure it is in namespace format and the file ends with ".xml" or ".php".
 application_basepath_invalid			= Application base path '{0}' does not exist or is not a directory.
 application_runtimepath_invalid			= Application runtime path '{0}' does not exist or is not writable by Web server process.

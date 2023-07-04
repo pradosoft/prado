@@ -142,7 +142,7 @@ class TListTest extends PHPUnit\Framework\TestCase
 
 	public function testInsertAtTList()
 	{
-		$this->assertNull($this->list->insertAt(0, $this->item3));
+		$this->list->insertAt(0, $this->item3);
 		$this->assertEquals(3, $this->list->getCount());
 		$this->assertEquals(2, $this->list->indexOf($this->item2));
 		$this->assertEquals(0, $this->list->indexOf($this->item3));
