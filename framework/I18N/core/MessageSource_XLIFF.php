@@ -368,7 +368,9 @@ class MessageSource_XLIFF extends MessageSource
 			//it will assume that the source is before the target.
 			foreach ($unit->childNodes as $node) {
 				//source node
-				if ($node->nodeName == 'source' && $node->firstChild->wholeText == $text) {
+				/** @var \DOMText $firstChild */
+				$firstChild = $node->firstChild;
+				if ($node->nodeName == 'source' && $firstChild->nodeType === XML_TEXT_NODE && $firstChild->wholeText == $text) {
 					$found = true;
 				}
 
@@ -453,7 +455,9 @@ class MessageSource_XLIFF extends MessageSource
 			//it will assume that the source is before the target.
 			foreach ($unit->childNodes as $node) {
 				//source node
-				if ($node->nodeName == 'source' && $node->firstChild->wholeText == $message) {
+				/** @var \DOMText $firstChild */
+				$firstChild = $node->firstChild;
+				if ($node->nodeName == 'source' && $firstChild->nodeType === XML_TEXT_NODE && $firstChild->wholeText == $message) {
 					//we found it, remove and save the xml file.
 					$unit->parentNode->removeChild($unit);
 					$fileNode = $xpath->query('//file')->item(0);
