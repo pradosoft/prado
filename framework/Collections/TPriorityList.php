@@ -49,7 +49,7 @@ use Prado\TPropertyValue;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2a
  */
-class TPriorityList extends TList
+class TPriorityList extends TList implements IPriorityCollection
 {
 	use TPriorityCollectionTrait;
 
@@ -141,6 +141,7 @@ class TPriorityList extends TList
 	 * @param mixed $item new item to add
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
+	 * @return ?float The priority of the inserted item.
 	 */
 	public function insertAt($index, $item)
 	{
@@ -150,6 +151,7 @@ class TPriorityList extends TList
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
 			$this->insertAtIndexInPriority($item, $priority[1], $priority[0]);
+			return $priority[0];
 		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
@@ -234,7 +236,7 @@ class TPriorityList extends TList
 	 * The list will search for the item.  The first matching item found will be removed from the list.
 	 * @param mixed $item item the item to be removed.
 	 * @param null|bool|float $priority priority of item to remove. without this parameter it defaults to false.
-	 * A value of false means any priority. null will be filled in with the default priority.
+	 *   A value of false means any priority. null will be filled in with the default priority.
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int index within the flattened list at which the item is being removed
 	 */
@@ -244,13 +246,29 @@ class TPriorityList extends TList
 			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
-		if (($p = $this->priorityOf($item, true)) !== false) {
-			if ($priority !== false) {
-				$priority = $this->ensurePriority($priority);
-				if ($p[0] != $priority) {
-					throw new TInvalidDataValueException('list_item_inexistent');
+		if ($priority !== false) {
+			$this->sortPriorities();
+
+			$priority = $this->ensurePriority($priority);
+
+			$absindex = 0;
+			foreach (array_keys($this->_d) as $p) {
+				if ($p < $priority) {
+					$absindex += count($this->_d[$p]);
+					continue;
+				} elseif ($p == $priority) {
+					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
+						$absindex += $index;
+						$this->removeAtIndexInPriority($index, $p);
+						return $absindex;
+					}
 				}
+				break;
 			}
+			throw new TInvalidDataValueException('list_item_inexistent');
+		}
+
+		if (($p = $this->priorityOf($item, true)) !== false) {
 			$this->removeAtIndexInPriority($p[1], $p[0]);
 			return $p[2];
 		} else {
@@ -329,10 +347,31 @@ class TPriorityList extends TList
 
 	/**
 	 * @param mixed $item item
+	 * @param mixed $priority
 	 * @return int the index of the item in the flattened list (0 based), -1 if not found.
 	 */
-	public function indexOf($item)
+	public function indexOf($item, $priority = false)
 	{
+		if ($priority !== false) {
+			$this->sortPriorities();
+
+			$priority = $this->ensurePriority($priority);
+
+			$absindex = 0;
+			foreach (array_keys($this->_d) as $p) {
+				if ($p < $priority) {
+					$absindex += count($this->_d[$p]);
+					continue;
+				} elseif ($p == $priority) {
+					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
+						$absindex += $index;
+						return $absindex;
+					}
+				}
+				break;
+			}
+			return -1;
+		}
 		$this->flattenPriorities();
 		if (($index = array_search($item, $this->_fd, true)) === false) {
 			return -1;

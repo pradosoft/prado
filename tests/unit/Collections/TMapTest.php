@@ -137,7 +137,7 @@ class TMapTest extends PHPUnit\Framework\TestCase
 	{
 		$this->map->attachBehavior(self::BEHAVIOR_NAME, $b = new TMapTestBehavior);
 		
-		$this->map->add('key3', $this->item3);
+		$this->assertEquals('key3', $this->map->add('key3', $this->item3));
 		$this->assertTrue($this->map->getCount() == 3);
 		$this->assertTrue($this->map->contains('key3'));
 		$this->assertEquals($this->item3, $this->map->itemAt('key3'));
@@ -145,6 +145,9 @@ class TMapTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('dyAddItem', $b->method);
 		$this->assertEquals('key3', $b->args[0]);
 		$this->assertEquals($this->item3, $b->args[1]);
+		
+		$this->assertEquals(0, $this->map->add(null, $this->item1));
+		$this->assertEquals(1, $this->map->add(null, $this->item2));
 	}
 
 	public function testCanNotAddWhenReadOnly()

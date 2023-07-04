@@ -59,7 +59,7 @@ use Prado\TPropertyValue;
  * @method void dyRemoveItem(mixed $key, mixed $value)
  * @method mixed dyNoItem(mixed $returnValue, mixed $key)
  */
-class TPriorityMap extends TMap
+class TPriorityMap extends TMap implements IPriorityCollection
 {
 	use TPriorityCollectionTrait;
 
@@ -188,7 +188,7 @@ class TPriorityMap extends TMap
 	{
 		$this->sortPriorities();
 		foreach (array_keys($this->_d) as $priority) {
-			if (array_key_exists($key, $this->_d[$priority])) {
+			if (isset($this->_d[$priority][$key]) || array_key_exists($key, $this->_d[$priority])) {
 				return $priority;
 			}
 		}
@@ -206,9 +206,9 @@ class TPriorityMap extends TMap
 	 * @param mixed $value
 	 * @param null|numeric $priority default: null, filled in with default priority
 	 * @throws TInvalidOperationException if the map is read-only
-	 * @return numeric priority at which the key-value pair was added
+	 * @return mixed The key of the item, which is calculated when the $key is null.
 	 */
-	public function add($key, $value, $priority = null)
+	public function add($key, $value, $priority = null): mixed
 	{
 		$itemPriority = null;
 		if (($isPriorityItem = ($value instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
@@ -248,7 +248,7 @@ class TPriorityMap extends TMap
 		} else {
 			throw new TInvalidOperationException('map_readonly', $this::class);
 		}
-		return $priority;
+		return $key;
 	}
 
 	/**

@@ -337,9 +337,10 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 * Attaches the behavior event handlers to an owner component. This tracks of the
 	 * attachment status of handlers on the owner components.
 	 * @param TComponent $component The component to attach the behavior event handlers to.
+	 * @return bool Successfully attached the event handlers.
 	 * @since 4.2.3
 	 */
-	protected function attachEventHandlers(TComponent $component): void
+	protected function attachEventHandlers(TComponent $component): bool
 	{
 		if ($this->setHandlersStatus($component, true)) {
 			$priority = $this->getPriority();
@@ -351,16 +352,19 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 					}
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/*
 	 * Detaches the behavior event handlers from an owner component. This tracks of the
 	 * attachment status of handlers on the owner components.
 	 * @param TComponent $component The component to detach the behavior event handlers from.
+	 * @return bool Successfully detached the event handlers.
 	 * @since 4.2.3
 	 */
-	protected function detachEventHandlers(TComponent $component): void
+	protected function detachEventHandlers(TComponent $component): bool
 	{
 		if ($this->setHandlersStatus($component, false)) {
 			$strict = $this->getStrictEvents();
@@ -371,7 +375,9 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 					}
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/**

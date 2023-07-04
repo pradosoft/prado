@@ -54,7 +54,7 @@ use WeakReference;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
  */
-class TWeakCallableCollection extends TPriorityList
+class TWeakCallableCollection extends TPriorityList implements IWeakCollection, ICollectionFilter
 {
 	use TWeakCollectionTrait;
 
@@ -138,6 +138,9 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		if($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
+			if (!$object) {
+				return;
+			}
 			$this->_eventHandlerCount++;
 		}
 		return $this->weakAdd($object);
@@ -154,6 +157,9 @@ class TWeakCallableCollection extends TPriorityList
 	{
 		if($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
+			if (!$object) {
+				return;
+			}
 			$this->_eventHandlerCount--;
 		}
 		return $this->weakRemove($object);
@@ -180,7 +186,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * actual callable.
 	 * @param callable &$handler the $handler or $handler[0] may be a WeakReference
 	 */
-	protected function filterItemForOutput(&$handler)
+	public static function filterItemForOutput(&$handler): void
 	{
 		if (is_array($handler) && is_object($handler[0]) && ($handler[0] instanceof WeakReference)) {
 			if ($obj = $handler[0]->get()) {
@@ -203,7 +209,7 @@ class TWeakCallableCollection extends TPriorityList
 	 * @param callable &$handler callable to convert into a WeakReference version
 	 * @param bool $validate whether or not to validate the input as a callable
 	 */
-	protected function filterItemForInput(&$handler, $validate = false)
+	public static function filterItemForInput(&$handler, $validate = false): void
 	{
 		if ($validate && !is_callable($handler)) {
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
@@ -466,6 +472,7 @@ class TWeakCallableCollection extends TPriorityList
 
 		if (($priority = $this->priorityAt($index, true)) !== false) {
 			$this->internalInsertAtIndexInPriority($item, $priority[1], $priority[0]);
+			return $priority[0];
 		} else {
 			throw new TInvalidDataValueException('list_index_invalid', $index);
 		}
@@ -564,13 +571,30 @@ class TWeakCallableCollection extends TPriorityList
 			throw new TInvalidOperationException('list_readonly', $this::class);
 		}
 
-		if (($p = $this->priorityOf($item, true)) !== false) {
-			if ($priority !== false) {
-				$priority = $this->ensurePriority($priority);
-				if ($p[0] != $priority) {
-					throw new TInvalidDataValueException('list_item_inexistent');
+		if ($priority !== false) {
+			$this->filterItemForInput($item);
+			$this->sortPriorities();
+
+			$priority = $this->ensurePriority($priority);
+
+			$absindex = 0;
+			foreach (array_keys($this->_d) as $p) {
+				if ($p < $priority) {
+					$absindex += count($this->_d[$p]);
+					continue;
+				} elseif ($p == $priority) {
+					if (($index = array_search($item, $this->_d[$p], true)) !== false) {
+						$absindex += $index;
+						$this->removeAtIndexInPriority($index, $p);
+						return $absindex;
+					}
 				}
+				break;
 			}
+			throw new TInvalidDataValueException('list_item_inexistent');
+		}
+
+		if (($p = $this->priorityOf($item, true)) !== false) {
 			$this->internalRemoveAtIndexInPriority($p[1], $p[0]);
 			return $p[2];
 		} else {
@@ -671,11 +695,39 @@ class TWeakCallableCollection extends TPriorityList
 	/**
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param mixed $item item being indexed.
+	 * @param mixed $priority
 	 * @return int the index of the item in the flattened list (0 based), -1 if not found.
 	 */
-	public function indexOf($item)
+	public function indexOf($item, $priority = false)
 	{
 		$this->filterItemForInput($item);
+		if ($priority !== false) {
+			$this->sortPriorities();
+
+			$priority = $this->ensurePriority($priority);
+
+			$absindex = 0;
+			foreach (array_keys($this->_d) as $p) {
+				if ($p < $priority) {
+					$absindex += count($this->_d[$p]);
+					continue;
+				} elseif ($p == $priority) {
+					$index = false;
+					foreach($this->_d[$p] as $index => $pItem) {
+						if ($item === $pItem || ($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+							break;
+						}
+						$index = false;
+					}
+					if ($index !== false) {
+						$absindex += $index;
+						return $absindex;
+					}
+				}
+				return -1;
+			}
+			return -1;
+		}
 		$this->flattenPriorities();
 
 		if (($index = array_search($item, $this->_fd, true)) === false && $this->_eventHandlerCount) {
