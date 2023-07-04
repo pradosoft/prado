@@ -18,10 +18,10 @@ namespace Prado\Web\UI\WebControls;
  * TDataGridSortCommandEventParameter class
  *
  * TDataGridSortCommandEventParameter encapsulates the parameter data for
- * {@link TDataGrid::onSortCommand SortCommand} event of {@link TDataGrid} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataGrid::onSortCommand SortCommand} event of {@see \Prado\Web\UI\WebControls\TDataGrid} controls.
  *
- * The {@link getCommandSource CommandSource} property refers to the control
- * that originally raises the OnCommand event, while {@link getSortExpression SortExpression}
+ * The {@see getCommandSource CommandSource} property refers to the control
+ * that originally raises the OnCommand event, while {@see getSortExpression SortExpression}
  * gives the sort expression carried with the sort command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

@@ -23,16 +23,16 @@ use Prado\Util\IBaseBehavior;
  * TBehaviorParameterLoader implements attaching Behaviors from Parameters
  * before any work has been done.  Here is an example of how to attach a behavior
  * via parameter within an application.xml:
- * <code>
+ * ```xml
  * <application id="prado-app">
  *		<parameters>
  *		<parameter id="pagethemebehaviorloader" class="Prado\Util\Behaviors\TBehaviorParameterLoader" BehaviorName="testBehavior" BehaviorClass="Prado\Util\Behaviors\TParameterizeBehavior" Priority="10" AttachToClass="Prado\Web\UI\TPage" Parameter="ThemeName" Property="Theme" DefaultValue="ColoradoBlue2022" />
  *		<parameters>
  * 	  ...
- * </code>
+ * ```
  *
  * TBehaviorParameterLoader can be used in parameters to load behaviors through the
- * application configuration parameters, {@link TParameterModule}, as well in each
+ * application configuration parameters, {@see \Prado\Util\TParameterModule}, as well in each
  * folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -117,8 +117,8 @@ class TBehaviorParameterLoader extends TComponent
 	}
 
 	/**
-	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * TApplication::onBeginRequest Handler that adds {@see attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@see attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
 	 * @param mixed $param parameter of the event

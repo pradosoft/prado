@@ -232,15 +232,15 @@ class TXmlElement extends \Prado\TComponent
 
 	/**
 	 * Magic-method override. Called whenever this element is used as a string.
-	 * <code>
+	 * ```php
 	 * $element = new TXmlElement('tag');
 	 * echo $element;
-	 * </code>
+	 * ```
 	 * or
-	 * <code>
+	 * ```php
 	 * $element = new TXmlElement('tag');
 	 * $xml = (string)$element;
-	 * </code>
+	 * ```
 	 * @return string string representation of this element
 	 */
 	public function __toString()

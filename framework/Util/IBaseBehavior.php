@@ -22,10 +22,10 @@ use Prado\Collections\IPriorityProperty;
  * properties, and fine internal process control for the owner component at run time.
  *
  * There are two specific types of behaviors in PRADO:
- * -{@link IClassBehavior} is stateless and one instance attaches to multiple owners.
+ * -{@see \Prado\Util\IClassBehavior} is stateless and one instance attaches to multiple owners.
  *    The owner is injected as the first parameter argument in behavior implemented
  *    methods called on the owner.
- * -{@link IBehavior} is stateful and each one instance attaches to one owner.
+ * -{@see \Prado\Util\IBehavior} is stateful and each one instance attaches to one owner.
  *
  * All public methods and properties in the behavior are inherited by the owners
  * and so IBaseBehavior act like run-time traits.
@@ -34,9 +34,9 @@ use Prado\Collections\IPriorityProperty;
  * events are an optional event system between owners and behaviors.  When an owner
  * calls a method starting with "dy", all attached enabled behaviors implementing
  * the dynamic event are raised. For example:
- * <code>
+ * ```php
  *		$filteredData = $componentObject->dyFilterData($data);
- * </code>
+ * ```
  * would automatically call all enabled behaviors attached to $componentObject implementing
  * dyFilterData(..., ?TCallchain $chain = null).  The first parameter in "dy" dynamic
  * events is passed through as the return value and so acts like a filter or default
@@ -51,7 +51,7 @@ use Prado\Collections\IPriorityProperty;
  * method callable without the $chain but will always be present in owner called
  * behavior dynamic event methods.
  *
- * See {@link IBehavior} and {@link IClassBehavior} for examples of their respective
+ * See {@see \Prado\Util\IBehavior} and {@see \Prado\Util\IClassBehavior} for examples of their respective
  * dynamic event implementations.
  *
  * @author Brad Anderson <belisoful@icloud.ocm>

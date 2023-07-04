@@ -88,7 +88,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * If a {@link ParameterMap setParameterMap()} property is not specified,
+	 * If a {@see ParameterMap setParameterMap()} property is not specified,
 	 * you may specify a ParameterClass instead and use inline parameters.
 	 * The value of the parameterClass attribute can be any existing PHP class name.
 	 * @param string $value parameter class name.
@@ -125,7 +125,7 @@ class TSqlMapStatement extends \Prado\TComponent
 	}
 
 	/**
-	 * If a {@link ResultMap setResultMap()} is not specified, you may specify a
+	 * If a {@see ResultMap setResultMap()} is not specified, you may specify a
 	 * ResultClass instead. The value of the ResultClass property can be the
 	 * name of a PHP class or primitives like integer, string, or array. The
 	 * class specified will be automatically mapped to the columns in the
@@ -220,7 +220,7 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * @return TResultMap the result map corresponding to the
-	 * {@link ResultMap getResultMap()} property.
+	 * {@see ResultMap getResultMap()} property.
 	 */
 	public function resultMap()
 	{
@@ -229,7 +229,7 @@ class TSqlMapStatement extends \Prado\TComponent
 
 	/**
 	 * @return TParameterMap the parameter map corresponding to the
-	 * {@link ParameterMap getParameterMap()} property.
+	 * {@see ParameterMap getParameterMap()} property.
 	 */
 	public function parameterMap()
 	{

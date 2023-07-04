@@ -15,9 +15,9 @@ use Prado\Util\TUtf8Converter;
 
 /**
  * To format numbers in locale sensitive manner use
- * <code>
+ * ```php
  * <com:TNumberFormat Pattern="0.##" value="2.0" />
- * </code>
+ * ```
  *
  * The format used for numbers can be selected by specifying the Type attribute.
  * The known types are "decimal", "currency", "percentage", "scientific",
@@ -31,9 +31,9 @@ use Prado\Util\TUtf8Converter;
  * people from US know the "," as thousand separator. Therefore a "Currency"
  * attribute is available, so that the output from the following example
  * results in 100.00.
- * <code>
+ * ```php
  * <com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" />
- * </code>
+ * ```
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
@@ -102,8 +102,8 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the numberic value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return string number
 	 * @see getValue
 	 * @since 3.1.2
@@ -115,8 +115,8 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the numberic value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value the number value
 	 * @see setValue
 	 * @since 3.1.2

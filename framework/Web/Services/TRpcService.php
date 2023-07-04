@@ -19,33 +19,33 @@ use Prado\Xml\TXmlElement;
  * The TRpcService class is a generic class that can be extended and used to implement
  * rpc services using different servers and protocols.
  *
- * A server is a {@link TModule} that must subclass {@link TRpcServer}: its role is
+ * A server is a {@see \Prado\TModule} that must subclass {@see \Prado\Web\Services\TRpcServer}: its role is
  * to be an intermediate, moving data between the service and the provider. The base
- * {@link TRpcServer} class should suit the most common needs, but can be sublassed for
+ * {@see \Prado\Web\Services\TRpcServer} class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.
  *
- * A protocol is a {@link TModule} that must subclass {@link TRpcProtocol}: its role is
+ * A protocol is a {@see \Prado\TModule} that must subclass {@see \Prado\Web\Services\TRpcProtocol}: its role is
  * to implement the protocol that exposes the rpc api. Prado already implements two
- * protocols: {@link TXmlRpcProtocol} for Xml-Rpc request and {@link TJsonRpcProtocol} for
+ * protocols: {@see \Prado\Web\Services\TXmlRpcProtocol} for Xml-Rpc request and {@see \Prado\Web\Services\TJsonRpcProtocol} for
  * JSON-Rpc requests.
  *
- * A provider is a {@link TModule} that must subclass {@link TRpcApiProvider}: its role is
+ * A provider is a {@see \Prado\TModule} that must subclass {@see \Prado\Web\Services\TRpcApiProvider}: its role is
  * to implement the methods that are available through the api. Each defined api must be
- * a sublass of the abstract class {@link TRpcApiProvider} and implement its methods.
+ * a sublass of the abstract class {@see \Prado\Web\Services\TRpcApiProvider} and implement its methods.
  *
  * The flow of requests and reponses is the following:
  * Request <-> TRpcService <-> TRpcServer <-> TRpcProtocol <-> TRpcApiProvider <-> Response
  *
  * To define an rpc service, add the proper application configuration:
  *
- * <code>
+ * ```xml
  * <service id="rpc" class="Prado\Web\Services\TRpcService">
  * 	 <rpcapi id="customers" class="Application.Api.CustomersApi" />
  *   <modules>
  *     <!--  register any module needed by the service here -->
  *   </modules>
  * </service>
- * </code>
+ * ```
  *
  * An api can be registered adding a proper <rpcapi ..> definition inside the service
  * configuration. Each api definition must contain an id property and a class name

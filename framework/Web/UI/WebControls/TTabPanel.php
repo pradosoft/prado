@@ -21,29 +21,29 @@ use Prado\Web\Javascripts\TJavaScript;
  * TTabPanel displays a tabbed panel. Users can click on the tab bar to switching among
  * different tab views. Each tab view is an independent panel that can contain arbitrary content.
  *
- * If the {@link setAutoSwitch AutoSwitch} property is enabled, the user will be able to switch the active view
+ * If the {@see setAutoSwitch AutoSwitch} property is enabled, the user will be able to switch the active view
  * to another one just hovering its corresponding tab caption.
  *
- * A TTabPanel control consists of one or several {@link TTabView} controls representing the possible
+ * A TTabPanel control consists of one or several {@see \Prado\Web\UI\WebControls\TTabView} controls representing the possible
  * tab views. At any time, only one tab view is visible (active), which is specified by any of
  * the following properties:
- * - {@link setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
- * - {@link setActiveViewID ActiveViewID} - the text ID of the visible view.
- * - {@link setActiveView ActiveView} - the visible view instance.
- * If both {@link setActiveViewIndex ActiveViewIndex} and {@link setActiveViewID ActiveViewID}
+ * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
+ * - {@see setActiveViewID ActiveViewID} - the text ID of the visible view.
+ * - {@see setActiveView ActiveView} - the visible view instance.
+ * If both {@see setActiveViewIndex ActiveViewIndex} and {@see setActiveViewID ActiveViewID}
  * are set, the latter takes precedence.
  *
  * TTabPanel uses CSS to specify the appearance of the tab bar and panel. By default,
  * an embedded CSS file will be published which contains the default CSS for TTabPanel.
- * You may also use your own CSS file by specifying the {@link setCssUrl CssUrl} property.
+ * You may also use your own CSS file by specifying the {@see setCssUrl CssUrl} property.
  * The following properties specify the CSS classes used for elements in a TTabPanel:
- * - {@link setCssClass CssClass} - the CSS class name for the outer-most div element (defaults to 'tab-panel');
- * - {@link setTabCssClass TabCssClass} - the CSS class name for nonactive tab div elements (defaults to 'tab-normal');
- * - {@link setActiveTabCssClass ActiveTabCssClass} - the CSS class name for the active tab div element (defaults to 'tab-active');
- * - {@link setViewCssClass ViewCssClass} - the CSS class for the div element enclosing view content (defaults to 'tab-view');
+ * - {@see setCssClass CssClass} - the CSS class name for the outer-most div element (defaults to 'tab-panel');
+ * - {@see setTabCssClass TabCssClass} - the CSS class name for nonactive tab div elements (defaults to 'tab-normal');
+ * - {@see setActiveTabCssClass ActiveTabCssClass} - the CSS class name for the active tab div element (defaults to 'tab-active');
+ * - {@see setViewCssClass ViewCssClass} - the CSS class for the div element enclosing view content (defaults to 'tab-view');
  *
  * To use TTabPanel, write a template like following:
- * <code>
+ * ```php
  * <com:TTabPanel>
  *   <com:TTabView Caption="View 1">
  *     content for view 1
@@ -55,7 +55,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *     content for view 3
  *   </com:TTabView>
  * </com:TTabPanel>
- * </code>
+ * ```
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
@@ -74,7 +74,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@link TTabView} objects into the {@link getViews Views} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TTabView} objects into the {@see getViews Views} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -88,7 +88,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns the index of the active tab view.
 	 * Note, this property may not return the correct index.
-	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * To ensure the correctness, call {@see getActiveView()} first.
 	 * @return int the zero-based index of the active tab view. If -1, it means no active tab view. Default is 0 (the first view is active).
 	 */
 	public function getActiveViewIndex()
@@ -108,7 +108,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	/**
 	 * Returns the ID of the active tab view.
 	 * Note, this property may not return the correct ID.
-	 * To ensure the correctness, call {@link getActiveView()} first.
+	 * To ensure the correctness, call {@see getActiveView()} first.
 	 * @return string The ID of the active tab view. Defaults to '', meaning not set.
 	 */
 	public function getActiveViewID()
@@ -346,8 +346,8 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getActiveViewIndex ActiveViewIndex} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getActiveViewIndex ActiveViewIndex} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */
@@ -396,7 +396,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Registers the CSS relevant to the TTabControl.
-	 * It will register the CSS file specified by {@link getCssUrl CssUrl}.
+	 * It will register the CSS file specified by {@see getCssUrl CssUrl}.
 	 * If that is not set, it will use the default CSS.
 	 */
 	protected function registerStyleSheet()
@@ -477,7 +477,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return TTabViewCollection list of {@link TTabView} controls
+	 * @return TTabViewCollection list of {@see \Prado\Web\UI\WebControls\TTabView} controls
 	 */
 	public function getViews()
 	{

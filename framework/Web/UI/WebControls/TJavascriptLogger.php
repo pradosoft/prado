@@ -13,12 +13,15 @@ namespace Prado\Web\UI\WebControls;
  * TJavascriptLogger class.
  *
  * Provides logging for client-side javascript. Example: template code
- * <code><com:TJavascriptLogger /></code>
+ * ```php
+ * <com:TJavascriptLogger />
+ * ```
  *
  * Client-side javascript code to log info, error, warn, debug
- * <code>Logger.warn('A warning');
+ * ```js
+ * Logger.warn('A warning');
  * Logger.info('something happend');
- * </code>
+ * ```
  *
  * To see the logger and console, press ALT-D (or CTRL-D on OS X).
  * More information on the logger can be found at

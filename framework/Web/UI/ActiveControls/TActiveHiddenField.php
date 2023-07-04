@@ -16,7 +16,7 @@ use Prado\Web\UI\WebControls\THiddenField;
  * TActiveHiddenField class
  *
  * TActiveHiddenField displays a hidden input field on a Web page.
- * The value of the input field can be accessed via {@link getValue Value} property.
+ * The value of the input field can be accessed via {@see getValue Value} property.
  *
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>
  * @since 3.1

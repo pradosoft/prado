@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TTextBoxMode class.
  * TTextBoxMode defines the enumerable type for the possible mode
- * that a {@link TTextBox} control could be at.
+ * that a {@see \Prado\Web\UI\WebControls\TTextBox} control could be at.
  *
  * The following enumerable values are defined:
  * - SingleLine: the textbox will be a regular single line input

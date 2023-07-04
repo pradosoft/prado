@@ -12,7 +12,7 @@ namespace Prado\Collections;
 /**
  * IPriorityCollection interface
  *
- * IPriorityCollection is implemented by {@see TPriorityList} and {@see TPriorityMap}
+ * IPriorityCollection is implemented by {@see \Prado\Collections\TPriorityList} and {@see \Prado\Collections\TPriorityMap}
  * that provide priority collections.
  *
  * @author Brad Anderson <belisoful@icloud.com>

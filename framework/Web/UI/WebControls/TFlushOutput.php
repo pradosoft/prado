@@ -21,14 +21,14 @@ use Prado\TPropertyValue;
  * To use TFlushOutput, simply place it in a template where you want
  * the have the output buffered between the start of the page or the
  * last TFlushOutput to be sent to the client immediately
- * <code>
+ * ```php
  * <com:TFlushOutput />
- * </code>
+ * ```
  *
  * You can specify whether you want to keep buffering of the output
  * (if it was enabled) till the next occourence of a <com: TFlushOutput />
  * or the end of the page rendering, or stop buffering, by using the
- * {@link setContinueBuffering ContinueBuffering}.
+ * {@see setContinueBuffering ContinueBuffering}.
  *
  * @author Berczi Gabor <gabor.berczi@devworx.hu>
  * @since 3.1

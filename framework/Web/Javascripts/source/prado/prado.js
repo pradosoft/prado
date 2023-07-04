@@ -388,7 +388,7 @@ Prado.Element =
 	 * Select options from a selectable element.
 	 * @function ?
 	 * @param {string} element - Element id
-	 * @param {string} method - Name of any {@link Prado.Element.Selection} method
+	 * @param {string} method - Name of any {@see Prado.Element.Selection} method
 	 * @param {array|boolean|string} value - Values that should be selected
 	 * @param {int} total - Number of elements
 	 */

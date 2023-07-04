@@ -27,7 +27,7 @@ interface IValidator
 	 */
 	public function validate();
 	/**
-	 * @return bool whether the previous {@link validate()} is successful.
+	 * @return bool whether the previous {@see validate()} is successful.
 	 */
 	public function getIsValid();
 	/**

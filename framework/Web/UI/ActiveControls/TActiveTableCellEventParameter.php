@@ -13,12 +13,12 @@ namespace Prado\Web\UI\ActiveControls;
  * TActiveTableCellEventParameter class.
  *
  * The TActiveTableCellEventParameter provides the parameter passed during the callback
- * requestion in the {@link getCallbackParameter CallbackParameter} property. The
+ * requestion in the {@see getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
- * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
+ * using an THtmlWriter obtained from the {@see getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
  *
- * The {@link getSelectedCellIndex SelectedCellIndex} is a zero-based index of the
+ * The {@see getSelectedCellIndex SelectedCellIndex} is a zero-based index of the
  * TActiveTableCell , -1 if the cell is not part of the cell collection (this shouldn't
  * happen though since an exception is thrown before).
  *
@@ -45,8 +45,8 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 	}
 
 	/**
-	 * Returns the zero-based index of the {@link TActiveTableCell} within the
-	 * {@link TTableCellCollection} of the parent {@link TTableRow} control.
+	 * Returns the zero-based index of the {@see \Prado\Web\UI\ActiveControls\TActiveTableCell} within the
+	 * {@see \Prado\Web\UI\WebControls\TTableCellCollection} of the parent {@see \Prado\Web\UI\WebControls\TTableRow} control.
 	 * @return int the zero-based index of the cell.
 	 */
 	public function getSelectedCellIndex()

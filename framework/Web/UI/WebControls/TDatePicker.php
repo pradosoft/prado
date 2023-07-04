@@ -28,7 +28,7 @@ use Prado\I18N\core\CultureInfo;
  * the <b>DateFormat</b> property. Valid formats are the combination of the
  * following tokens,
  *
- * <code>
+ * ```
  *  Character Format Pattern (en-US)
  *  -----------------------------------------
  *  d          day digit
@@ -39,7 +39,7 @@ use Prado\I18N\core\CultureInfo;
  *  yy         2 digit year
  *  yyyy       4 digit year
  *  -----------------------------------------
- * </code>
+ * ```
  *
  * TDatePicker has four <b>Mode</b> to show the date picker popup.
  *
@@ -325,8 +325,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Returns the timestamp selected by the user.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getTimeStamp()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getTimeStamp()}.
 	 * @return int the timestamp of the TDatePicker control.
 	 * @see getTimeStamp
 	 * @since 3.1.2
@@ -338,8 +338,8 @@ class TDatePicker extends TTextBox
 
 	/**
 	 * Sets the timestamp represented by this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setTimeStamp()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setTimeStamp()}.
 	 * @param int $value the timestamp of the TDatePicker control.
 	 * @see setTimeStamp
 	 * @since 3.1.2

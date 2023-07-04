@@ -19,9 +19,9 @@ use Prado\Xml\TXmlDocument;
 /**
  * TUserManager class
  *
- * TUserManager manages a static list of users {@link TUser}.
+ * TUserManager manages a static list of users {@see \Prado\Security\TUser}.
  * The user information is specified via module configuration using the following XML syntax,
- * <code>
+ * ```xml
  * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
  *   <user name="Joe" password="demo" />
  *   <user name="John" password="demo" />
@@ -29,10 +29,10 @@ use Prado\Xml\TXmlDocument;
  *   <role name="Administrator" users="John" />
  *   <role name="Writer" users="Joe,John" />
  * </module>
- * </code>
+ * ```
  *
  * PHP configuration style:
- * <code>
+ * ```php
  * array(
  *   'users' => array(
  *      'class' => 'Prado\Security\TUserManager',
@@ -50,19 +50,19 @@ use Prado\Xml\TXmlDocument;
  *       ),
  *    ),
  * )
- * </code>
+ * ```
  *
  * In addition, user information can also be loaded from an external file
- * specified by {@link setUserFile UserFile} property. Note, the property
+ * specified by {@see setUserFile UserFile} property. Note, the property
  * only accepts a file path in namespace format. The user file format is
  * similar to the above sample.
  *
  * The user passwords may be specified as clear text, SH1 or MD5 hashed by setting
- * {@link setPasswordMode PasswordMode} as <b>Clear</b>, <b>SHA1</b> or <b>MD5</b>.
+ * {@see setPasswordMode PasswordMode} as <b>Clear</b>, <b>SHA1</b> or <b>MD5</b>.
  * The default name for a guest user is <b>Guest</b>. It may be changed
- * by setting {@link setGuestName GuestName} property.
+ * by setting {@see setGuestName GuestName} property.
  *
- * TUserManager may be used together with {@link TAuthManager} which manages
+ * TUserManager may be used together with {@see \Prado\Security\TAuthManager} which manages
  * how users are authenticated and authorized in a Prado application.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

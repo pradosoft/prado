@@ -16,11 +16,11 @@ use Prado\Web\UI\TTemplateControl;
  * TDataRenderer class
  *
  * TDataRenderer is the convenient base class for template-based renderer controls.
- * It extends {@link TTemplateControl} and implements the methods required
- * by the {@link \Prado\IDataRenderer} interface.
+ * It extends {@see \Prado\Web\UI\TTemplateControl} and implements the methods required
+ * by the {@see \Prado\IDataRenderer} interface.
  *
  * The following property is provided by TDataRenderer:
- * - {@link getData Data}: data associated with this renderer.
+ * - {@see getData Data}: data associated with this renderer.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.2

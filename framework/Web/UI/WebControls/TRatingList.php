@@ -59,7 +59,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Wrapper for {@link setReadOnly ReadOnly} property.
+	 * Wrapper for {@see setReadOnly ReadOnly} property.
 	 * @return bool whether the rating list can be edited. Defaults to true.
 	 */
 	public function getAllowInput()
@@ -68,7 +68,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Wrapper for {@link setReadOnly ReadOnly} property.
+	 * Wrapper for {@see setReadOnly ReadOnly} property.
 	 * @param bool $value whether the rating list can be edited
 	 */
 	public function setAllowInput($value)
@@ -77,7 +77,7 @@ class TRatingList extends TRadioButtonList
 	}
 
 	/**
-	 * Wrapper for {@link setReadOnly ReadOnly} property.
+	 * Wrapper for {@see setReadOnly ReadOnly} property.
 	 * @param bool $value whether the rating list can be edited
 	 */
 	public function setEnabled($value)
@@ -343,8 +343,8 @@ class TRatingList extends TRadioButtonList
 
 	/**
 	 * Add rating style class name to the class attribute
-	 * when {@link setReadOnly ReadOnly} property is true and when the
-	 * {@link setCssClass CssClass} property is empty.
+	 * when {@see setReadOnly ReadOnly} property is true and when the
+	 * {@see setCssClass CssClass} property is empty.
 	 * @param \Prado\Web\UI\THtmlWriter $writer renderer
 	 */
 	public function render($writer)

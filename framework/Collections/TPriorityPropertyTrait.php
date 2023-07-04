@@ -19,9 +19,9 @@ use Prado\TPropertyValue;
  * together.
  *
  * The trait adds methods:
- *	- {@link getPriority} returns the default priority of items without priority.
- *	- {@link setPriority} sets the default priority. (protected)
- *	- {@link _priorityItemZappableSleepProps} to add the excluded trait properties on sleep.
+ *	- {@see getPriority} returns the default priority of items without priority.
+ *	- {@see setPriority} sets the default priority. (protected)
+ *	- {@see _priorityItemZappableSleepProps} to add the excluded trait properties on sleep.
  *
  * The priority is implement with a float.
  *

@@ -29,7 +29,7 @@ use WeakReference;
  * with the specified data.
  *
  * A TEventHandler handler method would be implemented as such:
- * <code>
+ * ```php
  *    $handler = new TEventHandler([$object, 'myHandler'], ['key' => 'data']);
  *    $handler($sender, $param); // <- invokable
  *    $component->attachEventHandler('onMyEvent', $handler, $priority);
@@ -40,17 +40,17 @@ use WeakReference;
  *	 	// $data === ['key' => 'data']
  *       ....
  *    }
- * </code>
+ * ```
  * In this instance, $data is default to null so it can be called on a raised
  * attached event without TEventHandler.  If you will only have a your handler use
  * TEventHandler, then $data can be required (without the null default).
  *
- * There are several ways to access the event handler (callable).  {@link getHandler}
+ * There are several ways to access the event handler (callable).  {@see getHandler}
  * will return the event handler and can be requested to return the callable as
  * WeakReference.
  *
  * The event handler can be accessed by ArrayAccess as well.  For example:
- * <code>
+ * ```php
  *		$handler = new TEventHandler('TMyClass::myStaticHandler', ['data' => 2, ...]);
  *		$handler[null] === 'TMyClass::myStaticHandler' === $handler->getHandler();
  *		$handler[0] === 'TMyClass::myStaticHandler';
@@ -65,26 +65,26 @@ use WeakReference;
  *
  *		// Add the handler to the event at priority 12 (the default is 10)
  *		$component->attachEventHandler('onMyEvent', $handler, 12);
- * </code>
+ * ```
  *
  * PRADO event handler objects are stored as WeakReference to improve PHP garbage
  * collection.  To enable this functionality, TEventHandler holds its callable object
  * as WeakReference and re-references the callable handler object when used.
  *
- * The only exceptions to conversion into WeakReference are Closure and {@link IWeakRetainable}.
+ * The only exceptions to conversion into WeakReference are Closure and {@see \Prado\Collections\IWeakRetainable}.
  * Closure and IWeakRetainable are retained without WeakReference conversion because
  * they might be the only instance in the application.  Holding these instances
  * directly will properly increment their PHP use counter to be retained.
  *
- * {@link hasWeakObject} returns if there is an object being held as WeakReference.
+ * {@see hasWeakObject} returns if there is an object being held as WeakReference.
  *
- * When the TEventHandler {@link getData data} is an array, and the 3rd parameter
- * $data of {@link __invoke invoke} is also an array, an `array_replace` (with the
+ * When the TEventHandler {@see getData data} is an array, and the 3rd parameter
+ * $data of {@see __invoke invoke} is also an array, an `array_replace` (with the
  * function parameter array taking precedence) will combine the data.
  *
  * In nesting TEventHandlers, a base TEventHandler, pointing to a callable, can be
  * instanced with core data.  Children TEventHandler[s] can point to the parent
- * TEventHandler and override specific data items in the {@link getData Data} array
+ * TEventHandler and override specific data items in the {@see getData Data} array
  * with its own (array) data items.  This only works if the Data is an array otherwise
  * the children will override the parent TEventHandler data.
  *
@@ -308,7 +308,7 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 
 	/**
 	 * This is a convenience method for getting the data of the TEventHandler.
-	 * - Index null will return the {@link getHandler Handler},
+	 * - Index null will return the {@see getHandler Handler},
 	 * - Index '0' will return the handler if its a string or object, or the first element
 	 *   of the callable array;
 	 * - Index '1' will return the second element of the callable array or null if not

@@ -17,32 +17,32 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TPager class.
  *
  * TPager creates a pager that provides UI for end-users to interactively
- * specify which page of data to be rendered in a {@link TDataBoundControl}-derived control,
- * such as {@link TDataList}, {@link TRepeater}, {@link TCheckBoxList}, etc.
- * The target data-bound control is specified by {@link setControlToPaginate ControlToPaginate},
+ * specify which page of data to be rendered in a {@see \Prado\Web\UI\WebControls\TDataBoundControl}-derived control,
+ * such as {@see \Prado\Web\UI\WebControls\TDataList}, {@see \Prado\Web\UI\WebControls\TRepeater}, {@see \Prado\Web\UI\WebControls\TCheckBoxList}, etc.
+ * The target data-bound control is specified by {@see setControlToPaginate ControlToPaginate},
  * which must be the ID path of the target control reaching from the pager's
- * naming container. Note, the target control must have its {@link TDataBoundControl::setAllowPaging AllowPaging}
+ * naming container. Note, the target control must have its {@see \Prado\Web\UI\WebControls\TDataBoundControl::setAllowPaging AllowPaging}
  * set to true.
  *
- * TPager can display three different UIs, specified via {@link setMode Mode}:
+ * TPager can display three different UIs, specified via {@see setMode Mode}:
  * - NextPrev: a next page and a previous page button are rendered.
  * - Numeric: a list of page index buttons are rendered.
  * - List: a dropdown list of page indices are rendered.
  *
  * When the pager mode is either NextPrev or Numeric, the paging buttons may be displayed
- * in three types by setting {@link setButtonType ButtonType}:
+ * in three types by setting {@see setButtonType ButtonType}:
  * - LinkButton: a hyperlink button
  * - PushButton: a normal button
  * - ImageButton: an image button (please set XXXPageImageUrl properties accordingly to specify the button images.)
  *
- * Since Prado 3.2.1, you can use the {@link setButtonCssClass ButtonCssClass} property to specify a css class
+ * Since Prado 3.2.1, you can use the {@see setButtonCssClass ButtonCssClass} property to specify a css class
  * that will be applied to each button created by the pager in NextPrev or Numeric mode.
  *
- * TPager raises an {@link onPageIndexChanged OnPageIndexChanged} event when
+ * TPager raises an {@see onPageIndexChanged OnPageIndexChanged} event when
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained
- * from the event parameter's property {@link TPagerPageChangedEventParameter::getNewPageIndex NewPageIndex}.
- * Normally, in the event handler, one can set the {@link TDataBoundControl::getCurrentPageIndex CurrentPageIndex}
+ * from the event parameter's property {@see \Prado\Web\UI\WebControls\TPagerPageChangedEventParameter::getNewPageIndex NewPageIndex}.
+ * Normally, in the event handler, one can set the {@see \Prado\Web\UI\WebControls\TDataBoundControl::getCurrentPageIndex CurrentPageIndex}
  * to this new page index so that the new page of data is rendered.
  *
  * Multiple pagers can be associated with the same data-bound control.
@@ -211,7 +211,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return string the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @return string the image URL for the first page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function getFirstPageImageUrl()
@@ -220,7 +220,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string $value the image URL for the first page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the first page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setFirstPageImageUrl($value)
@@ -229,7 +229,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return string the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @return string the image URL for the last page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function getLastPageImageUrl()
@@ -238,7 +238,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string $value the image URL for the last page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the last page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setLastPageImageUrl($value)
@@ -247,7 +247,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return string the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @return string the image URL for the next page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function getNextPageImageUrl()
@@ -256,7 +256,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string $value the image URL for the next page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the next page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setNextPageImageUrl($value)
@@ -265,7 +265,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return string the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @return string the image URL for the previous page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function getPrevPageImageUrl()
@@ -274,7 +274,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @param string $value the image URL for the previous page button. This is only used when {@link getButtonType ButtonType} is 'ImageButton'.
+	 * @param string $value the image URL for the previous page button. This is only used when {@see getButtonType ButtonType} is 'ImageButton'.
 	 * @since 3.1.1
 	 */
 	public function setPrevPageImageUrl($value)
@@ -283,7 +283,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	}
 
 	/**
-	 * @return string the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
+	 * @return string the image URL for the numeric page buttons. This is only used when {@see getButtonType ButtonType} is 'ImageButton' and {@see getMode Mode} is 'Numeric'.
 	 * @see setNumericPageImageUrl
 	 * @since 3.1.1
 	 */
@@ -298,7 +298,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 	 * Use {0} as the placeholder for the numbers.
 	 * For example, the image URL http://example.com/images/button{0}.gif
 	 * will be replaced as http://example.com/images/button1.gif, http://example.com/images/button2.gif, etc.
-	 * @param string $value the image URL for the numeric page buttons. This is only used when {@link getButtonType ButtonType} is 'ImageButton' and {@link getMode Mode} is 'Numeric'.
+	 * @param string $value the image URL for the numeric page buttons. This is only used when {@see getButtonType ButtonType} is 'ImageButton' and {@see getMode Mode} is 'Numeric'.
 	 * @since 3.1.1
 	 */
 	public function setNumericPageImageUrl($value)
@@ -384,7 +384,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * Performs databinding to populate data items from data source.
-	 * This method is invoked by {@link dataBind()}.
+	 * This method is invoked by {@see dataBind()}.
 	 * You may override this function to provide your own way of data population.
 	 * @param \Traversable $param the bound data
 	 */
@@ -630,7 +630,7 @@ class TPager extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\Web
 
 	/**
 	 * Event handler to the OnSelectedIndexChanged event of the dropdown list.
-	 * This handler will raise {@link onPageIndexChanged OnPageIndexChanged} event.
+	 * This handler will raise {@see onPageIndexChanged OnPageIndexChanged} event.
 	 * @param TDropDownList $sender the dropdown list control raising the event
 	 * @param \Prado\TEventParameter $param event parameter
 	 */

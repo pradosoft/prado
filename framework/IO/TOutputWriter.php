@@ -13,7 +13,7 @@ namespace Prado\IO;
  * TOutputWriter class.
  *
  * TOutputWriter extends TTextWriter to fwrite the buffer to STDOUT
- * when {@link flush}ed.  This allows for testing of the Shell output.
+ * when {@see flush}ed.  This allows for testing of the Shell output.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

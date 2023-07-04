@@ -20,27 +20,27 @@ use Prado\Web\UI\WebControls\TTableRow;
 /**
  * TActiveTableCell class.
  *
- * TActiveTableCell is the active counterpart to the original {@link TTableCell} control
+ * TActiveTableCell is the active counterpart to the original {@see \Prado\Web\UI\WebControls\TTableCell} control
  * and displays a table cell. The horizontal and vertical alignments of the cell
- * are specified via {@link setHorizontalAlign HorizontalAlign} and
- * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ * are specified via {@see setHorizontalAlign HorizontalAlign} and
+ * {@see setVerticalAlign VerticalAlign} properties, respectively.
  *
  * TActiveTableCell allows the contents of the table cell to be changed during callback. When
- * {@link onCellSelected CellSelected} property is set, selecting (clicking on) the cell will
- * perform a callback request causing {@link onCellSelected OnCellSelected} event to be fired.
+ * {@see onCellSelected CellSelected} property is set, selecting (clicking on) the cell will
+ * perform a callback request causing {@see onCellSelected OnCellSelected} event to be fired.
  *
- * It will also bubble the {@link onCellSelected OnCellSelected} event up to it's parent
- * {@link TActiveTableRow} control which will fire up the event handlers if implemented.
+ * It will also bubble the {@see onCellSelected OnCellSelected} event up to it's parent
+ * {@see \Prado\Web\UI\ActiveControls\TActiveTableRow} control which will fire up the event handlers if implemented.
  *
  * TActiveTableCell allows the client-side cell contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the
- * output, similar to a {@link TActivePanel} control.
- * <code>
+ * output, similar to a {@see \Prado\Web\UI\ActiveControls\TActivePanel} control.
+ * ```php
  * function callback_request($sender, $param)
  * {
  *     $this->active_cell->render($param->getNewWriter());
  * }
- * </code>
+ * ```
  *
  * Please refer to the original documentation of the regular counterpart for usage.
  *
@@ -89,9 +89,9 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link ICallbackEventHandler}
-	 * interface. It will raise {@link onCellSelected OnCellSelected} event with a
-	 * {@link TActiveTableCellEventParameter} containing the zero-based index of the
+	 * Raises the callback event. This method is required by {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
+	 * interface. It will raise {@see onCellSelected OnCellSelected} event with a
+	 * {@see \Prado\Web\UI\ActiveControls\TActiveTableCellEventParameter} containing the zero-based index of the
 	 * TActiveTableCell.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -118,7 +118,7 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
-	 * {@link onCellSelected OnCellSelected} event is set.
+	 * {@see onCellSelected OnCellSelected} event is set.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
@@ -169,8 +169,8 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Returns the zero-based index of the TActiveTableCell within the {@link TTableCellCollection}
-	 * of the parent {@link TTableRow} control. Raises a {@link TConfigurationException} if the cell
+	 * Returns the zero-based index of the TActiveTableCell within the {@see \Prado\Web\UI\WebControls\TTableCellCollection}
+	 * of the parent {@see \Prado\Web\UI\WebControls\TTableRow} control. Raises a {@see \Prado\Exceptions\TConfigurationException} if the cell
 	 * is no member of the cell collection.
 	 * @return int the zero-based index of the cell
 	 */
@@ -185,8 +185,8 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Returns the parent {@link TTableRow} control by looping through all parents until a {@link TTableRow}
-	 * is found. Raises a {@link TConfigurationException} if no row control is found.
+	 * Returns the parent {@see \Prado\Web\UI\WebControls\TTableRow} control by looping through all parents until a {@see \Prado\Web\UI\WebControls\TTableRow}
+	 * is found. Raises a {@see \Prado\Exceptions\TConfigurationException} if no row control is found.
 	 * @return TTableRow the parent row control
 	 */
 	public function getRow()

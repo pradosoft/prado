@@ -15,8 +15,8 @@ use Prado\TPropertyValue;
  * THttpException class
  *
  * THttpException represents an exception that is caused by invalid operations
- * of end-users. The {@link getStatusCode StatusCode} gives the type of HTTP error.
- * It is used by {@link TErrorHandler} to provide different error output to users.
+ * of end-users. The {@see getStatusCode StatusCode} gives the type of HTTP error.
+ * It is used by {@see \Prado\Exceptions\TErrorHandler} to provide different error output to users.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

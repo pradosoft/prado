@@ -30,7 +30,7 @@ use ReflectionClass;
  * - rendering scheme
  * - control lifecycles
  *
- * A property can be data-bound with an expression. By calling {@link dataBind},
+ * A property can be data-bound with an expression. By calling {@see dataBind},
  * expressions bound to properties will be evaluated and the results will be
  * set to the corresponding properties.
  *
@@ -38,10 +38,10 @@ use ReflectionClass;
  * enclosed within each other. A parent will determine where to place
  * the presentation of its child controls. For example, a TPanel will enclose
  * all its child controls' presentation within a div html tag. A control's parent
- * can be obtained via {@link getParent Parent} property, and its
- * {@link getControls Controls} property returns a list of the control's children,
+ * can be obtained via {@see getParent Parent} property, and its
+ * {@see getControls Controls} property returns a list of the control's children,
  * including controls and static texts. The property can be manipulated
- * like an array for adding or removing a child (see {@link TList} for more details).
+ * like an array for adding or removing a child (see {@see \Prado\Collections\TList} for more details).
  *
  * A naming container control implements INamingContainer and ensures that
  * its containee controls can be differentiated by their ID property values.
@@ -54,11 +54,11 @@ use ReflectionClass;
  * and can be disabled if not needed. ControlState represents crucial logic state
  * and cannot be disabled.
  *
- * A control is rendered via its {@link render()} method (the method is invoked
+ * A control is rendered via its {@see render()} method (the method is invoked
  * by the framework.) Descendant control classes may override this method for
- * customized rendering. By default, {@link render()} invokes {@link renderChildren()}
+ * customized rendering. By default, {@see render()} invokes {@see renderChildren()}
  * which is responsible for rendering of children of the control.
- * Control's {@link getVisible Visible} property governs whether the control
+ * Control's {@see getVisible Visible} property governs whether the control
  * should be rendered or not.
  *
  * Each control on a page will undergo a series of lifecycles, including
@@ -193,9 +193,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Returns a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing accessing
 	 * a control via its ID using the following syntax,
-	 * <code>
+	 * ```php
 	 * $menuBar=$this->menuBar;
-	 * </code>
+	 * ```
 	 * Note, the control must be configured in the template
 	 * with explicit ID. If the name matches both a property and a control ID,
 	 * the control ID will take the precedence.
@@ -218,9 +218,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Checks for the existance of a property value by name or a control by ID.
 	 * This overrides the parent implementation by allowing checking for the
 	 * existance of a control via its ID using the following syntax,
-	 * <code>
+	 * ```php
 	 * $menuBarExists = isset($this->menuBar);
-	 * </code>
+	 * ```
 	 * Do not call this method. This is a PHP magic method that we override
 	 * to allow using isset() to detect if a component property is set or not.
 	 * Note, the control must be configured in the template
@@ -632,7 +632,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
 	 * and unless they are all enabled, false will be returned.
-	 * The property Enabled is mainly used for {@link TWebControl}
+	 * The property Enabled is mainly used for {@see \Prado\Web\UI\WebControls\TWebControl}
 	 * derived controls.
 	 * @param bool $checkParents whether the parents should also be checked enabled
 	 * @return bool whether the control is enabled.
@@ -902,7 +902,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Sets up the binding between a property (or property path) and an expression.
 	 * Unlike regular databinding, the expression bound by this method
-	 * is automatically evaluated during {@link prerenderRecursive()}.
+	 * is automatically evaluated during {@see prerenderRecursive()}.
 	 * The context of the expression is the template control (or the control itself if it is a page).
 	 * @param string $name the property name, or property path
 	 * @param string $expression the expression
@@ -996,7 +996,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Ensures child controls are created.
 	 * If child controls are not created yet, this method will invoke
-	 * {@link createChildControls} to create them.
+	 * {@see createChildControls} to create them.
 	 */
 	public function ensureChildControls()
 	{
@@ -1021,7 +1021,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Creates child controls.
 	 * This method can be overriden for controls who want to have their controls.
-	 * Do not call this method directly. Instead, call {@link ensureChildControls}
+	 * Do not call this method directly. Instead, call {@see ensureChildControls}
 	 * to ensure child controls are created only once.
 	 */
 	public function createChildControls()
@@ -1031,8 +1031,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Finds a control by ID path within the current naming container.
 	 * The current naming container is either the control itself
-	 * if it implements {@link INamingContainer} or the control's naming container.
-	 * The ID path is an ID sequence separated by {@link TControl::ID_SEPARATOR}.
+	 * if it implements {@see \Prado\Web\UI\INamingContainer} or the control's naming container.
+	 * The ID path is an ID sequence separated by {@see \Prado\Web\UI\TControl::ID_SEPARATOR}.
 	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
@@ -1087,9 +1087,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Finds all child and grand-child controls with the specified ID.
-	 * Note, this method is different from {@link findControl} in that
+	 * Note, this method is different from {@see findControl} in that
 	 * it searches through all controls that have this control as the ancestor
-	 * while {@link findcontrol} only searches through controls that have this
+	 * while {@see findcontrol} only searches through controls that have this
 	 * control as the direct naming container.
 	 * @param string $id the ID being looked for
 	 * @return array list of controls found
@@ -1463,7 +1463,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Raises 'OnDataBinding' event.
-	 * This method is invoked when {@link dataBind} is invoked.
+	 * This method is invoked when {@see dataBind} is invoked.
 	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
 	public function onDataBinding($param)
@@ -1532,13 +1532,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Broadcasts an event.
 	 * The event will be sent to all controls on the current page hierarchy.
 	 * If a control defines the event, the event will be raised for the control.
-	 * If a control implements {@link IBroadcastEventReceiver}, its
-	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()} method will
+	 * If a control implements {@see \Prado\Web\UI\IBroadcastEventReceiver}, its
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()} method will
 	 * be invoked which gives the control a chance to respond to the event.
 	 * For example, when broadcasting event 'OnClick', all controls having 'OnClick'
 	 * event will have this event raised, and all controls implementing
-	 * {@link IBroadcastEventReceiver} will also have its
-	 * {@link IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver} will also have its
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
 	 * invoked.
 	 * @param string $name name of the broadcast event
 	 * @param \Prado\Web\UI\TControl $sender sender of this event
@@ -1581,9 +1581,9 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * A post-callback is invoked after traversing child controls.
 	 * Callback functions can be global functions or class methods.
 	 * They must be of the following signature:
-	 * <code>
+	 * ```php
 	 * function callback_func($control,$param) {...}
-	 * </code>
+	 * ```
 	 * where $control refers to the control being visited and $param
 	 * is the parameter that is passed originally when calling this traverse function.
 	 *
@@ -1626,7 +1626,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Renders the control.
-	 * This method is invoked by {@link renderControl} when the control is visible.
+	 * This method is invoked by {@see renderControl} when the control is visible.
 	 * You can override this method to provide customized rendering of the control.
 	 * By default, the control simply renders all its child contents.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose

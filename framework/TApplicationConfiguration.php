@@ -289,7 +289,7 @@ class TApplicationConfiguration extends \Prado\TComponent
 
 	/**
 	 * Given a module id as a composer package name, returns the extension bootstrap
-	 * {@link TModule} class.
+	 * {@see \Prado\TModule} class.
 	 * @param string $name the name of the Composer Extension.
 	 * @return null|string the bootstrap class of the Composer Extension.
 	 * @since 4.2.0

@@ -16,8 +16,8 @@ use Prado\Web\UI\TClientSideOptions;
 /**
  * TSliderClientScript class.
  *
- * Client-side slider events {@link setOnChange OnChange} and {@line setOnMove OnMove}
- * can be modified through the {@link TSlider:: getClientSide ClientSide}
+ * Client-side slider events {@see setOnChange OnChange} and {@line setOnMove OnMove}
+ * can be modified through the {@see \Prado\Web\UI\WebControls\TSlider:: getClientSide ClientSide}
  * property of a slider.
  *
  * The current value of the slider can be get in the 'value' js variable

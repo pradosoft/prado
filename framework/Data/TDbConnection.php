@@ -21,28 +21,28 @@ use Prado\TPropertyValue;
  *
  * TDbConnection represents a connection to a database.
  *
- * TDbConnection works together with {@link TDbCommand}, {@link TDbDataReader}
- * and {@link TDbTransaction} to provide data access to various DBMS
- * in a common set of APIs. They are a thin wrapper of the {@link http://www.php.net/manual/en/ref.pdo.php PDO}
+ * TDbConnection works together with {@see \Prado\Data\TDbCommand}, {@see \Prado\Data\TDbDataReader}
+ * and {@see \Prado\Data\TDbTransaction} to provide data access to various DBMS
+ * in a common set of APIs. They are a thin wrapper of the {@see http://www.php.net/manual/en/ref.pdo.php PDO}
  * PHP extension.
  *
- * To establish a connection, set {@link setActive Active} to true after
- * specifying {@link setConnectionString ConnectionString}, {@link setUsername Username}
- * and {@link setPassword Password}.
+ * To establish a connection, set {@see setActive Active} to true after
+ * specifying {@see setConnectionString ConnectionString}, {@see setUsername Username}
+ * and {@see setPassword Password}.
  *
  * Since 3.1.2, the connection charset can be set (for MySQL and PostgreSQL databases only)
- * using the {@link setCharset Charset} property. The value of this property is database dependant.
+ * using the {@see setCharset Charset} property. The value of this property is database dependant.
  * e.g. for mysql, you can use 'latin1' for cp1252 West European, 'utf8' for unicode, ...
  *
  * The following example shows how to create a TDbConnection instance and establish
  * the actual connection:
- * <code>
+ * ```php
  * $connection=new TDbConnection($dsn,$username,$password);
  * $connection->Active=true;
- * </code>
+ * ```
  *
  * After the DB connection is established, one can execute an SQL statement like the following:
- * <code>
+ * ```php
  * $command=$connection->createCommand($sqlStatement);
  * $command->execute();   // a non-query SQL statement execution
  * // or execute an SQL query and fetch the result set
@@ -50,18 +50,18 @@ use Prado\TPropertyValue;
  *
  * // each $row is an array representing a row of data
  * foreach($reader as $row) ...
- * </code>
+ * ```
  *
  * One can do prepared SQL execution and bind parameters to the prepared SQL:
- * <code>
+ * ```php
  * $command=$connection->createCommand($sqlStatement);
  * $command->bindParameter($name1,$value1);
  * $command->bindParameter($name2,$value2);
  * $command->execute();
- * </code>
+ * ```
  *
  * To use transaction, do like the following:
- * <code>
+ * ```php
  * $transaction=$connection->beginTransaction();
  * try
  * {
@@ -74,10 +74,10 @@ use Prado\TPropertyValue;
  * {
  *    $transaction->rollBack();
  * }
- * </code>
+ * ```
  *
  * TDbConnection provides a set of methods to support setting and querying
- * of certain DBMS attributes, such as {@link getNullConversion NullConversion}.
+ * of certain DBMS attributes, such as {@see getNullConversion NullConversion}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -113,7 +113,7 @@ class TDbConnection extends \Prado\TComponent
 	/**
 	 * Constructor.
 	 * Note, the DB connection is not established when this connection
-	 * instance is created. Set {@link setActive Active} property to true
+	 * instance is created. Set {@see setActive Active} property to true
 	 * to establish the connection.
 	 * Since 3.1.2, you can set the charset for MySql connection
 	 *
@@ -361,7 +361,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string Transaction class name to be created by calling {@link TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
+	 * @return string Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
 	 * @since 3.1.7
 	 */
 	public function getTransactionClass()
@@ -371,7 +371,7 @@ class TDbConnection extends \Prado\TComponent
 
 
 	/**
-	 * @param string $value Transaction class name to be created by calling {@link TDbConnection::beginTransaction}.
+	 * @param string $value Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
 	 * @since 3.1.7
 	 */
 	public function setTransactionClass($value)

@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * TWizardStepType class.
- * TWizardStepType defines the enumerable type for the possible types of {@link TWizard wizard} steps.
+ * TWizardStepType defines the enumerable type for the possible types of {@see TWizard wizard} steps.
  *
  * The following enumerable values are defined:
  * - Auto: the type is automatically determined based on the location of the wizard step in the whole step collection.

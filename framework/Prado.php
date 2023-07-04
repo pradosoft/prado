@@ -184,7 +184,7 @@ class Prado
 	/**
 	 * PHP error handler.
 	 * This method should be registered as PHP error handler using
-	 * {@link set_error_handler}. The method throws an exception that
+	 * {@see set_error_handler}. The method throws an exception that
 	 * contains the error information.
 	 * @param int $errno the level of the error raised
 	 * @param string $errstr the error message
@@ -202,7 +202,7 @@ class Prado
 	/**
 	 * PHP shutdown function used to catch fatal errors.
 	 * This method should be registered as PHP error handler using
-	 * {@link register_shutdown_function}. The method throws an exception that
+	 * {@see register_shutdown_function}. The method throws an exception that
 	 * contains the error information.
 	 */
 	public static function phpFatalErrorHandler(): void
@@ -218,7 +218,7 @@ class Prado
 	/**
 	 * Default exception handler.
 	 * This method should be registered as default exception handler using
-	 * {@link set_exception_handler}. The method tries to use the errorhandler
+	 * {@see set_exception_handler}. The method tries to use the errorhandler
 	 * module of the Prado application to handle the exception.
 	 * If the application or the module does not exist, it simply echoes the
 	 * exception.
@@ -728,7 +728,7 @@ class Prado
 
 	/**
 	 * Writes a log message.
-	 * This method wraps {@link log()} by checking the application mode.
+	 * This method wraps {@see log()} by checking the application mode.
 	 * When the application is in Debug mode, debug backtrace information is appended
 	 * to the message and the message is logged at DEBUG level.
 	 * When the application is in Performance mode, this method does nothing.
@@ -865,9 +865,9 @@ class Prado
 
 	/**
 	 * Logs a message.
-	 * Messages logged by this method may be retrieved via {@link TLogger::getLogs}
+	 * Messages logged by this method may be retrieved via {@see \Prado\Util\TLogger::getLogs}
 	 * and may be recorded in different media, such as file, email, database, using
-	 * {@link TLogRouter}.
+	 * {@see \Prado\Util\TLogRouter}.
 	 * @param string $msg message to be logged
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,

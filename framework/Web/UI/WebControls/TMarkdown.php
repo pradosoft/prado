@@ -29,7 +29,7 @@ use Parsedown;
  * details on the Markdown syntax usage.
  *
  * TMarkdown also performs syntax highlighting for code blocks whose language
- * is recognized by {@link TTextHighlighter}.
+ * is recognized by {@see \Prado\Web\UI\WebControls\TTextHighlighter}.
  * The language of a code block must be specified in the first line of the block
  * and enclosed within a pair of square brackets (e.g. [php]).
  *

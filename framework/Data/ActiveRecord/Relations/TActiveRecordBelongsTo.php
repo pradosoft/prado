@@ -18,14 +18,14 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
  * Implements the foreign key relationship (TActiveRecord::BELONGS_TO) between
  * the source objects and the related foreign object. Consider the
  * <b>entity</b> relationship between a Team and a Player.
- * <code>
+ * ```php
  * +------+            +--------+
  * | Team | 1 <----- * | Player |
  * +------+            +--------+
- * </code>
+ * ```
  * Where one team may have 0 or more players and each player belongs to only
  * one team. We may model Team-Player <b>object</b> relationship as active record as follows.
- * <code>
+ * ```php
  * class TeamRecord extends TActiveRecord
  * {
  *     // see TActiveRecordHasMany for detailed definition.
@@ -48,14 +48,14 @@ use Prado\Data\ActiveRecord\Exceptions\TActiveRecordException;
  *		   return parent::finder($className);
  *	   }
  * }
- * </code>
+ * ```
  * The static <tt>$RELATIONS</tt> property of PlayerRecord defines that the
  * property <tt>$team</tt> belongs to a <tt>TeamRecord</tt>.
  *
  * The team object may be fetched as follows.
- * <code>
+ * ```php
  * $players = PlayerRecord::finder()->with_team()->findAll();
- * </code>
+ * ```
  * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
  * name, in this case, <tt>team</tt>) fetchs the corresponding TeamRecords using
  * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same

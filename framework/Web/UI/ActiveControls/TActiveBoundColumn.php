@@ -19,13 +19,13 @@ use Prado\Web\UI\WebControls\TDataGrid;
  *
  * TActiveBoundColumn represents a column that is bound to a field in a data source.
  * The cells in the column will be displayed using the data indexed by
- * {@link setDataField DataField}. You can customize the display by
- * setting {@link setDataFormatString DataFormatString}.
+ * {@see setDataField DataField}. You can customize the display by
+ * setting {@see setDataFormatString DataFormatString}.
  *
- * This is the active counterpart to the {@link TBoundColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TBoundColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@link TBoundColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TBoundColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

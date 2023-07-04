@@ -16,23 +16,23 @@ use Prado\TPropertyValue;
  * TDropDownList class
  *
  * TDropDownList displays a dropdown list on a Web page.
- * It inherits all properties and events from {@link TListControl}.
+ * It inherits all properties and events from {@see \Prado\Web\UI\WebControls\TListControl}.
  *
  * Since v3.0.3, TDropDownList starts to support optgroup. To specify an option group for
  * a list item, set a Group attribute with it,
- * <code>
+ * ```php
  *  $listitem->Attributes->Group="Group Name";
  *  // or <com:TListItem Attributes.Group="Group Name" .../> in template
- * </code>
+ * ```
  *
  * Since v3.1.1, TDropDownList starts to support prompt text. That is, a prompt item can be
- * displayed as the first list item by specifying either {@link setPromptText PromptText} or
- * {@link setPromptValue PromptValue}, or both. Choosing the prompt item will unselect the TDropDownList.
+ * displayed as the first list item by specifying either {@see setPromptText PromptText} or
+ * {@see setPromptValue PromptValue}, or both. Choosing the prompt item will unselect the TDropDownList.
  *
- * When a prompt item is set, its index in the list is set to -1. So, the {@link getSelectedIndex SelectedIndex}
+ * When a prompt item is set, its index in the list is set to -1. So, the {@see getSelectedIndex SelectedIndex}
  * property is not affected by a prompt item: the items list will still be zero-based.
  *
- * The {@link clearSelection clearSelection} method will select the prompt item if existing, otherway the first
+ * The {@see clearSelection clearSelection} method will select the prompt item if existing, otherway the first
  * available item in the dropdown list will be selected.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -89,8 +89,8 @@ class TDropDownList extends TListControl implements \Prado\Web\UI\IPostBackDataH
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getSelectedIndex SelectedIndex} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getSelectedIndex SelectedIndex} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */

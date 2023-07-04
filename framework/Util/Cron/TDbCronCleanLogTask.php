@@ -19,7 +19,7 @@ use Prado\Util\Cron\TCronModule;
  * TDbCronCleanLogTask class.
  *
  * TDbCronCleanLogTask Cleans the cron log of old entries older than the
- * age of {@link getTimePeriod} seconds.
+ * age of {@see getTimePeriod} seconds.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

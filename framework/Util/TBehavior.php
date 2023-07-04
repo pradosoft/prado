@@ -22,21 +22,21 @@ use WeakReference;
  * handlers attachment status on its owner.
  *
  * TBehavior is one of two types of behaviors in PRADO. The other type is the
- * {@link TClassBehavior} where each instance can have multiple owners and is
+ * {@see \Prado\Util\TClassBehavior} where each instance can have multiple owners and is
  * is designed to not retain per object information (acting stateless).
  *
- * Behaviors can be attached to instanced objects, with {@link TComponent::attachbehavior},
+ * Behaviors can be attached to instanced objects, with {@see \Prado\TComponent::attachbehavior},
  * or to each class, the parent classes, interfaces, and first level traits used by
- * the class(es) with {@link TComponent::attachClassBehavior}. Class-wide behaviors
- * cannot be attached to the root class {@link TComponent} but can attach to any subclass.
+ * the class(es) with {@see \Prado\TComponent::attachClassBehavior}. Class-wide behaviors
+ * cannot be attached to the root class {@see \Prado\TComponent} but can attach to any subclass.
  * All new components with an attached class behavior will receive the behavior on
  * instancing.  Instances of a class will receive the class behavior if they are
- * {@link TComponent::listen}ing.
+ * {@see \Prado\TComponent::listen}ing.
  *
  * TComponent clones instanced IBehavior when applied to whole classes.
  *
- * TBehavior is a subclass of {@link TBaseBehavior} that implements the core
- * behavior functionality.  See {@link IBehavior} for implementation details.
+ * TBehavior is a subclass of {@see \Prado\Util\TBaseBehavior} that implements the core
+ * behavior functionality.  See {@see \Prado\Util\IBehavior} for implementation details.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2.3
@@ -62,11 +62,11 @@ class TBehavior extends TBaseBehavior implements IBehavior
 
 	/**
 	 * Attaches the behavior object to the new owner component.  This is normally called
-	 * by the new owner when attaching a behavior, by {@link TComponent::attachBehavior},
+	 * by the new owner when attaching a behavior, by {@see \Prado\TComponent::attachBehavior},
 	 * and not directly called.
 	 *
-	 * The default implementation will set the {@link getOwner Owner} property and
-	 * synchronized the behavior event handlers (cached in {@link eventsLog}) with
+	 * The default implementation will set the {@see getOwner Owner} property and
+	 * synchronized the behavior event handlers (cached in {@see eventsLog}) with
 	 * the owner.  Make sure you call the parent implementation if you override this method.
 	 * @param TComponent $owner The owner component that this behavior is being attached.
 	 * @throws TInvalidOperationException When attaching a behavior that is already
@@ -86,10 +86,10 @@ class TBehavior extends TBaseBehavior implements IBehavior
 
 	/**
 	 * Detaches the behavior object from the owner component.  This is normally called
-	 * by the owner when detaching a behavior, by {@link TComponent::detachBehavior},
+	 * by the owner when detaching a behavior, by {@see \Prado\TComponent::detachBehavior},
 	 * and not directly called.
 	 *
-	 * The default implementation detaches the behavior event handlers (cached in {@link
+	 * The default implementation detaches the behavior event handlers (cached in {@see
 	 * eventsLog}) and resets the owner. Make sure you call this parent implementation
 	 * if you override this method.
 	 * @param TComponent $owner The component this behavior is being detached from.

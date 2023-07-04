@@ -13,8 +13,8 @@ namespace Prado\Web\UI\WebControls;
  * TMetaTag class.
  *
  * TMetaTag represents a meta tag appearing in a page head section.
- * You can set its {@link setID ID}, {@link setHttpEquiv HttpEquiv},
- * {@link setName Name}, {@link setContent Content}, {@link setScheme Scheme}, {@link setCharset Charset}
+ * You can set its {@see setID ID}, {@see setHttpEquiv HttpEquiv},
+ * {@see setName Name}, {@see setContent Content}, {@see setScheme Scheme}, {@see setCharset Charset}
  * properties, which correspond to
  * id, http-equiv, name, content, scheme and charset * attributes for a meta tag, respectively.
  *

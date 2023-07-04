@@ -15,21 +15,21 @@ namespace Prado\Web\Javascripts;
 
 /**
  * TJavaScriptLiteral class that encloses string literals that are not
- * supposed to be escaped by {@link TJavaScript::encode() }
+ * supposed to be escaped by {@see \Prado\Web\Javascripts\TJavaScript::encode() }
  *
  * Since Prado 3.2 all the data that gets sent clientside inside a javascript statement
  * is encoded by default to avoid any kind of injection.
  * Sometimes there's the need to bypass this encoding and send raw javascript code.
- * To ensure that a string doesn't get encoded by {@link TJavaScript::encode() },
+ * To ensure that a string doesn't get encoded by {@see \Prado\Web\Javascripts\TJavaScript::encode() },
  * construct a new TJavaScriptLiteral:
- * <code>
+ * ```php
  * // a javascript test string
  * $js="alert('hello')";
  * // the string in $raw will not be encoded when sent clientside inside a javascript block
  * $raw=new TJavaScriptLiteral($js);
  * // shortened form
  * $raw=_js($js);
- * </code>
+ * ```
  *
  * @since 3.2.0
  */

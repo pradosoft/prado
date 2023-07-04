@@ -19,10 +19,10 @@ use Prado\Web\UI\WebControls\TListItemType;
  * TActiveButtonColumn contains a user-defined command button, such as Add or Remove,
  * that corresponds with each row in the column.
  *
- * This is the active counterpart to the {@link TButtonColumn} control where the
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TButtonColumn} control where the
  * button is replaced by the appropriate active button control.
  *
- * Please refer to the original documentation of the {@link TButtonColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TButtonColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

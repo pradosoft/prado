@@ -14,8 +14,8 @@ namespace Prado\Web\UI;
  *
  * TCommandEventParameter encapsulates the parameter data for <b>Command</b>
  * event of button controls. You can access the name of the command via
- * {@link getCommandName CommandName} property, and the parameter carried
- * with the command via {@link getCommandParameter CommandParameter} property.
+ * {@see getCommandName CommandName} property, and the parameter carried
+ * with the command via {@see getCommandParameter CommandParameter} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

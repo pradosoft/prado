@@ -30,16 +30,16 @@ use Prado\Xml\TXmlDocument;
  * task at a given time.  A task can be a task class or a module Id followed by
  * '->' followed by a method with or without parameters. eg.
  *
- * <code>
+ * ```xml
  * 	<module id="cron" class="Prado\Util\Cron\TCronModule" DefaultUserName="admin">
  *		<job Name="cronclean" Schedule="0 0 1 * * *" Task="Prado\Util\Cron\TDbCronCleanLogTask" UserName="cron" />
  *		<job Name="dbcacheclean" Schedule="* * * * *" Task="dbcache->flushCacheExpired(true)" />
  *		<job Schedule="0 * * * *" Task="mymoduleid->taskmethod" />
  *	</module>
- * </code>
+ * ```
  *
  * The schedule is formatted like a linux crontab schedule expression.
- * {@link TTimeSchedule} parses the schedule and supports 8 different
+ * {@see TTimeSchedule} parses the schedule and supports 8 different
  * languages.  Advanced options, like @daily, and @hourly, are supported.
  *
  * This module is designed to be run as a system Crontab prado-cli every
@@ -48,11 +48,11 @@ use Prado\Xml\TXmlDocument;
  *
  * The following is an example for your system cron tab to run the PRADO
  * application cron.
- * <code>
+ * ```
  *		* * * * *  php /dir_to_/vendor/bin/prado-cli app /dir_to_app/ cron
- * </code>
+ * ```
  *
- * The default cron user can be set with {@link set$DefaultUserName} with its
+ * The default cron user can be set with {@see set$DefaultUserName} with its
  * default being 'cron' user.  The default user is used when no task specific
  * user is specifiedThe 'cron' user should exist in the TUserManager to
  * switched the application user properly.
@@ -288,7 +288,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * This lazy loads the tasks from configuration array to instance.
-	 * This calls {@link ensureTasks} to get the tasks and their persistent data.
+	 * This calls {@see ensureTasks} to get the tasks and their persistent data.
 	 * @return \Prado\Util\Cron\TCronTask[] currently active cron tasks
 	 */
 	public function getTasks()
@@ -299,7 +299,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * These are the tasks specified in the configuration and getAdditionalCronTasks
-	 * until {@link ensureTasks} is called.
+	 * until {@see ensureTasks} is called.
 	 * @return array[]|TCronTask[] currently active cron tasks
 	 */
 	public function getRawTasks()
@@ -321,7 +321,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/**
 	 * .
 	 * @param string $taskExec the class name or "module->method('param1')" to place
-	 * into a {@link TCronMethodTask}.
+	 * into a {@see \Prado\Util\Cron\TCronMethodTask}.
 	 * @return TCronTask the instance of $taskExec
 	 */
 	public function instanceTask($taskExec)
@@ -446,7 +446,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 
 	/**
 	 * Runs a specific task. Sets the user to the Task user or the cron module
-	 * {@link getDefaultUserName}.
+	 * {@see getDefaultUserName}.
 	 * @param \Prado\Util\Cron\TCronTask $task the task to run.
 	 */
 	public function runTask($task)

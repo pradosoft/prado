@@ -11,9 +11,9 @@ namespace Prado\Web\Services;
 /**
  * TRpcProtocol class
  *
- * TRpcProtocol is the base class used to implement a protocol in a {@link TRpcService}.
- * Prado already implements two protocols: {@link TXmlRpcProtocol} for Xml-Rpc request
- * and {@link TJsonRpcProtocol} for JSON-Rpc requests.
+ * TRpcProtocol is the base class used to implement a protocol in a {@see \Prado\Web\Services\TRpcService}.
+ * Prado already implements two protocols: {@see \Prado\Web\Services\TXmlRpcProtocol} for Xml-Rpc request
+ * and {@see \Prado\Web\Services\TJsonRpcProtocol} for JSON-Rpc requests.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @since 3.2

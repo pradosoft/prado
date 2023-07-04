@@ -15,7 +15,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * Class TAccordionViewCollection.
  *
- * TAccordionViewCollection is a collection of {@link TAccordionView} to be used inside a {@link TAccordion}.
+ * TAccordionViewCollection is a collection of {@see \Prado\Web\UI\WebControls\TAccordionView} to be used inside a {@see \Prado\Web\UI\WebControls\TAccordion}.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @since 3.2
@@ -27,7 +27,7 @@ class TAccordionViewCollection extends \Prado\Web\UI\TControlCollection
 	 * This overrides the parent implementation by performing sanity check on the type of new item.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@link TAccordionView} object.
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@see \Prado\Web\UI\WebControls\TAccordionView} object.
 	 */
 	public function insertAt($index, $item)
 	{

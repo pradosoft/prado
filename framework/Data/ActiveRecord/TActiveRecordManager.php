@@ -18,14 +18,14 @@ use Prado\TPropertyValue;
  * default active record gateway, and table meta data inspector.
  *
  * The default connection can be set as follows:
- * <code>
+ * ```php
  * TActiveRecordManager::getInstance()->setDbConnection($conn);
- * </code>
+ * ```
  * All new active record created after setting the
- * {@link DbConnection setDbConnection()} will use that connection unless
+ * {@see DbConnection setDbConnection()} will use that connection unless
  * the custom ActiveRecord class overrides the ActiveRecord::getDbConnection().
  *
- * Set the {@link setCache Cache} property to an ICache object to allow
+ * Set the {@see setCache Cache} property to an ICache object to allow
  * the active record gateway to cache the table meta data information.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
@@ -36,7 +36,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	public const DEFAULT_GATEWAY_CLASS = \Prado\Data\ActiveRecord\TActiveRecordGateway::class;
 
 	/**
-	 * Defaults to {@link TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 * @var string
 	 */
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
@@ -48,7 +48,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	private $_cache;
 
 	/**
-	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'
+	 * Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'
 	 *
 	 * @var TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
@@ -132,7 +132,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@link TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordManager::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 */
 	public function getGatewayClass()
 	{
@@ -140,7 +140,7 @@ class TActiveRecordManager extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @since 3.1.5
 	 * @see setInvalidFinderResult
 	 */

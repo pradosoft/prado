@@ -15,7 +15,7 @@ namespace Prado\Web\UI\WebControls;
  * TRegularExpressionValidator validates whether the value of an associated
  * input component matches the pattern specified by a regular expression.
  *
- * You can specify the regular expression by setting the {@link setRegularExpression RegularExpression}
+ * You can specify the regular expression by setting the {@see setRegularExpression RegularExpression}
  * property. Some commonly used regular expressions include:
  * <pre>
  * French Phone Number: (0( \d|\d ))?\d\d \d\d(\d \d| \d\d )\d\d
@@ -34,7 +34,7 @@ namespace Prado\Web\UI\WebControls;
  * </pre>
  *
  * Note, the validation succeeds if the associated input control contains empty input.
- * Use a {@link TRequiredFieldValidator} to ensure the input is not empty.
+ * Use a {@see \Prado\Web\UI\WebControls\TRequiredFieldValidator} to ensure the input is not empty.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

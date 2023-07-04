@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TDatePickerMode class.
  * TDatePickerMode defines the enumerable type for the possible UI mode
- * that a {@link TDatePicker} control can take.
+ * that a {@see \Prado\Web\UI\WebControls\TDatePicker} control can take.
  *
  * The following enumerable values are defined:
  * - Basic: Only shows a text input, focusing on the input shows the date picker

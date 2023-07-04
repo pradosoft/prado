@@ -517,8 +517,8 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Returns whether user input is valid or not.
-	 * This method must be invoked after {@link validate} is called.
-	 * @throws TInvalidOperationException if {@link validate} is not invoked yet.
+	 * This method must be invoked after {@see validate} is called.
+	 * @throws TInvalidOperationException if {@see validate} is not invoked yet.
 	 * @return bool whether the user input is valid or not.
 	 */
 	public function getIsValid()
@@ -621,10 +621,10 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnPreInit event.
-	 * This method is invoked right before {@link onInit OnInit} stage.
+	 * This method is invoked right before {@see onInit OnInit} stage.
 	 * You may override this method to provide additional initialization that
-	 * should be done before {@link onInit OnInit} (e.g. setting {@link setTheme Theme} or
-	 * {@link setStyleSheetTheme StyleSheetTheme}).
+	 * should be done before {@see onInit OnInit} (e.g. setting {@see setTheme Theme} or
+	 * {@see setStyleSheetTheme StyleSheetTheme}).
 	 * Remember to call the parent implementation to ensure OnPreInit event is raised.
 	 * @param mixed $param event parameter
 	 */
@@ -635,9 +635,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnInitComplete event.
-	 * This method is invoked right after {@link onInit OnInit} stage and before {@link onLoad OnLoad} stage.
+	 * This method is invoked right after {@see onInit OnInit} stage and before {@see onLoad OnLoad} stage.
 	 * You may override this method to provide additional initialization that
-	 * should be done after {@link onInit OnInit}.
+	 * should be done after {@see onInit OnInit}.
 	 * Remember to call the parent implementation to ensure OnInitComplete event is raised.
 	 * @param mixed $param event parameter
 	 */
@@ -648,9 +648,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnPreLoad event.
-	 * This method is invoked right before {@link onLoad OnLoad} stage.
+	 * This method is invoked right before {@see onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
-	 * should be done before {@link onLoad OnLoad}.
+	 * should be done before {@see onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure OnPreLoad event is raised.
 	 * @param mixed $param event parameter
 	 */
@@ -661,9 +661,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnLoadComplete event.
-	 * This method is invoked right after {@link onLoad OnLoad} stage.
+	 * This method is invoked right after {@see onLoad OnLoad} stage.
 	 * You may override this method to provide additional page loading logic that
-	 * should be done after {@link onLoad OnLoad}.
+	 * should be done after {@see onLoad OnLoad}.
 	 * Remember to call the parent implementation to ensure OnLoadComplete event is raised.
 	 * @param mixed $param event parameter
 	 */
@@ -674,9 +674,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnPreRenderComplete event.
-	 * This method is invoked right after {@link onPreRender OnPreRender} stage.
+	 * This method is invoked right after {@see onPreRender OnPreRender} stage.
 	 * You may override this method to provide additional preparation for page rendering
-	 * that should be done after {@link onPreRender OnPreRender}.
+	 * that should be done after {@see onPreRender OnPreRender}.
 	 * Remember to call the parent implementation to ensure OnPreRenderComplete event is raised.
 	 * @param mixed $param event parameter
 	 */
@@ -732,7 +732,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Raises OnSaveStateComplete event.
-	 * This method is invoked right after {@link onSaveState OnSaveState} stage.
+	 * This method is invoked right after {@see onSaveState OnSaveState} stage.
 	 * You may override this method to provide additional logic after page state is saved.
 	 * Remember to call the parent implementation to ensure OnSaveStateComplete event is raised.
 	 * @param mixed $param event parameter
@@ -744,7 +744,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Determines whether the current page request is a postback.
-	 * Call {@link getIsPostBack} to get the result.
+	 * Call {@see getIsPostBack} to get the result.
 	 */
 	private function determinePostBackMode()
 	{
@@ -885,7 +885,7 @@ class TPage extends TTemplateControl
 	/**
 	 * Processes post data.
 	 * @param TMap $postData post data to be processed
-	 * @param bool $beforeLoad whether this method is invoked before {@link onLoad OnLoad}.
+	 * @param bool $beforeLoad whether this method is invoked before {@see onLoad OnLoad}.
 	 */
 	protected function processPostData($postData, $beforeLoad)
 	{
@@ -1073,9 +1073,9 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets the page title.
-	 * Note, a {@link THead} control needs to place on the page
+	 * Note, a {@see \Prado\Web\UI\WebControls\THead} control needs to place on the page
 	 * in order that this title be rendered.
-	 * @param string $value page title. This will override the title set in {@link getHead Head}.
+	 * @param string $value page title. This will override the title set in {@see getHead Head}.
 	 */
 	public function setTitle($value)
 	{
@@ -1248,7 +1248,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TStack stack of {@link TOutputCache} objects
+	 * @return TStack stack of {@see \Prado\Web\UI\WebControls\TOutputCache} objects
 	 */
 	public function getCachingStack()
 	{

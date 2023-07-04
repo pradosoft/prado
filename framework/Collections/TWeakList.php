@@ -31,7 +31,7 @@ use WeakReference;
  * restored on retrieval.  When an object becomes unset in the application/system
  * and its WeakReference invalidated, it can be removed from the TWeakList or have
  * a null in place of the object, depending on the mode.  The mode can be set during
- * {@link __construct Construct}.  The default mode of the TWeakList is to maintain
+ * {@see __construct Construct}.  The default mode of the TWeakList is to maintain
  * a list of only valid objects -where the count and item locations can change when
  * an item is invalidated-.  The other mode is to retain the place of invalidated
  * objects and replace the object with null -maintaining the count and item locations-.
@@ -45,12 +45,12 @@ use WeakReference;
  * If an object in an array is invalidated, it well be replaced by "null".  Arrays
  * in the TWeakList are kept regardless of the use/reference count of contained objects.
  *
- * When searching by a {@link TEventHandler} object, it will only find itself and
- * will not match on its {@link TEventHandler::getHandler}.  However, if searching
+ * When searching by a {@see \Prado\TEventHandler} object, it will only find itself and
+ * will not match on its {@see \Prado\TEventHandler::getHandler}.  However, if searching
  * for a callable handler, it will first match direct callable handlers in the list,
  * and then search for matching TEventHandlers' Handler regardless of the data.
  *
- * {@link TWeakCollectionTrait} implements a PHP 8 WeakMap used to track any changes
+ * {@see \Prado\Collections\TWeakCollectionTrait} implements a PHP 8 WeakMap used to track any changes
  * in WeakReference objects in the TWeakList and optionally scrubs the list of invalid
  * objects on any changes to the WeakMap.
  *
@@ -114,7 +114,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
-	 * if the object being added is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
 	 * @since 4.2.3
@@ -130,7 +130,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
-	 * if the object being removed is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
 	 * @since 4.2.3
@@ -309,7 +309,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * Returns the item at the specified offset.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param int $index the index of the item
 	 * @throws TInvalidDataValueException if the index is out of the range

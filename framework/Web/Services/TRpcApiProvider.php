@@ -12,11 +12,11 @@ namespace Prado\Web\Services;
  * TRpcApiProvider class
  *
  * TRpcApiProvider is an abstract class the can be subclasses in order to implement an
- * api for a {@link TRpcService}. A subclass of TRpcApiProvider must implement the
- * {@link registerMethods} method in order to declare the available methods, their
+ * api for a {@see \Prado\Web\Services\TRpcService}. A subclass of TRpcApiProvider must implement the
+ * {@see registerMethods} method in order to declare the available methods, their
  * names and the associated callback.
  *
- * <code>
+ * ```php
  * public function registerMethods()
  * {
  *   return array(
@@ -24,7 +24,7 @@ namespace Prado\Web\Services;
  *     'apiMethodName2' => array('method' => array('ClassName', 'staticMethodName')),
  *   );
  * }
- * </code>
+ * ```
  *
  * In this example, two api method have been defined. The first refers to an object
  * method that must be implemented in the same class, the second to a static method
@@ -35,7 +35,7 @@ namespace Prado\Web\Services;
  * validate them.
  *
  * Providers must be registered in the service configuration in order to be available,
- * as explained in {@link TRpcService}'s documentation.
+ * as explained in {@see \Prado\Web\Services\TRpcService}'s documentation.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @since 3.2

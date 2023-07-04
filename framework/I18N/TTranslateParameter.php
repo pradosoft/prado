@@ -23,13 +23,13 @@ use Prado\Web\UI\TControl;
  * with the values of "Hello" and "World", respectively.
  * The substitution string must be enclose with "{" and "}".
  * The parameters can be further translated by using TTranslate.
- * <code>
+ * ```php
  * <com:TTranslate>
  *   {greeting} {name}!
  *   <com:TTranslateParameter Key="name">World</com:TTranslateParameter>
  *   <com:TTranslateParameter Key="greeting">Hello</com:TTranslateParameter>
  * </com:TTranslate>
- * </code>
+ * ```
  *
  * Properties
  * - <b>Key</b>, string, <b>required</b>.

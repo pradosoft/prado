@@ -13,7 +13,7 @@ use Prado\Exceptions\THttpException;
 /**
  * TXmlRpcProtocol class
  *
- * TXmlRpcProtocol is a class that implements XML-Rpc protocol in {@link TRpcService}.
+ * TXmlRpcProtocol is a class that implements XML-Rpc protocol in {@see \Prado\Web\Services\TRpcService}.
  * It's basically a wrapper to the xmlrpc_server_* family of php methods.
  *
  * @author Robin J. Rogge <rrogge@bigpoint.net>

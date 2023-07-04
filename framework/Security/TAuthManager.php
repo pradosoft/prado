@@ -19,17 +19,17 @@ use Prado\Web\THttpCookie;
  * TAuthManager class
  *
  * TAuthManager performs user authentication and authorization for a Prado application.
- * TAuthManager works together with a {@link IUserManager} module that can be
- * specified via the {@link setUserManager UserManager} property.
+ * TAuthManager works together with a {@see \Prado\Security\IUserManager} module that can be
+ * specified via the {@see setUserManager UserManager} property.
  * If an authorization fails, TAuthManager will try to redirect the client
- * browser to a login page that is specified via the {@link setLoginPage LoginPage}.
- * To login or logout a user, call {@link login} or {@link logout}, respectively.
+ * browser to a login page that is specified via the {@see setLoginPage LoginPage}.
+ * To login or logout a user, call {@see login} or {@see logout}, respectively.
  *
- * The {@link setAuthExpire AuthExpire} property can be used to define the time
+ * The {@see setAuthExpire AuthExpire} property can be used to define the time
  * in seconds after which the authentication should expire.
- * {@link setAllowAutoLogin AllowAutoLogin} specifies if the login information
+ * {@see setAllowAutoLogin AllowAutoLogin} specifies if the login information
  * should be stored in a cookie to perform automatic login. Enabling this
- * feature will cause that {@link setAuthExpire AuthExpire} has no effect
+ * feature will cause that {@see setAuthExpire AuthExpire} has no effect
  * since the user will be logged in again on authentication expiration.
  *
  * To load TAuthManager, configure it in application configuration as follows,

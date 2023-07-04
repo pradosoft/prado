@@ -8,9 +8,9 @@
  *
  * Copyright(c) 2004 by Qiang Xue. All rights reserved.
  *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
+ * To contact the author write to {@see mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
+ * {@see http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
@@ -144,7 +144,10 @@ class CultureInfo
 
 	/**
 	 * Initializes a new instance of the CultureInfo class based on the
-	 * culture specified by name. E.g. <code>new CultureInfo('en_AU');</cdoe>
+	 * culture specified by name. E.g.
+	 * ```php
+	 * new CultureInfo('en_AU');
+	 * ```
 	 * The culture indentifier must be of the form
 	 * "language_(country/region/variant)".
 	 * @param string $culture a culture name, e.g. "en_AU".
@@ -278,7 +281,10 @@ class CultureInfo
 
 	/**
 	 * Gets the culture name in the language that the culture is set
-	 * to display. Returns <code>array('Language','Country');</code>
+	 * to display. Returns
+	 * ```php
+	 * array('Language','Country');
+	 * ```
 	 * 'Country' is omitted if the culture is neutral.
 	 * @return array array with language and country as elements, localized.
 	 */
@@ -297,7 +303,10 @@ class CultureInfo
 
 	/**
 	 * Gets the culture name in English.
-	 * Returns <code>array('Language','Country');</code>
+	 * Returns
+	 * ```php
+	 * array('Language','Country');
+	 * ```
 	 * 'Country' is omitted if the culture is neutral.
 	 * @return string language (country), it may locale code string if english name does not exist.
 	 */
@@ -383,8 +392,14 @@ class CultureInfo
 
 	/**
 	 * Simplify a single element array into its own value.
-	 * E.g. <code>array(0 => array('hello'), 1 => 'world');</code>
-	 * becomes <code>array(0 => 'hello', 1 => 'world');</code>
+	 * E.g.
+	 * ```php
+	 * array(0 => array('hello'), 1 => 'world');
+	 * ```
+	 * becomes
+	 * ```php
+	 * array(0 => 'hello', 1 => 'world');
+	 * ```
 	 * @param mixed $obj with single elements arrays
 	 * @return array simplified array.
 	 */

@@ -19,7 +19,7 @@ use Prado\Web\THttpResponseAdapter;
  * a new TCallbackResponseWriter. When flushContent() is called each
  * instance of TCallbackResponseWriter's content is flushed.
  *
- * The callback response data can be set using the {@link setResponseData ResponseData}
+ * The callback response data can be set using the {@see setResponseData ResponseData}
  * property.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

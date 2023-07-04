@@ -16,19 +16,19 @@ use Prado\TPropertyValue;
  *
  * TAttributeCollection implements a collection for storing attribute names and values.
  *
- * Besides all functionalities provided by {@link TMap}, TAttributeCollection
+ * Besides all functionalities provided by {@see \Prado\Collections\TMap}, TAttributeCollection
  * allows you to get and set attribute values like getting and setting
  * properties. For example, the following usages are all valid for a
  * TAttributeCollection object:
- * <code>
+ * ```php
  * $collection->Text='text';
  * echo $collection->Text;
- * </code>
+ * ```
  * They are equivalent to the following:
- * <code>
+ * ```php
  * $collection->add('Text','text');
  * echo $collection->itemAt('Text');
- * </code>
+ * ```
  *
  * Note, attribute names are case-insensitive. They are converted to lower-case
  * in the collection storage.

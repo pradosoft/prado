@@ -16,38 +16,38 @@ use Prado\TPropertyValue;
  *
  * TDropDownListColumn represents a column that is bound to a field in a data source.
  * The cells in the column will be displayed using the data indexed by
- * {@link setDataTextField DataTextField}. You can customize the display by
- * setting {@link setDataTextFormatString DataTextFormatString}.
+ * {@see setDataTextField DataTextField}. You can customize the display by
+ * setting {@see setDataTextFormatString DataTextFormatString}.
  *
- * If {@link setReadOnly ReadOnly} is false, TDropDownListColumn will display cells in edit mode
+ * If {@see setReadOnly ReadOnly} is false, TDropDownListColumn will display cells in edit mode
  * with dropdown lists. Otherwise, a static text is displayed.
  * The currently selected dropndown list item is specified by the data indexed with
- * {@link setDataValueField DataValueField}.
+ * {@see setDataValueField DataValueField}.
  *
  * There are two approaches to specify the list items available for selection.
  * The first approach uses template syntax as follows,
- * <code>
+ * ```php
  *   <com:TDropDownListColumn ....>
  *     <com:TListItem Value="1" Text="first item" />
  *     <com:TListItem Value="2" Text="second item" />
  *     <com:TListItem Value="3" Text="third item" />
  *   </com:TDropDownListColumn>
- * </code>
+ * ```
  * The second approach specifies a data source to be bound to the dropdown lists
- * by setting {@link setListDataSource ListDataSource}. Like generic list controls,
+ * by setting {@see setListDataSource ListDataSource}. Like generic list controls,
  * you may also want to specify which data fields are used for item values and texts
- * by setting {@link setListValueField ListValueField} and
- * {@link setListTextField ListTextField}, respectively.
- * Furthermore, the item texts may be formatted by using {@link setListTextFormatString ListTextFormatString}.
- * Note, if you specify {@link setListDataSource ListDataSource}, do it before
+ * by setting {@see setListValueField ListValueField} and
+ * {@see setListTextField ListTextField}, respectively.
+ * Furthermore, the item texts may be formatted by using {@see setListTextFormatString ListTextFormatString}.
+ * Note, if you specify {@see setListDataSource ListDataSource}, do it before
  * calling the datagrid's dataBind().
  *
  * The dropdown list control in the TDropDownListColumn can be accessed by one of
  * the following two methods:
- * <code>
+ * ```php
  * $datagridItem->DropDownListColumnID->DropDownList
  * $datagridItem->DropDownListColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the dropdown list control created within the
  * datagrid cell is the first child.
  *
@@ -92,7 +92,7 @@ class TDropDownListColumn extends TDataGridColumn
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TListItem} objects into the {@see getItems Items} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -115,7 +115,7 @@ class TDropDownListColumn extends TDataGridColumn
 
 	/**
 	 * Sets the field of the data source that provides the text content of the column.
-	 * If this is not set, the data specified via {@link getDataValueField DataValueField}
+	 * If this is not set, the data specified via {@see getDataValueField DataValueField}
 	 * will be displayed in the column.
 	 * @param string $value the field of the data source that provides the text content of the column.
 	 */
@@ -150,7 +150,7 @@ class TDropDownListColumn extends TDataGridColumn
 
 	/**
 	 * Sets the field of the data source that provides the key selecting an item in dropdown list.
-	 * If this is not present, the data specified via {@link getDataTextField DataTextField} (without
+	 * If this is not present, the data specified via {@see getDataTextField DataTextField} (without
 	 * applying the formatting string) will be used for selection, instead.
 	 * @param string $value the field of the data source that provides the key selecting an item in dropdown list.
 	 */

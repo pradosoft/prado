@@ -13,8 +13,8 @@ namespace Prado\Web\UI;
  * IButtonControl interface
  *
  * IButtonControl specifies the common properties and events that must
- * be implemented by a button control, such as {@link TButton}, {@link TLinkButton},
- * {@link TImageButton}.
+ * be implemented by a button control, such as {@see \Prado\Web\UI\WebControls\TButton}, {@see \Prado\Web\UI\WebControls\TLinkButton},
+ * {@see \Prado\Web\UI\WebControls\TImageButton}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -42,22 +42,22 @@ interface IButtonControl
 	public function setCausesValidation($value);
 
 	/**
-	 * @return string the command name associated with the {@link onCommand OnCommand} event.
+	 * @return string the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function getCommandName();
 
 	/**
-	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandName($value);
 
 	/**
-	 * @return string the parameter associated with the {@link onCommand OnCommand} event
+	 * @return string the parameter associated with the {@see onCommand OnCommand} event
 	 */
 	public function getCommandParameter();
 
 	/**
-	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value);
 

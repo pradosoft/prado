@@ -19,28 +19,28 @@ use Prado\Xml\TXmlElement;
 /**
  * TRedisCache class
  *
- * TRedisCache implements a cache application module based on {@link https://redis.io/ redis} key-value store.
+ * TRedisCache implements a cache application module based on {@see https://redis.io/ redis} key-value store.
  *
- * TRedisCache can be configured with the {@link setHost Host} and {@link setPort Port}
+ * TRedisCache can be configured with the {@see setHost Host} and {@see setPort Port}
  * properties, which specify the host and port of the redis server to be used.
  * By default, they take the value 'localhost' and 6379, respectively.
  *
  * It is also possible to use a unix socket for connection, it can be set
- * using {@link setSocket}. Be sure that the socket is readable/writeable by
+ * using {@see setSocket}. Be sure that the socket is readable/writeable by
  * the webserver/php user. By default, this value is left empty. If both,
  * server/port and socket are set, the latter takes precedence.
  *
- * Use the {@link setIndex Index} property to change the database to the given
+ * Use the {@see setIndex Index} property to change the database to the given
  * database index. Defaults to 0.
  *
  * The following basic cache operations are implemented:
- * - {@link get} : retrieve the value with a key (if any) from cache
- * - {@link set} : store the value with a key into cache
- * - {@link add} : store the value only if cache does not have this key
- * - {@link delete} : delete the value with the specified key from cache
- * - {@link flush} : delete all values from cache
+ * - {@see get} : retrieve the value with a key (if any) from cache
+ * - {@see set} : store the value with a key into cache
+ * - {@see add} : store the value only if cache does not have this key
+ * - {@see delete} : delete the value with the specified key from cache
+ * - {@see flush} : delete all values from cache
  *
- * Each value is associated with an expiration time. The {@link get} operation
+ * Each value is associated with an expiration time. The {@see get} operation
  * ensures that any expired value will not be returned. The expiration time can
  * be specified by the number of seconds. A expiration time 0 represents never expire.
  *
@@ -53,25 +53,25 @@ use Prado\Xml\TXmlElement;
  * To use this module, the php-redis extension must be loaded.
  *
  * Some usage examples of TRedisCache are as follows,
- * <code>
+ * ```php
  * $cache=new TRedisCache;  // TRedisache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
- * If loaded as module, TRedisCache will register itself with {@link TApplication} as the
- * default cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded as module, TRedisCache will register itself with {@see \Prado\TApplication} as the
+ * default cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TRedisCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TRedisCache" Host="localhost" Port="6379" />
- * </code>
+ * ```
  * or
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TRedisCache" Socket="var/run/redis/redis.sock" Index="2" />
- * </code>
- * where {@link setHost Host} and {@link setPort Port} or {@link setSocket Socket} are configurable properties
+ * ```
+ * where {@see setHost Host} and {@see setPort Port} or {@see setSocket Socket} are configurable properties
  * of TRedisCache.
  *
  * @author Jens Klaer <kj.landwehr.software@gmail.com>

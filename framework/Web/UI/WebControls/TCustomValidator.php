@@ -18,17 +18,17 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * server-side or client-side or both) on an input component.
  *
  * To create a server-side validation function, provide a handler for
- * the {@link onServerValidate OnServerValidate} event that performs the validation.
+ * the {@see onServerValidate OnServerValidate} event that performs the validation.
  * The data string of the input control to validate can be accessed
- * by {@link TServerValidateEventParameter::getValue Value} of the event parameter.
+ * by {@see \Prado\Web\UI\WebControls\TServerValidateEventParameter::getValue Value} of the event parameter.
  * The result of the validation should be stored in the
- * {@link TServerValidateEventParameter::getIsValid IsValid} property of the event
+ * {@see \Prado\Web\UI\WebControls\TServerValidateEventParameter::getIsValid IsValid} property of the event
  * parameter.
  *
  * To create a client-side validation function, add the client-side
  * validation javascript function to the page template.
  * The function should have the following signature:
- * <code>
+ * ```php
  * <script><!--
  * function ValidationFunctionName(sender, parameter)
  * {
@@ -38,8 +38,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
  *    //    return false;
  * }
  * --></script>
- * </code>
- * Use the {@link setClientValidationFunction ClientValidationFunction} property
+ * ```
+ * Use the {@see setClientValidationFunction ClientValidationFunction} property
  * to specify the name of the client-side validation script function associated
  * with the TCustomValidator.
  *
@@ -77,7 +77,7 @@ class TCustomValidator extends TBaseValidator
 
 	/**
 	 * This method overrides the parent's implementation.
-	 * The validation succeeds if {@link onServerValidate} returns true.
+	 * The validation succeeds if {@see onServerValidate} returns true.
 	 * @return bool whether the validation succeeds
 	 */
 	public function evaluateIsValid()
@@ -135,7 +135,7 @@ class TCustomValidator extends TBaseValidator
 
 	/**
 	 * Only register the client-side validator if
-	 * {@link setClientValidationFunction ClientValidationFunction} is set.
+	 * {@see setClientValidationFunction ClientValidationFunction} is set.
 	 */
 	protected function registerClientScriptValidator()
 	{

@@ -17,7 +17,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * Formats and parses dates using the SimpleDateFormat pattern.
  * This pattern is compatible with the I18N and java's SimpleDateFormatter.
- * <code>
+ * ```
  * Pattern |      Description
  * ----------------------------------------------------
  * d       | Day of month 1 to 31, no padding
@@ -27,19 +27,19 @@ use Prado\Exceptions\TInvalidDataValueException;
  * yy      | 2 year digit, e.g., 96, 05
  * yyyy    | 4 year digit, e.g., 2005
  * ----------------------------------------------------
- * </code>
+ * ```
  *
  * Usage example, to format a date
- * <code>
+ * ```php
  * $formatter = new TSimpleDateFormatter("dd/MM/yyyy");
  * echo $formatter->format(time());
- * </code>
+ * ```
  *
  * To parse the date string into a date timestamp.
- * <code>
+ * ```php
  * $formatter = new TSimpleDateFormatter("d-M-yyyy");
  * echo $formatter->parse("24-6-2005");
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0

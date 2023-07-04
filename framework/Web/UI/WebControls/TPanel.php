@@ -21,15 +21,15 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * By default, TPanel displays a &lt;div&gt; element on a page.
  * Children of TPanel are displayed as the body content of the element.
- * The property {@link setWrap Wrap} can be used to set whether the body content
- * should wrap or not. {@link setHorizontalAlign HorizontalAlign} governs how
- * the content is aligned horizontally, and {@link getDirection Direction} indicates
+ * The property {@see setWrap Wrap} can be used to set whether the body content
+ * should wrap or not. {@see setHorizontalAlign HorizontalAlign} governs how
+ * the content is aligned horizontally, and {@see getDirection Direction} indicates
  * the content direction (left to right or right to left). You can set
- * {@link setBackImageUrl BackImageUrl} to give a background image to the panel,
- * and you can ste {@link setGroupingText GroupingText} so that the panel is
+ * {@see setBackImageUrl BackImageUrl} to give a background image to the panel,
+ * and you can ste {@see setGroupingText GroupingText} so that the panel is
  * displayed as a field set with a legend text. Finally, you can specify
  * a default button to be fired when users press 'return' key within the panel
- * by setting the {@link setDefaultButton DefaultButton} property.
+ * by setting the {@see setDefaultButton DefaultButton} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -154,7 +154,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 * Specifies the default button for the panel.
 	 * The default button will be fired (clicked) whenever a user enters 'return'
 	 * key within the panel.
-	 * The button must be locatable via the function call {@link TControl::findControl findControl}.
+	 * The button must be locatable via the function call {@see \Prado\Web\UI\TControl::findControl findControl}.
 	 * @param string $value the ID path to the default button.
 	 */
 	public function setDefaultButton($value)

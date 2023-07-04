@@ -28,7 +28,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 	public const BASE_CSS_FILENAME = 'jquery-ui.css';
 
 	/**
-	 * Replace default StateTracker with {@link TJuiCallbackPageStateTracker} for
+	 * Replace default StateTracker with {@see \Prado\Web\UI\JuiControls\TJuiCallbackPageStateTracker} for
 	 * options tracking in ViewState.
 	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
 	 */
@@ -92,7 +92,7 @@ class TJuiControlAdapter extends TActiveControlAdapter
 
 	/**
 	 * Calls the parent implementation first and sets the parent control for the
-	 * {@link TJuiControlOptions} again afterwards since it was not serialized in viewstate.
+	 * {@see \Prado\Web\UI\JuiControls\TJuiControlOptions} again afterwards since it was not serialized in viewstate.
 	 */
 	public function loadState()
 	{

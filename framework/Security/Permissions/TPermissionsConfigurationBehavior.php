@@ -15,15 +15,15 @@ use Prado\Util\TBehavior;
  * TPermissionsConfigurationBehavior class.
  *
  * TPermissionsConfigurationBehavior is designed specifically to attach to the
- * {@link TPageConfiguration} class objects.  It reads and parses the
+ * {@see \Prado\Web\Services\TPageConfiguration} class objects.  It reads and parses the
  * permissions role hierarchy and permissions rules from a page configuration
  * file.  Within the config.xml for a page, for example, add the following:
- * <code>
+ * ```xml
  * 		<permissions>
  *			<role name="pageRole" children="otherRole, permission_name" />
  *			<permissionrule name="permission_name" action="allow" roles="manager"/>
  *		</permissions>
- * </code>
+ * ```
  *
  * See <@link TPermissionsManager> for information on php configurations.
  *

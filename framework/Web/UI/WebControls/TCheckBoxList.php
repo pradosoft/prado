@@ -17,19 +17,19 @@ use Prado\Web\UI\ActiveControls\IActiveControl;
  *
  * TCheckBoxList displays a list of checkboxes on a Web page.
  *
- * The layout of the checkbox list is specified via {@link setRepeatLayout RepeatLayout},
+ * The layout of the checkbox list is specified via {@see setRepeatLayout RepeatLayout},
  * which can be either 'Table' (default) or 'Flow'.
  * A table layout uses HTML table cells to organize the checkboxes while
  * a flow layout uses line breaks to organize the checkboxes.
- * When the layout is using 'Table', {@link setCellPadding CellPadding} and
- * {@link setCellSpacing CellSpacing} can be used to adjust the cellpadding and
+ * When the layout is using 'Table', {@see setCellPadding CellPadding} and
+ * {@see setCellSpacing CellSpacing} can be used to adjust the cellpadding and
  * cellpadding of the table.
  *
  * The number of columns used to display the checkboxes is specified via
- * {@link setRepeatColumns RepeatColumns} property, while the {@link setRepeatDirection RepeatDirection}
+ * {@see setRepeatColumns RepeatColumns} property, while the {@see setRepeatDirection RepeatDirection}
  * governs the order of the items being rendered.
  *
- * The alignment of the text besides each checkbox can be specified via {@link setTextAlign TextAlign}.
+ * The alignment of the text besides each checkbox can be specified via {@see setTextAlign TextAlign}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -92,7 +92,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableStyle} to be used by checkbox list.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableStyle} to be used by checkbox list.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()
@@ -225,7 +225,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Returns a value indicating whether this control contains header item.
-	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool always false.
 	 */
 	public function getHasHeader()
@@ -235,7 +235,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Returns a value indicating whether this control contains footer item.
-	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool always false.
 	 */
 	public function getHasFooter()
@@ -245,7 +245,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Returns a value indicating whether this control contains separator items.
-	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool always false.
 	 */
 	public function getHasSeparators()
@@ -278,7 +278,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Returns a style used for rendering items.
-	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index index of the item being rendered
 	 * @return null
@@ -290,7 +290,7 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Renders an item in the list.
-	 * This method is required by {@link IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
@@ -345,8 +345,8 @@ class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\
 
 	/**
 	 * Raises postdata changed event.
-	 * This method is required by {@link \Prado\Web\UI\IPostBackDataHandler} interface.
-	 * It is invoked by the framework when {@link getSelectedIndices SelectedIndices} property
+	 * This method is required by {@see \Prado\Web\UI\IPostBackDataHandler} interface.
+	 * It is invoked by the framework when {@see getSelectedIndices SelectedIndices} property
 	 * is changed on postback.
 	 * This method is primarly used by framework developers.
 	 */

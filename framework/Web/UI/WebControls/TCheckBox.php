@@ -18,24 +18,24 @@ use Prado\TPropertyValue;
  *
  * TCheckBox displays a check box on the page.
  * You can specify the caption to display beside the check box by setting
- * the {@link setText Text} property.  The caption can appear either on the right
- * or left of the check box, which is determined by the {@link setTextAlign TextAlign}
+ * the {@see setText Text} property.  The caption can appear either on the right
+ * or left of the check box, which is determined by the {@see setTextAlign TextAlign}
  * property.
  *
- * To determine whether the TCheckBox component is checked, test the {@link getChecked Checked}
- * property. The {@link onCheckedChanged OnCheckedChanged} event is raised when
- * the {@link getChecked Checked} state of the TCheckBox component changes
+ * To determine whether the TCheckBox component is checked, test the {@see getChecked Checked}
+ * property. The {@see onCheckedChanged OnCheckedChanged} event is raised when
+ * the {@see getChecked Checked} state of the TCheckBox component changes
  * between posts to the server. You can provide an event handler for
- * the {@link onCheckedChanged OnCheckedChanged} event to  to programmatically
+ * the {@see onCheckedChanged OnCheckedChanged} event to  to programmatically
  * control the actions performed when the state of the TCheckBox component changes
  * between posts to the server.
  *
- * If {@link setAutoPostBack AutoPostBack} is set true, changing the check box state
- * will cause postback action. And if {@link setCausesValidation CausesValidation}
+ * If {@see setAutoPostBack AutoPostBack} is set true, changing the check box state
+ * will cause postback action. And if {@see setCausesValidation CausesValidation}
  * is true, validation will also be processed, which can be further restricted within
- * a {@link setValidationGroup ValidationGroup}.
+ * a {@see setValidationGroup ValidationGroup}.
  *
- * Note, {@link setText Text} is rendered as is. Make sure it does not contain unwanted characters
+ * Note, {@see setText Text} is rendered as is. Make sure it does not contain unwanted characters
  * that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -73,7 +73,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Raises postdata changed event.
-	 * This method raises {@link onCheckedChanged OnCheckedChanged} event.
+	 * This method raises {@see onCheckedChanged OnCheckedChanged} event.
 	 * This method is primarly used by framework developers.
 	 */
 	public function raisePostDataChangedEvent()
@@ -85,7 +85,7 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * Raises <b>OnCheckedChanged</b> event when {@link getChecked Checked} changes value during postback.
+	 * Raises <b>OnCheckedChanged</b> event when {@see getChecked Checked} changes value during postback.
 	 * If you override this method, be sure to call the parent implementation
 	 * so that the event delegates can be invoked.
 	 * @param \Prado\TEventParameter $param event parameter to be passed to the event handlers
@@ -215,8 +215,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Returns the value indicating whether the checkbox is checked.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getChecked()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getChecked()}.
 	 * @return bool whether the checkbox is checked.
 	 * @see getChecked
 	 * @since 3.1.0
@@ -228,8 +228,8 @@ class TCheckBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Sets the value indicating whether the checkbox is to be checked or not.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setChecked()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setChecked()}.
 	 * @param bool $value whether the checkbox is to be checked
 	 * @see setChecked
 	 * @since 3.1.0

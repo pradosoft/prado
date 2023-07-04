@@ -18,17 +18,17 @@ use Prado\Util\TBehavior;
  *
  * TMapRouteBehavior routes the changes to Application Parameters to
  * actual functions to affect change.
- * <code>
+ * ```php
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapRouteBehavior('parameterToHook', [$obj, 'setParam']));
- * </code>
+ * ```
  * This code will call $obj->setParam($value) every time the parameter
  * 'parameterToHook' changes in the Application Parameters.
  *
- * <code>
+ * ```php
  *		Prado::getApplication()->getParameters()->attachBehavior('name'
  *			new TMapRouteBehavior(null, [$obj, 'setParam']));
- * </code>
+ * ```
  * This code will call $obj->setParam($key, $value) every time any parameter
  * changes in the Application Parameters.
  *

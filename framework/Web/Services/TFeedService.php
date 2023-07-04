@@ -24,17 +24,17 @@ use Prado\Exceptions\THttpException;
  * to the ID of the feed, specifies which feed content to be provided to end-users.
  *
  * To use TFeedService, configure it in application configuration as follows,
- * <code>
+ * ```xml
  *  <service id="feed" class="Prado\Web\Services\TFeedService">
  *    <feed id="ch1" class="Path\To\FeedClass1" .../>
  *    <feed id="ch2" class="Path\To\FeedClass2" .../>
  *    <feed id="ch3" class="Path\To\FeedClass3" .../>
  *  </service>
- * </code>
+ * ```
  * where each &lt;feed&gt; element specifies a feed identified by its "id" value (case-sensitive).
  *
  * PHP configuration style:
- * <code>
+ * ```php
  * array(
  *   'feed' => array(
  *	   'ch1' => array(
@@ -44,15 +44,17 @@ use Prado\Exceptions\THttpException;
  *        ),
  *   ),
  * )
- * </code>
+ * ```
  *
  * The class attribute indicates which PHP class will provide the actual feed
- * content. Note, the class must implement {@link IFeedContentProvider} interface.
+ * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.
  * Other initial properties for the feed class may also be specified in the
  * corresponding &lt;feed&gt; element.
  *
  * To retrieve the feed content identified by "ch2", use the URL
- * <code>/path/to/index.php?feed=ch2</code>
+ * ```
+ * /path/to/index.php?feed=ch2
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>

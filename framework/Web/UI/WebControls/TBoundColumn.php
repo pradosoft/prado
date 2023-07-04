@@ -17,26 +17,26 @@ use Prado\TPropertyValue;
  *
  * TBoundColumn represents a column that is bound to a field in a data source.
  * The cells in the column will be displayed using the data indexed by
- * {@link setDataField DataField}. You can customize the display by
- * setting {@link setDataFormatString DataFormatString}.
+ * {@see setDataField DataField}. You can customize the display by
+ * setting {@see setDataFormatString DataFormatString}.
  *
- * If {@link setReadOnly ReadOnly} is false, TBoundColumn will display cells in edit mode
+ * If {@see setReadOnly ReadOnly} is false, TBoundColumn will display cells in edit mode
  * with textboxes. Otherwise, a static text is displayed.
  *
  * When a datagrid row is in edit mode, the textbox control in the TBoundColumn
  * can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->BoundColumnID->TextBox
  * $datagridItem->BoundColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the textbox control created within the
  * datagrid cell is the first child.
  *
- * Since v3.1.0, TBoundColumn has introduced two new properties {@link setItemRenderer ItemRenderer}
- * and {@link setEditItemRenderer EditItemRenderer} which can be used to specify
+ * Since v3.1.0, TBoundColumn has introduced two new properties {@see setItemRenderer ItemRenderer}
+ * and {@see setEditItemRenderer EditItemRenderer} which can be used to specify
  * the layout of the datagrid cells in browsing and editing mode.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@link TRepeater} and {@link TDataList}.
+ * For more details, see {@see \Prado\Web\UI\WebControls\TRepeater} and {@see \Prado\Web\UI\WebControls\TDataList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -57,10 +57,10 @@ class TBoundColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cells of the column.
 	 *
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the data associated with the datagrid cell during databinding.
 	 * The data can be either the whole data row or a field of the row if
-	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
+	 * {@see getDataField DataField} is not empty. If {@see getDataFormatString DataFormatString}
 	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
 	 * @param string $value the renderer class name in namespace format.
@@ -85,10 +85,10 @@ class TBoundColumn extends TDataGridColumn
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the item cell that is in edit mode.
 	 *
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
 	 * will be set as the data associated with the datagrid cell during databinding.
 	 * The data can be either the whole data row or a field of the row if
-	 * {@link getDataField DataField} is not empty. If {@link getDataFormatString DataFormatString}
+	 * {@see getDataField DataField} is not empty. If {@see getDataFormatString DataFormatString}
 	 * is not empty, the data will be formatted first before passing to the renderer.
 	 *
 	 * @param string $value the renderer class name in namespace format.

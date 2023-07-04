@@ -34,7 +34,7 @@ use Prado\Web\UI\TThemeManager;
  *
  * TApplication adopts a modular structure. A TApplication instance is a composition
  * of multiple modules. A module is an instance of class implementing
- * {@link IModule} interface. Each module accomplishes certain functionalities
+ * {@see \Prado\IModule} interface. Each module accomplishes certain functionalities
  * that are shared by all Prado components in an application.
  * There are default modules, composer modules, and user-defined modules. The latter
  * offers extreme flexibility of extending TApplication in a plug-and-play fashion.
@@ -46,7 +46,7 @@ use Prado\Web\UI\TThemeManager;
  * Packages can be specified as a configuration module (without a class) to load the
  * composer extension module.  The ID of the module is the name of the package.
  *
- * TApplication has four modes that can be changed by setting {@link setMode Mode}
+ * TApplication has four modes that can be changed by setting {@see setMode Mode}
  * property (in the application configuration file).
  * - <b>Off</b> mode will prevent the application from serving user requests.
  * - <b>Debug</b> mode is mainly used during application development. It ensures
@@ -85,14 +85,14 @@ use Prado\Web\UI\TThemeManager;
  * events and do appropriate processing when the events are raised. By this way,
  * the application is able to coordinate the activities of modules and services
  * in the above order. To terminate an application before the whole lifecycle
- * completes, call {@link completeRequest}.
+ * completes, call {@see completeRequest}.
  *
  * Examples:
  * - Create and run a Prado application:
- * <code>
+ * ```php
  * $application=new TApplication($configFile);
  * $application->run();
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -474,9 +474,9 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Loads global values from persistent storage.
-	 * This method is invoked when {@link onLoadState OnLoadState} event is raised.
+	 * This method is invoked when {@see onLoadState OnLoadState} event is raised.
 	 * After this method, values that are stored in previous requests become
-	 * available to the current request via {@link getGlobalState}.
+	 * available to the current request via {@see getGlobalState}.
 	 */
 	protected function loadGlobals()
 	{
@@ -485,7 +485,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Saves global values into persistent storage.
-	 * This method is invoked when {@link onSaveState OnSaveState} event is raised.
+	 * This method is invoked when {@see onSaveState OnSaveState} event is raised.
 	 */
 	protected function saveGlobals()
 	{
@@ -718,13 +718,13 @@ class TApplication extends \Prado\TComponent
 	/**
 	 * Returns a list of application modules of a specific class.
 	 * Lazy Loading Modules are not loaded, and are null but have an ID Key.
-	 * When null modules are found, load them with {@link getModule}. eg.
-	 * <code>
+	 * When null modules are found, load them with {@see getModule}. eg.
+	 * ```php
 	 *	foreach (Prado::getApplication()->getModulesByType(\Prado\Caching\ICache::class) as $id => $module) {
 	 *		$module = (!$module) ? $app->getModule($id) : $module;
 	 *		...
 	 *	}
-	 * </code>
+	 * ```
 	 * @param string $type class name of the modules to look for.
 	 * @param bool $strict should the module be the class or can the module be a subclass
 	 * @return array keys are the ids of the module and values are module of a specific class
@@ -748,7 +748,7 @@ class TApplication extends \Prado\TComponent
 
 	/**
 	 * Returns the list of application parameters.
-	 * Since the parameters are returned as a {@link \Prado\Collections\TMap} object, you may use
+	 * Since the parameters are returned as a {@see \Prado\Collections\TMap} object, you may use
 	 * the returned result to access, add or remove individual parameters.
 	 * @return \Prado\Collections\TMap the list of application parameters
 	 */

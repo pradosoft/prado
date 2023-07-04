@@ -15,7 +15,7 @@ use Prado\Data\DataGateway\TSqlCriteria;
  * Search criteria for Active Record.
  *
  * Criteria object for active record finder methods. Usage:
- * <code>
+ * ```php
  * $criteria = new TActiveRecordCriteria;
  * $criteria->Condition = 'username = :name AND password = :pass';
  * $criteria->Parameters[':name'] = 'admin';
@@ -24,7 +24,7 @@ use Prado\Data\DataGateway\TSqlCriteria;
  * $criteria->OrdersBy['name'] = 'asc';
  * $criteria->Limit = 10;
  * $criteria->Offset = 20;
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

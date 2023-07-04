@@ -16,15 +16,15 @@ use Prado\Web\THttpUtility;
  * THyperLink class
  *
  * THyperLink displays a hyperlink on a page. The hyperlink URL is specified
- * via the {@link setNavigateUrl NavigateUrl} property, and link text is via
- * the {@link setText Text} property. It is also possible to display an image
- * by setting the {@link setImageUrl ImageUrl} property. In this case,
+ * via the {@see setNavigateUrl NavigateUrl} property, and link text is via
+ * the {@see setText Text} property. It is also possible to display an image
+ * by setting the {@see setImageUrl ImageUrl} property. In this case,
  * the style of the image displayed can be set using the
- * {@link setImageStyle ImageStyle} property and {@link getText Text} is
+ * {@see setImageStyle ImageStyle} property and {@see getText Text} is
  * displayed as the alternate text of the image.
  *
- * The link target is specified via the {@link setTarget Target} property.
- * If both {@link getImageUrl ImageUrl} and {@link getText Text} are empty,
+ * The link target is specified via the {@see setTarget Target} property.
+ * If both {@see getImageUrl ImageUrl} and {@see getText Text} are empty,
  * the content enclosed within the control tag will be rendered.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -228,8 +228,8 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Returns the URL to link to when the THyperLink component is clicked.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string the text caption
 	 * @see getText
 	 * @since 3.1.0
@@ -241,8 +241,8 @@ class THyperLink extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the URL to link to when the THyperLink component is clicked.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value the text caption to be set
 	 * @see setText
 	 * @since 3.1.0

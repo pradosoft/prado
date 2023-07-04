@@ -14,8 +14,8 @@ use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * TXmlElementList class.
  *
- * TXmlElementList represents a collection of {@link TXmlElement}.
- * You may manipulate the collection with the operations defined in {@link TList}.
+ * TXmlElementList represents a collection of {@see \Prado\Xml\TXmlElement}.
+ * You may manipulate the collection with the operations defined in {@see \Prado\Collections\TList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

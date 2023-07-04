@@ -23,20 +23,20 @@ use Prado\TPropertyValue;
  * class to keep order to your map.
  *
  * You can access, add or remove an item with a key by using
- * {@link itemAt}, {@link add}, and {@link remove}.  These functions
+ * {@see itemAt}, {@see add}, and {@see remove}.  These functions
  * can optionally take a priority parameter to allow access to specific
  * priorities.  TPriorityMap is functionally backward compatible
- * with {@link TMap}.
+ * with {@see \Prado\Collections\TMap}.
  *
- * To get the number of the items in the map, use {@link getCount}.
+ * To get the number of the items in the map, use {@see getCount}.
  * TPriorityMap can also be used like a regular array as follows,
- * <code>
+ * ```php
  * $map[$key]=$value; // add a key-value pair
  * unset($map[$key]); // remove the value with the specified key
  * if(isset($map[$key])) // if the map contains the key
  * foreach($map as $key=>$value) // traverse the items in the map
  * $n=count($map);  // returns the number of items in the map
- * </code>
+ * ```
  * Using standard array access method like these will always use
  * the default priority.
  *
@@ -51,7 +51,7 @@ use Prado\TPropertyValue;
  * during the instantiation of a new TPriorityMap.
  * The default is 8 decimal places for a priority.  If a negative number
  * is used, rounding occurs into the integer space rather than in
- * the decimal space.  See {@link round}.
+ * the decimal space.  See {@see round}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2a
@@ -147,7 +147,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 
 	/**
 	 * This changes an item's priority.  Specify the item and the new priority.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * @param mixed $key the key
 	 * @param null|numeric $priority the priority.  default: null, filled in with the default priority numeric.
 	 * @return numeric old priority of the item
@@ -306,7 +306,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	}
 
 	/**
-	 * Removes all items in the map.  {@link remove} is called on all items.
+	 * Removes all items in the map.  {@see remove} is called on all items.
 	 */
 	public function clear(): void
 	{

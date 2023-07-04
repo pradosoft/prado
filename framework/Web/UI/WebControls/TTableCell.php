@@ -15,17 +15,17 @@ use Prado\TPropertyValue;
  * TTableCell class.
  *
  * TTableCell displays a table cell on a Web page. Content of the table cell
- * is specified by the {@link setText Text} property. If {@link setText Text}
+ * is specified by the {@see setText Text} property. If {@see setText Text}
  * is empty, the body contents enclosed by the table cell component tag are rendered.
- * Note, {@link setText Text} is not HTML-encoded when displayed. So make sure
+ * Note, {@see setText Text} is not HTML-encoded when displayed. So make sure
  * it does not contain dangerous characters.
  *
  * The horizontal and vertical alignments of the contents in the cell
- * are specified via {@link setHorizontalAlign HorizontalAlign} and
- * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ * are specified via {@see setHorizontalAlign HorizontalAlign} and
+ * {@see setVerticalAlign VerticalAlign} properties, respectively.
  *
- * The colspan and rowspan of the cell are specified via {@link setColumnSpan ColumnSpan}
- * and {@link setRowSpan RowSpan} properties. And the {@link setWrap Wrap} property
+ * The colspan and rowspan of the cell are specified via {@see setColumnSpan ColumnSpan}
+ * and {@see setRowSpan RowSpan} properties. And the {@see setWrap Wrap} property
  * indicates whether the contents in the cell should be wrapped.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -44,7 +44,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableItemStyle} to be used by the table cell.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableItemStyle} to be used by the table cell.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()
@@ -171,8 +171,8 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Returns the text content of the table cell.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string the text content of the table cell.
 	 * @see getText
 	 * @since 3.1.0
@@ -184,8 +184,8 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Sets the text content of the table cell.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value the text content of the table cell.
 	 * @see setText
 	 * @since 3.1.0

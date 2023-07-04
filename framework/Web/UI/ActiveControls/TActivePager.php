@@ -25,8 +25,8 @@ use Prado\Web\UI\WebControls\TWebControl;
  * When a page change is requested, TActivePager raises a callback instead of the
  * traditional postback.
  *
- * The {@link onCallback OnCallback} event is raised during a callback request
- * and it is raise <b>after</b> the {@link onPageIndexChanged OnPageIndexChanged} event.
+ * The {@see onCallback OnCallback} event is raised during a callback request
+ * and it is raise <b>after</b> the {@see onPageIndexChanged OnPageIndexChanged} event.
  *
  * @author "gevik" (forum contributor) and Christophe Boulain (Christophe.Boulain@gmail.com)
  * @since 3.1.2
@@ -62,7 +62,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -163,7 +163,7 @@ class TActivePager extends TPager implements IActiveControl, ICallbackEventHandl
 
 	/**
 	 * Event handler to the OnCallback active buttons or active dropdownlist.
-	 * This handler will raise the {@link onCallback OnCallback} event
+	 * This handler will raise the {@see onCallback OnCallback} event
 	 *
 	 * @param mixed $sender
 	 * @param TCallbackEventParameter $param

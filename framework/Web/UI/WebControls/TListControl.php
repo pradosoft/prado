@@ -20,58 +20,58 @@ use Prado\Exceptions\TInvalidDataValueException;
 /**
  * TListControl class
  *
- * TListControl is a base class for list controls, such as {@link TListBox},
- * {@link TDropDownList}, {@link TCheckBoxList}, etc.
+ * TListControl is a base class for list controls, such as {@see \Prado\Web\UI\WebControls\TListBox},
+ * {@see \Prado\Web\UI\WebControls\TDropDownList}, {@see \Prado\Web\UI\WebControls\TCheckBoxList}, etc.
  * It manages the items and their status in a list control.
  * It also implements how the items can be populated from template and
  * data source.
  *
- * The property {@link getItems} returns a list of the items in the control.
+ * The property {@see getItems} returns a list of the items in the control.
  * To specify or determine which item is selected, use the
- * {@link getSelectedIndex SelectedIndex} property that indicates the zero-based
+ * {@see getSelectedIndex SelectedIndex} property that indicates the zero-based
  * index of the selected item in the item list. You may also use
- * {@link getSelectedItem SelectedItem} and {@link getSelectedValue SelectedValue}
+ * {@see getSelectedItem SelectedItem} and {@see getSelectedValue SelectedValue}
  * to get the selected item and its value. For multiple selection lists
- * (such as {@link TCheckBoxList} and {@link TListBox}), property
- * {@link getSelectedIndices SelectedIndices} is useful.
+ * (such as {@see \Prado\Web\UI\WebControls\TCheckBoxList} and {@see \Prado\Web\UI\WebControls\TListBox}), property
+ * {@see getSelectedIndices SelectedIndices} is useful.
  *
- * TListControl implements {@link setAutoPostBack AutoPostBack} which allows
+ * TListControl implements {@see setAutoPostBack AutoPostBack} which allows
  * a list control to postback the page if the selections of the list items are changed.
- * The {@link setCausesValidation CausesValidation} and {@link setValidationGroup ValidationGroup}
+ * The {@see setCausesValidation CausesValidation} and {@see setValidationGroup ValidationGroup}
  * properties may be used to specify that validation be performed when auto postback occurs.
  *
  * There are three ways to populate the items in a list control: from template,
- * using {@link setDataSource DataSource} and using {@link setDataSourceID DataSourceID}.
- * The latter two are covered in {@link TDataBoundControl}. To specify items via
+ * using {@see setDataSource DataSource} and using {@see setDataSourceID DataSourceID}.
+ * The latter two are covered in {@see \Prado\Web\UI\WebControls\TDataBoundControl}. To specify items via
  * template, using the following template syntax:
- * <code>
+ * ```php
  * <com:TListControl>
  *   <com:TListItem Value="xxx" Text="yyy" >
  *   <com:TListItem Value="xxx" Text="yyy" Selected="true" >
  *   <com:TListItem Value="xxx" Text="yyy" >
  * </com:TListControl>
- * </code>
+ * ```
  *
- * When {@link setDataSource DataSource} or {@link setDataSourceID DataSourceID}
- * is used to populate list items, the {@link setDataTextField DataTextField} and
- * {@link setDataValueField DataValueField} properties are used to specify which
+ * When {@see setDataSource DataSource} or {@see setDataSourceID DataSourceID}
+ * is used to populate list items, the {@see setDataTextField DataTextField} and
+ * {@see setDataValueField DataValueField} properties are used to specify which
  * columns of the data will be used to populate the text and value of the items.
  * For example, if a data source is as follows,
- * <code>
+ * ```php
  * $dataSource=array(
  *    array('name'=>'John', 'age'=>31),
  *    array('name'=>'Cary', 'age'=>28),
  *    array('name'=>'Rose', 'age'=>35),
  * );
- * </code>
- * setting {@link setDataTextField DataTextField} and {@link setDataValueField DataValueField}
+ * ```
+ * setting {@see setDataTextField DataTextField} and {@see setDataValueField DataValueField}
  * to 'name' and 'age' will make the first item's text be 'John', value be 31,
  * the second item's text be 'Cary', value be 28, and so on.
- * The {@link setDataTextFormatString DataTextFormatString} property may be further
- * used to format how the item should be displayed. See {@link formatDataValue()}
+ * The {@see setDataTextFormatString DataTextFormatString} property may be further
+ * used to format how the item should be displayed. See {@see formatDataValue()}
  * for an explanation of the format string.
  *
- * The {@link setPromptText PromptText} and {@link setPromptValue PromptValue} properties can
+ * The {@see setPromptText PromptText} and {@see setPromptValue PromptValue} properties can
  * be used to add a dummy list item that will be rendered first.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -177,7 +177,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@link TListItem} objects into the {@link getItems Items} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TListItem} objects into the {@see getItems Items} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -382,7 +382,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Sets data text format string.
-	 * The format string is used in {@link TDataValueFormatter::format()} to format the Text property value
+	 * The format string is used in {@see TDataValueFormatter::format()} to format the Text property value
 	 * of each item in the list control.
 	 * @param string $value the formatting string used to control how data bound to the list control is displayed.
 	 * @see TDataValueFormatter::format()
@@ -543,8 +543,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Returns the value of the selected item with the lowest cardinal index.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getSelectedValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getSelectedValue()}.
 	 * @return string the value of the selected item with the lowest cardinal index, empty if no selection.
 	 * @see getSelectedValue
 	 * @since 3.1.0
@@ -556,8 +556,8 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Selects an item by the specified value.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setSelectedValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setSelectedValue()}.
 	 * @param string $value the value of the item to be selected.
 	 * @see setSelectedValue
 	 * @since 3.1.0
@@ -833,7 +833,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 	 * If the format string starts with '#', the string is treated as a PHP expression
 	 * within which the token '{0}' is translated with the data value to be formated.
 	 * Otherwise, the format string and the data value are passed
-	 * as the first and second parameters in {@link sprintf}.
+	 * as the first and second parameters in {@see sprintf}.
 	 * @param string $formatString format string
 	 * @param mixed $value the data to be formatted
 	 * @return string the formatted result

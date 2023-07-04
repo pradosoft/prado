@@ -17,7 +17,7 @@ use Prado\Web\UI\ActiveControls\TActivePageAdapter;
  *
  * TFirebugLogRoute prints selected log messages in the firebug log console.
  *
- * {@link http://www.getfirebug.com/ FireBug Website}
+ * {@see http://www.getfirebug.com/ FireBug Website}
  *
  * @author Enrico Stahn <mail@enricostahn.com>, Christophe Boulain <Christophe.Boulain@gmail.com>
  * @since 3.1.2

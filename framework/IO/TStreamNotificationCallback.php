@@ -20,8 +20,8 @@ use Prado\Prado;
  * callback.
  *
  * This class is an invokable callback that is notified as the connection unfolds.
- * Of particular use is listening to the progress of data transfer with {@see TStreamNotificationCallback::onProgress()}
- * The {@see TStreamNotificationCallback::filterStreamContext()}
+ * Of particular use is listening to the progress of data transfer with {@see \Prado\IO\TStreamNotificationCallback::onProgress()}
+ * The {@see \Prado\IO\TStreamNotificationCallback::filterStreamContext()}
  * method can accept a TStreamNotificationCallback or an array of options that includes
  * "notification".  The array of options are the options for stream_context_create
  * and can include events as keys and event handlers (or an array of Event Handlers)
@@ -38,18 +38,18 @@ use Prado\Prado;
  *   - onRedirected: Raised when the Notification Code is STREAM_NOTIFY_REDIRECTED.
  *   - onMimeType: Raised when the Notification Code is STREAM_NOTIFY_MIME_TYPE_IS.
  *       This parses the $message Mime Type and Charset and is retrievable with
- *       {@see TStreamNotificationCallback::getMimeType()} and {@see TStreamNotificationCallback::getCharset()}.
+ *       {@see \Prado\IO\TStreamNotificationCallback::getMimeType()} and {@see \Prado\IO\TStreamNotificationCallback::getCharset()}.
  *   - onFileSize: Raised when the Notification Code is STREAM_NOTIFY_FILE_SIZE_IS.
- *       This stores the file size and is retrievable with {@see TStreamNotificationCallback::getFileSize()}.
+ *       This stores the file size and is retrievable with {@see \Prado\IO\TStreamNotificationCallback::getFileSize()}.
  *   - onProgress: Raised when the Notification Code is STREAM_NOTIFY_PROGRESS.
- *       This stores the bytes Transferred and is retrievable with {@see TStreamNotificationCallback::getBytesTransferred()}.
+ *       This stores the bytes Transferred and is retrievable with {@see \Prado\IO\TStreamNotificationCallback::getBytesTransferred()}.
  *   - onCompleted: Raised when the Notification Code is STREAM_NOTIFY_COMPLETED.
- *		 This sets the {@see TStreamNotificationCallback::getIsCompleted()} to true (from false).
+ *		 This sets the {@see \Prado\IO\TStreamNotificationCallback::getIsCompleted()} to true (from false).
  *   - onFailure: Raised when the Notification Code is STREAM_NOTIFY_FAILURE.
- *		 This sets the {@see TStreamNotificationCallback::getIsFailure()} to true (from
- *       false) and stores the Message Code for retrieval with {@see TStreamNotificationCallback::getMessageCode()}.
+ *		 This sets the {@see \Prado\IO\TStreamNotificationCallback::getIsFailure()} to true (from
+ *       false) and stores the Message Code for retrieval with {@see \Prado\IO\TStreamNotificationCallback::getMessageCode()}.
  *
- * These events pass the {@see TStreamNotificationParameter} as the parameter. It
+ * These events pass the {@see \Prado\IO\TStreamNotificationParameter} as the parameter. It
  * contains the arguments of the Stream Notification Callback and is reused in each
  * notification.
  *

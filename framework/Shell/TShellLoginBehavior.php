@@ -21,13 +21,13 @@ use Prado\Prado;
  * actions.  TShellLoginBehavior is attached to TAuthManager.
  *
  * For example in a TBehaviorsModule where the TAuthManager module id is 'auth':
- * <code>
+ * ```php
  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachTo="module:auth" />
- * </code>
+ * ```
  * or, attach to all TAuthManager
- * <code>
+ * ```php
  *	 <behavior name="shellLoginAuth" Class="Prado\Shell\TShellLoginBehavior" AttachToClass="Prado\Security\TAuthManager" />
- * </code>
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

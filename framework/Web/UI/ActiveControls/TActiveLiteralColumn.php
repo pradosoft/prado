@@ -19,18 +19,18 @@ use Prado\Web\UI\WebControls\TLiteralColumn;
  *
  * TActiveLiteralColumn represents a static text column that is bound to a field in a data source.
  * The cells in the column will be displayed with static texts using the data indexed by
- * {@link setDataField DataField}. You can customize the display by
- * setting {@link setDataFormatString DataFormatString}.
+ * {@see setDataField DataField}. You can customize the display by
+ * setting {@see setDataFormatString DataFormatString}.
  *
- * If {@link setDataField DataField} is not specified, the cells will be filled
- * with {@link setText Text}.
+ * If {@see setDataField DataField} is not specified, the cells will be filled
+ * with {@see setText Text}.
  *
- * If {@link setEncode Encode} is true, the static texts will be HTML-encoded.
+ * If {@see setEncode Encode} is true, the static texts will be HTML-encoded.
  *
- * This is the active counterpart to the {@link TLiteralColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TLiteralColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@link TLiteralColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TLiteralColumn} for usage.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @since 3.1.9

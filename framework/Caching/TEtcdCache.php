@@ -16,7 +16,7 @@ use Prado\Exceptions\TConfigurationException;
  * TEtcdCache class
  *
  * TEtcdCache implements a cache application module based on the distributed,
- * consistent key-value store {@link https://github.com/coreos/etcd etcd}.
+ * consistent key-value store {@see https://github.com/coreos/etcd etcd}.
  * etcd is high performance key-value store written in Go which uses the Raft
  * consensus algorithm to manage a highly-available replicated log.
  *
@@ -24,28 +24,28 @@ use Prado\Exceptions\TConfigurationException;
  * even if it never expires. Cache is not meant to be an persistent storage.
  *
  * To use this module, an etcd instance must be running and reachable on the host
- * specified by {@link setHost} and the port specified by {@link setPort} which
+ * specified by {@see setHost} and the port specified by {@see setPort} which
  * default to 'localhost:2379'. All values are stored within a directory set by
- * {@link setDir} which defaults to 'pradocache'.
+ * {@see setDir} which defaults to 'pradocache'.
  *
  * TEtcdCache only supports etcd API v2 and uses cURL to fire the HTTP
  * GET/PUT/DELETE commands, thus the PHP cURL extension is also needed.
  *
  * Some usage examples of TEtcdCache are as follows,
- * <code>
+ * ```php
  * $cache = new TEtcdCache(); // TEtcdCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('value', $value);
  * $value = $cache->get('value');
- * </code>
+ * ```
  *
- * If loaded, TEtcdCache will register itself with {@link TApplication} as the
- * cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded, TEtcdCache will register itself with {@see \Prado\TApplication} as the
+ * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TEtcdCache may be configured in application configuration file as follows
- * <code>
+ * ```php
  * <module id="cache" class="Prado\Caching\TEtcdCache" Host="localhost" Port="2379" Dir="pradocache" />
- * </code>
+ * ```
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

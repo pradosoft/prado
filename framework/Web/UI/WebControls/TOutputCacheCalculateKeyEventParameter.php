@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TOutputCacheCalculateKeyEventParameter class
  *
  * TOutputCacheCalculateKeyEventParameter encapsulates the parameter data for
- * <b>OnCalculateKey</b> event of {@link TOutputCache} control.
+ * <b>OnCalculateKey</b> event of {@see \Prado\Web\UI\WebControls\TOutputCache} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

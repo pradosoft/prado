@@ -13,24 +13,24 @@ namespace Prado\Web\UI\WebControls;
  * THyperLinkColumn class
  *
  * THyperLinkColumn contains a hyperlink for each item in the column.
- * You can set the text and the url of the hyperlink by {@link setText Text}
- * and {@link setNavigateUrl NavigateUrl} properties, respectively.
+ * You can set the text and the url of the hyperlink by {@see setText Text}
+ * and {@see setNavigateUrl NavigateUrl} properties, respectively.
  * You can also bind the text and url to specific data field in datasource
- * by setting {@link setDataTextField DataTextField} and
- * {@link setDataNavigateUrlField DataNavigateUrlField}.
+ * by setting {@see setDataTextField DataTextField} and
+ * {@see setDataNavigateUrlField DataNavigateUrlField}.
  * Both can be formatted before rendering according to the
- * {@link setDataTextFormatString DataTextFormatString} and
- * and {@link setDataNavigateUrlFormatString DataNavigateUrlFormatString}
- * properties, respectively. If both {@link setText Text} and {@link setDataTextField DataTextField}
+ * {@see setDataTextFormatString DataTextFormatString} and
+ * and {@see setDataNavigateUrlFormatString DataNavigateUrlFormatString}
+ * properties, respectively. If both {@see setText Text} and {@see setDataTextField DataTextField}
  * are present, the latter takes precedence.
- * The same rule applies to {@link setNavigateUrl NavigateUrl} and
- * {@link setDataNavigateUrlField DataNavigateUrlField} properties.
+ * The same rule applies to {@see setNavigateUrl NavigateUrl} and
+ * {@see setDataNavigateUrlField DataNavigateUrlField} properties.
  *
  * The hyperlinks in the column can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->HyperLinkColumnID->HyperLink
  * $datagridItem->HyperLinkColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the hyperlink control created within the
  * datagrid cell is the first child.
  *

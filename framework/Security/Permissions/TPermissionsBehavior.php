@@ -18,8 +18,8 @@ use Prado\Util\TLogger;
 /**
  * TPermissionsBehavior class.
  *
- * TPermissionsBehavior class is a class behavior attached to {@link IPermissions}.
- * This class calls getPermissions to get an array of {@link TPermissionEvent}
+ * TPermissionsBehavior class is a class behavior attached to {@see \Prado\Security\Permissions\IPermissions}.
+ * This class calls getPermissions to get an array of {@see \Prado\Security\Permissions\TPermissionEvent}
  * and/or to have the implementation register their own permissions.
  * Any returned TPermissionEvents will have their permission registered for rules.
  *
@@ -28,34 +28,34 @@ use Prado\Util\TLogger;
  * user permission is checked.
  *
  * Example getPermissions method:
- * <code>
+ * ```php
  *	public function getPermissions($manager) {
  * 		$manager->registerPermission('module_perm_edit', 'Short Description');
  *		return [ new TPermissionEvent('module_perm_name', 'Short Description.', ['dyPermissionAction', 'dyOtherAction']) ];
  *	}
- * </code>
+ * ```
  *
  * In this example, the methods dyPermissionAction and dyOtherAction would have an
  * authorization check on the given permission.
  *
  * The way to implement a dynamic event is like this, from the example above:
  * the first return value parameter is always false.
- * <code>
+ * ```php
  *	public function myFunctionToAuth($param1, $param2) {
  *		if ($this->dyPermissionAction(false, $param1, $param2) === true)
  *			return false;
  *		....
  *		return true;
  *	}
- *	</code>
+ * ```
  * Together, TPermissionsBehavior will check the user for the 'module_perm_name'
  * permission.
  *
  * This can be alternatively implemented as a call to the user::can, eg
- * <code>
+ * ```php
  *  	if(!Prado::getApplication()->getUser()->can('module_perm_name'))
  *			return false;
- * </code>
+ * ```
  *
  * The application user is available on and after the onAuthenticationComplete
  * in the application stack.
@@ -63,10 +63,10 @@ use Prado\Util\TLogger;
  * The default is to allow without any rules in place.  To automatically
  * block functionality, there needs to be a (final) Permission Rule to deny all.
  * The TPermissionsManager, by default, adds a final rule to deny all on all
- * permissions via {@link TPermissionsManager::setAutoDenyAll}.
+ * permissions via {@see \Prado\Security\Permissions\TPermissionsManager::setAutoDenyAll}.
  *
- * The {@link TUserPermissionsBehavior} attaches to {@link TUser} to
- * provide {@link TUserPermissionsBehavior::can}, whether or note a user has authorization for a
+ * The {@see \Prado\Security\Permissions\TUserPermissionsBehavior} attaches to {@see \Prado\Security\TUser} to
+ * provide {@see \Prado\Security\Permissions\TUserPermissionsBehavior::can}, whether or note a user has authorization for a
  * permission.
  *
  * @author Brad Anderson <belisoful@icloud.com>

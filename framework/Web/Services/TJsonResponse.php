@@ -14,7 +14,7 @@ namespace Prado\Web\Services;
  *
  * TJsonResponse is the base class for all JSON response provider classes.
  *
- * Derived classes must implement {@link getJsonContent()} to return
+ * Derived classes must implement {@see getJsonContent()} to return
  * an object or literals to be converted to JSON format. The response
  * will be empty if the returned content is null.
  *
@@ -27,7 +27,7 @@ abstract class TJsonResponse extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the feed.
-	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@link TJsonService}.
+	 * @param \Prado\Xml\TXmlElement $config configurations specified in {@see \Prado\Web\Services\TJsonService}.
 	 */
 	public function init($config)
 	{

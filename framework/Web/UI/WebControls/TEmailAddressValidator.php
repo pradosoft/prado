@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TEmailAddressValidator class
  *
  * TEmailAddressValidator validates whether the value of an associated
- * input component is a valid email address. If {@link getCheckMXRecord CheckMXRecord}
+ * input component is a valid email address. If {@see getCheckMXRecord CheckMXRecord}
  * is true, it will check MX record for the email adress, provided
  * checkdnsrr() is available in the installed PHP.
  *
@@ -81,7 +81,7 @@ class TEmailAddressValidator extends TRegularExpressionValidator
 
 	/**
 	 * @param bool $value whether to check MX record for the email address being validated.
-	 * Note, if {@link checkdnsrr} is not available, this check will not be performed.
+	 * Note, if {@see checkdnsrr} is not available, this check will not be performed.
 	 */
 	public function setCheckMXRecord($value)
 	{

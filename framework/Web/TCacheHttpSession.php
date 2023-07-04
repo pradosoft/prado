@@ -18,11 +18,11 @@ use Prado\Exceptions\TConfigurationException;
  * TCacheHttpSession class
  *
  * TCacheHttpSession provides access for storing session data using a cache module (e.g. TMemCache, TDbCache).
- * To specify the cache module for data storage, set the {@link setCacheModuleID CacheModuleID} property
+ * To specify the cache module for data storage, set the {@see setCacheModuleID CacheModuleID} property
  * which should refer to a valid cache module configured in the application configuration.
  *
  * The following example shows how we configure TCacheHttpSession:
- * <code>
+ * ```xml
  *  <modules>
  *    <module id="cache" class="Prado\Caching\TMemCache" Host="localhost" Port="11211" />
  *    <module id="session" class="Prado\Web\TCacheHttpSession"
@@ -30,7 +30,7 @@ use Prado\Exceptions\TConfigurationException;
  *         CookieMode="Allow" AutoStart="true" GCProbability="1"
  *         UseTransparentSessionID="true" TimeOut="3600" />
  *  </modules>
- * </code>
+ * ```
  *
  * Beware, by definition cache storage are volatile, which means the data stored on them
  * may be swapped out and get lost. This may not be the case for certain cache storage,
@@ -114,7 +114,7 @@ class TCacheHttpSession extends THttpSession
 
 	/**
 	 * Session destroy handler.
-	 * This method should be overriden if {@link setUseCustomStorage UseCustomStorage} is set true.
+	 * This method should be overriden if {@see setUseCustomStorage UseCustomStorage} is set true.
 	 * @param string $id session ID
 	 * @return bool whether session is destroyed successfully
 	 */

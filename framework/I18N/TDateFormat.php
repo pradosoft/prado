@@ -14,9 +14,10 @@ use Prado\Util\TUtf8Converter;
 
 /**
  * To format dates and/or time according to the current locale use
- * <code>
+ *
+ * ```php
  * <com:TDateFormat Pattern="dd:MMM:yyyy" Value="01/01/2001" />
- *</code>
+ * ```
  * The date will be formatted according to the current locale (or culture)
  * using the format specified by 'Pattern' attribute.
  * The 'Pattern' attribute can also contain two of the predefined presets,
@@ -24,21 +25,24 @@ use Prado\Util\TUtf8Converter;
  * 'full', 'long', 'medium', 'short', 'none'.
  * If only one preset is present, it will be used for both the date and the
  * time parts.
- * <code>
+ * ```php
  * <com:TDateFormat Pattern="medium long" Value="01/01/2001 15:30:45" />
  * <com:TDateFormat Pattern="full" Value="01/01/2001 15:30:45" />
- *</code>
+ * ```
  *
  * To format date and/or time for a locale (e.g. de_DE) include a Culture
  * attribute, for example:
- * <code>
+ * ```php
  * <com:TDateFormat Culture="de_DE" Value="01/01/2001 12:00" />
- * </code>
+ * ```
  * The date will be formatted according to this format.
  *
  * If no Pattern was specified then the date will be formatted with the
  * default format (both date and time). If no value for the date is specified
- * then the current date will be used. E.g.: <code><com:TDateFormat /></code>
+ * then the current date will be used. E.g.:
+ * ```php
+ * <com:TDateFormat />
+ * ```
  * will result in the current date, formatted with default localized pattern.
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -151,8 +155,8 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Get the date-time value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getValue()}.
 	 * @return string date time value.
 	 * @see getValue
 	 * @since 3.1.2
@@ -164,8 +168,8 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the date-time value for this control.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setValue()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setValue()}.
 	 * @param string $value the date-time value.
 	 * @see setValue
 	 * @since 3.1.2

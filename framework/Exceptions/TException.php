@@ -26,24 +26,24 @@ use Throwable;
  * information.
  *
  * Old style TException only have an error Message Code as follows:
- * <code>
+ * ```php
  *   throw new TException('component_error_message_code'[, $param1, $param2, ..., $chainedException]);
- * <code>
+ * ```
  * The parameters and $chainedException are optional. $chainedException
  * may be entirely left out.
  *
  * To include an actual integer error Code, new style PRADO Exceptions
  * should be used.  The new style is as follows:
- * <code>
+ * ```php
  *   throw new TException($errorCode, 'component_error_message_code'[, $param1, $param2, ..., $chainedException]);
- * <code>
+ * ```
  *
  * Please note that the Error Code and Error Message/Message-Code is swapped
  * to the Normal PHP Exceptions (where the $message is the first parameter and $code
  * is the second).  This done to support Error Message Parameters.
  *
  * By default, TException looks for a message file by calling
- * {@link getErrorMessageFile()} method, which uses the "message-xx.txt"
+ * {@see getErrorMessageFile()} method, which uses the "message-xx.txt"
  * file located under "Prado\Exceptions" folder, where "xx" is the
  * code of the user preferred language. If such a file is not found,
  * "message.txt" will be used instead.

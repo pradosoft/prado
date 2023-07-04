@@ -17,10 +17,10 @@ use Prado\Web\UI\TPage;
 /**
  * TBaseActiveControl class provided additional basic property for every
  * active control. An instance of TBaseActiveControl or its decendent
- * TBaseActiveCallbackControl is created by {@link TActiveControlAdapter::getBaseActiveControl()}
+ * TBaseActiveCallbackControl is created by {@see \Prado\Web\UI\ActiveControls\TActiveControlAdapter::getBaseActiveControl()}
  * method.
  *
- * The {@link setEnableUpdate EnableUpdate} property determines wether the active
+ * The {@see setEnableUpdate EnableUpdate} property determines wether the active
  * control is allowed to update the contents of the client-side when the callback
  * response returns.
  *
@@ -121,7 +121,7 @@ class TBaseActiveControl extends \Prado\TComponent
 	/**
 	 * Returns true if callback response is allowed to update the browser contents.
 	 * Is is true if the control is initilized, and is a callback request and
-	 * the {@link setEnableUpdate EnableUpdate} property is true and
+	 * the {@see setEnableUpdate EnableUpdate} property is true and
 	 * the page is not loading post data.
 	 * @param mixed $bDontRequireVisibility
 	 * @return bool true if the callback response is allowed update

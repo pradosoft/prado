@@ -17,12 +17,12 @@ use Prado\IO\TTextWriter;
  *
  * TTextProcessor is the base class for classes that process or transform
  * text content into different forms. The text content to be processed
- * is specified by {@link setText Text} property. If it is not set, the body
+ * is specified by {@see setText Text} property. If it is not set, the body
  * content enclosed within the processor control will be processed and rendered.
  * The body content includes static text strings and the rendering result
  * of child controls.
  *
- * Note, all child classes must implement {@link processText} method.
+ * Note, all child classes must implement {@see processText} method.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.1

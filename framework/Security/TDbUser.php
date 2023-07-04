@@ -15,10 +15,10 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * TDbUser class
  *
- * TDbUser is the base user class for using together with {@link TDbUserManager}.
+ * TDbUser is the base user class for using together with {@see \Prado\Security\TDbUserManager}.
  * Two methods are declared and must be implemented in the descendant classes:
- * - {@link validateUser()}: validates if username and password are correct entries.
- * - {@link createUser()}: creates a new user instance given the username
+ * - {@see validateUser()}: validates if username and password are correct entries.
+ * - {@see createUser()}: creates a new user instance given the username
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
@@ -54,7 +54,7 @@ abstract class TDbUser extends TUser
 	 * Validates if username and password are correct entries.
 	 * Usually, this is accomplished by checking if the user database
 	 * contains this (username, password) pair.
-	 * You may use {@link getDbConnection DbConnection} to deal with database.
+	 * You may use {@see getDbConnection DbConnection} to deal with database.
 	 * @param string $username username (case-sensitive)
 	 * @param string $password password
 	 * @return bool whether the validation succeeds
@@ -71,7 +71,7 @@ abstract class TDbUser extends TUser
 	 * If the username is invalid (not found in the user database), null
 	 * should be returned.
 	 *
-	 * You may use {@link getDbConnection DbConnection} to deal with database.
+	 * You may use {@see getDbConnection DbConnection} to deal with database.
 	 *
 	 * @param string $username username (case-sensitive)
 	 * @return TDbUser the newly created and initialized user instance
@@ -81,7 +81,7 @@ abstract class TDbUser extends TUser
 	/**
 	 * Creates a new user instance given the cookie containing auth data.
 	 *
-	 * This method is invoked when {@link TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
+	 * This method is invoked when {@see \Prado\Security\TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
 	 * The default implementation simply returns null, meaning no user instance can be created
 	 * from the given cookie.
 	 *
@@ -101,7 +101,7 @@ abstract class TDbUser extends TUser
 
 	/**
 	 * Saves necessary auth data into a cookie.
-	 * This method is invoked when {@link TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
+	 * This method is invoked when {@see \Prado\Security\TAuthManager::setAllowAutoLogin AllowAutoLogin} is set true.
 	 * The default implementation does nothing, meaning auth data is not stored in the cookie
 	 * (and thus automatic login is not supported.)
 	 *

@@ -18,17 +18,17 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiDialog class.
  *
- * TJuiDialog is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/dialog/ Dialog} widget.
+ * TJuiDialog is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/dialog/ Dialog} widget.
  *
  *
- * <code>
+ * ```php
  * <com:TJuiDialog
  *	ID="dlg1"
  * >
  * contents
  * </com:TJuiDialog>
- * </code>
+ * ```
  *
  * @author David Otto <ottodavid[at]gmx[dot]net>
  * @since 3.3
@@ -132,7 +132,7 @@ class TJuiDialog extends TActivePanel implements IJuiOptions, ICallbackEventHand
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

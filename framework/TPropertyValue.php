@@ -25,12 +25,12 @@ use Prado\Web\Javascripts\TJavaScript;
  * TPropertyValue is commonly used in component setter methods to ensure
  * the new property value is of specific type.
  * For example, a boolean-typed property setter method would be as follows,
- * <code>
+ * ```php
  * function setPropertyName($value) {
  *     $value=TPropertyValue::ensureBoolean($value);
  *     // $value is now of boolean type
  * }
- * </code>
+ * ```
  *
  * Properties can be of the following types with specific type conversion rules:
  * - string: a boolean value will be converted to 'true' or 'false'.
@@ -145,7 +145,7 @@ class TPropertyValue
 	 * This method checks if the value is of the specified enumerable type.
 	 * A value is a valid enumerable value if it is equal to the name of a constant
 	 * in the specified enumerable type (class).
-	 * For more details about enumerable, see {@link TEnumerable}.
+	 * For more details about enumerable, see {@see \Prado\TEnumerable}.
 	 *
 	 * For backward compatibility, this method also supports sanity
 	 * check of a string value to see if it is among the given list of strings.

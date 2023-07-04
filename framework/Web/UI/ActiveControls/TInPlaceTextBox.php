@@ -20,25 +20,25 @@ use Prado\Web\UI\WebControls\TWebControl;
  * TInPlaceTextBox is a component rendered as a label and allows its
  * contents to be edited by changing the label to a textbox when
  * the label is clicked or when another control or html element with
- * ID given by {@link setEditTriggerControlID EditTriggerControlID} is clicked.
+ * ID given by {@see setEditTriggerControlID EditTriggerControlID} is clicked.
  *
- * If the {@link OnLoadingText} event is handled, a callback request is
+ * If the {@see OnLoadingText} event is handled, a callback request is
  * made when the label is clicked, while the request is being made the
- * textbox is disabled from editing. The {@link OnLoadingText} event allows
+ * textbox is disabled from editing. The {@see OnLoadingText} event allows
  * you to update the content of the textbox before the client is allowed
  * to edit the content. After the callback request returns successfully,
  * the textbox is enabled and the contents is then allowed to be edited.
  *
- * Once the textbox loses focus, if {@link setAutoPostBack AutoPostBack}
+ * Once the textbox loses focus, if {@see setAutoPostBack AutoPostBack}
  * is true and the textbox content has changed, a callback request is made and
- * the {@link OnTextChanged} event is raised like that of the TActiveTextBox.
+ * the {@see OnTextChanged} event is raised like that of the TActiveTextBox.
  * During the request, the textbox is disabled.
  *
  * After the callback request returns sucessfully, the textbox is enabled.
- * If the {@link setAutoHideTextBox AutoHideTextBox} property is true, then
+ * If the {@see setAutoHideTextBox AutoHideTextBox} property is true, then
  * the textbox will be hidden and the label is then shown.
  *
- * Since 3.1.2, you can set the {@link setReadOnly ReadOnly} property to make
+ * Since 3.1.2, you can set the {@see setReadOnly ReadOnly} property to make
  * the control not editable. This property can be also changed on callback
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

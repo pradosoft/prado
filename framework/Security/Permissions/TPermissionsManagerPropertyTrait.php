@@ -15,8 +15,8 @@ use WeakReference;
  * TPermissionsManagerPropertyTrait class.
  *
  * These are the methods for having the TPermissionsManager as a property in the
- * the behaviors {@link TPermissionsBehavior}, {@link TPermissionsConfigurationBehavior},
- * and {@link TUserPermissionsBehavior}.
+ * the behaviors {@see \Prado\Security\Permissions\TPermissionsBehavior}, {@see \Prado\Security\Permissions\TPermissionsConfigurationBehavior},
+ * and {@see \Prado\Security\Permissions\TUserPermissionsBehavior}.
  *
  * The Permissions Manager property is important to zap when sleeping.  On waking
  * up, the PermissionsManager is set to the current instance manager.

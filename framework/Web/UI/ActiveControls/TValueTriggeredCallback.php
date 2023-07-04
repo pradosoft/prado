@@ -16,12 +16,12 @@ use Prado\TPropertyValue;
 /**
  * TValueTriggeredCallback Class
  *
- * Observes the value with {@link setPropertyName PropertyName} of a
- * control with {@link setControlID ControlID}. Changes to the observed
+ * Observes the value with {@see setPropertyName PropertyName} of a
+ * control with {@see setControlID ControlID}. Changes to the observed
  * property value will trigger a new callback request. The property value is checked
- * for changes every{@link setInterval Interval} seconds.
+ * for changes every{@see setInterval Interval} seconds.
  *
- * A {@link setDecayRate DecayRate} can be set to increase the polling
+ * A {@see setDecayRate DecayRate} can be set to increase the polling
  * interval linearly if no changes are observed. Once a change is
  * observed, the polling interval is reset to the original value.
  *

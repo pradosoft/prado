@@ -15,9 +15,9 @@ use Prado\Web\THttpResponse;
  * TCallbackEventParameter class.
  *
  * The TCallbackEventParameter provides the parameter passed during the callback
- * request in the {@link getCallbackParameter CallbackParameter} property. The
+ * request in the {@see getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
- * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
+ * using an THtmlWriter obtained from the {@see getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
  *
  * Each instance TCallbackResponseWriter is associated with a unique
@@ -26,7 +26,7 @@ use Prado\Web\THttpResponse;
  * use the same writer instance for the panels to be rendered.
  *
  * The response data (i.e., passing results back to the client-side
- * callback handler function) can be set using {@link setResponseData ResponseData} property.
+ * callback handler function) can be set using {@see setResponseData ResponseData} property.
  *
  * @author Wei Zhuo <weizhuo[at]gamil[dot]com>
  * @since 3.1

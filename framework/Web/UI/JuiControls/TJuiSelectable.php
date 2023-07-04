@@ -20,24 +20,24 @@ use Prado\Web\UI\WebControls\TRepeater;
 /**
  * TJuiSelectable class.
  *
- * TJuiSelectable is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/selectable/ Selectable} interaction.
- * TJuiSelectable can be feed a {@link setDataSource DataSource} and will interally
- * render a {@link TRepeater} that displays items in an unordered list.
+ * TJuiSelectable is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/selectable/ Selectable} interaction.
+ * TJuiSelectable can be feed a {@see setDataSource DataSource} and will interally
+ * render a {@see \Prado\Web\UI\WebControls\TRepeater} that displays items in an unordered list.
  * Items can be selected by clicking on them, individually or in a group.
  *
- * <code>
+ * ```php
  * <style>
  * .ui-selecting { background: #FECA40; }
  * .ui-selected { background: #F39814; color: white; }
  * </style>
  * <com:TJuiSelectable ID="repeater1" />
- * </code>
+ * ```
  *
- * <code>
+ * ```php
  * $this->repeater1->DataSource=array('home', 'office', 'car', 'boat', 'plane');
  * $this->repeater1->dataBind();
- * </code>
+ * ```
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3
  */
@@ -132,7 +132,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

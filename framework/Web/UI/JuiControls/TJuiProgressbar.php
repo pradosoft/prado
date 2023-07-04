@@ -17,17 +17,17 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiProgressbar class.
  *
- * TJuiProgressbar is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/progressbar/ Progressbar} widget.
+ * TJuiProgressbar is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/progressbar/ Progressbar} widget.
  *
- * <code>
+ * ```php
  * <com:TJuiProgressbar
  *	ID="pbar1"
  *	Options.Max="100"
  *	Options.Value="75"
  *  OnChange="pbar1_changed"
  * />
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3
@@ -119,7 +119,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TTextBoxAutoCompleteType class.
  * TTextBoxAutoCompleteType defines the possible AutoComplete type that is supported
- * by a {@link TTextBox} control.
+ * by a {@see \Prado\Web\UI\WebControls\TTextBox} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4

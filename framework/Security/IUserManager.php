@@ -13,8 +13,8 @@ namespace Prado\Security;
  * IUserManager interface
  *
  * IUserManager specifies the interface that must be implemented by
- * a user manager class if it is to be used together with {@link TAuthManager}
- * and {@link TUser}.
+ * a user manager class if it is to be used together with {@see \Prado\Security\TAuthManager}
+ * and {@see \Prado\Security\TUser}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -21,11 +21,11 @@ use Prado\Web\UI\WebControls\TLinkButton;
  * When a TActiveLinkButton is clicked, rather than a normal post back request a
  * callback request is initiated.
  *
- * The {@link onCallback OnCallback} event is raised during a callback request
- * and it is raise <b>after</b> the {@link onClick OnClick} event.
+ * The {@see onCallback OnCallback} event is raised during a callback request
+ * and it is raise <b>after</b> the {@see onClick OnClick} event.
  *
- * When the {@link TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
- * property is true, changing the {@link setText Text} property during callback request
+ * When the {@see \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
+ * property is true, changing the {@see setText Text} property during callback request
  * will update the link text upon callback response completion.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
@@ -63,10 +63,10 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 
 	/**
 	 * Raises the callback event. This method is required by
-	 * {@link ICallbackEventHandlerICallbackEventHandler} interface. If
-	 * {@link getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@link TPage::validate validate} method first. It will raise
-	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback}
+	 * {@see ICallbackEventHandlerICallbackEventHandler} interface. If
+	 * {@see getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first. It will raise
+	 * {@see onClick OnClick} event first and then the {@see onCallback OnCallback}
 	 * event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -91,7 +91,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 
 	/**
 	 * Updates the link text on the client-side if the
-	 * {@link setEnableUpdate EnableUpdate} property is set to true.
+	 * {@see setEnableUpdate EnableUpdate} property is set to true.
 	 * @param string $value caption of the button
 	 */
 	public function setText($value)
@@ -108,7 +108,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)

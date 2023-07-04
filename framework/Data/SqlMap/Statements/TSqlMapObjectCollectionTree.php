@@ -17,8 +17,8 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException;
  * TSQLMapObjectCollectionTree class.
  *
  * Maps object collection graphs as trees. Nodes in the collection can
- * be {@link add} using parent relationships. The object collections can be
- * build using the {@link collect} method.
+ * be {@see add} using parent relationships. The object collections can be
+ * build using the {@see collect} method.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

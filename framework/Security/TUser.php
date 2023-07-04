@@ -15,12 +15,12 @@ use Prado\TPropertyValue;
  * TUser class
  *
  * TUser implements basic user functionality for a Prado application.
- * To get the name of the user, use {@link getName Name} property.
- * The property {@link getIsGuest IsGuest} tells if the user a guest/anonymous user.
+ * To get the name of the user, use {@see getName Name} property.
+ * The property {@see getIsGuest IsGuest} tells if the user a guest/anonymous user.
  * To obtain or test the roles that the user is in, use property
- * {@link getRoles Roles} and call {@link isInRole()}, respectively.
+ * {@see getRoles Roles} and call {@see isInRole()}, respectively.
  *
- * TUser is meant to be used together with {@link IUserManager}.
+ * TUser is meant to be used together with {@see \Prado\Security\IUserManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -170,7 +170,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 *
 	 * This function is designed to be used by TUser descendant classes
 	 * who want to store additional user information in user session.
-	 * A variable, if stored in user session using {@link setState} can be
+	 * A variable, if stored in user session using {@see setState} can be
 	 * retrieved back using this function.
 	 *
 	 * @param string $key variable name
@@ -189,7 +189,7 @@ class TUser extends \Prado\TComponent implements IUser
 	 * This function is designed to be used by TUser descendant classes
 	 * who want to store additional user information in user session.
 	 * By storing a variable using this function, the variable may be retrieved
-	 * back later using {@link getState}. The variable will be persistent
+	 * back later using {@see getState}. The variable will be persistent
 	 * across page requests during a user session.
 	 *
 	 * @param string $key variable name

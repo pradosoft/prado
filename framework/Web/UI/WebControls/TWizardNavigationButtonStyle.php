@@ -14,11 +14,11 @@ use Prado\TPropertyValue;
 /**
  * TWizardNavigationButtonStyle class.
  * TWizardNavigationButtonStyle defines the style applied to a wizard navigation button.
- * The button type can be specified via {@link setButtonType ButtonType}, which
+ * The button type can be specified via {@see setButtonType ButtonType}, which
  * can be 'Button', 'Image' or 'Link'.
- * If the button is an image button, {@link setImageUrl ImageUrl} will be
+ * If the button is an image button, {@see setImageUrl ImageUrl} will be
  * used to load the image for the button.
- * Otherwise, {@link setButtonText ButtonText} will be displayed as the button caption.
+ * Otherwise, {@see setButtonText ButtonText} will be displayed as the button caption.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -23,18 +23,18 @@ use Prado\TPropertyValue;
  *
  * TSecurityManager is mainly used to protect data from being tampered
  * and viewed. It can generate HMAC and encrypt the data.
- * The private key used to generate HMAC is set by {@link setValidationKey ValidationKey}.
- * The key used to encrypt data is specified by {@link setEncryptionKey EncryptionKey}.
+ * The private key used to generate HMAC is set by {@see setValidationKey ValidationKey}.
+ * The key used to encrypt data is specified by {@see setEncryptionKey EncryptionKey}.
  * If the above keys are not explicitly set, random keys will be generated
  * and used.
  *
- * To prefix data with an HMAC, call {@link hashData()}.
- * To validate if data is tampered, call {@link validateData()}, which will
+ * To prefix data with an HMAC, call {@see hashData()}.
+ * To validate if data is tampered, call {@see validateData()}, which will
  * return the real data if it is not tampered.
- * The algorithm used to generated HMAC is specified by {@link setHashAlgorithm HashAlgorithm}.
+ * The algorithm used to generated HMAC is specified by {@see setHashAlgorithm HashAlgorithm}.
  *
- * To encrypt and decrypt data, call {@link encrypt()} and {@link decrypt()}
- * respectively. The encryption algorithm can be set by {@link setCryptAlgorithm CryptAlgorithm}.
+ * To encrypt and decrypt data, call {@see encrypt()} and {@see decrypt()}
+ * respectively. The encryption algorithm can be set by {@see setCryptAlgorithm CryptAlgorithm}.
  *
  * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
  * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
@@ -162,7 +162,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@link encrypt} and {@link decrypt}.
+	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@see encrypt} and {@see decrypt}.
 	 * @param mixed $value either a string containing the cipther name.
 	 */
 	public function setCryptAlgorithm($value)
@@ -174,7 +174,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Encrypts data with {@link getEncryptionKey EncryptionKey}.
+	 * Encrypts data with {@see getEncryptionKey EncryptionKey}.
 	 * @param string $data data to be encrypted.
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the encrypted data
@@ -191,7 +191,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Decrypts data with {@link getEncryptionKey EncryptionKey}.
+	 * Decrypts data with {@see getEncryptionKey EncryptionKey}.
 	 * @param string $data data to be decrypted.
 	 * @throws TNotSupportedException if PHP OpenSSL extension is not loaded
 	 * @return string the decrypted data
@@ -221,7 +221,7 @@ class TSecurityManager extends \Prado\TModule
 	/**
 	 * Validates if data is tampered.
 	 * @param string $data data to be validated. The data must be previously
-	 * generated using {@link hashData()}.
+	 * generated using {@see hashData()}.
 	 * @return string the real data with HMAC stripped off. False if the data
 	 * is tampered.
 	 */
@@ -239,7 +239,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * Computes the HMAC for the data with {@link getValidationKey ValidationKey}.
+	 * Computes the HMAC for the data with {@see getValidationKey ValidationKey}.
 	 * @param string $data data to be generated HMAC
 	 * @return string the HMAC for the data
 	 */

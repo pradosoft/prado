@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 /**
  * Class TRectangleHotSpot.
  *
- * TRectangleHotSpot defines a rectangle hot spot region in a {@link
+ * TRectangleHotSpot defines a rectangle hot spot region in a {@see
  * TImageMap} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

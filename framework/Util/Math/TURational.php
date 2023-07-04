@@ -14,16 +14,16 @@ use Prado\Util\Helpers\TBitHelper;
 /**
  * TURational class.
  *
- * TURational implements a fraction in the form of one unsigned integer {@link getNumerator
- *  Numerator} divided by another unsigned integer {@link getDenominator Denominator}.
+ * TURational implements a fraction in the form of one unsigned integer {@see getNumerator
+ *  Numerator} divided by another unsigned integer {@see getDenominator Denominator}.
  *
- * TURational is a specialization of {@link TRational} and TRational has information
+ * TURational is a specialization of {@see \Prado\Util\Math\TRational} and TRational has information
  * about how these classes work.
  *
  * INF is "4294967295/0" and NAN (Not A Number) has the denominator equal zero
  * (to avoid a divide by zero error).
  *
- * When setting a {@link setNumerator Numerator} and {@link setDenominator Denominator},
+ * When setting a {@see setNumerator Numerator} and {@see setDenominator Denominator},
  * the PHP instance is checked if it is 32 bit or 64 bit.  64 Bit PHP can represent
  * integers in the range [2147483648, 4294967295] as an integer, but on a 32 bit
  * PHP instance, these high bit integers are converted to float to be more accurately
@@ -80,9 +80,9 @@ class TURational extends TRational
 
 	/**
 	 * This returns the float value of the Numerator divided by the denominator.
-	 * Returns INF (Infinity) float value if the {@link getNumerator Numerator} is
-	 * 0xFFFFFFFF (4294967295) and {@link getDenominator Denominator} is 0.   Returns
-	 * NAN (Not A Number) float value if the {@link getDenominator Denominator} is zero.
+	 * Returns INF (Infinity) float value if the {@see getNumerator Numerator} is
+	 * 0xFFFFFFFF (4294967295) and {@see getDenominator Denominator} is 0.   Returns
+	 * NAN (Not A Number) float value if the {@see getDenominator Denominator} is zero.
 	 * @return float The float value of the Numerator divided by denominator.
 	 */
 	public function getValue(): float

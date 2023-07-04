@@ -23,7 +23,7 @@ class THotSpotCollection extends \Prado\Collections\TList
 {
 	/**
 	 * Inserts an item at the specified position.
-	 * This overrides the parent implementation by inserting only {@link THotSpot}.
+	 * This overrides the parent implementation by inserting only {@see \Prado\Web\UI\WebControls\THotSpot}.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
 	 * @throws TInvalidDataTypeException if the item to be inserted is not a THotSpot.

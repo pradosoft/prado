@@ -15,14 +15,14 @@ use Prado\TPropertyValue;
  * TWizardNavigationEventParameter class.
  *
  * TWizardNavigationEventParameter represents the parameter for
- * {@link TWizard}'s navigation events.
+ * {@see \Prado\Web\UI\WebControls\TWizard}'s navigation events.
  *
  * The index of the currently active step can be obtained from
- * {@link getCurrentStepIndex CurrentStepIndex}, while the index
- * of the candidate new step is in {@link getNextStepIndex NextStepIndex}.
- * By modifying {@link setNextStepIndex NextStepIndex}, the new step
+ * {@see getCurrentStepIndex CurrentStepIndex}, while the index
+ * of the candidate new step is in {@see getNextStepIndex NextStepIndex}.
+ * By modifying {@see setNextStepIndex NextStepIndex}, the new step
  * can be changed to another one. If there is anything wrong with
- * the navigation and it is not wanted, set {@link setCancelNavigation CancelNavigation}
+ * the navigation and it is not wanted, set {@see setCancelNavigation CancelNavigation}
  * to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -54,7 +54,7 @@ class TWizardNavigationEventParameter extends \Prado\TEventParameter
 	}
 
 	/**
-	 * @return int the zero-based index of the next step. Default to {@link getCurrentStepIndex CurrentStepIndex}.
+	 * @return int the zero-based index of the next step. Default to {@see getCurrentStepIndex CurrentStepIndex}.
 	 */
 	public function getNextStepIndex()
 	{

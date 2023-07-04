@@ -13,8 +13,8 @@ namespace Prado\Data\ActiveRecord\Scaffold;
  * IScaffoldEditRenderer interface.
  *
  * IScaffoldEditRenderer defines the interface that an edit renderer
- * needs to implement. Besides the {@link getData Data} property, an edit
- * renderer also needs to provide {@link updateRecord updateRecord} method
+ * needs to implement. Besides the {@see getData Data} property, an edit
+ * renderer also needs to provide {@see updateRecord updateRecord} method
  * that is called before the save() method is called on the TActiveRecord.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

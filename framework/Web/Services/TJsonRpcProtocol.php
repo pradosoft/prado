@@ -15,7 +15,7 @@ use Prado\Web\Javascripts\TJavaScript;
 /**
  * TJsonRpcProtocol class
  *
- * TJsonRpcProtocol is a class that implements JSON-Rpc protocol in {@link TRpcService}.
+ * TJsonRpcProtocol is a class that implements JSON-Rpc protocol in {@see \Prado\Web\Services\TRpcService}.
  * Both version 1.0 and 2.0 of the specification are implemented, and the server will try
  * to answer using the same version of the protocol used by the requesting client.
  *

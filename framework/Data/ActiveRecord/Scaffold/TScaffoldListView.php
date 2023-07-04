@@ -26,12 +26,12 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
 /**
  * TScaffoldListView displays a list of Active Records.
  *
- * The {@link getHeader Header} property is a TRepeater displaying the
- * Active Record property/field names. The {@link getSort Sort} property
+ * The {@see getHeader Header} property is a TRepeater displaying the
+ * Active Record property/field names. The {@see getSort Sort} property
  * is a drop down list displaying the combination of properties and its possible
- * ordering. The {@link getPager Pager} property is a TPager control displaying
+ * ordering. The {@see getPager Pager} property is a TPager control displaying
  * the links and/or buttons that navigate to different pages in the Active Record data.
- * The {@link getList List} property is a TRepeater that renders a row of
+ * The {@see getList List} property is a TRepeater that renders a row of
  * Active Record data.
  *
  * Custom rendering of the each Active Record can be achieved by specifying
@@ -42,13 +42,13 @@ use Prado\Web\UI\WebControls\TRepeaterCommandEventParameter;
  * "edit". A "delete" command will delete a the record for the row where the
  * "delete" command is originates. An "edit" command will push
  * the record data to be edited by a TScaffoldEditView with ID specified by the
- * {@link setEditViewID EditViewID}.
+ * {@see setEditViewID EditViewID}.
  *
- * Additional {@link setSearchCondition SearchCondition} and
- * {@link setSearchParameters SearchParameters} (takes array values) can be
- * specified to customize the records to be shown. The {@link setSearchCondition SearchCondition}
+ * Additional {@see setSearchCondition SearchCondition} and
+ * {@see setSearchParameters SearchParameters} (takes array values) can be
+ * specified to customize the records to be shown. The {@see setSearchCondition SearchCondition}
  * will be used as the Condition property of TActiveRecordCriteria, and similarly
- * the {@link setSearchParameters SearchParameters} will be the corresponding
+ * the {@see setSearchParameters SearchParameters} will be the corresponding
  * Parameters property of TActiveRecordCriteria.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>

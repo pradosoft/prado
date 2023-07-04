@@ -18,10 +18,10 @@ namespace Prado\Web\UI\WebControls;
  * TDataGridPageChangedEventParameter class
  *
  * TDataGridPageChangedEventParameter encapsulates the parameter data for
- * {@link TDataGrid::onPageIndexChanged PageIndexChanged} event of {@link TDataGrid} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataGrid::onPageIndexChanged PageIndexChanged} event of {@see \Prado\Web\UI\WebControls\TDataGrid} controls.
  *
- * The {@link getCommandSource CommandSource} property refers to the control
- * that originally raises the OnCommand event, while {@link getNewPageIndex NewPageIndex}
+ * The {@see getCommandSource CommandSource} property refers to the control
+ * that originally raises the OnCommand event, while {@see getNewPageIndex NewPageIndex}
  * returns the new page index carried with the page command.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

@@ -22,15 +22,15 @@ use Prado\Web\THttpUtility;
  * will be encoded.
  *
  * A common usage of THtmlWriter is as the following sequence:
- * <code>
+ * ```php
  *  $writer->addAttribute($name1,$value1);
  *  $writer->addAttribute($name2,$value2);
  *  $writer->renderBeginTag($tagName);
  *  // ... render contents enclosed within the tag here
  *  $writer->renderEndTag();
- * </code>
- * Make sure each invocation of {@link renderBeginTag} is accompanied with
- * a {@link renderEndTag} and they are properly nested, like nesting
+ * ```
+ * Make sure each invocation of {@see renderBeginTag} is accompanied with
+ * a {@see renderEndTag} and they are properly nested, like nesting
  * tags in HTML and XHTML.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

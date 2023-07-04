@@ -23,27 +23,27 @@ use Prado\Xml\TXmlElement;
  * TParameterModule enables loading application parameters from external
  * storage other than the application configuration.
  * To load parameters from an XML file, configure the module by setting
- * its {@link setParameterFile ParameterFile} property.
+ * its {@see setParameterFile ParameterFile} property.
  * Note, the property only accepts a file path in namespace format with
  * file extension being '.xml'. The file format is as follows,  which is
  * similar to the parameter portion in an application configuration,
- * <code>
+ * ```xml
  * <parameters>
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
  *   <parameter id="param3" Class="MyDataObject" Property1="Value1" Property2="Value2" ... />
  * </parameters>
- * </code>
+ * ```
  *
  * In addition, any content enclosed within the module tag is also treated
  * as parameters, e.g.,
- * <code>
+ * ```xml
  * <module class="Prado\Util\TParameterModule">
  *   <parameter id="param1" value="paramValue1" />
  *   <parameter id="param2" Property1="Value1" Property2="Value2" ... />
  *   <parameter id="param3" Class="MyDataObject" Property1="Value1" Property2="Value2" ... />
  * </module>
- * </code>
+ * ```
  *
  * If a parameter is defined both in the external file and within the module
  * tag, the former takes precedence.

@@ -16,8 +16,8 @@ use Prado\Web\UI\ITemplate;
  *
  * TTemplatedWizardStep represents a wizard step whose content and navigation
  * can be customized using templates. To customize the step content, specify
- * {@link setContentTemplate ContentTemplate}. To customize navigation specific
- * to the step, specify {@link setNavigationTemplate NavigationTemplate}. Note,
+ * {@see setContentTemplate ContentTemplate}. To customize navigation specific
+ * to the step, specify {@see setNavigationTemplate NavigationTemplate}. Note,
  * if the navigation template is not specified, default navigation will be used.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

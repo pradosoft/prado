@@ -18,15 +18,15 @@ use Prado\Exceptions\TInvalidOperationException;
  * TStack implements a stack.
  *
  * The typical stack operations are implemented, which include
- * {@link push()}, {@link pop()} and {@link peek()}. In addition,
- * {@link contains()} can be used to check if an item is contained
+ * {@see push()}, {@see pop()} and {@see peek()}. In addition,
+ * {@see contains()} can be used to check if an item is contained
  * in the stack. To obtain the number of the items in the stack,
- * check the {@link getCount Count} property.
+ * check the {@see getCount Count} property.
  *
  * Items in the stack may be traversed using foreach as follows,
- * <code>
+ * ```php
  * foreach($stack as $item) ...
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -105,7 +105,7 @@ class TStack extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Returns the item at the top of the stack.
-	 * Unlike {@link pop()}, this method does not remove the item from the stack.
+	 * Unlike {@see pop()}, this method does not remove the item from the stack.
 	 * @throws TInvalidOperationException if the stack is empty
 	 * @return mixed item at the top of the stack
 	 */

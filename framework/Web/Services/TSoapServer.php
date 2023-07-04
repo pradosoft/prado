@@ -179,8 +179,8 @@ class TSoapServer extends \Prado\TApplicationComponent
 
 	/**
 	 * Returns the WSDL content of the SOAP server.
-	 * If {@link getWsdlUri WsdlUri} is set, its content will be returned.
-	 * If not, the {@link setProvider Provider} class will be investigated
+	 * If {@see getWsdlUri WsdlUri} is set, its content will be returned.
+	 * If not, the {@see setProvider Provider} class will be investigated
 	 * and the WSDL will be automatically genearted.
 	 * @return string the WSDL content of the SOAP server
 	 */

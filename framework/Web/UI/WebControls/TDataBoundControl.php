@@ -27,19 +27,19 @@ use Prado\Collections\TMap;
  * TBC....
  *
  * TDataBoundControl is equipped with paging capabilities. By setting
- * {@link setAllowPaging AllowPaging} to true, the input data will be paged
+ * {@see setAllowPaging AllowPaging} to true, the input data will be paged
  * and only one page of data is actually populated into the data-bound control.
  * This saves a lot of memory when dealing with larget datasets.
  *
  * To specify the number of data items displayed on each page, set
- * the {@link setPageSize PageSize} property, and to specify which
- * page of data to be displayed, set {@link setCurrentPageIndex CurrentPageIndex}.
+ * the {@see setPageSize PageSize} property, and to specify which
+ * page of data to be displayed, set {@see setCurrentPageIndex CurrentPageIndex}.
  *
  * When the size of the original data is too big to be loaded all in the memory,
  * one can enable custom paging. In custom paging, the total number of data items
- * is specified manually via {@link setVirtualItemCount VirtualItemCount},
+ * is specified manually via {@see setVirtualItemCount VirtualItemCount},
  * and the data source only needs to contain the current page of data. To enable
- * custom paging, set {@link setAllowCustomPaging AllowCustomPaging} to true.
+ * custom paging, set {@see setAllowCustomPaging AllowCustomPaging} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -90,7 +90,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param string $value ID path to the data source control. The data source
-	 * control must be locatable via {@link TControl::findControl} call.
+	 * control must be locatable via {@see \Prado\Web\UI\TControl::findControl} call.
 	 */
 	public function setDataSourceID($value)
 	{
@@ -104,8 +104,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @return bool if the databound control uses the data source specified
-	 * by {@link setDataSourceID}, or it uses the data source object specified
-	 * by {@link setDataSource}.
+	 * by {@see setDataSourceID}, or it uses the data source object specified
+	 * by {@see setDataSource}.
 	 */
 	protected function getUsingDataSourceID()
 	{
@@ -113,8 +113,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Sets {@link setRequiresDataBinding RequiresDataBinding} as true if the control is initialized.
-	 * This method is invoked when either {@link setDataSource} or {@link setDataSourceID} is changed.
+	 * Sets {@see setRequiresDataBinding RequiresDataBinding} as true if the control is initialized.
+	 * This method is invoked when either {@see setDataSource} or {@see setDataSourceID} is changed.
 	 */
 	public function onDataSourceChanged()
 	{
@@ -136,8 +136,8 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets a value indicating whether the databound control is initialized.
-	 * If initialized, any modification to {@link setDataSource DataSource} or
-	 * {@link setDataSourceID DataSourceID} will set {@link setRequiresDataBinding RequiresDataBinding}
+	 * If initialized, any modification to {@see setDataSource DataSource} or
+	 * {@see setDataSourceID DataSourceID} will set {@see setRequiresDataBinding RequiresDataBinding}
 	 * as true.
 	 * @param bool $value a value indicating whether the databound control is initialized.
 	 */
@@ -196,9 +196,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Sets a value indicating whether the custom paging should be enabled.
-	 * When the pager is in custom paging mode, the {@link setVirtualItemCount VirtualItemCount}
+	 * When the pager is in custom paging mode, the {@see setVirtualItemCount VirtualItemCount}
 	 * property is used to determine the paging, and the data items in the
-	 * {@link setDataSource DataSource} are considered to be in the current page.
+	 * {@see setDataSource DataSource} are considered to be in the current page.
 	 * @param bool $value whether the custom paging is enabled
 	 */
 	public function setAllowCustomPaging($value)
@@ -279,7 +279,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets a value indicating whether a databind call is required by the data bound control.
 	 * If true and the control has been prerendered while it uses the data source
-	 * specified by {@link setDataSourceID}, a databind call will be called by this method.
+	 * specified by {@see setDataSourceID}, a databind call will be called by this method.
 	 * @param bool $value whether a databind call is required.
 	 */
 	protected function setRequiresDataBinding($value)
@@ -294,9 +294,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Ensures any pending {@link dataBind} is called.
-	 * This method calls {@link dataBind} if the data source is specified
-	 * by {@link setDataSourceID} or if {@link getRequiresDataBinding RequiresDataBinding}
+	 * Ensures any pending {@see dataBind} is called.
+	 * This method calls {@see dataBind} if the data source is specified
+	 * by {@see setDataSourceID} or if {@see getRequiresDataBinding RequiresDataBinding}
 	 * is true.
 	 */
 	protected function ensureDataBound()
@@ -324,7 +324,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Performs databinding.
 	 * This method overrides the parent implementation by calling
-	 * {@link performSelect} which fetches data from data source and does
+	 * {@see performSelect} which fetches data from data source and does
 	 * the actual binding work.
 	 */
 	public function dataBind()
@@ -420,9 +420,9 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Sets page's <b>OnPreLoad</b> event handler as {@link pagePreLoad}.
+	 * Sets page's <b>OnPreLoad</b> event handler as {@see pagePreLoad}.
 	 * If viewstate is disabled and the current request is a postback,
-	 * {@link setRequiresDataBinding RequiresDataBinding} will be set true.
+	 * {@see setRequiresDataBinding RequiresDataBinding} will be set true.
 	 * This method overrides the parent implementation.
 	 * @param \Prado\TEventParameter $param event parameter
 	 */
@@ -434,7 +434,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Sets {@link getInitialized} as true.
+	 * Sets {@see getInitialized} as true.
 	 * This method is invoked when page raises <b>PreLoad</b> event.
 	 * @param mixed $sender event sender
 	 * @param \Prado\TEventParameter $param event parameter

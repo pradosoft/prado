@@ -27,23 +27,23 @@ use Prado\Xml\TXmlElement;
  *
  * TPermissionsManager handles Permissions authorization and Roll Based
  * Access Control (RBAC).  Each registered Permission is given a set of
- * {@link \Prado\Security\TAuthorizationRule}s.  The RBAC is based on roles
+ * {@see \Prado\Security\TAuthorizationRule}s.  The RBAC is based on roles
  * having children roles and permissions, with permissions being thought of
  * as special roles themselves.
  *
- * TPermissionsManager attaches {@link TPermissionsBehavior} to all classes
- * that implement {@link IPermissions}.  This is the main mechanism
+ * TPermissionsManager attaches {@see \Prado\Security\Permissions\TPermissionsBehavior} to all classes
+ * that implement {@see \Prado\Security\Permissions\IPermissions}.  This is the main mechanism
  * by which application permissions are registered.
  *
  * The role hierarchy and permission rules are unique to each application.  The
  * permissions configuration is defined in the TPermissionsManager application
- * configuration or in a separate {@link PermissionsFile}. {@link TPermissionsConfigurationBehavior}
+ * configuration or in a separate {@see PermissionsFile}. {@see \Prado\Security\Permissions\TPermissionsConfigurationBehavior}
  * enables a page configuration to have Permission Configurations as well.
- * A {@link TDbParameterModule} can be specified with {@link getDbParameter} for
+ * A {@see \Prado\Util\TDbParameterModule} can be specified with {@see getDbParameter} for
  * loading dynamic roles and permissions.
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
- * <code>
+ * ```xml
  * <module id="permissions" class="Prado\Security\Permissions\TPermissionsManager" DefaultRoles="Default" SuperRoles="Administrator">
  *	<role name="Developer" children="all, param_shell_permission, cron" />
  *	<role name="Manager" children="editor, change_user_role_permission, cron_shell" />
@@ -60,10 +60,10 @@ use Prado\Xml\TXmlElement;
  *	<permissionrule name="blog_*" action="allow" users="admin, user1, user2" roles="*" verb="*" IPs="*"  />
  *	<permissionrule name="*" action="deny" priority="1000" />
  * </module>
- * </code>
+ * ```
  *
  * and in PHP the same file would follow the following format, eg:
- * <code>
+ * ```php
  * 'modules' => [
  * 'permissions' => ['class' => 'Prado\Security\Permissions\TPermissionsManager',
  * 		'properties' => ['DefaultRoles' => 'Default', 'SuperRoles' => "Administrator"],
@@ -86,7 +86,7 @@ use Prado\Xml\TXmlElement;
  *			[name => '*', 'action' => 'deny', 'priority' => 1000]
  *		]
  * ]
- * </code>
+ * ```
  *
  * In this example, "cron" is not a permission, but when used as a permission,
  * all children roles/permissions will receive the rule.  Permissions with children,
@@ -95,9 +95,9 @@ use Prado\Xml\TXmlElement;
  *
  * A special role "All" is automatically created to contain all the permissions.
  * Specifying "all" as a child, is the same as specifying a role as a super role
- * via {@link setSuperRoles}.
+ * via {@see setSuperRoles}.
  *
- * All users get the roles specified by {@link getDefaultRoles}.  This changes
+ * All users get the roles specified by {@see getDefaultRoles}.  This changes
  * the default Prado behavior for guest users having no roles.
  *
  * Intermediate roles, that are not defined in the user system, may be defined in
@@ -106,7 +106,7 @@ use Prado\Xml\TXmlElement;
  *
  * Permission Rules can have multiple rules. they are
  * ordered by natural specified configuration order unless the rule property
- * {@link TAuthorizationRule::setPriority} is set.
+ * {@see \Prado\Security\TAuthorizationRule::setPriority} is set.
  *
  * Permissions authorization rules may use the '*' or 'perm_*' to add the rules to all
  * matching permission names.  Anything before the * is matched as a permission.
@@ -115,21 +115,21 @@ use Prado\Xml\TXmlElement;
  *
  * A permission name must list itself as a role in TAuthorizationRule for the user to be
  * validated for that permission name for authorization.  This is handled automatically
- * by TPermissionManager with the {@link getAutoAllowWithPermission} property.
+ * by TPermissionManager with the {@see getAutoAllowWithPermission} property.
  * By default getAutoAllowWithPermission is true, and allows any user with
  * that permission in their hierarchy to allow access to the functionality.
- * This rule priority can be set with {@link getAutoRulePriority},
+ * This rule priority can be set with {@see getAutoRulePriority},
  * where the default is 5, and -thus- before user defined rules.
  *
  * The second automatic rules includes Modules have their own preset rules that can
- * be automatically added via {@link getAutoPresetRules}.  By default this
+ * be automatically added via {@see getAutoPresetRules}.  By default this
  * is true. These rules typically allow owners of the data to be permitted without having
  * a permission-role.  Preset rules can define their own priorities but those
- * without set priorities receive the priority from {@link getAutoRulePriority}.
+ * without set priorities receive the priority from {@see getAutoRulePriority}.
  *
- * The third, and last, auto-Rule is the final {@link getAutoDenyAll DenyAll}
+ * The third, and last, auto-Rule is the final {@see getAutoDenyAll DenyAll}
  * rule. This is the last rule that denies all by default.  The AutoDenyAll
- * gets its rule priority from {@link getAutoDenyAllPriority}.  By default,
+ * gets its rule priority from {@see getAutoDenyAllPriority}.  By default,
  * deny all to all permissions is enabled and thus blocking all permissions.
  *
  * Recursive hierarchy is gracefully handled, in case of any loop structures.
@@ -143,11 +143,11 @@ use Prado\Xml\TXmlElement;
  * The role and rule management functions only work when the TDbParameter Module is specified.
  * The following gives user "admin" and all users with "Administrators" role the
  * permission to access permissions shell and its full functionality:
- * <code>
+ * ```php
  *	 <role name="permissions_shell" children="permissions_manage_roles, permissions_manage_rules" />
  *   <permissionrule name="permissions_shell" action="allow" users="admin" />
  *   <permissionrule name="permissions_shell" action="allow" roles="Administrators" />
- * <code>
+ * ```php
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @method bool dyRegisterShellAction($returnValue)

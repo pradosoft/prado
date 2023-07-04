@@ -14,7 +14,7 @@ namespace Prado\IO;
  *
  * TTextWriter implements a memory-based text writer.
  * Content written by TTextWriter are stored in memory
- * and can be obtained by calling {@link flush()}.
+ * and can be obtained by calling {@see flush()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

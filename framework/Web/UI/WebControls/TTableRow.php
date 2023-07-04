@@ -15,9 +15,9 @@ use Prado\TPropertyValue;
  * TTableRow class.
  *
  * TTableRow displays a table row. The table cells in the row can be accessed
- * via {@link getCells Cells}. The horizontal and vertical alignments of the row
- * are specified via {@link setHorizontalAlign HorizontalAlign} and
- * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ * via {@see getCells Cells}. The horizontal and vertical alignments of the row
+ * are specified via {@see setHorizontalAlign HorizontalAlign} and
+ * {@see setVerticalAlign VerticalAlign} properties, respectively.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -35,7 +35,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@link TTableCell} objects into the {@link getCells Cells} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TTableCell} objects into the {@see getCells Cells} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -48,7 +48,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableItemStyle} to be used by the table row.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableItemStyle} to be used by the table row.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()
@@ -67,7 +67,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableCellCollection list of {@link TTableCell} controls
+	 * @return TTableCellCollection list of {@see \Prado\Web\UI\WebControls\TTableCell} controls
 	 */
 	public function getCells()
 	{

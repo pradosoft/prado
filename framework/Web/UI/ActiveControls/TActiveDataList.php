@@ -14,7 +14,7 @@ use Prado\Web\UI\WebControls\TDataList;
  * TActiveDataList class
  *
  * TActiveDataList represents a data bound and updatable grid control which is the
- * active counterpart to the original {@link TDataList} control.
+ * active counterpart to the original {@see \Prado\Web\UI\WebControls\TDataList} control.
  *
  * This component can be used in the same way as the regular datalist, the only
  * difference is that the active datalist uses callbacks instead of postbacks
@@ -73,7 +73,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	/**
 	 * Renders the repeater.
 	 * If the repeater did not pass the prerender phase yet, it will register itself for rendering later.
-	 * Else it will call the {@link renderRepeater()} method which will do the rendering of the repeater.
+	 * Else it will call the {@see renderRepeater()} method which will do the rendering of the repeater.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
@@ -89,7 +89,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	}
 
 	/**
-	 * Loops through all {@link TActivePager} on the page and registers the ones which are set to paginate
+	 * Loops through all {@see \Prado\Web\UI\ActiveControls\TActivePager} on the page and registers the ones which are set to paginate
 	 * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */
@@ -105,7 +105,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	}
 
 	/**
-	 * Renders the repeater by writing a span tag with the container id obtained from {@link getContainerID()}
+	 * Renders the repeater by writing a span tag with the container id obtained from {@see getContainerID()}
 	 * which will be called by the replacement method of the client script to update it's content.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */

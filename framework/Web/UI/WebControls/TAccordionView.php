@@ -15,11 +15,11 @@ use Prado\TPropertyValue;
 /**
  * Class TAccordionView.
  *
- * TAccordionView represents a single view in a {@link TAccordion}.
+ * TAccordionView represents a single view in a {@see \Prado\Web\UI\WebControls\TAccordion}.
  *
- * TAccordionView is represented inside the {@link TAccordion} with an header label whose text is defined by
- * the {@link setCaption Caption} property; optionally the label can be an hyperlink: use the
- * {@link setNavigateUrl NavigateUrl} property to define the destination url.
+ * TAccordionView is represented inside the {@see \Prado\Web\UI\WebControls\TAccordion} with an header label whose text is defined by
+ * the {@see setCaption Caption} property; optionally the label can be an hyperlink: use the
+ * {@see setNavigateUrl NavigateUrl} property to define the destination url.
  *
  * @author Gabor Berczi, DevWorx Hungary <gabor.berczi@devworx.hu>
  * @since 3.2

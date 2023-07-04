@@ -16,16 +16,16 @@ use Prado\TPropertyValue;
  *
  * TCheckBoxColumn represents a checkbox column that is bound to a field in a data source.
  * The checked state of the checkboxes are determiend by the bound data at
- * {@link setDataField DataField}. If {@link setReadOnly ReadOnly} is false,
+ * {@see setDataField DataField}. If {@see setReadOnly ReadOnly} is false,
  * TCheckBoxColumn will display an enabled checkbox provided the cells are
  * in edit mode. Otherwise, the checkboxes will be disabled to prevent from editting.
  *
  * The checkbox control in the TCheckBoxColumn can be accessed by one of
  * the following two methods:
- * <code>
+ * ```php
  * $datagridItem->CheckBoxColumnID->CheckBox
  * $datagridItem->CheckBoxColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the checkbox control created within the
  * datagrid cell is the first child.
  *

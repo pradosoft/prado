@@ -335,7 +335,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Logs a message.
-	 * Messages logged by this method may be retrieved via {@link getLogs}.
+	 * Messages logged by this method may be retrieved via {@see getLogs}.
 	 * @param mixed $token message to be logged
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,

@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TOutputCacheCheckDependencyEventParameter class
  *
  * TOutputCacheCheckDependencyEventParameter encapsulates the parameter data for
- * <b>OnCheckDependency</b> event of {@link TOutputCache} control.
+ * <b>OnCheckDependency</b> event of {@see \Prado\Web\UI\WebControls\TOutputCache} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

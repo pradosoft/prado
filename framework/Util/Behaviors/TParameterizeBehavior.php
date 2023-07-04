@@ -24,13 +24,13 @@ use Prado\Exceptions\TInvalidOperationException;
  * parameter to then route the change to the property by setting the
  * RouteBehaviorName.
  *
- * <code>
+ * ```php
  *	<behavior name="PageThemeParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="ThemeName" Property="Theme" DefaultValue="Basic"/>
  *  <behavior name="PageTitle" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Parameter="TPageTitle" Property="Title" Localize="true"/>
  *  <behavior name="AuthManagerExpireParameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="module:auth" Parameter="prop:TAuthManager.AuthExpire" Property="AuthExpire" RouteBehaviorName="TAuthManagerAuthExpireRouter" />
  *	<behavior name="TSecurityManagerValidationKey" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="TSecurityManager" Parameter="prop:TSecurityManager.ValidationKey" Property="ValidationKey" />
  *	<behavior name="TSecurityManagerEncryptionKey" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="TSecurityManager" Parameter="prop:TSecurityManager.EncryptionKey" Property="EncryptionKey" />
- * </code>
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -63,7 +63,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 	protected $_localize;
 
 	/**
-	 * @var object {@link TMapRouteBehavior} that routes changes from the parameter to the property
+	 * @var object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes from the parameter to the property
 	 */
 	private $_paramBehavior;
 
@@ -77,7 +77,7 @@ class TParameterizeBehavior extends \Prado\Util\TBehavior
 
 	/**
 	 * This method sets the Owner Property to the Application Parameter of Parameter. When
-	 * {@link getRouteBehaviorName} is set, a {@link TMapRouteBehavior} is attached to
+	 * {@see getRouteBehaviorName} is set, a {@see \Prado\Util\Behaviors\TMapRouteBehavior} is attached to
 	 * the Application Parameter on the key so any changes are also routed to the Property.
 	 * @param object $owner the object to which this behavior is being attached
 	 * @throws TConfigurationException when missing the parameter, property, or property is not able to set

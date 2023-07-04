@@ -20,44 +20,44 @@ use Prado\Web\UI\TControl;
  * TDataGridColumn class
  *
  * TDataGridColumn serves as the base class for the different column types of
- * the {@link TDataGrid} control.
+ * the {@see \Prado\Web\UI\WebControls\TDataGrid} control.
  * TDataGridColumn defines the properties and methods that are common among
  * all datagrid column types. In particular, it initializes header and footer
- * cells according to {@link setHeaderText HeaderText} and {@link getHeaderStyle HeaderStyle}
- * {@link setFooterText FooterText} and {@link getFooterStyle FooterStyle} properties.
- * If {@link setHeaderImageUrl HeaderImageUrl} is specified, the image
+ * cells according to {@see setHeaderText HeaderText} and {@see getHeaderStyle HeaderStyle}
+ * {@see setFooterText FooterText} and {@see getFooterStyle FooterStyle} properties.
+ * If {@see setHeaderImageUrl HeaderImageUrl} is specified, the image
  * will be displayed instead in the header cell.
- * The {@link getItemStyle ItemStyle} is applied to cells that belong to
+ * The {@see getItemStyle ItemStyle} is applied to cells that belong to
  * non-header and -footer datagrid items.
  *
- * When the datagrid enables sorting, if the {@link setSortExpression SortExpression}
+ * When the datagrid enables sorting, if the {@see setSortExpression SortExpression}
  * is not empty, the header cell will display a button (linkbutton or imagebutton)
  * that will bubble the sort command event to the datagrid.
  *
- * Since v3.1.0, TDataGridColumn has introduced two new properties {@link setHeaderRenderer HeaderRenderer}
- * and {@link setFooterRenderer FooterRenderer} which can be used to specify
+ * Since v3.1.0, TDataGridColumn has introduced two new properties {@see setHeaderRenderer HeaderRenderer}
+ * and {@see setFooterRenderer FooterRenderer} which can be used to specify
  * the layout of header and footer column cells.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@link TRepeater} and {@link TDataList}.
+ * For more details, see {@see \Prado\Web\UI\WebControls\TRepeater} and {@see \Prado\Web\UI\WebControls\TDataList}.
  *
- * Since v3.1.1, TDataGridColumn has introduced {@link setEnableCellGrouping EnableCellGrouping}.
+ * Since v3.1.1, TDataGridColumn has introduced {@see setEnableCellGrouping EnableCellGrouping}.
  * If a column has this property set true, consecutive cells having the same content in this
  * column will be grouped into one cell.
  * Note, there are some limitations to cell grouping. We determine the cell content according to
- * the cell's {@link TTableCell::getText Text} property. If the text is empty and the cell has
- * some child controls, we will pick up the first control who implements {@link \Prado\IDataRenderer}
- * and obtain its {@link \Prado\IDataRenderer::getData Data} property.
+ * the cell's {@see \Prado\Web\UI\WebControls\TTableCell::getText Text} property. If the text is empty and the cell has
+ * some child controls, we will pick up the first control who implements {@see \Prado\IDataRenderer}
+ * and obtain its {@see \Prado\IDataRenderer::getData Data} property.
  *
  * The following datagrid column types are provided by the framework currently,
- * - {@link TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
- * - {@link TEditCommandColumn}, displaying edit/update/cancel command buttons
- * - {@link TDropDownListColumn}, displaying a dropdown list when the item is in edit state
- * - {@link TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
- * - {@link THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
- * - {@link TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
- * - {@link TTemplateColumn}, displaying content based on templates.
+ * - {@see \Prado\Web\UI\WebControls\TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@see \Prado\Web\UI\WebControls\TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@see \Prado\Web\UI\WebControls\TDropDownListColumn}, displaying a dropdown list when the item is in edit state
+ * - {@see \Prado\Web\UI\WebControls\TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TTemplateColumn}, displaying content based on templates.
  *
- * To create your own column class, simply override {@link initializeCell()} method,
+ * To create your own column class, simply override {@see initializeCell()} method,
  * which is the major logic for managing the data and presentation of cells in the column.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -137,8 +137,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets the column header cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column header cell.
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
-	 * will be set as the {@link getFooterText FooterText}.
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
+	 * will be set as the {@see getFooterText FooterText}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -190,8 +190,8 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * Sets the column footer cell renderer class.
 	 *
 	 * If not empty, the class will be used to instantiate as a child control in the column footer cell.
-	 * If the class implements {@link \Prado\IDataRenderer}, the <b>Data</b> property
-	 * will be set as the {@link getFooterText FooterText}.
+	 * If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b> property
+	 * will be set as the {@see getFooterText FooterText}.
 	 *
 	 * @param string $value the renderer class name in namespace format.
 	 * @since 3.1.0
@@ -343,7 +343,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the column.
-	 * This method is invoked by {@link TDataGrid} when the column
+	 * This method is invoked by {@see \Prado\Web\UI\WebControls\TDataGrid} when the column
 	 * is about to be used to initialize datagrid items.
 	 * Derived classes may override this method to do additional initialization.
 	 */
@@ -354,7 +354,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * Fetches the value of the data at the specified field.
 	 * If the data is an array, the field is used as an array key.
-	 * If the data is an of {@link TMap}, {@link TList} or their derived class,
+	 * If the data is an of {@see \Prado\Collections\TMap}, {@see \Prado\Collections\TList} or their derived class,
 	 * the field is used as a key value.
 	 * If the data is a component, the field is used as the name of a property.
 	 * @param mixed $data data containing the field of value
@@ -390,7 +390,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * Returns a value indicating whether this column allows sorting.
-	 * The column allows sorting only when {@link getSortExpression SortExpression}
+	 * The column allows sorting only when {@see getSortExpression SortExpression}
 	 * is not empty and the datagrid allows sorting.
 	 * @return bool whether this column allows sorting
 	 */
@@ -402,10 +402,10 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * Initializes the header cell.
 	 *
-	 * This method attempts to use {@link getHeaderRenderer HeaderRenderer} to
+	 * This method attempts to use {@see getHeaderRenderer HeaderRenderer} to
 	 * instantiate the header cell. If that is not available, it will populate
-	 * the cell with an image or a text string, depending on {@link getHeaderImageUrl HeaderImageUrl}
-	 * and {@link getHeaderText HeaderText} property values.
+	 * the cell with an image or a text string, depending on {@see getHeaderImageUrl HeaderImageUrl}
+	 * and {@see getHeaderText HeaderText} property values.
 	 *
 	 * If the column allows sorting, image or text will be created as
 	 * a button which issues <b>Sort</b> command upon user click.
@@ -459,9 +459,9 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * Initializes the footer cell.
 	 *
-	 * This method attempts to use {@link getFooterRenderer FooterRenderer} to
+	 * This method attempts to use {@see getFooterRenderer FooterRenderer} to
 	 * instantiate the footer cell. If that is not available, it will populate
-	 * the cell with a text string specified by {@link getFooterImageUrl FooterImageUrl}
+	 * the cell with a text string specified by {@see getFooterImageUrl FooterImageUrl}
 	 *
 	 * @param TTableCell $cell the cell to be initialized
 	 * @param int $columnIndex the index to the Columns property that the cell resides in.
@@ -508,7 +508,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	 * If the format string starts with '#', the string is treated as a PHP expression
 	 * within which the token '{0}' is translated with the data value to be formated.
 	 * Otherwise, the format string and the data value are passed
-	 * as the first and second parameters in {@link sprintf}.
+	 * as the first and second parameters in {@see sprintf}.
 	 * @param string $formatString format string
 	 * @param mixed $value the data to be formatted
 	 * @return string the formatted result

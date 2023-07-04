@@ -17,29 +17,29 @@ use Prado\TPropertyValue;
 
 /**
  * TBaseBehavior is the base implementing class for both PRADO behaviors types
- * {@link TClassBehavior} and {@link @TBehavior}.
+ * {@see \Prado\Util\TClassBehavior} and {@see @TBehavior}.
  *
- * This provides an {@link init} stub, {@link events} for attaching the behaviors'
- * handlers (value) to events (keys), an {@link getEnabled Enabled} flag, the {@link
- * getName Name} of the behavior, a {@link getRetainDisabledHandlers RetainDisabledHandlers}
- * flag to retain event handlers on the behavior being disabled, and {@link attach}ing
- * and {@link detach}ing from an owner.  Attaching and detaching call methods {@link
- * syncEventHandlers} and {@link detachEventHandlers}, respectively, to manage the
+ * This provides an {@see init} stub, {@see events} for attaching the behaviors'
+ * handlers (value) to events (keys), an {@see getEnabled Enabled} flag, the {@see
+ * getName Name} of the behavior, a {@see getRetainDisabledHandlers RetainDisabledHandlers}
+ * flag to retain event handlers on the behavior being disabled, and {@see attach}ing
+ * and {@see detach}ing from an owner.  Attaching and detaching call methods {@see
+ * syncEventHandlers} and {@see detachEventHandlers}, respectively, to manage the
  * behaviors' handlers in the owner[s] events.
  *
- * Behaviors use the {@see TPriorityPropertyTrait} to receive priority information
- * from insertion into the owner's {@link TPriorityMap} of behaviors.  When attaching
+ * Behaviors use the {@see TPriorityItemTrait} to receive priority information
+ * from insertion into the owner's {@see \Prado\Collections\TPriorityMap} of behaviors.  When attaching
  * events to an owner, the event handlers receive the same priority as the behavior
  * in the owner.
  *
- * Changing the {@link setEnabled Enabled} flag can automatically attach or detach
+ * Changing the {@see setEnabled Enabled} flag can automatically attach or detach
  * events from the owner. If the behavior events should be preserved in the owner
- * when disabled, set {@link setRetainDisabledHandlers RetainDisabledHandlers} to
+ * when disabled, set {@see setRetainDisabledHandlers RetainDisabledHandlers} to
  * true.  To force detach event handlers, give this property the value null.  When
  * false, the default attachment logic applies where the behavior event handlers
  * are attached where the owner has behaviors enabled and the behavior is enabled.
  *
- * Event Handlers from {@link events} are cached and available by the method {@link
+ * Event Handlers from {@see events} are cached and available by the method {@see
  * eventsLog}.  The eventsLog retains Closures across event handler management
  * and multiple TClassBehavior owners.
  *
@@ -96,19 +96,19 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 
 	/**
 	 * Declares events and the corresponding event handler methods.
-	 * The events are defined by the {@link owner} component, while the handler
+	 * The events are defined by the {@see owner} component, while the handler
 	 * methods defined in the behavior class.  These events will be attached to the
-	 * owner depending on the enable status and {@link getRetainDisabledHandlers}.
+	 * owner depending on the enable status and {@see getRetainDisabledHandlers}.
 	 * The format of events is as follows:
 	 * e.g. return ["onEvent" => function($sender, $param) {...}, "onInit" => "myInitHandler",
 	 * 'onAnEvent' => [$this, 'methodHandler'], 'onOtherEvent' => [[$this, 'handlerMethod'],
 	 * "behaviorMethod", function($sender, $param) {...}];
 	 *
-	 * Subclasses should use {@link mergeHandlers} to combine event handlers with the
+	 * Subclasses should use {@see mergeHandlers} to combine event handlers with the
 	 * parent's event handlers.  For example:
-	 * <code>
+	 * ```php
 	 *	return self::mergeHandlers(parent::events(), ['onEvent' => 'myHandler', ...]]);
-	 * </code>
+	 * ```
 	 *
 	 * Acceptable array values are string name of behavior method, callable, or
 	 * an array of string behavior method names or callables.
@@ -136,7 +136,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	}
 
 	/**
-	 * By default, all events with handlers in {@link eventsLog} are attached or there
+	 * By default, all events with handlers in {@see eventsLog} are attached or there
 	 * will be an error.  When this is false, attaching behavior event handlers will
 	 * not fail if the owner is missing events and handlers are not attached.  Put
 	 * another way, when false, behavior event handlers are optional rather than made
@@ -181,7 +181,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	/**
 	 * Attaches the behavior object to a new owner component.
 	 * The default implementation will synchronize attachment of event handlers declared
-	 * in {@link eventsLog}.
+	 * in {@see eventsLog}.
 	 * Make sure you call the parent implementation if you override this method.
 	 * @param TComponent $component the component that this behavior is being attached to.
 	 */
@@ -192,7 +192,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 
 	/**
 	 * Detaches the behavior object from an owner component.
-	 * The default implementation will detach event handlers declared in {@link eventsLog}.
+	 * The default implementation will detach event handlers declared in {@see eventsLog}.
 	 * Make sure you call this parent implementation if you override this method.
 	 * @param TComponent $component the component that this behavior is being detached from.
 	 */
@@ -289,9 +289,9 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	/**
 	 * This synchronizes an owner's events of the behavior event handlers by attaching
 	 * or detaching where needed.  A behaviors handlers are attached depending on whether
-	 * {@link getRetainDisabledHandlers} is true (or null) or both the owner and behavior are
+	 * {@see getRetainDisabledHandlers} is true (or null) or both the owner and behavior are
 	 * [Behavior] enabled.  The $attachOverride will set RetainDisabledHandlers when not
-	 * its default value 0 and thus can act like {@link setRetainDisabledHandlers}.
+	 * its default value 0 and thus can act like {@see setRetainDisabledHandlers}.
 	 * @param ?object $component The component to manage the behaviors handlers on. Default
 	 *   is null for synchronizing all owners.
 	 * @param null|bool|int $attachOverride Overrides the default attachment logic or whether

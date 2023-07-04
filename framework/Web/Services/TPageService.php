@@ -25,7 +25,7 @@ use Prado\Web\UI\TThemeManager;
  * TPageService implements the service for serving user page requests.
  *
  * Pages that are available to client users are stored under a directory specified by
- * {@link setBasePath BasePath}. The directory may contain subdirectories.
+ * {@see setBasePath BasePath}. The directory may contain subdirectories.
  * Pages serving for a similar goal are usually placed under the same directory.
  * A directory may contain a configuration file <b>config.xml</b> whose content
  * is similar to that of application configuration file.
@@ -33,28 +33,28 @@ use Prado\Web\UI\TThemeManager;
  * A page is requested via page path, which is a dot-connected directory names
  * appended by the page name. Assume '<BasePath>/Users/Admin' is the directory
  * containing the page 'Update'. Then the page can be requested via 'Users.Admin.Update'.
- * By default, the {@link setBasePath BasePath} of the page service is the "pages"
+ * By default, the {@see setBasePath BasePath} of the page service is the "pages"
  * directory under the application base path. You may change this default
- * by setting {@link setBasePath BasePath} with a different path you prefer.
+ * by setting {@see setBasePath BasePath} with a different path you prefer.
  *
  * Page name refers to the file name (without extension) of the page template.
  * In order to differentiate from the common control template files, the extension
  * name of the page template files must be '.page'. If there is a PHP file with
  * the same page name under the same directory as the template file, that file
  * will be considered as the page class file and the file name is the page class name.
- * If such a file is not found, the page class is assumed as {@link TPage}.
+ * If such a file is not found, the page class is assumed as {@see \Prado\Web\UI\TPage}.
  *
  * Modules can be configured and loaded in page directory configurations.
  * Configuration of a module in a subdirectory will overwrite its parent
  * directory's configuration, if both configurations refer to the same module.
  *
  * By default, TPageService will automatically load two modules:
- * - {@link TTemplateManager} : manages page and control templates
- * - {@link TThemeManager} : manages themes used in a Prado application
+ * - {@see \Prado\Web\UI\TTemplateManager} : manages page and control templates
+ * - {@see \Prado\Web\UI\TThemeManager} : manages themes used in a Prado application
  *
  * In page directory configurations, static authorization rules can also be specified,
  * which governs who and which roles can access particular pages.
- * Refer to {@link TAuthorizationRule} for more details about authorization rules.
+ * Refer to {@see \Prado\Security\TAuthorizationRule} for more details about authorization rules.
  * Page authorization rules can be configured within an <authorization> tag in
  * each page directory configuration as follows,
  * <authorization>
@@ -539,12 +539,12 @@ class TPageService extends \Prado\TService
 	 * This event is raised if the page is not found in the BasePath.
 	 * This provides additional possible Page Paths to look for the page.
 	 * The typical handler would look like:
-	 * <code>
+	 * ```php
 	 * public function additionalPagePaths($service, $pagePath)
 	 * {
 	 *	 return $this->getPluginPagesPath() . DIRECTORY_SEPARATOR . strtr($pagePath, '.', DIRECTORY_SEPARATOR);
 	 * }
-	 * </code>
+	 * ```
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */

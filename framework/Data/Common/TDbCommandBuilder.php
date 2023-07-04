@@ -15,7 +15,7 @@ use Prado\Data\TDbCommand;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
- * giving by {@link setTableInfo TableInfo} the property.
+ * giving by {@see setTableInfo TableInfo} the property.
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -171,28 +171,28 @@ class TDbCommandBuilder extends \Prado\TComponent
 	 *
 	 * array
 	 * - Column names will be quoted if used as key or value of array
-	 * 	<code>
-	 * 	array('col1', 'col2', 'col2')
-	 * 	// SELECT `col1`, `col2`, `col3` FROM...
-	 * 	</code>
+	 * ```php
+	 * array('col1', 'col2', 'col2')
+	 * // SELECT `col1`, `col2`, `col3` FROM...
+	 * ```
 	 *
 	 * - Column aliasing
-	 * <code>
+	 * ```php
 	 * array('mycol1' => 'col1', 'mycol2' => 'COUNT(*)')
 	 * // SELECT `col1` AS mycol1, COUNT(*) AS mycol2 FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - NULL and scalar values (strings will be quoted depending on database)
-	 * <code>
+	 * ```php
 	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
 	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
-	 * <code>
+	 * ```php
 	 * array('col1' => 'NULL', '*')
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
-	 * </code>
+	 * ```
 	 * @param mixed $data
 	 * @return array of generated fields - use implode(', ', $selectfieldlist) to collapse field list for usage
 	 * @since 3.1.7
@@ -308,7 +308,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 
 	/**
 	 * Appends the $where condition to the string "SELECT * FROM tableName WHERE ".
-	 * The tableName is obtained from the {@link setTableInfo TableInfo} property.
+	 * The tableName is obtained from the {@see setTableInfo TableInfo} property.
 	 * @param string $where query condition
 	 * @param array $parameters condition parameters.
 	 * @param array $ordering
@@ -342,7 +342,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Creates a count(*) command for the table described in {@link setTableInfo TableInfo}.
+	 * Creates a count(*) command for the table described in {@see setTableInfo TableInfo}.
 	 * @param string $where count condition.
 	 * @param array $parameters binding parameters.
 	 * @param array $ordering
@@ -356,7 +356,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Creates a delete command for the table described in {@link setTableInfo TableInfo}.
+	 * Creates a delete command for the table described in {@see setTableInfo TableInfo}.
 	 * The conditions for delete is given by the $where argument and the parameters
 	 * for the condition is given by $parameters.
 	 * @param string $where delete condition.
@@ -375,7 +375,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Creates an insert command for the table described in {@link setTableInfo TableInfo} for the given data.
+	 * Creates an insert command for the table described in {@see setTableInfo TableInfo} for the given data.
 	 * Each array key in the $data array must correspond to the column name of the table
 	 * (if a column allows to be null, it may be omitted) to be inserted with
 	 * the corresponding array value.
@@ -392,7 +392,7 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Creates an update command for the table described in {@link setTableInfo TableInfo} for the given data.
+	 * Creates an update command for the table described in {@see setTableInfo TableInfo} for the given data.
 	 * Each array key in the $data array must correspond to the column name to be updated with the corresponding array value.
 	 * @param array $data name-value pairs of data to be updated.
 	 * @param string $where update condition.

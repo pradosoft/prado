@@ -18,16 +18,16 @@ use Prado\TPropertyValue;
  * TPagedList implements a list with paging functionality.
  *
  * TPagedList works in one of two modes, managed paging or customized paging,
- * specified by {@link setCustomPaging CustomPaging}.
- * - Managed paging ({@link setCustomPaging CustomPaging}=false) :
+ * specified by {@see setCustomPaging CustomPaging}.
+ * - Managed paging ({@see setCustomPaging CustomPaging}=false) :
  *   the list is assumed to contain all data and it will manage which page
  *   of data are available to user.
- * - Customized paging ({@link setCustomPaging CustomPaging}=true) :
- *   the list is assumed to contain only one page of data. An  {@link onFetchData OnFetchData}
+ * - Customized paging ({@see setCustomPaging CustomPaging}=true) :
+ *   the list is assumed to contain only one page of data. An  {@see onFetchData OnFetchData}
  *   event will be raised if the list changes to a different page.
  *   Developers can attach a handler to the event and supply the needed data.
  *   The event handler can be written as follows,
- * <code>
+ * ```php
  *  public function fetchData($sender,$param)
  *  {
  *    $offset=$param->Offset; // beginning index of the data needed
@@ -35,21 +35,21 @@ use Prado\TPropertyValue;
  *    // get data according to the above two parameters
  *    $param->Data=$data;
  *  }
- * </code>
+ * ```
  *
  * Data in TPagedList can be accessed like an integer-indexed array and can
  * be traversed using foreach. For example,
- * <code>
+ * ```php
  * $count=$list->Count;
  * for($index=0;$index<$count;++$index)
  *     echo $list[$index];
  * foreach($list as $index=>$item) // traverse each item in the list
- * </code>
+ * ```
  *
- * The {@link setPageSize PageSize} property specifies the number of items in each page.
- * To access different page of data in the list, set {@link setCurrentPageIndex CurrentPageIndex}
- * or call {@link nextPage()}, {@link previousPage()}, or {@link gotoPage()}.
- * The total number of pages can be obtained by {@link getPageCount() PageCount}.
+ * The {@see setPageSize PageSize} property specifies the number of items in each page.
+ * To access different page of data in the list, set {@see setCurrentPageIndex CurrentPageIndex}
+ * or call {@see nextPage()}, {@see previousPage()}, or {@see gotoPage()}.
+ * The total number of pages can be obtained by {@see getPageCount() PageCount}.
  *
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -154,7 +154,7 @@ class TPagedList extends TList
 	 * Raises <b>OnFetchData</b> event.
 	 * This event is raised each time when the list changes to a different page
 	 * and needs the new page of data. This event can only be raised when
-	 * {@link setCustomPaging CustomPaging} is true.
+	 * {@see setCustomPaging CustomPaging} is true.
 	 * @param TPagedListFetchDataEventParameter $param event parameter
 	 */
 	public function onFetchData($param)
@@ -239,7 +239,7 @@ class TPagedList extends TList
 	}
 
 	/**
-	 * @return int number of pages, -1 if under custom paging mode and {@link setVirtualCount VirtualCount} is not set.
+	 * @return int number of pages, -1 if under custom paging mode and {@see setVirtualCount VirtualCount} is not set.
 	 */
 	public function getPageCount()
 	{
@@ -301,7 +301,7 @@ class TPagedList extends TList
 
 	/**
 	 * Returns the item at the specified offset.
-	 * This method is exactly the same as {@link offsetGet}.
+	 * This method is exactly the same as {@see offsetGet}.
 	 * @param int $index the index of the item
 	 * @throws TInvalidDataValueException if the index is out of the range
 	 * @return mixed the item at the index

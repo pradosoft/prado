@@ -24,26 +24,26 @@ use WeakReference;
  * TWeakCallableCollection class
  *
  * TWeakCallableCollection implements a priority ordered list collection of callables.
- * This extends {@link TPriorityList}.  This holds the callables for object event handlers
+ * This extends {@see \Prado\Collections\TPriorityList}.  This holds the callables for object event handlers
  * and global event handlers by converting all callable objects into a WeakReference.
  * TWeakCallableCollection prevents circular references in global events that would
  * otherwise block object destruction, and thus removal of the callable in __destruct.
  * All data out has the callable objects converted back to the regular object reference
  * in a callable.
  *
- * Closure and {@link IWeakRetainable} are not converted into WeakReference as they
+ * Closure and {@see \Prado\Collections\IWeakRetainable} are not converted into WeakReference as they
  * may be the only instance in the application.  This increments their PHP use counter
  * resulting in them being retained.
  *
- * When searching by a {@link TEventHandler} object, it will only find itself and
- * will not match on its {@link TEventHandler::getHandler}.  However, if searching
+ * When searching by a {@see \Prado\TEventHandler} object, it will only find itself and
+ * will not match on its {@see \Prado\TEventHandler::getHandler}.  However, if searching
  * for a callable handler, it will first match direct callable handlers in the list,
  * and then search for matching TEventHandlers' Handler regardless of the data.
  * Put another way, searching for callable handlers will find TEventHandlers that
  * use the handler.
  *
  * This uses PHP 8 WeakMap to track any system changes to the weak references of
- * objects the list is using -when {@link getDiscardInvalid DiscardInvalid} is true.
+ * objects the list is using -when {@see getDiscardInvalid DiscardInvalid} is true.
  * By default, when the map is read only then the items are not scrubbed, but the
  * scrubbing behavior can be enabled for read only lists. In this instance, no new
  * items can be added but only a list of valid  callables is kept.
@@ -129,7 +129,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
-	 * if the object being added is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
 	 * @since 4.2.3
@@ -148,7 +148,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
-	 * if the object being removed is a TEventHandler, we use the {@link TEventHandler::getHandlerObject}
+	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
 	 * @since 4.2.3
@@ -224,7 +224,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * When a change in the WeakMap is detected, scrub the list of WeakReference that
 	 * have lost their object.
-	 * All invalid WeakReference[s] are optionally removed from the list when {@link
+	 * All invalid WeakReference[s] are optionally removed from the list when {@see
 	 * getDiscardInvalid} is true.
 	 * @since 4.2.3
 	 */
@@ -363,7 +363,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * Gets the number of items at a priority within the list.
 	 * All invalid WeakReference[s] are optionally removed from the list before counting.
 	 * @param null|numeric $priority optional priority at which to count items.  if no
-	 *    parameter, it will be set to the default {@link getDefaultPriority}
+	 *    parameter, it will be set to the default {@see getDefaultPriority}
 	 * @return int the number of items in the list at the specified priority
 	 * @since 4.2.3
 	 */
@@ -402,7 +402,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * Returns the item at the index of a flattened priority list. This is needed to
-	 *  filter the output.  {@link offsetGet} calls this method.
+	 *  filter the output.  {@see offsetGet} calls this method.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param int $index the index of the item to get
 	 * @throws TInvalidDataValueException Issued when the index is invalid
@@ -480,7 +480,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * Inserts an item at the specified index within a priority.  This scrubs the list and
-	 * calls {@link internalInsertAtIndexInPriority}.
+	 * calls {@see internalInsertAtIndexInPriority}.
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * @param mixed $item item to add within the list.
 	 * @param null|false|int $index index within the priority to add the item, defaults to null

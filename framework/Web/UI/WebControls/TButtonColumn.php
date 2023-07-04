@@ -17,26 +17,26 @@ use Prado\TPropertyValue;
  * TButtonColumn contains a user-defined command button, such as Add or Remove,
  * that corresponds with each row in the column.
  *
- * The caption of the buttons in the column is determined by {@link setText Text}
- * and {@link setDataTextField DataTextField} properties. If both are present,
- * the latter takes precedence. The {@link setDataTextField DataTextField} property
+ * The caption of the buttons in the column is determined by {@see setText Text}
+ * and {@see setDataTextField DataTextField} properties. If both are present,
+ * the latter takes precedence. The {@see setDataTextField DataTextField} property
  * refers to the name of the field in datasource whose value will be used as the button caption.
- * If {@link setDataTextFormatString DataTextFormatString} is not empty,
+ * If {@see setDataTextFormatString DataTextFormatString} is not empty,
  * the value will be formatted before rendering.
  *
  * The buttons in the column can be set to display as hyperlinks, push buttons or images
- * by setting the {@link setButtonType ButtonType} property.
- * The {@link setCommandName CommandName} will assign its value to
+ * by setting the {@see setButtonType ButtonType} property.
+ * The {@see setCommandName CommandName} will assign its value to
  * all button's <b>CommandName</b> property. The datagrid will capture
  * the command event where you can write event handlers based on different command names.
  * The buttons' <b>CausesValidation</b> and <b>ValidationGroup</b> property values
  * are determined by the column's corresponding properties.
  *
  * The buttons in the column can be accessed by one of the following two methods:
- * <code>
+ * ```php
  * $datagridItem->ButtonColumnID->Button
  * $datagridItem->ButtonColumnID->Controls[0]
- * </code>
+ * ```
  * The second method is possible because the button control created within the
  * datagrid cell is the first child.
  *

@@ -18,8 +18,8 @@ use Prado\Web\UI\WebControls\TImageButton;
  * When a TActiveImageButton is clicked, rather than a normal post back request a
  * callback request is initiated.
  *
- * The {@link onCallback OnCallback} event is raised during a callback request
- * and it is raise <b>after</b> the {@link onClick OnClick} event.
+ * The {@see onCallback OnCallback} event is raised during a callback request
+ * and it is raise <b>after</b> the {@see onClick OnClick} event.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1
@@ -123,10 +123,10 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 
 	/**
 	 * Raises the callback event. This method is required by
-	 * {@link ICallbackEventHandler ICallbackEventHandler} interface. If
-	 * {@link getCausesValidation CausesValidation} is true, it will invoke the page's
-	 * {@link TPage::validate} method first. It will raise
-	 * {@link onClick OnClick} event first and then the {@link onCallback OnCallback} event.
+	 * {@see ICallbackEventHandler ICallbackEventHandler} interface. If
+	 * {@see getCausesValidation CausesValidation} is true, it will invoke the page's
+	 * {@see \Prado\Web\UI\TPage::validate} method first. It will raise
+	 * {@see onClick OnClick} event first and then the {@see onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */
@@ -150,7 +150,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 
 	/**
 	 * Override parent implementation, no javascript is rendered here instead
-	 * the javascript required for active control is registered in {@link addAttributesToRender}.
+	 * the javascript required for active control is registered in {@see addAttributesToRender}.
 	 * @param mixed $writer
 	 */
 	protected function renderClientControlScript($writer)

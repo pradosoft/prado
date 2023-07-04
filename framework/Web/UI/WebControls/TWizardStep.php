@@ -15,10 +15,10 @@ use Prado\TPropertyValue;
  * TWizardStep class.
  *
  * TWizardStep represents a wizard step. The wizard owning the step
- * can be obtained by {@link getWizard Wizard}.
- * To specify the type of the step, set {@link setStepType StepType};
- * For step title, set {@link setTitle Title}. If a step can be re-visited,
- * set {@link setAllowReturn AllowReturn} to true.
+ * can be obtained by {@see getWizard Wizard}.
+ * To specify the type of the step, set {@see setStepType StepType};
+ * For step title, set {@see setTitle Title}. If a step can be re-visited,
+ * set {@see setAllowReturn AllowReturn} to true.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -37,7 +37,7 @@ class TWizardStep extends TView
 
 	/**
 	 * Sets the wizard owning this step.
-	 * This method is used internally by {@link TWizard}.
+	 * This method is used internally by {@see \Prado\Web\UI\WebControls\TWizard}.
 	 * @param TWizard $wizard the wizard owning this step
 	 */
 	public function setWizard($wizard)

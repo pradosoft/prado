@@ -15,7 +15,7 @@ namespace Prado\Util;
 
 /**
  * IInstanceCheck This interface allows objects to determine their own
- * 'instanceof' results when {@link TComponent::isa} is called.  This is
+ * 'instanceof' results when {@see \Prado\TComponent::isa} is called.  This is
  * important with behaviors because behaviors may want to look like
  * particular objects other than themselves.
  *

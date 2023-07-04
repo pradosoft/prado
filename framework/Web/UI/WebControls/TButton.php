@@ -17,32 +17,32 @@ use Prado\TPropertyValue;
  *
  * TButton creates a click button on the page. It is mainly used to submit data to a page.
  *
- * TButton raises two server-side events, {@link onClick OnClick} and {@link onCommand OnCommand},
+ * TButton raises two server-side events, {@see onClick OnClick} and {@see onCommand OnCommand},
  * when it is clicked on the client-side. The difference between these two events
- * is that the event {@link onCommand OnCommand} is bubbled up to the button's ancestor controls.
- * And within the event parameter for {@link onCommand OnCommand} contains the reference
- * to the {@link setCommandName CommandName} and {@link setCommandParameter CommandParameter}
+ * is that the event {@see onCommand OnCommand} is bubbled up to the button's ancestor controls.
+ * And within the event parameter for {@see onCommand OnCommand} contains the reference
+ * to the {@see setCommandName CommandName} and {@see setCommandParameter CommandParameter}
  * property values that are set for the button object. This allows you to create multiple TButton
  * components on a Web page and programmatically determine which one is clicked
  * with what parameter.
  *
  * Clicking on button can also trigger form validation, if
- * {@link setCausesValidation CausesValidation} is true.
+ * {@see setCausesValidation CausesValidation} is true.
  * The validation may be restricted within a certain group of validator
- * controls by setting {@link setValidationGroup ValidationGroup} property.
+ * controls by setting {@see setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
  *
- * TButton displays the {@link setText Text} property as the button caption.
+ * TButton displays the {@see setText Text} property as the button caption.
  *
- * TButton by default renders an input tag; the {@link setButtonTag ButtonTag}
+ * TButton by default renders an input tag; the {@see setButtonTag ButtonTag}
  * property can be used to render a button tag (introduced in html5).
  *
- * TButton can be one of three {@link setButtonType ButtonType}: Submit, Button and Reset.
+ * TButton can be one of three {@see setButtonType ButtonType}: Submit, Button and Reset.
  * By default, it is a Submit button and the form submission uses the browser's
  * default submission capability. If it is Button or Reset, postback may occur
  * if one of the following conditions is met:
- * - an event handler is attached to {@link onClick OnClick} event;
- * - an event handler is attached to {@link onCommand OnCommand} event;
+ * - an event handler is attached to {@see onClick OnClick} event;
+ * - an event handler is attached to {@see onCommand OnCommand} event;
  * - the button is in a non-empty validation group.
  * In addition, clicking on a Reset button will clear up all input fields
  * if the button does not cause a postback.
@@ -235,10 +235,10 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@link IPostBackEventHandler} interface.
-	 * If {@link getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
+	 * If {@see getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
+	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter
 	 */
@@ -269,8 +269,8 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Returns the caption of the button.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string caption of the button.
 	 * @see getText
 	 * @since 3.1.0
@@ -282,8 +282,8 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 
 	/**
 	 * Sets the caption of the button.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value caption of the button
 	 * @see setText
 	 * @since 3.1.0
@@ -310,7 +310,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return string the command name associated with the {@link onCommand OnCommand} event.
+	 * @return string the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function getCommandName()
 	{
@@ -318,7 +318,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
@@ -326,7 +326,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @return string the parameter associated with the {@link onCommand OnCommand} event
+	 * @return string the parameter associated with the {@see onCommand OnCommand} event
 	 */
 	public function getCommandParameter()
 	{
@@ -334,7 +334,7 @@ class TButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{

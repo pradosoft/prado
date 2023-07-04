@@ -19,10 +19,10 @@ use Prado\Web\UI\WebControls\TDropDownListColumn;
  *
  * TActiveDropDownListColumn represents a column that is bound to a field in a data source.
  *
- * This is the active counterpart to the {@link TDropDownListColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TDropDownListColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@link TDropDownListColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TDropDownListColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

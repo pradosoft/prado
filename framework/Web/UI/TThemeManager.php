@@ -21,20 +21,20 @@ use Prado\Web\Services\TPageService;
  * TThemeManager manages the themes used in a Prado application.
  *
  * Themes are stored under the directory specified by the
- * {@link setBasePath BasePath} property. The themes can be accessed
- * via URL {@link setBaseUrl BaseUrl}. Each theme is represented by a subdirectory
+ * {@see setBasePath BasePath} property. The themes can be accessed
+ * via URL {@see setBaseUrl BaseUrl}. Each theme is represented by a subdirectory
  * and all the files under that directory. The name of a theme is the name
  * of the corresponding subdirectory.
  * By default, the base path of all themes is a directory named "themes"
  * under the directory containing the application entry script.
- * To get a theme (normally you do not need to), call {@link getTheme}.
+ * To get a theme (normally you do not need to), call {@see getTheme}.
  *
  * TThemeManager may be configured within page service tag in application
  * configuration file as follows,
  * <module id="themes" class="Prado\Web\UI\TThemeManager"
  *         BasePath="Application.themes" BaseUrl="/themes" />
- * where {@link getCacheExpire CacheExpire}, {@link getCacheControl CacheControl}
- * and {@link getBufferOutput BufferOutput} are configurable properties of THttpResponse.
+ * where {@see getCacheExpire CacheExpire}, {@see getCacheControl CacheControl}
+ * and {@see getBufferOutput BufferOutput} are configurable properties of THttpResponse.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -101,7 +101,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string Theme class name in namespace format. Defaults to {@link TThemeManager::DEFAULT_THEMECLASS DEFAULT_THEMECLASS}.
+	 * @return string Theme class name in namespace format. Defaults to {@see \Prado\Web\UI\TThemeManager::DEFAULT_THEMECLASS DEFAULT_THEMECLASS}.
 	 */
 	public function getThemeClass()
 	{

@@ -16,26 +16,26 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * Access object's properties (and subproperties) using dot path notation.
  * The following are equivalent.
- * <code>
+ * ```php
  * echo $obj->property1;
  * echo $obj->getProperty1();
  * echo $obj['property1']; //$obj may be an array or object
  * echo TPropertyAccess($obj, 'property1');
- * </code>
+ * ```
  *
  * Setting a property value.
- * <code>
+ * ```php
  * $obj1->propert1 = 'hello';
  * $obj->setProperty('hello');
  * $obj['property1'] = 'hello'; //$obj may be an array or object
  * TPropertyAccess($obj, 'property1', 'hello');
- * </code>
+ * ```
  *
  * Subproperties are supported using the dot notation. E.g.
- * <code>
+ * ```php
  * echo $obj->property1->property2->property3
  * echo TPropertyAccess::get($obj, 'property1.property2.property3');
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1

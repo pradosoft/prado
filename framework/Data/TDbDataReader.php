@@ -17,18 +17,18 @@ use Prado\Exceptions\TDbException;
  *
  * TDbDataReader represents a forward-only stream of rows from a query result set.
  *
- * To read the current row of data, call {@link read}. The method {@link readAll}
+ * To read the current row of data, call {@see read}. The method {@see readAll}
  * returns all the rows in a single array.
  *
  * One can also retrieve the rows of data in TDbDataReader by using foreach:
- * <code>
+ * ```php
  * foreach($reader as $row)
  *     // $row represents a row of data
- * </code>
+ * ```
  * Since TDbDataReader is a forward-only stream, you can only traverse it once.
  *
  * It is possible to use a specific mode of data fetching by setting
- * {@link setFetchMode FetchMode}. See {@link http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php}
+ * {@see setFetchMode FetchMode}. See {@see http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php}
  * for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

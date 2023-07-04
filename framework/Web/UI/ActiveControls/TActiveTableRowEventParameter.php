@@ -13,12 +13,12 @@ namespace Prado\Web\UI\ActiveControls;
  * TActiveTableRowEventParameter class.
  *
  * The TActiveTableRowEventParameter provides the parameter passed during the callback
- * requestion in the {@link getCallbackParameter CallbackParameter} property. The
+ * requestion in the {@see getCallbackParameter CallbackParameter} property. The
  * callback response content (e.g. new HTML content) must be rendered
- * using an THtmlWriter obtained from the {@link getNewWriter NewWriter}
+ * using an THtmlWriter obtained from the {@see getNewWriter NewWriter}
  * property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
  *
- * The {@link getSelectedRowIndex SelectedRowIndex} is a zero-based index of the
+ * The {@see getSelectedRowIndex SelectedRowIndex} is a zero-based index of the
  * TActiveTableRow , -1 if the row is not part of the row collection (this shouldn't
  * happen though since an exception is thrown before).
  *
@@ -45,8 +45,8 @@ class TActiveTableRowEventParameter extends TCallbackEventParameter
 	}
 
 	/**
-	 * Returns the zero-based index of the {@link TActiveTableRow} within the
-	 * {@link TTableRowCollection} of the parent {@link TTable} control.
+	 * Returns the zero-based index of the {@see \Prado\Web\UI\ActiveControls\TActiveTableRow} within the
+	 * {@see \Prado\Web\UI\WebControls\TTableRowCollection} of the parent {@see \Prado\Web\UI\WebControls\TTable} control.
 	 * @return int the zero-based index of the row.
 	 */
 	public function getSelectedRowIndex()

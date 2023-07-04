@@ -498,11 +498,11 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	/**
 	 * Registers a CSS file to be rendered in the page head
 	 *
-	 * The CSS files in themes are registered in {@link OnPreRenderComplete onPreRenderComplete} if you want to override
+	 * The CSS files in themes are registered in {@see OnPreRenderComplete onPreRenderComplete} if you want to override
 	 * CSS styles in themes you need to register it after this event is completed.
 	 *
 	 * Example:
-	 * <code>
+	 * ```php
 	 * <?php
 	 * class BasePage extends TPage {
 	 *   public function onPreRenderComplete($param) {
@@ -511,7 +511,7 @@ class TClientScriptManager extends \Prado\TApplicationComponent
 	 *     $this->getPage()->getClientScript()->registerStyleSheetFile($url, $url);
 	 *   }
 	 * }
-	 * </code>
+	 * ```
 	 *
 	 * @param string $key a unique key identifying the file
 	 * @param string $url URL to the CSS file

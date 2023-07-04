@@ -19,24 +19,24 @@ use Prado\Web\Javascripts\TJavaScript;
  * TJsonService class provides to end-users javascript content response in
  * JSON format.
  *
- * TJsonService manages a set of {@link TJsonResponse}, each
+ * TJsonService manages a set of {@see \Prado\Web\Services\TJsonResponse}, each
  * representing specific response with javascript content.
  * The service parameter, referring to the ID of the service, specifies
  * which javascript content to be provided to end-users.
  *
  * To use TJsonService, configure it in application configuration as follows,
- * <code>
+ * ```xml
  *  <service id="json" class="Prado\Web\Services\TJsonService">
  *    <json id="get_article" class="Path\To\JsonResponseClass1" .../>
  *    <json id="register_rating" class="Path\To\JsonResponseClass2" .../>
  *  </service>
- * </code>
+ * ```
  * where each JSON response is specified via a &lt;json&gt; element.
  * Initial property values can be configured in a &lt;json&gt; element.
  *
  *
  * PHP configuration style:
- * <code>
+ * ```php
  *  'services' => array(
  *    'get_article' => array(
  *     'class' => 'Path\To\JsonResponseClass1',
@@ -45,10 +45,12 @@ use Prado\Web\Javascripts\TJavaScript;
  *	    )
  *    )
  *  )
- * </code>
+ * ```
  *
  * To retrieve the JSON content provided by "get_article", use the URL
- * <code>index.php?json=get_article</code>
+ * ```
+ * index.php?json=get_article
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Carl G. Mathisen <carlgmathisen@gmail.com>

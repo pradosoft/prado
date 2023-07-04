@@ -18,15 +18,15 @@ use Prado\Exceptions\TInvalidOperationException;
  * TQueue implements a queue.
  *
  * The typical queue operations are implemented, which include
- * {@link enqueue()}, {@link dequeue()} and {@link peek()}. In addition,
- * {@link contains()} can be used to check if an item is contained
+ * {@see enqueue()}, {@see dequeue()} and {@see peek()}. In addition,
+ * {@see contains()} can be used to check if an item is contained
  * in the queue. To obtain the number of the items in the queue,
- * check the {@link getCount Count} property.
+ * check the {@see getCount Count} property.
  *
  * Items in the queue may be traversed using foreach as follows,
- * <code>
+ * ```php
  * foreach($queue as $item) ...
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Knut Urdalen <knut.urdalen@gmail.com>
@@ -106,7 +106,7 @@ class TQueue extends \Prado\TComponent implements \IteratorAggregate, \Countable
 
 	/**
 	 * Returns the first item at the front of the queue.
-	 * Unlike {@link dequeue()}, this method does not remove the item from the queue.
+	 * Unlike {@see dequeue()}, this method does not remove the item from the queue.
 	 * @throws TInvalidOperationException if the queue is empty
 	 * @return mixed item at the top of the queue
 	 */

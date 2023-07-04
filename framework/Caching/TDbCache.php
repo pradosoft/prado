@@ -21,7 +21,7 @@ use Prado\Util\Cron\TCronTaskInfo;
  *
  * TDbCache implements a cache application module by storing cached data in a database.
  *
- * TDbCache relies on {@link http://www.php.net/manual/en/ref.pdo.php PDO} to retrieve
+ * TDbCache relies on {@see http://www.php.net/manual/en/ref.pdo.php PDO} to retrieve
  * data from databases. In order to use TDbCache, you need to enable the PDO extension
  * as well as the corresponding PDO DB driver. For example, to use SQLite database
  * to store cached data, you need both php_pdo and php_pdo_sqlite extensions.
@@ -29,17 +29,17 @@ use Prado\Util\Cron\TCronTaskInfo;
  * By default, TDbCache creates and uses an SQLite database under the application
  * runtime directory. You may change this default setting by specifying the following
  * properties:
- * - {@link setConnectionID ConnectionID} or
- * - {@link setConnectionString ConnectionString}, {@link setUsername Username} and {@link setPassword Pasword}.
+ * - {@see \Prado\Caching\TDbCache::setConnectionID() ConnectionID} or
+ * - {@see \Prado\Caching\TDbCache::setConnectionString() ConnectionString}, {@see \Prado\Caching\TDbCache::setUsername() Username} and {@see \Prado\Caching\TDbCache::setPassword() Pasword}.
  *
  * The cached data is stored in a table in the specified database.
  * By default, the name of the table is called 'pradocache'. If the table does not
  * exist in the database, it will be automatically created with the following structure:
- * <code>
+ * ```sql
  * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
  * CREATE INDEX IX_itemkey ON pradocache (itemkey)
  * CREATE INDEX IX_expire ON pradocache (expire)
- * </code>
+ * ```
  *
  * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
  * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)
@@ -47,19 +47,19 @@ use Prado\Util\Cron\TCronTaskInfo;
  * Important: Make sure that the indices are non-unique!
  *
  * If you want to change the cache table name, or if you want to create the table by yourself,
- * you may set {@link setCacheTableName CacheTableName} and {@link setAutoCreateCacheTable AutoCreateCacheTableName} properties.
+ * you may set {@see \Prado\Caching\TDbCache::setCacheTableName() CacheTableName} and {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTableName} properties.
  *
- * {@link setFlushInterval FlushInterval} control how often expired items will be removed from cache.
+ * {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval} control how often expired items will be removed from cache.
  * If you prefer to remove expired items manualy e.g. via cronjob you can disable automatic deletion by setting FlushInterval to '0'.
  *
  * The following basic cache operations are implemented:
- * - {@link get} : retrieve the value with a key (if any) from cache
- * - {@link set} : store the value with a key into cache
- * - {@link add} : store the value only if cache does not have this key
- * - {@link delete} : delete the value with the specified key from cache
- * - {@link flush} : delete all values from cache
+ * - {@see self::get()} : retrieve the value with a key (if any) from cache
+ * - {@see \Prado\Caching\TDbCache::set()} : store the value with a key into cache
+ * - {@see \Prado\Caching\TDbCache::add()} : store the value only if cache does not have this key
+ * - {@see \Prado\Caching\TDbCache::delete()} : delete the value with the specified key from cache
+ * - {@see \Prado\Caching\TDbCache::flush()} : delete all values from cache
  *
- * Each value is associated with an expiration time. The {@link get} operation
+ * Each value is associated with an expiration time. The {@see \Prado\Caching\TDbCache::get()} operation
  * ensures that any expired value will not be returned. The expiration time by
  * the number of seconds. A expiration time 0 represents never expire.
  *
@@ -70,20 +70,20 @@ use Prado\Util\Cron\TCronTaskInfo;
  * Also note, cache is shared by all user sessions of an application.
  *
  * Some usage examples of TDbCache are as follows,
- * <code>
+ * ```php
  * $cache=new TDbCache;  // TDbCache may also be loaded as a Prado application module
  * $cache->init(null);
  * $cache->add('object',$object);
  * $object2=$cache->get('object');
- * </code>
+ * ```
  *
- * If loaded, TDbCache will register itself with {@link TApplication} as the
- * cache module. It can be accessed via {@link TApplication::getCache()}.
+ * If loaded, TDbCache will register itself with {@see \Prado\TApplication} as the
+ * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TDbCache may be configured in application configuration file as follows
- * <code>
+ * ```xml
  * <module id="cache" class="Prado\Caching\TDbCache" />
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
@@ -137,8 +137,8 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	/**
 	 * Initializes this module.
 	 * This method is required by the IModule interface.
-	 * attach {@link doInitializeCache} to TApplication.OnLoadStateComplete event
-	 * attach {@link doFlushCacheExpired} to TApplication.OnSaveState event
+	 * attach {@see \Prado\Caching\TDbCache::doInitializeCache()} to TApplication.OnLoadStateComplete event
+	 * attach {@see \Prado\Caching\TDbCache::doFlushCacheExpired()} to TApplication.OnSaveState event
 	 * @param \Prado\Xml\TXmlElement $config configuration for this module, can be null
 	 */
 	public function init($config)
@@ -172,7 +172,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	/**
 	 * Initialize TDbCache
 	 *
-	 * If {@link setAutoCreateCacheTable AutoCreateCacheTableName} is 'true' check existence of cache table
+	 * If {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTableName} is 'true' check existence of cache table
 	 * and create table if does not exist.
 	 *
 	 * @param bool $force Force override global state check
@@ -232,8 +232,8 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * Flush expired values from cache depending on {@link setFlushInterval FlushInterval}
-	 * @param bool $force override {@link setFlushInterval FlushInterval} and force deletion of expired items
+	 * Flush expired values from cache depending on {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval}
+	 * @param bool $force override {@see \Prado\Caching\TDbCache::setFlushInterval() FlushInterval} and force deletion of expired items
 	 * @since 3.1.5
 	 */
 	public function flushCacheExpired($force = false)
@@ -338,7 +338,7 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * @return string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 * @since 3.1.1
 	 */
 	public function getConnectionID()
@@ -349,9 +349,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cache module.
-	 * The database connection can also be specified via {@link setConnectionString ConnectionString}.
+	 * The database connection can also be specified via {@see \Prado\Caching\TDbCache::setConnectionString() ConnectionString}.
 	 * When both ConnectionID and ConnectionString are specified, the former takes precedence.
-	 * @param string $value ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
 	 * @since 3.1.1
 	 */
 	public function setConnectionID($value)
@@ -419,14 +419,14 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 
 	/**
 	 * Sets the name of the DB table to store cache content.
-	 * Note, if {@link setAutoCreateCacheTable AutoCreateCacheTable} is false
+	 * Note, if {@see \Prado\Caching\TDbCache::setAutoCreateCacheTable() AutoCreateCacheTable} is false
 	 * and you want to create the DB table manually by yourself,
 	 * you need to make sure the DB table is of the following structure:
-	 * <code>
+	 * ```sql
 	 * CREATE TABLE pradocache (itemkey CHAR(128), value BLOB, expire INT)
 	 * CREATE INDEX IX_itemkey ON pradocache (itemkey)
 	 * CREATE INDEX IX_expire ON pradocache (expire)
-	 * </code>
+	 * ```
 	 *
 	 * Note, some DBMS might not support BLOB type. In this case, replace 'BLOB' with a suitable
 	 * binary data type (e.g. LONGBLOB in MySQL, BYTEA in PostgreSQL.)

@@ -24,15 +24,15 @@ use Prado\TPropertyValue;
  * parameters, the pattern will generate a valid URL. In both case, only the PATH_INFO
  * part of a URL is parsed/constructed using the pattern.
  *
- * To specify the pattern, set the {@link setPattern Pattern} property.
- * {@link setPattern Pattern} takes a string expression with
+ * To specify the pattern, set the {@see setPattern Pattern} property.
+ * {@see setPattern Pattern} takes a string expression with
  * parameter names enclosed between a left brace '{' and a right brace '}'.
- * The patterns for each parameter can be set using {@link getParameters Parameters}
+ * The patterns for each parameter can be set using {@see getParameters Parameters}
  * attribute collection. For example
- * <code>
+ * ```php
  * <url ... pattern="articles/{year}/{month}/{day}"
  *          parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
- * </code>
+ * ```
  *
  * In the above example, the pattern contains 3 parameters named "year",
  * "month" and "day". The pattern for these parameters are, respectively,
@@ -42,11 +42,11 @@ use Prado\TPropertyValue;
  * to form a complete regular expression string.
  *
  * For more complicated patterns, one may specify the pattern using a regular expression
- * by {@link setRegularExpression RegularExpression}. For example, the above pattern
+ * by {@see setRegularExpression RegularExpression}. For example, the above pattern
  * is equivalent to the following regular expression-based pattern:
- * <code>
+ * ```
  * #^articles/(?P<year>\d{4})/(?P<month>\d{2})\/(?P<day>\d+)$#u
- * </code>
+ * ```
  * The above regular expression used the "named group" feature available in PHP.
  * If you intended to use the <tt>RegularExpression</tt> property or
  * regular expressions in CDATA sections, notice that you need to escape the slash,
@@ -60,7 +60,7 @@ use Prado\TPropertyValue;
  * The parameter values are available through the <tt>THttpRequest</tt> instance (e.g.
  * <tt>$this->Request['year']</tt>).
  *
- * The {@link setServiceParameter ServiceParameter} and {@link setServiceID ServiceID}
+ * The {@see setServiceParameter ServiceParameter} and {@see setServiceID ServiceID}
  * (the default ID is 'page') set the service parameter and service id respectively.
  *
  * Since 3.1.4 you can also use simplyfied wildcard patterns to match multiple
@@ -243,7 +243,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return bool whether the {@link getPattern Pattern} should be treated as case sensititve. Defaults to true.
+	 * @return bool whether the {@see getPattern Pattern} should be treated as case sensititve. Defaults to true.
 	 */
 	public function getCaseSensitive()
 	{
@@ -251,7 +251,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @param bool $value whether the {@link getPattern Pattern} should be treated as case sensititve.
+	 * @param bool $value whether the {@see getPattern Pattern} should be treated as case sensititve.
 	 */
 	public function setCaseSensitive($value)
 	{
@@ -424,8 +424,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * A Get URL format is like index.php?name1=value1&name2=value2
 	 * while a Path URL format is like index.php/name1/value1/name2/value.
 	 * The separating character between name and value can be configured with
-	 * {@link setUrlParamSeparator} and defaults to '/'.
-	 * Changing the UrlFormat will affect {@link constructUrl} and how GET variables
+	 * {@see setUrlParamSeparator} and defaults to '/'.
+	 * Changing the UrlFormat will affect {@see constructUrl} and how GET variables
 	 * are parsed.
 	 * @param THttpRequestUrlFormat $value the format of URLs.
 	 * @since 3.1.4
@@ -457,7 +457,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@link TUrlMappingPatternSecureConnection::Automatic Automatic}
+	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
 	 * @since 3.2
 	 */
 	public function getSecureConnection()
@@ -573,8 +573,8 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * Apply behavior of {@link SecureConnection} property by conditionaly prefixing
-	 * URL with {@link THttpRequest::getBaseUrl()}
+	 * Apply behavior of {@see SecureConnection} property by conditionaly prefixing
+	 * URL with {@see \Prado\Web\THttpRequest::getBaseUrl()}
 	 *
 	 * @param string $url
 	 * @return string

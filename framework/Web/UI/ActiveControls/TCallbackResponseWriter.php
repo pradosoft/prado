@@ -18,7 +18,7 @@ use Prado\IO\TTextWriter;
  * html comment boundary. This allows multiple chuncks of content to return
  * in the callback response and update multiple HTML elements.
  *
- * The {@link setBoundary Boundary} property sets boundary identifier in the
+ * The {@see setBoundary Boundary} property sets boundary identifier in the
  * HTML comment that forms the boundary. By default, the boundary identifier
  * is generated using microtime.
  *

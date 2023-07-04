@@ -41,7 +41,7 @@ use Prado\Exceptions\TTemplateException;
  * Tags other than the above are not required to be well-formed.
  *
  * A TTemplate object represents a parsed PRADO template. To instantiate the template
- * for a particular control, call {@link instantiateIn($control)}, which
+ * for a particular control, call {@see instantiateIn($control)}, which
  * will create and intialize all components specified in the template and
  * set their parent as $control.
  *
@@ -497,7 +497,7 @@ class TTemplate extends \Prado\TApplicationComponent implements ITemplate
 	 * - a string, 0: container index; 1: string content;
 	 * - a component tag, 0: container index; 1: component type; 2: attributes (name=>value pairs)
 	 * If a directive is found in the template, it will be parsed and can be
-	 * retrieved via {@link getDirective}, which returns an array consisting of
+	 * retrieved via {@see getDirective}, which returns an array consisting of
 	 * name-value pairs in the directive.
 	 *
 	 * Note, attribute names are treated as case-insensitive and will be turned into lower cases.

@@ -20,28 +20,28 @@ use Prado\Web\UI\WebControls\TTableRow;
 /**
  * TActiveTableRow class.
  *
- * TActiveTableRow is the active counterpart to the original {@link TTableRow} control
+ * TActiveTableRow is the active counterpart to the original {@see \Prado\Web\UI\WebControls\TTableRow} control
  * and displays a table row. The table cells in the row can be accessed
- * via {@link getCells Cells}. The horizontal and vertical alignments of the row
- * are specified via {@link setHorizontalAlign HorizontalAlign} and
- * {@link setVerticalAlign VerticalAlign} properties, respectively.
+ * via {@see getCells Cells}. The horizontal and vertical alignments of the row
+ * are specified via {@see setHorizontalAlign HorizontalAlign} and
+ * {@see setVerticalAlign VerticalAlign} properties, respectively.
  *
  * TActiveTableRow allows the contents of the table row to be changed during callback. When
- * {@link onRowSelected RowSelected} property is set, selecting (clicking on) the row will
- * perform a callback request causing {@link onRowSelected OnRowSelected} event to be fired.
+ * {@see onRowSelected RowSelected} property is set, selecting (clicking on) the row will
+ * perform a callback request causing {@see onRowSelected OnRowSelected} event to be fired.
  *
- * It will also respond to a bubbled {@link onCellSelected OnCellSelected} event of a
- * {@link TActiveTableCell} child control and fire a {@link onRowSelected OnRowSelected} event.
+ * It will also respond to a bubbled {@see onCellSelected OnCellSelected} event of a
+ * {@see \Prado\Web\UI\ActiveControls\TActiveTableCell} child control and fire a {@see onRowSelected OnRowSelected} event.
  *
  * TActiveTableRow allows the client-side row contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the
- * output, similar to a {@link TActivePanel} control.
- * <code>
+ * output, similar to a {@see \Prado\Web\UI\ActiveControls\TActivePanel} control.
+ * ```php
  * function callback_request($sender, $param)
  * {
  *     $this->active_row->render($param->getNewWriter());
  * }
- * </code>
+ * ```
  *
  * Please refer to the original documentation of the regular counterpart for usage.
  *
@@ -90,9 +90,9 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link ICallbackEventHandler}
-	 * interface. It will raise {@link onRowSelected OnRowSelected} event with a
-	 * {@link TActiveTableRowEventParameter} containing the zero-based index of the
+	 * Raises the callback event. This method is required by {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
+	 * interface. It will raise {@see onRowSelected OnRowSelected} event with a
+	 * {@see \Prado\Web\UI\ActiveControls\TActiveTableRowEventParameter} containing the zero-based index of the
 	 * TActiveTableRow.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -105,7 +105,7 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 
 	/**
 	 * This method overrides parent's implementation and raises the control's
-	 * callback event. This will fire the {@link onRowSelected OnRowSelected}
+	 * callback event. This will fire the {@see onRowSelected OnRowSelected}
 	 * event if an appropriate event handler is implemented.
 	 * @param \Prado\Web\UI\TControl $sender the sender of the event
 	 * @param \Prado\TEventParameter $param event parameter
@@ -136,7 +136,7 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 	/**
 	 * Ensure that the ID attribute is rendered and registers the javascript code
 	 * for initializing the active control if the event handler for the
-	 * {@link onRowSelected OnRowSelected} event is set.
+	 * {@see onRowSelected OnRowSelected} event is set.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer responsible for rendering
 	 */
 	protected function addAttributesToRender($writer)
@@ -187,8 +187,8 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Returns the zero-based index of the TActiveTableRow within the {@link TTableRowCollection}
-	 * of the parent {@link TTable} control. Raises a {@link TConfigurationException} if the row
+	 * Returns the zero-based index of the TActiveTableRow within the {@see \Prado\Web\UI\WebControls\TTableRowCollection}
+	 * of the parent {@see \Prado\Web\UI\WebControls\TTable} control. Raises a {@see \Prado\Exceptions\TConfigurationException} if the row
 	 * is no member of the row collection.
 	 * @return int the zero-based index of the row
 	 */
@@ -203,8 +203,8 @@ class TActiveTableRow extends TTableRow implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Returns the parent {@link TTable} control by looping through all parents until a {@link TTable}
-	 * is found. Raises a {@link TConfigurationException} if no table control is found.
+	 * Returns the parent {@see \Prado\Web\UI\WebControls\TTable} control by looping through all parents until a {@see \Prado\Web\UI\WebControls\TTable}
+	 * is found. Raises a {@see \Prado\Exceptions\TConfigurationException} if no table control is found.
 	 * @return TTable the parent table control
 	 */
 	public function getTable()

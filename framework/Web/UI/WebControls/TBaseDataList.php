@@ -16,21 +16,21 @@ use Prado\Util\TDataFieldAccessor;
  * TBaseDataList class
  *
  * TBaseDataList is the base class for data listing controls, including
- * {@link TDataList} and {@link TDataGrid}.
+ * {@see \Prado\Web\UI\WebControls\TDataList} and {@see \Prado\Web\UI\WebControls\TDataGrid}.
  *
- * The key field in the data source is specified by {@link setKeyField KeyField},
- * while {@link getKeyValues KeyValues} stores the key values of each record in
+ * The key field in the data source is specified by {@see setKeyField KeyField},
+ * while {@see getKeyValues KeyValues} stores the key values of each record in
  * a data listing control. You may use the list item index to obtain the corresponding
  * database key value.
  *
  * TBaseDataList also implements a few properties used for presentation based
- * on tabular layout. The {@link setCaption Caption}, whose alignment is
- * specified via {@link setCaptionAlign CaptionAlign}, is rendered as the table caption.
+ * on tabular layout. The {@see setCaption Caption}, whose alignment is
+ * specified via {@see setCaptionAlign CaptionAlign}, is rendered as the table caption.
  * The table cellpadding and cellspacing are specified by
- * {@link setCellPadding CellPadding} and {@link setCellSpacing CellSpacing}
- * properties, respectively. The {@link setGridLines GridLines} specifies how
+ * {@see setCellPadding CellPadding} and {@see setCellSpacing CellSpacing}
+ * properties, respectively. The {@see setGridLines GridLines} specifies how
  * the table should display its borders, and the horizontal alignment of the table
- * content can be specified via {@link setHorizontalAlign HorizontalAlign}.
+ * content can be specified via {@see setHorizontalAlign HorizontalAlign}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -40,7 +40,7 @@ abstract class TBaseDataList extends TDataBoundControl
 {
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableStyle} to be used by the data list control.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableStyle} to be used by the data list control.
 	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()

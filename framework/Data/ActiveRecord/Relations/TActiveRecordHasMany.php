@@ -12,14 +12,14 @@ namespace Prado\Data\ActiveRecord\Relations;
 /**
  * Implements TActiveRecord::HAS_MANY relationship between the source object having zero or
  * more foreign objects. Consider the <b>entity</b> relationship between a Team and a Player.
- * <code>
+ * ```php
  * +------+            +--------+
  * | Team | 1 <----- * | Player |
  * +------+            +--------+
- * </code>
+ * ```
  * Where one team may have 0 or more players and each player belongs to only
  * one team. We may model Team-Player <b>object</b> relationship as active record as follows.
- * <code>
+ * ```php
  * class TeamRecord extends TActiveRecord
  * {
  *     const TABLE='team';
@@ -42,14 +42,14 @@ namespace Prado\Data\ActiveRecord\Relations;
  * {
  *     // see TActiveRecordBelongsTo for detailed definition
  * }
- * </code>
+ * ```
  * The static <tt>$RELATIONS</tt> property of TeamRecord defines that the
  * property <tt>$players</tt> has many <tt>PlayerRecord</tt>s.
  *
  * The players list may be fetched as follows.
- * <code>
+ * ```php
  * $team = TeamRecord::finder()->with_players()->findAll();
- * </code>
+ * ```
  * The method <tt>with_xxx()</tt> (where <tt>xxx</tt> is the relationship property
  * name, in this case, <tt>players</tt>) fetchs the corresponding PlayerRecords using
  * a second query (not by using a join). The <tt>with_xxx()</tt> accepts the same

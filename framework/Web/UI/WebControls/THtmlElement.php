@@ -15,10 +15,10 @@ use Prado\TPropertyValue;
  * THtmlElement class.
  *
  * THtmlElement represents a generic HTML element whose tag name is specified
- * via {@link setTagName TagName} property. Because THtmlElement extends from
- * {@link TWebControl}, it enjoys all its functionalities.
+ * via {@see setTagName TagName} property. Because THtmlElement extends from
+ * {@see \Prado\Web\UI\WebControls\TWebControl}, it enjoys all its functionalities.
  *
- * To change the default tag your subclass should override {@link getDefaultTagName}
+ * To change the default tag your subclass should override {@see getDefaultTagName}
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <javalizard@gmail.com>

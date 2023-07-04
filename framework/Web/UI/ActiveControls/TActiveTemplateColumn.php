@@ -18,15 +18,15 @@ use Prado\Web\UI\WebControls\TTemplateColumn;
  * TActiveTemplateColumn class
  *
  * TActiveTemplateColumn customizes the layout of controls in the column with templates.
- * In particular, you can specify {@link setItemTemplate ItemTemplate},
- * {@link setEditItemTemplate EditItemTemplate}, {@link setHeaderTemplate HeaderTemplate}
- * and {@link setFooterTemplate FooterTemplate} to customize specific
+ * In particular, you can specify {@see setItemTemplate ItemTemplate},
+ * {@see setEditItemTemplate EditItemTemplate}, {@see setHeaderTemplate HeaderTemplate}
+ * and {@see setFooterTemplate FooterTemplate} to customize specific
  * type of cells in the column.
  *
- * This is the active counterpart to the {@link TTemplateColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TTemplateColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@link TTemplateColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TTemplateColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

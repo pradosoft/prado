@@ -16,37 +16,37 @@ use Prado\TPropertyValue;
  *
  * TLinkButton creates a hyperlink style button on the page.
  * TLinkButton has the same appearance as a hyperlink. However, it is mainly
- * used to submit data to a page. Like {@link TButton}, you can create either
+ * used to submit data to a page. Like {@see \Prado\Web\UI\WebControls\TButton}, you can create either
  * a <b>submit</b> button or a <b>command</b> button.
  *
  * A <b>command</b> button has a command name (specified by
- * the {@link setCommandName CommandName} property) and and a command parameter
- * (specified by {@link setCommandParameter CommandParameter} property)
+ * the {@see setCommandName CommandName} property) and and a command parameter
+ * (specified by {@see setCommandParameter CommandParameter} property)
  * associated with the button. This allows you to create multiple TLinkButton
  * components on a Web page and programmatically determine which one is clicked
  * with what parameter. You can provide an event handler for
- * {@link onCommand OnCommand} event to programmatically control the actions performed
+ * {@see onCommand OnCommand} event to programmatically control the actions performed
  * when the command button is clicked. In the event handler, you can determine
- * the {@link setCommandName CommandName} property value and
- * the {@link setCommandParameter CommandParameter} property value
- * through the {@link TCommandParameter::getName Name} and
- * {@link TCommandParameter::getParameter Parameter} properties of the event
- * parameter which is of type {@link \Prado\Web\UI\TCommandEventParameter}.
+ * the {@see setCommandName CommandName} property value and
+ * the {@see setCommandParameter CommandParameter} property value
+ * through the {@see TCommandParameter::getName Name} and
+ * {@see TCommandParameter::getParameter Parameter} properties of the event
+ * parameter which is of type {@see \Prado\Web\UI\TCommandEventParameter}.
  *
  * A <b>submit</b> button does not have a command name associated with the button
  * and clicking on it simply posts the Web page back to the server.
  * By default, a TLinkButton component is a submit button.
- * You can provide an event handler for the {@link onClick OnClick} event
+ * You can provide an event handler for the {@see onClick OnClick} event
  * to programmatically control the actions performed when the submit button is clicked.
  *
  * Clicking on button can trigger form validation, if
- * {@link setCausesValidation CausesValidation} is true.
+ * {@see setCausesValidation CausesValidation} is true.
  * And the validation may be restricted within a certain group of validator
- * controls by setting {@link setValidationGroup ValidationGroup} property.
+ * controls by setting {@see setValidationGroup ValidationGroup} property.
  * If validation is successful, the data will be post back to the same page.
  *
- * TLinkButton will display the {@link setText Text} property value
- * as the hyperlink text. If {@link setText Text} is empty, the body content
+ * TLinkButton will display the {@see setText Text} property value
+ * as the hyperlink text. If {@see setText Text} is empty, the body content
  * of TLinkButton will be displayed. Therefore, you can use TLinkButton
  * as an image button by enclosing an &lt;img&gt; tag as the body of TLinkButton.
  *
@@ -168,7 +168,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Renders the body content enclosed between the control tag.
-	 * If {@link getText Text} is not empty, it will be rendered. Otherwise,
+	 * If {@see getText Text} is not empty, it will be rendered. Otherwise,
 	 * the body content enclosed in the control tag will be rendered.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
@@ -199,8 +199,8 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Returns the caption of the button.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link getText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see getText()}.
 	 * @return string caption of the button.
 	 * @see getText
 	 * @since 3.1.0
@@ -212,8 +212,8 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Sets the caption of the button.
-	 * This method is required by {@link \Prado\IDataRenderer}.
-	 * It is the same as {@link setText()}.
+	 * This method is required by {@see \Prado\IDataRenderer}.
+	 * It is the same as {@see setText()}.
 	 * @param string $value caption of the button
 	 * @see setText
 	 * @since 3.1.0
@@ -224,7 +224,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return string the command name associated with the {@link onCommand OnCommand} event.
+	 * @return string the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function getCommandName()
 	{
@@ -232,7 +232,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string $value the command name associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the command name associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandName($value)
 	{
@@ -240,7 +240,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @return string the parameter associated with the {@link onCommand OnCommand} event
+	 * @return string the parameter associated with the {@see onCommand OnCommand} event
 	 */
 	public function getCommandParameter()
 	{
@@ -248,7 +248,7 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	}
 
 	/**
-	 * @param string $value the parameter associated with the {@link onCommand OnCommand} event.
+	 * @param string $value the parameter associated with the {@see onCommand OnCommand} event.
 	 */
 	public function setCommandParameter($value)
 	{
@@ -290,10 +290,10 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@link IPostBackEventHandler} interface.
-	 * If {@link getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@link TPage::validate validate} method first.
-	 * It will raise {@link onClick OnClick} and {@link onCommand OnCommand} events.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
+	 * If {@see getCausesValidation CausesValidation} is true, it will
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
+	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter
 	 */

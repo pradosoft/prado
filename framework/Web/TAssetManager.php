@@ -26,21 +26,21 @@ use Prado\IO\TTarFileExtractor;
  * TAssetManager will copy the file to be published into a web-accessible
  * directory. The default base directory for storing the file is "assets", which
  * should be under the application directory. This can be changed by setting
- * the {@link setBasePath BasePath} property together with the
- * {@link setBaseUrl BaseUrl} property that refers to the URL for accessing the base path.
+ * the {@see setBasePath BasePath} property together with the
+ * {@see setBaseUrl BaseUrl} property that refers to the URL for accessing the base path.
  *
  * By default, TAssetManager will not publish a file or directory if it already
  * exists in the publishing directory and has an older modification time.
  * If the application mode is set as 'Performance', the modification time check
  * will be skipped. You can explicitly require a modification time check
- * with the function {@link publishFilePath}. This is usually
+ * with the function {@see publishFilePath}. This is usually
  * very useful during development.
  *
  * TAssetManager may be configured in application configuration file as follows,
- * <code>
+ * ```xml
  * <module id="asset" BasePath="Application.assets" BaseUrl="/assets" />
- * </code>
- * where {@link getBasePath BasePath} and {@link getBaseUrl BaseUrl} are
+ * ```
+ * where {@see getBasePath BasePath} and {@see getBaseUrl BaseUrl} are
  * configurable properties of TAssetManager. Make sure that BasePath is a namespace
  * pointing to a valid directory writable by the Web server process.
  *

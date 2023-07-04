@@ -15,11 +15,11 @@ use Prado\TPropertyValue;
 /**
  * TEventContent class
  *
- * TEventContent loads child controls by raising the {@link getBroadcastEvent BroadcastEvent}
+ * TEventContent loads child controls by raising the {@see getBroadcastEvent BroadcastEvent}
  * 'fx' event.  The handlers then add their own controls to the child control list in $param.
  *
- * The event {@link getBroadcastEvent} is raised with this control
- * as the $sender and the {@link getControls Control} List as $param.
+ * The event {@see getBroadcastEvent} is raised with this control
+ * as the $sender and the {@see getControls Control} List as $param.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

@@ -19,22 +19,22 @@ use Prado\Prado;
  * TDbCommand class.
  *
  * TDbCommand represents an SQL statement to execute against a database.
- * It is usually created by calling {@link TDbConnection::createCommand}.
- * The SQL statement to be executed may be set via {@link setText Text}.
+ * It is usually created by calling {@see \Prado\Data\TDbConnection::createCommand}.
+ * The SQL statement to be executed may be set via {@see setText Text}.
  *
  * To execute a non-query SQL (such as insert, delete, update), call
- * {@link execute}. To execute an SQL statement that returns result data set
- * (such as select), use {@link query} or its convenient versions {@link queryRow}
- * and {@link queryScalar}.
+ * {@see execute}. To execute an SQL statement that returns result data set
+ * (such as select), use {@see query} or its convenient versions {@see queryRow}
+ * and {@see queryScalar}.
  *
  * If an SQL statement returns results (such as a SELECT SQL), the results
- * can be accessed via the returned {@link TDbDataReader}.
+ * can be accessed via the returned {@see \Prado\Data\TDbDataReader}.
  *
  * TDbCommand supports SQL statment preparation and parameter binding.
- * Call {@link bindParameter} to bind a PHP variable to a parameter in SQL.
- * Call {@link bindValue} to bind a value to an SQL parameter.
+ * Call {@see bindParameter} to bind a PHP variable to a parameter in SQL.
+ * Call {@see bindValue} to bind a value to an SQL parameter.
  * When binding a parameter, the SQL statement is automatically prepared.
- * You may also call {@link prepare} to explicitly prepare an SQL statement.
+ * You may also call {@see prepare} to explicitly prepare an SQL statement.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -133,8 +133,8 @@ class TDbCommand extends \Prado\TComponent
 	 * using named placeholders, this will be a parameter name of
 	 * the form :name. For a prepared statement using question mark
 	 * placeholders, this will be the 1-indexed position of the parameter.
-	 * Unlike {@link bindValue}, the variable is bound as a reference and will
-	 * only be evaluated at the time that {@link execute} or {@link query} is called.
+	 * Unlike {@see bindValue}, the variable is bound as a reference and will
+	 * only be evaluated at the time that {@see execute} or {@see query} is called.
 	 * @param mixed $value The value to bind to the parameter
 	 * @param null|int $dataType SQL data type of the parameter
 	 * @param null|int $length length of the data type
@@ -229,7 +229,7 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Executes the SQL statement and returns the first row of the result.
-	 * This is a convenient method of {@link query} when only the first row of data is needed.
+	 * This is a convenient method of {@see query} when only the first row of data is needed.
 	 * @param bool $fetchAssociative whether the row should be returned as an associated array with
 	 * column names as the keys or the array keys are column indexes (0-based).
 	 * @throws TDbException execution failed
@@ -254,7 +254,7 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Executes the SQL statement and returns the value of the first column in the first row of data.
-	 * This is a convenient method of {@link query} when only a single scalar
+	 * This is a convenient method of {@see query} when only a single scalar
 	 * value is needed (e.g. obtaining the count of the records).
 	 * @throws TDbException execution failed
 	 * @return mixed the value of the first column in the first row of the query result. False is returned if there is no value.
@@ -282,7 +282,7 @@ class TDbCommand extends \Prado\TComponent
 
 	/**
 	 * Executes the SQL statement and returns the first column of the result.
-	 * This is a convenient method of {@link query} when only the first column of data is needed.
+	 * This is a convenient method of {@see query} when only the first column of data is needed.
 	 * Note, the column returned will contain the first element in each row of result.
 	 * @throws TDbException execution failed
 	 * @return array the first column of the query result. Empty array if no result.

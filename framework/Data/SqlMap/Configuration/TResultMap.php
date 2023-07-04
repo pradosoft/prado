@@ -26,9 +26,9 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapException;
  * Maintaining the element order ensures consistent results between different
  * drivers and providers.
  *
- * The {@link Class setClass()} property must be a PHP class object or array instance.
+ * The {@see Class setClass()} property must be a PHP class object or array instance.
  *
- * The optional {@link Extends setExtends()} attribute can be set to the ID of
+ * The optional {@see Extends setExtends()} attribute can be set to the ID of
  * another <resultMap> upon which to base this <resultMap>. All properties of the
  * "parent" <resultMap> will be included as part of this <resultMap>, and values
  * from the "parent" <resultMap> are set before any values specified by this <resultMap>.

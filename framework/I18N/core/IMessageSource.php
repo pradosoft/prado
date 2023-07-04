@@ -8,9 +8,9 @@
  *
  * Copyright(c) 2004 by Qiang Xue. All rights reserved.
  *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
+ * To contact the author write to {@see mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
+ * {@see http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  */
@@ -52,12 +52,12 @@ interface IMessageSource
 	 * It must return a 2 level array of translation strings.
 	 * # "catalogue+variant" the catalogue and its variants.
 	 * # "source string" translation keys, and its translations.
-	 * <code>
+	 * ```php
 	 *   array('catalogue+variant' =>
 	 *       array('source string' => 'target string', ...)
 	 *             ...),
 	 *        ...);
-	 * </code>
+	 * ```
 	 *
 	 * @return array 2 level array translation table.
 	 */

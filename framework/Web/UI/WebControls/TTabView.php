@@ -15,19 +15,19 @@ use Prado\TPropertyValue;
 /**
  * TTabView class.
  *
- * TTabView represents a view in a {@link TTabPanel} control.
+ * TTabView represents a view in a {@see \Prado\Web\UI\WebControls\TTabPanel} control.
  *
- * The content in a TTabView can be specified by the {@link setText Text} property
+ * The content in a TTabView can be specified by the {@see setText Text} property
  * or its child controls. In template syntax, the latter means enclosing the content
- * within the TTabView component element. If both are set, {@link getText Text} takes precedence.
+ * within the TTabView component element. If both are set, {@see getText Text} takes precedence.
  *
  * Each TTabView is associated with a tab in the tab bar of the TTabPanel control.
- * The tab caption is specified by {@link setCaption Caption}. If {@link setNavigateUrl NavigateUrl}
+ * The tab caption is specified by {@see setCaption Caption}. If {@see setNavigateUrl NavigateUrl}
  * is set, the tab will contain a hyperlink pointing to the specified URL. In this case,
  * clicking on the tab will redirect the browser to the specified URL.
  *
  * TTabView may be toggled between visible (active) and invisible (inactive) by
- * setting the {@link setActive Active} property.
+ * setting the {@see setActive Active} property.
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1

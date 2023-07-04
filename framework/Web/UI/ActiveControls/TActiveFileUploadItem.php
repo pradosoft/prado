@@ -12,10 +12,10 @@ namespace Prado\Web\UI\ActiveControls;
 /**
  * TActiveFileUploadItem class
  *
- * TActiveFileUploadItem represents a single uploaded file from {@link TActiveFileUpload} and
- * is especially needed when {@link TFileUpload::setMultiple} is set to true.
+ * TActiveFileUploadItem represents a single uploaded file from {@see \Prado\Web\UI\ActiveControls\TActiveFileUpload} and
+ * is especially needed when {@see \Prado\Web\UI\WebControls\TFileUpload::setMultiple} is set to true.
  *
- * See {@link TFileUpload} documentation for more details.
+ * See {@see \Prado\Web\UI\WebControls\TFileUpload} documentation for more details.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

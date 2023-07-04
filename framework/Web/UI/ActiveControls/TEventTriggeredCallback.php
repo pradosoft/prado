@@ -15,11 +15,11 @@ use Prado\TPropertyValue;
 /**
  * TEventTriggeredCallback Class
  *
- * Triggers a new callback request when a particular {@link setEventName EventName}
- * on a control with ID given by {@link setControlID ControlID} is raised.
+ * Triggers a new callback request when a particular {@see setEventName EventName}
+ * on a control with ID given by {@see setControlID ControlID} is raised.
  *
  * The default action of the event on the client-side can be prevented when
- * {@link setPreventDefaultAction PreventDefaultAction} is set to true.
+ * {@see setPreventDefaultAction PreventDefaultAction} is set to true.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.1

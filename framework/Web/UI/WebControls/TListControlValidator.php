@@ -19,14 +19,14 @@ use Prado\TPropertyValue;
  * for a <b>TListControl that allows multiple selection</b>.
  *
  * You can specify the minimum or maximum (or both) number of selections
- * required using the {@link setMinSelection MinSelection} and
- * {@link setMaxSelection MaxSelection} properties, respectively. In addition,
+ * required using the {@see setMinSelection MinSelection} and
+ * {@see setMaxSelection MaxSelection} properties, respectively. In addition,
  * you can specify a comma separated list of required selected values via the
- * {@link setRequiredSelections RequiredSelections} property.
+ * {@see setRequiredSelections RequiredSelections} property.
  *
  * Examples
  * - At least two selections
- * <code>
+ * ```php
  *	<com:TListBox ID="listbox" SelectionMode="Multiple">
  *		<com:TListItem Text="item1" Value="value1" />
  *		<com:TListItem Text="item2" Value="value2" />
@@ -37,9 +37,9 @@ use Prado\TPropertyValue;
  *		ControlToValidate="listbox"
  *		MinSelection="2"
  *		ErrorMessage="Please select at least 2" />
- * </code>
+ * ```
  * - "value1" must be selected <b>and</b> at least 1 other
- * <code>
+ * ```php
  *	<com:TCheckBoxList ID="checkboxes">
  *		<com:TListItem Text="item1" Value="value1" />
  *		<com:TListItem Text="item2" Value="value2" />
@@ -51,7 +51,7 @@ use Prado\TPropertyValue;
  *		RequiredSelections="value1"
  *		MinSelection="2"
  *		ErrorMessage="Please select 'item1' and at least 1 other" />
- * </code>
+ * ```
  *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail.com>
  * @since 3.0

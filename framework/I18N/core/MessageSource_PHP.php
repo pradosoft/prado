@@ -6,9 +6,9 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the BSD License.
  *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
+ * To contact the author write to {@see mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
+ * {@see http://prado.sourceforge.net/}
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 4.0

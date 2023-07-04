@@ -31,7 +31,7 @@ use Prado\Util\TLogger;
  * The TDbCronModule allows for adding, updating, and removing tasks from the
  * application and shell.  It can log executing tasks to the table as well.
  *
- * There are log maintenance methods and {@link TDbCronCleanLogTask} for cleaning
+ * There are log maintenance methods and {@see \Prado\Util\Cron\TDbCronCleanLogTask} for cleaning
  * the cron logs.
  *
  * Runtime Tasks can be added for execution onEndRequest.  Singleton tasks can
@@ -372,7 +372,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * This executes the Run Time Tasks, this method is automatically added
-	 * to TApplication::onEndRequest when there are RuntimeTasks via {@link addRuntimeTask}.
+	 * to TApplication::onEndRequest when there are RuntimeTasks via {@see addRuntimeTask}.
 	 * @param null|\Prado\TApplication $sender
 	 * @param null|mixed $param
 	 * @return int number of tasks run
@@ -400,7 +400,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * Adds a task to being run time.  If this is the first runtime task this
-	 * method adds {@link executeRuntimeTasks} to TApplication::onEndRequest.
+	 * method adds {@see executeRuntimeTasks} to TApplication::onEndRequest.
 	 * @param TCronTask $task
 	 */
 	public function addRuntimeTask($task)
@@ -414,7 +414,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * Gets the runtime tasks.
-	 * @return \Prado\Util\Cron\TCronTask the tasks to run on {@link executeRuntimeTasks}
+	 * @return \Prado\Util\Cron\TCronTask the tasks to run on {@see executeRuntimeTasks}
 	 */
 	public function getRuntimeTasks()
 	{
@@ -423,7 +423,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * Removes a task from being run time.  If there are no runtime tasks left
-	 * then it removes {@link executeRuntimeTasks} from TApplication::onEndRequest.
+	 * then it removes {@see executeRuntimeTasks} from TApplication::onEndRequest.
 	 * @param TCronTask $untask
 	 */
 	public function removeRuntimeTask($untask)
@@ -865,7 +865,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * @return null|string the ID of a {@link TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return null|string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID()
 	{
@@ -875,7 +875,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cron module.
-	 * @param string $value ID of the {@link TDataSourceConfig} module
+	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
 	 */
 	public function setConnectionID($value)

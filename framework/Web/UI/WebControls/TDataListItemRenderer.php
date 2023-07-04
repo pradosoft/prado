@@ -13,12 +13,12 @@ namespace Prado\Web\UI\WebControls;
  * TDataListItemRenderer class
  *
  * TDataListItemRenderer can be used as a convenient base class to
- * define an item renderer class specific for {@link TDataList}.
+ * define an item renderer class specific for {@see \Prado\Web\UI\WebControls\TDataList}.
  *
- * TDataListItemRenderer extends {@link TItemDataRenderer} and implements
+ * TDataListItemRenderer extends {@see \Prado\Web\UI\WebControls\TItemDataRenderer} and implements
  * the bubbling scheme for the OnCommand event of data list items.
  *
- * TDataListItemRenderer also implements the {@link IStyleable} interface,
+ * TDataListItemRenderer also implements the {@see \Prado\Web\UI\WebControls\IStyleable} interface,
  * which allows TDataList to apply CSS styles to the renders.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -112,10 +112,10 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 	 * Renders the control.
 	 * This method overrides the parent implementation by replacing it with
 	 * the following sequence:
-	 * - {@link renderBeginTag}
-	 * - {@link renderContents}
-	 * - {@link renderEndTag}
-	 * If the {@link getTagName TagName} is empty, only {@link renderContents} is invoked.
+	 * - {@see renderBeginTag}
+	 * - {@see renderContents}
+	 * - {@see renderEndTag}
+	 * If the {@see getTagName TagName} is empty, only {@see renderContents} is invoked.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function render($writer)
@@ -131,7 +131,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 
 	/**
 	 * Renders the openning tag for the control (including attributes)
-	 * This method is invoked when {@link getTagName TagName} is not empty.
+	 * This method is invoked when {@see getTagName TagName} is not empty.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderBeginTag($writer)
@@ -153,7 +153,7 @@ class TDataListItemRenderer extends TItemDataRenderer implements IStyleable
 
 	/**
 	 * Renders the closing tag for the control
-	 * This method is invoked when {@link getTagName TagName} is not empty.
+	 * This method is invoked when {@see getTagName TagName} is not empty.
 	 * @param \Prado\Web\UI\THtmlWriter $writer the writer used for the rendering purpose
 	 */
 	public function renderEndTag($writer)

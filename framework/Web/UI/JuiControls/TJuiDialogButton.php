@@ -22,13 +22,13 @@ use Prado\Web\Javascripts\TJavaScriptLiteral;
  * This button must be child of a TJuiDialog. It can be used to bind an callback
  * to the buttons of the dialog.
  *
- * <code>
+ * ```php
  * <com:TJuiDialog> * >
  * Text
  * 	<com:TJuiDialogButton Text="Ok" OnClick="Ok" />
  *
  * </com:TJuiDialog>
- * </code>
+ * ```
  *
  * @author David Otto <ottodavid[at]gmx[dot]net>
  * @since 3.3

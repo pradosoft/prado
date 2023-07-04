@@ -19,12 +19,12 @@ use Prado\Xml\TXmlElement;
 /**
  * TBehaviorsModule class.
  *
- * TBehaviorsModule loads and attaches {@link TBehavior}.  This attaches
+ * TBehaviorsModule loads and attaches {@see \Prado\Util\TBehavior}.  This attaches
  * Behaviors to classes and to application components like the TApplication,
  * individual modules, and TPage of the TPageService.
  *
  * Contents enclosed within the module tag are treated as behaviors, e.g.,
- * <code>
+ * ```xml
  * <module class="Prado\Util\TBehaviorsModule" Parameter="AdditionalBehaviors">
  *   <behavior Name="pagethemeparameter" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachToClass="Prade\Web\UI\TPage" Priority="10" Parameter="ThemeName" Property="Theme"/>
  *   <behavior Name="sharedModuleBehavior" Class="FooModuleBehavior" AttachToClass="Prado\TModule" Attribute1="abc"/>
@@ -32,19 +32,19 @@ use Prado\Xml\TXmlElement;
  *   <behavior name="MyModuleBehavior" Class="MyModuleBehavior" AttachTo="Module:page" Property1="Value1" Property2="Value2" ... />
  *   <behavior name="MyPageTitleBehavior" Class="Prado\Util\Behaviors\TParameterizeBehavior" AttachTo="Page" Priority="10" Parameter="PageTitle" Property="Title" Localize="true"/>
  * </module>
- * </code>
+ * ```
  *
  * When the Service is not TPageService, page behaviors are not installed and have no effect other than be ignored.
  *
- * When {@link setAdditionalBehaviors AdditionalBehaviors} is set, this module
+ * When {@see setAdditionalBehaviors AdditionalBehaviors} is set, this module
  * loads the behaviors from that property. It can be an array of php behavior definition arrays.
  * or a string that is then passed through unserialize or json_decode; otherwise is treated as
  * an xml document of behavior like above.
  *
  * The format is in the PHP style module configuration:
- * </code>
+ * ```
  *		[['name' => 'behaviorname', 'class' => 'TMyBehaviorClass', 'attachto' => 'page', 'priority' => '10', 'behaviorProperty'=>"value1'], ...]
- * </code>
+ * ```
  *
  * This allows TBehaviorsModule to load behaviors, dynamically, from parameters with the TParameterizeBehavior.
  *
@@ -118,8 +118,8 @@ class TBehaviorsModule extends \Prado\TModule
 	}
 
 	/**
-	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * TApplication::onBeginRequest Handler that adds {@see attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@see attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
 	 * @param mixed $param parameter of the event

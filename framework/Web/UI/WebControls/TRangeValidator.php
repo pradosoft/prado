@@ -19,27 +19,27 @@ use Prado\Util\TSimpleDateFormatter;
  * TRangeValidator tests whether an input value is within a specified range.
  *
  * TRangeValidator uses three key properties to perform its validation.
- * The {@link setMinValue MinValue} and {@link setMaxValue MaxValue}
+ * The {@see setMinValue MinValue} and {@see setMaxValue MaxValue}
  * properties specify the minimum and maximum values of the valid range.
- * The {@link setDataType DataType} property is used to specify the
+ * The {@see setDataType DataType} property is used to specify the
  * data type of the value and the minimum and maximum range values.
  * These values are converted to this data type before the validation
  * operation is performed. The following value types are supported:
  * - <b>Integer</b> A 32-bit signed integer data type.
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Date</b> A date data type. The date format can be specified by
- *   setting {@link setDateFormat DateFormat} property, which must be recognizable
- *   by {@link TSimpleDateFormatter}. If the property is not set,
+ *   setting {@see setDateFormat DateFormat} property, which must be recognizable
+ *   by {@see \Prado\Util\TSimpleDateFormatter}. If the property is not set,
  *   the GNU date syntax is assumed.
  * - <b>String</b> A string data type.
  * - <b>StringLength</b> check for string length.
  *
- * If {@link setStrictComparison StrictComparison} is true, then the ranges
+ * If {@see setStrictComparison StrictComparison} is true, then the ranges
  * are compared as strictly less than the max value and/or strictly greater than the min value.
  *
  * The TRangeValidator allows a special DataType "StringLength" that
  * can be used to verify minimum and maximum string length. The
- * {@link setCharset Charset} property can be used to force a particular
+ * {@see setCharset Charset} property can be used to force a particular
  * charset for comparison. Otherwise, the application charset is used and is
  * defaulted as UTF-8.
  *

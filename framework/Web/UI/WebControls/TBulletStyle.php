@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TBulletStyle class.
  * TBulletStyle defines the enumerable type for the possible bullet styles that may be used
- * for a {@link TBulletedList} control.
+ * for a {@see \Prado\Web\UI\WebControls\TBulletedList} control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0.4

@@ -19,8 +19,8 @@ use Prado\Web\Javascripts\TJavaScript;
  * THtmlArea5 class
  *
  * THtmlArea5 wraps the visual editing functionalities provided by the
- * version 5 of TinyMCE project {@link http://tinymce.com/}. It has been
- * developed as a plug'n'play substitute for {@link THtmlArea}, that is
+ * version 5 of TinyMCE project {@see http://tinymce.com/}. It has been
+ * developed as a plug'n'play substitute for {@see \Prado\Web\UI\WebControls\THtmlArea}, that is
  * based on a previous iteration (version 3) of the same project.
  * Please note that both components can't be used together in the same page.
  *
@@ -36,12 +36,12 @@ use Prado\Web\Javascripts\TJavaScript;
  * under the situation.
  *
  * The default editor gives only the basic tool bar. To change or add
- * additional tool bars, use the {@link setOptions Options} property to add additional
+ * additional tool bars, use the {@see setOptions Options} property to add additional
  * editor options with each options on a new line.
  * See http://www.tinymce.com/wiki.php/Configuration
  * for a list of options. The options can be change/added as shown in the
  * following example.
- * <code>
+ * ```php
  * <com:THtmlArea5>
  *       <prop:Options>
  *         language : "de"
@@ -50,7 +50,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *         statusbar: false
  *      </prop:Options>
  * </com:THtmlArea5>
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 4.2

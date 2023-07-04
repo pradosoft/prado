@@ -15,18 +15,18 @@ use Prado\TPropertyValue;
  * TImageMap class
  *
  * TImageMap represents an image on a page. Hotspot regions can be defined
- * within the image. Depending on the {@link setHotSpotMode HotSpotMode},
+ * within the image. Depending on the {@see setHotSpotMode HotSpotMode},
  * clicking on the hotspots may trigger a postback or navigate to a specified
- * URL. The hotspots defined may be accessed via {@link getHotSpots HotSpots}.
- * Each hotspot is described as a {@link THotSpot}, which can be a circle,
+ * URL. The hotspots defined may be accessed via {@see getHotSpots HotSpots}.
+ * Each hotspot is described as a {@see \Prado\Web\UI\WebControls\THotSpot}, which can be a circle,
  * rectangle, polygon, etc. To add hotspot in a template, use the following,
- * <code>
+ * ```php
  *  <com:TImageMap>
  *    <com:TCircleHotSpot ... />
  *    <com:TRectangleHotSpot ... />
  *    <com:TPolygonHotSpot ... />
  *  </com:TImageMap>
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -37,7 +37,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * This method adds {@link THotSpot} objects into the hotspot collection
+	 * This method adds {@see \Prado\Web\UI\WebControls\THotSpot} objects into the hotspot collection
 	 * of the imagemap.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 */
@@ -127,7 +127,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@link IPostBackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter
 	 */

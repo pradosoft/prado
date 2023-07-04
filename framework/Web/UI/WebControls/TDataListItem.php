@@ -14,11 +14,11 @@ use Prado\TPropertyValue;
 /**
  * TDataListItem class
  *
- * A TDataListItem control represents an item in the {@link TDataList} control,
+ * A TDataListItem control represents an item in the {@see \Prado\Web\UI\WebControls\TDataList} control,
  * such as heading section, footer section, or a data item.
- * The index and data value of the item can be accessed via {@link getItemIndex ItemIndex}>
- * and {@link getData Data} properties, respectively. The type of the item
- * is given by {@link getItemType ItemType} property.
+ * The index and data value of the item can be accessed via {@see getItemIndex ItemIndex}>
+ * and {@see getData Data} properties, respectively. The type of the item
+ * is given by {@see getItemType ItemType} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -61,7 +61,7 @@ class TDataListItem extends \Prado\Web\UI\WebControls\TWebControl implements \Pr
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@link TTableItemStyle} to be used by a datalist item.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableItemStyle} to be used by a datalist item.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()

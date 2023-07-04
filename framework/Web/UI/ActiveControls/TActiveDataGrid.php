@@ -23,21 +23,21 @@ use Prado\Web\UI\WebControls\TLabel;
  * TActiveDataGrid class
  *
  * TActiveDataGrid represents a data bound and updatable grid control which is the
- * active counterpart to the original {@link TDataGrid} control.
+ * active counterpart to the original {@see \Prado\Web\UI\WebControls\TDataGrid} control.
  *
  * This component can be used in the same way as the regular datagrid, the only
  * difference is that the active datagrid uses callbacks instead of postbacks
  * for interaction.
  *
  * There are also active datagrid columns to work with the TActiveDataGrid, which are
- * - {@link TActiveBoundColumn}, the active counterpart to {@link TBoundColumn}.
- * - {@link TActiveLiteralColumn}, the active counterpart to {@link TLiteralColumn}.
- * - {@link TActiveCheckBoxColumn}, the active counterpart to {@link TCheckBoxColumn}.
- * - {@link TActiveDropDownListColumn}, the active counterpart to {@link TDropDownListColumn}.
- * - {@link TActiveHyperLinkColumn}, the active counterpart to {@link THyperLinkColumn}.
- * - {@link TActiveEditCommandColumn}, the active counterpart to {@link TEditCommandColumn}.
- * - {@link TActiveButtonColumn}, the active counterpart to {@link TButtonColumn}.
- * - {@link TActiveTemplateColumn}, the active counterpart to {@link TTemplateColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveBoundColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TBoundColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveLiteralColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TLiteralColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveCheckBoxColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveDropDownListColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TDropDownListColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveHyperLinkColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\THyperLinkColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveEditCommandColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TEditCommandColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveButtonColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TButtonColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveTemplateColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TTemplateColumn}.
  *
  * Please refer to the original documentation of the regular counterparts for usage.
  *
@@ -173,7 +173,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	/**
 	 * Renders the datagrid.
 	 * If the datagrid did not pass the prerender phase yet, it will register itself for rendering later.
-	 * Else it will call the {@link renderDataGrid()} method which will do the rendering of the datagrid.
+	 * Else it will call the {@see renderDataGrid()} method which will do the rendering of the datagrid.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */
 	public function render($writer)
@@ -189,7 +189,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Loops through all {@link TActivePager} on the page and registers the ones which are set to paginate
+	 * Loops through all {@see \Prado\Web\UI\ActiveControls\TActivePager} on the page and registers the ones which are set to paginate
 	 * the datagrid for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */
@@ -205,8 +205,8 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Renders the datagrid by writing a {@link getSurroundingTag()} with the container id obtained
-	 * from {@link getSurroundingTagId()} which will be called by the replacement method of the client
+	 * Renders the datagrid by writing a {@see getSurroundingTag()} with the container id obtained
+	 * from {@see getSurroundingTagId()} which will be called by the replacement method of the client
 	 * script to update it's content.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for the rendering purpose
 	 */

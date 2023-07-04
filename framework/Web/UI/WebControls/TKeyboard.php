@@ -21,19 +21,19 @@ use Prado\Web\Javascripts\TJavaScript;
  * an associated text box. It helps to reduce the keyboard recording hacking.
  *
  * To use TKeyboard, write a template like following:
- * <code>
+ * ```php
  * <com:TTextBox ID="PasswordInput" />
  * <com:TKeyboard ForControl="PasswordInput" />
- * </code>
+ * ```
  *
- * A TKeyboard control is associated with a {@link TTextBox} control by specifying {@link setForControl ForControl}
+ * A TKeyboard control is associated with a {@see \Prado\Web\UI\WebControls\TTextBox} control by specifying {@see setForControl ForControl}
  * to be the ID of that control. When the textbox is in focus, a virtual keyboard will pop up; and when
- * the text box is losing focus, the keyboard will hide automatically. Set {@link setAutoHide AutoHide} to
+ * the text box is losing focus, the keyboard will hide automatically. Set {@see setAutoHide AutoHide} to
  * false to keep the keyboard showing all the time.
  *
  * The appearance of the keyboard can also be changed by specifying a customized CSS file via
- * {@link setCssUrl CssUrl}. By default, the CSS class name for the keyboard is 'Keyboard'. This may
- * also be changed by specifying {@link setKeyboardCssClass KeyboardCssClass}.
+ * {@see setCssUrl CssUrl}. By default, the CSS class name for the keyboard is 'Keyboard'. This may
+ * also be changed by specifying {@see setKeyboardCssClass KeyboardCssClass}.
  *
  * @author Sergey Morkovkin <sergeymorkovkin@mail.ru> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
@@ -41,7 +41,7 @@ use Prado\Web\Javascripts\TJavaScript;
 class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
-	 * @return string the ID path of the {@link TTextBox} control
+	 * @return string the ID path of the {@see \Prado\Web\UI\WebControls\TTextBox} control
 	 */
 	public function getForControl()
 	{
@@ -49,7 +49,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Sets the ID path of the {@link TTextBox} control.
+	 * Sets the ID path of the {@see \Prado\Web\UI\WebControls\TTextBox} control.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the keyboard's naming container to the target control.
 	 * @param string $value the ID path
@@ -86,7 +86,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	/**
 	 * Sets a value indicating the CSS class name for the keyboard <div> element.
 	 * Note, if you change this property, make sure you also supply a customized CSS file
-	 * by specifying {@link setCssUrl CssUrl} which uses the new CSS class name for styling.
+	 * by specifying {@see setCssUrl CssUrl} which uses the new CSS class name for styling.
 	 * @param string $value the CSS class name for the keyboard <div> element.
 	 */
 	public function setKeyboardCssClass($value)
@@ -139,7 +139,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Registers the CSS relevant to the TKeyboard.
-	 * It will register the CSS file specified by {@link getCssUrl CssUrl}.
+	 * It will register the CSS file specified by {@see getCssUrl CssUrl}.
 	 * If that is not set, it will use the default CSS.
 	 */
 	protected function registerStyleSheet()

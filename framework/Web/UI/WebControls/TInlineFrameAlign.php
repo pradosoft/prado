@@ -13,7 +13,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TInlineFrameAlign class.
  * TInlineFrameAlign defines the enumerable type for the possible alignments
- * that the content in a {@link TInlineFrame} could be.
+ * that the content in a {@see \Prado\Web\UI\WebControls\TInlineFrame} could be.
  *
  * The following enumerable values are defined:
  * - NotSet: the alignment is not specified.

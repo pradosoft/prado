@@ -7,9 +7,9 @@
  *
  * Copyright(c) 2004 by Qiang Xue. All rights reserved.
  *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
+ * To contact the author write to {@see mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
+ * {@see http://prado.sourceforge.net/}
  *
  */
 

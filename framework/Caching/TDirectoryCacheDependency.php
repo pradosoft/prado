@@ -18,13 +18,13 @@ use Prado\TPropertyValue;
  *
  * TDirectoryCacheDependency performs dependency checking based on the
  * modification time of the files contained in the specified directory.
- * The directory being checked is specified via {@link setDirectory Directory}.
+ * The directory being checked is specified via {@see setDirectory Directory}.
  *
  * By default, all files under the specified directory and subdirectories
  * will be checked. If the last modification time of any of them is changed
  * or if different number of files are contained in a directory, the dependency
- * is reported as changed. By specifying {@link setRecursiveCheck RecursiveCheck}
- * and {@link setRecursiveLevel RecursiveLevel}, one can limit the checking
+ * is reported as changed. By specifying {@see setRecursiveCheck RecursiveCheck}
+ * and {@see setRecursiveLevel RecursiveLevel}, one can limit the checking
  * to a certain depth of the subdirectories.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -96,7 +96,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 
 	/**
 	 * Sets a value indicating the depth of the subdirectories to be checked.
-	 * This is meaningful only when {@link getRecursiveCheck RecursiveCheck}
+	 * This is meaningful only when {@see getRecursiveCheck RecursiveCheck}
 	 * is true.
 	 * @param int $value the depth of the subdirectories to be checked.
 	 * If the value is less than 0, it means unlimited depth.
@@ -146,7 +146,7 @@ class TDirectoryCacheDependency extends TCacheDependency
 	/**
 	 * Determines the last modification time for files under the directory.
 	 * This method may go recursively into subdirectories if
-	 * {@link setRecursiveCheck RecursiveCheck} is set true.
+	 * {@see setRecursiveCheck RecursiveCheck} is set true.
 	 * @param string $directory the directory name
 	 * @param int $level level of the recursion
 	 * @return array list of file modification time indexed by the file path

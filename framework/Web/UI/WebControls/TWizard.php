@@ -22,10 +22,10 @@ use Prado\Exceptions\TInvalidDataValueException;
  * forms to complete. TWizard is analogous to the installation wizard commonly
  * used to install software in Windows.
  *
- * The smaller forms are called wizard steps ({@link TWizardStep}, which can be accessed via
- * {@link getWizardSteps WizardSteps}. In template, wizard steps can be added
+ * The smaller forms are called wizard steps ({@see \Prado\Web\UI\WebControls\TWizardStep}, which can be accessed via
+ * {@see getWizardSteps WizardSteps}. In template, wizard steps can be added
  * into a wizard using the following syntax,
- * <code>
+ * ```php
  *   <com:TWizard>
  *      <com:TWizardStep Title="step 1">
  *          content in step 1, may contain other controls
@@ -34,7 +34,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *          content in step 2, may contain other controls
  *      </com:TWizardStep>
  *   </com:TWizard>
- * </code>
+ * ```
  *
  * Each wizard step can be one of the following types:
  * - Start : the first step in the wizard.
@@ -43,35 +43,35 @@ use Prado\Exceptions\TInvalidDataValueException;
  * - Complete : the step that shows a summary to user (no interaction is allowed).
  * - Auto : the step type is determined by wizard automatically.
  * At any time, only one step is visible to end-users, which can be obtained
- * by {@link getActiveStep ActiveStep}. Its index in the step collection is given by
- * {@link getActiveStepIndex ActiveStepIndex}.
+ * by {@see getActiveStep ActiveStep}. Its index in the step collection is given by
+ * {@see getActiveStepIndex ActiveStepIndex}.
  *
  * Wizard content can be customized in many ways.
  *
  * The layout of a wizard consists of four parts: header, step content, navigation
  * and side bar. Their content are affected by the following properties, respectively,
- * - header: {@link setHeaderText HeaderText} and {@link setHeaderTemplate HeaderTemplate}.
+ * - header: {@see setHeaderText HeaderText} and {@see setHeaderTemplate HeaderTemplate}.
  *   If both are present, the latter takes precedence.
- * - step: {@link getWizardSteps WizardSteps}.
- * - navigation: {@link setStartNavigationTemplate StartNavigationTemplate},
- *   {@link setStepNavigationTemplate StepNavigationTemplate},
- *   {@link setFinishNavigationTemplate FinishNavigationTemplate}.
+ * - step: {@see getWizardSteps WizardSteps}.
+ * - navigation: {@see setStartNavigationTemplate StartNavigationTemplate},
+ *   {@see setStepNavigationTemplate StepNavigationTemplate},
+ *   {@see setFinishNavigationTemplate FinishNavigationTemplate}.
  *   Default templates will be used if above templates are not set.
- * - side bar: {@link setSideBarTemplate SideBarTemplate}.
+ * - side bar: {@see setSideBarTemplate SideBarTemplate}.
  *   A default template will be used if this template is not set.
- *   Its visibility is toggled by {@link setShowSideBar ShowSideBar}.
+ *   Its visibility is toggled by {@see setShowSideBar ShowSideBar}.
  *
  * The style of these wizard layout components can be customized via the following style properties,
- * - header: {@link getHeaderStyle HeaderStyle}.
- * - step: {@link getStepStyle StepStyle}.
- * - navigation: {@link getNavigationStyle NavigationStyle},
- *   {@link getStartNextButtonStyle StartNextButtonStyle},
- *   {@link getStepNextButtonStyle StepNextButtonStyle},
- *   {@link getStepPreviousButtonStyle StepPreviousButtonStyle},
- *   {@link getFinishPreviousButtonStyle FinishPreviousButtonStyle},
- *   {@link getFinishCompleteButtonStyle FinishCompleteButtonStyle},
- *   {@link getCancelButtonStyle CancelButtonStyle}.
- * - side bar: {@link getSideBarStyle SideBarStyle} and {@link getSideBarButtonStyle SideBarButtonStyle}.
+ * - header: {@see getHeaderStyle HeaderStyle}.
+ * - step: {@see getStepStyle StepStyle}.
+ * - navigation: {@see getNavigationStyle NavigationStyle},
+ *   {@see getStartNextButtonStyle StartNextButtonStyle},
+ *   {@see getStepNextButtonStyle StepNextButtonStyle},
+ *   {@see getStepPreviousButtonStyle StepPreviousButtonStyle},
+ *   {@see getFinishPreviousButtonStyle FinishPreviousButtonStyle},
+ *   {@see getFinishCompleteButtonStyle FinishCompleteButtonStyle},
+ *   {@see getCancelButtonStyle CancelButtonStyle}.
+ * - side bar: {@see getSideBarStyle SideBarStyle} and {@see getSideBarButtonStyle SideBarButtonStyle}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -173,7 +173,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * Adds {@link TWizardStep} objects into step collection.
+	 * Adds {@see \Prado\Web\UI\WebControls\TWizardStep} objects into step collection.
 	 * This method overrides the parent implementation and is
 	 * invoked when template is being instantiated.
 	 * @param mixed $object object instantiated in template

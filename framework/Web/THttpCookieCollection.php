@@ -15,12 +15,12 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * THttpCookieCollection class.
  *
  * THttpCookieCollection implements a collection class to store cookies.
- * Besides using all functionalities from {@link TList}, you can also
- * retrieve a cookie by its name using either {@link findCookieByName} or
+ * Besides using all functionalities from {@see \Prado\Collections\TList}, you can also
+ * retrieve a cookie by its name using either {@see findCookieByName} or
  * simply:
- * <code>
+ * ```php
  *   $cookie=$collection[$cookieName];
- * </code>
+ * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

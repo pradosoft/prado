@@ -18,20 +18,20 @@ use ReflectionClass;
 /**
  * TResultProperty corresponds a <property> tags inside a <resultMap> tag.
  *
- * The {@link NullValue setNullValue()} attribute can be set to any valid
- * value (based on property type). The {@link NullValue setNullValue()} attribute
+ * The {@see NullValue setNullValue()} attribute can be set to any valid
+ * value (based on property type). The {@see NullValue setNullValue()} attribute
  * is used to specify an outgoing null value replacement. What this means is
  * that when a null value is detected in the result, the corresponding value of
- * the {@link NullValue getNullValue()} will be used instead.
+ * the {@see NullValue getNullValue()} will be used instead.
  *
- * The {@link Select setSelect()} property is used to describe a relationship
+ * The {@see Select setSelect()} property is used to describe a relationship
  * between objects and to automatically load complex (i.e. user defined)
- * property types. The value of the {@link Select setSelect()} property must be
+ * property types. The value of the {@see Select setSelect()} property must be
  * the name of another mapped statement. The value of the database
- * {@link Column setColumn()} that is defined in the same property element as
+ * {@see Column setColumn()} that is defined in the same property element as
  * this statement attribute will be passed to the related mapped statement as
- * the parameter. The {@link LazyLoad setLayLoad()} attribute can be specified
- * with the {@link Select setSelect()} .
+ * the parameter. The {@see LazyLoad setLayLoad()} attribute can be specified
+ * with the {@see Select setSelect()} .
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -269,7 +269,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * Create type handler from {@link Type setType()} or {@link TypeHandler setTypeHandler}.
+	 * Create type handler from {@see Type setType()} or {@see TypeHandler setTypeHandler}.
 	 * @param \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry $registry type handler registry
 	 * @return \Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler type handler.
 	 */
@@ -308,7 +308,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * Returns true if the result property {@link Type getType()} is of TList type
+	 * Returns true if the result property {@see Type getType()} is of TList type
 	 * or that the actual result object is an instance of TList.
 	 * @param object $target result object
 	 * @return bool true if the result object is an instance of TList
@@ -322,7 +322,7 @@ class TResultProperty extends \Prado\TComponent
 	}
 
 	/**
-	 * Returns true if the result property {@link Type getType()} is of \ArrayAccess
+	 * Returns true if the result property {@see Type getType()} is of \ArrayAccess
 	 * or that the actual result object is an array or implements \ArrayAccess
 	 * @param object $target result object
 	 * @return bool true if the result object is an instance of \ArrayAccess or is an array.

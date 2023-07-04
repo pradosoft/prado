@@ -24,12 +24,12 @@ use Prado\Web\UI\WebControls\TRepeater;
 /**
  * Template control for editing an Active Record instance.
  * The <b>RecordClass</b> determines the Active Record class to be edited.
- * A particular record can be edited by specifying the {@link setRecordPk RecordPk}
+ * A particular record can be edited by specifying the {@see setRecordPk RecordPk}
  * value (may be an array for composite keys).
  *
  * The default editor input controls are created based on the column types.
  * The editor layout can be specified by a renderer by set the value
- * of the {@link setEditRenderer EditRenderer} property to the class name of a
+ * of the {@see setEditRenderer EditRenderer} property to the class name of a
  * class that implements TScaffoldEditRenderer. A renderer is an external
  * template control that implements IScaffoldEditRenderer.
  *
@@ -38,8 +38,8 @@ use Prado\Web\UI\WebControls\TRepeater;
  * is called when request to save the record is requested.
  *
  * Validators in the custom external editor template should have the
- * {@link TBaseValidator::setValidationGroup ValidationGroup} property set to the
- * value of the {@link getValidationGroup} of the TScaffoldEditView instance
+ * {@see \Prado\Web\UI\WebControls\TBaseValidator::setValidationGroup ValidationGroup} property set to the
+ * value of the {@see getValidationGroup} of the TScaffoldEditView instance
  * (the edit view instance is the <b>Parent</b> of the IScaffoldEditRenderer in most
  * cases.
  *

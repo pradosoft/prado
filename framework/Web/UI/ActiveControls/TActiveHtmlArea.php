@@ -17,11 +17,11 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 /**
  * TActiveHtmlArea class
  *
- * TActiveHtmlArea is the active counterpart to {@see THtmlArea} with added support
+ * TActiveHtmlArea is the active counterpart to {@see \Prado\Web\UI\WebControls\THtmlArea} with added support
  * for callback handling and the possibility of setting the content of the WYSIWYG
  * text editor during callback.
  *
- * Please refer to the original documentation of {@see THtmlArea} for basic usage.
+ * Please refer to the original documentation of {@see \Prado\Web\UI\WebControls\THtmlArea} for basic usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0
@@ -58,7 +58,7 @@ class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEven
 
 	/**
 	 * Client-side Text property can only be updated after the OnLoad stage. Setting WYSIWYG
-	 * text editor content is only available if {@link getEnableVisualEdit} is enabled.
+	 * text editor content is only available if {@see getEnableVisualEdit} is enabled.
 	 * @param string $value text content for the textbox
 	 */
 	public function setText($value)
@@ -76,7 +76,7 @@ class TActiveHtmlArea extends THtmlArea implements IActiveControl, ICallbackEven
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@link
+	 * Raises the callback event. This method is required by {@see
 	 * ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

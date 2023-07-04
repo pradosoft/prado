@@ -20,13 +20,13 @@ namespace Prado;
  * Each constant represents an enumerable value.
  * The constant name must be the same as the constant value.
  * For example,
- * <code>
+ * ```php
  * class TTextAlign extends \Prado\TEnumerable
  * {
  *     const Left='Left';
  *     const Right='Right';
  * }
- * </code>
+ * ```
  * Then, one can use the enumerable values such as TTextAlign::Left and
  * TTextAlign::Right.
  *

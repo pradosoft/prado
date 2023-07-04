@@ -27,32 +27,32 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * TDbParameterModule class
  *
  * This loads application parameters from a database.  It adds the
- * {@link TMapLazyLoadBehavior} to Application Parameters when the
- * {@link setAutoLoadField} is set.  The key and name fields, table,
+ * {@see \Prado\Util\Behaviors\TMapLazyLoadBehavior} to Application Parameters when the
+ * {@see setAutoLoadField} is set.  The key and name fields, table,
  * autoload field, and autoload values (both true and false values)
  * are parameterized.  Set them to your application specific values.
  *
  * The following will load the options from a WordPress Database:
- * <code>
+ * ```xml
  *		<module id="dbparams" class="Prado\Util\TDbParameterModule"
  * ConnectionID="DB" KeyField="option_name" ValueField="option_value" TableName="wp_options" Serializer="php"
  * autoLoadField="autoload" autoLoadValue="'yes'" autoLoadValueFalse="'no'"/>
- * </code>
+ * ```
  *
  * This allows for setting and removal of application parameters
- * into and from the database through {@link set} and
- * {@link remove}, respectively. Arrays and Objects are
+ * into and from the database through {@see set} and
+ * {@see remove}, respectively. Arrays and Objects are
  * serialized.  The specific serializer can be chose to be 'php',
  * 'json', or provide your own function or callable.  Default to 'php'.
  *
- * setting {@link setSerializer} to your own function that has the
+ * setting {@see setSerializer} to your own function that has the
  * following format:
- * <code>
+ * ```php
  *		function mySerializerFunction($data, $encode) {...}
- * </code>
+ * ```
  * If $encode is true, then encode, otherwise decode, to text.
  *
- * When {@link getCaptureParameterChanges} is true, the default,
+ * When {@see getCaptureParameterChanges} is true, the default,
  * then this will route any changes to the Application Parameters
  * after TPageService::onPreRunPage back to the TDbParameterModule
  * and be saved to the database.  This captures any changes when
@@ -66,10 +66,10 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * The role and rule management functions only work when the TDbParameter Module is specified.
  * The following gives user "admin" and all users with "Administrators" role the
  * permission to access permissions shell and its full functionality:
- * <code>
+ * ```xml
  *   <permissionrule name="param_shell" action="allow" users="admin" />
  *   <permissionrule name="param_shell" action="allow" roles="Administrators" />
- * <code>
+ * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -234,8 +234,8 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	}
 
 	/**
-	 * TApplication::onBeginRequest Handler that adds {@link attachTPageBehaviors} to
-	 * TPageService::onPreRunPage. In turn, this attaches {@link attachTPageBehaviors}
+	 * TApplication::onBeginRequest Handler that adds {@see attachTPageBehaviors} to
+	 * TPageService::onPreRunPage. In turn, this attaches {@see attachTPageBehaviors}
 	 * to TPageService to then adds the page behaviors.
 	 * @param object $sender the object that raised the event
 	 * @param mixed $param parameter of the event
@@ -545,7 +545,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	/**
 	 * Creates the DB connection.  If no ConnectionID is set, this creates a
 	 * sqlite3 database in the RuntimePath "sqlite3.params".  If the
-	 * {@link getAutoLoadField} is not set, the default, then the autoLoadField
+	 * {@see getAutoLoadField} is not set, the default, then the autoLoadField
 	 * is set to "autoload" to enable the feature by default.
 	 * @param string $connectionID the module ID for TDataSourceConfig
 	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty

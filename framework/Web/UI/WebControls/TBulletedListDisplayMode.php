@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TBulletedListDisplayMode class.
  * TBulletedListDisplayMode defines the enumerable type for the possible display mode
- * of a {@link TBulletedList} control.
+ * of a {@see \Prado\Web\UI\WebControls\TBulletedList} control.
  *
  * The following enumerable values are defined:
  * - Text: the bulleted list items are displayed as plain texts

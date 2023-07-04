@@ -8,9 +8,9 @@
  *
  * Copyright(c) 2004 by Qiang Xue. All rights reserved.
  *
- * To contact the author write to {@link mailto:qiang.xue@gmail.com Qiang Xue}
+ * To contact the author write to {@see mailto:qiang.xue@gmail.com Qiang Xue}
  * The latest version of PRADO can be obtained from:
- * {@link http://prado.sourceforge.net/}
+ * {@see http://prado.sourceforge.net/}
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  */
@@ -30,7 +30,7 @@ use Exception;
  * ChoiceFormat is generally used in a MessageFormat for displaying
  * grammatically correct plurals such as "There are 2 files."
  *
- * <code>
+ * ```php
  *	$string = '[0] are no files |[1] is one file |(1,Inf] are {number} files';
  *
  *  $formatter = new MessageFormat(...); //init for a source
@@ -38,7 +38,7 @@ use Exception;
  *
  *  $choice = new ChoiceFormat();
  * 	echo $choice->format($translated, 0); //shows "are no files"
- * </code>
+ * ```
  *
  * The message/string choices are separated by the pipe "|" followed
  * by a set notation of the form

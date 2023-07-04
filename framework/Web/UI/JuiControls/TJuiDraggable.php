@@ -17,12 +17,12 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiDraggable class.
  *
- * TJuiDraggable is an extension to {@link TActivePanel} based on jQuery-UI's
- * {@link http://jqueryui.com/draggable/ Draggable} interaction.
+ * TJuiDraggable is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
+ * {@see http://jqueryui.com/draggable/ Draggable} interaction.
  * The panel can be moved using the mouse, and eventually dropped over a
- * {@link TJuiDroppable}.
+ * {@see \Prado\Web\UI\JuiControls\TJuiDroppable}.
  *
- * <code>
+ * ```php
  * <com:TJuiDraggable
  *	ID="drag1"
  *	Style="border: 1px solid red; width:100px;height:100px"
@@ -31,7 +31,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
  * >
  * drag me
  * </com:TJuiDraggable>
- * </code>
+ * ```
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  * @since 3.3
@@ -123,7 +123,7 @@ class TJuiDraggable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@link ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

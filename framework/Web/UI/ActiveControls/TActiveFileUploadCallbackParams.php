@@ -11,7 +11,7 @@
 namespace Prado\Web\UI\ActiveControls;
 
 /**
- * TActiveFileUploadCallbackParams is an internal class used by {@link TActiveFileUpload}.
+ * TActiveFileUploadCallbackParams is an internal class used by {@see \Prado\Web\UI\ActiveControls\TActiveFileUpload}.
  *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>

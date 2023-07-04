@@ -40,7 +40,7 @@ use ReflectionClass;
  *  4. Update the database and insert into it the data in the Active Record.
  *
  * Example:
- * <code>
+ * ```php
  * class UserRecord extends TActiveRecord
  * {
  *     const TABLE='users'; //optional table name.
@@ -64,13 +64,13 @@ use ReflectionClass;
  * $user = UserRecord::finder()->findByPk('admin');
  * $user->email = 'admin@example.org';
  * $user->save(); //update the 'admin' record.
- * </code>
+ * ```
  *
  * Since v3.1.1, TActiveRecord starts to support column mapping. The physical
  * column names (defined in database) can be mapped to logical column names
  * (defined in active classes as public properties.) To use this feature, declare
  * a static class variable COLUMN_MAPPING like the following:
- * <code>
+ * ```php
  * class UserRecord extends TActiveRecord
  * {
  *     const TABLE='users';
@@ -82,7 +82,7 @@ use ReflectionClass;
  *     public $username;
  *     public $email;
  * }
- * </code>
+ * ```
  * In the above, the 'users' table consists of 'user_id' and 'email_address' columns,
  * while the UserRecord class declares 'username' and 'email' properties.
  * By using column mapping, we can regularize the naming convention of column names
@@ -91,7 +91,7 @@ use ReflectionClass;
  * Since v3.1.2, TActiveRecord enhanced its support to access of foreign objects.
  * By declaring a public static variable RELATIONS like the following, one can access
  * the corresponding foreign objects easily:
- * <code>
+ * ```php
  * class UserRecord extends TActiveRecord
  * {
  *     const TABLE='users';
@@ -101,7 +101,7 @@ use ReflectionClass;
  *         'contacts'=>array(self::HAS_MANY, 'ContactRecord', 'user_id'),
  *     );
  * }
- * </code>
+ * ```
  * In the above, the users table is related with departments table (represented by
  * DepartmentRecord) and contacts table (represented by ContactRecord). Now, given a UserRecord
  * instance $user, one can access its department and contacts simply by: $user->department and
@@ -113,11 +113,11 @@ use ReflectionClass;
  * The event OnInsert, OnUpdate and OnDelete methods are executed before
  * inserting, updating, and deleting the current record, respectively. You may override
  * these methods; a TActiveRecordChangeEventParameter parameter is passed to these methods.
- * The property {@link TActiveRecordChangeEventParameter::setIsValid IsValid} of the parameter
+ * The property {@see \Prado\Data\ActiveRecord\TActiveRecordChangeEventParameter::setIsValid IsValid} of the parameter
  * can be set to false to prevent the change action to be executed. This can be used,
  * for example, to validate the record before the action is executed. For example,
  * in the following the password property is hashed before a new record is inserted.
- * <code>
+ * ```php
  * class UserRecord extends TActiveRecord
  * {
  *      function OnInsert($param)
@@ -128,10 +128,10 @@ use ReflectionClass;
  *          $this->password = md5($this->password.$this->nounce);
  *      }
  * }
- * </code>
+ * ```
  *
  * Since v3.1.3 you can also define a method that returns the table name.
- * <code>
+ * ```php
  * class UserRecord extends TActiveRecord
  * {
  *     public function table()
@@ -140,7 +140,7 @@ use ReflectionClass;
  *     }
  *
  * }
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -471,14 +471,14 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Delete records by primary key. Usage:
 	 *
-	 * <code>
+	 * ```php
 	 * $finder->deleteByPk($primaryKey); //delete 1 record
 	 * $finder->deleteByPk($key1,$key2,...); //delete multiple records
 	 * $finder->deleteByPk(array($key1,$key2,...)); //delete multiple records
-	 * </code>
+	 * ```
 	 *
 	 * For composite primary keys (determined from the table definitions):
-	 * <code>
+	 * ```php
 	 * $finder->deleteByPk(array($key1,$key2)); //delete 1 record
 	 *
 	 * //delete multiple records
@@ -486,7 +486,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 *
 	 * //delete multiple records
 	 * $finder->deleteByPk(array( array($key1,$key2), array($key3,$key4), .. ));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $keys primary key values.
 	 * @return int number of records deleted.
@@ -525,7 +525,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Populates a new record with the query result.
-	 * This is a wrapper of {@link createRecord}.
+	 * This is a wrapper of {@see createRecord}.
 	 * @param array $data name value pair of record data
 	 * @return TActiveRecord object record, null if data is empty.
 	 */
@@ -571,14 +571,14 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Find one single record that matches the criteria.
 	 *
 	 * Usage:
-	 * <code>
+	 * ```php
 	 * $finder->find('username = :name AND password = :pass',
 	 * 					array(':name'=>$name, ':pass'=>$pass));
 	 * $finder->find('username = ? AND password = ?', array($name, $pass));
 	 * $finder->find('username = ? AND password = ?', $name, $pass);
 	 * //$criteria is of TActiveRecordCriteria
 	 * $finder->find($criteria); //the 2nd parameter for find() is ignored.
-	 * </code>
+	 * ```
 	 *
 	 * @param string|TActiveRecordCriteria $criteria SQL condition or criteria object.
 	 * @param mixed $parameters parameter values.
@@ -613,11 +613,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Find one record using only the primary key or composite primary keys. Usage:
 	 *
-	 * <code>
+	 * ```php
 	 * $finder->findByPk($primaryKey);
 	 * $finder->findByPk($key1, $key2, ...);
 	 * $finder->findByPk(array($key1,$key2,...));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $keys primary keys
 	 * @return null|TActiveRecord. Null if no result is found.
@@ -638,16 +638,16 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Find multiple records matching a list of primary or composite keys.
 	 *
 	 * For scalar primary keys:
-	 * <code>
+	 * ```php
 	 * $finder->findAllByPk($key1, $key2, ...);
 	 * $finder->findAllByPk(array($key1, $key2, ...));
-	 * </code>
+	 * ```
 	 *
 	 * For composite keys:
-	 * <code>
+	 * ```php
 	 * $finder->findAllByPk(array($key1, $key2), array($key3, $key4), ...);
 	 * $finder->findAllByPk(array(array($key1, $key2), array($key3, $key4), ...));
-	 * </code>
+	 * ```
 	 * @param mixed $keys primary keys
 	 * @return array matching ActiveRecords. Empty array is returned if no result is found.
 	 */
@@ -766,7 +766,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Tries to load the relationship results for the given property. The $property
 	 * value should correspond to an entry key in the $RELATION array.
 	 * This method can be used to lazy load relationships.
-	 * <code>
+	 * ```php
 	 * class TeamRecord extends TActiveRecord
 	 * {
 	 *     ...
@@ -792,7 +792,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * Usage example:
 	 * $team = TeamRecord::finder()->findByPk(1);
 	 * var_dump($team->players); //uses lazy load to fetch 'players' relation
-	 * </code>
+	 * ```
 	 * @param string $property relationship/property name corresponding to keys in $RELATION array.
 	 * @return bool true if relationship exists, false otherwise.
 	 * @since 3.1.2
@@ -815,23 +815,23 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * or "deleteBy".
 	 *
 	 * The following are equivalent:
-	 * <code>
+	 * ```php
 	 * $finder->findByName($name)
 	 * $finder->find('Name = ?', $name);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $finder->findByUsernameAndPassword($name,$pass); // OR may be used
 	 * $finder->findBy_Username_And_Password($name,$pass); // _OR_ may be used
 	 * $finder->find('Username = ? AND Password = ?', $name, $pass);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $finder->findAllByAge($age);
 	 * $finder->findAll('Age = ?', $age);
-	 * </code>
-	 * <code>
+	 * ```
+	 * ```php
 	 * $finder->deleteAll('Name = ?', $name);
 	 * $finder->deleteByName($name);
-	 * </code>
+	 * ```
 	 * @param mixed $method
 	 * @param mixed $args
 	 * @return mixed single record if method name starts with "findBy", 0 or more records
@@ -870,7 +870,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see TActiveRecordManager::getInvalidFinderResult
 	 * @since 3.1.5
 	 */
@@ -924,7 +924,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 *
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
@@ -940,9 +940,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@link TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@link TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::setResult Result} property.
 	 *
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are

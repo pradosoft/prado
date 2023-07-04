@@ -19,27 +19,27 @@ use Prado\TPropertyValue;
  * Database configuration for the default ActiveRecord manager instance.
  *
  * Example: application.xml configuration
- * <code>
+ * ```xml
  * <modules>
  * 	<module class="Prado\Data\Data\ActiveRecord\TActiveRecordConfig" EnableCache="true">
  * 		<database ConnectionString="mysql:host=localhost;dbname=test"
  * 			Username="dbuser" Password="dbpass" />
  * 	</module>
  * </modules>
- * </code>
+ * ```
  *
  * MySQL database definition:
- * <code>
+ * ```sql
  * CREATE TABLE `blogs` (
  *  `blog_id` int(10) unsigned NOT NULL auto_increment,
  *  `blog_name` varchar(255) NOT NULL,
  *  `blog_author` varchar(255) NOT NULL,
  *  PRIMARY KEY  (`blog_id`)
  * ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
- * </code>
+ * ```
  *
  * Record php class:
- * <code>
+ * ```php
  * class Blogs extends TActiveRecord
  * {
  * 	public $blog_id;
@@ -51,10 +51,10 @@ use Prado\TPropertyValue;
  *		return parent::finder($className);
  *	}
  * }
- * </code>
+ * ```
  *
  * Usage example:
- * <code>
+ * ```php
  * class Home extends TPage
  * {
  * 	function onLoad($param)
@@ -63,7 +63,7 @@ use Prado\TPropertyValue;
  *      print_r($blogs);
  * 	}
  * }
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -74,13 +74,13 @@ class TActiveRecordConfig extends TDataSourceConfig
 	public const DEFAULT_GATEWAY_CLASS = \Prado\Data\ActiveRecord\TActiveRecordGateway::class;
 
 	/**
-	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 * Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
 	 * @var string
 	 */
 	private $_managerClass = self::DEFAULT_MANAGER_CLASS;
 
 	/**
-	 * Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 * @var string
 	 */
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
@@ -93,7 +93,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	private $_enableCache = false;
 
 	/**
-	 * Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'
+	 * Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'
 	 *
 	 * @var string|TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
@@ -137,7 +137,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return string the implementation class of ActiveRecordManager. Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 * @return string the implementation class of ActiveRecordManager. Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
 	 */
 	public function getManagerClass()
 	{
@@ -154,7 +154,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@link TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 */
 	public function getGatewayClass()
 	{
@@ -179,7 +179,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@link TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see setInvalidFinderResult
 	 * @since 3.1.5
 	 */

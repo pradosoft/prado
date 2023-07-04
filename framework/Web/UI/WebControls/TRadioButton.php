@@ -16,28 +16,28 @@ use Prado\TPropertyValue;
  *
  * TRadioButton displays a radio button on the page.
  * You can specify the caption to display beside the radio buttonby setting
- * the {@link setText Text} property.  The caption can appear either on the right
- * or left of the radio button, which is determined by the {@link setTextAlign TextAlign}
+ * the {@see setText Text} property.  The caption can appear either on the right
+ * or left of the radio button, which is determined by the {@see setTextAlign TextAlign}
  * property.
  *
- * To determine whether the TRadioButton component is checked, test the {@link getChecked Checked}
- * property. The {@link onCheckedChanged OnCheckedChanged} event is raised when
- * the {@link getChecked Checked} state of the TRadioButton component changes
+ * To determine whether the TRadioButton component is checked, test the {@see getChecked Checked}
+ * property. The {@see onCheckedChanged OnCheckedChanged} event is raised when
+ * the {@see getChecked Checked} state of the TRadioButton component changes
  * between posts to the server. You can provide an event handler for
- * the {@link onCheckedChanged OnCheckedChanged} event to  to programmatically
+ * the {@see onCheckedChanged OnCheckedChanged} event to  to programmatically
  * control the actions performed when the state of the TRadioButton component changes
  * between posts to the server.
  *
- * TRadioButton uses {@link setGroupName GroupName} to group together a set of radio buttons.
- * Once the {@link setGroupName GroupName} is set, you can use the {@link getRadioButtonsInGroup}
+ * TRadioButton uses {@see setGroupName GroupName} to group together a set of radio buttons.
+ * Once the {@see setGroupName GroupName} is set, you can use the {@see getRadioButtonsInGroup}
  * method to get an array of TRadioButtons having the same group name.
  *
- * If {@link setAutoPostBack AutoPostBack} is set true, changing the radio button state
- * will cause postback action. And if {@link setCausesValidation CausesValidation}
+ * If {@see setAutoPostBack AutoPostBack} is set true, changing the radio button state
+ * will cause postback action. And if {@see setCausesValidation CausesValidation}
  * is true, validation will also be processed, which can be further restricted within
- * a {@link setValidationGroup ValidationGroup}.
+ * a {@see setValidationGroup ValidationGroup}.
  *
- * Note, {@link setText Text} is rendered as is. Make sure it does not contain unwanted characters
+ * Note, {@see setText Text} is rendered as is. Make sure it does not contain unwanted characters
  * that may bring security vulnerabilities.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -173,16 +173,16 @@ class TRadioButton extends TCheckBox
 	/**
 	 * Sets the unique group name that the radio button belongs to.
 	 * A unique group is a radiobutton group unique among the whole page hierarchy,
-	 * while the {@link setGroupName GroupName} specifies a group that is unique
+	 * while the {@see setGroupName GroupName} specifies a group that is unique
 	 * among the control's naming container only.
-	 * For example, each cell of a {@link TDataGrid} is a naming container.
-	 * If you specify {@link setGroupName GroupName} for a radiobutton in a cell,
+	 * For example, each cell of a {@see \Prado\Web\UI\WebControls\TDataGrid} is a naming container.
+	 * If you specify {@see setGroupName GroupName} for a radiobutton in a cell,
 	 * it groups together radiobutton within a cell, but not the other, even though
-	 * they have the same {@link setGroupName GroupName}.
-	 * On the contratry, if {@link setUniqueGroupName UniqueGroupName} is used instead,
+	 * they have the same {@see setGroupName GroupName}.
+	 * On the contratry, if {@see setUniqueGroupName UniqueGroupName} is used instead,
 	 * it will group all appropriate radio buttons on the whole page hierarchy.
-	 * Note, when both {@link setUniqueGroupName UniqueGroupName} and
-	 * {@link setGroupName GroupName}, the former takes precedence.
+	 * Note, when both {@see setUniqueGroupName UniqueGroupName} and
+	 * {@see setGroupName GroupName}, the former takes precedence.
 	 * @param string $value the group name
 	 * @see setGroupName
 	 */

@@ -17,7 +17,7 @@ use Traversable;
  * Search criteria for TDbDataGateway.
  *
  * Criteria object for data gateway finder methods. Usage:
- * <code>
+ * ```php
  * $criteria = new TSqlCriteria();
  * $criteria->Parameters[':name'] = 'admin';
  * $criteria->Parameters[':pass'] = 'prado';
@@ -25,7 +25,7 @@ use Traversable;
  * $criteria->OrdersBy['name'] = 'asc';
  * $criteria->Limit = 10;
  * $criteria->Offset = 20;
- * </code>
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -85,28 +85,28 @@ class TSqlCriteria extends \Prado\TComponent
 	 *
 	 * array
 	 * - Column names will be quoted if used as key or value of array
-	 * 	<code>
+	 * ```php
 	 * 	array('col1', 'col2', 'col2')
 	 * 	// SELECT `col1`, `col2`, `col3` FROM...
-	 * 	</code>
+	 * ```
 	 *
 	 * - Column aliasing
-	 * <code>
+	 * ```php
 	 * array('mycol1' => 'col1', 'mycol2' => 'COUNT(*)')
 	 * // SELECT `col1` AS mycol1, COUNT(*) AS mycol2 FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - NULL and scalar values (strings will be quoted depending on database)
-	 * <code>
+	 * ```php
 	 * array('col1' => 'my custom string', 'col2' => 1.0, 'col3' => 'NULL')
 	 * // SELECT "my custom string" AS `col1`, 1.0 AS `col2`, NULL AS `col3` FROM...
-	 * </code>
+	 * ```
 	 *
 	 * - If the *-wildcard char is used as key or value, add the full list of quoted table column names
-	 * <code>
+	 * ```php
 	 * array('col1' => 'NULL', '*')
 	 * // SELECT `col1`, `col2`, `col3`, NULL AS `col1` FROM...
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value * @since 3.1.7
 	 * @see TDbCommandBuilder::getSelectFieldList()
