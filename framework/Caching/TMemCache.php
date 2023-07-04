@@ -68,8 +68,8 @@ use Prado\Xml\TXmlElement;
  * </module>
  * ```
  *
- * If loaded, TMemCache will register itself with {@see TApplication} as the
- * cache module. It can be accessed via {@see TApplication::getCache()}.
+ * If loaded, TMemCache will register itself with {@see \Prado\TApplication} as the
+ * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TMemCache may be configured in application configuration file as follows
  * ```php

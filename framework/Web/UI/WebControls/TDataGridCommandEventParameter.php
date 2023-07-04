@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * TDataGridCommandEventParameter class
  *
  * TDataGridCommandEventParameter encapsulates the parameter data for
- * {@see TDataGrid::onItemCommand ItemCommand} event of {@see TDataGrid} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataGrid::onItemCommand ItemCommand} event of {@see \Prado\Web\UI\WebControls\TDataGrid} controls.
  *
  * The {@see getItem Item} property indicates the datagrid item related with the event.
  * The {@see getCommandSource CommandSource} refers to the control that originally

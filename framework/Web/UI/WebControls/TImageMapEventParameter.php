@@ -13,7 +13,7 @@ namespace Prado\Web\UI\WebControls;
  * TImageMapEventParameter class.
  *
  * TImageMapEventParameter represents a postback event parameter
- * when a hotspot is clicked and posts back in a {@see TImageMap}.
+ * when a hotspot is clicked and posts back in a {@see \Prado\Web\UI\WebControls\TImageMap}.
  * To retrieve the post back value associated with the hotspot being clicked,
  * access {@see getPostBackValue PostBackValue}.
  *

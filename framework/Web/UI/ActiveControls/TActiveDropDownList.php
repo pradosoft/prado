@@ -23,7 +23,7 @@ use Prado\Web\UI\WebControls\TDropDownList;
  * Thus, when the drop down list selection is changed the {@see onCallback OnCallback} event is
  * raised after {@see OnSelectedIndexChanged} event.
  *
- * With {@see TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
+ * With {@see \Prado\Web\UI\ActiveControls\TBaseActiveControl::setEnableUpdate() ActiveControl.EnableUpdate}
  * set to true (default is true), changes to the selection, <b>after</b> OnLoad event has
  * been raised, will be updated.
  * on the client side.

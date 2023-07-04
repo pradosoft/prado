@@ -60,8 +60,8 @@ use Prado\Xml\TXmlElement;
  * $object2=$cache->get('object');
  * ```
  *
- * If loaded as module, TRedisCache will register itself with {@see TApplication} as the
- * default cache module. It can be accessed via {@see TApplication::getCache()}.
+ * If loaded as module, TRedisCache will register itself with {@see \Prado\TApplication} as the
+ * default cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TRedisCache may be configured in application configuration file as follows
  * ```php

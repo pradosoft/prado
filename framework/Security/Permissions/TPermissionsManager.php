@@ -31,15 +31,15 @@ use Prado\Xml\TXmlElement;
  * having children roles and permissions, with permissions being thought of
  * as special roles themselves.
  *
- * TPermissionsManager attaches {@see TPermissionsBehavior} to all classes
- * that implement {@see IPermissions}.  This is the main mechanism
+ * TPermissionsManager attaches {@see \Prado\Security\Permissions\TPermissionsBehavior} to all classes
+ * that implement {@see \Prado\Security\Permissions\IPermissions}.  This is the main mechanism
  * by which application permissions are registered.
  *
  * The role hierarchy and permission rules are unique to each application.  The
  * permissions configuration is defined in the TPermissionsManager application
- * configuration or in a separate {@see PermissionsFile}. {@see TPermissionsConfigurationBehavior}
+ * configuration or in a separate {@see PermissionsFile}. {@see \Prado\Security\Permissions\TPermissionsConfigurationBehavior}
  * enables a page configuration to have Permission Configurations as well.
- * A {@see TDbParameterModule} can be specified with {@see getDbParameter} for
+ * A {@see \Prado\Util\TDbParameterModule} can be specified with {@see getDbParameter} for
  * loading dynamic roles and permissions.
  *
  * Module XML configurations (and similarly PermissionFile) follows the format, eg:
@@ -106,7 +106,7 @@ use Prado\Xml\TXmlElement;
  *
  * Permission Rules can have multiple rules. they are
  * ordered by natural specified configuration order unless the rule property
- * {@see TAuthorizationRule::setPriority} is set.
+ * {@see \Prado\Security\TAuthorizationRule::setPriority} is set.
  *
  * Permissions authorization rules may use the '*' or 'perm_*' to add the rules to all
  * matching permission names.  Anything before the * is matched as a permission.

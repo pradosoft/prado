@@ -41,7 +41,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * There are two ways to specify cache dependency. One may write event handlers
  * to respond to the {@see onCheckDependency OnCheckDependency} event and set
- * the event parameter's {@see TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
+ * the event parameter's {@see \Prado\Web\UI\WebControls\TOutputCacheCheckDependencyEventParameter::getIsValid IsValid}
  * property to indicate whether the cached data remains valid or not.
  * One can also extend TOutputCache and override its {@see getCacheDependency}
  * function. While the former is easier to use, the latter offers more extensibility.
@@ -317,7 +317,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 
 	/**
 	 * Sets the prefix of the cache key.
-	 * This method is used internally by {@see TTemplate}.
+	 * This method is used internally by {@see \Prado\Web\UI\TTemplate}.
 	 * @param string $value key prefix
 	 */
 	public function setCacheKeyPrefix($value)
@@ -435,7 +435,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	/**
 	 * This event is raised when the output cache is checking cache dependency.
 	 * An event handler may be written to check customized dependency conditions.
-	 * The checking result should be saved by setting {@see TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
+	 * The checking result should be saved by setting {@see \Prado\Web\UI\WebControls\TOutputCacheCheckDependencyEventParameter::setIsValid IsValid}
 	 * property of the event parameter (which defaults to true).
 	 * @param TOutputCacheCheckDependencyEventParameter $param event parameter
 	 */
@@ -448,7 +448,7 @@ class TOutputCache extends \Prado\Web\UI\TControl implements \Prado\Web\UI\INami
 	 * This event is raised when the output cache is calculating cache key.
 	 * By varying cache keys, one can obtain different versions of cached content.
 	 * An event handler may be written to add variety of the key calculation.
-	 * The value set in {@see TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
+	 * The value set in {@see \Prado\Web\UI\WebControls\TOutputCacheCalculateKeyEventParameter::setCacheKey CacheKey} of
 	 * this event parameter will be appended to the default key calculation scheme.
 	 * @param TOutputCacheCalculateKeyEventParameter $param event parameter
 	 */

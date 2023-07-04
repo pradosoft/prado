@@ -18,7 +18,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiResizable class.
  *
- * TJuiResizable is an extension to {@see TActivePanel} based on jQuery-UI's
+ * TJuiResizable is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
  * {@see http://jqueryui.com/resizable/ Resizable} interaction.
  * A small handle is shown on the bottom right corner of the panel, that permits
  * the panel to be resized using the mouse.
@@ -127,7 +127,7 @@ class TJuiResizable extends TActivePanel implements IJuiOptions, ICallbackEventH
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

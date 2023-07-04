@@ -33,7 +33,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * The size must be between 1 and 512, inclusive.
  *
- * {@see TParameterizeBehavior} can be attached to TGravatar to give
+ * {@see \Prado\Util\Behaviors\TParameterizeBehavior} can be attached to TGravatar to give
  * default values for various properties like DefaultImageStyle and Rating.
  * PRADO Skins can also be used to provide default values.
  *

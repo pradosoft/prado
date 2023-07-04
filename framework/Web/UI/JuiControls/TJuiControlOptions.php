@@ -20,7 +20,7 @@ use Prado\Web\UI\TControl;
  * TJuiControlOptions interface
  *
  * TJuiControlOptions is an helper class that can collect a list of options
- * for a control. The control must implement {@see IJuiOptions}.
+ * for a control. The control must implement {@see \Prado\Web\UI\JuiControls\IJuiOptions}.
  * The options are validated againg an array of valid options provided by the control itself.
  * Since component properties are case insensitive, the array of valid options is used
  * to ensure the option name has the correct case.

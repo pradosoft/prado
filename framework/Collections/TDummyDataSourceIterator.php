@@ -14,7 +14,7 @@ namespace Prado\Collections;
  *
  * TDummyDataSourceIterator implements \Iterator interface.
  *
- * TDummyDataSourceIterator is used by {@see TDummyDataSource}.
+ * TDummyDataSourceIterator is used by {@see \Prado\Collections\TDummyDataSource}.
  * It allows TDummyDataSource to return a new iterator
  * for traversing its dummy items.
  *

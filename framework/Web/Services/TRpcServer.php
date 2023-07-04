@@ -14,7 +14,7 @@ namespace Prado\Web\Services;
  * TRpcServer is a class
  *
  * TRpcServer is the base class used to creare a server to be used in conjunction with
- * {@see TRpcService}.
+ * {@see \Prado\Web\Services\TRpcService}.
  * The role of TRpcServer is to be an intermediate, moving data between the service and
  * the provider. This base class should suit the most common needs, but can be sublassed for
  * logging and debugging purposes, or to filter and modify the request/response on the fly.

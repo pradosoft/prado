@@ -101,7 +101,7 @@ class TThemeManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string Theme class name in namespace format. Defaults to {@see TThemeManager::DEFAULT_THEMECLASS DEFAULT_THEMECLASS}.
+	 * @return string Theme class name in namespace format. Defaults to {@see \Prado\Web\UI\TThemeManager::DEFAULT_THEMECLASS DEFAULT_THEMECLASS}.
 	 */
 	public function getThemeClass()
 	{

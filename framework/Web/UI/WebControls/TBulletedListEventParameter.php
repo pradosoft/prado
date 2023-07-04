@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * TBulletedListEventParameter
- * Event parameter for {@see TBulletedList::onClick Click} event of the
+ * Event parameter for {@see \Prado\Web\UI\WebControls\TBulletedList::onClick Click} event of the
  * bulleted list. The {@see getIndex Index} gives the zero-based index
  * of the item that is currently being clicked.
  *

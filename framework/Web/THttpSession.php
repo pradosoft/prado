@@ -45,8 +45,8 @@ use Prado\Prado;
  * and set {@see setUseCustomStorage UseCustomStorage} to true.
  * Then, the session data will be stored using the above methods.
  *
- * By default, THttpSession is registered with {@see TApplication} as the
- * request module. It can be accessed via {@see TApplication::getSession()}.
+ * By default, THttpSession is registered with {@see \Prado\TApplication} as the
+ * request module. It can be accessed via {@see \Prado\TApplication::getSession()}.
  *
  * THttpSession may be configured in application configuration file as follows,
  * ```xml

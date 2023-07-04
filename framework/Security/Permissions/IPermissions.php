@@ -14,15 +14,15 @@ namespace Prado\Security\Permissions;
  *
  * IPermissions specifies the interface for implementation by any class
  * that wants permission authorization built in through dynamic events.
- * This interface will have the {@see TPermissionsBehavior} attached by
- * {@see TPermissionsManager}.  When attached, the behavior will register
+ * This interface will have the {@see \Prado\Security\Permissions\TPermissionsBehavior} attached by
+ * {@see \Prado\Security\Permissions\TPermissionsManager}.  When attached, the behavior will register
  * the owners permissions, and check a permission rules on specified dynamic
  * events.
  *
- * {@see getPermissions} returns an array of {@see TPermissionEvent}.  These
+ * {@see getPermissions} returns an array of {@see \Prado\Security\Permissions\TPermissionEvent}.  These
  * are automatically registered permissions.  If nothing is returned, then
  * the implementation will need to register its own permissions through
- * $manager->{@see TPermissionsManager::registerPermissions}.
+ * $manager->{@see \Prado\Security\Permissions\TPermissionsManager::registerPermissions}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0

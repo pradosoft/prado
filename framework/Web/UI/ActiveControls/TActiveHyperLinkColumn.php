@@ -19,10 +19,10 @@ use Prado\Web\UI\WebControls\THyperLinkColumn;
  *
  * TActiveHyperLinkColumn contains a hyperlink for each item in the column.
  *
- * This is the active counterpart to the {@see THyperLinkColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\THyperLinkColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@see THyperLinkColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\THyperLinkColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

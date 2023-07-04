@@ -12,10 +12,10 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TFileUploadItem class
  *
- * TFileUploadItem represents a single uploaded file from {@see TFileUpload} and
- * is especially needed when {@see TFileUpload::setMultiple} is set to true.
+ * TFileUploadItem represents a single uploaded file from {@see \Prado\Web\UI\WebControls\TFileUpload} and
+ * is especially needed when {@see \Prado\Web\UI\WebControls\TFileUpload::setMultiple} is set to true.
  *
- * See {@see TFileUpload} documentation for more details.
+ * See {@see \Prado\Web\UI\WebControls\TFileUpload} documentation for more details.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

@@ -16,8 +16,8 @@ use Prado\TPropertyValue;
  * TItemDataRenderer class
  *
  * TItemDataRenderer is the convient base class for template-based item data renderers.
- * It implements the {@see IItemDataRenderer} interface, and because
- * TItemDataRenderer extends from {@see TTemplateControl}, derived child
+ * It implements the {@see \Prado\Web\UI\WebControls\IItemDataRenderer} interface, and because
+ * TItemDataRenderer extends from {@see \Prado\Web\UI\TTemplateControl}, derived child
  * classes can have templates to define their presentational layout.
  *
  * The following properties are provided by TItemDataRenderer:

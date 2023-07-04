@@ -11,7 +11,7 @@ namespace Prado\Web\UI\WebControls;
 
 /**
  * TPagerMode class.
- * TPagerMode defines the enumerable type for the possible modes that a {@see TPager} control can take.
+ * TPagerMode defines the enumerable type for the possible modes that a {@see \Prado\Web\UI\WebControls\TPager} control can take.
  *
  * The following enumerable values are defined:
  * - NextPrev: pager buttons are displayed as next and previous pages

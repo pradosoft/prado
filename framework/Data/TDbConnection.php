@@ -21,8 +21,8 @@ use Prado\TPropertyValue;
  *
  * TDbConnection represents a connection to a database.
  *
- * TDbConnection works together with {@see TDbCommand}, {@see TDbDataReader}
- * and {@see TDbTransaction} to provide data access to various DBMS
+ * TDbConnection works together with {@see \Prado\Data\TDbCommand}, {@see \Prado\Data\TDbDataReader}
+ * and {@see \Prado\Data\TDbTransaction} to provide data access to various DBMS
  * in a common set of APIs. They are a thin wrapper of the {@see http://www.php.net/manual/en/ref.pdo.php PDO}
  * PHP extension.
  *
@@ -361,7 +361,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return string Transaction class name to be created by calling {@see TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
+	 * @return string Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}. Defaults to '\Prado\Data\TDbTransaction'.
 	 * @since 3.1.7
 	 */
 	public function getTransactionClass()
@@ -371,7 +371,7 @@ class TDbConnection extends \Prado\TComponent
 
 
 	/**
-	 * @param string $value Transaction class name to be created by calling {@see TDbConnection::beginTransaction}.
+	 * @param string $value Transaction class name to be created by calling {@see \Prado\Data\TDbConnection::beginTransaction}.
 	 * @since 3.1.7
 	 */
 	public function setTransactionClass($value)

@@ -17,11 +17,11 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TPager class.
  *
  * TPager creates a pager that provides UI for end-users to interactively
- * specify which page of data to be rendered in a {@see TDataBoundControl}-derived control,
- * such as {@see TDataList}, {@see TRepeater}, {@see TCheckBoxList}, etc.
+ * specify which page of data to be rendered in a {@see \Prado\Web\UI\WebControls\TDataBoundControl}-derived control,
+ * such as {@see \Prado\Web\UI\WebControls\TDataList}, {@see \Prado\Web\UI\WebControls\TRepeater}, {@see \Prado\Web\UI\WebControls\TCheckBoxList}, etc.
  * The target data-bound control is specified by {@see setControlToPaginate ControlToPaginate},
  * which must be the ID path of the target control reaching from the pager's
- * naming container. Note, the target control must have its {@see TDataBoundControl::setAllowPaging AllowPaging}
+ * naming container. Note, the target control must have its {@see \Prado\Web\UI\WebControls\TDataBoundControl::setAllowPaging AllowPaging}
  * set to true.
  *
  * TPager can display three different UIs, specified via {@see setMode Mode}:
@@ -41,8 +41,8 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TPager raises an {@see onPageIndexChanged OnPageIndexChanged} event when
  * the end-user interacts with it and specifies a new page (e.g. clicking
  * on a page button that leads to a new page.) The new page index may be obtained
- * from the event parameter's property {@see TPagerPageChangedEventParameter::getNewPageIndex NewPageIndex}.
- * Normally, in the event handler, one can set the {@see TDataBoundControl::getCurrentPageIndex CurrentPageIndex}
+ * from the event parameter's property {@see \Prado\Web\UI\WebControls\TPagerPageChangedEventParameter::getNewPageIndex NewPageIndex}.
+ * Normally, in the event handler, one can set the {@see \Prado\Web\UI\WebControls\TDataBoundControl::getCurrentPageIndex CurrentPageIndex}
  * to this new page index so that the new page of data is rendered.
  *
  * Multiple pagers can be associated with the same data-bound control.

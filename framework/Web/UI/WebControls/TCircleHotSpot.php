@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 /**
  * Class TCircleHotSpot.
  *
- * TCircleHotSpot defines a circular hot spot region in a {@see TImageMap}
+ * TCircleHotSpot defines a circular hot spot region in a {@see \Prado\Web\UI\WebControls\TImageMap}
  * control.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

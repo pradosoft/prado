@@ -154,7 +154,7 @@ class TPanel extends \Prado\Web\UI\WebControls\TWebControl
 	 * Specifies the default button for the panel.
 	 * The default button will be fired (clicked) whenever a user enters 'return'
 	 * key within the panel.
-	 * The button must be locatable via the function call {@see TControl::findControl findControl}.
+	 * The button must be locatable via the function call {@see \Prado\Web\UI\TControl::findControl findControl}.
 	 * @param string $value the ID path to the default button.
 	 */
 	public function setDefaultButton($value)

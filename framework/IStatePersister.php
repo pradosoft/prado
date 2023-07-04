@@ -13,7 +13,7 @@ namespace Prado;
  * IStatePersister class.
  *
  * This interface must be implemented by all state persister classes (such as
- * {@see TPageStatePersister}, {@see TApplicationStatePersister}.
+ * {@see \Prado\Web\UI\TPageStatePersister}, {@see \Prado\TApplicationStatePersister}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

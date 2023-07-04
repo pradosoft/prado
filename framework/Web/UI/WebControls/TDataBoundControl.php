@@ -90,7 +90,7 @@ abstract class TDataBoundControl extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * @param string $value ID path to the data source control. The data source
-	 * control must be locatable via {@see TControl::findControl} call.
+	 * control must be locatable via {@see \Prado\Web\UI\TControl::findControl} call.
 	 */
 	public function setDataSourceID($value)
 	{

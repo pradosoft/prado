@@ -26,7 +26,7 @@ use Prado\TPropertyValue;
  * {@see itemAt}, {@see add}, and {@see remove}.  These functions
  * can optionally take a priority parameter to allow access to specific
  * priorities.  TPriorityMap is functionally backward compatible
- * with {@see TMap}.
+ * with {@see \Prado\Collections\TMap}.
  *
  * To get the number of the items in the map, use {@see getCount}.
  * TPriorityMap can also be used like a regular array as follows,

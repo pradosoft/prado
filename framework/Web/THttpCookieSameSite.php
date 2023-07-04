@@ -12,7 +12,7 @@ namespace Prado\Web;
 /**
  * THttpCookieSameSite class.
  * THttpCookieSameSite defines the enumerable type for the possible values of the
- * SameSite property of {@see THttpCookie}.
+ * SameSite property of {@see \Prado\Web\THttpCookie}.
  *
  * SameSite is a cookie attribute (similar to HTTPOnly, Secure etc.) which aims to
  * mitigate CSRF attacks. It prevents the browser from sending the cookie along on

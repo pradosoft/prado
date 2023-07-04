@@ -20,9 +20,9 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * To create a server-side validation function, provide a handler for
  * the {@see onServerValidate OnServerValidate} event that performs the validation.
  * The data string of the input control to validate can be accessed
- * by {@see TServerValidateEventParameter::getValue Value} of the event parameter.
+ * by {@see \Prado\Web\UI\WebControls\TServerValidateEventParameter::getValue Value} of the event parameter.
  * The result of the validation should be stored in the
- * {@see TServerValidateEventParameter::getIsValid IsValid} property of the event
+ * {@see \Prado\Web\UI\WebControls\TServerValidateEventParameter::getIsValid IsValid} property of the event
  * parameter.
  *
  * To create a client-side validation function, add the client-side

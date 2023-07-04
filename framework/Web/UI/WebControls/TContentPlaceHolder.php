@@ -14,15 +14,15 @@ use Prado\Exceptions\TConfigurationException;
 /**
  * TContentPlaceHolder class
  *
- * TContentPlaceHolder reserves a place on a template where a {@see TContent}
- * control can inject itself and its children in. TContentPlaceHolder and {@see TContent}
+ * TContentPlaceHolder reserves a place on a template where a {@see \Prado\Web\UI\WebControls\TContent}
+ * control can inject itself and its children in. TContentPlaceHolder and {@see \Prado\Web\UI\WebControls\TContent}
  * together implement a decoration pattern for prado templated controls.
  * A template control (called content control) can specify a master control
  * whose template contains some TContentPlaceHolder controls.
- * {@see TContent} controls on the content control's template will replace the corresponding
- * {@see TContentPlaceHolder} controls on the master control's template.
+ * {@see \Prado\Web\UI\WebControls\TContent} controls on the content control's template will replace the corresponding
+ * {@see \Prado\Web\UI\WebControls\TContentPlaceHolder} controls on the master control's template.
  * This is called content injection. It is done by matching the IDs of
- * {@see TContent} and {@see TContentPlaceHolder} controls.
+ * {@see \Prado\Web\UI\WebControls\TContent} and {@see \Prado\Web\UI\WebControls\TContentPlaceHolder} controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -17,9 +17,9 @@ use Prado\Web\UI\TTemplate;
 /**
  * TWebControlDecorator class
  *
- * A TWebControlDecorator can be applied to a {@see TWebControl} to customize its rendering.
+ * A TWebControlDecorator can be applied to a {@see \Prado\Web\UI\WebControls\TWebControl} to customize its rendering.
  * TWebControlDecorator can add custom html code before and after both the open and close
- * tag of a {@see TWebControl}.
+ * tag of a {@see \Prado\Web\UI\WebControls\TWebControl}.
  * The html code can be an user-defined text or an external template file that will be
  * instantiated and rendered in place.
  *
@@ -379,7 +379,7 @@ class TWebControlDecorator extends \Prado\TComponent
 
 
 	/**
-	 * This method places the pre tag text into the {@see TTextWriter}
+	 * This method places the pre tag text into the {@see \Prado\IO\TTextWriter}
 	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPreTagText($writer)
@@ -388,7 +388,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * This method places the pre contents text into the {@see TTextWriter}
+	 * This method places the pre contents text into the {@see \Prado\IO\TTextWriter}
 	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPreContentsText($writer)
@@ -397,7 +397,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * This method places the post contents text into the {@see TTextWriter}
+	 * This method places the post contents text into the {@see \Prado\IO\TTextWriter}
 	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPostContentsText($writer)
@@ -406,7 +406,7 @@ class TWebControlDecorator extends \Prado\TComponent
 	}
 
 	/**
-	 * This method places the post tag text into the {@see TTextWriter}
+	 * This method places the post tag text into the {@see \Prado\IO\TTextWriter}
 	 * @param \Prado\IO\TTextWriter $writer the writer to which the text is written
 	 */
 	public function renderPostTagText($writer)

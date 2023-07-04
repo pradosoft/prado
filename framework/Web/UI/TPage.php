@@ -1073,7 +1073,7 @@ class TPage extends TTemplateControl
 
 	/**
 	 * Sets the page title.
-	 * Note, a {@see THead} control needs to place on the page
+	 * Note, a {@see \Prado\Web\UI\WebControls\THead} control needs to place on the page
 	 * in order that this title be rendered.
 	 * @param string $value page title. This will override the title set in {@see getHead Head}.
 	 */
@@ -1248,7 +1248,7 @@ class TPage extends TTemplateControl
 	}
 
 	/**
-	 * @return TStack stack of {@see TOutputCache} objects
+	 * @return TStack stack of {@see \Prado\Web\UI\WebControls\TOutputCache} objects
 	 */
 	public function getCachingStack()
 	{

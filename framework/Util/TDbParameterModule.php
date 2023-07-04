@@ -27,7 +27,7 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * TDbParameterModule class
  *
  * This loads application parameters from a database.  It adds the
- * {@see TMapLazyLoadBehavior} to Application Parameters when the
+ * {@see \Prado\Util\Behaviors\TMapLazyLoadBehavior} to Application Parameters when the
  * {@see setAutoLoadField} is set.  The key and name fields, table,
  * autoload field, and autoload values (both true and false values)
  * are parameterized.  Set them to your application specific values.

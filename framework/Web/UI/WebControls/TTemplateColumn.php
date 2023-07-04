@@ -26,7 +26,7 @@ use Prado\Prado;
  * and {@see setEditItemRenderer EditItemRenderer} which can be used to specify
  * the layout of the datagrid cells in browsing and editing mode.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@see TRepeater} and {@see TDataList}.
+ * For more details, see {@see \Prado\Web\UI\WebControls\TRepeater} and {@see \Prado\Web\UI\WebControls\TDataList}.
  *
  * When a renderer and a template are both defined for a type of item, the former
  * takes precedence.
@@ -105,7 +105,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the edit item template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
@@ -126,7 +126,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the item template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -147,7 +147,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the header template.
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -168,7 +168,7 @@ class TTemplateColumn extends TDataGridColumn
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{

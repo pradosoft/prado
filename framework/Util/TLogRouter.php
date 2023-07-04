@@ -20,8 +20,8 @@ use Prado\Xml\TXmlDocument;
  * TLogRouter class.
  *
  * TLogRouter manages routes that record log messages in different media different ways.
- * For example, a file log route {@see TFileLogRoute} records log messages
- * in log files. An email log route {@see TEmailLogRoute} sends log messages
+ * For example, a file log route {@see \Prado\Util\TFileLogRoute} records log messages
+ * in log files. An email log route {@see \Prado\Util\TEmailLogRoute} sends log messages
  * to email addresses.
  *
  * Log routes may be configured in application or page folder configuration files

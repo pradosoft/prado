@@ -19,7 +19,7 @@ use Prado\Xml\TXmlDocument;
 /**
  * TUserManager class
  *
- * TUserManager manages a static list of users {@see TUser}.
+ * TUserManager manages a static list of users {@see \Prado\Security\TUser}.
  * The user information is specified via module configuration using the following XML syntax,
  * ```xml
  * <module id="users" class="Prado\Security\TUserManager" PasswordMode="Clear">
@@ -62,7 +62,7 @@ use Prado\Xml\TXmlDocument;
  * The default name for a guest user is <b>Guest</b>. It may be changed
  * by setting {@see setGuestName GuestName} property.
  *
- * TUserManager may be used together with {@see TAuthManager} which manages
+ * TUserManager may be used together with {@see \Prado\Security\TAuthManager} which manages
  * how users are authenticated and authorized in a Prado application.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

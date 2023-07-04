@@ -92,7 +92,7 @@ class TDropDownListColumn extends TDataGridColumn
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TListItem} objects into the {@see getItems Items} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TListItem} objects into the {@see getItems Items} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */

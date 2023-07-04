@@ -20,7 +20,7 @@ use Prado\Web\UI\WebControls\TTableRow;
 /**
  * TActiveTableCell class.
  *
- * TActiveTableCell is the active counterpart to the original {@see TTableCell} control
+ * TActiveTableCell is the active counterpart to the original {@see \Prado\Web\UI\WebControls\TTableCell} control
  * and displays a table cell. The horizontal and vertical alignments of the cell
  * are specified via {@see setHorizontalAlign HorizontalAlign} and
  * {@see setVerticalAlign VerticalAlign} properties, respectively.
@@ -30,11 +30,11 @@ use Prado\Web\UI\WebControls\TTableRow;
  * perform a callback request causing {@see onCellSelected OnCellSelected} event to be fired.
  *
  * It will also bubble the {@see onCellSelected OnCellSelected} event up to it's parent
- * {@see TActiveTableRow} control which will fire up the event handlers if implemented.
+ * {@see \Prado\Web\UI\ActiveControls\TActiveTableRow} control which will fire up the event handlers if implemented.
  *
  * TActiveTableCell allows the client-side cell contents to be updated during a
  * callback response by getting a new writer, invoking the render method and flushing the
- * output, similar to a {@see TActivePanel} control.
+ * output, similar to a {@see \Prado\Web\UI\ActiveControls\TActivePanel} control.
  * ```php
  * function callback_request($sender, $param)
  * {
@@ -89,9 +89,9 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Raises the callback event. This method is required by {@see ICallbackEventHandler}
+	 * Raises the callback event. This method is required by {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface. It will raise {@see onCellSelected OnCellSelected} event with a
-	 * {@see TActiveTableCellEventParameter} containing the zero-based index of the
+	 * {@see \Prado\Web\UI\ActiveControls\TActiveTableCellEventParameter} containing the zero-based index of the
 	 * TActiveTableCell.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
@@ -169,8 +169,8 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Returns the zero-based index of the TActiveTableCell within the {@see TTableCellCollection}
-	 * of the parent {@see TTableRow} control. Raises a {@see TConfigurationException} if the cell
+	 * Returns the zero-based index of the TActiveTableCell within the {@see \Prado\Web\UI\WebControls\TTableCellCollection}
+	 * of the parent {@see \Prado\Web\UI\WebControls\TTableRow} control. Raises a {@see \Prado\Exceptions\TConfigurationException} if the cell
 	 * is no member of the cell collection.
 	 * @return int the zero-based index of the cell
 	 */
@@ -185,8 +185,8 @@ class TActiveTableCell extends TTableCell implements IActiveControl, ICallbackEv
 	}
 
 	/**
-	 * Returns the parent {@see TTableRow} control by looping through all parents until a {@see TTableRow}
-	 * is found. Raises a {@see TConfigurationException} if no row control is found.
+	 * Returns the parent {@see \Prado\Web\UI\WebControls\TTableRow} control by looping through all parents until a {@see \Prado\Web\UI\WebControls\TTableRow}
+	 * is found. Raises a {@see \Prado\Exceptions\TConfigurationException} if no row control is found.
 	 * @return TTableRow the parent row control
 	 */
 	public function getRow()

@@ -15,12 +15,12 @@ use Prado\Web\UI\TClientSideOptions;
  * TDatePickerClientScript class.
  *
  * Client-side date picker event {@see setOnDateChanged OnDateChanged}
- * can be modified through the {@see TDatePicker::getClientSide ClientSide}
+ * can be modified through the {@see \Prado\Web\UI\WebControls\TDatePicker::getClientSide ClientSide}
  * property of a date picker.
  *
  * The <tt>OnDateChanged</tt> event is raise when the date picker's date
  * is changed.
- * The formatted date according to {@see TDatePicker::getDateFormat DateFormat} is sent
+ * The formatted date according to {@see \Prado\Web\UI\WebControls\TDatePicker::getDateFormat DateFormat} is sent
  * as parameter to this event
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>

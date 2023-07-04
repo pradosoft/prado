@@ -20,10 +20,10 @@ use Prado\Web\UI\WebControls\TRepeater;
 /**
  * TJuiSortable class.
  *
- * TJuiSortable is an extension to {@see TActivePanel} based on jQuery-UI's
+ * TJuiSortable is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
  * {@see http://jqueryui.com/sortable/ Sortable} interaction.
  * The panel can be feed a {@see setDataSource DataSource} and will interally
- * render a {@see TRepeater} that displays items in an unordered list.
+ * render a {@see \Prado\Web\UI\WebControls\TRepeater} that displays items in an unordered list.
  * Items can be sortered dragging and dropping them.
  *
  * ```php
@@ -136,7 +136,7 @@ class TJuiSortable extends TActivePanel implements IJuiOptions, ICallbackEventHa
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

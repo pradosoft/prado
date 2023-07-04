@@ -17,15 +17,15 @@ use Prado\TPropertyValue;
  *
  * Notice: while this class is easy to use and implement, it does not provide full security.
  * In fact, it's easy to bypass the checks reusing old, already-validated tokens (reply attack).
- * A better alternative is provided by {@see TReCaptchaValidator}.
+ * A better alternative is provided by {@see \Prado\Web\UI\WebControls\TReCaptchaValidator}.
  *
  * TCaptchaValidator validates user input against a CAPTCHA represented by
- * a {@see TCaptcha} control. The input control fails validation if its value
+ * a {@see \Prado\Web\UI\WebControls\TCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in CAPTCHA. Note, if the user does
  * not enter any thing, it is still considered as failing the validation.
  *
  * To use TCaptchaValidator, specify the {@see setControlToValidate ControlToValidate}
- * to be the ID path of the input control (usually a {@see TTextBox} control}.
+ * to be the ID path of the input control (usually a {@see \Prado\Web\UI\WebControls\TTextBox} control}.
  * Also specify the {@see setCaptchaControl CaptchaControl} to be the ID path of
  * the CAPTCHA control that the user input should be compared with.
  *

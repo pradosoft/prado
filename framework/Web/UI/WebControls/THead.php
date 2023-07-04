@@ -17,9 +17,9 @@ use Prado\Web\THttpUtility;
  * THead displays a head element on a page. It displays the content
  * enclosed in its body and the page title set by the
  * {@see setTitle Title} property. In addition, stylesheets and JavaScripts registered via
- * {@see TClientScriptManager::registerStyleSheet}, {@see TClientScriptManager::registerStyleSheetFile}
- * {@see TClientScriptManager::registerHeadJavaScript}, and
- * {@see TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
+ * {@see \Prado\Web\UI\TClientScriptManager::registerStyleSheet}, {@see \Prado\Web\UI\TClientScriptManager::registerStyleSheetFile}
+ * {@see \Prado\Web\UI\TClientScriptManager::registerHeadJavaScript}, and
+ * {@see \Prado\Web\UI\TClientScriptManager::registerHeadJavaScriptFile} will also be displayed
  * in the head.
  * THead also manages and displays meta tags through its {@see getMetaTags MetaTags}
  * property. You can add a meta object to the collection in code dynamically,
@@ -31,7 +31,7 @@ use Prado\Web\THttpUtility;
  * </com:THead>
  * ```
  *
- * Note, {@see TPage} has a property {@see TPage::getHead Head} that refers to
+ * Note, {@see \Prado\Web\UI\TPage} has a property {@see \Prado\Web\UI\TPage::getHead Head} that refers to
  * the THead control currently on the page. A page can have at most one THead
  * control. Although not required, it is recommended to place a THead on your page.
  * Without a THead on the page, stylesheets and javascripts in the current page
@@ -82,7 +82,7 @@ class THead extends \Prado\Web\UI\TControl
 
 	/**
 	 * Sets the page title.
-	 * This title will be rendered only if the {@see TPage::getTitle Title} property
+	 * This title will be rendered only if the {@see \Prado\Web\UI\TPage::getTitle Title} property
 	 * of the page is empty.
 	 * @param string $value the page title.
 	 */

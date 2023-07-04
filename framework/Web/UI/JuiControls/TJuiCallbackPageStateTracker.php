@@ -15,7 +15,7 @@ use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 /**
  * TJuiCallbackPageStateTracker class.
  *
- * Tracking changes to the page state during callback, including {@see TJuiControlOptions}.
+ * Tracking changes to the page state during callback, including {@see \Prado\Web\UI\JuiControls\TJuiControlOptions}.
  *
  * @author LANDWEHR Computer und Software GmbH
  * @since 3.3
@@ -23,7 +23,7 @@ use Prado\Web\UI\ActiveControls\TCallbackPageStateTracker;
 class TJuiCallbackPageStateTracker extends TCallbackPageStateTracker
 {
 	/**
-	 * Add the {@see TJuiControlOptions} to the states to track.
+	 * Add the {@see \Prado\Web\UI\JuiControls\TJuiControlOptions} to the states to track.
 	 */
 	protected function addStatesToTrack()
 	{

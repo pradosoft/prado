@@ -457,7 +457,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see TUrlMappingPatternSecureConnection::Automatic Automatic}
+	 * @return TUrlMappingPatternSecureConnection the SecureConnection behavior. Defaults to {@see \Prado\Web\TUrlMappingPatternSecureConnection::Automatic Automatic}
 	 * @since 3.2
 	 */
 	public function getSecureConnection()
@@ -574,7 +574,7 @@ class TUrlMappingPattern extends \Prado\TComponent
 
 	/**
 	 * Apply behavior of {@see SecureConnection} property by conditionaly prefixing
-	 * URL with {@see THttpRequest::getBaseUrl()}
+	 * URL with {@see \Prado\Web\THttpRequest::getBaseUrl()}
 	 *
 	 * @param string $url
 	 * @return string

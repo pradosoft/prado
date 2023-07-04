@@ -15,7 +15,7 @@ use Prado\Exceptions\TIOException;
  * TXmlDocument class.
  *
  * TXmlDocument represents a DOM representation of an XML file.
- * Besides all properties and methods inherited from {@see TXmlElement},
+ * Besides all properties and methods inherited from {@see \Prado\Xml\TXmlElement},
  * you can load an XML file or string by {@see loadFromFile} or {@see loadFromString}.
  * You can also get the version and encoding of the XML document by
  * the Version and Encoding properties.

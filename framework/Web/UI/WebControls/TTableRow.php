@@ -35,7 +35,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TTableCell} objects into the {@see getCells Cells} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TTableCell} objects into the {@see getCells Cells} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -48,7 +48,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@see TTableItemStyle} to be used by the table row.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableItemStyle} to be used by the table row.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()
@@ -67,7 +67,7 @@ class TTableRow extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableCellCollection list of {@see TTableCell} controls
+	 * @return TTableCellCollection list of {@see \Prado\Web\UI\WebControls\TTableCell} controls
 	 */
 	public function getCells()
 	{

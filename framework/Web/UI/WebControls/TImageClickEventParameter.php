@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TImageClickEventParameter class
  *
  * TImageClickEventParameter encapsulates the parameter data for
- * {@see TImageButton::onClick Click} event of {@see TImageButton} controls.
+ * {@see \Prado\Web\UI\WebControls\TImageButton::onClick Click} event of {@see \Prado\Web\UI\WebControls\TImageButton} controls.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

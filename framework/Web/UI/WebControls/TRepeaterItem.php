@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 /**
  * TRepeaterItem class
  *
- * A TRepeaterItem control represents an item in the {@see TRepeater} control,
+ * A TRepeaterItem control represents an item in the {@see \Prado\Web\UI\WebControls\TRepeater} control,
  * such as heading section, footer section, or a data item.
  * The index and data value of the item can be accessed via {@see getItemIndex ItemIndex}>
  * and {@see getData Data} properties, respectively. The type of the item

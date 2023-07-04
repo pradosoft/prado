@@ -52,7 +52,7 @@ class TMapLazyLoadBehavior extends TBehavior
 	 * This calls handler($key).
 	 * @param mixed $value the value of the item being added
 	 * @param string $key the key of the item being added
-	 * @param \Prado\Util\TCallChain $callchain {@see TCallChain} of event handlers
+	 * @param \Prado\Util\TCallChain $callchain {@see \Prado\Util\TCallChain} of event handlers
 	 * @return mixed returns the argv[0], chained to all handlers
 	 */
 	public function dyNoItem($value, $key, $callchain)

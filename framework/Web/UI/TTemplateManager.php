@@ -26,8 +26,8 @@ use Prado\TPropertyValue;
  * the extension '.tpl'. To load a template from a template file path,
  * call {@see getTemplateByFileName}.
  *
- * By default, TTemplateManager is registered with {@see TPageService} as the
- * template manager module that can be accessed via {@see TPageService::getTemplateManager()}.
+ * By default, TTemplateManager is registered with {@see \Prado\Web\Services\TPageService} as the
+ * template manager module that can be accessed via {@see \Prado\Web\Services\TPageService::getTemplateManager()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

@@ -17,7 +17,7 @@ use Prado\Web\UI\TPage;
 /**
  * TBaseActiveControl class provided additional basic property for every
  * active control. An instance of TBaseActiveControl or its decendent
- * TBaseActiveCallbackControl is created by {@see TActiveControlAdapter::getBaseActiveControl()}
+ * TBaseActiveCallbackControl is created by {@see \Prado\Web\UI\ActiveControls\TActiveControlAdapter::getBaseActiveControl()}
  * method.
  *
  * The {@see setEnableUpdate EnableUpdate} property determines wether the active

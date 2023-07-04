@@ -16,7 +16,7 @@ use Prado\Util\TDataFieldAccessor;
  * TBaseDataList class
  *
  * TBaseDataList is the base class for data listing controls, including
- * {@see TDataList} and {@see TDataGrid}.
+ * {@see \Prado\Web\UI\WebControls\TDataList} and {@see \Prado\Web\UI\WebControls\TDataGrid}.
  *
  * The key field in the data source is specified by {@see setKeyField KeyField},
  * while {@see getKeyValues KeyValues} stores the key values of each record in
@@ -40,7 +40,7 @@ abstract class TBaseDataList extends TDataBoundControl
 {
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@see TTableStyle} to be used by the data list control.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableStyle} to be used by the data list control.
 	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()

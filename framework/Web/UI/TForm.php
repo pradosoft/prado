@@ -17,7 +17,7 @@ use Prado\TPropertyValue;
  *
  * TForm displays an HTML form. Besides regular body content,
  * it displays hidden fields, javascript blocks and files that are registered
- * through {@see TClientScriptManager}.
+ * through {@see \Prado\Web\UI\TClientScriptManager}.
  *
  * A TForm is required for a page that needs postback.
  * Each page can contain at most one TForm. If multiple HTML forms are needed,

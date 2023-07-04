@@ -18,8 +18,8 @@ use Prado\Util\TLogger;
 /**
  * TPermissionsBehavior class.
  *
- * TPermissionsBehavior class is a class behavior attached to {@see IPermissions}.
- * This class calls getPermissions to get an array of {@see TPermissionEvent}
+ * TPermissionsBehavior class is a class behavior attached to {@see \Prado\Security\Permissions\IPermissions}.
+ * This class calls getPermissions to get an array of {@see \Prado\Security\Permissions\TPermissionEvent}
  * and/or to have the implementation register their own permissions.
  * Any returned TPermissionEvents will have their permission registered for rules.
  *
@@ -63,10 +63,10 @@ use Prado\Util\TLogger;
  * The default is to allow without any rules in place.  To automatically
  * block functionality, there needs to be a (final) Permission Rule to deny all.
  * The TPermissionsManager, by default, adds a final rule to deny all on all
- * permissions via {@see TPermissionsManager::setAutoDenyAll}.
+ * permissions via {@see \Prado\Security\Permissions\TPermissionsManager::setAutoDenyAll}.
  *
- * The {@see TUserPermissionsBehavior} attaches to {@see TUser} to
- * provide {@see TUserPermissionsBehavior::can}, whether or note a user has authorization for a
+ * The {@see \Prado\Security\Permissions\TUserPermissionsBehavior} attaches to {@see \Prado\Security\TUser} to
+ * provide {@see \Prado\Security\Permissions\TUserPermissionsBehavior::can}, whether or note a user has authorization for a
  * permission.
  *
  * @author Brad Anderson <belisoful@icloud.com>

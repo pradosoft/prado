@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
  *
  * THtmlElement represents a generic HTML element whose tag name is specified
  * via {@see setTagName TagName} property. Because THtmlElement extends from
- * {@see TWebControl}, it enjoys all its functionalities.
+ * {@see \Prado\Web\UI\WebControls\TWebControl}, it enjoys all its functionalities.
  *
  * To change the default tag your subclass should override {@see getDefaultTagName}
  *

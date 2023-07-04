@@ -70,10 +70,10 @@ use Prado\Xml\TXmlDocument;
  * ```
  *
  * Each <soap> element in the application specification actually configures
- * the properties of a SOAP server which defaults to {@see TSoapServer}.
- * Therefore, any writable property of {@see TSoapServer} may appear as an attribute
+ * the properties of a SOAP server which defaults to {@see \Prado\Web\Services\TSoapServer}.
+ * Therefore, any writable property of {@see \Prado\Web\Services\TSoapServer} may appear as an attribute
  * in the <soap> element. For example, the "provider" attribute refers to
- * the {@see TSoapServer::setProvider Provider} property of {@see TSoapServer}.
+ * the {@see \Prado\Web\Services\TSoapServer::setProvider Provider} property of {@see \Prado\Web\Services\TSoapServer}.
  * The following configuration specifies that the SOAP server is persistent within
  * the user session (that means a MyStockQuote object will be stored in session)
  * ```php

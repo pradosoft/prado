@@ -25,12 +25,12 @@ use Prado\TPropertyValue;
  * content can be specified via {@see setHorizontalAlign HorizontalAlign},
  * and {@see setBackImageUrl BackImageUrl} can assign a background image to the table.
  *
- * A TTable maintains a list of {@see TTableRow} controls in its
- * {@see getRows Rows} property. Each {@see TTableRow} represents
+ * A TTable maintains a list of {@see \Prado\Web\UI\WebControls\TTableRow} controls in its
+ * {@see getRows Rows} property. Each {@see \Prado\Web\UI\WebControls\TTableRow} represents
  * an HTML table row.
  *
  * To populate the table {@see getRows Rows}, you may either use control template
- * or dynamically create {@see TTableRow} in code.
+ * or dynamically create {@see \Prado\Web\UI\WebControls\TTableRow} in code.
  * In template, do as follows to create the table rows and cells,
  * ```php
  *   <com:TTable>
@@ -73,7 +73,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TTableRow} objects into the {@see getRows Rows} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TTableRow} objects into the {@see getRows Rows} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -86,7 +86,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@see TTableStyle} to be used by the table.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableStyle} to be used by the table.
 	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()
@@ -126,7 +126,7 @@ class TTable extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * @return TTableRowCollection list of {@see TTableRow} controls
+	 * @return TTableRowCollection list of {@see \Prado\Web\UI\WebControls\TTableRow} controls
 	 */
 	public function getRows()
 	{

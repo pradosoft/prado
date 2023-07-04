@@ -25,7 +25,7 @@ use Prado\TApplicationMode;
  * whose name has the extension ".skin" are parsed and saved as controls skins.
  *
  * A skin is essentially a list of initial property values that are to be applied
- * to a control when the skin is applied.  {@see TSkinTemplate} is used to
+ * to a control when the skin is applied.  {@see \Prado\Web\UI\TSkinTemplate} is used to
  * turn off class and attribute validation.
  * Each type of control can have multiple skins identified by the SkinID.
  * If a skin does not have SkinID, it is the default skin that will be applied

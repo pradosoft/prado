@@ -19,7 +19,7 @@ use Prado\Web\UI\WebControls\TLabel;
  * TActiveLabel class
  *
  * The active control counterpart of TLabel component. When
- * {@see TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
+ * {@see \Prado\Web\UI\ActiveControls\TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true the during a callback request, setting {@see setText Text}
  * property will also set the text of the label on the client upon callback
  * completion. Similarly, setting {@see setForControl ForControl} will also set
@@ -68,7 +68,7 @@ class TActiveLabel extends TLabel implements IActiveControl
 
 	/**
 	 * Sets the ID of the control that the label is associated with.
-	 * The control must be locatable via {@see TControl::findControl} using the ID.
+	 * The control must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
 	 * On callback response, the For attribute of the label is updated.
 	 * @param string $value the associated control ID
 	 */

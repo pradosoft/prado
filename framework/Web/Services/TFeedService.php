@@ -47,7 +47,7 @@ use Prado\Exceptions\THttpException;
  * ```
  *
  * The class attribute indicates which PHP class will provide the actual feed
- * content. Note, the class must implement {@see IFeedContentProvider} interface.
+ * content. Note, the class must implement {@see \Prado\Web\Services\IFeedContentProvider} interface.
  * Other initial properties for the feed class may also be specified in the
  * corresponding &lt;feed&gt; element.
  *

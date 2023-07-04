@@ -27,10 +27,10 @@ use Prado\Web\UI\WebControls\TLiteralColumn;
  *
  * If {@see setEncode Encode} is true, the static texts will be HTML-encoded.
  *
- * This is the active counterpart to the {@see TLiteralColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TLiteralColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@see TLiteralColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TLiteralColumn} for usage.
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  * @since 3.1.9

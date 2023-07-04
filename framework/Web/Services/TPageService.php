@@ -42,19 +42,19 @@ use Prado\Web\UI\TThemeManager;
  * name of the page template files must be '.page'. If there is a PHP file with
  * the same page name under the same directory as the template file, that file
  * will be considered as the page class file and the file name is the page class name.
- * If such a file is not found, the page class is assumed as {@see TPage}.
+ * If such a file is not found, the page class is assumed as {@see \Prado\Web\UI\TPage}.
  *
  * Modules can be configured and loaded in page directory configurations.
  * Configuration of a module in a subdirectory will overwrite its parent
  * directory's configuration, if both configurations refer to the same module.
  *
  * By default, TPageService will automatically load two modules:
- * - {@see TTemplateManager} : manages page and control templates
- * - {@see TThemeManager} : manages themes used in a Prado application
+ * - {@see \Prado\Web\UI\TTemplateManager} : manages page and control templates
+ * - {@see \Prado\Web\UI\TThemeManager} : manages themes used in a Prado application
  *
  * In page directory configurations, static authorization rules can also be specified,
  * which governs who and which roles can access particular pages.
- * Refer to {@see TAuthorizationRule} for more details about authorization rules.
+ * Refer to {@see \Prado\Security\TAuthorizationRule} for more details about authorization rules.
  * Page authorization rules can be configured within an <authorization> tag in
  * each page directory configuration as follows,
  * <authorization>

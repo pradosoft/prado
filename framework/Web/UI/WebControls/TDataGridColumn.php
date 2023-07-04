@@ -20,7 +20,7 @@ use Prado\Web\UI\TControl;
  * TDataGridColumn class
  *
  * TDataGridColumn serves as the base class for the different column types of
- * the {@see TDataGrid} control.
+ * the {@see \Prado\Web\UI\WebControls\TDataGrid} control.
  * TDataGridColumn defines the properties and methods that are common among
  * all datagrid column types. In particular, it initializes header and footer
  * cells according to {@see setHeaderText HeaderText} and {@see getHeaderStyle HeaderStyle}
@@ -38,24 +38,24 @@ use Prado\Web\UI\TControl;
  * and {@see setFooterRenderer FooterRenderer} which can be used to specify
  * the layout of header and footer column cells.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@see TRepeater} and {@see TDataList}.
+ * For more details, see {@see \Prado\Web\UI\WebControls\TRepeater} and {@see \Prado\Web\UI\WebControls\TDataList}.
  *
  * Since v3.1.1, TDataGridColumn has introduced {@see setEnableCellGrouping EnableCellGrouping}.
  * If a column has this property set true, consecutive cells having the same content in this
  * column will be grouped into one cell.
  * Note, there are some limitations to cell grouping. We determine the cell content according to
- * the cell's {@see TTableCell::getText Text} property. If the text is empty and the cell has
+ * the cell's {@see \Prado\Web\UI\WebControls\TTableCell::getText Text} property. If the text is empty and the cell has
  * some child controls, we will pick up the first control who implements {@see \Prado\IDataRenderer}
  * and obtain its {@see \Prado\IDataRenderer::getData Data} property.
  *
  * The following datagrid column types are provided by the framework currently,
- * - {@see TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
- * - {@see TEditCommandColumn}, displaying edit/update/cancel command buttons
- * - {@see TDropDownListColumn}, displaying a dropdown list when the item is in edit state
- * - {@see TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
- * - {@see THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
- * - {@see TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
- * - {@see TTemplateColumn}, displaying content based on templates.
+ * - {@see \Prado\Web\UI\WebControls\TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@see \Prado\Web\UI\WebControls\TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@see \Prado\Web\UI\WebControls\TDropDownListColumn}, displaying a dropdown list when the item is in edit state
+ * - {@see \Prado\Web\UI\WebControls\TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TTemplateColumn}, displaying content based on templates.
  *
  * To create your own column class, simply override {@see initializeCell()} method,
  * which is the major logic for managing the data and presentation of cells in the column.
@@ -343,7 +343,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 
 	/**
 	 * Initializes the column.
-	 * This method is invoked by {@see TDataGrid} when the column
+	 * This method is invoked by {@see \Prado\Web\UI\WebControls\TDataGrid} when the column
 	 * is about to be used to initialize datagrid items.
 	 * Derived classes may override this method to do additional initialization.
 	 */
@@ -354,7 +354,7 @@ abstract class TDataGridColumn extends \Prado\TApplicationComponent
 	/**
 	 * Fetches the value of the data at the specified field.
 	 * If the data is an array, the field is used as an array key.
-	 * If the data is an of {@see TMap}, {@see \Prado\Collections\TList} or their derived class,
+	 * If the data is an of {@see \Prado\Collections\TMap}, {@see \Prado\Collections\TList} or their derived class,
 	 * the field is used as a key value.
 	 * If the data is a component, the field is used as the name of a property.
 	 * @param mixed $data data containing the field of value

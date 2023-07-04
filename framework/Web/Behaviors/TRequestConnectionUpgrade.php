@@ -14,7 +14,7 @@ use Prado\Prado;
 /**
  * TRequestConnectionUpgrade class.
  *
- * This is a behavior for {@see THttpRequest} that adds the "Connection: Upgrade"
+ * This is a behavior for {@see \Prado\Web\THttpRequest} that adds the "Connection: Upgrade"
  * header "Upgrade: <service>" to the URL Parameters of the request.
  *
  * For example, a URL parameter could be used to select the PRADO "websocket" service.

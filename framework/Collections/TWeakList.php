@@ -45,12 +45,12 @@ use WeakReference;
  * If an object in an array is invalidated, it well be replaced by "null".  Arrays
  * in the TWeakList are kept regardless of the use/reference count of contained objects.
  *
- * When searching by a {@see TEventHandler} object, it will only find itself and
- * will not match on its {@see TEventHandler::getHandler}.  However, if searching
+ * When searching by a {@see \Prado\TEventHandler} object, it will only find itself and
+ * will not match on its {@see \Prado\TEventHandler::getHandler}.  However, if searching
  * for a callable handler, it will first match direct callable handlers in the list,
  * and then search for matching TEventHandlers' Handler regardless of the data.
  *
- * {@see TWeakCollectionTrait} implements a PHP 8 WeakMap used to track any changes
+ * {@see \Prado\Collections\TWeakCollectionTrait} implements a PHP 8 WeakMap used to track any changes
  * in WeakReference objects in the TWeakList and optionally scrubs the list of invalid
  * objects on any changes to the WeakMap.
  *
@@ -114,7 +114,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
-	 * if the object being added is a TEventHandler, we use the {@see TEventHandler::getHandlerObject}
+	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
 	 * @since 4.2.3
@@ -130,7 +130,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
-	 * if the object being removed is a TEventHandler, we use the {@see TEventHandler::getHandlerObject}
+	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
 	 * @since 4.2.3

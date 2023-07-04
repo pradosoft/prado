@@ -29,7 +29,7 @@ use Prado\Util\TSimpleDateFormatter;
  * - <b>Float</b> A double-precision floating point number data type.
  * - <b>Date</b> A date data type. The date format can be specified by
  *   setting {@see setDateFormat DateFormat} property, which must be recognizable
- *   by {@see TSimpleDateFormatter}. If the property is not set,
+ *   by {@see \Prado\Util\TSimpleDateFormatter}. If the property is not set,
  *   the GNU date syntax is assumed.
  * - <b>String</b> A string data type.
  * - <b>StringLength</b> check for string length.

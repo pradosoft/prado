@@ -23,10 +23,10 @@ use Prado\Web\UI\WebControls\TEditCommandColumn;
  * The button captions are specified using {@see setEditText EditText},
  * {@see setUpdateText UpdateText}, and {@see setCancelText CancelText}.
  *
- * This is the active counterpart to the {@see TEditCommandColumn} control. The buttons for
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TEditCommandColumn} control. The buttons for
  * interaction are replaced by active buttons.
  *
- * Please refer to the original documentation of the {@see TEditCommandColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TEditCommandColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

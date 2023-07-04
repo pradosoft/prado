@@ -113,7 +113,7 @@ use ReflectionClass;
  * The event OnInsert, OnUpdate and OnDelete methods are executed before
  * inserting, updating, and deleting the current record, respectively. You may override
  * these methods; a TActiveRecordChangeEventParameter parameter is passed to these methods.
- * The property {@see TActiveRecordChangeEventParameter::setIsValid IsValid} of the parameter
+ * The property {@see \Prado\Data\ActiveRecord\TActiveRecordChangeEventParameter::setIsValid IsValid} of the parameter
  * can be set to false to prevent the change action to be executed. This can be used,
  * for example, to validate the record before the action is executed. For example,
  * in the following the password property is hashed before a new record is inserted.
@@ -870,7 +870,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see TActiveRecordManager::getInvalidFinderResult
 	 * @since 3.1.5
 	 */
@@ -924,7 +924,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@see TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 *
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
@@ -940,9 +940,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@see TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::setResult Result} property.
 	 *
 	 * Note well that the finder objects obtained from ActiveRecord::finder()
 	 * method are static objects. This means that the event handlers are

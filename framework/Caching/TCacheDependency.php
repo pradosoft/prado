@@ -12,11 +12,11 @@ namespace Prado\Caching;
 /**
  * TCacheDependency class.
  *
- * TCacheDependency is the base class implementing {@see ICacheDependency} interface.
- * Descendant classes must implement {@see ICacheDependency::getHasChanged()} to provide
+ * TCacheDependency is the base class implementing {@see \Prado\Caching\ICacheDependency} interface.
+ * Descendant classes must implement {@see \Prado\Caching\ICacheDependency::getHasChanged()} to provide
  * actual dependency checking logic.
  *
- * The property value of {@see ICacheDependency::getHasChanged() HasChanged} tells whether
+ * The property value of {@see \Prado\Caching\ICacheDependency::getHasChanged() HasChanged} tells whether
  * the dependency is changed or not.
  *
  * You may disable the dependency checking by setting {@see setEnabled() Enabled}
@@ -28,10 +28,10 @@ namespace Prado\Caching;
  * not serializable.
  *
  * Currently, the following dependency classes are provided in the PRADO release:
- * - {@see TFileCacheDependency}: checks whether a file is changed or not
- * - {@see TDirectoryCacheDependency}: checks whether a directory is changed or not
- * - {@see TGlobalStateCacheDependency}: checks whether a global state is changed or not
- * - {@see TChainedCacheDependency}: checks whether any of a list of dependencies is changed or not
+ * - {@see \Prado\Caching\TFileCacheDependency}: checks whether a file is changed or not
+ * - {@see \Prado\Caching\TDirectoryCacheDependency}: checks whether a directory is changed or not
+ * - {@see \Prado\Caching\TGlobalStateCacheDependency}: checks whether a global state is changed or not
+ * - {@see \Prado\Caching\TChainedCacheDependency}: checks whether any of a list of dependencies is changed or not
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0

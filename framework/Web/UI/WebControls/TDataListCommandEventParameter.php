@@ -15,7 +15,7 @@ use Prado\Web\UI\TControl;
  * TDataListCommandEventParameter class
  *
  * TDataListCommandEventParameter encapsulates the parameter data for
- * {@see TDataList::onItemCommand ItemCommand} event of {@see TDataList} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataList::onItemCommand ItemCommand} event of {@see \Prado\Web\UI\WebControls\TDataList} controls.
  *
  * The {@see getItem Item} property indicates the DataList item related with the event.
  * The {@see getCommandSource CommandSource} refers to the control that originally

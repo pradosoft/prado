@@ -20,7 +20,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * THtmlArea5 wraps the visual editing functionalities provided by the
  * version 5 of TinyMCE project {@see http://tinymce.com/}. It has been
- * developed as a plug'n'play substitute for {@see THtmlArea}, that is
+ * developed as a plug'n'play substitute for {@see \Prado\Web\UI\WebControls\THtmlArea}, that is
  * based on a previous iteration (version 3) of the same project.
  * Please note that both components can't be used together in the same page.
  *

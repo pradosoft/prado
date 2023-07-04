@@ -16,7 +16,7 @@ use Prado\Web\UI\WebControls\TRepeater;
  * TActiveRepeater class
  *
  * TActiveRepeater represents a data bound and updatable grid control which is the
- * active counterpart to the original {@see TRepeater} control.
+ * active counterpart to the original {@see \Prado\Web\UI\WebControls\TRepeater} control.
  *
  * This component can be used in the same way as the regular datagrid, the only
  * difference is that the active repeater uses callbacks instead of postbacks
@@ -115,7 +115,7 @@ class TActiveRepeater extends TRepeater implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Loops through all {@see TActivePager} on the page and registers the ones which are set to paginate
+	 * Loops through all {@see \Prado\Web\UI\ActiveControls\TActivePager} on the page and registers the ones which are set to paginate
 	 * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */

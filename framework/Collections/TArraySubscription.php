@@ -26,7 +26,7 @@ use WeakReference;
  *
  * These are specific types that can be subscribed: PHP Array, Object implementing
  * ArrayAccess, TList and subclasses, and TMap and subclasses.  A priority can be
- * specified for {@see IPriorityCollection} instances.
+ * specified for {@see \Prado\Collections\IPriorityCollection} instances.
  *
  * When an array is associative, the original element is saved and restored (with
  * its original priority).  IWeakCollections retain their elements in their weakened
@@ -87,7 +87,7 @@ class TArraySubscription
 
 	/**
 	 * @var ?string The class filtering the item for storage.  This is populated when
-	 * the {@see self::getArray()} is an instanceOf {@see ICollectionFilter}.
+	 * the {@see self::getArray()} is an instanceOf {@see \Prado\Collections\ICollectionFilter}.
 	 */
 	protected ?string $_filterClass = null;
 
@@ -220,7 +220,7 @@ class TArraySubscription
 
 	/**
 	 * If the item is subscribed and the key is null, the item key will be discovered
-	 * with the TList (by {@see TList::indexOf()}) or array (by array_search).
+	 * with the TList (by {@see \Prado\Collections\TList::indexOf()}) or array (by array_search).
 	 * @return null|int|string The key for the item subscription to the array.
 	 */
 	public function getKey(): null|int|string
@@ -294,7 +294,7 @@ class TArraySubscription
 	}
 
 	/**
-	 * This is on applicable to {@see IPriorityCollection}.
+	 * This is on applicable to {@see \Prado\Collections\IPriorityCollection}.
 	 * @param ?numeric $value The priority of the item.
 	 * @throws TInvalidOperationException If the item is already subscribed.
 	 * @return static The current object.
@@ -320,7 +320,7 @@ class TArraySubscription
 	 * Whether to add to the array by association or by splicing (for an ordered list).
 	 * @return null|null|bool Is the array associative; default true.  false will treat the array
 	 *   as a list from (0, ..., count() - 1).  if null, where needed, the "list"ness
-	 *   of the array will be determined by {@see TArrayHelper::array_is_list()}.
+	 *   of the array will be determined by {@see \Prado\Util\Helpers\TArrayHelper::array_is_list()}.
 	 */
 	public function getIsAssociative(): null|bool|int
 	{
@@ -330,7 +330,7 @@ class TArraySubscription
 	/**
 	 * @param null|bool|int $value Is the array associative; default null.  false will treat the array
 	 *   as a list from (0, ..., count() - 1).  if null, where needed, the "list"ness
-	 *   of the array will be determined by {@see TArrayHelper::array_is_list()}.
+	 *   of the array will be determined by {@see \Prado\Util\Helpers\TArrayHelper::array_is_list()}.
 	 * @throws TInvalidOperationException If the item is already subscribed.
 	 * @return static The current object.
 	 */

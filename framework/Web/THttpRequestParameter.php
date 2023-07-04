@@ -12,7 +12,7 @@ namespace Prado\Web;
 /**
  * THttpRequestParameter class.
  *
- * This is the Event Parameter for {@see THttpRequest::onResolveRequest()} for encapsulating
+ * This is the Event Parameter for {@see \Prado\Web\THttpRequest::onResolveRequest()} for encapsulating
  * the service IDs and URL parameters as part of the event parameter.
  *
  * @author Brad Anderson <belisoful@icloud.com>

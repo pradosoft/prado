@@ -18,7 +18,7 @@ use Prado\Exceptions\THttpException;
  * form hidden fields.
  *
  * Since page state can be very big for complex pages, consider using
- * alternative persisters, such as {@see TSessionPageStatePersister},
+ * alternative persisters, such as {@see \Prado\Web\UI\TSessionPageStatePersister},
  * which store page state on the server side and thus reduce the network
  * traffic for transmitting bulky page state.
  *

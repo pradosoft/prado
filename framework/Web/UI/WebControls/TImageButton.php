@@ -38,7 +38,7 @@ use Prado\Web\UI\IPostBackEventHandler;
  * You can provide an event handler for the {@see onClick OnClick} event
  * to programmatically control the actions performed when the submit button is clicked.
  * The coordinates of the clicking point can be obtained from the {@see onClick OnClick}
- * event parameter, which is of type {@see TImageClickEventParameter}.
+ * event parameter, which is of type {@see \Prado\Web\UI\WebControls\TImageClickEventParameter}.
  *
  * Clicking on button can trigger form validation, if
  * {@see setCausesValidation CausesValidation} is true.
@@ -239,9 +239,9 @@ class TImageButton extends TImage implements \Prado\Web\UI\IPostBackDataHandler,
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@see IPostBackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
 	 * If {@see getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@see TPage::validate validate} method first.
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter

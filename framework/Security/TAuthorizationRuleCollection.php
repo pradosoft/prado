@@ -13,7 +13,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 
 /**
  * TAuthorizationRuleCollection class.
- * TAuthorizationRuleCollection represents a collection of authorization rules {@see TAuthorizationRule}.
+ * TAuthorizationRuleCollection represents a collection of authorization rules {@see \Prado\Security\TAuthorizationRule}.
  * To check if a user is allowed, call {@see isUserAllowed}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

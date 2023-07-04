@@ -36,7 +36,7 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
  * any of them successfully.
  *
  * Upon postback, user input can be validated by calling {@see validate()}.
- * The {@see TReCaptcha2Validator} control can also be used to do validation, which provides
+ * The {@see \Prado\Web\UI\WebControls\TReCaptcha2Validator} control can also be used to do validation, which provides
  * server-side validation. Calling (@link validate()) will invalidate the token supplied, so all consecutive
  * calls to the method - without solving a new captcha - will return false. Therefore if implementing a multi-stage
  * input process, you must make sure that you call validate() only once, either at the end of the input process, or

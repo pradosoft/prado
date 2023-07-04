@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
  * within the image. Depending on the {@see setHotSpotMode HotSpotMode},
  * clicking on the hotspots may trigger a postback or navigate to a specified
  * URL. The hotspots defined may be accessed via {@see getHotSpots HotSpots}.
- * Each hotspot is described as a {@see THotSpot}, which can be a circle,
+ * Each hotspot is described as a {@see \Prado\Web\UI\WebControls\THotSpot}, which can be a circle,
  * rectangle, polygon, etc. To add hotspot in a template, use the following,
  * ```php
  *  <com:TImageMap>
@@ -37,7 +37,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * This method adds {@see THotSpot} objects into the hotspot collection
+	 * This method adds {@see \Prado\Web\UI\WebControls\THotSpot} objects into the hotspot collection
 	 * of the imagemap.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 */
@@ -127,7 +127,7 @@ class TImageMap extends TImage implements \Prado\Web\UI\IPostBackEventHandler
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@see IPostBackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter
 	 */

@@ -24,7 +24,7 @@ use Prado\Web\UI\IValidator;
  * Validation is performed when a postback control, such as a TButton, a TLinkButton
  * or a TTextBox (under AutoPostBack mode) is submitting the page and
  * its <b>CausesValidation</b> property is true.
- * You can also manually perform validation by calling {@see TPage::validate()}.
+ * You can also manually perform validation by calling {@see \Prado\Web\UI\TPage::validate()}.
  * The input control to be validated is specified by {@see setControlToValidate ControlToValidate}.
  *
  * Validator controls always validate the associated input control on the serve side.
@@ -38,8 +38,8 @@ use Prado\Web\UI\IValidator;
  * each responsible for validating against a different criteria.
  * For example, on a user registration form, you may want to make sure the user
  * enters a value in the username text box, and the input must consist of only word
- * characters. You can use a {@see TRequiredFieldValidator} to ensure the input
- * of username and a {@see TRegularExpressionValidator} to ensure the proper input.
+ * characters. You can use a {@see \Prado\Web\UI\WebControls\TRequiredFieldValidator} to ensure the input
+ * of username and a {@see \Prado\Web\UI\WebControls\TRegularExpressionValidator} to ensure the proper input.
  *
  * If an input control fails validation, the text specified by the {@see setErrorMessage ErrorMessage}
  * property is displayed in the validation control. However, if the {@see setText Text}
@@ -51,21 +51,21 @@ use Prado\Web\UI\IValidator;
  * code to the subproperties of the {@see getClientSide ClientSide}
  * property. See quickstart documentation for further details.
  *
- * You can also place a {@see TValidationSummary} control on a page to display error messages
+ * You can also place a {@see \Prado\Web\UI\WebControls\TValidationSummary} control on a page to display error messages
  * from the validators together. In this case, only the {@see setErrorMessage ErrorMessage}
- * property of the validators will be displayed in the {@see TValidationSummary} control.
+ * property of the validators will be displayed in the {@see \Prado\Web\UI\WebControls\TValidationSummary} control.
  *
  * Validators can be partitioned into validation groups by setting their
  * {@see setValidationGroup ValidationGroup} property. If the control causing the
  * validation also sets its ValidationGroup property, only those validators having
  * the same ValidationGroup value will do input validation.
  *
- * Note, the {@see TPage::getIsValid IsValid} property of the current {@see TPage}
+ * Note, the {@see \Prado\Web\UI\TPage::getIsValid IsValid} property of the current {@see \Prado\Web\UI\TPage}
  * instance will be automatically updated by the validation process which occurs
- * after {@see TPage::onLoad onLoad} of {@see TPage} and before the postback events.
- * Therefore, if you use the {@see TPage::getIsValid()} property in
- * the {@see TPage::onLoad()} method, you must first explicitly call
- * the {@see TPage::validate()} method.
+ * after {@see \Prado\Web\UI\TPage::onLoad onLoad} of {@see \Prado\Web\UI\TPage} and before the postback events.
+ * Therefore, if you use the {@see \Prado\Web\UI\TPage::getIsValid()} property in
+ * the {@see \Prado\Web\UI\TPage::onLoad()} method, you must first explicitly call
+ * the {@see \Prado\Web\UI\TPage::validate()} method.
  *
  * <b>Notes to Inheritors</b>  When you inherit from TBaseValidator, you must
  * override the method {@see evaluateIsValid}.

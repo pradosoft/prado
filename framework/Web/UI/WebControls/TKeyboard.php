@@ -26,7 +26,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * <com:TKeyboard ForControl="PasswordInput" />
  * ```
  *
- * A TKeyboard control is associated with a {@see TTextBox} control by specifying {@see setForControl ForControl}
+ * A TKeyboard control is associated with a {@see \Prado\Web\UI\WebControls\TTextBox} control by specifying {@see setForControl ForControl}
  * to be the ID of that control. When the textbox is in focus, a virtual keyboard will pop up; and when
  * the text box is losing focus, the keyboard will hide automatically. Set {@see setAutoHide AutoHide} to
  * false to keep the keyboard showing all the time.
@@ -41,7 +41,7 @@ use Prado\Web\Javascripts\TJavaScript;
 class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 {
 	/**
-	 * @return string the ID path of the {@see TTextBox} control
+	 * @return string the ID path of the {@see \Prado\Web\UI\WebControls\TTextBox} control
 	 */
 	public function getForControl()
 	{
@@ -49,7 +49,7 @@ class TKeyboard extends \Prado\Web\UI\WebControls\TWebControl
 	}
 
 	/**
-	 * Sets the ID path of the {@see TTextBox} control.
+	 * Sets the ID path of the {@see \Prado\Web\UI\WebControls\TTextBox} control.
 	 * The ID path is the dot-connected IDs of the controls reaching from
 	 * the keyboard's naming container to the target control.
 	 * @param string $value the ID path

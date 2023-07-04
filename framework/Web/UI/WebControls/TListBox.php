@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
  * The list box allows multiple selections if {@see setSelectionMode SelectionMode}
  * is TListSelectionMode::Multiple. It takes single selection only if Single.
  * The property {@see setRows Rows} specifies how many rows of options are visible
- * at a time. See {@see TListControl} for inherited properties.
+ * at a time. See {@see \Prado\Web\UI\WebControls\TListControl} for inherited properties.
  *
  * Since v3.0.3, TListBox starts to support optgroup. To specify an option group for
  * a list item, set a Group attribute with it,

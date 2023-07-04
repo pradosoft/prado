@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * To obtain or test the roles that the user is in, use property
  * {@see getRoles Roles} and call {@see isInRole()}, respectively.
  *
- * TUser is meant to be used together with {@see IUserManager}.
+ * TUser is meant to be used together with {@see \Prado\Security\IUserManager}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

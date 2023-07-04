@@ -28,13 +28,13 @@ use Prado\TPropertyValue;
  * Since Prado 4.0 the TFileUpload supports uploading multiple files at once by
  * setting {@see setMultiple Multiple} to true which renders the additional HTML5
  * attribute and adds square brackets to the name attribute. A new method
- * {@see getFiles} is introduced which returns an array of {@see TFileUploadItem}
+ * {@see getFiles} is introduced which returns an array of {@see \Prado\Web\UI\WebControls\TFileUploadItem}
  * representing each uploaded file.
  *
  * All (old) methods mentioned in the first paragraph (getHasFile, getFileName, getFileType,
  * getFileSize, getErrorCode and saveAs) also take a new optional parameter specifying
  * the file index to get the desired information from. This is for backward compatibility
- * so that old, single file uploads will still work - internally a {@see TFileUploadItem}
+ * so that old, single file uploads will still work - internally a {@see \Prado\Web\UI\WebControls\TFileUploadItem}
  * is also used for a single file upload.
  * If more than one file is uploaded {@see getValidationPropertyValue} returns a comma
  * separated list of original file names instead of a single file name for validation.
@@ -60,11 +60,11 @@ class TFileUpload extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 	 */
 	private $_multiple = false;
 	/**
-	 * @var array the list of uploaded files represented by {@see TFileUploadItem}
+	 * @var array the list of uploaded files represented by {@see \Prado\Web\UI\WebControls\TFileUploadItem}
 	 */
 	private $_files = [];
 	/**
-	 * @var string class name used to instantiate items for uploaded files: {@see TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@see \Prado\Web\UI\WebControls\TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = \Prado\Web\UI\WebControls\TFileUploadItem::class;
 

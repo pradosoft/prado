@@ -22,7 +22,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * forms to complete. TWizard is analogous to the installation wizard commonly
  * used to install software in Windows.
  *
- * The smaller forms are called wizard steps ({@see TWizardStep}, which can be accessed via
+ * The smaller forms are called wizard steps ({@see \Prado\Web\UI\WebControls\TWizardStep}, which can be accessed via
  * {@see getWizardSteps WizardSteps}. In template, wizard steps can be added
  * into a wizard using the following syntax,
  * ```php
@@ -173,7 +173,7 @@ class TWizard extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\We
 	}
 
 	/**
-	 * Adds {@see TWizardStep} objects into step collection.
+	 * Adds {@see \Prado\Web\UI\WebControls\TWizardStep} objects into step collection.
 	 * This method overrides the parent implementation and is
 	 * invoked when template is being instantiated.
 	 * @param mixed $object object instantiated in template

@@ -16,7 +16,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
  * TCacheDependencyList class.
  *
  * TCacheDependencyList represents a list of cache dependency objects.
- * Only objects implementing {@see ICacheDependency} can be added into this list.
+ * Only objects implementing {@see \Prado\Caching\ICacheDependency} can be added into this list.
  *
  * TCacheDependencyList can be used like an array. See {@see \Prado\Collections\TList}
  * for more details.

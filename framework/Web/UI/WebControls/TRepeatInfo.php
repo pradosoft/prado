@@ -14,7 +14,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 
 /**
  * TRepeatInfo class.
- * TRepeatInfo represents repeat information for controls like {@see TCheckBoxList}.
+ * TRepeatInfo represents repeat information for controls like {@see \Prado\Web\UI\WebControls\TCheckBoxList}.
  * The layout of the repeated items is specified via {@see setRepeatLayout RepeatLayout},
  * which can be either Table (default), Flow or Raw.
  * A table layout uses HTML table cells to organize the items while

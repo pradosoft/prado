@@ -14,7 +14,7 @@ use Prado\TPropertyValue;
 /**
  * TShellWriter class.
  *
- * Similar to the {@see THtmlWriter}, the TShellWriter writes and formats text
+ * Similar to the {@see \Prado\Web\UI\THtmlWriter}, the TShellWriter writes and formats text
  * with color, and processes other commands to the terminal to another ITextWriter.
  *
  * @author Brad Anderson <belisoful@icloud.com>

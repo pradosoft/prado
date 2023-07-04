@@ -321,7 +321,7 @@ class TCronModule extends \Prado\TModule implements IPermissions
 	/**
 	 * .
 	 * @param string $taskExec the class name or "module->method('param1')" to place
-	 * into a {@see TCronMethodTask}.
+	 * into a {@see \Prado\Util\Cron\TCronMethodTask}.
 	 * @return TCronTask the instance of $taskExec
 	 */
 	public function instanceTask($taskExec)

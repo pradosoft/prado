@@ -18,14 +18,14 @@ use Prado\TPropertyValue;
  *
  * TCache is the base class for cache classes with different cache storage implementation.
  *
- * TCache implements the interface {@see ICache} with the following methods,
- * - {@see TCache::get()} : retrieve the value with a key (if any) from cache
- * - {@see TCache::set()} : store the value with a key into cache
- * - {@see TCache::add()} : store the value only if cache does not have this key
- * - {@see TCache::delete()} : delete the value with the specified key from cache
- * - {@see TCache::flush()} : delete all values from cache
+ * TCache implements the interface {@see \Prado\Caching\ICache} with the following methods,
+ * - {@see get()} : retrieve the value with a key (if any) from cache
+ * - {@see set()} : store the value with a key into cache
+ * - {@see add()} : store the value only if cache does not have this key
+ * - {@see delete()} : delete the value with the specified key from cache
+ * - {@see flush()} : delete all values from cache
  *
- * Each value is associated with an expiration time. The {@see TCache::get()} operation
+ * Each value is associated with an expiration time. The {@see get()} operation
  * ensures that any expired value will not be returned. The expiration time by
  * the number of seconds. A expiration time 0 represents never expire.
  *
@@ -33,12 +33,12 @@ use Prado\TPropertyValue;
  * even if it never expires. Cache is not meant to be an persistent storage.
  *
  * Child classes must implement the following methods:
- * - {@see TCache::getValue()}
- * - {@see TCache::setValue()}
- * - {@see TCache::addValue()}
- * - {@see TCache::deleteValue()}
+ * - {@see getValue()}
+ * - {@see setValue()}
+ * - {@see addValue()}
+ * - {@see deleteValue()}
  *
- * and optionally {@see TCache::flush()}
+ * and optionally {@see flush()}
  *
  * Since version 3.1.2, TCache implements the \ArrayAccess interface such that
  * the cache acts as an array.
@@ -93,7 +93,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 
 	/**
 	 * @return string a unique prefix for the keys of cached values.
-	 * If it is not explicitly set, it will take the value of {@see TApplication::getUniqueID}.
+	 * If it is not explicitly set, it will take the value of {@see \Prado\TApplication::getUniqueID}.
 	 */
 	public function getKeyPrefix()
 	{
@@ -200,7 +200,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Retrieves a value from cache with a specified key.
 	 * This method should be implemented by child classes to store the data
 	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see TCache::get()} already. So only the implementation of data retrieval
+	 * in {@see \Prado\Caching\TCache::get()} already. So only the implementation of data retrieval
 	 * is needed.
 	 * @param string $key a unique key identifying the cached value
 	 * @return false|string the value stored in cache, false if the value is not in the cache or expired.
@@ -211,7 +211,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Stores a value identified by a key in cache.
 	 * This method should be implemented by child classes to store the data
 	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see TCache::set()} already. So only the implementation of data storage
+	 * in {@see \Prado\Caching\TCache::set()} already. So only the implementation of data storage
 	 * is needed.
 	 *
 	 * @param string $key the key identifying the value to be cached
@@ -225,7 +225,7 @@ abstract class TCache extends \Prado\TModule implements ICache, \ArrayAccess
 	 * Stores a value identified by a key into cache if the cache does not contain this key.
 	 * This method should be implemented by child classes to store the data
 	 * in specific cache storage. The uniqueness and dependency are handled
-	 * in {@see TCache::add()} already. So only the implementation of data storage
+	 * in {@see \Prado\Caching\TCache::add()} already. So only the implementation of data storage
 	 * is needed.
 	 *
 	 * @param string $key the key identifying the value to be cached

@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
  *
  * TLinkButton creates a hyperlink style button on the page.
  * TLinkButton has the same appearance as a hyperlink. However, it is mainly
- * used to submit data to a page. Like {@see TButton}, you can create either
+ * used to submit data to a page. Like {@see \Prado\Web\UI\WebControls\TButton}, you can create either
  * a <b>submit</b> button or a <b>command</b> button.
  *
  * A <b>command</b> button has a command name (specified by
@@ -290,9 +290,9 @@ class TLinkButton extends \Prado\Web\UI\WebControls\TWebControl implements \Prad
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@see IPostBackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
 	 * If {@see getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@see TPage::validate validate} method first.
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} and {@see onCommand OnCommand} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param \Prado\TEventParameter $param the event parameter

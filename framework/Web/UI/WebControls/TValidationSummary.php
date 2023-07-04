@@ -17,7 +17,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * TValidationSummary displays a summary of validation errors inline on a Web page,
  * in a message box, or both. By default, a validation summary will collect
- * {@see TBaseValidator::getErrorMessage ErrorMessage} of all failed validators
+ * {@see \Prado\Web\UI\WebControls\TBaseValidator::getErrorMessage ErrorMessage} of all failed validators
  * on the page. If {@see getValidationGroup ValidationGroup} is not
  * empty, only those validators who belong to the group will show their error messages
  * in the summary.

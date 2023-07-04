@@ -13,12 +13,12 @@ namespace Prado\Web\UI\WebControls;
  * TDataListItemRenderer class
  *
  * TDataListItemRenderer can be used as a convenient base class to
- * define an item renderer class specific for {@see TDataList}.
+ * define an item renderer class specific for {@see \Prado\Web\UI\WebControls\TDataList}.
  *
- * TDataListItemRenderer extends {@see TItemDataRenderer} and implements
+ * TDataListItemRenderer extends {@see \Prado\Web\UI\WebControls\TItemDataRenderer} and implements
  * the bubbling scheme for the OnCommand event of data list items.
  *
- * TDataListItemRenderer also implements the {@see IStyleable} interface,
+ * TDataListItemRenderer also implements the {@see \Prado\Web\UI\WebControls\IStyleable} interface,
  * which allows TDataList to apply CSS styles to the renders.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

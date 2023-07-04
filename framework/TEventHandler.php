@@ -71,7 +71,7 @@ use WeakReference;
  * collection.  To enable this functionality, TEventHandler holds its callable object
  * as WeakReference and re-references the callable handler object when used.
  *
- * The only exceptions to conversion into WeakReference are Closure and {@see IWeakRetainable}.
+ * The only exceptions to conversion into WeakReference are Closure and {@see \Prado\Collections\IWeakRetainable}.
  * Closure and IWeakRetainable are retained without WeakReference conversion because
  * they might be the only instance in the application.  Holding these instances
  * directly will properly increment their PHP use counter to be retained.

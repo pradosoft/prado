@@ -37,7 +37,7 @@ class TWizardStep extends TView
 
 	/**
 	 * Sets the wizard owning this step.
-	 * This method is used internally by {@see TWizard}.
+	 * This method is used internally by {@see \Prado\Web\UI\WebControls\TWizard}.
 	 * @param TWizard $wizard the wizard owning this step
 	 */
 	public function setWizard($wizard)

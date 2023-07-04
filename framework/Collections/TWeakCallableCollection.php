@@ -24,19 +24,19 @@ use WeakReference;
  * TWeakCallableCollection class
  *
  * TWeakCallableCollection implements a priority ordered list collection of callables.
- * This extends {@see TPriorityList}.  This holds the callables for object event handlers
+ * This extends {@see \Prado\Collections\TPriorityList}.  This holds the callables for object event handlers
  * and global event handlers by converting all callable objects into a WeakReference.
  * TWeakCallableCollection prevents circular references in global events that would
  * otherwise block object destruction, and thus removal of the callable in __destruct.
  * All data out has the callable objects converted back to the regular object reference
  * in a callable.
  *
- * Closure and {@see IWeakRetainable} are not converted into WeakReference as they
+ * Closure and {@see \Prado\Collections\IWeakRetainable} are not converted into WeakReference as they
  * may be the only instance in the application.  This increments their PHP use counter
  * resulting in them being retained.
  *
- * When searching by a {@see TEventHandler} object, it will only find itself and
- * will not match on its {@see TEventHandler::getHandler}.  However, if searching
+ * When searching by a {@see \Prado\TEventHandler} object, it will only find itself and
+ * will not match on its {@see \Prado\TEventHandler::getHandler}.  However, if searching
  * for a callable handler, it will first match direct callable handlers in the list,
  * and then search for matching TEventHandlers' Handler regardless of the data.
  * Put another way, searching for callable handlers will find TEventHandlers that
@@ -129,7 +129,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * This is a custom function for adding objects to the weak map.  Specifically,
-	 * if the object being added is a TEventHandler, we use the {@see TEventHandler::getHandlerObject}
+	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
 	 * @since 4.2.3
@@ -148,7 +148,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * This is a custom function for removing objects to the weak map.  Specifically,
-	 * if the object being removed is a TEventHandler, we use the {@see TEventHandler::getHandlerObject}
+	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
 	 * @since 4.2.3

@@ -24,7 +24,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * If the {@see setAutoSwitch AutoSwitch} property is enabled, the user will be able to switch the active view
  * to another one just hovering its corresponding tab caption.
  *
- * A TTabPanel control consists of one or several {@see TTabView} controls representing the possible
+ * A TTabPanel control consists of one or several {@see \Prado\Web\UI\WebControls\TTabView} controls representing the possible
  * tab views. At any time, only one tab view is visible (active), which is specified by any of
  * the following properties:
  * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
@@ -74,7 +74,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TTabView} objects into the {@see getViews Views} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TTabView} objects into the {@see getViews Views} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -477,7 +477,7 @@ class TTabPanel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\
 	}
 
 	/**
-	 * @return TTabViewCollection list of {@see TTabView} controls
+	 * @return TTabViewCollection list of {@see \Prado\Web\UI\WebControls\TTabView} controls
 	 */
 	public function getViews()
 	{

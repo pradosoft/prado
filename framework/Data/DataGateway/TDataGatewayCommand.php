@@ -440,7 +440,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Raised when a command is prepared and parameter binding is completed.
 	 * The parameter object is TDataGatewayEventParameter of which the
-	 * {@see TDataGatewayEventParameter::getCommand Command} property can be
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getCommand Command} property can be
 	 * inspected to obtain the sql query to be executed.
 	 * @param TDataGatewayCommand $command originator $sender
 	 * @param mixed $criteria TDataGatewayEventParameter
@@ -453,9 +453,9 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Raised when a command is executed and the result from the database was returned.
 	 * The parameter object is TDataGatewayResultEventParameter of which the
-	 * {@see TDataGatewayEventParameter::getResult Result} property contains
+	 * {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::getResult Result} property contains
 	 * the data return from the database. The data returned can be changed
-	 * by setting the {@see TDataGatewayEventParameter::setResult Result} property.
+	 * by setting the {@see \Prado\Data\DataGateway\TDataGatewayEventParameter::setResult Result} property.
 	 * @param TDataGatewayCommand $command originator sender
 	 * @param mixed $result TDataGatewayResultEventParameter
 	 */

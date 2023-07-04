@@ -865,9 +865,9 @@ class Prado
 
 	/**
 	 * Logs a message.
-	 * Messages logged by this method may be retrieved via {@see TLogger::getLogs}
+	 * Messages logged by this method may be retrieved via {@see \Prado\Util\TLogger::getLogs}
 	 * and may be recorded in different media, such as file, email, database, using
-	 * {@see TLogRouter}.
+	 * {@see \Prado\Util\TLogRouter}.
 	 * @param string $msg message to be logged
 	 * @param int $level level of the message. Valid values include
 	 * TLogger::DEBUG, TLogger::INFO, TLogger::NOTICE, TLogger::WARNING,

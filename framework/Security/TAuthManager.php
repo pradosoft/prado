@@ -19,7 +19,7 @@ use Prado\Web\THttpCookie;
  * TAuthManager class
  *
  * TAuthManager performs user authentication and authorization for a Prado application.
- * TAuthManager works together with a {@see IUserManager} module that can be
+ * TAuthManager works together with a {@see \Prado\Security\IUserManager} module that can be
  * specified via the {@see setUserManager UserManager} property.
  * If an authorization fails, TAuthManager will try to redirect the client
  * browser to a login page that is specified via the {@see setLoginPage LoginPage}.

@@ -15,7 +15,7 @@ use Prado\Web\UI\TControl;
  * TPagerPageChangedEventParameter class
  *
  * TPagerPageChangedEventParameter encapsulates the parameter data for
- * {@see TPager::onPageIndexChanged PageIndexChanged} event of {@see TPager} controls.
+ * {@see \Prado\Web\UI\WebControls\TPager::onPageIndexChanged PageIndexChanged} event of {@see \Prado\Web\UI\WebControls\TPager} controls.
  *
  * The {@see getCommandSource CommandSource} property refers to the control
  * that originally raises the OnCommand event, while {@see getNewPageIndex NewPageIndex}

@@ -17,7 +17,7 @@ use Prado\Util\Helpers\TBitHelper;
  * TURational implements a fraction in the form of one unsigned integer {@see getNumerator
  *  Numerator} divided by another unsigned integer {@see getDenominator Denominator}.
  *
- * TURational is a specialization of {@see TRational} and TRational has information
+ * TURational is a specialization of {@see \Prado\Util\Math\TRational} and TRational has information
  * about how these classes work.
  *
  * INF is "4294967295/0" and NAN (Not A Number) has the denominator equal zero

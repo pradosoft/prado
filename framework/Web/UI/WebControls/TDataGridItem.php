@@ -19,7 +19,7 @@ use Prado\TPropertyValue;
 /**
  * TDataGridItem class
  *
- * A TDataGridItem control represents an item in the {@see TDataGrid} control,
+ * A TDataGridItem control represents an item in the {@see \Prado\Web\UI\WebControls\TDataGrid} control,
  * such as heading section, footer section, or a data item.
  * The index and data value of the item can be accessed via {@see getItemIndex ItemIndex}>
  * and {@see getData Data} properties, respectively. The type of the item

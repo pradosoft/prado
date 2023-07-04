@@ -12,7 +12,7 @@ namespace Prado\Web\UI;
 /**
  * TWebColors class.
  * TWebColors defines the Extended Web Colors and their respective hex web color.
- * This is used by {@see TPropertyValue::ensureHexColor} to convert the web color
+ * This is used by {@see \Prado\TPropertyValue::ensureHexColor} to convert the web color
  * names to their hex values.
  *
  * @author Brad Anderson <belisoful@icloud.com>

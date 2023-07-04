@@ -34,7 +34,7 @@ namespace Prado\Web\UI\WebControls;
  * </pre>
  *
  * Note, the validation succeeds if the associated input control contains empty input.
- * Use a {@see TRequiredFieldValidator} to ensure the input is not empty.
+ * Use a {@see \Prado\Web\UI\WebControls\TRequiredFieldValidator} to ensure the input is not empty.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

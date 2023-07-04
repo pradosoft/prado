@@ -14,7 +14,7 @@ use Prado\Web\UI\WebControls\TDataList;
  * TActiveDataList class
  *
  * TActiveDataList represents a data bound and updatable grid control which is the
- * active counterpart to the original {@see TDataList} control.
+ * active counterpart to the original {@see \Prado\Web\UI\WebControls\TDataList} control.
  *
  * This component can be used in the same way as the regular datalist, the only
  * difference is that the active datalist uses callbacks instead of postbacks
@@ -89,7 +89,7 @@ class TActiveDataList extends TDataList implements IActiveControl
 	}
 
 	/**
-	 * Loops through all {@see TActivePager} on the page and registers the ones which are set to paginate
+	 * Loops through all {@see \Prado\Web\UI\ActiveControls\TActivePager} on the page and registers the ones which are set to paginate
 	 * the repeater for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */

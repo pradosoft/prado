@@ -48,9 +48,9 @@ class TBulletedList extends TListControl implements \Prado\Web\UI\IPostBackEvent
 
 	/**
 	 * Raises the postback event.
-	 * This method is required by {@see IPostBackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\IPostBackEventHandler} interface.
 	 * If {@see getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@see TPage::validate validate} method first.
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first.
 	 * It will raise {@see onClick OnClick} events.
 	 * This method is mainly used by framework and control developers.
 	 * @param mixed $param the event parameter

@@ -17,12 +17,12 @@ use Prado\Web\Javascripts\TJavaScript;
  * TReCaptchaValidator class
  *
  * TReCaptchaValidator validates user input against a reCAPTCHA represented by
- * a {@see TReCaptcha} control. The input control fails validation if its value
+ * a {@see \Prado\Web\UI\WebControls\TReCaptcha} control. The input control fails validation if its value
  * is not the same as the token displayed in reCAPTCHA. Note, if the user does
  * not enter any thing, it is still considered as failing the validation.
  *
  * To use TReCaptchaValidator, specify the {@see setCaptchaControl CaptchaControl}
- * to be the ID path of the {@see TReCaptcha} control.
+ * to be the ID path of the {@see \Prado\Web\UI\WebControls\TReCaptcha} control.
  *
  * @author Bérczi Gábor <gabor.berczi@devworx.hu>
  * @since 3.2

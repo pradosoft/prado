@@ -632,7 +632,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * A control is enabled if it allows client user interaction.
 	 * If $checkParents is true, all parent controls will be checked,
 	 * and unless they are all enabled, false will be returned.
-	 * The property Enabled is mainly used for {@see TWebControl}
+	 * The property Enabled is mainly used for {@see \Prado\Web\UI\WebControls\TWebControl}
 	 * derived controls.
 	 * @param bool $checkParents whether the parents should also be checked enabled
 	 * @return bool whether the control is enabled.
@@ -1031,8 +1031,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Finds a control by ID path within the current naming container.
 	 * The current naming container is either the control itself
-	 * if it implements {@see INamingContainer} or the control's naming container.
-	 * The ID path is an ID sequence separated by {@see TControl::ID_SEPARATOR}.
+	 * if it implements {@see \Prado\Web\UI\INamingContainer} or the control's naming container.
+	 * The ID path is an ID sequence separated by {@see \Prado\Web\UI\TControl::ID_SEPARATOR}.
 	 * For example, 'Repeater1.Item1.Button1' looks for a control with ID 'Button1'
 	 * whose naming container is 'Item1' whose naming container is 'Repeater1'.
 	 * @param string $id ID of the control to be looked up
@@ -1532,13 +1532,13 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * Broadcasts an event.
 	 * The event will be sent to all controls on the current page hierarchy.
 	 * If a control defines the event, the event will be raised for the control.
-	 * If a control implements {@see IBroadcastEventReceiver}, its
-	 * {@see IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()} method will
+	 * If a control implements {@see \Prado\Web\UI\IBroadcastEventReceiver}, its
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()} method will
 	 * be invoked which gives the control a chance to respond to the event.
 	 * For example, when broadcasting event 'OnClick', all controls having 'OnClick'
 	 * event will have this event raised, and all controls implementing
-	 * {@see IBroadcastEventReceiver} will also have its
-	 * {@see IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver} will also have its
+	 * {@see \Prado\Web\UI\IBroadcastEventReceiver::broadcastEventReceived broadcastEventReceived()}
 	 * invoked.
 	 * @param string $name name of the broadcast event
 	 * @param \Prado\Web\UI\TControl $sender sender of this event

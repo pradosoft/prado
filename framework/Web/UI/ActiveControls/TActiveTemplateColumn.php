@@ -23,10 +23,10 @@ use Prado\Web\UI\WebControls\TTemplateColumn;
  * and {@see setFooterTemplate FooterTemplate} to customize specific
  * type of cells in the column.
  *
- * This is the active counterpart to the {@see TTemplateColumn} control. For that purpose,
+ * This is the active counterpart to the {@see \Prado\Web\UI\WebControls\TTemplateColumn} control. For that purpose,
  * if sorting is allowed, the header links/buttons are replaced by active controls.
  *
- * Please refer to the original documentation of the {@see TTemplateColumn} for usage.
+ * Please refer to the original documentation of the {@see \Prado\Web\UI\WebControls\TTemplateColumn} for usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 3.1.9

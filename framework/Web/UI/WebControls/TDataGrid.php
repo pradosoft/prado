@@ -33,13 +33,13 @@ use Prado\Web\UI\ITemplate;
  * An item can be at one of three states: browsing, selected and edit.
  * The state determines how the item will be displayed. For example, if an item
  * is in edit state, it may be displayed as a table row with input text boxes
- * if the columns are of type {@see TBoundColumn}; and if in browsing state,
+ * if the columns are of type {@see \Prado\Web\UI\WebControls\TBoundColumn}; and if in browsing state,
  * they are displayed as static text.
  *
  * To change the state of an item, set {@see setEditItemIndex EditItemIndex}
  * or {@see setSelectedItemIndex SelectedItemIndex} property.
  *
- * Each datagrid item has a {@see TDataGridItem::getItemType type}
+ * Each datagrid item has a {@see \Prado\Web\UI\WebControls\TDataGridItem::getItemType type}
  * which tells the position and state of the item in the datalist. An item in the header
  * of the repeater is of type Header. A body item may be of either
  * Item, AlternatingItem, SelectedItem or EditItem, depending whether the item
@@ -49,13 +49,13 @@ use Prado\Web\UI\ITemplate;
  * table column will be displayed. For example, the header/footer text of that column,
  * the cells in that column, and so on. The following column types are currently
  * provided by the framework,
- * - {@see TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
- * - {@see TEditCommandColumn}, displaying edit/update/cancel command buttons
- * - {@see TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
- * - {@see TDropDownListColumn}, displaying a dropdown list when the item is in edit state
- * - {@see THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
- * - {@see TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
- * - {@see TTemplateColumn}, displaying content based on templates.
+ * - {@see \Prado\Web\UI\WebControls\TBoundColumn}, associated with a specific field in datasource and displays the corresponding data.
+ * - {@see \Prado\Web\UI\WebControls\TEditCommandColumn}, displaying edit/update/cancel command buttons
+ * - {@see \Prado\Web\UI\WebControls\TButtonColumn}, displaying generic command buttons that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TDropDownListColumn}, displaying a dropdown list when the item is in edit state
+ * - {@see \Prado\Web\UI\WebControls\THyperLinkColumn}, displaying a hyperlink that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}, displaying a checkbox that may be bound to specific field in datasource.
+ * - {@see \Prado\Web\UI\WebControls\TTemplateColumn}, displaying content based on templates.
  *
  * There are three ways to specify columns for a datagrid.
  * <ul>
@@ -272,7 +272,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@see TTableStyle} to be used by datagrid.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableStyle} to be used by datagrid.
 	 * @return TTableStyle control style to be used
 	 */
 	protected function createStyle()
@@ -658,7 +658,7 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datagrid
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -672,8 +672,8 @@ class TDataGrid extends TBaseDataList implements \Prado\Web\UI\INamingContainer
 	/**
 	 * This method overrides parent's implementation to handle
 	 * {@see onItemCommand OnItemCommand} event which is bubbled from
-	 * {@see TDataGridItem} child controls.
-	 * If the event parameter is {@see TDataGridCommandEventParameter} and
+	 * {@see \Prado\Web\UI\WebControls\TDataGridItem} child controls.
+	 * If the event parameter is {@see \Prado\Web\UI\WebControls\TDataGridCommandEventParameter} and
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@see onEditCommand OnEditCommand}).

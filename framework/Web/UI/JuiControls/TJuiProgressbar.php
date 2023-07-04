@@ -17,7 +17,7 @@ use Prado\Web\UI\ActiveControls\TCallbackEventParameter;
 /**
  * TJuiProgressbar class.
  *
- * TJuiProgressbar is an extension to {@see TActivePanel} based on jQuery-UI's
+ * TJuiProgressbar is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
  * {@see http://jqueryui.com/progressbar/ Progressbar} widget.
  *
  * ```php
@@ -119,7 +119,7 @@ class TJuiProgressbar extends TActivePanel implements IJuiOptions, ICallbackEven
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

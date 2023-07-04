@@ -13,9 +13,9 @@ namespace Prado\Web\UI\WebControls;
  * TRepeaterItemRenderer class
  *
  * TRepeaterItemRenderer can be used as a convenient base class to
- * define an item renderer class specific for {@see TRepeater}.
+ * define an item renderer class specific for {@see \Prado\Web\UI\WebControls\TRepeater}.
  *
- * TRepeaterItemRenderer extends {@see TItemDataRenderer} and implements
+ * TRepeaterItemRenderer extends {@see \Prado\Web\UI\WebControls\TItemDataRenderer} and implements
  * the bubbling scheme for the OnCommand event of repeater items.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

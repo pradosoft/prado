@@ -20,8 +20,8 @@ use Prado\Exceptions\TInvalidDataValueException;
 /**
  * TListControl class
  *
- * TListControl is a base class for list controls, such as {@see TListBox},
- * {@see TDropDownList}, {@see TCheckBoxList}, etc.
+ * TListControl is a base class for list controls, such as {@see \Prado\Web\UI\WebControls\TListBox},
+ * {@see \Prado\Web\UI\WebControls\TDropDownList}, {@see \Prado\Web\UI\WebControls\TCheckBoxList}, etc.
  * It manages the items and their status in a list control.
  * It also implements how the items can be populated from template and
  * data source.
@@ -32,7 +32,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * index of the selected item in the item list. You may also use
  * {@see getSelectedItem SelectedItem} and {@see getSelectedValue SelectedValue}
  * to get the selected item and its value. For multiple selection lists
- * (such as {@see TCheckBoxList} and {@see TListBox}), property
+ * (such as {@see \Prado\Web\UI\WebControls\TCheckBoxList} and {@see \Prado\Web\UI\WebControls\TListBox}), property
  * {@see getSelectedIndices SelectedIndices} is useful.
  *
  * TListControl implements {@see setAutoPostBack AutoPostBack} which allows
@@ -42,7 +42,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  *
  * There are three ways to populate the items in a list control: from template,
  * using {@see setDataSource DataSource} and using {@see setDataSourceID DataSourceID}.
- * The latter two are covered in {@see TDataBoundControl}. To specify items via
+ * The latter two are covered in {@see \Prado\Web\UI\WebControls\TDataBoundControl}. To specify items via
  * template, using the following template syntax:
  * ```php
  * <com:TListControl>
@@ -177,7 +177,7 @@ abstract class TListControl extends TDataBoundControl implements \Prado\IDataRen
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TListItem} objects into the {@see getItems Items} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TListItem} objects into the {@see getItems Items} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */

@@ -31,7 +31,7 @@ use Prado\Util\TLogger;
  * The TDbCronModule allows for adding, updating, and removing tasks from the
  * application and shell.  It can log executing tasks to the table as well.
  *
- * There are log maintenance methods and {@see TDbCronCleanLogTask} for cleaning
+ * There are log maintenance methods and {@see \Prado\Util\Cron\TDbCronCleanLogTask} for cleaning
  * the cron logs.
  *
  * Runtime Tasks can be added for execution onEndRequest.  Singleton tasks can
@@ -865,7 +865,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * @return null|string the ID of a {@see TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return null|string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID()
 	{
@@ -875,7 +875,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cron module.
-	 * @param string $value ID of the {@see TDataSourceConfig} module
+	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
 	 * @throws TInvalidOperationException when trying to set this property but the module is already initialized.
 	 */
 	public function setConnectionID($value)

@@ -125,7 +125,7 @@ class TActiveImageButton extends TImageButton implements IActiveControl, ICallba
 	 * Raises the callback event. This method is required by
 	 * {@see ICallbackEventHandler ICallbackEventHandler} interface. If
 	 * {@see getCausesValidation CausesValidation} is true, it will invoke the page's
-	 * {@see TPage::validate} method first. It will raise
+	 * {@see \Prado\Web\UI\TPage::validate} method first. It will raise
 	 * {@see onClick OnClick} event first and then the {@see onCallback OnCallback} event.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter

@@ -19,9 +19,9 @@ namespace Prado\Web;
  * Derived classes may override {@see constructUrl} and {@see parseUrl}
  * to provide customized URL schemes.
  *
- * By default, {@see THttpRequest} uses TUrlManager as its URL manager.
+ * By default, {@see \Prado\Web\THttpRequest} uses TUrlManager as its URL manager.
  * If you want to use your customized URL manager, load your manager class
- * as an application module and set {@see THttpRequest::setUrlManager THttpRequest.UrlManager}
+ * as an application module and set {@see \Prado\Web\THttpRequest::setUrlManager THttpRequest.UrlManager}
  * with the ID of your URL manager module.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -32,7 +32,7 @@ class TUrlManager extends \Prado\TModule
 	/**
 	 * Constructs a URL that can be recognized by PRADO.
 	 *
-	 * This method provides the actual implementation used by {@see THttpRequest::constructUrl}.
+	 * This method provides the actual implementation used by {@see \Prado\Web\THttpRequest::constructUrl}.
 	 * Override this method if you want to provide your own way of URL formatting.
 	 * If you do so, you may also need to override {@see parseUrl} so that the URL can be properly parsed.
 	 *
@@ -40,12 +40,12 @@ class TUrlManager extends \Prado\TModule
 	 * ```
 	 * /entryscript.php?serviceID=serviceParameter&get1=value1&...
 	 * ```
-	 * If {@see THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
+	 * If {@see \Prado\Web\THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'Path',
 	 * the following format is used instead:
 	 * ```
 	 * /entryscript.php/serviceID/serviceParameter/get1,value1/get2,value2...
 	 * ```
-	 * If {@see THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
+	 * If {@see \Prado\Web\THttpRequest::setUrlFormat THttpRequest.UrlFormat} is 'HiddenPath',
 	 * then entryscript.php will be hidden and the following format is used instead:
 	 * ```
 	 * /serviceID/serviceParameter/get1,value1/get2,value2...
@@ -109,7 +109,7 @@ class TUrlManager extends \Prado\TModule
 
 	/**
 	 * Parses the request URL and returns an array of input parameters.
-	 * This method is automatically invoked by {@see THttpRequest} when
+	 * This method is automatically invoked by {@see \Prado\Web\THttpRequest} when
 	 * handling a user request.
 	 *
 	 * In general, this method should parse the path info part of the requesting URL

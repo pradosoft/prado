@@ -13,8 +13,8 @@ namespace Prado\Web\UI;
  * IButtonControl interface
  *
  * IButtonControl specifies the common properties and events that must
- * be implemented by a button control, such as {@see TButton}, {@see TLinkButton},
- * {@see TImageButton}.
+ * be implemented by a button control, such as {@see \Prado\Web\UI\WebControls\TButton}, {@see \Prado\Web\UI\WebControls\TLinkButton},
+ * {@see \Prado\Web\UI\WebControls\TImageButton}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

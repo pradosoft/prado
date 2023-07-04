@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TValidationCompareOperator class.
  * TValidationCompareOperator defines the enumerable type for the comparison operations
- * that {@see TCompareValidator} can perform validation with.
+ * that {@see \Prado\Web\UI\WebControls\TCompareValidator} can perform validation with.
  *
  * The following enumerable values are defined:
  * - Equal

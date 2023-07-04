@@ -34,7 +34,7 @@ use Prado\Web\UI\TThemeManager;
  *
  * TApplication adopts a modular structure. A TApplication instance is a composition
  * of multiple modules. A module is an instance of class implementing
- * {@see IModule} interface. Each module accomplishes certain functionalities
+ * {@see \Prado\IModule} interface. Each module accomplishes certain functionalities
  * that are shared by all Prado components in an application.
  * There are default modules, composer modules, and user-defined modules. The latter
  * offers extreme flexibility of extending TApplication in a plug-and-play fashion.

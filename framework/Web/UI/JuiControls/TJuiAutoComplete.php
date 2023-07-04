@@ -36,7 +36,7 @@ use Prado\Web\UI\WebControls\TPanel;
  *
  * The list of suggestions should be set in the {@see onSuggestion OnSuggestion}
  * event handler. The partial word to match the suggestion is in the
- * {@see TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
+ * {@see \Prado\Web\UI\ActiveControls\TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
  * property. The datasource of the TJuiAutoComplete must be set using {@see setDataSource}
  * method. This sets the datasource for the suggestions repeater, available through
  * the {@see getSuggestions Suggestions} property. Header, footer templates and
@@ -66,7 +66,7 @@ use Prado\Web\UI\WebControls\TPanel;
  * When an suggestion is selected, that is, when the use has clicked, pressed
  * the "Enter" key, or pressed the "Tab" key, the {@see onSuggestionSelected OnSuggestionSelected}
  * event is raised. The
- * {@see TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
+ * {@see \Prado\Web\UI\ActiveControls\TCallbackEventParameter::getCallbackParameter TCallbackEventParameter::CallbackParameter}
  * property contains the index of the selected suggestion.
  *
  * TJuiAutoComplete allows multiple suggestions within one textbox with each

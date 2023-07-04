@@ -23,21 +23,21 @@ use Prado\Web\UI\WebControls\TLabel;
  * TActiveDataGrid class
  *
  * TActiveDataGrid represents a data bound and updatable grid control which is the
- * active counterpart to the original {@see TDataGrid} control.
+ * active counterpart to the original {@see \Prado\Web\UI\WebControls\TDataGrid} control.
  *
  * This component can be used in the same way as the regular datagrid, the only
  * difference is that the active datagrid uses callbacks instead of postbacks
  * for interaction.
  *
  * There are also active datagrid columns to work with the TActiveDataGrid, which are
- * - {@see TActiveBoundColumn}, the active counterpart to {@see TBoundColumn}.
- * - {@see TActiveLiteralColumn}, the active counterpart to {@see TLiteralColumn}.
- * - {@see TActiveCheckBoxColumn}, the active counterpart to {@see TCheckBoxColumn}.
- * - {@see TActiveDropDownListColumn}, the active counterpart to {@see TDropDownListColumn}.
- * - {@see TActiveHyperLinkColumn}, the active counterpart to {@see THyperLinkColumn}.
- * - {@see TActiveEditCommandColumn}, the active counterpart to {@see TEditCommandColumn}.
- * - {@see TActiveButtonColumn}, the active counterpart to {@see TButtonColumn}.
- * - {@see TActiveTemplateColumn}, the active counterpart to {@see TTemplateColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveBoundColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TBoundColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveLiteralColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TLiteralColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveCheckBoxColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TCheckBoxColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveDropDownListColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TDropDownListColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveHyperLinkColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\THyperLinkColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveEditCommandColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TEditCommandColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveButtonColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TButtonColumn}.
+ * - {@see \Prado\Web\UI\ActiveControls\TActiveTemplateColumn}, the active counterpart to {@see \Prado\Web\UI\WebControls\TTemplateColumn}.
  *
  * Please refer to the original documentation of the regular counterparts for usage.
  *
@@ -189,7 +189,7 @@ class TActiveDataGrid extends TDataGrid implements IActiveControl, ISurroundable
 	}
 
 	/**
-	 * Loops through all {@see TActivePager} on the page and registers the ones which are set to paginate
+	 * Loops through all {@see \Prado\Web\UI\ActiveControls\TActivePager} on the page and registers the ones which are set to paginate
 	 * the datagrid for rendering. This is to ensure that the connected pagers are also rendered if the
 	 * data source changed.
 	 */

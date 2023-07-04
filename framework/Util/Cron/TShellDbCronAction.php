@@ -19,7 +19,7 @@ use Prado\Shell\TShellWriter;
 /**
  * TShellDbCronAction class.
  *
- * TShellDbCronAction extends {@see TShellCronAction} to implement
+ * TShellDbCronAction extends {@see \Prado\Util\Cron\TShellCronAction} to implement
  * additional commands {@see addTask add}, {@see updateTask update},
  * and {@see removeTask}.
  *

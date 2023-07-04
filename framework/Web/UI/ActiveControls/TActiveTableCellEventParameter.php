@@ -45,8 +45,8 @@ class TActiveTableCellEventParameter extends TCallbackEventParameter
 	}
 
 	/**
-	 * Returns the zero-based index of the {@see TActiveTableCell} within the
-	 * {@see TTableCellCollection} of the parent {@see TTableRow} control.
+	 * Returns the zero-based index of the {@see \Prado\Web\UI\ActiveControls\TActiveTableCell} within the
+	 * {@see \Prado\Web\UI\WebControls\TTableCellCollection} of the parent {@see \Prado\Web\UI\WebControls\TTableRow} control.
 	 * @return int the zero-based index of the cell.
 	 */
 	public function getSelectedCellIndex()

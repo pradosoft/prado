@@ -21,7 +21,7 @@ use Prado\Web\UI\ITemplate;
  *
  * TDataList represents a data bound and updatable list control.
  *
- * Like {@see TRepeater}, TDataList displays its content repeatedly based on
+ * Like {@see \Prado\Web\UI\WebControls\TRepeater}, TDataList displays its content repeatedly based on
  * the data fetched from {@see setDataSource DataSource}.
  * The repeated contents in TDataList are called items, which are controls and
  * can be accessed through {@see getItems Items}. When {@see dataBind()} is
@@ -29,7 +29,7 @@ use Prado\Web\UI\ITemplate;
  * row to the item. Optionally, a TDataList can have a header, a footer and/or
  * separators between items.
  *
- * TDataList differs from {@see TRepeater} in that it supports tiling the items
+ * TDataList differs from {@see \Prado\Web\UI\WebControls\TRepeater} in that it supports tiling the items
  * in different manners and it maintains status of items to handle data update.
  *
  * The layout of the repeated contents are specified by inline templates.
@@ -43,11 +43,11 @@ use Prado\Web\UI\ITemplate;
  * A renderer can be any control class.
  * - If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
- * implement this interface, such as {@see TLabel}, {@see TTextBox}, etc.
- * - If the class implements {@see IItemDataRenderer}, the <b>ItemIndex</b> property will be set
+ * implement this interface, such as {@see \Prado\Web\UI\WebControls\TLabel}, {@see \Prado\Web\UI\WebControls\TTextBox}, etc.
+ * - If the class implements {@see \Prado\Web\UI\WebControls\IItemDataRenderer}, the <b>ItemIndex</b> property will be set
  * as the zero-based index of the item in the datalist item collection, and
  * the <b>ItemType</b> property as the item's type (such as TListItemType::Item).
- * {@see TDataListItemRenderer} may be used as the convenient base class which
+ * {@see \Prado\Web\UI\WebControls\TDataListItemRenderer} may be used as the convenient base class which
  * already implements {@see IDataItemRenderer}.
  *
  * The following properties are used to specify different types of template and renderer
@@ -402,7 +402,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template for item
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -435,7 +435,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template for each alternating item
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
@@ -468,7 +468,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the selected item template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setSelectedItemTemplate($value)
 	{
@@ -501,7 +501,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the edit item template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setEditItemTemplate($value)
 	{
@@ -534,7 +534,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the header template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -575,7 +575,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
@@ -616,7 +616,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the datalist
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -637,7 +637,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the separator template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{
@@ -909,7 +909,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 	 * This method overrides parent's implementation to handle
 	 * {@see onItemCommand OnItemCommand} event which is bubbled from
 	 * datalist items and their child controls.
-	 * If the event parameter is {@see TDataListCommandEventParameter} and
+	 * If the event parameter is {@see \Prado\Web\UI\WebControls\TDataListCommandEventParameter} and
 	 * the command name is a recognized one, which includes 'select', 'edit',
 	 * 'delete', 'update', and 'cancel' (case-insensitive), then a
 	 * corresponding command event is also raised (such as {@see onEditCommand OnEditCommand}).
@@ -1033,7 +1033,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Returns a value indicating whether this control contains header item.
-	 * This method is required by {@see IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool whether the datalist has header
 	 */
 	public function getHasHeader()
@@ -1043,7 +1043,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Returns a value indicating whether this control contains footer item.
-	 * This method is required by {@see IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool whether the datalist has footer
 	 */
 	public function getHasFooter()
@@ -1053,7 +1053,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Returns a value indicating whether this control contains separator items.
-	 * This method is required by {@see IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @return bool always false.
 	 */
 	public function getHasSeparators()
@@ -1063,7 +1063,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Returns a style used for rendering items.
-	 * This method is required by {@see IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)
 	 * @param int $index index of the item being rendered
 	 * @return TStyle item style
@@ -1081,7 +1081,7 @@ class TDataList extends TBaseDataList implements \Prado\Web\UI\INamingContainer,
 
 	/**
 	 * Renders an item in the list.
-	 * This method is required by {@see IRepeatInfoUser} interface.
+	 * This method is required by {@see \Prado\Web\UI\WebControls\IRepeatInfoUser} interface.
 	 * @param \Prado\Web\UI\THtmlWriter $writer writer for rendering purpose
 	 * @param TRepeatInfo $repeatInfo repeat information
 	 * @param string $itemType item type (Header,Footer,Item,AlternatingItem,SelectedItem,EditItem,Separator,Pager)

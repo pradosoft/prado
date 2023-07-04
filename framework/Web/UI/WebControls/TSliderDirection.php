@@ -13,7 +13,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TSliderDirection class.
  *
- * TSliderDirection defines the enumerable type for the possible direction that can be used in a {@see TSlider}
+ * TSliderDirection defines the enumerable type for the possible direction that can be used in a {@see \Prado\Web\UI\WebControls\TSlider}
  *
  * The following enumerable values are defined :
  * - Horizontal : Horizontal slider

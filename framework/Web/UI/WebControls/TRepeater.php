@@ -38,11 +38,11 @@ use Prado\Web\UI\ITemplate;
  * A renderer can be any control class.
  * - If the class implements {@see \Prado\IDataRenderer}, the <b>Data</b>
  * property will be set as the data row during databinding. Many PRADO controls
- * implement this interface, such as {@see TLabel}, {@see TTextBox}, etc.
- * - If the class implements {@see IItemDataRenderer}, the <b>ItemIndex</b> property will be set
+ * implement this interface, such as {@see \Prado\Web\UI\WebControls\TLabel}, {@see \Prado\Web\UI\WebControls\TTextBox}, etc.
+ * - If the class implements {@see \Prado\Web\UI\WebControls\IItemDataRenderer}, the <b>ItemIndex</b> property will be set
  * as the zero-based index of the item in the repeater item collection, and
  * the <b>ItemType</b> property as the item's type (such as TListItemType::Item).
- * {@see TRepeaterItemRenderer} may be used as the convenient base class which
+ * {@see \Prado\Web\UI\WebControls\TRepeaterItemRenderer} may be used as the convenient base class which
  * already implements {@see IDataItemRenderer}.
  *
  * The following properties are used to specify different types of template and renderer
@@ -285,7 +285,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template for repeater items
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setItemTemplate($value)
 	{
@@ -306,7 +306,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the alternative item template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setAlternatingItemTemplate($value)
 	{
@@ -327,7 +327,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the header template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setHeaderTemplate($value)
 	{
@@ -348,7 +348,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the footer template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setFooterTemplate($value)
 	{
@@ -369,7 +369,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the template applied when no data is bound to the repeater
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setEmptyTemplate($value)
 	{
@@ -390,7 +390,7 @@ class TRepeater extends TDataBoundControl implements \Prado\Web\UI\INamingContai
 
 	/**
 	 * @param \Prado\Web\UI\ITemplate $value the separator template
-	 * @throws TInvalidDataTypeException if the input is not an {@see ITemplate} or not null.
+	 * @throws TInvalidDataTypeException if the input is not an {@see \Prado\Web\UI\ITemplate} or not null.
 	 */
 	public function setSeparatorTemplate($value)
 	{

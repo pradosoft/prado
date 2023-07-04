@@ -14,12 +14,12 @@ namespace Prado\Web\UI\ActiveControls;
  * TActiveDatePickerClientScript class.
  *
  * Client-side date picker event {@see setOnDateChanged OnDateChanged}
- * can be modified through the {@see TActiveDatePicker::getClientSide ClientSide}
+ * can be modified through the {@see \Prado\Web\UI\ActiveControls\TActiveDatePicker::getClientSide ClientSide}
  * property of a date picker.
  *
  * The <tt>OnDateChanged</tt> event is raise when the date picker's date
  * is changed.
- * The formatted date according to {@see TDatePicker::getDateFormat DateFormat} is sent
+ * The formatted date according to {@see \Prado\Web\UI\WebControls\TDatePicker::getDateFormat DateFormat} is sent
  * as parameter to this event
  *
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>

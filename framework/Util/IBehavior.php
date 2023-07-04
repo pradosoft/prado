@@ -22,7 +22,7 @@ namespace Prado\Util;
  * from its class/property array configuration (or string).
  *
  * IBehavior is one of two types of behavior interfaces.  The other type of behavior
- * interface is the {@see IClassBehavior} that handles stateless behaviors and
+ * interface is the {@see \Prado\Util\IClassBehavior} that handles stateless behaviors and
  * where each behavior is attached to multiple different owners.
  *
  * All public methods and properties in the behavior are inherited by the owners
@@ -43,7 +43,7 @@ namespace Prado\Util;
  *  }
  * ```
  *
- * When an IBehaviors implements a "dy" dynamic event, the {@see TCallChain} is
+ * When an IBehaviors implements a "dy" dynamic event, the {@see \Prado\Util\TCallChain} is
  * appended to the end of the method argument list.  For example, a dynamic event method
  * implementations might look like:
  * ```php

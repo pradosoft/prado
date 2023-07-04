@@ -17,11 +17,11 @@ use Prado\Web\UI\ActiveControls\TActiveControlAdapter;
 /**
  * TActiveHtmlArea class
  *
- * TActiveHtmlArea is the active counterpart to {@see THtmlArea} with added support
+ * TActiveHtmlArea is the active counterpart to {@see \Prado\Web\UI\WebControls\THtmlArea} with added support
  * for callback handling and the possibility of setting the content of the WYSIWYG
  * text editor during callback.
  *
- * Please refer to the original documentation of {@see THtmlArea} for basic usage.
+ * Please refer to the original documentation of {@see \Prado\Web\UI\WebControls\THtmlArea} for basic usage.
  *
  * @author LANDWEHR Computer und Software GmbH <programmierung@landwehr-software.de>
  * @since 4.0

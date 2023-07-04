@@ -16,7 +16,7 @@ namespace Prado\Util;
  * information.  Each instance of IClassBehavior may be attached to multiple owners.
  *
  * IClassBehavior is one of two types of behavior interfaces.  The other type of
- * behavior interface is the {@see IBehavior} that handles stateful behaviors and
+ * behavior interface is the {@see \Prado\Util\IBehavior} that handles stateful behaviors and
  * where each behavior is attached to only one owner.
  *
  * All public methods and properties in the behavior are inherited by the owners
@@ -38,7 +38,7 @@ namespace Prado\Util;
  *  }
  * ```
  *
- * When an IClassBehaviors implements a "dy" dynamic event, the {@see TCallChain}
+ * When an IClassBehaviors implements a "dy" dynamic event, the {@see \Prado\Util\TCallChain}
  * is appended to the end of the method argument list as well.  For example, a dynamic
  * event method implementation might look like:
  * ```php

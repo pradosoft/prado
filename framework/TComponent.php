@@ -83,7 +83,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * clientside inside a javascript block.
  * In the second case, the property will be 'marked' as being a safe javascript
  * statement and will not be encoded when rendered inside a javascript block.
- * This special handling makes use of the {@see TJavaScriptLiteral} class.
+ * This special handling makes use of the {@see \Prado\Web\Javascripts\TJavaScriptLiteral} class.
  *
  *
  * Object Events
@@ -111,7 +111,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * $component->attachEventHandler('OnClick', $callback);
  * ```
  * The first two ways make use of the fact that $component->OnClick refers to
- * the event handler list {@see TWeakCallableCollection} for the 'OnClick' event.
+ * the event handler list {@see \Prado\Collections\TWeakCallableCollection} for the 'OnClick' event.
  * The variable $callback contains the definition of the event handler that can
  * be either:
  *
@@ -207,10 +207,10 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * will return null.  If there are handlers an 'fx' method will be called directly
  * within the object.  Global 'fx' events are triggered by calling {@see raiseEvent}.
  * For dynamic events where there are behaviors that respond to the dynamic events, a
- * {@see TCallChain} is developed.  A call chain allows the behavior dynamic event
+ * {@see \Prado\Util\TCallChain} is developed.  A call chain allows the behavior dynamic event
  * implementations to call further implementing behaviors within a chain.
  *
- * If an object implements {@see IDynamicMethods}, all global and object dynamic
+ * If an object implements {@see \Prado\Util\IDynamicMethods}, all global and object dynamic
  * events will be sent to {@see __dycall}.  In the case of global events, all
  * global events will trigger this method.  In the case of behaviors, all undefined
  * dynamic events  which are called will be passed through to this method.
@@ -223,13 +223,13 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * owner object.  Behaviors can be attached to single objects or whole classes
  * (or interfaces, parents, and first level traits).
  *
- * There are two types of behaviors.  There are individual {@see IBehavior} and
+ * There are two types of behaviors.  There are individual {@see \Prado\Util\IBehavior} and
  * there are class wide {IClassBehavior}.  IBehavior has one owner and IClassBehavior
  * can attach to multiple owners at the same time.  IClassBehavior is designed to be
  * stateless, like for specific filtering or addition of data.
  *
- * When a new class implements {@see IClassBehavior} or {@see IBehavior}, or extends
- * the PRADO implementations {@see TClassBehavior} and {@see TBehavior}, it may be
+ * When a new class implements {@see \Prado\Util\IClassBehavior} or {@see \Prado\Util\IBehavior}, or extends
+ * the PRADO implementations {@see \Prado\Util\TClassBehavior} and {@see \Prado\Util\TBehavior}, it may be
  * attached to a TComponent by calling the object's {@see attachBehavior}. The
  * behaviors associated name can then be used to {@see enableBehavior} or {@see
  * disableBehavior} the specific behavior.
@@ -247,7 +247,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * behavior inclusive function that acts as the PHP operator {@see instanceof}.
  * A behavior could provide the functionality of a specific class thus causing
  * the host object to act similarly to a completely different class.  A behavior
- * would then implement {@see IInstanceCheck} to provide the identity of the
+ * would then implement {@see \Prado\Util\IInstanceCheck} to provide the identity of the
  * different class.
  *
  * IClassBehavior are similar to IBehavior except that the class behavior
@@ -338,7 +338,7 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * implemented (similar to the built-in PHP method {@see __call}).  When
  * a dynamic or global event is called but a behavior does not implement it,
  * yet desires to know when an undefined dynamic event is run, the behavior
- * implements the interface {@see IDynamicMethods} and method {@see __dycall}.
+ * implements the interface {@see \Prado\Util\IDynamicMethods} and method {@see __dycall}.
  *
  * In the case of dynamic events, {@see __dycall} is supplied with the method
  * name and its parameters.  When a global event is raised, via {@see raiseEvent},
@@ -574,7 +574,7 @@ class TComponent
 
 	/**
 	 * This returns an array of the class name and the names of all its parents.  The base object last,
-	 * {@see TComponent}, and the deepest subclass is first.
+	 * {@see \Prado\TComponent}, and the deepest subclass is first.
 	 * @param bool $lowercase optional should the names be all lowercase true/false
 	 * @return string[] array of strings being the class hierarchy of $this.
 	 */
@@ -780,7 +780,7 @@ class TComponent
 	 * name, a property of a behavior, or an object 'on' event defined by the behavior.
 	 * @param string $name the property name or the event name
 	 * @throws TInvalidOperationException if the property/event is not defined.
-	 * @return mixed the property value or the event handler list as {@see TWeakCallableCollection}
+	 * @return mixed the property value or the event handler list as {@see \Prado\Collections\TWeakCallableCollection}
 	 */
 	public function __get($name)
 	{
@@ -1255,7 +1255,7 @@ class TComponent
 	 * It is equivalent to {@see getEventHandlers}($name)->add($handler).
 	 * For complete management of event handlers, use {@see getEventHandlers}
 	 * to get the event handler list first, and then do various
-	 * {@see TWeakCallableCollection} operations to append, insert or remove
+	 * {@see \Prado\Collections\TWeakCallableCollection} operations to append, insert or remove
 	 * event handlers. You may also do these operations like
 	 * getting and setting properties, e.g.,
 	 * ```php
@@ -1275,7 +1275,7 @@ class TComponent
 	 * @param string $name the event name
 	 * @param callable $handler the event handler
 	 * @param null|numeric $priority the priority of the handler, defaults to null which translates into the
-	 * default priority of 10.0 within {@see TWeakCallableCollection}
+	 * default priority of 10.0 within {@see \Prado\Collections\TWeakCallableCollection}
 	 * @throws TInvalidOperationException if the event does not exist
 	 */
 	public function attachEventHandler($name, $handler, $priority = null)
@@ -1290,7 +1290,7 @@ class TComponent
 	 * @param string $name event name
 	 * @param callable $handler the event handler to be removed
 	 * @param null|false|numeric $priority the priority of the handler, defaults to false which translates
-	 * to an item of any priority within {@see TWeakCallableCollection}; null means the default priority
+	 * to an item of any priority within {@see \Prado\Collections\TWeakCallableCollection}; null means the default priority
 	 * @return bool if the removal is successful
 	 */
 	public function detachEventHandler($name, $handler, $priority = false)
@@ -1308,7 +1308,7 @@ class TComponent
 	/**
 	 * Raises an event.  This raises both inter-object 'on' events and global 'fx' events.
 	 * This method represents the happening of an event and will
-	 * invoke all attached event handlers for the event in {@see TWeakCallableCollection} order.
+	 * invoke all attached event handlers for the event in {@see \Prado\Collections\TWeakCallableCollection} order.
 	 * This method does not handle intra-object/behavior dynamic 'dy' events.
 	 *
 	 * There are ways to handle event responses.  By default {@see EVENT_RESULT_FILTER},
@@ -1371,7 +1371,7 @@ class TComponent
 	 * and the parameters are the sender, the param, and then the name of the event.
 	 *
 	 * In the rare circumstance that the event handlers need to be raised in reverse order, then
-	 * specifying {@see TEventResults::EVENT_REVERSE} can be used to reverse the order of the
+	 * specifying {@see \Prado\TEventResults::EVENT_REVERSE} can be used to reverse the order of the
 	 * handlers.
 	 *
 	 * @param string $name the event name
@@ -1644,7 +1644,7 @@ class TComponent
 	 * the behavior.
 	 *
 	 * @param array|IBaseBehavior|string $behavior string, Behavior, or array of ['class' => 'MyBehavior', 'property1' => 'Value1' ...].
-	 * @throws TInvalidDataTypeException if the behavior is not an {@see IBaseBehavior}
+	 * @throws TInvalidDataTypeException if the behavior is not an {@see \Prado\Util\IBaseBehavior}
 	 * @return IBaseBehavior&TComponent an instance of $behavior or $behavior itself
 	 * @since 4.2.0
 	 */
@@ -1687,9 +1687,9 @@ class TComponent
 	 * ```
 	 * An array is used to initialize values of the behavior. eg. ['class' => '\\MyBehavior', 'property' => 'value'].
 	 * @param null|numeric $priority priority of behavior, default: null the default
-	 *  priority of the {@see TWeakCallableCollection}  Optional.
+	 *  priority of the {@see \Prado\Collections\TWeakCallableCollection}  Optional.
 	 * @throws TInvalidOperationException if the class behavior is being added to a
-	 *  {@see TComponent}; due to recursion.
+	 *  {@see \Prado\TComponent}; due to recursion.
 	 * @throws TInvalidOperationException if the class behavior is already defined
 	 * @return array|object the behavior if its an IClassBehavior and an array of all
 	 * behaviors that have been attached from 'fxAttachClassBehavior' when the Class
@@ -1736,7 +1736,7 @@ class TComponent
 	 * @param string $name the key of the class behavior
 	 * @param string $class class on which to attach this behavior.  Defaults to null.
 	 * @param null|false|numeric $priority priority: false is any priority, null is default
-	 *		{@see TWeakCallableCollection} priority, and numeric is a specific priority.
+	 *		{@see \Prado\Collections\TWeakCallableCollection} priority, and numeric is a specific priority.
 	 * @throws TInvalidOperationException if the the class cannot be derived from Late Static Binding and is not
 	 * not supplied as a parameter.
 	 * @return null|array|object the behavior if its an IClassBehavior and an array of all behaviors
@@ -1799,16 +1799,16 @@ class TComponent
 	 * Returns whether or not the object or any of the behaviors are of a particular class.
 	 * The name 'isa' stands for 'is a'.  This first checks if $this is an instanceof the class.
 	 * Then it checks if the $class is in the hierarchy, which includes first level traits.
-	 * It then checks each Behavior.  If a behavior implements {@see IInstanceCheck},
+	 * It then checks each Behavior.  If a behavior implements {@see \Prado\Util\IInstanceCheck},
 	 * then the behavior can determine what it is an instanceof.  If this behavior function returns true,
 	 * then this method returns true.  If the behavior instance checking function returns false,
 	 * then no further checking is performed as it is assumed to be correct.
 	 *
 	 * If the behavior instance check function returns nothing or null or the behavior
-	 * doesn't implement the {@see IInstanceCheck} interface, then the default instanceof occurs.
+	 * doesn't implement the {@see \Prado\Util\IInstanceCheck} interface, then the default instanceof occurs.
 	 * The default isa behavior is to check if the behavior is an instanceof the class.
 	 *
-	 * The behavior {@see IInstanceCheck} is to allow a behavior to have the host object
+	 * The behavior {@see \Prado\Util\IInstanceCheck} is to allow a behavior to have the host object
 	 * act as a completely different object.
 	 *
 	 * @param mixed|string $class class or string
@@ -1840,7 +1840,7 @@ class TComponent
 
 	/**
 	 * Returns all the behaviors attached to the TComponent.  IBaseBehavior[s] may
-	 * be attached but not {@see IBaseBehavior::getEnabled Enabled}.
+	 * be attached but not {@see \Prado\Util\IBaseBehavior::getEnabled Enabled}.
 	 * @param ?string $class Filters the result by class, default null for no filter.
 	 * @return array The behaviors [optionally filtered] attached to the TComponent.
 	 * @since 4.2.2
@@ -1858,8 +1858,8 @@ class TComponent
 	/**
 	 * Attaches a list of behaviors to the component.
 	 * Each behavior is indexed by its name and should be an instance of
-	 * {@see IBaseBehavior}, a string specifying the behavior class, or a
-	 * {@see TClassBehaviorEventParameter}.
+	 * {@see \Prado\Util\IBaseBehavior}, a string specifying the behavior class, or a
+	 * {@see \Prado\Util\TClassBehaviorEventParameter}.
 	 * @param array $behaviors list of behaviors to be attached to the component
 	 * @param bool $cloneIBehavior Should IBehavior be cloned before attaching.
 	 *   Default is false.
@@ -1886,8 +1886,8 @@ class TComponent
 	/**
 	 * Detaches select behaviors from the component.
 	 * Each behavior is indexed by its name and should be an instance of
-	 * {@see IBaseBehavior}, a string specifying the behavior class, or a
-	 * {@see TClassBehaviorEventParameter}.
+	 * {@see \Prado\Util\IBaseBehavior}, a string specifying the behavior class, or a
+	 * {@see \Prado\Util\TClassBehaviorEventParameter}.
 	 * @param array $behaviors list of behaviors to be detached from the component
 	 * @since 3.2.3
 	 */
@@ -1922,7 +1922,7 @@ class TComponent
 	 * Attaches a behavior to this component.
 	 * This method will create the behavior object based on the given
 	 * configuration. After that, the behavior object will be initialized
-	 * by calling its {@see IBaseBehavior::attach} method.
+	 * by calling its {@see \Prado\Util\IBaseBehavior::attach} method.
 	 *
 	 * Already attached behaviors may implement the function:
 	 * ```php
@@ -1936,7 +1936,7 @@ class TComponent
 	 *
 	 * @param null|numeric|string $name the behavior's name. It should uniquely identify this behavior.
 	 * @param array|IBaseBehavior|string $behavior the behavior configuration. This is the name of the Behavior Class
-	 * instanced by {@see PradoBase::createComponent}, or is a Behavior, or is an array of
+	 * instanced by {@see \Prado\PradoBase::createComponent}, or is a Behavior, or is an array of
 	 * ['class'=>'TBehavior' property1='value 1' property2='value2'...] with the class and properties
 	 * with values.
 	 * @param null|numeric $priority
@@ -1965,7 +1965,7 @@ class TComponent
 
 	/**
 	 * Detaches a behavior from the component.
-	 * The behavior's {@see IBaseBehavior::detach} method will be invoked.
+	 * The behavior's {@see \Prado\Util\IBaseBehavior::detach} method will be invoked.
 	 *
 	 * Behaviors may implement the function:
 	 * ```php

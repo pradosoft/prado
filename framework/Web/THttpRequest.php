@@ -66,8 +66,8 @@ use Prado\TEventResults;
  * THttpRequest also provides the cookies sent by the user, user information such
  * as his browser capabilities, accepted languages, etc.
  *
- * By default, THttpRequest is registered with {@see TApplication} as the
- * request module. It can be accessed via {@see TApplication::getRequest()}.
+ * By default, THttpRequest is registered with {@see \Prado\TApplication} as the
+ * request module. It can be accessed via {@see \Prado\TApplication::getRequest()}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
@@ -303,7 +303,7 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 
 	/**
 	 * Sets the URL manager module.
-	 * By default, {@see TUrlManager} is used for managing URLs.
+	 * By default, {@see \Prado\Web\TUrlManager} is used for managing URLs.
 	 * You may specify a different module for URL managing tasks
 	 * by loading it as an application module and setting this property
 	 * with the module ID.

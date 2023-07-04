@@ -142,7 +142,7 @@ class TLabel extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\IDa
 
 	/**
 	 * Sets the ID of the control that the label is associated with.
-	 * The control must be locatable via {@see TControl::findControl} using the ID.
+	 * The control must be locatable via {@see \Prado\Web\UI\TControl::findControl} using the ID.
 	 * @param string $value the associated control ID
 	 */
 	public function setForControl($value)

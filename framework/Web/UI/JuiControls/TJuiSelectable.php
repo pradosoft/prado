@@ -20,10 +20,10 @@ use Prado\Web\UI\WebControls\TRepeater;
 /**
  * TJuiSelectable class.
  *
- * TJuiSelectable is an extension to {@see TActivePanel} based on jQuery-UI's
+ * TJuiSelectable is an extension to {@see \Prado\Web\UI\ActiveControls\TActivePanel} based on jQuery-UI's
  * {@see http://jqueryui.com/selectable/ Selectable} interaction.
  * TJuiSelectable can be feed a {@see setDataSource DataSource} and will interally
- * render a {@see TRepeater} that displays items in an unordered list.
+ * render a {@see \Prado\Web\UI\WebControls\TRepeater} that displays items in an unordered list.
  * Items can be selected by clicking on them, individually or in a group.
  *
  * ```php
@@ -132,7 +132,7 @@ class TJuiSelectable extends TActivePanel implements IJuiOptions, ICallbackEvent
 	}
 
 	/**
-	 * Raises callback event. This method is required by the {@see ICallbackEventHandler}
+	 * Raises callback event. This method is required by the {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler}
 	 * interface.
 	 * @param TCallbackEventParameter $param the parameter associated with the callback event
 	 */

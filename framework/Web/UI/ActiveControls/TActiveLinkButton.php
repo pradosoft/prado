@@ -24,7 +24,7 @@ use Prado\Web\UI\WebControls\TLinkButton;
  * The {@see onCallback OnCallback} event is raised during a callback request
  * and it is raise <b>after</b> the {@see onClick OnClick} event.
  *
- * When the {@see TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
+ * When the {@see \Prado\Web\UI\ActiveControls\TBaseActiveCallbackControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true, changing the {@see setText Text} property during callback request
  * will update the link text upon callback response completion.
  *
@@ -65,7 +65,7 @@ class TActiveLinkButton extends TLinkButton implements IActiveControl, ICallback
 	 * Raises the callback event. This method is required by
 	 * {@see ICallbackEventHandlerICallbackEventHandler} interface. If
 	 * {@see getCausesValidation CausesValidation} is true, it will
-	 * invoke the page's {@see TPage::validate validate} method first. It will raise
+	 * invoke the page's {@see \Prado\Web\UI\TPage::validate validate} method first. It will raise
 	 * {@see onClick OnClick} event first and then the {@see onCallback OnCallback}
 	 * event.
 	 * This method is mainly used by framework and control developers.

@@ -15,7 +15,7 @@ use Prado\Web\UI\TControl;
  * TDataListItemEventParameter class
  *
  * TDataListItemEventParameter encapsulates the parameter data for
- * {@see TDataList::onItemCreated ItemCreated} event of {@see TDataList} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataList::onItemCreated ItemCreated} event of {@see \Prado\Web\UI\WebControls\TDataList} controls.
  * The {@see getItem Item} property indicates the DataList item related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

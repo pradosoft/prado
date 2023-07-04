@@ -74,13 +74,13 @@ class TActiveRecordConfig extends TDataSourceConfig
 	public const DEFAULT_GATEWAY_CLASS = \Prado\Data\ActiveRecord\TActiveRecordGateway::class;
 
 	/**
-	 * Defaults to {@see TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 * Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
 	 * @var string
 	 */
 	private $_managerClass = self::DEFAULT_MANAGER_CLASS;
 
 	/**
-	 * Defaults to {@see TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 * @var string
 	 */
 	private $_gatewayClass = self::DEFAULT_GATEWAY_CLASS;
@@ -93,7 +93,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	private $_enableCache = false;
 
 	/**
-	 * Defaults to '{@see TActiveRecordInvalidFinderResult::Null Null}'
+	 * Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'
 	 *
 	 * @var string|TActiveRecordInvalidFinderResult
 	 * @since 3.1.5
@@ -137,7 +137,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return string the implementation class of ActiveRecordManager. Defaults to {@see TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
+	 * @return string the implementation class of ActiveRecordManager. Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_MANAGER_CLASS}
 	 */
 	public function getManagerClass()
 	{
@@ -154,7 +154,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@see TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
+	 * @return string the implementation class of ActiveRecordGateway. Defaults to {@see \Prado\Data\ActiveRecord\TActiveRecordConfig::DEFAULT_GATEWAY_CLASS DEFAULT_GATEWAY_CLASS}
 	 */
 	public function getGatewayClass()
 	{
@@ -179,7 +179,7 @@ class TActiveRecordConfig extends TDataSourceConfig
 	}
 
 	/**
-	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see TActiveRecordInvalidFinderResult::Null Null}'.
+	 * @return TActiveRecordInvalidFinderResult Defaults to '{@see \Prado\Data\ActiveRecord\TActiveRecordInvalidFinderResult::Null Null}'.
 	 * @see setInvalidFinderResult
 	 * @since 3.1.5
 	 */

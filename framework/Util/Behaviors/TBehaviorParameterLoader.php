@@ -32,7 +32,7 @@ use Prado\Util\IBaseBehavior;
  * ```
  *
  * TBehaviorParameterLoader can be used in parameters to load behaviors through the
- * application configuration parameters, {@see TParameterModule}, as well in each
+ * application configuration parameters, {@see \Prado\Util\TParameterModule}, as well in each
  * folder through the config.xml/php files.
  *
  * @author Brad Anderson <belisoful@icloud.com>

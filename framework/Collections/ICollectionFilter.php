@@ -13,7 +13,7 @@ namespace Prado\Collections;
  * ICollectionFilter interface
  *
  * Collections implement this to convert their items for storage. Mainly this is
- * used by {@see TWeakCallableCollection} and {@see TWeakList} to convert objects
+ * used by {@see \Prado\Collections\TWeakCallableCollection} and {@see \Prado\Collections\TWeakList} to convert objects
  * into {@see WeakReference}.
  *
  * @author Brad Anderson <belisoful@icloud.com>

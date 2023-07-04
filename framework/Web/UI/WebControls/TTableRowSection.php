@@ -12,7 +12,7 @@ namespace Prado\Web\UI\WebControls;
 /**
  * TTableRowSection class.
  * TTableRowSection defines the enumerable type for the possible table sections
- * that a {@see TTableRow} can be within.
+ * that a {@see \Prado\Web\UI\WebControls\TTableRow} can be within.
  *
  * The following enumerable values are defined:
  * - Header: in table header

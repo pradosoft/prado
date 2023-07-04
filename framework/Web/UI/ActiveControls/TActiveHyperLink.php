@@ -17,7 +17,7 @@ use Prado\Web\UI\WebControls\THyperLink;
  * TActiveHyperLink class.
  *
  * The active control counterpart of THyperLink component. When
- * {@see TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
+ * {@see \Prado\Web\UI\ActiveControls\TBaseActiveControl::setEnableUpdate ActiveControl.EnableUpdate}
  * property is true the during a callback request, setting {@see setText Text}
  * property will also set the text of the label on the client upon callback
  * completion. Similarly, for other properties such as {@see setImageUrl ImageUrl},

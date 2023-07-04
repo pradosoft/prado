@@ -38,7 +38,7 @@ use Prado\Web\UI\WebControls\TRepeater;
  * is called when request to save the record is requested.
  *
  * Validators in the custom external editor template should have the
- * {@see TBaseValidator::setValidationGroup ValidationGroup} property set to the
+ * {@see \Prado\Web\UI\WebControls\TBaseValidator::setValidationGroup ValidationGroup} property set to the
  * value of the {@see getValidationGroup} of the TScaffoldEditView instance
  * (the edit view instance is the <b>Parent</b> of the IScaffoldEditRenderer in most
  * cases.

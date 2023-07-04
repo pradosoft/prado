@@ -17,8 +17,8 @@ namespace Prado\Caching;
  * these objects. If any of them reports a dependency change, TChainedCacheDependency
  * will return true for the checking.
  *
- * To add dependencies to TChainedCacheDependency, use {@see TChainedCacheDependency::getDependencies() Dependencies }
- * which gives a {@see TCacheDependencyList} instance and can be used like an array
+ * To add dependencies to TChainedCacheDependency, use {@see \Prado\Caching\TChainedCacheDependency::getDependencies() Dependencies }
+ * which gives a {@see \Prado\Caching\TCacheDependencyList} instance and can be used like an array
  * (see {@see \Prado\Collections\TList} for more details).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

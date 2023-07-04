@@ -175,7 +175,7 @@ class TRadioButton extends TCheckBox
 	 * A unique group is a radiobutton group unique among the whole page hierarchy,
 	 * while the {@see setGroupName GroupName} specifies a group that is unique
 	 * among the control's naming container only.
-	 * For example, each cell of a {@see TDataGrid} is a naming container.
+	 * For example, each cell of a {@see \Prado\Web\UI\WebControls\TDataGrid} is a naming container.
 	 * If you specify {@see setGroupName GroupName} for a radiobutton in a cell,
 	 * it groups together radiobutton within a cell, but not the other, even though
 	 * they have the same {@see setGroupName GroupName}.

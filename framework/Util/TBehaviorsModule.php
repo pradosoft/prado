@@ -19,7 +19,7 @@ use Prado\Xml\TXmlElement;
 /**
  * TBehaviorsModule class.
  *
- * TBehaviorsModule loads and attaches {@see TBehavior}.  This attaches
+ * TBehaviorsModule loads and attaches {@see \Prado\Util\TBehavior}.  This attaches
  * Behaviors to classes and to application components like the TApplication,
  * individual modules, and TPage of the TPageService.
  *

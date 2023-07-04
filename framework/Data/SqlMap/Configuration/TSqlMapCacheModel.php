@@ -22,7 +22,7 @@ use Prado\TPropertyValue;
  *
  * The cache model uses a pluggable framework for supporting different types of
  * caches. The choice of cache is specified by the {@see Implementation setImplementation()}
- * property. The class name specified must be one of {@see TSqlMapCacheTypes}.
+ * property. The class name specified must be one of {@see \Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes}.
  *
  * The cache implementations, LRU and FIFO cache below do not persist across
  * requests. That is, once the request is complete, all cache data is lost.

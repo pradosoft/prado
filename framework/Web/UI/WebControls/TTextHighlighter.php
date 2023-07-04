@@ -29,11 +29,11 @@ use Prado\Web\Javascripts\TJavaScript;
  * By setting {@see setShowLineNumbers ShowLineNumbers} to true, the highlighted
  * result may be shown with line numbers. To style lin numbers, use the css class "hljs-line-numbers".
  *
- * By default the contents are encoded using {@see THttpUtility::htmlEncode} before being rendered, and
+ * By default the contents are encoded using {@see \Prado\Web\THttpUtility::htmlEncode} before being rendered, and
  * any leading end-of-line character is removed to avoid an empty line being rendered.
  * Setting {@see setEncodeHtml EncodeHtml} to false the original content will be rendered.
  *
- * Note, TTextHighlighter requires {@see THead} to be placed on the page template
+ * Note, TTextHighlighter requires {@see \Prado\Web\UI\WebControls\THead} to be placed on the page template
  * because it needs to insert some CSS styles.
  *
  * @author Wei Zhuo<weizhuo[at]gmail[dot]com>
@@ -139,7 +139,7 @@ class TTextHighlighter extends TTextProcessor
 	}
 
 	/**
-	 * @param bool $value wether to html-encode the contents using {@see THttpUtility::htmlEncode}.
+	 * @param bool $value wether to html-encode the contents using {@see \Prado\Web\THttpUtility::htmlEncode}.
 	 */
 	public function setEncodeHtml($value)
 	{

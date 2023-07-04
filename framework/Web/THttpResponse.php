@@ -29,8 +29,8 @@ use Prado\TPropertyValue;
  * To redirect client browser to a new URL, use {@see redirect()}.
  * To send a file to client, use {@see writeFile()}.
  *
- * By default, THttpResponse is registered with {@see TApplication} as the
- * response module. It can be accessed via {@see TApplication::getResponse()}.
+ * By default, THttpResponse is registered with {@see \Prado\TApplication} as the
+ * response module. It can be accessed via {@see \Prado\TApplication::getResponse()}.
  *
  * THttpResponse may be configured in application configuration file as follows
  *
@@ -40,7 +40,7 @@ use Prado\TPropertyValue;
  * and {@see getBufferOutput BufferOutput} are optional properties of THttpResponse.
  *
  * THttpResponse sends charset header if either {@see setCharset() Charset}
- * or {@see TGlobalization::setCharset() TGlobalization.Charset} is set.
+ * or {@see \Prado\I18N\TGlobalization::setCharset() TGlobalization.Charset} is set.
  *
  * Since 3.1.2, HTTP status code can be set with the {@see setStatusCode StatusCode} property.
  *
@@ -273,7 +273,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Set the HTTP status code for the response.
-	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@see THttpRequest::getHttpProtocolVersion})
+	 * The code and its reason will be sent to client using the currently requested http protocol version (see {@see \Prado\Web\THttpRequest::getHttpProtocolVersion})
 	 * Keep in mind that HTTP/1.0 clients might not understand all status codes from HTTP/1.1
 	 *
 	 * @param int $status HTTP status code

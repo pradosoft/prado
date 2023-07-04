@@ -15,7 +15,7 @@ use Prado\Web\UI\TControl;
  * TRepeaterCommandEventParameter class
  *
  * TRepeaterCommandEventParameter encapsulates the parameter data for
- * {@see TRepeater::onItemCommand ItemCommand} event of {@see TRepeater} controls.
+ * {@see \Prado\Web\UI\WebControls\TRepeater::onItemCommand ItemCommand} event of {@see \Prado\Web\UI\WebControls\TRepeater} controls.
  *
  * The {@see getItem Item} property indicates the repeater item related with the event.
  * The {@see getCommandSource CommandSource} refers to the control that originally

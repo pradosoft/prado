@@ -18,7 +18,7 @@ namespace Prado\Web\UI\WebControls;
  * TDataGridPagerEventParameter class
  *
  * TDataGridPagerEventParameter encapsulates the parameter data for
- * {@see TDataGrid::onPagerCreated OnPagerCreated} event of {@see TDataGrid} controls.
+ * {@see \Prado\Web\UI\WebControls\TDataGrid::onPagerCreated OnPagerCreated} event of {@see \Prado\Web\UI\WebControls\TDataGrid} controls.
  * The {@see getPager Pager} property indicates the datagrid pager related with the event.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

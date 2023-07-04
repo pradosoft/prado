@@ -39,8 +39,8 @@ use Prado\Exceptions\TConfigurationException;
  * $value = $cache->get('value');
  * ```
  *
- * If loaded, TEtcdCache will register itself with {@see TApplication} as the
- * cache module. It can be accessed via {@see TApplication::getCache()}.
+ * If loaded, TEtcdCache will register itself with {@see \Prado\TApplication} as the
+ * cache module. It can be accessed via {@see \Prado\TApplication::getCache()}.
  *
  * TEtcdCache may be configured in application configuration file as follows
  * ```php

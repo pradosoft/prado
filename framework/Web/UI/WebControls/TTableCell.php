@@ -44,7 +44,7 @@ class TTableCell extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Creates a style object for the control.
-	 * This method creates a {@see TTableItemStyle} to be used by the table cell.
+	 * This method creates a {@see \Prado\Web\UI\WebControls\TTableItemStyle} to be used by the table cell.
 	 * @return TStyle control style to be used
 	 */
 	protected function createStyle()

@@ -21,7 +21,7 @@ use Prado\Web\Javascripts\TJavaScript;
  * TAccordion displays an accordion control. Users can click on the view headers to switch among
  * different accordion views. Each accordion view is an independent panel that can contain arbitrary content.
  *
- * A TAccordion control consists of one or several {@see TAccordionView} controls representing the possible
+ * A TAccordion control consists of one or several {@see \Prado\Web\UI\WebControls\TAccordionView} controls representing the possible
  * accordion views. At any time, only one accordion view is visible (active), which is specified by any of
  * the following properties:
  * - {@see setActiveViewIndex ActiveViewIndex} - the zero-based integer index of the view in the view collection.
@@ -79,7 +79,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	/**
 	 * Adds object parsed from template to the control.
-	 * This method adds only {@see TAccordionView} objects into the {@see getViews Views} collection.
+	 * This method adds only {@see \Prado\Web\UI\WebControls\TAccordionView} objects into the {@see getViews Views} collection.
 	 * All other objects are ignored.
 	 * @param mixed $object object parsed from template
 	 */
@@ -498,7 +498,7 @@ class TAccordion extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 	}
 
 	/**
-	 * @return TAccordionViewCollection list of {@see TAccordionView} controls
+	 * @return TAccordionViewCollection list of {@see \Prado\Web\UI\WebControls\TAccordionView} controls
 	 */
 	public function getViews()
 	{

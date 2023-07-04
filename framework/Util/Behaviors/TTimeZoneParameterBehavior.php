@@ -55,7 +55,7 @@ class TTimeZoneParameterBehavior extends TBehavior
 	private $_timeZoneParameter = self::TIMEZONE_PARAMETER_NAME;
 
 	/**
-	 * @var object {@see TMapRouteBehavior} that routes changes to the parameter
+	 * @var object {@see \Prado\Util\Behaviors\TMapRouteBehavior} that routes changes to the parameter
 	 * is handled by setTimeZone.
 	 */
 	private $_paramBehavior;

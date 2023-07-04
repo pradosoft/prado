@@ -22,10 +22,10 @@ use Prado\Collections\IPriorityProperty;
  * properties, and fine internal process control for the owner component at run time.
  *
  * There are two specific types of behaviors in PRADO:
- * -{@see IClassBehavior} is stateless and one instance attaches to multiple owners.
+ * -{@see \Prado\Util\IClassBehavior} is stateless and one instance attaches to multiple owners.
  *    The owner is injected as the first parameter argument in behavior implemented
  *    methods called on the owner.
- * -{@see IBehavior} is stateful and each one instance attaches to one owner.
+ * -{@see \Prado\Util\IBehavior} is stateful and each one instance attaches to one owner.
  *
  * All public methods and properties in the behavior are inherited by the owners
  * and so IBaseBehavior act like run-time traits.
@@ -51,7 +51,7 @@ use Prado\Collections\IPriorityProperty;
  * method callable without the $chain but will always be present in owner called
  * behavior dynamic event methods.
  *
- * See {@see IBehavior} and {@see IClassBehavior} for examples of their respective
+ * See {@see \Prado\Util\IBehavior} and {@see \Prado\Util\IClassBehavior} for examples of their respective
  * dynamic event implementations.
  *
  * @author Brad Anderson <belisoful@icloud.ocm>

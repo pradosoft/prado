@@ -18,7 +18,7 @@ use Prado\Web\UI\WebControls\TMultiView;
 /**
  * TActiveMultiView class.
  *
- * TActiveMultiView is the active counterpart to the original {@see TMultiView} control.
+ * TActiveMultiView is the active counterpart to the original {@see \Prado\Web\UI\WebControls\TMultiView} control.
  * It re-renders on Callback when {@see setActiveView ActiveView} or
  * {@see setActiveViewIndex ActiveViewIndex} is called.
  *

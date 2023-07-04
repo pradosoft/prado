@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
  *
  * TDbLogRoute stores log messages in a database table.
  * To specify the database table, set {@see setConnectionID ConnectionID} to be
- * the ID of a {@see TDataSourceConfig} module and {@see setLogTableName LogTableName}.
+ * the ID of a {@see \Prado\Data\TDataSourceConfig} module and {@see setLogTableName LogTableName}.
  * If they are not setting, an SQLite3 database named 'sqlite3.log' will be created and used
  * under the runtime directory.
  *
@@ -340,7 +340,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * @return string the ID of a {@see TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
 	 */
 	public function getConnectionID()
 	{
@@ -350,7 +350,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this log route.
-	 * @param string $value ID of the {@see TDataSourceConfig} module
+	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
 	 * @return static The current object.
 	 */
 	public function setConnectionID($value): static

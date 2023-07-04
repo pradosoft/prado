@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
  * TDropDownList class
  *
  * TDropDownList displays a dropdown list on a Web page.
- * It inherits all properties and events from {@see TListControl}.
+ * It inherits all properties and events from {@see \Prado\Web\UI\WebControls\TListControl}.
  *
  * Since v3.0.3, TDropDownList starts to support optgroup. To specify an option group for
  * a list item, set a Group attribute with it,

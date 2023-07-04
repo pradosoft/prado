@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
  *
  * TAttributeCollection implements a collection for storing attribute names and values.
  *
- * Besides all functionalities provided by {@see TMap}, TAttributeCollection
+ * Besides all functionalities provided by {@see \Prado\Collections\TMap}, TAttributeCollection
  * allows you to get and set attribute values like getting and setting
  * properties. For example, the following usages are all valid for a
  * TAttributeCollection object:

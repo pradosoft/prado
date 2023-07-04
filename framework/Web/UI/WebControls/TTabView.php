@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
 /**
  * TTabView class.
  *
- * TTabView represents a view in a {@see TTabPanel} control.
+ * TTabView represents a view in a {@see \Prado\Web\UI\WebControls\TTabPanel} control.
  *
  * The content in a TTabView can be specified by the {@see setText Text} property
  * or its child controls. In template syntax, the latter means enclosing the content

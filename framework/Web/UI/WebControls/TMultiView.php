@@ -18,7 +18,7 @@ use Prado\Web\UI\TControl;
 /**
  * TMultiView class
  *
- * TMultiView serves as a container for a group of {@see TView} controls.
+ * TMultiView serves as a container for a group of {@see \Prado\Web\UI\WebControls\TView} controls.
  * The view collection can be retrieved by {@see getViews Views}.
  * Each view contains child controls. TMultiView determines which view and its
  * child controls are visible. At any time, at most one view is visible (called
@@ -50,11 +50,11 @@ class TMultiView extends \Prado\Web\UI\TControl
 
 	/**
 	 * Processes an object that is created during parsing template.
-	 * This method overrides the parent implementation by adding only {@see TView}
+	 * This method overrides the parent implementation by adding only {@see \Prado\Web\UI\WebControls\TView}
 	 * controls as children.
 	 * @param \Prado\TComponent|string $object text string or component parsed and instantiated in template
 	 * @see createdOnTemplate
-	 * @throws TConfigurationException if controls other than {@see TView} is being added
+	 * @throws TConfigurationException if controls other than {@see \Prado\Web\UI\WebControls\TView} is being added
 	 */
 	public function addParsedObject($object)
 	{

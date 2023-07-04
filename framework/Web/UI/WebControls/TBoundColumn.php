@@ -36,7 +36,7 @@ use Prado\TPropertyValue;
  * and {@see setEditItemRenderer EditItemRenderer} which can be used to specify
  * the layout of the datagrid cells in browsing and editing mode.
  * A renderer refers to a control class that is to be instantiated as a control.
- * For more details, see {@see TRepeater} and {@see TDataList}.
+ * For more details, see {@see \Prado\Web\UI\WebControls\TRepeater} and {@see \Prado\Web\UI\WebControls\TDataList}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0

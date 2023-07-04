@@ -15,7 +15,7 @@ use Prado\Exceptions\TInvalidDataTypeException;
 /**
  * TTabViewCollection class.
  *
- * TTabViewCollection is used to maintain a list of views belong to a {@see TTabPanel}.
+ * TTabViewCollection is used to maintain a list of views belong to a {@see \Prado\Web\UI\WebControls\TTabPanel}.
  *
  * @author Tomasz Wolny <tomasz.wolny@polecam.to.pl> and Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.1
@@ -27,7 +27,7 @@ class TTabViewCollection extends \Prado\Web\UI\TControlCollection
 	 * This overrides the parent implementation by performing sanity check on the type of new item.
 	 * @param int $index the specified position.
 	 * @param mixed $item new item
-	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@see TTabView} object.
+	 * @throws TInvalidDataTypeException if the item to be inserted is not a {@see \Prado\Web\UI\WebControls\TTabView} object.
 	 */
 	public function insertAt($index, $item)
 	{

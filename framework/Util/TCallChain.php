@@ -14,7 +14,7 @@ use Prado\Collections\TList;
 
 /**
  * TCallChain is a recursive event calling mechanism.  This class implements
- * the {@see IDynamicMethods} class so that any 'dy' event calls can be caught
+ * the {@see \Prado\Util\IDynamicMethods} class so that any 'dy' event calls can be caught
  * and patched through to the intended recipient
  * @author Brad Anderson <javalizard@gmail.com>
  * @since 3.2.3

@@ -51,7 +51,7 @@ use Prado\Web\Javascripts\TJavaScript;
  *
  * Since Prado 4.0 the TActiveFileUpload supports HTML5 multiple file uploads by setting the
  * {@see setMultiple Multiple} attribute to true. See the description of the parent class
- * {@see TFileUpload} for further details.
+ * {@see \Prado\Web\UI\WebControls\TFileUpload} for further details.
  *
  * @author Bradley Booms <Bradley.Booms@nsighttel.com>
  * @author Christophe Boulain <Christophe.Boulain@gmail.com>
@@ -83,7 +83,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	 */
 	private $_target;
 	/**
-	 * @var string class name used to instantiate items for uploaded files: {@see TFileUploadItem}
+	 * @var string class name used to instantiate items for uploaded files: {@see \Prado\Web\UI\WebControls\TFileUploadItem}
 	 */
 	protected static $fileUploadItemClass = \Prado\Web\UI\ActiveControls\TActiveFileUploadItem::class;
 
@@ -213,7 +213,7 @@ class TActiveFileUpload extends TFileUpload implements IActiveControl, ICallback
 	/**
 	 * Raises <b>OnFileUpload</b> event.
 	 *
-	 * This method is required by {@see ICallbackEventHandler} interface.
+	 * This method is required by {@see \Prado\Web\UI\ActiveControls\ICallbackEventHandler} interface.
 	 * This method is mainly used by framework and control developers.
 	 * @param TCallbackEventParameter $param the event parameter
 	 */

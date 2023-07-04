@@ -16,7 +16,7 @@ use Prado\TPropertyValue;
  * TView class
  *
  * TView is a container for a group of controls. TView must be contained
- * within a {@see TMultiView} control in which only one view can be active
+ * within a {@see \Prado\Web\UI\WebControls\TMultiView} control in which only one view can be active
  * at one time.
  *
  * To activate a view, set {@see setActive Active} to true.

@@ -15,7 +15,7 @@ use Prado\TPropertyValue;
  * TWizardNavigationEventParameter class.
  *
  * TWizardNavigationEventParameter represents the parameter for
- * {@see TWizard}'s navigation events.
+ * {@see \Prado\Web\UI\WebControls\TWizard}'s navigation events.
  *
  * The index of the currently active step can be obtained from
  * {@see getCurrentStepIndex CurrentStepIndex}, while the index

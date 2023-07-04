@@ -12,7 +12,7 @@ namespace Prado\Security;
 /**
  * TUserManagerPasswordMode class.
  * TUserManagerPasswordMode defines the enumerable type for the possible modes
- * that user passwords can be specified for a {@see TUserManager}.
+ * that user passwords can be specified for a {@see \Prado\Security\TUserManager}.
  *
  * The following enumerable values are defined:
  * - Clear: the password is in plain text

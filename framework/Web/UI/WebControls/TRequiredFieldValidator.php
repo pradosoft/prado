@@ -21,7 +21,7 @@ use Prado\TPropertyValue;
  * Validation will also succeed if input is of TListControl type and the number
  * of selected values different from the initial value is greater than zero.
  *
- * If the input is of TListControl type and has a {@see TListControl::setPromptValue PromptValue}
+ * If the input is of TListControl type and has a {@see \Prado\Web\UI\WebControls\TListControl::setPromptValue PromptValue}
  * set, it will be automatically considered as the validator's {@see setInitialValue InitialValue}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>

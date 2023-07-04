@@ -17,7 +17,7 @@ use Prado\TPropertyValue;
 
 /**
  * TBaseBehavior is the base implementing class for both PRADO behaviors types
- * {@see TClassBehavior} and {@see @TBehavior}.
+ * {@see \Prado\Util\TClassBehavior} and {@see @TBehavior}.
  *
  * This provides an {@see init} stub, {@see events} for attaching the behaviors'
  * handlers (value) to events (keys), an {@see getEnabled Enabled} flag, the {@see
@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  * behaviors' handlers in the owner[s] events.
  *
  * Behaviors use the {@see TPriorityItemTrait} to receive priority information
- * from insertion into the owner's {@see TPriorityMap} of behaviors.  When attaching
+ * from insertion into the owner's {@see \Prado\Collections\TPriorityMap} of behaviors.  When attaching
  * events to an owner, the event handlers receive the same priority as the behavior
  * in the owner.
  *
