@@ -248,7 +248,6 @@ class TLogger extends \Prado\TComponent
 
 		if ($app = Prado::getApplication()) {
 			$app->attachEventHandler('onEndRequest', [$this, 'onFlushLogs'], 20);
-			//$app->attachEventHandler(TProcessHelper::FX_TERMINATE_PROCESS, [$this, 'onFlushLogs'], 20);
 			$this->_registered = true;
 		}
 	}
@@ -385,6 +384,17 @@ class TLogger extends \Prado\TComponent
 
 
 	/**
+	 * This event collects any logs from other aspects of the application that may
+	 * not be able to directly log to the TLogger.
+	 * @param bool $final Is the final collection, default false.
+	 * @since 4.2.3
+	 */
+	public function onCollectLogs(bool $final = false)
+	{
+		return $this->raiseEvent('onCollectLogs', $this, $final);
+	}
+
+	/**
 	 * This is an Event and an event handler.  When {@see Application::onEndRequest()}
 	 * is raised and as a `register_shutdown_function` function, this is called.
 	 * On calling, this raises the event `onFlushLogs`.
@@ -395,7 +405,7 @@ class TLogger extends \Prado\TComponent
 	 */
 	public function onFlushLogs(mixed $sender = null, mixed $final = null)
 	{
-		if ($this->_flushing || !$final && !count($this->_logs)) {
+		if ($this->_flushing) {
 			return;
 		}
 
@@ -403,12 +413,10 @@ class TLogger extends \Prado\TComponent
 			$final = $sender;
 			$sender = null;
 		}
-		//if (($final instanceof TEventParameter) && $final->getEventName() === TProcessHelper::FX_TERMINATE_PROCESS) {
-		//	$final = true;
-		//} else
 		if (!is_bool($final)) {
 			$final = false;
 		}
+		$this->onCollectLogs($final);
 
 		$this->_flushing = true;
 		$this->_flushingLog = [];

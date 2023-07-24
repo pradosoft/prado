@@ -199,6 +199,15 @@ parameterizebehavior_cannot_set_defaultValue_after_attach = TParameterizeBehavio
 parameterizebehavior_cannot_set_localize_after_attach = TParameterizeBehavior cannot set Localize after being attached.
 parameterizebehavior_cannot_set_routeBehaviorName_after_attach = TParameterizeBehavior cannot set RouteBehaviorName after being attached.
 
+processhelper_no_forking				= Process Forking is not supported.
+processhelper_no_signals				= Process signals cannot be sent on Windows.
+
+appsignals_no_change					= TApplicationSignals::{0} cannot be changed after attaching.
+appsignals_not_a_dispatcher				= '{0}' is not a TSignalsDispatcher.
+
+signalsdispatcher_bad_pid				= '{0}' is not a valid PID.
+signalsdispatcher_no_change				= TSignalsDispatcher::{0} cannot be changed after attaching.
+
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
 template_directive_nonunique			= Directive '<%@ ... %>' must appear at the beginning of the template and can appear at most once.

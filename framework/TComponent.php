@@ -5,7 +5,7 @@
  * @author Qiang Xue <qiang.xue@gmail.com>
  *
  * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link https://github.com/pradosoft/prado
@@ -1136,7 +1136,7 @@ class TComponent
 	 */
 	public function hasMethod($name)
 	{
-		if (Prado::method_visible($this, $name) || strncasecmp($name, 'fx', 2) === 0 || strncasecmp($name, 'dy', 2) === 0) {
+		if (Prado::method_visible($this, $name) || strncasecmp($name, 'dy', 2) === 0) {
 			return true;
 		} elseif ($this->_m !== null && $this->getBehaviorsEnabled()) {
 			foreach ($this->_m->toArray() as $behavior) {

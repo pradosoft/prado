@@ -127,6 +127,8 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 			$this->assertEquals(['data123'], $app->asa('testBehavior1')->config);
 			$app->detachBehavior('testBehavior1');
 		}
+		$mod->unlisten();
+		$modB->unlisten();
 	}
 	
 	public function testAttachModuleBehaviors()
@@ -153,6 +155,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('TestModuleBehaviorLoader1', $module->asa($behaviorName));
 		$this->assertEquals('value1', $module->asa($behaviorName)->PropertyA);
 		$module->detachBehavior($behaviorName);
+		$module->unlisten();
 	}
 	
 	public function testAttachModuleBehaviors_anonymous()
@@ -197,6 +200,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('TestModuleBehaviorLoader2', $page->asa($behaviorName));
 		$this->assertEquals('value', $page->asa($behaviorName)->PropertyA);
 		$page->detachBehavior($behaviorName);
+		$page->unlisten();
 	}
 	
 	public function testAttachTPageBehaviors_anonymous()
@@ -217,6 +221,7 @@ class TBehaviorParameterLoaderTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('TestModuleBehaviorLoader2', $page->asa(0));
 		$this->assertEquals('value', $page->asa(0)->PropertyA);
 		$page->detachBehavior(0);
+		$page->unlisten();
 	}
 	
 	public function testBehaviorName()

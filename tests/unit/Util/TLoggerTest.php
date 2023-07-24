@@ -291,9 +291,12 @@ class TLoggerTest extends PHPUnit\Framework\TestCase
 			}
 		};
 		
-		$logger->onFlushLogs();  // Not calling due to no log items
-		$this->assertEquals(0, $called);
-		$this->assertNull($final);
+		$logger->onFlushLogs();  // Calling without log items
+		$this->assertEquals(1, $called);
+		$this->assertFalse($final);
+		
+		$called = 0;
+		$final = null;
 		
 		$logger->log('token1', TLogger::INFO);
 		$logger->log('token2', TLogger::PROFILE_BEGIN);

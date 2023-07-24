@@ -51,8 +51,7 @@ class TSysLogRouteTest extends PHPUnit\Framework\TestCase
 		
 		$this->assertEquals(LOG_USER, $route->getFacility());
 		
-		//if (TProcessHelper::isSystemWindows()) {
-		if (strncasecmp(php_uname('s'), 'win', 3) === 0) {
+		if (\Prado\Util\Helpers\TProcessHelper::isSystemWindows()) {
 			return;
 		}
 		
