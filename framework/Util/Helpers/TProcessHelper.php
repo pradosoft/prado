@@ -241,7 +241,7 @@ class TProcessHelper
 				];
 				return $priorityValues[$matches[1]] ?? null;
 			} else {
-				return false;
+				return null;
 			}
 		} else {
 			if (strlen($priority = trim(shell_exec('exec ps -o nice= -p ' . $pid)))) {
