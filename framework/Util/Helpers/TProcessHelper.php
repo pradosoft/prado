@@ -59,10 +59,11 @@ class TProcessHelper
 	public const FX_RESTORE_AFTER_FORK = 'fxRestoreAfterFork';
 
 	/**
+	 * Linux priority is -20 (for "real time") to 19 (for idle).
 	 * The WINDOWS_*_PRIORITY is what the windows priority would map into the PRADO
 	 * and linux priority numbering.  Windows will only have these priorities.
 	 */
-	public const WINDOWS_IDLE_PRIORITY = 20;
+	public const WINDOWS_IDLE_PRIORITY = 19;
 	public const WINDOWS_BELOW_NORMAL_PRIORITY = 8;
 	public const WINDOWS_NORMAL_PRIORITY = 0;
 	public const WINDOWS_ABOVE_NORMAL_PRIORITY = -5;
@@ -77,7 +78,6 @@ class TProcessHelper
 	{
 		static $isWindows = null;
 		if ($isWindows === null) {
-			echo('--' . php_uname('s') . '--');
 			$isWindows = strncasecmp(php_uname('s'), 'win', 3) === 0;
 		}
 		return $isWindows;
@@ -94,6 +94,19 @@ class TProcessHelper
 			$isDarwin = strncasecmp(php_uname('s'), 'darwin', 6) === 0;
 		}
 		return $isDarwin;
+	}
+
+	/**
+	 * Checks if the system that PHP is run on is Linux.
+	 * @return bool Is the system Linux.
+	 */
+	public static function isSystemLinux(): bool
+	{
+		static $isLinux = null;
+		if ($isLinux === null) {
+			$isLinux = strncasecmp(php_uname('s'), 'linux', 5) === 0;
+		}
+		return $isLinux;
 	}
 
 	/**
