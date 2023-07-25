@@ -77,6 +77,7 @@ class TProcessHelper
 	{
 		static $isWindows = null;
 		if ($isWindows === null) {
+			echo('--' . php_uname('s') . '--');
 			$isWindows = strncasecmp(php_uname('s'), 'win', 3) === 0;
 		}
 		return $isWindows;
