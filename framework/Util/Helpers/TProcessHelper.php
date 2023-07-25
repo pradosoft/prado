@@ -291,11 +291,12 @@ class TProcessHelper
 			}
 			$priority -= $pp;
 			$result = shell_exec("exec renice -n $priority -p $pid");
-			// On MacOS, working properly consists of returning nothing.  only errors return
+			// On MacOS, working properly consists of returning nothing.
+			//	only errors return "renice: 40812: setpriority: Permission denied" (when lowering priority without permission)
+			//		(Lowering the priority is increasing its importance)
 			// On the github linux test system it return "3539 (process ID) old priority 0, new priority 8"
-			//   for an error, it return: ...
-			echo('--' . $result . '--');
-			if (is_string($result) && strlen($result) > 1) {
+			//	for an error, it return: "renice: failed to set priority for 3612 (process ID): Permission denied"
+			if (is_string($result) && str_contains($result, 'denied')) {
 				return false;
 			}
 			return true;

@@ -117,7 +117,6 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 		self::assertTrue(TProcessHelper::isRunning($pid));
 		
 		self::assertTrue(is_int($processPriority = TProcessHelper::getProcessPriority($pid)));
-		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_ABOVE_NORMAL_PRIORITY, $pid));
 		self::assertTrue(TProcessHelper::setProcessPriority(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, $pid));
 		self::assertEquals(TProcessHelper::WINDOWS_BELOW_NORMAL_PRIORITY, TProcessHelper::getProcessPriority($pid));
 		
