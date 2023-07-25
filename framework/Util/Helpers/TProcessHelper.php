@@ -291,6 +291,9 @@ class TProcessHelper
 			}
 			$priority -= $pp;
 			$result = shell_exec("exec renice -n $priority -p $pid");
+			// On MacOS, working properly consists of returning nothing.  only errors return
+			// On the github linux test system it return "3539 (process ID) old priority 0, new priority 8"
+			//   for an error, it return: ...
 			echo('--' . $result . '--');
 			if (is_string($result) && strlen($result) > 1) {
 				return false;
