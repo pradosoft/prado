@@ -27,6 +27,11 @@ class TProcessHelperTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(strncasecmp(php_uname('s'), 'win', 3) === 0, TProcessHelper::isSystemWindows());
 	}
 	
+	public function testIsSystemMacOS()
+	{
+		self::assertEquals(strncasecmp(php_uname('s'), 'darwin', 6) === 0, TProcessHelper::isSystemMacOS());
+	}
+	
 	public function testIsForkable()
 	{
 		self::assertEquals(function_exists('pcntl_fork'), TProcessHelper::isForkable());

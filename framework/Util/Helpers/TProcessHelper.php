@@ -83,6 +83,19 @@ class TProcessHelper
 	}
 
 	/**
+	 * Checks if the system that PHP is run on is MacOS (Darwin).
+	 * @return bool Is the system MacOS (Darwin).
+	 */
+	public static function isSystemMacOS(): bool
+	{
+		static $isDarwin = null;
+		if ($isDarwin === null) {
+			$isDarwin = strncasecmp(php_uname('s'), 'darwin', 6) === 0;
+		}
+		return $isDarwin;
+	}
+
+	/**
 	 * @return bool Can PHP fork the process.
 	 */
 	public static function isForkable(): bool
@@ -289,8 +302,13 @@ class TProcessHelper
 			if (($pp = static::getProcessPriority($pid)) === null) {
 				return false;
 			}
-			$priority -= $pp;
+
+			if (static::isSystemMacOS()) {
+				$priority -= $pp;
+			}
+
 			$result = shell_exec("exec renice -n $priority -p $pid");
+
 			// On MacOS, working properly consists of returning nothing.
 			//	only errors return "renice: 40812: setpriority: Permission denied" (when lowering priority without permission)
 			//		(Lowering the priority is increasing its importance)
@@ -299,6 +317,7 @@ class TProcessHelper
 			if (is_string($result) && str_contains($result, 'denied')) {
 				return false;
 			}
+
 			return true;
 		}
 	}
