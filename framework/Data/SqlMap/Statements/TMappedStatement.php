@@ -512,7 +512,7 @@ class TMappedStatement extends \Prado\TComponent implements IMappedStatement
 		} else {
 			$obj = $this->fillDefaultResultMap(null, $row, $resultObject);
 		}
-		if (class_exists('TActiveRecord', false) && $obj instanceof TActiveRecord) {
+		if (class_exists('\Prado\Data\ActiveRecord\TActiveRecord', false) && $obj instanceof TActiveRecord) {
 			//Create a new clean active record.
 			$obj = TActiveRecord::createRecord($obj::class, $obj);
 		}
