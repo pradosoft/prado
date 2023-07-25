@@ -291,6 +291,7 @@ class TProcessHelper
 			}
 			$priority -= $pp;
 			$result = shell_exec("exec renice -n $priority -p $pid");
+			echo('--' . $result . '--');
 			if (is_string($result) && strlen($result) > 1) {
 				return false;
 			}
