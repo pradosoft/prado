@@ -15,12 +15,12 @@ ENH: Issue #975 - Prado base object methods for each log type and automatic disc
 ENH: Issue #977 - THttpRequest::onResolveRequest for custom service resolution and TRequestConnectionUpgrade behavior for selecting service on http headers for "websocket". (belisoful)
 ENH: Issue #982 - General Logging update: Profiling, Flushing large logs for long running processes, optional Tracing, tracks PID for multi-threaded logging, TBrowserLogRoute colorizes the time delta, TDbLogRoute adds a new DB field 'prefix' and functions for getting the DB log, DB log count, and deleting DB logs, TDBLogRoute also adds a RetainPeriod for automatically removing old logs, Adds an event TLogger::OnFlushLogs and flushes as a register_shutdown_function, adds the TSysLogRoute, and adds unit tests for logging. (belisoful)
 ENH: Issue #984 - TEventSubscription for temporary event handlers. (belisoful)
-ENG: Issue #972 - TProcessHelper (isSystemWindows, forking, kill, priority) and TSignalsDispatcher for delegating signals to respective global events, alarm interrupt callbacks at specific times, and per child PIDs callbacks. TEventSubscription can subscribe to a PHP process signal, an integer, as an event "name" (in TSignalsDispatcher).  (belisoful)
+ENH: Issue #972 - TProcessHelper (isSystemWindows, forking, kill, priority) and TSignalsDispatcher for delegating signals to respective global events, alarm interrupt callbacks at specific times, and per child PIDs callbacks. TEventSubscription can subscribe to a PHP process signal, an integer, as an event "name" (in TSignalsDispatcher).  (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
 BUG: Issue #811 - Update TSqlCriteria.php for fix phpdoc (zendre4)
-BUG: Issue #814 -  TSkinTemplate: ensure the full-NS class name is returned from the skin to match the one from the template (ctrlaltca)
+BUG: Issue #814 - TSkinTemplate: ensure the full-NS class name is returned from the skin to match the one from the template (ctrlaltca)
 BUG: Issue #815 - Cron trigger on first run fix, repeat running fix, and removed time zone code (belisoful)
 BUG: Issue #819 - Support for OFFSET parameter without LIMIT clause in SQL query for TActiveRecord (ganiuszka)
 ENH: Issue #820 - TApplicationComponent::getClassFxEvents Performance Mode should cache all (belisoful)
