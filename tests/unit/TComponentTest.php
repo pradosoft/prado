@@ -2278,8 +2278,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->component->hasMethod('fxAttachClassBehavior'));
 		$this->assertTrue($this->component->hasMethod('fxattachclassbehavior'));
 	
-		$this->assertTrue($this->component->hasMethod('fxNonExistantGlobalEvent'));
-		$this->assertTrue($this->component->hasMethod('fxnonexistantglobalevent'));
+		$this->assertFalse($this->component->hasMethod('fxNonExistantGlobalEvent'));
+		$this->assertFalse($this->component->hasMethod('fxnonexistantglobalevent'));
 	
 		$this->assertTrue($this->component->hasMethod('dyNonExistantLocalEvent'));
 		$this->assertTrue($this->component->hasMethod('dynonexistantlocalevent'));

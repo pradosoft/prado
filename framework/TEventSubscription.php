@@ -24,7 +24,10 @@ use WeakReference;
  *	{
  * 		$exitLoop = false;
  *		$subscription = new TEventSubscription($dispatcher, 'fxSignalInterrupt',
- *			function ($sender, $param) use (&$exitLoop){$exitLoop = true;});
+ *			function ($sender, $param) use (&$exitLoop){
+ *				$exitLoop = true;
+ *				$param->setExit(false);
+ *			});
  *      ...
  *	} // dereference unsubscribes
  * ```

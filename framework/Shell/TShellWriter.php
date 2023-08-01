@@ -10,6 +10,7 @@
 namespace Prado\Shell;
 
 use Prado\TPropertyValue;
+use Prado\Util\Helpers\TProcessHelper;
 
 /**
  * TShellWriter class.
@@ -308,7 +309,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	protected function isColorSupported()
 	{
-		if (static::isRunningOnWindows()) {
+		if (TProcessHelper::isSystemWindows()) {
 			return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
 		}
 
@@ -519,7 +520,7 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 			return $size;
 		}
 
-		if (static::isRunningOnWindows()) {
+		if (TProcessHelper::isSystemWindows()) {
 			$output = [];
 			exec('mode con', $output);
 			if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
@@ -594,14 +595,5 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 		}
 
 		return implode("\n", $lines);
-	}
-
-	/**
-	 * Returns true if the console is running on windows.
-	 * @return bool
-	 */
-	public static function isRunningOnWindows()
-	{
-		return DIRECTORY_SEPARATOR === '\\';
 	}
 }
