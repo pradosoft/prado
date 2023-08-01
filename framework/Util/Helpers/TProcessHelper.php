@@ -313,11 +313,11 @@ class TProcessHelper
 			}
 			return $matches[1] === 0;
 		} else {
-			if (($pp = static::getProcessPriority($pid)) === null) {
-				return false;
-			}
-
 			if (static::isSystemMacOS()) {
+				if (($pp = static::getProcessPriority($pid)) === null) {
+					return false;
+				}
+
 				$priority -= $pp;
 			}
 
