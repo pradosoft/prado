@@ -14,9 +14,10 @@ use Prado\Shell\Actions\TActiveRecordAction;
 use Prado\Shell\Actions\THelpAction;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\TPhpShellAction;
+use Prado\Shell\Actions\TWebServerAction;
 
 use Prado\IO\ITextWriter;
-use Prado\IO\TOutputWriter;
+use Prado\IO\TStdOutWriter;
 use Prado\Shell\TShellWriter;
 use Prado\TPropertyValue;
 
@@ -94,14 +95,9 @@ class TShellApplication extends \Prado\TApplication
 		$this->_arguments = $args;
 		$this->detectShellLanguageCharset();
 
-		$this->addShellActionClass(TFlushCachesAction::class);
-		$this->addShellActionClass(THelpAction::class);
-		$this->addShellActionClass(TPhpShellAction::class);
-		$this->addShellActionClass(TActiveRecordAction::class);
+		$this->_outWriter = new TShellWriter(new TStdOutWriter());
 
-		$this->_outWriter = new TShellWriter(new TOutputWriter());
-
-		$this->registerOption('quiet', [$this, 'setQuietMode'], 'Quiets the output to <level> [1..3], default 1', '=<level>');
+		$this->registerOption('quiet', [$this, 'setQuietMode'], 'Quiets the output to <level> [1..3], default 1 (when specified)', '=<level>');
 		$this->registerOptionAlias('q', 'quiet');
 
 		$this->attachEventHandler('onInitComplete', [$this, 'processArguments'], 20);
@@ -146,11 +142,13 @@ class TShellApplication extends \Prado\TApplication
 	 */
 	public function processArguments($sender, $param)
 	{
-		$options = array_merge(['quiet' => [$this, 'setQuietMode']], $this->_options);
-		$aliases = array_merge(['q' => 'quiet'], $this->_optionAliases);
+		$this->installShellActions();
+
+		$options = $this->_options;
+		$aliases = $this->_optionAliases;
 		$skip = false;
 		foreach ($this->_arguments as $i => $arg) {
-			$arg = explode('=', $arg);
+			$arg = explode('=', $arg, 2);
 			$processed = false;
 			foreach ($options as $option => $setMethod) {
 				$option = '--' . $option;
@@ -172,6 +170,23 @@ class TShellApplication extends \Prado\TApplication
 			}
 		}
 		$this->_arguments = array_values($this->_arguments);
+	}
+
+	/**
+	 * Installs the shell actions.
+	 * @since 4.2.3
+	 */
+	public function installShellActions()
+	{
+		$this->addShellActionClass(TFlushCachesAction::class);
+		$this->addShellActionClass(THelpAction::class);
+		$this->addShellActionClass(TPhpShellAction::class);
+		$this->addShellActionClass(TActiveRecordAction::class);
+
+		$app = Prado::getApplication();
+		if ($app->getMode() === \Prado\TApplicationMode::Debug || TPropertyValue::ensureBoolean($app->getParameters()[TWebServerAction::DEV_WEBSERVER_PARAM])) {
+			$this->addShellActionClass(TWebServerAction::class);
+		}
 	}
 
 	/**
@@ -370,6 +385,7 @@ class TShellApplication extends \Prado\TApplication
 		$outWriter->write("usage: ");
 		$outWriter->writeLine("php prado-cli.php command[/action] <parameter> [optional]", [TShellWriter::BLUE, TShellWriter::BOLD]);
 		$outWriter->writeLine();
+		$outWriter->writeLine("example: prado-cli http");
 		$outWriter->writeLine("example: php prado-cli.php cache/flush-all");
 		$outWriter->writeLine("example: prado-cli help");
 		$outWriter->writeLine("example: prado-cli cron/tasks");

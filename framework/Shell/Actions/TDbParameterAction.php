@@ -56,12 +56,12 @@ class TDbParameterAction extends TShellAction
 
 	/**
 	 * Properties for the action set by parameter
-	 * @param string $actionID the action being executed
+	 * @param string $methodID the action being executed
 	 * @return array properties for the $actionID
 	 */
-	public function options($actionID): array
+	public function options($methodID): array
 	{
-		if ($actionID === 'index') {
+		if ($methodID === 'index') {
 			return ['all'];
 		}
 		return [];

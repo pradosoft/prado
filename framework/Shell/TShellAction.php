@@ -196,7 +196,7 @@ abstract class TShellAction extends \Prado\TComponent
 
 		$str = '';
 		$length = 31;
-		$str .= $this->getWriter()->pad(" - {$action}", $length);
+		$str .= $this->getWriter()->pad("  {$action}", $length);
 		$description = $this->getWriter()->wrapText($this->description[0], $length);
 		$str .= $description . PHP_EOL;
 		foreach ($this->methods as $i => $method) {

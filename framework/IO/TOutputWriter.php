@@ -12,7 +12,7 @@ namespace Prado\IO;
 /**
  * TOutputWriter class.
  *
- * TOutputWriter extends TTextWriter to fwrite the buffer to STDOUT
+ * TOutputWriter extends TTextWriter to fwrite the buffer to "Output"
  * when {@see flush}ed.  This allows for testing of the Shell output.
  *
  * @author Brad Anderson <belisoful@icloud.com>
@@ -20,6 +20,12 @@ namespace Prado\IO;
  */
 class TOutputWriter extends TTextWriter
 {
+	/** @const The file path to open a data stream to Output. */
+	public const OUTPUT_URI = 'php://output';
+
+	/** @const The type of stream for Output. */
+	public const OUTPUT_TYPE = 'Output';
+
 	/**
 	 * Flushes the content that has been written.
 	 * @return string the content being flushed
@@ -27,8 +33,7 @@ class TOutputWriter extends TTextWriter
 	public function flush()
 	{
 		$str = parent::flush();
-		fwrite(STDOUT, $str);
-		flush();
+		echo $str;
 		return $str;
 	}
 }
