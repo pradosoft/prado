@@ -45,6 +45,16 @@ use Prado\Util\Helpers\TProcessHelper;
  * command option (with the number of page workers need for you).  In this example,
  * eight concurrent workers are created.
  *
+ * The TWebServerAction is only available when the application is in "Debug" mode.
+ * In other Application modes, this action can be enabled with the Prado Application
+ * Parameter "Prado:PhpWebServer" set to "true". eg. Within the Application configuration:
+ *
+ * ```xml
+ * <parameters>
+ *     <parameter id="Prado:PhpWebServer" value="true" />
+ * </parameters>
+ * ```
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
