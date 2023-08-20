@@ -12,8 +12,14 @@ namespace Prado\IO;
 /**
  * TOutputWriter class.
  *
- * TOutputWriter extends TTextWriter to fwrite the buffer to "Output"
- * when {@see flush}ed.  This allows for testing of the Shell output.
+ * TOutputWriter extends TTextWriter to write the buffer to "Output" when {@see flush}ed.
+ * In a CLI execution, STDOUT is "Output" but this is not true for processing web
+ * pages.  For web pages, "Output" goes to the browser and 'php://stdout' goes to
+ * the web server's output (either cli or file); while STDOUT is not defined.
+ *
+ * Once this class is flushed, PHP's flush need to be called to ensure the "Output"
+ * is written.  If Output Buffering (ob_*) is used, ob_flush (or equivalent) also
+ * must be called before PHP's flush and after this class flushes.
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.0
@@ -27,8 +33,9 @@ class TOutputWriter extends TTextWriter
 	public const OUTPUT_TYPE = 'Output';
 
 	/**
-	 * Flushes the content that has been written.
-	 * @return string the content being flushed
+	 * Flushes the content that has been written.  This does not call PHP's ob_flush
+	 * or flush and those must be called to ensure the output is actually sent.
+	 * @return string the content being flushed.
 	 */
 	public function flush()
 	{

@@ -70,7 +70,7 @@ class TWebServerAction extends TShellAction
 	protected $parameters = [[]];
 	protected $optional = [['router-filepath']];
 	protected $description = [
-		'Provides a PHP Web Server to serve the application.',
+		'Provides a Test PHP Web Server to serve the application.',
 		'Runs a PHP Web Server after Initializing the Application.'];
 
 	/** @var bool Listen on all network addresses assigned to the computer, when one is not provided. */
@@ -107,7 +107,7 @@ class TWebServerAction extends TShellAction
 	 */
 	public function setAll($value): static
 	{
-		if (!$value) {
+		if ($value === null || $value === '') {
 			$this->_all = true;
 		} else {
 			$this->_all = TPropertyValue::ensureBoolean($value);
@@ -184,12 +184,12 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @param null|int|string $address The port to serve pages, default 8080.
+	 * @param null|int|string $port The port to serve pages, default 8080.
 	 * @return static The current object.
 	 */
-	public function setPort($address): static
+	public function setPort($port): static
 	{
-		$this->_port = TPropertyValue::ensureInteger($address);
+		$this->_port = TPropertyValue::ensureInteger($port);
 
 		return $this;
 	}

@@ -27,7 +27,7 @@ class TStdOutWriter extends TTextWriter
 	public const STDOUT_URI = 'php://stdout';
 
 	/** @var mixed the Standard Out stream handle */
-	private mixed $_stdout;
+	private mixed $_stdout = null;
 
 	/**
 	 * Closes the StdOut handle when STDOUT is not defined
@@ -42,7 +42,7 @@ class TStdOutWriter extends TTextWriter
 
 	/**
 	 * Flushes the content that has been written.
-	 * @return string the content being flushed
+	 * @return string the content being flushed.
 	 */
 	public function flush()
 	{
@@ -57,7 +57,6 @@ class TStdOutWriter extends TTextWriter
 		}
 
 		fwrite($this->_stdout, $str);
-		flush();
 
 		return $str;
 	}
