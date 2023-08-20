@@ -98,7 +98,8 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * This option is only used when no network interface is specified.
+	 * This option is only used when no network interface is specified.  When called
+	 * without a $value (null or ''), All is set to true.
 	 * @param mixed $value
 	 * @return bool Respond on all network addresses.
 	 * @return static The current object.
@@ -193,7 +194,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @return bool Use an IPv6 network address, default false.
+	 * @return bool Use the local IPv6 network address, default false.
 	 */
 	public function getIpv6(): bool
 	{
@@ -201,7 +202,8 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @param null|bool|string $ipv6
+	 * When called without a $value (null or ''), Ipv6 is set to true.
+	 * @param null|bool|string $ipv6 Use the ipv6 local network address.
 	 * @return static The current object.
 	 */
 	public function setIpv6($ipv6): static
@@ -223,6 +225,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
+	 * When called without a value (null or '') then the number of workers is set to 8.
 	 * @param null|int|string $value The number of web server requests workers.
 	 * @return static The current object.
 	 */
