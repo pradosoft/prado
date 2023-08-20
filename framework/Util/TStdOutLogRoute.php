@@ -23,6 +23,10 @@ use Prado\Shell\TShellWriter;
  * This sends the log to STDOUT and will corrupt web server log files.  This is useful
  * in presenting PRADO logs in the PHP (Test and Development) Web Server output.
  *
+ * The TStdOutLogRoute can be turned off for all but the built-in Test web server
+ * with the configuration property {@see \Prado\Util\TStdOutLogRoute::getOnlyDevServer}
+ * set to true.
+ *
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.2.3
  */
