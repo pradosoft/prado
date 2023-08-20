@@ -26,10 +26,10 @@ namespace Prado\IO;
  */
 class TOutputWriter extends TTextWriter
 {
-	/** @const The file path to open a data stream to Output. */
+	/** The file path to open a data stream to Output. */
 	public const OUTPUT_URI = 'php://output';
 
-	/** @const The type of stream for Output. */
+	/** The type of stream for Output. */
 	public const OUTPUT_TYPE = 'Output';
 
 	/**
