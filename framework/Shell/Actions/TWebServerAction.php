@@ -73,19 +73,19 @@ class TWebServerAction extends TShellAction
 		'Provides a Test PHP Web Server to serve the application.',
 		'Runs a PHP Web Server after Initializing the Application.'];
 
-	/** @var bool Listen on all network addresses assigned to the computer, when one is not provided. */
+	/** @var bool Listen on all network addresses assigned to the computer, when one is not provided.  Default false. */
 	private bool $_all = false;
 
-	/** @var ?string The specific address to listen on. */
+	/** @var ?string The specific address to listen on.  Default null. */
 	private ?string $_address = null;
 
 	/** @var int The port to listen on, default 8080 */
 	private int $_port = 8080;
 
-	/** @var bool Use a direct ip v6 address, when one is not provided. */
+	/** @var bool Use a direct ip v6 address, when one is not provided.  Default false. */
 	private bool $_ipv6 = false;
 
-	/** @var int the number of workers for the Web Server */
+	/** @var int the number of workers for the Web Server, default 1. */
 	private int $_workers = 1;
 
 	/**
