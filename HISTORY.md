@@ -16,6 +16,7 @@ ENH: Issue #977 - THttpRequest::onResolveRequest for custom service resolution a
 ENH: Issue #982 - General Logging update: Profiling, Flushing large logs for long running processes, optional Tracing, tracks PID for multi-threaded logging, TBrowserLogRoute colorizes the time delta, TDbLogRoute adds a new DB field 'prefix' and functions for getting the DB log, DB log count, and deleting DB logs, TDBLogRoute also adds a RetainPeriod for automatically removing old logs, Adds an event TLogger::OnFlushLogs and flushes as a register_shutdown_function, adds the TSysLogRoute, and adds unit tests for logging. (belisoful)
 ENH: Issue #984 - TEventSubscription for temporary event handlers. (belisoful)
 ENH: Issue #972 - TProcessHelper (isSystemWindows, forking, kill, priority) and TSignalsDispatcher for delegating signals to respective global events, alarm interrupt callbacks at specific times, and per child PIDs callbacks. TEventSubscription can subscribe to a PHP process signal, an integer, as an event "name" (in TSignalsDispatcher).  (belisoful)
+ENH: Issue #973 - Embedded PHP Development Web Server CLI Action. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 

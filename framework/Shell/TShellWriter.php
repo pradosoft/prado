@@ -9,6 +9,7 @@
 
 namespace Prado\Shell;
 
+use Prado\IO\TStdOutWriter;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TProcessHelper;
 
@@ -309,11 +310,27 @@ class TShellWriter extends \Prado\TComponent implements \Prado\IO\ITextWriter
 	 */
 	protected function isColorSupported()
 	{
-		if (TProcessHelper::isSystemWindows()) {
-			return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+		static $hasColor = null;
+
+		if ($hasColor === null) {
+			if (TProcessHelper::isSystemWindows()) {
+				return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+			}
+
+			if ($hasStdOut = !defined('STDOUT')) {
+				$stdOut = fopen(TStdOutWriter::STDOUT_URI, 'wb');
+			} else {
+				$stdOut = STDOUT;
+			}
+
+			$hasColor = function_exists('posix_isatty') && @posix_isatty($stdOut) && strpos(getenv('TERM'), '256color') !== false;
+
+			if ($hasStdOut) {
+				fclose($stdOut);
+			}
 		}
 
-		return function_exists('posix_isatty') && @posix_isatty(STDOUT) && strpos(getenv('TERM'), '256color') !== false;
+		return $hasColor;
 	}
 
 	/**

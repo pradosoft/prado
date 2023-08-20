@@ -21,7 +21,7 @@ interface ISingleton
 {
 	/**
 	 * @param bool $create Should the singleton be created if it doesn't exist.
-	 * @return ?object The singleton instance of the class
+	 * @return ?object The singleton instance of the class.
 	 */
 	public static function singleton(bool $create = true): ?object;
 }

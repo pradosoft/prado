@@ -33,6 +33,18 @@ composer create-project pradosoft/prado-app app
 
 The application will be installed in the "app" directory.
 
+## Built-in PHP Test Web Server
+
+The built-in PHP Test Web Server can be used to immediately start developing and testing a web application.
+The web server is started with command (assuming the above application in the directory "app")
+
+```sh
+cd app/protected
+./vendor/bin/prado-cli http
+```
+
+The application is then accessible on the machine's browser at `http://127.0.0.1:8080/`.  The built-in web server is enabled when the application is in "Debug" mode or is enabled in the application configuration parameters.
+
 #### Add PRADO to an existing application
 Just create a composer.json file for your project:
 
@@ -51,7 +63,7 @@ Just create a composer.json file for your project:
 ```
 
 The [asset-packagist](https://asset-packagist.org) repository is used to install javascript dependencies.
-Assuming you already installed composer, run
+Assuming you already installed composer, run the command
 
 ```sh
 composer install
