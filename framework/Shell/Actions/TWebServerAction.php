@@ -90,7 +90,7 @@ class TWebServerAction extends TShellAction
 
 	/**
 	 * This option is only used when no network interface is specified.
-	 * @return bool Respond on all network addresses.
+	 * @return bool Respond on all network addresses, default false.
 	 */
 	public function getAll(): bool
 	{
@@ -174,7 +174,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @return int The port to serve pages.
+	 * @return int The port to serve pages, default 8080.
 	 */
 	public function getPort(): int
 	{
@@ -182,7 +182,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @param null|int|string $port The port to serve pages, default 8080.
+	 * @param null|int|string $port The port to serve pages.
 	 * @return static The current object.
 	 */
 	public function setPort($port): static
@@ -193,7 +193,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @return bool Use an IPv6 network address.
+	 * @return bool Use an IPv6 network address, default false.
 	 */
 	public function getIpv6(): bool
 	{
@@ -215,7 +215,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * @return int The number of web server requests workers.
+	 * @return int The number of web server requests workers, default 1.
 	 */
 	public function getWorkers(): int
 	{
