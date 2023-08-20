@@ -88,8 +88,6 @@ class TWebServerAction extends TShellAction
 	/** @var int the number of workers for the Web Server */
 	private int $_workers = 1;
 
-
-
 	/**
 	 * This option is only used when no network interface is specified.
 	 * @return bool Respond on all network addresses.
@@ -230,7 +228,11 @@ class TWebServerAction extends TShellAction
 	 */
 	public function setWorkers($value): static
 	{
-		$this->_workers = max(1, TPropertyValue::ensureInteger($value));
+		if ($value === null || $value === '') {
+			$this->_workers = 8;
+		} else {
+			$this->_workers = max(1, TPropertyValue::ensureInteger($value));
+		}
 
 		return $this;
 	}
@@ -249,7 +251,7 @@ class TWebServerAction extends TShellAction
 	}
 
 	/**
-	 * Aliases for the properties to be set by parameter
+	 * Aliases for the properties to be set by parameter.  'i' is for 'interface'.
 	 * @return array<string, string> alias => property for the $actionID
 	 */
 	public function optionAliases(): array
