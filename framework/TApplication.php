@@ -97,7 +97,7 @@ use Prado\Web\UI\TThemeManager;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TApplication extends \Prado\TComponent
+class TApplication extends \Prado\TComponent implements ISingleton
 {
 	/**
 	 * Page service ID
@@ -326,6 +326,18 @@ class TApplication extends \Prado\TComponent
 
 		Prado::setPathOfAlias('Application', $this->_basePath);
 		parent::__construct();
+	}
+
+	/**
+	 * Returns the current Prado application.  This enables application behaviors to
+	 * be used for undefined static function calls via {@see \Prado\TComponent::__callStatic}.
+	 * @param bool $create Should the singleton be created if it doesn't exist.
+	 * @return ?object The singleton instance of the class.
+	 * @since 4.2.3
+	 */
+	public static function singleton(bool $create = true): ?object
+	{
+		return Prado::getApplication();
 	}
 
 	/**

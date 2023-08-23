@@ -4,6 +4,7 @@ use Prado\Collections\TPriorityList;
 use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TUnknownMethodException;
 use Prado\TComponent;
 use Prado\TEventResults;
 use Prado\Util\IDynamicMethods;
@@ -134,6 +135,22 @@ class NewComponentBehavior extends TBehavior
 	public function ncBehaviorHandler($sender, $param)
 	{
 		
+	}
+}
+
+class NewComponentStaticBehavior extends TBehavior
+{
+	public static function aStaticMethod(int $value)
+	{
+		return $value + $value;
+	}
+}
+
+class NewComponentStaticClassBehavior extends TClassBehavior
+{
+	public static function aStaticMethod(int $value)
+	{
+		return $value * $value;
 	}
 }
 
@@ -1266,8 +1283,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	{
 		try {
 			$this->component->faaEverMore(true, true);
-			$this->fail('TApplicationException not raised trying to execute a undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 
 		$this->assertNull($this->component->asa('FooBehavior'));
@@ -1314,8 +1331,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->component->noMethodHere(true);
-			$this->fail('TApplicationException not raised trying to execute a undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 
 		$this->assertTrue($this->component->disableBehavior('FooBehavior'));
@@ -1325,8 +1342,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->component->faaEverMore(true, true);
-			$this->fail('TApplicationException not raised trying to execute a undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 
 		$this->assertTrue($this->component->enableBehavior('FooBehavior'));
@@ -1548,8 +1565,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		
 		try {
 			$this->component->faaEverMore(true, true);
-			$this->fail('TApplicationException not raised trying to execute a undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 		
 		// *** Test TBehavior
@@ -1618,8 +1635,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->component->faaEverMore(true, true);
-			$this->fail('TApplicationException not raised trying to execute a undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 		
 		//Test upper case name as well.
@@ -1644,8 +1661,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->component->moreFunction(true, true);
-			$this->fail('TApplicationException not raised trying to execute an undefined class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute an undefined class method');
+		} catch (TUnknownMethodException $e) {
 		}
 		
 		// instance
@@ -1699,8 +1716,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->assertTrue($this->component->moreFunction(true, true));
-			$this->fail('TApplicationException not raised while trying to execute a disabled behavior class method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised while trying to execute a disabled behavior class method');
+		} catch (TUnknownMethodException $e) {
 		}
 		$this->assertTrue($this->component->enableBehavior($className));
 		$this->assertEquals(4, $this->component->onMyEvent->getCount());
@@ -1795,12 +1812,14 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 	}
 
 
-	public function testBehaviorFunctionCalls()
+	public function testCall_ForBehaviorFunction()
 	{
 		$fooClassBehaviorName = 'FooClassBehaviorName';
 		$fooBarBehaviorName = 'FooBarBehaviorName';
 		$this->component->attachBehavior($fooBarBehaviorName, $behavior = new FooBarBehavior);
 		$this->component->attachClassBehavior($fooClassBehaviorName, $classbehavior = new FooClassBehavior);
+
+		$this->tearDownScripts[$fooClassBehaviorName] = function() use ($fooClassBehaviorName) {NewComponent::detachClassBehavior($fooClassBehaviorName);};
 
 		// Test the Class Methods
 		$this->assertEquals(12, $this->component->faaEverMore(3, 4));
@@ -1815,8 +1834,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($this->component->disableBehavior($fooBarBehaviorName));
 		try {
 			$this->assertNull($this->component->moreFunction(3, 4));
-			$this->fail('TApplicationException not raised trying to execute a disabled behavior');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a disabled behavior');
+		} catch (TUnknownMethodException $e) {
 		}
 		$this->assertTrue($this->component->enableBehavior($fooBarBehaviorName));
 
@@ -1825,7 +1844,7 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertNull($this->component->dySomeUndefinedIntraObjectEvent());
 
 		$this->component->detachClassBehavior($fooClassBehaviorName);
-
+		unset($this->tearDownScripts[$fooClassBehaviorName]);
 
 
 		// test object instance behaviors implemented through class-wide behaviors
@@ -1842,8 +1861,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 
 		try {
 			$this->component->faafaaEverMore(3, 4);
-			$this->fail('TApplicationException not raised trying to execute a disabled behavior');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised trying to execute a disabled behavior');
+		} catch (TUnknownMethodException $e) {
 		}
 
 
@@ -1864,6 +1883,91 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$dynamicComponent->unlisten();
 	}
 
+	
+	public function testCallStatic_singleton()
+	{
+		$app = Prado::getApplication();
+		try {
+			TApplication::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+		
+		$behaviorName = 'aStaticMethodBehavior';
+		$app->attachBehavior($behaviorName, NewComponentStaticBehavior::class);
+		
+		self::assertEquals(6, TApplication::aStaticMethod(3));
+			
+		// Disable Behavior has no singleton behavior static function
+		$app->disableBehavior($behaviorName);
+		try {
+			TApplication::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+		$app->enableBehavior($behaviorName);
+		self::assertEquals(8, TApplication::aStaticMethod(4));
+		
+		// Disable Behaviors of application, has no singleton behavior static function
+		$app->disableBehaviors();
+		try {
+			TApplication::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+		$app->enableBehaviors();
+		self::assertEquals(10, TApplication::aStaticMethod(5));
+		
+		$app->detachBehavior($behaviorName);
+		
+		try {
+			TApplication::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+	}
+	
+	public function testCallStatic_classBehavior()
+	{
+		try {
+			NewComponent::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+		
+		$behaviorName = 'aStaticMethodBehavior';
+		
+		// Class Behavior as String
+		NewComponent::attachClassBehavior($behaviorName, NewComponentStaticClassBehavior::class);
+		$this->tearDownScripts[$behaviorName] = function() use ($behaviorName) { NewComponent::detachClassBehavior($behaviorName);};
+		
+		self::assertEquals(9, NewComponent::aStaticMethod(3));
+		NewComponent::detachClassBehavior($behaviorName);
+			
+		// Class Behavior as Array
+		NewComponent::attachClassBehavior($behaviorName, ['class' => NewComponentStaticClassBehavior::class]);
+		
+		self::assertEquals(9, NewComponent::aStaticMethod(3));
+		NewComponent::detachClassBehavior($behaviorName);
+		
+		// Class Behavior as instanced class
+		NewComponent::attachClassBehavior($behaviorName, $behavior = new NewComponentStaticClassBehavior());
+		
+		self::assertEquals(9, NewComponent::aStaticMethod(3));
+		$behavior->setEnabled(false);
+		try {
+			NewComponent::aStaticMethod(3);
+			self::fail("failed to raise TUnknownMethodException when calling an undefined static method.");
+		} catch(TUnknownMethodException $e) {
+		}
+		$behavior->setEnabled(true);
+		self::assertEquals(16, NewComponent::aStaticMethod(4));
+			
+		NewComponent::detachClassBehavior($behaviorName);
+			
+			
+		unset($this->tearDownScripts[$behaviorName]);
+	}
 
 	public function testHasProperty()
 	{
@@ -2298,8 +2402,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		$this->assertEquals('ffemResult', $this->component->$behaviorTestBehaviorName->faafaaEverMore(null, null, null));
 		try {
 			$this->component->faafaaEverMore(null, null, null);
-			$this->fail('TApplicationException not raised when calling a behaviors behaviors method');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised when calling a behaviors behaviors method');
+		} catch (TUnknownMethodException $e) {
 		}
 		
 	
@@ -2742,8 +2846,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		//Test out undefined behavior/host object method
 		try {
 			$this->component->objectAndBehaviorUndefinedMethod();
-			$this->fail('exception not raised when evaluating an undefined method by the object and behavior');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised when evaluating an undefined method by the object and behavior');
+		} catch (TUnknownMethodException $e) {
 		}
 
 		// calling undefined dynamic method, caught by the __dycall method in the behavior and implemented
@@ -2777,8 +2881,8 @@ class TComponentTest extends PHPUnit\Framework\TestCase
 		//Test out undefined behavior/host object method
 		try {
 			$this->component->objectAndBehaviorUndefinedMethod();
-			$this->fail('exception not raised when evaluating an undefined method by the object and behavior');
-		} catch (TApplicationException $e) {
+			$this->fail('TUnknownMethodException not raised when evaluating an undefined method by the object and behavior');
+		} catch (TUnknownMethodException $e) {
 		}
 
 		// calling undefined dynamic method, caught by the __dycall method in the behavior and implemented
