@@ -89,7 +89,7 @@ The example PRADO Composer extension has its own manifest, Module, web page, and
 composer require --prefer-dist pradosoft/prado-composer-extension "*"
 ```
 
-Once downloaded and installed in composer, an extension is activated by adding the Composer Extension Name as a new module ID in the application configuration file application.xml or application.php. To include the example extension "pradosoft/prado-composer-extension", the PRADO configuration would include this xml:
+Once downloaded and installed in composer, an extension is activated by adding the Composer Extension Name as a new module ID in the application configuration file application.xml or application.php. To include the example extension "pradosoft/prado-composer-extension", the PRADO configuration would include this module xml:
 
 ```xml
 <modules>
