@@ -17,7 +17,7 @@ ENH: Issue #982 - General Logging update: Profiling, Flushing large logs for lon
 ENH: Issue #984 - TEventSubscription for temporary event handlers. (belisoful)
 ENH: Issue #972 - TProcessHelper (isSystemWindows, forking, kill, priority) and TSignalsDispatcher for delegating signals to respective global events, alarm interrupt callbacks at specific times, and per child PIDs callbacks. TEventSubscription can subscribe to a PHP process signal, an integer, as an event "name" (in TSignalsDispatcher).  (belisoful)
 ENH: Issue #973 - Embedded PHP Development Web Server CLI Action. (belisoful)
-ENH: Issue #976 - TComponent::__callStatic supports static functions of Class-wide behaviors and ISingleton implementations. (belisoful)
+ENH: Issue #976 - A class's static function are extendable with class-wide behaviors or a singleton implementing ISingleton.  The PHP magic method TComponent::__callStatic forwards static function calls to implementing class-wide or ISingleton behaviors. (belisoful)
 
 ## Version 4.2.2 - April 6, 2023
 
