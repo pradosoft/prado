@@ -773,7 +773,6 @@ class TComponent
 	 */
 	public static function __callStatic(string $method, array $args)
 	{
-		$return = null;
 		$checkedClasses = [];
 		if (is_a(static::class, ISingleton::class, true) && ($singleton = (static::class)::singleton(false)) && $singleton->getBehaviorsEnabled()) {
 			foreach ($singleton->getBehaviors() as $behavior) {
