@@ -37,7 +37,6 @@ The application will be installed in the "app" directory.
 
 The built-in PHP Test Web Server can be used to immediately start developing and testing a web application.
 The web server is started with command (assuming the above application in the directory "app"):
-
 ```sh
 cd app/protected
 ./vendor/bin/prado-cli http
@@ -48,7 +47,6 @@ The application is then accessible on the machine's browser at `http://127.0.0.1
 ### Add PRADO to an existing application
 
 Just create a composer.json file for your project:
-
 ```JSON
 {
   "repositories": [
@@ -65,13 +63,11 @@ Just create a composer.json file for your project:
 
 The [asset-packagist](https://asset-packagist.org) repository is used to install javascript dependencies.
 Assuming you already installed composer, run the command:
-
 ```sh
 composer install
 ```
 
 Then you can include the autoloader, and you will have access to the library classes:
-
 ```php
 <?php
 require 'vendor/autoload.php';
@@ -79,18 +75,16 @@ require 'vendor/autoload.php';
 
 ### PRADO Composer Extensions
 
-PRADO 4.2 supports Composer extensions to plug in new functionality directly into a PRADO application; such as new web controls, API integration, authorization, new services, analytics, custom behaviors, and CLI commands.  3rd party extensions can be found at [Packagist](https://packagist.org/?query=prado4&type=prado4-extension).  The community is encouraged to write and submit 3rd party PRADO 4 extensions for others to find and use.
+PRADO 4.2 supports Composer extensions to plug in new functionality directly into a PRADO application; such as new web controls, API integration, authorization, new services, analytics, custom behaviors, and CLI commands.  3rd party extensions can be found at [Packagist - Prado4-Extensions](https://packagist.org/?query=prado4&type=prado4-extension).  The community is encouraged to write and submit 3rd party PRADO 4 extensions for others to find and use.
 
 PRADO provides a rich set of features for runtime extension of an application with composer extensions.  Behaviors modify existing functionality and add new properties and methods to instanced run-time objects.  Class-wide behaviors add default behaviors to classes, interfaces, and traits when instancing new objects and to "listen"ing instances.  "Global Events" enable extensions to communicate with other extensions without knowledge of application configuration.  "Dynamic Events" enable objects to communicate with their attached behaviors with direct function calls.
 
 The example PRADO Composer extension has its own manifest, Module, web page, and error messages.  It can be included in your application with the following command:
-
 ```sh
 composer require --prefer-dist pradosoft/prado-composer-extension "*"
 ```
 
 Once downloaded and installed in composer, an extension is activated by adding the Composer Extension Name as a new module ID in the application configuration file application.xml or application.php. To include the example extension "pradosoft/prado-composer-extension", the PRADO configuration would include this module xml:
-
 ```xml
 <modules>
   ...
@@ -152,10 +146,10 @@ composer install
 
 For functional tests only, you need to manually download and run an app called [Selenium Server](https://www.selenium.dev/downloads/).
 It's a java application, so you'll need to install a [JRE/JDK](https://java.com/) and then run it from a terminal:
-
-```
+```sh
 java -jar selenium-server-4.x.x.jar standalone
 ```
+
 Depending on the browser you want to use to do functional testing, you may need an [additional driver](https://www.selenium.dev/documentation/en/webdriver/driver_requirements/).
 
 
@@ -170,7 +164,6 @@ Test results will be saved in in the `build/tests/` directory.
 
 PRADO uses phpDocumentor 3 (https://github.com/phpDocumentor/phpDocumentor) to generate its API documentation.
 A phpdoc.dist.xml configuration file is provided, to generate the documentation just execute:
-
 ```sh
 composer gendoc
 ```
