@@ -20,6 +20,7 @@ Upgrading from v4.2.1
 
 Upgrading from v4.1.2
 ---------------------
+- Application parameter "PluginContentId" is added for integrating PRADO Composer Extensions' pages into an application.  All PRADO Composer extensions use "PluginContentId" for their TContent ID to integrate into any particular application's layouts.
 - Wsat has been moved into its own repo; if you use it, you may want to add to your composer.json: "pradosoft/prado-wsat": "*"
 - the prado-cli command used to create a new project has been removed. Use "composer create-project pradosoft/prado-app <directory>" instead.
 - TEACache has been removed. The eAccelerator project has been abandoned and doesn't work with PHP > 5.4.
