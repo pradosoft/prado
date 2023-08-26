@@ -79,7 +79,7 @@ PRADO 4.2 supports Composer extensions to plug in new functionality directly int
 
 PRADO provides a rich set of features for runtime extension of an application with composer extensions.  Behaviors modify existing functionality and add new properties and methods to instanced run-time objects.  Class-wide behaviors add default behaviors to classes, interfaces, and traits when instancing new objects and to "listen"ing instances.  "Global Events" enable extensions to communicate with other extensions without knowledge of application configuration.  "Dynamic Events" enable objects to communicate with their attached behaviors with direct function calls.
 
-The example PRADO Composer extension has its own manifest, Module, web page, and error messages.  It can be included in your application with the following command:
+The example PRADO Composer extension has its own manifest, Module, web page, and error messages.  It can be included in an application with the following command:
 ```sh
 composer require --prefer-dist pradosoft/prado-composer-extension "*"
 ```
