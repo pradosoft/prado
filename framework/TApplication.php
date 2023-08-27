@@ -331,7 +331,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	/**
 	 * Returns the current Prado application.  This enables application behaviors to
 	 * be used for undefined static function calls via {@see \Prado\TComponent::__callStatic}.
-	 * @param bool $create Should the singleton be created if it doesn't exist.
+	 * @param bool $create This is ignored and returns Prado::getApplication().
 	 * @return ?object The singleton instance of the class.
 	 * @since 4.2.3
 	 */
