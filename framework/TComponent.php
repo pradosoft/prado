@@ -20,6 +20,7 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TUnknownMethodException;
 use Prado\Util\IBaseBehavior;
 use Prado\Util\IBehavior;
 use Prado\Util\TCallChain;
@@ -754,10 +755,62 @@ class TComponent
 
 		// don't throw an exception for __magicMethods() or any other weird methods natively implemented by php
 		if (!method_exists($this, $method)) {
-			throw new TApplicationException('component_method_undefined', $this::class, $method);
+			throw new TUnknownMethodException('component_method_undefined', $this::class, $method);
 		}
 	}
 
+	/**
+	 * This is the magic method that is called when a static function is not found.
+	 * It checks the class if it has an ISingleton instance, in which case its behaviors
+	 * are checked for the static method.  This further checks the Class-wide behaviors
+	 * (added with {@see \Prado\TComponent::attachClassBehavior}) for the static method.
+	 * When the static method is found (in either the ISingleton behaviors or the class-wide
+	 * behaviors), the behavior's static method is called and the results returned.
+	 * @param string $method The method name of the static call.
+	 * @param array $args The array of arguments passed to the static call.
+	 * @return mixed the result of the static call.
+	 * @since 4.2.3
+	 */
+	public static function __callStatic(string $method, array $args)
+	{
+		$checkedClasses = [];
+		if (is_a(static::class, ISingleton::class, true) && ($singleton = (static::class)::singleton(false)) && $singleton->getBehaviorsEnabled()) {
+			foreach ($singleton->getBehaviors() as $behavior) {
+				$class = $behavior::class;
+				$lclass = strtolower($class);
+				if (!isset($checkedClasses[$lclass])) {
+					if ($behavior->getEnabled() && method_exists($class, $method)) {
+						return forward_static_call_array([$class, $method], $args);
+					}
+					$checkedClasses[$lclass] = true;
+				}
+			}
+		}
+
+		if (isset(self::$_um[$lclass = strtolower(static::class)])) {
+			foreach(self::$_um[$lclass] as $pbehavior) {
+				$class = $behavior = $pbehavior->getBehavior();
+				if (is_array($behavior)) {
+					$class = $behavior['class'];
+				} elseif (is_object($behavior)) {
+					$class = $behavior::class;
+				}
+
+				$lclass = strtolower($class);
+				if (!isset($checkedClasses[$lclass])) {
+					if ((!($behavior instanceof IBaseBehavior) || $behavior->getEnabled()) && method_exists($class, $method)) {
+						return forward_static_call_array([$class, $method], $args);
+					}
+					$checkedClasses[$lclass] = true;
+				}
+			}
+		}
+
+		// don't throw an exception for __magicMethods() or any other weird methods natively implemented by php
+		if (!method_exists(static::class, $method)) {
+			throw new TUnknownMethodException('component_method_undefined', static::class, $method);
+		}
+	}
 
 	/**
 	 * Returns a property value or an event handler list by property or event name.

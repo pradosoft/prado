@@ -193,6 +193,7 @@ return [
 'TSocketException' => 'Prado\Exceptions\TSocketException',
 'TSystemException' => 'Prado\Exceptions\TSystemException',
 'TTemplateException' => 'Prado\Exceptions\TTemplateException',
+'TUnknownMethodException' => 'Prado\Exceptions\TUnknownMethodException',
 'TUserException' => 'Prado\Exceptions\TUserException',
 'ChoiceFormat' => 'Prado\I18N\core\ChoiceFormat',
 'CultureInfo' => 'Prado\I18N\core\CultureInfo',
