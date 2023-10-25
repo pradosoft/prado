@@ -16,7 +16,7 @@ namespace Prado\Web\UI;
  * names to their hex values.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @see https://en.wikipedia.org/wiki/Web_colors  Web Colors
  */
 class TWebColors extends \Prado\TEnumerable

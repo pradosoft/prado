@@ -33,7 +33,7 @@ use WeakReference;
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TEventSubscription extends \Prado\Collections\TCollectionSubscription
 {

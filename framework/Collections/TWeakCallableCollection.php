@@ -95,7 +95,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * Cloning a TWeakCallableCollection requires cloning the WeakMap
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __clone()
 	{
@@ -106,7 +106,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * Waking up a TWeakCallableCollection requires creating the WeakMap.  No items
 	 * are saved in TWeakList so only initialization of the WeakMap is required.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __wakeup()
 	{
@@ -132,7 +132,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * if the object being added is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to add to the managed weak map.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function weakCustomAdd(object $object)
 	{
@@ -151,7 +151,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * if the object being removed is a TEventHandler, we use the {@see \Prado\TEventHandler::getHandlerObject}
 	 * object instead of the TEventHandler itself.
 	 * @param object $object The object to remove to the managed weak map.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function weakCustomRemove(object $object)
 	{
@@ -226,7 +226,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * have lost their object.
 	 * All invalid WeakReference[s] are optionally removed from the list when {@see
 	 * getDiscardInvalid} is true.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function scrubWeakReferences()
 	{
@@ -268,7 +268,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 
 	/**
 	 * @return bool Does the TWeakList scrub invalid WeakReferences.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getDiscardInvalid(): bool
 	{
@@ -290,7 +290,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * All invalid WeakReference[s] are optionally removed from the list on $value
 	 *  being "true".
 	 * @param null|bool|string $value Sets the TWeakList scrubbing of invalid WeakReferences.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setDiscardInvalid($value): void
 	{
@@ -351,7 +351,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * All invalid WeakReference[s] are optionally removed from the list before getting
 	 * the priorities.
 	 * @return array the array of priority numerics in increasing priority number
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getPriorities(): array
 	{
@@ -365,7 +365,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param null|numeric $priority optional priority at which to count items.  if no
 	 *    parameter, it will be set to the default {@see getDefaultPriority}
 	 * @return int the number of items in the list at the specified priority
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getPriorityCount($priority = null)
 	{
@@ -378,7 +378,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * All invalid WeakReference[s] are optionally removed from the list before indexing.
 	 * This method is required by the interface \IteratorAggregate.
 	 * @return \Iterator an iterator for traversing the items in the list.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getIterator(): \Iterator
 	{
@@ -392,7 +392,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * Returns the total number of items in the list
 	 * All invalid WeakReference[s] are optionally removed from the list before counting.
 	 * @return int the number of items in the list
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getCount(): int
 	{
@@ -462,7 +462,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param mixed $item new item to add
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function insertAt($index, $item)
 	{
@@ -513,7 +513,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @throws \Prado\Exceptions\TInvalidDataValueException If the index specified exceeds the
 	 *    bound
 	 * @throws \Prado\Exceptions\TInvalidOperationException if the list is read-only
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function internalInsertAtIndexInPriority($items, $index = null, $priority = null, $preserveCache = false)
 	{
@@ -563,7 +563,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 *   the default priority.
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int index within the flattened list at which the item is being removed
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function remove($item, $priority = false)
 	{
@@ -609,7 +609,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @throws TInvalidDataValueException If the index specified exceeds the bound
 	 * @throws TInvalidOperationException if the list is read-only
 	 * @return mixed the removed item.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function removeAt($index)
 	{
@@ -647,7 +647,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 *    left blank, it is then set to the default priority
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return mixed the removed item.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function internalRemoveAtIndexInPriority($index, $priority = null)
 	{
@@ -662,7 +662,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * Removes all items in the priority list by calling removeAtIndexInPriority from the
 	 * last item to the first.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function clear(): void
 	{
@@ -685,7 +685,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * @param mixed $item the item
 	 * @return bool whether the list contains the item
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function contains($item): bool
 	{
@@ -814,7 +814,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 *   if $withindex is true, an array is returned of [0 => $priority, 1 => $priorityIndex,
 	 *   2 => flattenedIndex, 'priority' => $priority, 'index' => $priorityIndex, 'absindex'
 	 *   => flattenedIndex]
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function priorityAt($index, $withindex = false)
 	{
@@ -830,7 +830,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param mixed $item the item to add before indexitem
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function insertBefore($indexitem, $item)
 	{
@@ -855,7 +855,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param mixed $item the item to add after indexitem
 	 * @throws TInvalidDataValueException If the item does not exist
 	 * @return int where the item has been inserted in the flattened list
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function insertAfter($indexitem, $item)
 	{
@@ -875,7 +875,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	/**
 	 * All invalid WeakReference[s] are optionally removed from the list before returning.
 	 * @return array the priority list of items in array
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function toArray(): array
 	{
@@ -925,7 +925,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @return array the array of priorities keys with values of arrays of items that
 	 *   are below a specified priority.  The priorities are sorted so important priorities,
 	 *   lower numerics, are first.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function toArrayBelowPriority($priority, bool $inclusive = false): array
 	{
@@ -946,7 +946,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @return array the array of priorities keys with values of arrays of items that
 	 *   are above a specified priority.  The priorities are sorted so important priorities,
 	 *   lower numerics, are first.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function toArrayAbovePriority($priority, bool $inclusive = true): array
 	{
@@ -962,7 +962,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param mixed $data the data to be copied from, must be an array or object implementing
 	 *   Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor a Traversable.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function copyFrom($data): void
 	{
@@ -1007,7 +1007,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * @param mixed $data the data to be merged with, must be an array or object implementing
 	 *   Traversable
 	 * @throws TInvalidDataTypeException If data is neither an array nor an iterator.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function mergeWith($data): void
 	{
@@ -1050,7 +1050,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * is given.
 	 * @param int $offset the offset to set element
 	 * @param mixed $item the element value
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function offsetSet($offset, $item): void
 	{
@@ -1079,7 +1079,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 * for the next page loads.  Reimplement in derived classes to add new variables,
 	 * but remember to  also to call the parent implementation first.
 	 * @param array $exprops by reference
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

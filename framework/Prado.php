@@ -108,7 +108,7 @@ class Prado
 	 */
 	public static function getVersion(): string
 	{
-		return '4.2.2';
+		return '4.3.0';
 	}
 
 	/**
@@ -451,7 +451,7 @@ class Prado
 	 *   and for visibility to the calling object.
 	 * @param string $method
 	 * @return bool Does the method exist and is publicly callable.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function method_visible($object_or_class, string $method): bool
 	{
@@ -471,7 +471,7 @@ class Prado
 	/**
 	 * This method return the object that is calling your method.
 	 * @return ?object The parent object calling your code block.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function callingObject(): ?object
 	{
@@ -487,7 +487,7 @@ class Prado
 	 * this signifies if self, parents, and children have visibility to "protected"
 	 * properties, methods, and constants.
 	 * @return bool Does the method exist and is publicly callable.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function isCallingSelf(): bool
 	{
@@ -500,7 +500,7 @@ class Prado
 	 * In effect, this allows only the self to have visibility to "private" properties,
 	 * methods, and constants.
 	 * @return bool Does the method exist and is publicly callable.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function isCallingSelfClass(): bool
 	{

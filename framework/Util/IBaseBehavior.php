@@ -85,44 +85,44 @@ interface IBaseBehavior extends IPriorityProperty
 
 	/**
 	 * @return ?string The name of the behavior in the owner[s].
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getName(): ?string;
 
 	/**
 	 * @param ?string $value The name of the behavior in the owner[s].
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setName($value);
 
 	/**
 	 * @return bool Whether this behavior is enabled.  See implementation for default.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getEnabled(): bool;
 
 	/**
 	 * @param bool $value Whether this behavior is enabled.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setEnabled($value);
 
 	/**
 	 * @return array The owner component(s) that this behavior is attached to. [] when none.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getOwners(): array;
 
 	/**
 	 * @return bool Is the behavior attached to an owner.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function hasOwner(): bool;
 
 	/**
 	 * @param object $component The component to check if its an owner.
 	 * @return bool Is the object an owner of the behavior.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function isOwner(object $component): bool;
 
@@ -135,7 +135,7 @@ interface IBaseBehavior extends IPriorityProperty
 	 *   to install and forcibly attach or detach the handlers when true or null.  Default
 	 *   is 0 for standard attachment logic.  false resets the overrides to default attachment
 	 *   logic.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function syncEventHandlers(?object $component = null, $attachOverride = 0);
 }

@@ -20,7 +20,7 @@ namespace Prado\Exceptions;
  * the application.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TExitException extends TSystemException
 {

@@ -89,7 +89,7 @@ use WeakReference;
  * the children will override the parent TEventHandler data.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess, \Countable
 {

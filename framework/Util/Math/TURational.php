@@ -34,7 +34,7 @@ use Prado\Util\Helpers\TBitHelper;
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @see TRational
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TURational extends TRational
 {

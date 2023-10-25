@@ -63,7 +63,7 @@ use WeakReference;
  * ```
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @todo TComponent is too complex, TBaseObject for getters/setters.
  */
 class TArraySubscription

@@ -45,7 +45,7 @@ class TTemplateManager extends \Prado\TModule
 	public const TEMPLATE_CACHE_PREFIX = 'prado:template:';
 	/**
 	 * @var string Default template class, default '\Prado\Web\UI\TTemplate'
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private string $_defaultTemplateClass = TTemplate::class;
 
@@ -146,7 +146,7 @@ class TTemplateManager extends \Prado\TModule
 
 	/**
 	 * @return string the default template class.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getDefaultTemplateClass(): string
 	{
@@ -155,7 +155,7 @@ class TTemplateManager extends \Prado\TModule
 
 	/**
 	 * @param string $tplClass the default template class.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setDefaultTemplateClass($tplClass)
 	{

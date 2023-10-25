@@ -137,7 +137,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Gets the number of log routes.
 	 * @return int The number of routes.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getRoutesCount(): int
 	{
@@ -147,7 +147,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * Gets the log routes.
 	 * @return TLogRoute[] The routes for the Router
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getRoutes(): array
 	{
@@ -158,7 +158,7 @@ class TLogRouter extends \Prado\TModule
 	 * Removes a TLogRoute instance to the log router.
 	 * @param mixed $route the Route or Route Key to remove
 	 * @return ?TLogRoute The routes for the Router
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function removeRoute($route): ?TLogRoute
 	{
@@ -218,7 +218,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * This is a passthrough to the Application TLogger.
 	 * @return int The number of logs before triggering {@see self::onFlushLogs()}, default 1000.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getFlushCount(): int
 	{
@@ -229,7 +229,7 @@ class TLogRouter extends \Prado\TModule
 	 * This is a passthrough to the Application TLogger.
 	 * @param int|string $value the number of logs before triggering {@see self::onFlushLogs()}
 	 * @return static $this
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setFlushCount($value): static
 	{
@@ -241,7 +241,7 @@ class TLogRouter extends \Prado\TModule
 	/**
 	 * This is a passthrough to the Application TLogger.
 	 * @return int How much debug trace stack information to include. Default 0.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getTraceLevel(): int
 	{
@@ -252,7 +252,7 @@ class TLogRouter extends \Prado\TModule
 	 * This is a passthrough to the Application TLogger.
 	 * @param null|int|string $value How much debug trace stack information to include.
 	 * @return static $this
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setTraceLevel($value): static
 	{

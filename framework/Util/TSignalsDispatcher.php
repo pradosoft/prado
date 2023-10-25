@@ -68,7 +68,7 @@ use Prado\Util\Helpers\TProcessHelper;
  * Child PID handlers can be cleared with {@see self::clearPidHandlers()}
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 {

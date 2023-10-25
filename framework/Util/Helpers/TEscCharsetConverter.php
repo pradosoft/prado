@@ -18,7 +18,7 @@ namespace Prado\Util\Helpers;
  * Each Esc charset Encoding has 4 versions for G0, G1, G2, and G3.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @see https://en.wikipedia.org/wiki/ISO/IEC_2022 General structure of character encodings.
  * @see https://en.wikipedia.org/wiki/ISO/IEC_646 National standards for ASCII.
  * @see https://www.sljfaq.org/afaq/encodings.html Japanese encodings and character sets.

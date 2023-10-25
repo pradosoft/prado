@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  * Sends the log to the syslog.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @link https://www.php.net/manual/en/function.openlog.php
  * @link https://www.php.net/manual/en/function.syslog.php
  */

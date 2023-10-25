@@ -33,7 +33,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter
 	/**
 	 * Constructor.
 	 * @param null|mixed $parameter parameter of the event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __construct(mixed $parameter = null)
 	{
@@ -43,7 +43,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter
 
 	/**
 	 * @return string name of the event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getEventName(): string
 	{
@@ -52,7 +52,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter
 
 	/**
 	 * @param string $value name of the event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setEventName(string $value)
 	{
@@ -61,7 +61,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter
 
 	/**
 	 * @return mixed parameter of the event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getParameter(): mixed
 	{
@@ -70,7 +70,7 @@ class TEventParameter extends \Prado\TComponent implements IEventParameter
 
 	/**
 	 * @param mixed $value parameter of the event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setParameter(mixed $value)
 	{

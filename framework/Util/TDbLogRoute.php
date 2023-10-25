@@ -38,7 +38,7 @@ use Prado\TPropertyValue;
  *   );
  * ```
  *
- * 4.2.3 Notes: Add the `prefix` to the log table:
+ * 4.3.0 Notes: Add the `prefix` to the log table:
  * `ALTER TABLE pradolog ADD COLUMN prefix VARCHAR(128) AFTER category;`
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -66,7 +66,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * @var ?float The number of seconds of the log to retain.  Default null for logs are
 	 *   not deleted.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private ?float $_retainPeriod = null;
 
@@ -144,7 +144,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param ?float $maxTime All logs before this time are found
 	 * @param mixed $values the values to fill in.
 	 * @return string The where clause for the various SQL statements.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function getLogWhere(?int $level, null|string|array $categories, ?float $minTime, ?float $maxTime, &$values): string
 	{
@@ -212,7 +212,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param ?float $minTime All logs after this time are found
 	 * @param ?float $maxTime All logs before this time are found
 	 * @return string The where clause for the various SQL statements..
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getDBLogCount(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null)
 	{
@@ -236,7 +236,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param string $order The order statement.
 	 * @param string $limit The limit statement.
 	 * @return \Prado\Data\TDbDataReader the logs from the database.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getDBLogs(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null, string $order = '', string $limit = '')
 	{
@@ -264,7 +264,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param ?float $minTime All logs after this time are found
 	 * @param ?float $maxTime All logs before this time are found
 	 * @return int the number of logs in the database.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function deleteDBLog(?int $level = null, null|string|array $categories = null, ?float $minTime = null, ?float $maxTime = null)
 	{
@@ -409,7 +409,7 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * @return ?float The seconds to retain.  Null is no end.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getRetainPeriod(): ?float
 	{
@@ -420,7 +420,7 @@ class TDbLogRoute extends TLogRoute
 	 * @param null|int|string $value Number of seconds or "PT" period time.
 	 * @throws TConfigurationException when the time span is not a valid "PT" string.
 	 * @return static The current object.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setRetainPeriod($value): static
 	{
@@ -448,7 +448,7 @@ class TDbLogRoute extends TLogRoute
 	/**
 	 * @param string $timespan The time span to compute the number of seconds.
 	 * @retutrn ?int the number of seconds of the time span.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function timespanToSeconds(string $timespan): ?int
 	{

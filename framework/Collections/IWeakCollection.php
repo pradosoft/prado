@@ -16,7 +16,7 @@ namespace Prado\Collections;
  * and {@see \Prado\Collections\TWeakList} for providing weak collections.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 interface IWeakCollection
 {

@@ -16,7 +16,7 @@ namespace Prado\Exceptions;
  * These are usually thrown because of a mistake made by the end user.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TUserException extends TApplicationException
 {

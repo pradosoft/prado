@@ -174,7 +174,7 @@ class TShellApplication extends \Prado\TApplication
 
 	/**
 	 * Installs the shell actions.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function installShellActions()
 	{

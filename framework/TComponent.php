@@ -441,7 +441,7 @@ class TComponent
 	 * IBehavior objects are cloned, IClassBehaviors are not.
 	 * Clone object events are scrubbed of the old object behaviors' events.
 	 * To finalize the behaviors, dyClone is raised.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __clone()
 	{
@@ -485,7 +485,7 @@ class TComponent
 	 * the module can use a small IClassBehavior [implementing dyWakeUp]
 	 * (adding the event[s]) attached to the class with {@see
 	 * attachClassBehavior} prior to unserialization.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __wakeup()
 	{
@@ -769,7 +769,7 @@ class TComponent
 	 * @param string $method The method name of the static call.
 	 * @param array $args The array of arguments passed to the static call.
 	 * @return mixed the result of the static call.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function __callStatic(string $method, array $args)
 	{
@@ -1117,7 +1117,7 @@ class TComponent
 	 * @param mixed &$return The return value.
 	 * @param array $args The arguments to the method being called.
 	 * @return bool Was the method handled.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function callBehaviorsMethod($method, &$return, ...$args): bool
 	{
@@ -1157,7 +1157,7 @@ class TComponent
 	 * @param array $args The arguments to the behaviors method being chained.
 	 * @return ?TCallChain The chain of methods implemented by behaviors or null when
 	 *   there are no methods to call.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function getCallChain($method, ...$args): ?TCallChain
 	{

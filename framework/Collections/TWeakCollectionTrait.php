@@ -27,7 +27,7 @@ namespace Prado\Collections;
  * {@see weakCount} and the count of each object with {@see weakObjectCount}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @see https://www.php.net/manual/en/class.weakmap.php
  */
 trait TWeakCollectionTrait

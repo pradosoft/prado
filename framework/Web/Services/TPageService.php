@@ -287,7 +287,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @return TTemplateManager template manager
-	 * @deprecated 4.2.3, removal in 4.3
+	 * @deprecated since 4.3.0
 	 */
 	public function getTemplateManager()
 	{
@@ -296,7 +296,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param TTemplateManager $value template manager
-	 * @deprecated 4.2.3, removal in 4.3
+	 * @deprecated since 4.3.0
 	 */
 	public function setTemplateManager(TTemplateManager $value)
 	{
@@ -305,7 +305,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @return TThemeManager theme manager
-	 * @deprecated 4.2.3, removal in 4.3
+	 * @deprecated since 4.3.0
 	 */
 	public function getThemeManager()
 	{
@@ -314,7 +314,7 @@ class TPageService extends \Prado\TService
 
 	/**
 	 * @param TThemeManager $value theme manager
-	 * @deprecated 4.2.3, removal in 4.3
+	 * @deprecated since 4.3.0
 	 */
 	public function setThemeManager(TThemeManager $value)
 	{

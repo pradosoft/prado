@@ -196,7 +196,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $item the item to be removed
 	 * @throws TInvalidOperationException if the map is read-only
 	 * @return array The array of keys and the item removed.
-	 * since 4.2.3
+	 * since 4.3.0
 	 */
 	public function removeItem(mixed $item): array
 	{
@@ -236,7 +236,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 	 * @param mixed $item the item
 	 * @param bool $multiple Return an array of all the keys. Default true.
 	 * @return false|mixed the key of the item in the map, false if not found.
-	 * since 4.2.3
+	 * since 4.3.0
 	 */
 	public function keyOf($item, bool $multiple = true): mixed
 	{

@@ -27,7 +27,7 @@ namespace Prado\Util;
  * the Signal PID, and {@see self::getParameterUID()} for accessing the Signal PID UID.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TSignalParameter extends \Prado\TEventParameter
 {

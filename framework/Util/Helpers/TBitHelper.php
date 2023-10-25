@@ -60,7 +60,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * Converting LongLong is only supported in 64 bit PHP environments.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TBitHelper
 {

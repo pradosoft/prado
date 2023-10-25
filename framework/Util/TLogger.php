@@ -75,17 +75,17 @@ class TLogger extends \Prado\TComponent
 	private array $_logs = [];
 	/**
 	 * @var array unmatched PROFILE_BEGIN log messages
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private array $_profileLogs = [];
 	/**
 	 * @var int the profileLogs count that are not static::LOGGED.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private int $_profileLogsCount = 0;
 	/**
 	 * @var array The maintained Profile Begin times
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private array $_profileBeginTimes = [];
 	/**
@@ -106,39 +106,39 @@ class TLogger extends \Prado\TComponent
 	private ?float $_timestamp;
 	/**
 	 * @var ?int process id used to filter
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private ?int $_pid;
 
 	/**
 	 * @var int the number of logs before flushing.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private int $_flushCount = 1000;
 	/**
 	 * @var bool is the logger flushing.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private bool $_flushing = false;
 	/**
 	 * @var ?array any logged messages during flushing so they aren't flushed.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private ?array $_flushingLog = null;
 	/**
 	 * @var int The depth of a trace, default 0 for no trace.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private int $_traceLevel = 0;
 	/**
 	 * @var bool Is the logger Registered with onEndRequest
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private bool $_registered = false;
 
 	/**
 	 * @param bool $flushShutdown Should onFlushLogs be a register_shutdown_function.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __construct(bool $flushShutdown = true)
 	{
@@ -154,7 +154,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * @return int The number of logs before triggering {@see self::onFlushLogs()}
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getFlushCount(): int
 	{
@@ -164,7 +164,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * @param int $value the number of logs before triggering {@see self::onFlushLogs()}
 	 * @return static $this
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setFlushCount(int $value): static
 	{
@@ -178,7 +178,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * @return int How much debug trace stack information to include.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getTraceLevel(): int
 	{
@@ -188,7 +188,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * @param int $value How much debug trace stack information to include.
 	 * @return static $this
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setTraceLevel(int $value): static
 	{
@@ -212,7 +212,7 @@ class TLogger extends \Prado\TComponent
 	 *
 	 * @param ?bool $selector Which list of logs to count. Default null for both.
 	 * @return int The number of logs.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getLogCount(null|bool|int $selector = null): int
 	{
@@ -229,7 +229,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * This is the number of Profile Begin Logs that have been logged.
 	 * @return int The Profile Logs already logged.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getLoggedProfileLogCount(): int
 	{
@@ -238,7 +238,7 @@ class TLogger extends \Prado\TComponent
 
 	/**
 	 * Ensures that the logger is registered with the Application onEndRequest.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function ensureFlushing()
 	{
@@ -257,7 +257,7 @@ class TLogger extends \Prado\TComponent
 	 * @param array $log The log item to log.
 	 * @param bool $flush Allow a flush on adding if the log size is FlushCount, default true.
 	 * @return ?float The time delta for PROFILE_END; and null in other cases.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function addLog(array $log, bool $flush = true): ?float
 	{
@@ -301,7 +301,7 @@ class TLogger extends \Prado\TComponent
 	 * When the ProfileLog Count is equal or more than the FlushCount, then the Retained
 	 * profile logs are deleted and a WARNING is logged.
 	 * @param bool $flush Is the log being flushing, default true.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function checkProfileLogsSize(bool $flush = true)
 	{
@@ -323,7 +323,7 @@ class TLogger extends \Prado\TComponent
 	 * If we allow a flush (not a bulk logging), and the log count is equal to or more
 	 * than the FlushCount then we flush the logs.
 	 * @param bool $flush Is the log being flushing, default true.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function checkLogsSize(bool $flush = true)
 	{
@@ -387,7 +387,7 @@ class TLogger extends \Prado\TComponent
 	 * This event collects any logs from other aspects of the application that may
 	 * not be able to directly log to the TLogger.
 	 * @param bool $final Is the final collection, default false.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function onCollectLogs(bool $final = false)
 	{
@@ -401,7 +401,7 @@ class TLogger extends \Prado\TComponent
 	 *
 	 * @param mixed $sender the sender of the raised event.
 	 * @param mixed $final true on `register_shutdown_function`.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function onFlushLogs(mixed $sender = null, mixed $final = null)
 	{
@@ -470,7 +470,7 @@ class TLogger extends \Prado\TComponent
 	 *   [3] => timestamp (by microtime(true), float number)
 	 *   [4] => memory in bytes
 	 *   [5] => control client id; null when absent
-	 *      @ since 4.2.3:
+	 *      @ since 4.3.0:
 	 *   [6] => traces, when configured; null when absent
 	 *   [7] => process id)
 	 */
@@ -518,7 +518,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * This merges a set of logs with the current running logs.
 	 * @param array $logs the logs elements to insert.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function mergeLogs(array $logs)
 	{
@@ -599,7 +599,7 @@ class TLogger extends \Prado\TComponent
 	/**
 	 * Deletes the retained Profile Begin logs.
 	 * @return array The deleted Profile Begin Logs.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function deleteProfileLogs(): array
 	{
@@ -616,7 +616,7 @@ class TLogger extends \Prado\TComponent
 	 * @param mixed $a First element to compare.
 	 * @param mixed $b Second element to compare.
 	 * @return int The order between the two elements.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private function orderByTimeStamp($a, $b): int
 	{
@@ -735,7 +735,7 @@ class TLogger extends \Prado\TComponent
 	 * Filter function used by {@see static::getLogs()}
 	 * @param array $log element to be filtered
 	 * @return bool retain the element.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private function filterByPID($log): bool
 	{

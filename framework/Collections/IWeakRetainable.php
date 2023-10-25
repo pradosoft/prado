@@ -16,7 +16,7 @@ namespace Prado\Collections;
  * {@see \Prado\Collections\TWeakCallableCollection}, and {@see \Prado\TEventHandler}
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 interface IWeakRetainable
 {

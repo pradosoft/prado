@@ -54,7 +54,7 @@ use Prado\Prado;
  * notification.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TStreamNotificationCallback extends \Prado\TComponent
 {

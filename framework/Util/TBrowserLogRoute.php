@@ -28,12 +28,12 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 	private $_cssClass;
 	/**
 	 * @var bool colorize the deltas.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private bool $_colorizeDelta = true;
 	/**
 	 * @var bool add the prefix to the message
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private bool $_addPrefix = false;
 
@@ -78,7 +78,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 
 	/**
 	 * @return bool Colorize the Deltas
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getColorizeDelta(): bool
 	{
@@ -87,7 +87,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 
 	/**
 	 * @param bool|string $value Colorize the Deltas
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setColorizeDelta($value): static
 	{
@@ -97,7 +97,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 
 	/**
 	 * @return bool Adds the prefix to the message
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getAddPrefix(): bool
 	{
@@ -106,7 +106,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 
 	/**
 	 * @param bool|string $value Adds the prefix to the message
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setAddPrefix($value): static
 	{

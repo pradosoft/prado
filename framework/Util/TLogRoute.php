@@ -28,7 +28,7 @@ use Prado\TPropertyValue;
  * which takes a string of comma-separated desired category names (e.g. 'Prado\Web, Prado\IO').
  *
  * The categories filter can use '!' or '~', e.g. '!Prado\Web\UI' or '~Prado\Web\UI',
- * to exclude categories.  Added 4.2.3.
+ * to exclude categories.  Added 4.3.0.
  *
  * Level filter and category filter are combinational, i.e., only messages
  * satisfying both filter conditions will they be returned.
@@ -50,7 +50,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		TLogger::ERROR => 'Error',
 		TLogger::ALERT => 'Alert',
 		TLogger::FATAL => 'Fatal',
-		// @ since 4.2.3:
+		// @ since 4.3.0:
 		TLogger::PROFILE => 'Profile',
 		TLogger::PROFILE_BEGIN => 'Profile Begin',
 		TLogger::PROFILE_END => 'Profile End',
@@ -66,7 +66,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		'error' => TLogger::ERROR,
 		'alert' => TLogger::ALERT,
 		'fatal' => TLogger::FATAL,
-		// @ since 4.2.3:
+		// @ since 4.3.0:
 		'profile' => TLogger::PROFILE,
 		'profile begin' => TLogger::PROFILE_BEGIN_SELECT,
 		'profile end' => TLogger::PROFILE_END_SELECT,
@@ -77,7 +77,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	protected array $_logs = [];
 	/**
 	 * @var int the number of logs to save before processing, default 1000
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private ?int $_processInterval = 1000;
 	/**
@@ -90,27 +90,27 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	private ?array $_categories = [];
 	/**
 	 * @var bool|callable Whether the route is enabled, default true
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private mixed $_enabled = true;
 	/**
 	 * @var ?callable The prefix callable
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private mixed $_prefix = null;
 	/**
 	 * @var bool display the time with subseconds, default false.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private bool $_displaySubSeconds = false;
 	/**
 	 * @var float the maximum delta for the log items, default 0.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private float $_maxDelta = 0;
 	/**
 	 * @var float The computed total time of the logs, default 0.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	private float $_totalTime = 0;
 
@@ -221,7 +221,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @return bool Is the log enabled. Defaults is true.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getEnabled(): bool
 	{
@@ -243,7 +243,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 *
 	 * @param bool|callable $value Whether the route is enabled.
 	 * @return static $this
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setEnabled($value): static
 	{
@@ -257,7 +257,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @return int The number of logs before they are processed by the route.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getProcessInterval(): int
 	{
@@ -266,7 +266,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @param int $value The number of logs before they are processed by the route.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setProcessInterval($value): static
 	{
@@ -277,7 +277,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @return callable Changes the prefix.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getPrefixCallback(): mixed
 	{
@@ -293,7 +293,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 * ```
 	 * @param callable $value Changes the prefix.
 	 * @return static The current object.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setPrefixCallback(mixed $value): static
 	{
@@ -307,7 +307,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @return bool display the subseconds with the time during logging.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getDisplaySubSeconds(): bool
 	{
@@ -316,7 +316,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 
 	/**
 	 * @param bool|string $value display the subseconds with the time during logging.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setDisplaySubSeconds($value): static
 	{
@@ -358,7 +358,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @param array $log
 	 * @return string The prefix for the message
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getLogPrefix(array $log): string
 	{
@@ -398,7 +398,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * @param float $timestamp The timestamp to format
 	 * @return string The formatted time
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function getTime(float $timestamp): string
 	{
@@ -410,7 +410,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	/**
 	 * Given $normalizedTime between 0 and 1 will produce an associated color.
 	 * Lowest values (~0) are black, then blue, green, yellow, orange, and red at 1.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 * @param float $normalizedTime
 	 * @return array [red, green, blue] values for the color of the log.
 	 */
@@ -434,10 +434,10 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 *   [3] => timestamp (by microtime(true), float number)
 	 *   [4] => memory in bytes
 	 *   [5] => control client id
-	 * 		@ since 4.2.3:
+	 * 		@ since 4.3.0:
 	 *   [6] => traces, when configured
 	 *   [7] => process id)
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function filterLogs(&$logs)
 	{
@@ -539,7 +539,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 	 *   [3] => timestamp (by microtime(time), float number)
 	 *   [4] => memory in bytes
 	 *   [5] => control client id
-	 *     @ since 4.2.3:
+	 *     @ since 4.3.0:
 	 *   [6] => traces, when configured
 	 *   [7] => process id)
 	 * @param bool $final

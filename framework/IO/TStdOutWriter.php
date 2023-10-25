@@ -19,7 +19,7 @@ namespace Prado\IO;
  * a new handle to 'php://stdout'.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TStdOutWriter extends TTextWriter
 {

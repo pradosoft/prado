@@ -51,7 +51,7 @@ class TBroadcastEventParameter extends \Prado\TEventParameter
 
 	/**
 	 * @param string $value name of the broadcast event
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function setEventName(string $value)
 	{

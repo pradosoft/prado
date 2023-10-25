@@ -17,7 +17,7 @@ use Traversable;
  * This is the class to assist in array access.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TArrayHelper
 {

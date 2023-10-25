@@ -59,7 +59,7 @@ use Prado\Util\Helpers\TBitHelper;
  * Directory of EXIF.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @see https://en.wikipedia.org/wiki/Continued_fraction
  */
 class TRational implements \ArrayAccess

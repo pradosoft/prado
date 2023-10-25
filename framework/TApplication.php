@@ -333,7 +333,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * be used for undefined static function calls via {@see \Prado\TComponent::__callStatic}.
 	 * @param bool $create This is ignored and returns Prado::getApplication().
 	 * @return ?object The singleton instance of the class.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public static function singleton(bool $create = true): ?object
 	{

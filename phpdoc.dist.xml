@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="https://www.phpdoc.org"
 >
-    <title>Prado 4.2.2 API Manual</title>
+    <title>Prado 4.3.0 API Manual</title>
     <paths>
         <output>build/docs</output>
         <cache>build/cache</cache>

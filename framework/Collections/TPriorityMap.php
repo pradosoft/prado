@@ -427,7 +427,7 @@ class TPriorityMap extends TMap implements IPriorityCollection
 	 * Reimplement in derived classes to add new variables, but remember to  also to call the parent
 	 * implementation first.
 	 * @param array $exprops by reference
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

@@ -16,7 +16,7 @@ namespace Prado\IO;
  * for raising PRADO Stream Notification Events.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  * @link https://www.php.net/manual/en/function.stream-notification-callback.php
  */
 class TStreamNotificationParameter extends \Prado\TEventParameter

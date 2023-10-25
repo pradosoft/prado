@@ -27,7 +27,7 @@ use Prado\TComponent;
  * class behaviors when there is a change in the global class behaviors.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TGlobalClassAware extends \Prado\Util\TBehavior
 {

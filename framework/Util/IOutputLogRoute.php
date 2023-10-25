@@ -15,7 +15,7 @@ namespace Prado\Util;
  * The interface for the log routes that use the OUTPUT pipe to display the log.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 interface IOutputLogRoute
 {

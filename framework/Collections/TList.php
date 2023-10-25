@@ -416,7 +416,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 	 * because their value is the default one or useless to be cached for the next page loads.
 	 * When there are no items in the list, _d and _c are not stored
 	 * @param array $exprops by reference
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{

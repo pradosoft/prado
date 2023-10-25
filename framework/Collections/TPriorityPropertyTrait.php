@@ -26,7 +26,7 @@ use Prado\TPropertyValue;
  * The priority is implement with a float.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 trait TPriorityPropertyTrait
 {

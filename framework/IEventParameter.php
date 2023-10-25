@@ -15,7 +15,7 @@ namespace Prado;
  * This interface is for any event parameter to capture the event being raised.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 interface IEventParameter
 {

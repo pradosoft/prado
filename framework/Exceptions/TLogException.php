@@ -15,7 +15,7 @@ namespace Prado\Exceptions;
  * Thrown when there is an exception with logging.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TLogException extends TApplicationException
 {

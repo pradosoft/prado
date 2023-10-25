@@ -24,7 +24,7 @@ use WeakReference;
  * This functionality is important to replicate if-when overriding.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 trait TPermissionsManagerPropertyTrait
 {

@@ -16,7 +16,7 @@ namespace Prado\Exceptions;
  * in {@see \Prado\TComponent::__call} and {@see \Prado\TComponent::__callStatic}.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TUnknownMethodException extends TSystemException
 {

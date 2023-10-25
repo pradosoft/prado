@@ -18,7 +18,7 @@ use Prado\TPropertyValue;
  * errorCode and gets their translated message from PHP.
  *
  * @author Brad Anderson <belisoful@icloud.com>
- * @since 4.2.3
+ * @since 4.3.0
  */
 class TSocketException extends TNetworkException
 {

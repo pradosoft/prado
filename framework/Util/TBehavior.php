@@ -51,7 +51,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 
 	/**
 	 * This resets the owner and _handlersInstalled flag on cloning.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function __clone()
 	{
@@ -128,7 +128,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 * TClassBehavior could return multiple owners, but this type of behavior only
 	 *  has one.
 	 * @return array An array of the owner component.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function getOwners(): array
 	{
@@ -140,7 +140,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 
 	/**
 	 * @return bool Is the behavior attached to an owner.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function hasOwner(): bool
 	{
@@ -150,7 +150,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	/**
 	 * @param object $component The object to check if its the owner of the behavior.
 	 * @return bool Is the object an owner of the behavior.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function isOwner(object $component): bool
 	{
@@ -164,7 +164,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 * the behaviors are already enabled in the owner.
 	 * @param ?TCallChain $chain The chain of dynamic events being raised.  Default
 	 *   is null for no chain continuation.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function dyEnableBehaviors(?TCallChain $chain = null)
 	{
@@ -180,7 +180,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 * and it will delegate the $chain continuation to the subclass implementation.
 	 * @param ?TCallChain $chain The chain of dynamic events being raised.  Default
 	 *   is null for no chain continuation.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	public function dyDisableBehaviors(?TCallChain $chain = null)
 	{
@@ -197,7 +197,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 *   Default null for the IBehavior owner status.  This must match the owner if/when
 	 *   provided.
 	 * @return bool Are the behavior handlers attached to the owner events.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function getHandlersStatus(?TComponent $component = null): ?bool
 	{
@@ -213,7 +213,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 * @param TComponent $component The owner of the behavior.
 	 * @param bool $attach "true" to attach the handlers or "false" to detach.
 	 * @return bool Is there a change in the attachment status on the owner.
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function setHandlersStatus(TComponent $component, bool $attach): bool
 	{
@@ -233,7 +233,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 	 * for the next page loads.  Reimplement in derived classes to add new variables,
 	 * but remember to also to call the parent implementation first.
 	 * @param array $exprops by reference
-	 * @since 4.2.3
+	 * @since 4.3.0
 	 */
 	protected function _getZappableSleepProps(&$exprops)
 	{
