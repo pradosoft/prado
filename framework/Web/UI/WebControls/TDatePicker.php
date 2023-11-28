@@ -216,6 +216,22 @@ class TDatePicker extends TTextBox
 	}
 
 	/**
+	 * @param string $value Additional Css class name applied to dropdowns in DropDownList mode.
+	 */
+	public function setDropDownCssClass($value)
+	{
+		$this->setViewState('DropDownCssClass', $value);
+	}
+
+	/**
+	 * @return string Additional Css class name applied to dropdowns in DropDownList mode.
+	 */
+	public function getDropDownCssClass()
+	{
+		return $this->getViewState('DropDownCssClass');
+	}
+
+	/**
 	 * Set the first day of week, with 0 as Sunday, 1 as Monday, etc.
 	 * @param int $value 0 for Sunday, 1 for Monday, 2 for Tuesday, etc.
 	 */
@@ -702,7 +718,7 @@ class TDatePicker extends TTextBox
 		$days = $this->getDropDownDayOptions();
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'day');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'day');
-		$writer->addAttribute('class', 'datepicker_day_options');
+		$writer->addAttribute('class', 'datepicker_day_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -735,7 +751,7 @@ class TDatePicker extends TTextBox
 		$info = $this->getLocalizedCalendarInfo();
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'month');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'month');
-		$writer->addAttribute('class', 'datepicker_month_options');
+		$writer->addAttribute('class', 'datepicker_month_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}
@@ -790,7 +806,7 @@ class TDatePicker extends TTextBox
 		}
 		$writer->addAttribute('id', $this->getClientID() . TControl::CLIENT_ID_SEPARATOR . 'year');
 		$writer->addAttribute('name', $this->getUniqueID() . TControl::ID_SEPARATOR . 'year');
-		$writer->addAttribute('class', 'datepicker_year_options');
+		$writer->addAttribute('class', 'datepicker_year_options ' . $this->getDropDownCssClass());
 		if ($this->getReadOnly() || !$this->getEnabled(true)) {
 			$writer->addAttribute('disabled', 'disabled');
 		}

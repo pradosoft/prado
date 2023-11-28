@@ -1,3 +1,7 @@
+## Version 4.3.x - TBD
+
+ENH: Issue #993 - Added TDatePicker::DropDownCssClass to apply a class to all the dropdowns
+
 ## Version 4.3.0 - October 26, 2023
 
 ENH: Issues #824, #838, #851, #891, #910, #917 - General Behaviors Update: Cloning and Serializing supports behaviors.  IBaseBehavior has init($config) method. TClassBehavior tracks their owners.  Behaviors attach their registered event handlers at the behavior priority.  Registered Behavior event can optionally attached and detached automatically when the behavior is enabled or disabled (default).  Behavior events() support Closures. IBehavior are attachable class-wide by cloning. Behaviors for behaviors has better support.  Behaviors are case insensitive.  Supports Anonymous (unnamed/numeric) behaviors.  Wakeup updates the component behaviors with new named class behaviors. (belisoful)
