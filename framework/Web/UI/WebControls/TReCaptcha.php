@@ -178,12 +178,11 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 
 	public function validate()
 	{
-		if (!
-			  (
-			  	($challenge = @$_POST[$this->getChallengeFieldName()])
+		if (!(
+			($challenge = @$_POST[$this->getChallengeFieldName()])
 			and
 			($response = @$_POST[$this->getResponseFieldName()])
-			  )
+		)
 		) {
 			return false;
 		}
