@@ -212,6 +212,7 @@ class TTemplateColumn extends TDataGridColumn
 				}
 				if ($control instanceof \Prado\IDataRenderer) {
 					/** @var \Prado\TComponent $control */
+					// @phpstan-ignore varTag.nativeType
 					$control->attachEventHandler('OnDataBinding', [$this, 'dataBindColumn']);
 				}
 			} elseif ($template !== null) {

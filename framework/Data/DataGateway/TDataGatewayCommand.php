@@ -132,7 +132,7 @@ class TDataGatewayCommand extends \Prado\TComponent
 	/**
 	 * Build the find command from the criteria. Limit, Offset and Ordering are applied if applicable.
 	 * @param TSqlCriteria $criteria $criteria
-	 * @return TDbCommand.
+	 * @return TDbCommand
 	 */
 	protected function getFindCommand($criteria)
 	{

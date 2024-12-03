@@ -621,7 +621,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * ```
 	 *
 	 * @param mixed $keys primary keys
-	 * @return null|TActiveRecord. Null if no result is found.
+	 * @return null|TActiveRecord Null if no result is found.
 	 */
 	public function findByPk($keys)
 	{
@@ -667,7 +667,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * class.
 	 * @param string $sql select SQL
 	 * @param array $parameters
-	 * @return TActiveRecord, null if no result is returned.
+	 * @return TActiveRecord null if no result is returned.
 	 */
 	public function findBySql($sql, $parameters = [])
 	{
@@ -732,7 +732,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	 * value equal to the $property value.
 	 * @param string $name relationship/property name corresponding to keys in $RELATION array.
 	 * @param array $args method call arguments.
-	 * @return null|\Prado\Data\ActiveRecord\Relations\TActiveRecordRelation, null if the context or the handler doesn't exist
+	 * @return null|\Prado\Data\ActiveRecord\Relations\TActiveRecordRelation null if the context or the handler doesn't exist
 	 */
 	protected function getRelationHandler($name, $args = [])
 	{

@@ -359,10 +359,10 @@ use Prado\Web\Javascripts\TJavaScriptString;
  * @method void dyWakeUp()
  * @method void dyListen(array $globalEvents)
  * @method void dyUnlisten(array $globalEvents)
- * @method string dyPreRaiseEvent(string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|function $postfunction)
+ * @method string dyPreRaiseEvent(string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|callable $postfunction)
  * @method dyIntraRaiseEventTestHandler(callable $handler, mixed $sender, \Prado\TEventParameter $param, string $name)
  * @method bool dyIntraRaiseEventPostHandler(string $name, mixed $sender, \Prado\TEventParameter $param, callable $handler, $response)
- * @method array dyPostRaiseEvent(array $responses, string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|function $postfunction)
+ * @method array dyPostRaiseEvent(array $responses, string $name, mixed $sender, \Prado\TEventParameter $param, null|numeric $responsetype, null|callable $postfunction)
  * @method string dyEvaluateExpressionFilter(string $statements)
  * @method string dyEvaluateStatementsFilter(string $statements)
  * @method dyCreatedOnTemplate(\Prado\TComponent $parent)
@@ -1391,7 +1391,7 @@ class TComponent
 	 *
 	 * Behaviors may implement the following functions with TBehaviors:
 	 * ```php
-	 *	public function dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction[, TCallChain $chain) {
+	 *	public function dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction, TCallChain $chain) {
 	 *      ....  //  Your logic
 	 *  	return $chain->dyPreRaiseEvent($name, $sender, $param, $responsetype, $postfunction); //eg, the event name may be filtered/changed
 	 *  }
@@ -1403,9 +1403,9 @@ class TComponent
 	 *      ....  //  Your logic
 	 *		return $chain->dyIntraRaiseEventPostHandler($name, $sender, $param, $handler, $response); //contains the per handler response
 	 *  }
-	 *  public function dyPostRaiseEvent($responses, $name, $sender, $param,$ responsetype, $postfunction, TCallChain $chain) {
+	 *  public function dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction, TCallChain $chain) {
 	 *      ....  //  Your logic
-	 *		return $chain->dyPostRaiseEvent($responses, $name, $sender, $param,$ responsetype, $postfunction);
+	 *		return $chain->dyPostRaiseEvent($responses, $name, $sender, $param, $responsetype, $postfunction);
 	 *  }
 	 * ```
 	 * to be executed when raiseEvent is called.  The 'intra' dynamic events are called per handler in

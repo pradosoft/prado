@@ -135,6 +135,7 @@ class TFeedService extends \Prado\TService
 			// init feed properties
 			foreach ($properties as $name => $value) {
 				/** @var \Prado\TComponent $feed */
+				// @phpstan-ignore varTag.nativeType
 				$feed->setSubproperty($name, $value);
 			}
 			$feed->init($feedConfig);

@@ -35,7 +35,7 @@ use Prado\Web\UI\ActiveControls\IActiveControl;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  * @method TTableStyle getStyle()
- * @method TActiveControlAdapter getAdapter()
+ * @method \Prado\Web\UI\ActiveControls\TActiveControlAdapter getAdapter()
  */
 class TCheckBoxList extends TListControl implements IRepeatInfoUser, \Prado\Web\UI\INamingContainer, \Prado\Web\UI\IPostBackDataHandler, \Prado\Web\UI\IValidatable
 {
