@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TFlushCachesAction class file
  *

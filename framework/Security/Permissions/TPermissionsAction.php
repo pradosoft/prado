@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPermissionsAction class file
  *

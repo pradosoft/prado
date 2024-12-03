@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TAuthManager class file
  *

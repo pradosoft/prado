@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THeader6 class file
  *

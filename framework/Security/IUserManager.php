@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IUserManager interface file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOutputCache class file
  *

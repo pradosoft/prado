@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TMssqlMetaData class file.
  *

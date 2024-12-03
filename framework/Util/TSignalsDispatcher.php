@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSignalsDispatcher class file.
  *
@@ -223,7 +224,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			static::setAsyncSignals(true);
 		}
 
-		foreach(static::SIGNAL_MAP as $signal => $event) {
+		foreach (static::SIGNAL_MAP as $signal => $event) {
 			$handler = pcntl_signal_get_handler($signal);
 
 			if ($handler instanceof self) {
@@ -277,7 +278,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			return false;
 		}
 
-		foreach(self::$_priorHandlers as $signal => $originalCallback) {
+		foreach (self::$_priorHandlers as $signal => $originalCallback) {
 			pcntl_signal($signal, $originalCallback[0]);
 			$uninstallHandler = true;
 			switch ($signal) {
@@ -325,7 +326,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	{
 		if (isset(static::SIGNAL_MAP[$name])) {
 			$name = static::SIGNAL_MAP[$name];
-		} elseif(strncasecmp('pid:', $name, 4) === 0) {
+		} elseif (strncasecmp('pid:', $name, 4) === 0) {
 			if (is_numeric($pid = trim(substr($name, 4)))) {
 				return TProcessHelper::isRunning((int) $pid);
 			}
@@ -347,7 +348,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	{
 		if (isset(static::SIGNAL_MAP[$name])) {
 			$name = static::SIGNAL_MAP[$name];
-		} elseif(strncasecmp('pid:', $name, 4) === 0) {
+		} elseif (strncasecmp('pid:', $name, 4) === 0) {
 			if (is_numeric($pid = trim(substr($name, 4)))) {
 				$pid = (int) $pid;
 				return isset(self::$_pidHandlers[$pid]) && self::$_pidHandlers[$pid]->getCount() > 0;
@@ -370,7 +371,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 	{
 		if (isset(static::SIGNAL_MAP[$name])) {
 			$name = static::SIGNAL_MAP[$name];
-		} elseif(strncasecmp('pid:', $name, 4) === 0) {
+		} elseif (strncasecmp('pid:', $name, 4) === 0) {
 			if (!is_numeric($pid = trim(substr($name, 4)))) {
 				throw new TInvalidOperationException('signalsdispatcher_bad_pid', $pid);
 			}
@@ -620,7 +621,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			$callback = self::$_priorHandlers[SIGALRM][1];
 		}
 
-		foreach($alarmTime !== null ? [$alarmTime] : array_keys(static::$_alarms) as $time) {
+		foreach ($alarmTime !== null ? [$alarmTime] : array_keys(static::$_alarms) as $time) {
 			if (($key = array_search($callback, static::$_alarms[$time] ?? [], true)) !== false) {
 				unset(static::$_alarms[$time][$key]);
 				if (is_array(static::$_alarms[$time] ?? false)) {
@@ -661,7 +662,7 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			$nextTime = null;
 			$startTime = time();
 			$signalParam->setAlarmTime($startTime);
-			foreach(static::$_alarms as $alarmTime => $alarms) {
+			foreach (static::$_alarms as $alarmTime => $alarms) {
 				if ($alarmTime <= $startTime) {
 					array_map(fn ($alarm) => $alarm($this, $signalParam), static::$_alarms[$alarmTime]);
 					unset(static::$_alarms[$alarmTime]);

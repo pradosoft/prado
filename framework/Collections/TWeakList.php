@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TWeakList class
  *
@@ -15,7 +16,6 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TEventHandler;
 use Prado\TPropertyValue;
-
 use ArrayAccess;
 use Closure;
 use Traversable;
@@ -121,7 +121,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 */
 	protected function weakCustomAdd(object $object)
 	{
-		if($object instanceof TEventHandler) {
+		if ($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
 			$this->_eventHandlerCount++;
 		}
@@ -137,7 +137,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 */
 	protected function weakCustomRemove(object $object)
 	{
-		if($object instanceof TEventHandler) {
+		if ($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
 			$this->_eventHandlerCount--;
 		}
@@ -161,7 +161,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 				$item[$key] = $element;
 			}
 		} elseif (is_object($item)) {
-			if($item instanceof WeakReference) {
+			if ($item instanceof WeakReference) {
 				$item = $item->get();
 			} elseif (($item instanceof TEventHandler) && !$item->hasHandler()) {
 				$item = null;
@@ -207,7 +207,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 				if ($isEventHandler = ($object instanceof TEventHandler)) {
 					$object = $object->getHandlerObject(true);
 				}
-				if(($object instanceof WeakReference) && $object->get() === null) {
+				if (($object instanceof WeakReference) && $object->get() === null) {
 					$this->_c--;
 					if ($i === $this->_c) {
 						array_pop($this->_d);
@@ -247,7 +247,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 	 */
 	public function setDiscardInvalid($value): void
 	{
-		if($value === $this->_discardInvalid) {
+		if ($value === $this->_discardInvalid) {
 			return;
 		}
 		if ($this->_discardInvalid !== null && !Prado::isCallingSelf()) {
@@ -445,7 +445,7 @@ class TWeakList extends TList implements IWeakCollection, ICollectionFilter
 		$this->filterItemForInput($item);
 		if (($index = parent::indexOf($item)) === -1 && $this->_eventHandlerCount) {
 			$index = false;
-			foreach($this->_d as $index => $dItem) {
+			foreach ($this->_d as $index => $dItem) {
 				if (($dItem instanceof TEventHandler) && $dItem->isSameHandler($item, true)) {
 					break;
 				}

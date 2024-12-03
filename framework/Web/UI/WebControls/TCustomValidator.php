@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCustomValidator class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTableHeaderCell class file
  *

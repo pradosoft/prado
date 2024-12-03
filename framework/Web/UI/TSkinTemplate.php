@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSkinTemplate class file
  *

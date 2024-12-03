@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TRational class file
  *

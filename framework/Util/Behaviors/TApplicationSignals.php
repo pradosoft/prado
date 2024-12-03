@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TApplicationSignals class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordGateway class file.
  *

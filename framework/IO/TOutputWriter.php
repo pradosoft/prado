@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOutputWriter class file
  *

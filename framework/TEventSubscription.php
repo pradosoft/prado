@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TEventSubscription classes
  *
@@ -11,7 +12,6 @@
 namespace Prado;
 
 use Prado\Exceptions\TInvalidOperationException;
-
 use ArrayAccess;
 use WeakReference;
 

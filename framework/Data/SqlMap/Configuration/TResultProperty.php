@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TResultProperty class file.
  *

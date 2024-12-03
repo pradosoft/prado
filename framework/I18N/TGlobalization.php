@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TGlobalization class file.
  *

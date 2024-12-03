@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveLinkButton class file.
  *

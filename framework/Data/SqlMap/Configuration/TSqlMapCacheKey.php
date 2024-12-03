@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapCacheModel, TSqlMapCacheTypes and TSqlMapCacheKey classes file.
  *

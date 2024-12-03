@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TXmlElement, TXmlDocument, TXmlElementList class file
  *

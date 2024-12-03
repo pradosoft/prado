@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCallbackOptions component class file.
  *

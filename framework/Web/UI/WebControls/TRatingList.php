@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TRatingList class file.
  *

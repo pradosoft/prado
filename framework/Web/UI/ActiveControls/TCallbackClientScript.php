@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCallbackClientScript class file
  *

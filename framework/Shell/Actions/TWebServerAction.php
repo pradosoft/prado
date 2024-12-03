@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TWebServerAction class file
  *
@@ -122,7 +123,7 @@ class TWebServerAction extends TShellAction
 	 */
 	public function getAddress(): string
 	{
-		if(!$this->_address) {
+		if (!$this->_address) {
 			if ($this->getIpv6()) {
 				if ($this->getAll()) {
 					return '[::0]';

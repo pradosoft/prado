@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordCriteria class file.
  *

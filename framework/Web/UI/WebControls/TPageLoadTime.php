@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPageLoadTime class file.
  *

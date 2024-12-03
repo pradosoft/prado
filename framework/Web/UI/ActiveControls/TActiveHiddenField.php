@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveHiddenField class file.
  *

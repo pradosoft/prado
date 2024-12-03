@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TBehaviorsModule class
  *

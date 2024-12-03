@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TUserPermissionsBehavior class file.
  *

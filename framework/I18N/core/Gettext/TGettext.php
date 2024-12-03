@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TGettext class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPanelStyle class file
  *

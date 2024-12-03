@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TScaffoldBase class file.
  *

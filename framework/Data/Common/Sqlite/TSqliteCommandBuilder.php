@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqliteCommandBuilder class file.
  *

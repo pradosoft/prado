@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IMappedStatement interface file.
  *

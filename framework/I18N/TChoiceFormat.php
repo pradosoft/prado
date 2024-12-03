@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TChoiceFormat, I18N choice format component.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiDatePicker class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordManager class file.
  *

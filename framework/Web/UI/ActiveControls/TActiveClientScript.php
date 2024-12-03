@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveClientScript class file
  *

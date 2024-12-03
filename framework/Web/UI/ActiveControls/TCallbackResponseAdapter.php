@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCallbackResponseAdapter class file.
  *

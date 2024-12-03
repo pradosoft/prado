@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTableRow and TTableCellCollection class file
  *

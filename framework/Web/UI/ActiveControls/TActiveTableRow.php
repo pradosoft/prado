@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveTableRow and TActiveTableRowEventParameter class file
  *

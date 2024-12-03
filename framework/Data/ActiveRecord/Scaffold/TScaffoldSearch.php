@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TScaffoldSearch class file.
  *

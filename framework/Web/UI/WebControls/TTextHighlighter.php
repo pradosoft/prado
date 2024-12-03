@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTextHighlighter class file
  *

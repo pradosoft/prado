@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCompositeControl class file.
  *

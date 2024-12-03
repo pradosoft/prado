@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TWizardNavigationButtonStyle class file.
  *

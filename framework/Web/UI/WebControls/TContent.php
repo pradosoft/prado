@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TContent class file.
  *

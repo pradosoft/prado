@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPermissionsManager class file
  *

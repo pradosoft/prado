@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *
@@ -444,7 +445,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		$next = [];
 		$nextNext = [];
 
-		foreach(array_reverse(array_keys($logs)) as $key) {
+		foreach (array_reverse(array_keys($logs)) as $key) {
 			$next[$key] = $nextNext[$logs[$key][TLogger::LOG_PID]] ?? null;
 			$nextNext[$logs[$key][TLogger::LOG_PID]] = $key;
 		}
@@ -454,7 +455,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 		$profileLast = [];
 		$profileTotal = [];
 		$startTime = $_SERVER["REQUEST_TIME_FLOAT"];
-		foreach(array_keys($logs) as $key) {
+		foreach (array_keys($logs) as $key) {
 			if (isset($next[$key])) {
 				$logs[$key]['delta'] = $logs[$next[$key]][TLogger::LOG_TIME] - $logs[$key][TLogger::LOG_TIME];
 				$total = $logs[$key]['total'] = $logs[$key][TLogger::LOG_TIME] - $startTime;
@@ -465,7 +466,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 			if ($total > $this->_totalTime) {
 				$this->_totalTime = $total;
 			}
-			if(($logs[$key][TLogger::LOG_LEVEL] & TLogger::PROFILE_BEGIN) === TLogger::PROFILE_BEGIN) {
+			if (($logs[$key][TLogger::LOG_LEVEL] & TLogger::PROFILE_BEGIN) === TLogger::PROFILE_BEGIN) {
 				$profileToken = $logs[$key][TLogger::LOG_MESSAGE] . $logs[$key][TLogger::LOG_PID];
 				$profile[$profileToken] = $logs[$key];
 				$profileLast[$profileToken] = false;
@@ -474,7 +475,7 @@ abstract class TLogRoute extends \Prado\TApplicationComponent
 				$logs[$key]['total'] = 0;
 				$logs[$key][TLogger::LOG_MESSAGE] = 'Profile Begin: ' . $logs[$key][TLogger::LOG_MESSAGE];
 
-			} elseif(($logs[$key][TLogger::LOG_LEVEL] & TLogger::PROFILE_END) === TLogger::PROFILE_END) {
+			} elseif (($logs[$key][TLogger::LOG_LEVEL] & TLogger::PROFILE_END) === TLogger::PROFILE_END) {
 				$profileToken = $logs[$key][TLogger::LOG_MESSAGE] . $logs[$key][TLogger::LOG_PID];
 				if (isset($profile[$profileToken])) {
 					if ($profileLast[$profileToken] !== false) {

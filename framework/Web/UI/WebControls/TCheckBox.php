@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCheckBox class file
  *

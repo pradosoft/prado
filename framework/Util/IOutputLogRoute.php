@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IOutputLogRoute class file
  *

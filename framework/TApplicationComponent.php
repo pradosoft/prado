@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TApplicationComponent class
  *
@@ -59,7 +60,7 @@ class TApplicationComponent extends \Prado\TComponent
 		$cacheFile = $mode = null;
 		if ($app) {
 			$cacheFile = $app->getRuntimePath() . DIRECTORY_SEPARATOR . self::FX_CACHE_FILE;
-			if((($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && !$_loaded) {
+			if ((($mode = $app->getMode()) === TApplicationMode::Normal || $mode === TApplicationMode::Performance) && !$_loaded) {
 				$_loaded = true;
 				if (($content = @file_get_contents($cacheFile)) !== false) {
 					$_classfx = @unserialize($content) ?? [];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TList class
  *
@@ -89,7 +90,7 @@ class TList extends \Prado\TComponent implements \IteratorAggregate, \ArrayAcces
 		if ($value === null) {
 			return;
 		}
-		if($this->_r === null || Prado::isCallingSelf()) {
+		if ($this->_r === null || Prado::isCallingSelf()) {
 			$this->_r = TPropertyValue::ensureBoolean($value);
 		} else {
 			throw new TInvalidOperationException('list_readonly_set', $this::class);

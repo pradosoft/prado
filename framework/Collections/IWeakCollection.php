@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IWeakCollection interface file
  *

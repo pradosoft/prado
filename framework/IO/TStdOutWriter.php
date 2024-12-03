@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TStdOutWriter class file
  *

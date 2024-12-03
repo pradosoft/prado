@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPriorityCollectionTrait class
  *
@@ -101,7 +102,7 @@ trait TPriorityCollectionTrait
 		if ($value === $this->_dp) {
 			return;
 		}
-		if($this->_dp === null || Prado::isCallingSelf()) {
+		if ($this->_dp === null || Prado::isCallingSelf()) {
 			$this->_dp = (string) round(TPropertyValue::ensureFloat($value), $this->getPrecision());
 		} else {
 			throw new TInvalidOperationException('prioritytrait_no_set_default_priority');
@@ -130,13 +131,13 @@ trait TPriorityCollectionTrait
 		if ($value === $this->_p) {
 			return;
 		}
-		if($this->_p !== null && !Prado::isCallingSelf()) {
+		if ($this->_p !== null && !Prado::isCallingSelf()) {
 			throw new TInvalidOperationException('prioritytrait_no_set_precision');
 		}
 		$this->_p = TPropertyValue::ensureInteger($value);
 		$this->setDefaultPriority($this->_dp);
 		$_d = [];
-		foreach(array_keys($this->_d) as $priority) {
+		foreach (array_keys($this->_d) as $priority) {
 			$newPriority = $this->ensurePriority($priority);
 			if (array_key_exists($newPriority, $_d)) {
 				if ($this->getPriorityCombineStyle()) {
@@ -282,7 +283,7 @@ trait TPriorityCollectionTrait
 			}
 			$items[] = $itemsatpriority;
 		}
-		if(empty($items)) {
+		if (empty($items)) {
 			return [];
 		}
 		if ($this->getPriorityCombineStyle()) {
@@ -309,7 +310,7 @@ trait TPriorityCollectionTrait
 			}
 			$items[] = $itemsatpriority;
 		}
-		if(empty($items)) {
+		if (empty($items)) {
 			return [];
 		}
 		if ($this->getPriorityCombineStyle()) {

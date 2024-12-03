@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordRelation class file.
  *

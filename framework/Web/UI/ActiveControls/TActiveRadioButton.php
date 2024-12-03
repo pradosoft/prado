@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRadioButton class file.
  *

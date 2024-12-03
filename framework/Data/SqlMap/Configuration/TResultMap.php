@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TResultMap class file.
  *

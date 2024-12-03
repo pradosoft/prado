@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDataGatewayCommand, TDataGatewayEventParameter and TDataGatewayResultEventParameter class file.
  *

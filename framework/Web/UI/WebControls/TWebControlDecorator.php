@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TWebControlDecorator class file.
  *

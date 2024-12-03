@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IEventParameter class.
  *

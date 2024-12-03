@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TComponent, TPropertyValue classes
  *

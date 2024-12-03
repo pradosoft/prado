@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TClientScriptManager and TClientSideOptions class file.
  *

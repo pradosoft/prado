@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TInPlaceTextBox class file.
  *

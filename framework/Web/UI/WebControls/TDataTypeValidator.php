@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDataTypeValidator class.
  *

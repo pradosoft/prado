@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTranslate, I18N translation component.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TMysqlCommandBuilder class file.
  *

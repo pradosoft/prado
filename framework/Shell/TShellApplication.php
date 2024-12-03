@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TShellApplication class file
  *
@@ -15,7 +16,6 @@ use Prado\Shell\Actions\THelpAction;
 use Prado\Shell\Actions\TFlushCachesAction;
 use Prado\Shell\Actions\TPhpShellAction;
 use Prado\Shell\Actions\TWebServerAction;
-
 use Prado\IO\ITextWriter;
 use Prado\IO\TStdOutWriter;
 use Prado\Shell\TShellWriter;

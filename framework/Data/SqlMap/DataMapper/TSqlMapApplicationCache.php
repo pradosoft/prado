@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapCache class file contains FIFO, LRU, and GLOBAL cache implementations.
  *

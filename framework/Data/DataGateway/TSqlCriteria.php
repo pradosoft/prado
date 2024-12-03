@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDbSqlCriteria class file.
  *

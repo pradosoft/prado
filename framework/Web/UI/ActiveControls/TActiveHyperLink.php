@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveHyperLink class file.
  *

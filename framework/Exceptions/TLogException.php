@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogException classes file
  *

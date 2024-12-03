@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TColorPicker class file
  *

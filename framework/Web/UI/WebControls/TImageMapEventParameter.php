@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TImageMap and related class file.
  *

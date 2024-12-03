@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveHtmlArea5 class file.
  *

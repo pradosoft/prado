@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveLabel class file.
  *

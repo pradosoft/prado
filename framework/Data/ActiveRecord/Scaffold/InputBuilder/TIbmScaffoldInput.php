@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TIbmScaffoldInput class file.
  *

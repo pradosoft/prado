@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TArrayHelper class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTextBox class file.
  *
@@ -176,7 +177,7 @@ class TTextBox extends \Prado\Web\UI\WebControls\TWebControl implements \Prado\W
 				$writer->addAttribute('value', $text);
 			}
 
-			switch($this->getAutoCompleteType()) {
+			switch ($this->getAutoCompleteType()) {
 				case TTextBoxAutoCompleteType::Enabled:
 					$writer->addAttribute('autocomplete', 'on');
 					break;

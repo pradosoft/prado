@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TScaffoldEditView class and IScaffoldEditRenderer interface file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TContentPlaceHolder class file.
  *

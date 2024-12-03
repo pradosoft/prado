@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOracleTableColumn class file.
  *

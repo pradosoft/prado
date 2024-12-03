@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TAccordion class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IPermissions interface file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapConfig class file.
  *

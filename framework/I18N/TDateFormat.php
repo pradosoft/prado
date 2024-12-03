@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDateFromat formatting component.
  *

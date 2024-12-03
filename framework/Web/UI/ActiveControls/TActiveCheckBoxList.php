@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveCheckBoxList class file.
  *

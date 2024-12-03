@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THttpRequestResolveMethod class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTemplateColumn class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPermissionsManagerPropertyTrait class file.
  *
@@ -49,7 +50,7 @@ trait TPermissionsManagerPropertyTrait
 	{
 		$this->setPermissionsManager(TPermissionsManager::getManager());
 		parent::__wakeup();
-		if(!$this->getPermissionsManager() && ($owner = $this->getOwner())) {
+		if (!$this->getPermissionsManager() && ($owner = $this->getOwner())) {
 			$owner->detachBehavior($this->getName());
 		}
 	}

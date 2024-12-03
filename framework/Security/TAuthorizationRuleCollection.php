@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TAuthorizationRule, TAuthorizationRuleCollection class file
  *

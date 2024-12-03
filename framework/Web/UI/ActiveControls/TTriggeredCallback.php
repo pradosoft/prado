@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTriggeredCallback class file.
  *

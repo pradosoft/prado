@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TStyleSheet class file.
  *

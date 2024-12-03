@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqliteMetaData class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TClassBehavior class file.
  *
@@ -127,7 +128,7 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 			throw new TInvalidOperationException('classbehavior_detach_wrong_owner', $this->getName());
 		}
 		parent::detach($component);
-		if($this->_owners->remove($component) === 0 && !$this->_owners->getCount()) {
+		if ($this->_owners->remove($component) === 0 && !$this->_owners->getCount()) {
 			$this->_owners = null;
 			$this->_name = null;
 			$this->_handlersInstalled = null;
@@ -228,7 +229,7 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	protected function setHandlersStatus(TComponent $component, bool $attach): bool
 	{
 		$ref = is_array($this->_handlersInstalled) ? spl_object_id($component) : $component;
-		if($attach) {
+		if ($attach) {
 			if ($this->_owners && $this->_owners->contains($component) && !isset($this->_handlersInstalled[$ref])) {
 				$this->_handlersInstalled[$ref] = true;
 				return true;

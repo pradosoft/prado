@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TGravatar class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTemplateControl class file.
  *

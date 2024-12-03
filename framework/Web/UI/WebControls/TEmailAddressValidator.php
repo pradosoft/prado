@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TEmailAddressValidator class file
  *

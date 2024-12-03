@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapException is the base exception class for all SqlMap exceptions.
  *

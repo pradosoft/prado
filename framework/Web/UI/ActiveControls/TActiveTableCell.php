@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveTableCell class file
  *

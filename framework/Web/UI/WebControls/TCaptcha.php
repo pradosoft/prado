@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCaptcha class file
  *

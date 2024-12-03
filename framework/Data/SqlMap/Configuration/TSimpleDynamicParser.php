@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSimpleDynamicParser class file.
  *

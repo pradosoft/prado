@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Robin J. Rogge <rrogge@bigpoint.net>
  * @link https://github.com/pradosoft/prado

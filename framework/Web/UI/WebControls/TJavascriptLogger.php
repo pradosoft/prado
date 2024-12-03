@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJavascriptLogger class file.
  *

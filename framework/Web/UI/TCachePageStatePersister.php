@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCachePageStatePersister class file
  *

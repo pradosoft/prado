@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDataGridPagerStyle class file.
  *

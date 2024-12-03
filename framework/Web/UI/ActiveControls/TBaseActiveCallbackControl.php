@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TBaseActiveControl and TBaseActiveCallbackControl class file.
  *

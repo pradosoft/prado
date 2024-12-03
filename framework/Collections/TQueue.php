@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TQueue, TQueueIterator classes
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TUserOwnerRule class file
  *

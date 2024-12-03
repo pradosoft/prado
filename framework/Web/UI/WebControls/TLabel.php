@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLabel class file.
  *

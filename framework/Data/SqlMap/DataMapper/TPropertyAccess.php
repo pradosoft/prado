@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPropertyAccess class file.
  *

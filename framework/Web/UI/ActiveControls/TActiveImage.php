@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveImage class file.
  *

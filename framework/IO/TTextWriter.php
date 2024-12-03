@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTextWriter class file
  *

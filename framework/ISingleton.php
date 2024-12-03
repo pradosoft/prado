@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ISingleton interface file.
  *

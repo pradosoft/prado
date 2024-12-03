@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDataGridColumn class file
  *

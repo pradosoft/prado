@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordException class file.
  *

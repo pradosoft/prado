@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSimpleDynamicSql class file.
  *

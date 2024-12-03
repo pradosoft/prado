@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *

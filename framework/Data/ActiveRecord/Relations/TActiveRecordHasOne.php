@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordHasOne class file.
  *

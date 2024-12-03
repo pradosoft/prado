@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqliteTableColumn class file.
  *

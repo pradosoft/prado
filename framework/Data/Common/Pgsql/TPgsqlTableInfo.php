@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPgsqlTableInfo class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ICollectionFilter interface file
  *

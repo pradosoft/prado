@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TErrorHandler class file
  *

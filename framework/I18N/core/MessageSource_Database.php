@@ -1,4 +1,5 @@
 <?php
+
 /**
  * MessageSource_Database class file.
  *

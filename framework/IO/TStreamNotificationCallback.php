@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TStreamNotificationCallback class file
  *
@@ -153,7 +154,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 				}
 			}
 			if ($notification instanceof TStreamNotificationCallback) {
-				foreach($context as $property => $value) {
+				foreach ($context as $property => $value) {
 					if (property_exists($notification, $property) || $notification->canSetProperty($property) || $notification->hasEvent($property)) {
 						$notification->setSubProperty($property, $value);
 						unset($context[$property]);
@@ -161,7 +162,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 				}
 			}
 			$param = null;
-			if($notification) {
+			if ($notification) {
 				$param = [self::NOTIFICATION => $notification];
 			}
 			if (empty($context)) {
@@ -312,7 +313,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 			$this->_parameter->setBytesTransferred($bytes_transferred);
 			$this->_parameter->setBytesMax($bytes_max);
 		}
-		switch($notification_code) {
+		switch ($notification_code) {
 			case STREAM_NOTIFY_RESOLVE: // value: 1
 				$this->onResolve($this->_parameter);
 				break;
@@ -370,7 +371,7 @@ class TStreamNotificationCallback extends \Prado\TComponent
 				break;
 		}
 		if ($this->_callbacks && $this->_callbacks->getCount()) {
-			foreach($this->_callbacks as $callback) {
+			foreach ($this->_callbacks as $callback) {
 				$callback($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max);
 			}
 		}

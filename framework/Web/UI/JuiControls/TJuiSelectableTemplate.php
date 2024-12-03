@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiSelectable class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordInvalidFinderResult class file.
  *

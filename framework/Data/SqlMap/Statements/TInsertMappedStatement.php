@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TInsertMappedStatement class file.
  *

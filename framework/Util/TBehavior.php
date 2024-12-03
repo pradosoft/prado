@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TBehavior class file.
  *
@@ -12,7 +13,6 @@ namespace Prado\Util;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TComponent;
 use Prado\Util\TCallChain;
-
 use WeakReference;
 
 /**
@@ -220,7 +220,7 @@ class TBehavior extends TBaseBehavior implements IBehavior
 		if ($this->getOwner() !== $component) {
 			return false;
 		}
-		if($attach ^ $this->_handlersInstalled) {
+		if ($attach ^ $this->_handlersInstalled) {
 			$this->_handlersInstalled = $attach;
 			return true;
 		}

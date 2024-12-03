@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCallbackResponseWriter class file.
  *

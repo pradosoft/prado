@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveListControlAdapter class file.
  *

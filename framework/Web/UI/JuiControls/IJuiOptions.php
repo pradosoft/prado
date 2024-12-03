@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiControlAdapter class file.
  *

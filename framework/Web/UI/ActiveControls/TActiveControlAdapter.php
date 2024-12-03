@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveControlAdapter and TCallbackPageStateTracker class file.
  *

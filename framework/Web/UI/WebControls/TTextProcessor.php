@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTextProcessor class file
  *

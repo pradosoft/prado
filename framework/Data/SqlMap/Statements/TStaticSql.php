@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TStaticSql class file.
  *

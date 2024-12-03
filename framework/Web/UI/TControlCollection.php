@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TControl, TControlCollection, TEventParameter and INamingContainer class file
  *

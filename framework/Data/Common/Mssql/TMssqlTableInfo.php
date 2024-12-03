@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TMssqlTableInfo class file.
  *

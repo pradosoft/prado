@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TControlAdapter class file.
  *

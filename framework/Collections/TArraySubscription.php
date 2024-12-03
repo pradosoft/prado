@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TArraySubscription classes
  *
@@ -13,7 +14,6 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\TPropertyValue;
 use Prado\Util\Helpers\TArrayHelper;
-
 use ArrayAccess;
 use WeakReference;
 

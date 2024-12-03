@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTableFooterRow class file
  *

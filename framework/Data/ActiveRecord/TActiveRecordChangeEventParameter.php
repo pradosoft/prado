@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordChangeEventParameter class file.
  *

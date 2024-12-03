@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THttpRequest, THttpCookie, THttpCookieCollection, TUri class file
  *

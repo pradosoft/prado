@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapXmlConfigBuilder, TSqlMapXmlConfiguration, TSqlMapXmlMappingConfiguration classes file.
  *

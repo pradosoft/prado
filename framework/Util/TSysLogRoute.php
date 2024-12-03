@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSysLogRoute class file
  *
@@ -151,7 +152,7 @@ class TSysLogRoute extends TLogRoute
 			}
 			$options = array_map('trim', $value);
 			$this->_sysLogFlags = 0;
-			while(count($options)) {
+			while (count($options)) {
 				$option = array_pop($options);
 				if (isset($_flagsMap[$option])) {
 					$this->_sysLogFlags |= $_flagsMap[$option];

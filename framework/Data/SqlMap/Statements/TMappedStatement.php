@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TMappedStatement and related classes.
  *

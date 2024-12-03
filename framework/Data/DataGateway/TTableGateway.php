@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTableGateway class file.
  *

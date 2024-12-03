@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveTextBox class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqliteScaffoldInput class file.
  *

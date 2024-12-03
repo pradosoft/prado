@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJsonService and TJsonResponse class file.
  *

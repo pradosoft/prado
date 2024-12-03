@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLazyLoadList, TObjectProxy classes file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THtmlArea5 class file.
  *

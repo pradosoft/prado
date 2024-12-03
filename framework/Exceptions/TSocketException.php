@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSocketException class file
  *

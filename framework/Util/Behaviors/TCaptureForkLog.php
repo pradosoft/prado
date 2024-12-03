@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCaptureForkLog class file.
  *
@@ -145,7 +146,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			$logger->deleteLogs();
 			$logs = $logger->deleteProfileLogs();
 			$pid = getmypid();
-			foreach(array_keys($logs) as $key) { // Reset PROFILE_BEGIN to pid.
+			foreach (array_keys($logs) as $key) { // Reset PROFILE_BEGIN to pid.
 				$logs[$key][TLogger::LOG_LEVEL] &= ~TLogger::LOGGED;
 				$logs[$key][TLogger::LOG_PID] = $pid;
 			}
@@ -176,7 +177,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		if (!$this->_parentConnections) {
 			return;
 		}
-		if($pid && !isset($this->_parentConnections[$pid])) {
+		if ($pid && !isset($this->_parentConnections[$pid])) {
 			return;
 		}
 
@@ -187,11 +188,11 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 		do {
 			$read = $connections;
 			if (stream_select($read, $write, $except, ($wait || count($childLogs)) ? 1 : 0, 0)) {
-				foreach($read as $pid => $socket) {
+				foreach ($read as $pid => $socket) {
 					$data = fread($socket, 8192);
 					do {
 						$iterate = false;
-						if($data !== false) {
+						if ($data !== false) {
 							if (array_key_exists($pid, $childLogs)) {
 								$childLogs[$pid][0] .= $data;
 							} else {
@@ -234,12 +235,12 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 					} while ($iterate);
 				}
 			}
-		} while(count($childLogs) || $wait && ($pid && isset($connections[$pid]) || $pid === null && $connections));
+		} while (count($childLogs) || $wait && ($pid && isset($connections[$pid]) || $pid === null && $connections));
 
 		if (!$completeLogs) {
 			return;
 		}
-		foreach(array_merge(...$completeLogs) as $pid => $logs) {
+		foreach (array_merge(...$completeLogs) as $pid => $logs) {
 			Prado::getLogger()->mergeLogs(unserialize($logs));
 		}
 	}
@@ -257,7 +258,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 			return;
 		}
 
-		if(!($logger instanceof TLogger)) {
+		if (!($logger instanceof TLogger)) {
 			$logger = Prado::getLogger();
 		}
 
@@ -294,7 +295,7 @@ class TCaptureForkLog extends \Prado\Util\TBehavior
 					$data = substr($data, $count);
 				}
 			}
-		} while($count !== false && strlen($data) > 0);
+		} while ($count !== false && strlen($data) > 0);
 
 		if ($final) {
 			stream_socket_shutdown($this->_childConnection, STREAM_SHUT_RDWR);

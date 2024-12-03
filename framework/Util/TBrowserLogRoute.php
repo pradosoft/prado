@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *
@@ -191,7 +192,7 @@ class TBrowserLogRoute extends TLogRoute implements IOutputLogRoute
 				$weightLightCutOff = 0.4;
 				if ($normalizedTime > $weightCutOff) {
 					$weight = '; font-weight: ' . round(400 + 500 * ($normalizedTime - $weightCutOff) / (1 - $weightCutOff));
-				} elseif($normalizedTime < $weightLightCutOff) {
+				} elseif ($normalizedTime < $weightLightCutOff) {
 					$weight = '; font-weight: ' . round(400 - 300 * ($weightLightCutOff - $normalizedTime) / ($weightLightCutOff));
 				} else {
 					$weight = '';

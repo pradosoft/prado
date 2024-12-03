@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCompareValidator class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THyperLink class file.
  *

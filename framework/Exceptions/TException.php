@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Exception classes file
  *
@@ -11,7 +12,6 @@ namespace Prado\Exceptions;
 
 use Prado\Prado;
 use Prado\TPropertyValue;
-
 use Throwable;
 
 /**
@@ -71,7 +71,7 @@ class TException extends \Exception
 	 */
 	public function __construct($errorCode, $errorMessage = null, ...$args)
 	{
-		if(!is_int($errorCode)) {
+		if (!is_int($errorCode)) {
 			//assume old code
 			if ($errorMessage !== null || !empty($args)) {
 				array_unshift($args, $errorMessage);
@@ -83,7 +83,7 @@ class TException extends \Exception
 		$errorMessage = $this->translateErrorMessage($errorMessage);
 		$n = count($args);
 		$previous = null;
-		if($n > 0 && ($args[$n - 1] instanceof Throwable)) {
+		if ($n > 0 && ($args[$n - 1] instanceof Throwable)) {
 			$previous = array_pop($args);
 			$n--;
 		}

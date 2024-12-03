@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPgsqlMetaData class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CAPTCHA generator script.
  *

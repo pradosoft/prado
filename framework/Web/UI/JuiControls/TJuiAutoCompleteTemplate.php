@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiAutoComplete class file.
  *

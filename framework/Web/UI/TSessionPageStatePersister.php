@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSessionPageStatePersister class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiResizable class file.
  *

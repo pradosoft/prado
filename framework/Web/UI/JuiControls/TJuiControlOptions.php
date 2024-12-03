@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiControlOptions class file.
  *

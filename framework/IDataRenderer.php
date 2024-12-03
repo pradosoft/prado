@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Core interfaces essential for TApplication class.
  *

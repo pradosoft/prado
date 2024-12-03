@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TProcessHelper class file
  *
@@ -298,7 +299,7 @@ class TProcessHelper
 				9 => TProcessWindowsPriorityName::BelowNormal,
 				PHP_INT_MAX => TProcessWindowsPriorityName::Idle,
 			];
-			foreach($priorityValues as $keyPriority => $priorityName) {
+			foreach ($priorityValues as $keyPriority => $priorityName) {
 				if ($priority <= $keyPriority) {
 					break;
 				}

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TEventHandler class
  *
@@ -15,7 +16,6 @@ use Prado\Exceptions\TApplicationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
-
 use Closure;
 use WeakReference;
 
@@ -111,7 +111,7 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 	 */
 	public function __construct(mixed $handler, mixed $data = null)
 	{
-		if(!is_callable($handler)) {
+		if (!is_callable($handler)) {
 			throw new TInvalidDataTypeException('eventhandler_not_callable');
 		}
 
@@ -213,13 +213,13 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 		$handler = null;
 		if (is_array($this->_handler) && is_object($this->_handler[0])) {
 			$handler = $this->_handler[0];
-		} elseif($this->_handler instanceof TEventHandler) {
+		} elseif ($this->_handler instanceof TEventHandler) {
 			return $this->_handler->getHandlerObject($weak);
-		} elseif(is_object($this->_handler)) {
+		} elseif (is_object($this->_handler)) {
 			$handler = $this->_handler;
 
 		}
-		if(!$weak && $this->_weakObject) {
+		if (!$weak && $this->_weakObject) {
 			$handler = $handler->get();
 		}
 		return $handler;
@@ -232,7 +232,7 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 	 */
 	public function hasHandler(): bool
 	{
-		if($this->_handler instanceof TEventHandler) {
+		if ($this->_handler instanceof TEventHandler) {
 			return $this->_handler->hasHandler();
 		}
 		return $this->getHandler() !== null;
@@ -269,7 +269,7 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 	 */
 	public function hasWeakObject(): bool
 	{
-		if($this->_handler instanceof TEventHandler) {
+		if ($this->_handler instanceof TEventHandler) {
 			return $this->_handler->hasWeakObject();
 		}
 		return $this->_weakObject;
@@ -330,7 +330,7 @@ class TEventHandler implements IPriorityProperty, IWeakRetainable, \ArrayAccess,
 			$offset = (int) $offset;
 			if ($offset === 2) {
 				return $this->_data;
-			} elseif(is_array($this->_handler)) {
+			} elseif (is_array($this->_handler)) {
 				if ($offset === 0) {
 					if ($this->_weakObject) {
 						return $this->_handler[$offset]->get();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDbMetaData class file.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Translation table cache.
  * @author $Author: weizhuo $

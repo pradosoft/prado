@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogger class file
  *
@@ -142,7 +143,7 @@ class TLogger extends \Prado\TComponent
 	 */
 	public function __construct(bool $flushShutdown = true)
 	{
-		if($flushShutdown) {
+		if ($flushShutdown) {
 			register_shutdown_function(function () {
 				$this->onFlushLogs();
 				// flush any logs in the shutdown function.
@@ -409,7 +410,7 @@ class TLogger extends \Prado\TComponent
 			return;
 		}
 
-		if(is_bool($sender)) {
+		if (is_bool($sender)) {
 			$final = $sender;
 			$sender = null;
 		}
@@ -424,14 +425,14 @@ class TLogger extends \Prado\TComponent
 		$this->deleteLogs();
 		$this->_flushing = false;
 		if (count($this->_flushingLog)) {
-			foreach($this->_flushingLog as $log) {
+			foreach ($this->_flushingLog as $log) {
 				$this->addLog($log, false); // $final = false to stop any possible recursion w/ low flushCount.
 			}
 		}
 		$this->_flushingLog = null;
 
 		$this->_profileLogsCount = 0;
-		foreach(array_keys($this->_profileLogs) as $key) {
+		foreach (array_keys($this->_profileLogs) as $key) {
 			$this->_profileLogs[$key][static::LOG_LEVEL] |= static::LOGGED;
 		}
 	}
@@ -523,7 +524,7 @@ class TLogger extends \Prado\TComponent
 	public function mergeLogs(array $logs)
 	{
 		$count = count($logs);
-		foreach($logs as $log) {
+		foreach ($logs as $log) {
 			$log[static::LOG_LEVEL] &= ~TLogger::LOGGED;
 			$this->addLog($log, !(--$count));
 		}
@@ -640,7 +641,7 @@ class TLogger extends \Prado\TComponent
 			}
 			$c = $category[0] ?? 0;
 			if ($c === '!' || $c === '~') {
-				if(!$exclude) {
+				if (!$exclude) {
 					$category = substr($category, 1);
 					if ($log[static::LOG_CATEGORY] === $category || str_ends_with($category, '*') && strpos($log[static::LOG_CATEGORY], rtrim($category, '*')) === 0) {
 						$exclude = true;
@@ -697,7 +698,7 @@ class TLogger extends \Prado\TComponent
 			}
 			$c = $control[0] ?? 0;
 			if ($c === '!' || $c === '~') {
-				if(!$exclude) {
+				if (!$exclude) {
 					$control = substr($control, 1);
 					if ($log[static::LOG_CONTROL] === $control || str_ends_with($control, '*') && strpos($log[static::LOG_CONTROL], rtrim($control, '*')) === 0) {
 						$exclude = true;

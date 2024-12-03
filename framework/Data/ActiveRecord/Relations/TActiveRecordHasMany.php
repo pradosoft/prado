@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordHasMany class file.
  *

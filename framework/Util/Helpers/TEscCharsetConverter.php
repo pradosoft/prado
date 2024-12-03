@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TEscCharsetConverter class file
  *

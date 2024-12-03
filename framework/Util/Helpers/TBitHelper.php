@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TBitHelper class file
  *
@@ -213,7 +214,7 @@ class TBitHelper
 				if ($length === null && !$startOffset && !$crc2) {
 					$hash = hash_file('crc32b', $string, true);
 					$value = unpack('N', $hash)[1];
-					if(PHP_INT_SIZE === 4 && $value > self::PHP_INT32_MAX) {
+					if (PHP_INT_SIZE === 4 && $value > self::PHP_INT32_MAX) {
 						$value = (int) ($value - self::PHP_INT32_UMAX - 1);
 					}
 					return $value;
@@ -238,7 +239,7 @@ class TBitHelper
 				}
 			}
 			$crc ^= 0xFFFFFFFF;
-			while($length === null || $length > 0) {
+			while ($length === null || $length > 0) {
 				$d = fgetc($string);
 				if ($d === false || strlen($d) === 0) {
 					break;

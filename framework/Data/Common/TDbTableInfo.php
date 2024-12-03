@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDbTableInfo class file.
  *

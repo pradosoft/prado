@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TModule class file.
  *

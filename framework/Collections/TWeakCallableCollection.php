@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TWeakCallableCollection class
  *
@@ -15,7 +16,6 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TEventHandler;
 use Prado\TPropertyValue;
-
 use Closure;
 use Traversable;
 use WeakReference;
@@ -136,7 +136,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 */
 	protected function weakCustomAdd(object $object)
 	{
-		if($object instanceof TEventHandler) {
+		if ($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
 			if (!$object) {
 				return;
@@ -155,7 +155,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 */
 	protected function weakCustomRemove(object $object)
 	{
-		if($object instanceof TEventHandler) {
+		if ($object instanceof TEventHandler) {
 			$object = $object->getHandlerObject();
 			if (!$object) {
 				return;
@@ -195,7 +195,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 				$handler = null;
 			}
 		} elseif (is_object($handler)) {
-			if($handler instanceof WeakReference) {
+			if ($handler instanceof WeakReference) {
 				$handler = $handler->get();
 			} elseif (($handler instanceof TEventHandler) && !$handler->hasHandler()) {
 				$handler = null;
@@ -294,7 +294,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 	 */
 	public function setDiscardInvalid($value): void
 	{
-		if($value === $this->_discardInvalid) {
+		if ($value === $this->_discardInvalid) {
 			return;
 		}
 		if ($this->_discardInvalid !== null && !Prado::isCallingSelf()) {
@@ -313,7 +313,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 							$obj = $obj->getHandlerObject(true);
 						}
 						if ($obj instanceof WeakReference) {
-							if($obj = $obj->get()) {
+							if ($obj = $obj->get()) {
 								$this->weakAdd($obj);
 							} else {
 								parent::removeAtIndexInPriority($i, $priority);
@@ -524,7 +524,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 			throw new TInvalidDataValueException('weakcallablecollection_callable_required');
 		}
 		$return = null;
-		foreach($items as $item) {
+		foreach ($items as $item) {
 			$itemPriority = null;
 			if (($isPriorityItem = ($item instanceof IPriorityItem)) && ($priority === null || !is_numeric($priority))) {
 				$itemPriority = $priority = $item->getPriority();
@@ -540,7 +540,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 			$result = parent::insertAtIndexInPriority($item, $index, $priority, $preserveCache);
 			if ($return === null) {
 				$return = $result;
-			} elseif(!is_array($return)) {
+			} elseif (!is_array($return)) {
 				$return = [$return, $result];
 			} else {
 				$return[] = $result;
@@ -713,7 +713,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 					continue;
 				} elseif ($p == $priority) {
 					$index = false;
-					foreach($this->_d[$p] as $index => $pItem) {
+					foreach ($this->_d[$p] as $index => $pItem) {
 						if ($item === $pItem || ($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
 							break;
 						}
@@ -731,7 +731,7 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		$this->flattenPriorities();
 
 		if (($index = array_search($item, $this->_fd, true)) === false && $this->_eventHandlerCount) {
-			foreach($this->_fd as $index => $pItem) {
+			foreach ($this->_fd as $index => $pItem) {
 				if (($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
 					break;
 				}
@@ -783,8 +783,8 @@ class TWeakCallableCollection extends TPriorityList implements IWeakCollection, 
 		$absindex = 0;
 		foreach (array_keys($this->_d) as $priority) {
 			$index = false;
-			foreach($this->_d[$priority] as $index => $pItem) {
-				if(($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
+			foreach ($this->_d[$priority] as $index => $pItem) {
+				if (($pItem instanceof TEventHandler) && $pItem->isSameHandler($item, true)) {
 					break;
 				}
 				$index = false;

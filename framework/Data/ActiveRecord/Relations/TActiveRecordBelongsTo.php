@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveRecordBelongsTo class file.
  *

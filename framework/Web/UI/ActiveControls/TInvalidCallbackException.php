@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActivePageAdapter, TCallbackErrorHandler and TInvalidCallbackException class file.
  *

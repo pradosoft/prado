@@ -1,4 +1,5 @@
 <?php
+
 /**
  * IPriorityCollection interface file
  *

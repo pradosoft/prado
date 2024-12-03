@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPreparedCommand class file.
  *

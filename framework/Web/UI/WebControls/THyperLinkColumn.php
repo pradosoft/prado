@@ -1,4 +1,5 @@
 <?php
+
 /**
  * THyperLinkColumn class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TBaseBehavior class file.
  *
@@ -159,7 +160,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 */
 	public static function mergeHandlers(...$args): array
 	{
-		if(empty($args)) {
+		if (empty($args)) {
 			return [];
 		}
 		$combined = [];
@@ -347,7 +348,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 			$strict = $this->getStrictEvents();
 			foreach ($this->eventsLog() as $event => $handlers) {
 				if ($strict || $this->hasEvent($event)) {
-					foreach($handlers as $handler) {
+					foreach ($handlers as $handler) {
 						$component->attachEventHandler($event, is_string($handler) ? [$this, $handler] : $handler, $priority);
 					}
 				}
@@ -370,7 +371,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 			$strict = $this->getStrictEvents();
 			foreach ($this->eventsLog() as $event => $handlers) {
 				if ($strict || $this->hasEvent($event)) {
-					foreach($handlers as $handler) {
+					foreach ($handlers as $handler) {
 						$component->detachEventHandler($event, is_string($handler) ? [$this, $handler] : $handler);
 					}
 				}

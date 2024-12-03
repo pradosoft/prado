@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TClientScript class file
  *

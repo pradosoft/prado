@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TJuiProgressbar class file.
  *

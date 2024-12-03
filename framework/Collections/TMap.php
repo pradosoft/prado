@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TMap class
  *
@@ -82,7 +83,7 @@ class TMap extends \Prado\TComponent implements \IteratorAggregate, \ArrayAccess
 		if ($value === null) {
 			return;
 		}
-		if($this->_r === null || Prado::isCallingSelf()) {
+		if ($this->_r === null || Prado::isCallingSelf()) {
 			$this->_r = TPropertyValue::ensureBoolean($value);
 		} else {
 			throw new TInvalidOperationException('map_readonly_set', $this::class);

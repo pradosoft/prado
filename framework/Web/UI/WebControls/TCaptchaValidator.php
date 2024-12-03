@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TCaptchaValidator class file
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSlider class file.
  *

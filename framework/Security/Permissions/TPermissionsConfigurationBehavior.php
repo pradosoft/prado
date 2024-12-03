@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TPermissionsConfigurationBehavior class file.
  *

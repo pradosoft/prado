@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDiscriminator and TSubMap classes file.
  *

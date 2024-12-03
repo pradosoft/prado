@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TActiveDataGrid class file
  *

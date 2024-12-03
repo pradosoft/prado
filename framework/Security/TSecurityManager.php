@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSecurityManager class file
  *

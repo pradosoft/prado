@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TTemplateManager and TTemplate class file
  *

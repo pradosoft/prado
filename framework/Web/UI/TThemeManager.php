@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TThemeManager class
  *

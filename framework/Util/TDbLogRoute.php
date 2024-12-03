@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TLogRouter, TLogRoute, TFileLogRoute, TEmailLogRoute class file
  *
@@ -126,7 +127,7 @@ class TDbLogRoute extends TLogRoute
 			$command->bindValue(':category', $log[TLogger::LOG_CATEGORY]);
 			$command->bindValue(':prefix', $this->getLogPrefix($log));
 			$command->bindValue(':logtime', sprintf('%F', $log[TLogger::LOG_TIME]));
-			if(!$command->execute()) {
+			if (!$command->execute()) {
 				throw new TLogException('dblogroute_insert_failed', $this->_logTable);
 			}
 		}
@@ -155,12 +156,12 @@ class TDbLogRoute extends TLogRoute
 			$values[':level'] = $level;
 		}
 		if ($categories !== null) {
-			if(is_string($categories)) {
+			if (is_string($categories)) {
 				$categories = array_map('trim', explode(',', $categories));
 			}
 			$i = 0;
 			$or = '';
-			foreach($categories as $category) {
+			foreach ($categories as $category) {
 				$c = $category[0] ?? 0;
 				if ($c === '!' || $c === '~') {
 					if ($where) {

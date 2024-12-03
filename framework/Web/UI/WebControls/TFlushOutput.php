@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TFlushOutput class file
  *

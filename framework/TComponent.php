@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TComponent, TPropertyValue classes
  *
@@ -514,7 +515,7 @@ class TComponent
 		foreach ($classes as $class) {
 			if (isset(self::$_um[$class])) {
 				foreach (self::$_um[$class] as $name => $behavior) {
-					if(is_numeric($name)) {
+					if (is_numeric($name)) {
 						continue;
 					}
 					if (!array_key_exists($name, $classBehaviors)) {
@@ -788,7 +789,7 @@ class TComponent
 		}
 
 		if (isset(self::$_um[$lclass = strtolower(static::class)])) {
-			foreach(self::$_um[$lclass] as $pbehavior) {
+			foreach (self::$_um[$lclass] as $pbehavior) {
 				$class = $behavior = $pbehavior->getBehavior();
 				if (is_array($behavior)) {
 					$class = $behavior['class'];
@@ -1453,7 +1454,7 @@ class TComponent
 		$name = strtolower($name);
 		$responses = [];
 
-		if($param instanceof IEventParameter) {
+		if ($param instanceof IEventParameter) {
 			$param->setEventName($name);
 		}
 
@@ -1817,7 +1818,7 @@ class TComponent
 		$behaviorObject->setName($name);
 		$isClassBehavior = $behaviorObject instanceof IClassBehavior;
 		unset(self::$_um[$class][$name]);
-		if(empty(self::$_um[$class])) {
+		if (empty(self::$_um[$class])) {
 			unset(self::$_um[$class]);
 		}
 		$results = $behaviorObject->raiseEvent('fxDetachClassBehavior', null, $param);
@@ -1839,7 +1840,7 @@ class TComponent
 			return $this->_m[$behaviorname];
 		}
 		if ((class_exists($behaviorname, false) || interface_exists($behaviorname, false)) && $this->_m) {
-			foreach($this->_m->toArray() as $behavior) {
+			foreach ($this->_m->toArray() as $behavior) {
 				if ($behavior instanceof $behaviorname) {
 					return $behavior;
 				}

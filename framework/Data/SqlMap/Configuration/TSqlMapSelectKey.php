@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TSqlMapStatement, TSqlMapInsert, TSqlMapUpdate, TSqlMapDelete,
  * TSqlMapSelect and TSqlMapSelectKey classes file.

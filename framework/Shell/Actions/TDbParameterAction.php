@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TDbParameterAction class file
  *

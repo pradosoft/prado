@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TOracleMetaData class file.
  *
