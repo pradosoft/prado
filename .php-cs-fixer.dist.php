@@ -25,7 +25,7 @@ $config
 		'concat_space' => ['spacing' => 'one'],
 		'dir_constant' => true,
 		'is_null' => true,
-		'function_typehint_space' => true,
+		'type_declaration_spaces' => ['elements' => ['function', 'property']],
 		'method_chaining_indentation' => true,
 		'modernize_types_casting' => true,
 		'no_alias_functions' => true,
