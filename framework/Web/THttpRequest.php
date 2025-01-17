@@ -188,6 +188,10 @@ class THttpRequest extends \Prado\TApplicationComponent implements \IteratorAggr
 			$this->_pathInfo = $_SERVER['PATH_INFO'];
 		} elseif (strpos($_SERVER['PHP_SELF'], $_SERVER['SCRIPT_NAME']) === 0 && $_SERVER['PHP_SELF'] !== $_SERVER['SCRIPT_NAME']) {
 			$this->_pathInfo = substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME']));
+		} elseif ($this->_urlFormat === THttpRequestUrlFormat::Path) {
+			$this->_pathInfo = substr($this->_requestUri, strlen($_SERVER['SCRIPT_NAME']));
+		} elseif ($this->_urlFormat === THttpRequestUrlFormat::HiddenPath) {
+			$this->_pathInfo = substr($this->_requestUri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
 		} else {
 			$this->_pathInfo = '';
 		}
