@@ -443,8 +443,9 @@ class TErrorHandler extends \Prado\TModule
 
 	private function getSourceCode($lines, $errorLine)
 	{
+		$numLines = is_countable($lines) ? count($lines) : 0;
 		$beginLine = $errorLine - self::SOURCE_LINES >= 0 ? $errorLine - self::SOURCE_LINES : 0;
-		$endLine = $errorLine + self::SOURCE_LINES <= count($lines) ? $errorLine + self::SOURCE_LINES : count($lines);
+		$endLine = $errorLine + self::SOURCE_LINES <= $numLines ? $errorLine + self::SOURCE_LINES : $numLines;
 
 		$source = '';
 		for ($i = $beginLine; $i < $endLine; ++$i) {
