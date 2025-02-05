@@ -1567,7 +1567,7 @@ class TComponent
 		$this->callBehaviorsMethod('dyEvaluateExpressionFilter', $expression, $expression);
 		try {
 			return eval("return $expression;");
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw new TInvalidOperationException('component_expression_invalid', $this::class, $expression, $e->getMessage());
 		}
 	}
