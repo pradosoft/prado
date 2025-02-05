@@ -124,7 +124,7 @@ class TUrlManager extends \Prado\TModule
 	public function parseUrl()
 	{
 		$request = $this->getRequest();
-		$pathInfo = trim($request->getPathInfo(), '/');
+		$pathInfo = urldecode(trim($request->getPathInfo(), '/'));
 		if (($request->getUrlFormat() === THttpRequestUrlFormat::Path ||
 			$request->getUrlFormat() === THttpRequestUrlFormat::HiddenPath) &&
 			$pathInfo !== '') {
