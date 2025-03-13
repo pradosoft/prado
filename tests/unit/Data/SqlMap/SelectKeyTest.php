@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class SelectKeyTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 
 		//force autoload
 		new Account;
@@ -38,14 +38,14 @@ class SelectKeyTest extends BaseCase
 		$item->setPrice(44.00);
 		$item->setQuantity(1);
 
-		$key = $this->sqlmap->Insert("InsertLineItemPostKey", $item);
+		$key = self::$sqlmap->Insert("InsertLineItemPostKey", $item);
 
 		$this->assertSame(99, $key);
 		$this->assertSame(99, $item->getId());
 
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] = 10;
-		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
+		$testItem = self::$sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
 		$this->assertSame(10, $testItem->getId());
@@ -69,7 +69,7 @@ class SelectKeyTest extends BaseCase
 		$item->setPrice(44.00);
 		$item->setQuantity(1);
 
-		$key = $this->sqlmap->Insert("InsertLineItemPreKey", $item);
+		$key = self::$sqlmap->Insert("InsertLineItemPreKey", $item);
 
 		$this->assertSame(99, $key);
 		$this->assertSame(99, $item->getId());
@@ -77,7 +77,7 @@ class SelectKeyTest extends BaseCase
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] = 99;
 
-		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
+		$testItem = self::$sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
 		$this->assertSame(99, $testItem->getId());
@@ -102,7 +102,7 @@ class SelectKeyTest extends BaseCase
 		$item->setQuantity(1);
 
 
-		$key = $this->sqlmap->Insert("InsertLineItemNoKey", $item);
+		$key = self::$sqlmap->Insert("InsertLineItemNoKey", $item);
 
 		$this->assertNull($key);
 		$this->assertSame(100, $item->getId());
@@ -110,7 +110,7 @@ class SelectKeyTest extends BaseCase
 		$param["Order_ID"] = 9;
 		$param["LineItem_ID"] = 100;
 
-		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
+		$testItem = self::$sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
 		$this->assertSame(100, $testItem->getId());

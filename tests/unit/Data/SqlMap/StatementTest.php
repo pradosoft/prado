@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class StatementTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 
 		//force autoload
 		new Account;
@@ -43,9 +43,9 @@ class StatementTest extends BaseCase
 	 */
 	public function testOpenConnection()
 	{
-		$conn = $this->sqlmap->getDbConnection();
+		$conn = self::$sqlmap->getDbConnection();
 		$conn->setActive(true);
-		$account = $this->sqlmap->QueryForObject("SelectWithProperty");
+		$account = self::$sqlmap->QueryForObject("SelectWithProperty");
 		$conn->setActive(false);
 		$this->assertAccount1($account);
 	}
@@ -56,7 +56,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testSelectWithProperty()
 	{
-		$account = $this->sqlmap->QueryForObject("SelectWithProperty");
+		$account = self::$sqlmap->QueryForObject("SelectWithProperty");
 		$this->assertAccount1($account);
 	}
 
@@ -65,7 +65,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectViaColumnName()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 		$this->assertAccount1($account);
 	}
 
@@ -74,7 +74,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectViaColumnIndex()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnIndex", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnIndex", 1);
 		$this->assertAccount1($account);
 	}
 
@@ -83,7 +83,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectViaResultClass()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountViaResultClass", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaResultClass", 1);
 		$this->assertAccount1($account);
 	}
 
@@ -92,7 +92,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectWithSimpleResultClass()
 	{
-		$email = $this->sqlmap->QueryForObject("GetEmailAddressViaResultClass", 1);
+		$email = self::$sqlmap->QueryForObject("GetEmailAddressViaResultClass", 1);
 		$this->assertSame("Joe.Dalton@somewhere.com", $email);
 	}
 
@@ -101,7 +101,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectWithSimpleResultMap()
 	{
-		$email = $this->sqlmap->QueryForObject("GetEmailAddressViaResultMap", 1);
+		$email = self::$sqlmap->QueryForObject("GetEmailAddressViaResultMap", 1);
 		$this->assertSame("Joe.Dalton@somewhere.com", $email);
 	}
 
@@ -110,7 +110,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testPrimitiveReturnValue()
 	{
-		$CardExpiry = $this->sqlmap->QueryForObject("GetOrderCardExpiryViaResultClass", 1);
+		$CardExpiry = self::$sqlmap->QueryForObject("GetOrderCardExpiryViaResultClass", 1);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
 		$this->assertSame($date, $CardExpiry->getTimeStamp());
 	}
@@ -121,7 +121,7 @@ class StatementTest extends BaseCase
 	public function testExecuteQueryForObjectWithResultObject()
 	{
 		$account = new Account();
-		$testAccount = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1, $account);
+		$testAccount = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1, $account);
 		$this->assertAccount1($account);
 		$this->assertTrue($account == $testAccount);
 	}
@@ -131,7 +131,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectAsHashArray()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountAsHashtable", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountAsHashtable", 1);
 		$this->assertAccount1AsHashArray($account);
 	}
 
@@ -140,7 +140,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForObjectAsHashtableResultClass()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountAsHashtableResultClass", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountAsHashtableResultClass", 1);
 		$this->assertAccount1AsHashArray($account);
 	}
 
@@ -152,7 +152,7 @@ class StatementTest extends BaseCase
 		$param["LineItem_ID"] = 2;
 		$param["Order_ID"] = 9;
 
-		$testItem = $this->sqlmap->QueryForObject("GetSpecificLineItem", $param);
+		$testItem = self::$sqlmap->QueryForObject("GetSpecificLineItem", $param);
 
 		$this->assertNotNull($testItem);
 		$this->assertSame("TSM-12", $testItem->getCode());
@@ -162,11 +162,11 @@ class StatementTest extends BaseCase
 	//TODO: Test Query Dynamic Sql Element
 	public function testQueryDynamicSqlElement()
 	{
-		//$list = $this->sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_ID");
+		//$list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_ID");
 
 		//$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
 
-		//list = $this->sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
+		//list = self::$sqlmap->QueryForList("GetDynamicOrderedEmailAddressesViaResultMap", "Account_FirstName");
 
 		//$this->assertSame("Averel.Dalton@somewhere.com", $list[0]);
 		throw new PHPUnit\Framework\IncompleteTestError();
@@ -175,7 +175,7 @@ class StatementTest extends BaseCase
 	// TODO: Test Execute QueryForList With ResultMap With Dynamic Element
 	public function testExecuteQueryForListWithResultMapWithDynamicElement()
 	{
-		//$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "LIKE");
+		//$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "LIKE");
 
 		//$this->assertAccount1$list[0]);
 		//$this->assertSame(3, $list->getCount());
@@ -183,7 +183,7 @@ class StatementTest extends BaseCase
 		//$this->assertSame(2, $list[1]->getID());
 		//$this->assertSame(4, $list[2]->getID());
 
-		//list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
+		//list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMapWithDynamicElement", "=");
 
 		//$this->assertSame(0, $list->getCount());
 		throw new PHPUnit\Framework\IncompleteTestError();
@@ -199,7 +199,7 @@ class StatementTest extends BaseCase
 		$account = new Account();
 		$account->setID(1);
 
-		$testAccount = $this->sqlmap->QueryForObject("GetAccountViaInlineParameters", $account);
+		$testAccount = self::$sqlmap->QueryForObject("GetAccountViaInlineParameters", $account);
 
 		$this->assertAccount1($testAccount);
 	}
@@ -209,13 +209,13 @@ class StatementTest extends BaseCase
 
 	public function testExecuteQueryForObjectWithEnum()
 	{
-		//$enumClass = $this->sqlmap->QueryForObject("GetEnumeration", 1);
+		//$enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 1);
 
 		//$this->assertSame(enumClass.Day, Days.Sat);
 		//$this->assertSame(enumClass.Color, Colors.Red);
 		//$this->assertSame(enumClass.Month, Months.August);
 
-		//enumClass = $this->sqlmap->QueryForObject("GetEnumeration", 3) as Enumeration;
+		//enumClass = self::$sqlmap->QueryForObject("GetEnumeration", 3) as Enumeration;
 
 		//$this->assertSame(enumClass.Day, Days.Mon);
 		//$this->assertSame(enumClass.Color, Colors.Blue);
@@ -233,7 +233,7 @@ class StatementTest extends BaseCase
 	public function testQueryForListWithHashtableResultMap()
 	{
 		$this->initScript('account-init.sql');
-		$list = $this->sqlmap->QueryForList("GetAllAccountsAsHashMapViaResultMap");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsAsHashMapViaResultMap");
 
 		$this->assertAccount1AsHashArray($list[0]);
 		$this->assertSame(5, count($list));
@@ -250,7 +250,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithHashtableResultClass()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsAsHashtableViaResultClass");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsAsHashtableViaResultClass");
 
 		$this->assertAccount1AsHashArray($list[0]);
 		$this->assertSame(5, count($list));
@@ -267,7 +267,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithIListResultClass()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsAsArrayListViaResultClass");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsAsArrayListViaResultClass");
 
 		$listAccount = $list[0];
 
@@ -295,7 +295,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithResultMap()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMap");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMap");
 
 		$this->assertAccount1($list[0]);
 		$this->assertSame(5, count($list));
@@ -312,7 +312,7 @@ class StatementTest extends BaseCase
 	public function testExecuteQueryForPaginatedList()
 	{
 		// Get List of all 5
-		$list = $this->sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 2);
+		$list = self::$sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 2);
 
 		// Test initial state (page 0)
 		$this->assertFalse($list->getIsPreviousPageAvailable());
@@ -392,7 +392,7 @@ class StatementTest extends BaseCase
 		$this->assertFalse($list->getIsNextPageAvailable());
 		$this->assertSame(0, $list->getCount());
 
-		$list = $this->sqlmap->QueryForPagedList("GetNoAccountsViaResultMap", null, 2);
+		$list = self::$sqlmap->QueryForPagedList("GetNoAccountsViaResultMap", null, 2);
 
 		// Test empty list
 		$this->assertFalse($list->getIsPreviousPageAvailable());
@@ -416,7 +416,7 @@ class StatementTest extends BaseCase
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
 		$this->assertSame(0, $list->getCount());
-		$list = $this->sqlmap->QueryForPagedList("GetFewAccountsViaResultMap", null, 2);
+		$list = self::$sqlmap->QueryForPagedList("GetFewAccountsViaResultMap", null, 2);
 
 		$this->assertFalse($list->getIsPreviousPageAvailable());
 		$this->assertFalse($list->getIsNextPageAvailable());
@@ -440,7 +440,7 @@ class StatementTest extends BaseCase
 		$this->assertSame(1, $list->getCount());
 
 
-		$list = $this->sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 5);
+		$list = self::$sqlmap->QueryForPagedList("GetAllAccountsViaResultMap", null, 5);
 
 		$this->assertSame(5, $list->getCount());
 
@@ -460,7 +460,7 @@ class StatementTest extends BaseCase
 	{
 		$accounts = new AccountCollection();
 
-		$this->sqlmap->QueryForList("GetAllAccountsViaResultMap", null, $accounts);
+		self::$sqlmap->QueryForList("GetAllAccountsViaResultMap", null, $accounts);
 		$this->assertAccount1($accounts[0]);
 		$this->assertSame(5, $accounts->getCount());
 		$this->assertSame(1, $accounts[0]->getID());
@@ -475,7 +475,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithListClass()
 	{
-		$linesItem = $this->sqlmap->QueryForList("GetLineItemsForOrderWithListClass", 10);
+		$linesItem = self::$sqlmap->QueryForList("GetLineItemsForOrderWithListClass", 10);
 
 		$this->assertNotNull($linesItem);
 		$this->assertSame(2, $linesItem->getCount());
@@ -488,7 +488,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithNoResult()
 	{
-		$list = $this->sqlmap->QueryForList("GetNoAccountsViaResultMap");
+		$list = self::$sqlmap->QueryForList("GetNoAccountsViaResultMap");
 
 		$this->assertSame(0, count($list));
 	}
@@ -498,7 +498,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListResultClass()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultClass");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultClass");
 
 		$this->assertAccount1($list[0]);
 		$this->assertSame(5, count($list));
@@ -514,7 +514,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithSimpleResultClass()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllEmailAddressesViaResultClass");
+		$list = self::$sqlmap->QueryForList("GetAllEmailAddressesViaResultClass");
 
 		$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
 		$this->assertSame("Averel.Dalton@somewhere.com", $list[1]);
@@ -528,7 +528,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithSimpleResultMap()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllEmailAddressesViaResultMap");
+		$list = self::$sqlmap->QueryForList("GetAllEmailAddressesViaResultMap");
 
 		$this->assertSame("Joe.Dalton@somewhere.com", $list[0]);
 		$this->assertSame("Averel.Dalton@somewhere.com", $list[1]);
@@ -542,7 +542,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testQueryForListWithSkipAndMax()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsViaResultMap", null, null, 2, 2);
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaResultMap", null, null, 2, 2);
 
 		$this->assertSame(2, count($list));
 		$this->assertSame(3, $list[0]->getID());
@@ -557,7 +557,7 @@ class StatementTest extends BaseCase
 	{
 		//$handler = new SqlMapper.RowDelegate(this.RowHandler);
 
-		//$list = $this->sqlmap->QueryWithRowDelegate("GetAllAccountsViaResultMap", null, handler);
+		//$list = self::$sqlmap->QueryWithRowDelegate("GetAllAccountsViaResultMap", null, handler);
 
 		//$this->assertSame(5, _index);
 		//$this->assertSame(5, $list->getCount());
@@ -579,7 +579,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForMap()
 	{
-		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName");
+		$map = self::$sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName");
 
 		$this->assertSame(5, count($map));
 		$this->assertAccount1($map["Joe"]);
@@ -599,7 +599,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForMap2()
 	{
-		$map = $this->sqlmap->QueryForMap("GetAllOrderWithLineItems", null, "PostalCode");
+		$map = self::$sqlmap->QueryForMap("GetAllOrderWithLineItems", null, "PostalCode");
 
 		$this->assertSame(11, count($map));
 		$order = $map["T4H 9G4"];
@@ -613,7 +613,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForMapWithValueProperty()
 	{
-		$map = $this->sqlmap->QueryForMap(
+		$map = self::$sqlmap->QueryForMap(
 			"GetAllAccountsViaResultClass",
 			null,
 			"FirstName",
@@ -634,11 +634,11 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForWithJoined()
 	{
-		$order = $this->sqlmap->QueryForObject("GetOrderJoinWithAccount", 10);
+		$order = self::$sqlmap->QueryForObject("GetOrderJoinWithAccount", 10);
 
 		$this->assertNotNull($order->getAccount());
 
-		$order = $this->sqlmap->QueryForObject("GetOrderJoinWithAccount", 11);
+		$order = self::$sqlmap->QueryForObject("GetOrderJoinWithAccount", 11);
 
 		$this->assertNull($order->getAccount());
 	}
@@ -652,7 +652,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryForWithComplexJoined()
 	{
-		$a = $this->sqlmap->QueryForObject("SelectComplexJoined");
+		$a = self::$sqlmap->QueryForObject("SelectComplexJoined");
 		$this->assertNotNull($a);
 		$this->assertNotNull($a->getB());
 		$this->assertNotNull($a->getB()->getC());
@@ -669,7 +669,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExtendsGetAllAccounts()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccounts");
+		$list = self::$sqlmap->QueryForList("GetAllAccounts");
 
 		$this->assertAccount1($list[0]);
 		$this->assertSame(5, count($list));
@@ -685,7 +685,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExtendsGetAllAccountsOrderByName()
 	{
-		$list = $this->sqlmap->QueryForList("GetAllAccountsOrderByName");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsOrderByName");
 
 		$this->assertAccount1($list[3]);
 		$this->assertSame(5, count($list));
@@ -702,7 +702,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testExtendsGetOneAccount()
 	{
-		$account = $this->sqlmap->QueryForObject("GetOneAccount", 1);
+		$account = self::$sqlmap->QueryForObject("GetOneAccount", 1);
 		$this->assertAccount1($account);
 	}
 
@@ -714,7 +714,7 @@ class StatementTest extends BaseCase
 		$param["lowID"] = 2;
 		$param["hightID"] = 4;
 
-		$list = $this->sqlmap->QueryForList("GetSomeAccount", $param);
+		$list = self::$sqlmap->QueryForList("GetSomeAccount", $param);
 
 		$this->assertSame(3, count($list));
 
@@ -742,9 +742,9 @@ class StatementTest extends BaseCase
 		$account->LastName = "Luke";
 		$account->EmailAddress = "luly.luke@somewhere.com";
 
-		$this->sqlmap->Insert("InsertAccountViaPublicFields", $account);
+		self::$sqlmap->Insert("InsertAccountViaPublicFields", $account);
 
-		$testAccount = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 10);
+		$testAccount = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 10);
 
 		$this->assertNotNull($testAccount);
 
@@ -762,7 +762,7 @@ class StatementTest extends BaseCase
 		$this->initScript('order-init.sql');
 		$account = $this->NewAccount6();
 
-		$this->sqlmap->Insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->Insert("InsertAccountViaParameterMap", $account);
 
 		$order = new Order();
 		$order->setId(99);
@@ -776,7 +776,7 @@ class StatementTest extends BaseCase
 		$order->setProvince("Rhone");
 		$order->setStreet("rue Durand");
 
-		$this->sqlmap->Insert("InsertOrderViaPublicFields", $order);
+		self::$sqlmap->Insert("InsertOrderViaPublicFields", $order);
 		$this->assertTrue(true);
 
 		$this->initScript('account-init.sql');
@@ -797,9 +797,9 @@ class StatementTest extends BaseCase
 		$account->setLastName("Luke");
 		$account->setEmailAddress("luly.luke@somewhere.com");
 
-		$this->sqlmap->Insert("InsertAccountViaInlineParameters", $account);
+		self::$sqlmap->Insert("InsertAccountViaInlineParameters", $account);
 
-		$testAccount = $this->sqlmap->QueryForObject("GetAccountViaColumnIndex", 10);
+		$testAccount = self::$sqlmap->QueryForObject("GetAccountViaColumnIndex", 10);
 
 		$this->assertNotNull($testAccount);
 		$this->assertSame(10, $testAccount->getId());
@@ -813,9 +813,9 @@ class StatementTest extends BaseCase
 	{
 		$this->initScript('account-init.sql');
 		$account = $this->NewAccount6();
-		$this->sqlmap->Insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->Insert("InsertAccountViaParameterMap", $account);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountNullableEmail", 6);
+		$account = self::$sqlmap->QueryForObject("GetAccountNullableEmail", 6);
 		$this->AssertAccount6($account);
 
 		$this->initScript('account-init.sql');
@@ -827,12 +827,12 @@ class StatementTest extends BaseCase
 	public function testUpdateViaParameterMap()
 	{
 		$this->initScript('account-init.sql');
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$account->setEmailAddress("new@somewhere.com");
-		$this->sqlmap->Update("UpdateAccountViaParameterMap", $account);
+		self::$sqlmap->Update("UpdateAccountViaParameterMap", $account);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
@@ -844,12 +844,12 @@ class StatementTest extends BaseCase
 	public function testUpdateViaParameterMap2()
 	{
 		$this->initScript('account-init.sql');
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$account->setEmailAddress("new@somewhere.com");
-		$this->sqlmap->Update("UpdateAccountViaParameterMap2", $account);
+		self::$sqlmap->Update("UpdateAccountViaParameterMap2", $account);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
@@ -861,12 +861,12 @@ class StatementTest extends BaseCase
 	public function testUpdateWithInlineParameters()
 	{
 		$this->initScript('account-init.sql');
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$account->setEmailAddress("new@somewhere.com");
-		$this->sqlmap->Update("UpdateAccountViaInlineParameters", $account);
+		self::$sqlmap->Update("UpdateAccountViaInlineParameters", $account);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 1);
 
 		$this->assertSame("new@somewhere.com", $account->getEmailAddress());
 		$this->initScript('account-init.sql');
@@ -880,13 +880,13 @@ class StatementTest extends BaseCase
 		$this->initScript('account-init.sql');
 		$account = $this->NewAccount6();
 
-		$this->sqlmap->Insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->Insert("InsertAccountViaParameterMap", $account);
 
-		$noRowsDeleted = $this->sqlmap->Update("DeleteAccount", null);
+		$noRowsDeleted = self::$sqlmap->Update("DeleteAccount", null);
 
-		$this->sqlmap->Update("DeleteAccount", $account);
+		self::$sqlmap->Update("DeleteAccount", $account);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 6);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 6);
 
 		$this->assertNull($account);
 		$this->assertSame(0, $noRowsDeleted);
@@ -901,17 +901,17 @@ class StatementTest extends BaseCase
 		$this->initScript('account-init.sql');
 		$account = $this->NewAccount6();
 
-		$this->sqlmap->Insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->Insert("InsertAccountViaParameterMap", $account);
 
 		$account = null;
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 6);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 6);
 
 		$this->assertTrue($account->getId() == 6);
 
-		$rowNumber = $this->sqlmap->Delete("DeleteAccount", $account);
+		$rowNumber = self::$sqlmap->Delete("DeleteAccount", $account);
 		$this->assertTrue($rowNumber == 1);
 
-		$account = $this->sqlmap->QueryForObject("GetAccountViaColumnName", 6);
+		$account = self::$sqlmap->QueryForObject("GetAccountViaColumnName", 6);
 
 		$this->assertNull($account);
 		$this->initScript('account-init.sql');
@@ -923,7 +923,7 @@ class StatementTest extends BaseCase
 	public function testDeleteWithComments()
 	{
 		$this->initScript('line-item-init.sql');
-		$rowNumber = $this->sqlmap->Delete("DeleteWithComments");
+		$rowNumber = self::$sqlmap->Delete("DeleteWithComments");
 
 		$this->assertSame($rowNumber, 2);
 		$this->initScript('line-item-init.sql');
@@ -959,7 +959,7 @@ class StatementTest extends BaseCase
 		$account->setLastName("Dalton");
 		$account->setEmailAddress("Joe.Dalton@somewhere.com");
 
-		$result = $this->sqlmap->QueryForObject("GetAccountWithRepeatingProperty", $account);
+		$result = self::$sqlmap->QueryForObject("GetAccountWithRepeatingProperty", $account);
 
 		$this->assertAccount1($result);
 	}
@@ -975,7 +975,7 @@ class StatementTest extends BaseCase
 		$other->setBool(true);
 		$other->setLong(789456321);
 
-		$this->sqlmap->Insert("InsertBool", $other);
+		self::$sqlmap->Insert("InsertBool", $other);
 		$this->assertTrue(true);
 	}
 
@@ -984,7 +984,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testJIRA45()
 	{
-		$account = $this->sqlmap->QueryForObject("GetAccountJIRA45", 1);
+		$account = self::$sqlmap->QueryForObject("GetAccountJIRA45", 1);
 		$this->assertAccount1($account);
 	}
 
@@ -993,7 +993,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testJIRA110()
 	{
-		$account = $this->sqlmap->QueryForObject("Get1Account");
+		$account = self::$sqlmap->QueryForObject("Get1Account");
 		$this->assertAccount1($account);
 	}
 
@@ -1002,7 +1002,7 @@ class StatementTest extends BaseCase
 	 */
 	public function testJIRA110Bis()
 	{
-		$list = $this->sqlmap->QueryForList("GetAccounts");
+		$list = self::$sqlmap->QueryForList("GetAccounts");
 
 		$this->assertAccount1($list[0]);
 		$this->assertSame(5, count($list));
@@ -1013,17 +1013,17 @@ class StatementTest extends BaseCase
 	 */
 	public function testJIRA113()
 	{
-		//	$this->sqlmap->FlushCaches();
+		//	self::$sqlmap->FlushCaches();
 
 		// taken from TestFlushDataCache()
 		// first query is not cached, second query is: 50% cache hit
-		/*$list = $this->sqlmap->QueryForList("GetCachedAccountsViaResultMap");
+		/*$list = self::$sqlmap->QueryForList("GetCachedAccountsViaResultMap");
 		$firstId = HashCodeProvider.GetIdentityHashCode(list);
-		list = $this->sqlmap->QueryForList("GetCachedAccountsViaResultMap");
+		list = self::$sqlmap->QueryForList("GetCachedAccountsViaResultMap");
 		int secondId = HashCodeProvider.GetIdentityHashCode(list);
 		$this->assertSame(firstId, secondId);
 
-		string cacheStats = $this->sqlmap->GetDataCacheStats();
+		string cacheStats = self::$sqlmap->GetDataCacheStats();
 
 		$this->assertNotNull(cacheStats);*/
 		throw new PHPUnit\Framework\IncompleteTestError();
@@ -1038,10 +1038,10 @@ class StatementTest extends BaseCase
 	 */
 	public function testExecuteQueryWithCustomTypeHandler()
 	{
-		$this->sqlmap->registerTypeHandler(new HundredsBool());
-		$this->sqlmap->registerTypeHandler(new OuiNonBool());
+		self::$sqlmap->registerTypeHandler(new HundredsBool());
+		self::$sqlmap->registerTypeHandler(new OuiNonBool());
 
-		$list = $this->sqlmap->QueryForList("GetAllAccountsViaCustomTypeHandler");
+		$list = self::$sqlmap->QueryForList("GetAllAccountsViaCustomTypeHandler");
 
 		$this->assertAccount1($list[0]);
 		$this->assertSame(5, count($list));
@@ -1072,16 +1072,16 @@ class StatementTest extends BaseCase
 		$this->initScript('other-init.sql');
 		$this->initScript('account-init.sql');
 
-		$this->sqlmap->registerTypeHandler(new OuiNonBool());
+		self::$sqlmap->registerTypeHandler(new OuiNonBool());
 
 		$other = new Other();
 		$other->setInt(99);
 		$other->setLong(1966);
 		$other->setBool(true);
 		$other->setBool2(false);
-		$this->sqlmap->Insert("InsertCustomTypeHandler", $other);
+		self::$sqlmap->Insert("InsertCustomTypeHandler", $other);
 
-		$anOther = $this->sqlmap->QueryForObject("SelectByInt", 99);
+		$anOther = self::$sqlmap->QueryForObject("SelectByInt", 99);
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());
 		$this->assertSame(1966, (int) $anOther->getLong());
@@ -1103,9 +1103,9 @@ class StatementTest extends BaseCase
 		$other->setBool(true);
 		$other->setBool2(false);
 
-		$this->sqlmap->Insert("InsertInlineCustomTypeHandlerV1", $other);
+		self::$sqlmap->Insert("InsertInlineCustomTypeHandlerV1", $other);
 
-		$anOther = $this->sqlmap->QueryForObject("SelectByIntV1", 99);
+		$anOther = self::$sqlmap->QueryForObject("SelectByIntV1", 99);
 
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());
@@ -1128,9 +1128,9 @@ class StatementTest extends BaseCase
 		$other->setBool(true);
 		$other->setBool2(false);
 
-		$this->sqlmap->Insert("InsertInlineCustomTypeHandlerV2", $other);
+		self::$sqlmap->Insert("InsertInlineCustomTypeHandlerV2", $other);
 
-		$anOther = $this->sqlmap->QueryForObject("SelectByInt", 99);
+		$anOther = self::$sqlmap->QueryForObject("SelectByInt", 99);
 
 		$this->assertNotNull($anOther);
 		$this->assertSame(99, (int) $anOther->getInt());

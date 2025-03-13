@@ -24,11 +24,11 @@ class ActiveAccount extends TActiveRecord
 
 class ActiveRecordSqlMapTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
-		TActiveRecordManager::getInstance()->setDbConnection($this->getConnection());
+		parent::setUpBeforeClass();
+		self::initSqlMap();
+		TActiveRecordManager::getInstance()->setDbConnection(self::getConnection());
 
 		//$this->initScript('account-init.sql');
 	}
@@ -37,12 +37,12 @@ class ActiveRecordSqlMapTest extends BaseCase
 	{
 		$this->markTestSkipped('Needs fixing');
 		/*
-				$record = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
+				$record = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
 				$record->Account_FirstName = "Testing 123";
 
 				$this->assertTrue($record->save());
 
-				$check1 = $this->sqlmap->queryForObject('GetActiveRecordAccounts');
+				$check1 = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
 				$finder = ActiveAccount::finder();
 				$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
 

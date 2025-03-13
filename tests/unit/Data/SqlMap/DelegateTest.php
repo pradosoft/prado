@@ -4,15 +4,15 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class DelegateTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 	}
 
 	public function testListDelegate()
 	{
-		$list = $this->sqlmap->queryWithRowDelegate(
+		$list = self::$sqlmap->queryWithRowDelegate(
 			"GetAllAccountsViaResultMap",
 			[$this, 'listHandler']
 		);
@@ -31,7 +31,7 @@ class DelegateTest extends BaseCase
 	 */
 	public function testExecuteQueryForMap()
 	{
-		$map = $this->sqlmap->QueryForMapWithRowDelegate(
+		$map = self::$sqlmap->QueryForMapWithRowDelegate(
 			"GetAllAccountsViaResultClass",
 			[$this, 'mapHandler'],
 			null,

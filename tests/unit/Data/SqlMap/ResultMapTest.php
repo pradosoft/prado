@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class ResultMapTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 		new Order;
 		new LineItemCollection;
 		new Account;
@@ -23,19 +23,19 @@ class ResultMapTest extends BaseCase
 
 	public function testColumnsByName()
 	{
-		$order = $this->sqlmap->QueryForObject('GetOrderLiteByColumnName', 1);
+		$order = self::$sqlmap->QueryForObject('GetOrderLiteByColumnName', 1);
 		$this->assertOrder1($order);
 	}
 
 	public function testColumnsByIndex()
 	{
-		$order = $this->sqlmap->QueryForObject("GetOrderLiteByColumnIndex", 1);
+		$order = self::$sqlmap->QueryForObject("GetOrderLiteByColumnIndex", 1);
 		$this->assertOrder1($order);
 	}
 
 	public function testExtendedResultMap()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemsNoLazyLoad", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItemsNoLazyLoad", 1);
 		$this->assertOrder1($order);
 		$this->assertTrue($order->getLineItemsList() instanceof TList);
 		$this->assertSame(2, $order->getLineItemsList()->getCount());
@@ -44,7 +44,7 @@ class ResultMapTest extends BaseCase
 
 	public function testLazyLoad()
 	{
-		$order = $this->sqlmap->QueryForObject("GetOrderWithLineItems", 1);
+		$order = self::$sqlmap->QueryForObject("GetOrderWithLineItems", 1);
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItemsList());
 		$this->assertFalse($order->getLineItemsList() instanceof TList);
@@ -58,7 +58,7 @@ class ResultMapTest extends BaseCase
 
 	public function testLazyWithTypedCollectionMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemCollection", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItemCollection", 1);
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItems());
 		$this->assertFalse($order->getLineItemsList() instanceof LineItemCollection);
@@ -76,26 +76,26 @@ class ResultMapTest extends BaseCase
 
 	public function testNullValueReplacementOnString()
 	{
-		$account = $this->sqlmap->queryForObject("GetAccountViaColumnName", 5);
+		$account = self::$sqlmap->queryForObject("GetAccountViaColumnName", 5);
 		$this->assertSame("no_email@provided.com", $account->getEmailAddress());
 	}
 
 	public function testTypeSpecified()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithTypes", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithTypes", 1);
 		$this->assertOrder1($order);
 	}
 
 	public function testComplexObjectMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithAccount", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithAccount", 1);
 		$this->assertOrder1($order);
 		$this->assertAccount1($order->getAccount());
 	}
 
 	public function testCollectionMappingAndExtends()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemsCollection", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItemsCollection", 1);
 		$this->assertOrder1($order);
 
 		// Check strongly typed collection
@@ -105,7 +105,7 @@ class ResultMapTest extends BaseCase
 
 	public function testListMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItems", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItems", 1);
 		$this->assertOrder1($order);
 
 		// Check TList collection
@@ -115,7 +115,7 @@ class ResultMapTest extends BaseCase
 
 	public function testArrayMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemArray", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItemArray", 1);
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItemsArray());
 		$this->assertTrue(is_array($order->getLineItemsArray()));
@@ -124,7 +124,7 @@ class ResultMapTest extends BaseCase
 
 	public function testTypedCollectionMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderWithLineItemCollectionNoLazy", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderWithLineItemCollectionNoLazy", 1);
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getLineItems());
 		$this->assertTrue($order->getLineItems() instanceof LineItemCollection);
@@ -137,13 +137,13 @@ class ResultMapTest extends BaseCase
 
 	public function testHashArrayMapping()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderAsHastable", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderAsHastable", 1);
 		$this->assertOrder1AsHashArray($order);
 	}
 
 	public function testNestedObjects()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderJoinedFavourite", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderJoinedFavourite", 1);
 
 		$this->assertOrder1($order);
 		$this->assertNotNull($order->getFavouriteLineItem());
@@ -154,7 +154,7 @@ class ResultMapTest extends BaseCase
 
 	public function testNestedObjects2()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderJoinedFavourite2", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderJoinedFavourite2", 1);
 		$this->assertOrder1($order);
 
 		$this->assertNotNull($order->getFavouriteLineItem());
@@ -164,7 +164,7 @@ class ResultMapTest extends BaseCase
 
 	public function testImplicitResultMaps()
 	{
-		$order = $this->sqlmap->queryForObject("GetOrderJoinedFavourite3", 1);
+		$order = self::$sqlmap->queryForObject("GetOrderJoinedFavourite3", 1);
 
 		// *** force date to timestamp since data type can't be
 		// *** explicity known without mapping
@@ -181,8 +181,8 @@ class ResultMapTest extends BaseCase
 	{
 		$this->resetDatabase();
 
-		$order1 = $this->sqlmap->queryForObject("GetOrderWithFavouriteLineItem", 1);
-		$order2 = $this->sqlmap->queryForObject("GetOrderWithFavouriteLineItem", 2);
+		$order1 = self::$sqlmap->queryForObject("GetOrderWithFavouriteLineItem", 1);
+		$order2 = self::$sqlmap->queryForObject("GetOrderWithFavouriteLineItem", 2);
 
 		$this->assertNotNull($order1);
 		$this->assertNotNull($order1->getFavouriteLineItem());
@@ -198,7 +198,7 @@ class ResultMapTest extends BaseCase
 	{
 		$this->resetDatabase();
 
-		$list = $this->sqlmap->QueryForList("GetAllCreditCardNumbersFromOrders", null);
+		$list = self::$sqlmap->QueryForList("GetAllCreditCardNumbersFromOrders", null);
 
 		$this->assertSame(5, count($list));
 		$this->assertSame("555555555555", $list[0]);
@@ -210,7 +210,7 @@ class ResultMapTest extends BaseCase
 
 		$param["LineItem_ID"] = 1;
 		$param["Order_ID"] = 10;
-		$price = $this->sqlmap->queryForObject("GetLineItemPrice", $param);
+		$price = self::$sqlmap->queryForObject("GetLineItemPrice", $param);
 		$this->assertSame(gettype($price), 'double');
 		$this->assertSame(45.43, $price);
 	}
@@ -224,9 +224,9 @@ class ResultMapTest extends BaseCase
 		$enum['Color'] = 'Colors.Blue';
 		$enum['Month'] = 'Months.All';
 
-		$this->sqlmap->insert("InsertEnumViaParameterMap", $enum);
+		self::$sqlmap->insert("InsertEnumViaParameterMap", $enum);
 
-		$enumClass = $this->sqlmap->queryForObject("GetEnumerationNullValue", 99);
+		$enumClass = self::$sqlmap->queryForObject("GetEnumerationNullValue", 99);
 
 		$this->assertSame($enumClass['Day'], 'Days.Thu');
 		$this->asserEquals($enumClass['Color'], 'Colors.Blue');
@@ -253,7 +253,7 @@ class ResultMapTest extends BaseCase
 	//requires dynamic SQL
 	function testDynamiqueCompositeKeyMapping()
 	{
-		$order1 = $this->sqlmap->queryForObject("GetOrderWithDynFavouriteLineItem", 1);
+		$order1 = self::$sqlmap->queryForObject("GetOrderWithDynFavouriteLineItem", 1);
 
 		$this->assertNotNull($order1);
 		$this->assertNotNull($order1->getFavouriteLineItem());

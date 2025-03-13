@@ -7,11 +7,11 @@ use Prado\Data\SqlMap\TSqlMapManager;
 
 class BaseCase extends PHPUnit\Framework\TestCase
 {
-	protected $sqlmap;
-	protected $connection;
-	private $mapper;
-	private $config;
-	protected $ScriptDirectory;
+	protected static $sqlmap;
+	protected static $connection;
+	private static $mapper;
+	private static $config;
+	protected static $scriptDirectory;
 
 	public function testCase1()
 	{
@@ -23,42 +23,41 @@ class BaseCase extends PHPUnit\Framework\TestCase
 		$this->assertTrue(true);
 	}
 
-	public function __construct()
-	{
-		parent::__construct();
-		$this->config = BaseTestConfig::createConfigInstance();
-		$this->ScriptDirectory = $this->config->getScriptDir();
-	}
-
 	public function hasSupportFor($feature)
 	{
-		return $this->config->hasFeature($feature);
+		return self::$config->hasFeature($feature);
 	}
 
-	public function __destruct()
+	public static function setUpBeforeClass(): void
 	{
-		if (null !== $this->mapper) {
-			$this->mapper->cacheConfiguration();
+		self::$config = BaseTestConfig::createConfigInstance();
+		self::$scriptDirectory = self::$config->getScriptDir();
+	}
+
+    public static function tearDownAfterClass(): void
+    {
+		if (null !== self::$mapper) {
+			self::$mapper->cacheConfiguration();
 		}
 	}
 
-	public function getConnection()
+	public static function getConnection()
 	{
-		if (null === $this->connection) {
-			$this->connection = $this->config->getConnection();
+		if (null === self::$connection) {
+			self::$connection = self::$config->getConnection();
 		}
-		$this->connection->setActive(true);
-		return $this->connection;
+		self::$connection->setActive(true);
+		return self::$connection;
 	}
 
 	/**
 	 * Initialize an sqlMap
 	 */
-	protected function initSqlMap()
+	protected static function initSqlMap()
 	{
-		$manager = new TSqlMapManager($this->config->getConnection());
-		$manager->configureXml($this->config->getSqlMapConfigFile());
-		$this->sqlmap = $manager->getSqlMapGateway();
+		$manager = new TSqlMapManager(self::$config->getConnection());
+		$manager->configureXml(self::$config->getSqlMapConfigFile());
+		self::$sqlmap = $manager->getSqlMapGateway();
 		$manager->TypeHandlers->registerTypeHandler(new TDateTimeHandler);
 	}
 
@@ -66,10 +65,10 @@ class BaseCase extends PHPUnit\Framework\TestCase
 	 * Run a sql batch for the datasource.
 	 * @param mixed $script
 	 */
-	protected function initScript($script)
+	protected static function initScript($script)
 	{
-		$runner = $this->config->getScriptRunner();
-		$runner->runScript($this->getConnection(), $this->ScriptDirectory . $script);
+		$runner = self::$config->getScriptRunner();
+		$runner->runScript(self::getConnection(), self::$scriptDirectory . $script);
 	}
 
 	/**

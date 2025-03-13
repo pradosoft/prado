@@ -4,18 +4,18 @@ use Prado\Data\SqlMap\TSqlMapConfig;
 
 class StatementExtendsTest extends PHPUnit\Framework\TestCase
 {
-	protected $sqlmap;
+	protected $testSqlMap;
 
 	protected function setUp(): void
 	{
 		$config = new TSqlMapConfig();
 		$config->ConfigFile = __DIR__ . '/maps/tests.xml';
-		$this->sqlmap = $config->getClient();
+		$this->testSqlMap = $config->getClient();
 	}
 
 	public function test_extends1()
 	{
-		$manager = $this->sqlmap->SqlMapManager;
+		$manager = $this->testSqlMap->SqlMapManager;
 		$sql = $manager->getMappedStatement('test')->getSqlString();
 
 		$this->assertMatchesRegularExpression('/img_request/', $sql);

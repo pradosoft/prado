@@ -19,16 +19,16 @@ class AccountWithOrders extends Account
 
 class GroupByTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 	}
 
 	public function testAccountWithOrders()
 	{
 		$this->initScript('account-init.sql');
-		$accounts = $this->sqlmap->queryForList("getAccountWithOrders");
+		$accounts = self::$sqlmap->queryForList("getAccountWithOrders");
 		$this->assertSame(5, count($accounts));
 		foreach ($accounts as $account) {
 			$this->assertSame(2, count($account->getOrders()));

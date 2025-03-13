@@ -6,18 +6,17 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler;
 
 class InheritanceTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-
-		$this->initSqlMap();
-		$this->initScript('documents-init.sql');
+		parent::setUpBeforeClass();
+		self::initSqlMap();
+		self::initScript('documents-init.sql');
 	}
 
 	/// Test All document with no formula
 	public function testGetAllDocument()
 	{
-		$list = $this->sqlmap->queryForList("GetAllDocument");
+		$list = self::$sqlmap->queryForList("GetAllDocument");
 
 		$this->assertEquals(6, count($list));
 		$book = $list[0];
@@ -42,7 +41,7 @@ class InheritanceTest extends BaseCase
 	/// Test All document in a typed collection
 	public function testGetTypedCollection()
 	{
-		$list = $this->sqlmap->queryForList("GetTypedCollection");
+		$list = self::$sqlmap->queryForList("GetTypedCollection");
 
 		$this->assertEquals(6, $list->getCount());
 
@@ -70,9 +69,9 @@ class InheritanceTest extends BaseCase
 	{
 
 		//register the custom inheritance type handler
-		$this->sqlmap->registerTypeHandler(new CustomInheritance);
+		self::$sqlmap->registerTypeHandler(new CustomInheritance);
 
-		$list = $this->sqlmap->queryForList("GetAllDocumentWithCustomTypeHandler");
+		$list = self::$sqlmap->queryForList("GetAllDocumentWithCustomTypeHandler");
 
 		$this->assertEquals(6, count($list));
 		$book = $list[0];

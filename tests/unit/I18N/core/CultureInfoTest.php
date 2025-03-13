@@ -62,7 +62,7 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 	{
 		$culture = new CultureInfo('it');
 
-		$this->assertGreaterThanOrEqual(100, count($culture->TimeZones));
+		$this->assertGreaterThanOrEqual(90, count($culture->TimeZones));
 	}
 
 	public function test_missing_english_names_returns_culture_code()

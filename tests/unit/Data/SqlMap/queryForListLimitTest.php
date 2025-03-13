@@ -4,11 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class queryForListLimitTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 
 		//force autoload
 		new Account;
@@ -21,7 +20,7 @@ class queryForListLimitTest extends BaseCase
 
 	public function test_accounts_limit_2()
 	{
-		$list1 = $this->sqlmap->queryForList('GetAllAccountsAsArrayListViaResultClass', null, null, 1, 2);
+		$list1 = self::$sqlmap->queryForList('GetAllAccountsAsArrayListViaResultClass', null, null, 1, 2);
 		$this->assertEquals(count($list1), 2);
 
 		$this->assertEquals($list1[0][0], '2');

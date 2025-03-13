@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class ParameterMapTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 	}
 
 	protected function setUp(): void
@@ -24,8 +24,8 @@ class ParameterMapTest extends BaseCase
 	{
 		$account = $this->newAccount6();
 
-		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
-		$account = $this->sqlmap->queryForObject("GetAccountNullableEmail", 6);
+		self::$sqlmap->insert("InsertAccountViaParameterMap", $account);
+		$account = self::$sqlmap->queryForObject("GetAccountNullableEmail", 6);
 
 		$this->assertNull($account->getEmailAddress(), 'no_email@provided.com');
 
@@ -37,8 +37,8 @@ class ParameterMapTest extends BaseCase
 	{
 		$account = $this->newAccount6();
 
-		$this->sqlmap->insert("InsertAccountViaInlineParameters", $account);
-		$account = $this->sqlmap->queryForObject("GetAccountNullableEmail", 6);
+		self::$sqlmap->insert("InsertAccountViaInlineParameters", $account);
+		$account = self::$sqlmap->queryForObject("GetAccountNullableEmail", 6);
 		$this->assertNull($account->getEmailAddress());
 
 		$this->assertAccount6($account);
@@ -49,8 +49,8 @@ class ParameterMapTest extends BaseCase
 	{
 		$account = $this->newAccount6();
 		$account->setEmailAddress(null);
-		$this->sqlmap->insert("InsertAccountNullableEmail", $account);
-		$account = $this->sqlmap->queryForObject("GetAccountNullableEmail", 6);
+		self::$sqlmap->insert("InsertAccountNullableEmail", $account);
+		$account = self::$sqlmap->queryForObject("GetAccountNullableEmail", 6);
 		$this->assertAccount6($account);
 	}
 
@@ -60,8 +60,8 @@ class ParameterMapTest extends BaseCase
 	{
 		$account = $this->newAccount6();
 		$account->setEmailAddress(null);
-		$this->sqlmap->insert("InsertAccountUknownParameterClass", $account);
-		$account = $this->sqlmap->queryForObject("GetAccountNullableEmail", 6);
+		self::$sqlmap->insert("InsertAccountUknownParameterClass", $account);
+		$account = self::$sqlmap->queryForObject("GetAccountNullableEmail", 6);
 		$this->assertAccount6($account);
 	}
 
@@ -71,7 +71,7 @@ class ParameterMapTest extends BaseCase
 	public function testNullValueReplacementForDateTimeMinValue()
 	{
 		$account = $this->newAccount6();
-		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->insert("InsertAccountViaParameterMap", $account);
 		$order = new Order();
 		$order->setId(99);
 		$order->setCardExpiry("09/11");
@@ -84,9 +84,9 @@ class ParameterMapTest extends BaseCase
 		$order->setProvince("Rhone");
 		$order->setStreet("rue Durand");
 
-		$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
+		self::$sqlmap->insert("InsertOrderViaParameterMap", $order);
 
-		$orderTest = $this->sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
+		$orderTest = self::$sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
 
 		$this->assertSame($order->getCity(), $orderTest->getCity());
 	}
@@ -97,7 +97,7 @@ class ParameterMapTest extends BaseCase
 	{
 		$account = $this->newAccount6();
 
-		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->insert("InsertAccountViaParameterMap", $account);
 
 		$order = new Order();
 		$order->setId(99);
@@ -111,9 +111,9 @@ class ParameterMapTest extends BaseCase
 		$order->setProvince("Rhone");
 		$order->setStreet("rue Durand");
 
-		$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
+		self::$sqlmap->insert("InsertOrderViaParameterMap", $order);
 
-		$orderTest = $this->sqlmap->queryForObject("GetOrderByHashTable", 99);
+		$orderTest = self::$sqlmap->queryForObject("GetOrderByHashTable", 99);
 
 		$this->assertSame($orderTest["Date"], '0001-01-01 00:00:00');
 	}
@@ -127,9 +127,9 @@ class ParameterMapTest extends BaseCase
 			$category->setName("Totoasdasd");
 			$category->setGuidString('00000000-0000-0000-0000-000000000000');
 
-			$key = $this->sqlmap->insert("InsertCategoryNull", $category);
+			$key = self::$sqlmap->insert("InsertCategoryNull", $category);
 
-			$categoryRead = $this->sqlmap->queryForObject("GetCategory", $key);
+			$categoryRead = self::$sqlmap->queryForObject("GetCategory", $key);
 
 			$this->assertSame($category->getName(), $categoryRead->getName());
 			$this->assertSame('', $categoryRead->getGuidString());
@@ -162,7 +162,7 @@ class ParameterMapTest extends BaseCase
 		$o->setCity("Dalton");
 		$param["Order"] = $o;
 
-		$accountTest = $this->sqlmap->queryForObject("GetAccountComplexMapping", $param);
+		$accountTest = self::$sqlmap->queryForObject("GetAccountComplexMapping", $param);
 
 		$this->assertAccount1($accountTest);
 	}
@@ -173,7 +173,7 @@ class ParameterMapTest extends BaseCase
 		{
 			$account = $this->newAccount6();
 
-			$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
+			self::$sqlmap->insert("InsertAccountViaParameterMap", $account);
 
 			$order = new Order();
 			$order->setId(99);
@@ -187,7 +187,7 @@ class ParameterMapTest extends BaseCase
 			$order->setProvince("Rhone");
 			$order->setStreet("rue Durand");
 
-			$this->sqlmap->insert("InsertOrderViaParameterMap", $order);
+			self::$sqlmap->insert("InsertOrderViaParameterMap", $order);
 
 			$item = new LineItem();
 			$item->setId(99);
@@ -198,7 +198,7 @@ class ParameterMapTest extends BaseCase
 			$item->setPicture(null);
 
 			// Check insert
-			$this->sqlmap->insert("InsertLineItemWithPicture", $item);
+			self::$sqlmap->insert("InsertLineItemWithPicture", $item);
 
 			// select
 			$item = null;
@@ -206,7 +206,7 @@ class ParameterMapTest extends BaseCase
 			$param["LineItem_ID"] = 99;
 			$param["Order_ID"] = 99;
 
-			$item = $this->sqlmap->queryForObject("GetSpecificLineItemWithPicture", $param);
+			$item = self::$sqlmap->queryForObject("GetSpecificLineItemWithPicture", $param);
 
 			$this->assertNotNull($item->getId());
 	//		$this->assertNotNull($item->getPicture());
@@ -218,10 +218,10 @@ class ParameterMapTest extends BaseCase
 	/// (Support Requests 1043181)
 	public function testInsertOrderViaExtendParameterMap()
 	{
-		$this->sqlmap->getSqlMapManager()->getTypeHandlers()->registerTypeHandler(new HundredsBool());
+		self::$sqlmap->getSqlMapManager()->getTypeHandlers()->registerTypeHandler(new HundredsBool());
 
 		$account = $this->newAccount6();
-		$this->sqlmap->insert("InsertAccountViaParameterMap", $account);
+		self::$sqlmap->insert("InsertAccountViaParameterMap", $account);
 
 		$order = new Order();
 		$order->setId(99);
@@ -235,9 +235,9 @@ class ParameterMapTest extends BaseCase
 		$order->setProvince("Rhone");
 		$order->setStreet("rue Durand");
 
-		$this->sqlmap->insert("InsertOrderViaExtendParameterMap", $order);
+		self::$sqlmap->insert("InsertOrderViaExtendParameterMap", $order);
 
-		$orderTest = $this->sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
+		$orderTest = self::$sqlmap->queryForObject("GetOrderLiteByColumnName", 99);
 
 		$this->assertSame($order->getCity(), $orderTest->getCity());
 	}

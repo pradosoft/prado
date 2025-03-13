@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class TestQueryForMap extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 	}
 
 	/**
@@ -15,7 +15,7 @@ class TestQueryForMap extends BaseCase
 	 */
 	public function testExecuteQueryForMap()
 	{
-		$map = $this->sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName", null, 0, 2);
+		$map = self::$sqlmap->QueryForMap("GetAllAccountsViaResultClass", null, "FirstName", null, 0, 2);
 		$this->assertSame(2, count($map));
 		$this->assertAccount1($map["Joe"]);
 
@@ -29,7 +29,7 @@ class TestQueryForMap extends BaseCase
 	 */
 	public function testExecuteQueryForMapWithValueProperty()
 	{
-		$map = $this->sqlmap->QueryForMap(
+		$map = self::$sqlmap->QueryForMap(
 			"GetAllAccountsViaResultClass",
 			null,
 			"FirstName",

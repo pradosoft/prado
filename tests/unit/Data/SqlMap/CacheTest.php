@@ -4,11 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class CacheTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 
 		//force autoload
 		new Account;
@@ -26,7 +25,7 @@ class CacheTest extends BaseCase
 	{
 		$this->markTestSkipped('Needs fixing');
 		/*
-				$account = $this->sqlmap->queryForObject("GetNoAccountWithCache",-99);
+				$account = self::$sqlmap->queryForObject("GetNoAccountWithCache",-99);
 				$this->assertNull($account);
 		*/
 	}
@@ -38,9 +37,9 @@ class CacheTest extends BaseCase
 	{
 		$this->resetDatabase();
 
-		$list1 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list1 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
-		$list2 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list2 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 === $list2);
 
@@ -48,9 +47,9 @@ class CacheTest extends BaseCase
 		$account->setEmailAddress("somebody@cache.com");
 
 		//this will cause the cache to flush
-		$this->sqlmap->update("UpdateAccountViaInlineParameters", $account);
+		self::$sqlmap->update("UpdateAccountViaInlineParameters", $account);
 
-		$list3 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list3 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 !== $list3);
 
@@ -63,13 +62,13 @@ class CacheTest extends BaseCase
 	 */
 	public function testFlushDataCache()
 	{
-		$list1 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
-		$list2 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list1 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list2 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 === $list2);
-		$this->sqlmap->flushCaches();
+		self::$sqlmap->flushCaches();
 
-		$list3 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list3 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 !== $list3);
 	}
@@ -79,14 +78,14 @@ class CacheTest extends BaseCase
 	 */
 	public function testFlushDataCacheOnExecute()
 	{
-		$list1 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list1 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
-		$list2 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list2 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 === $list2);
-		$this->sqlmap->update("UpdateAccountViaInlineParameters", $list1[0]);
+		self::$sqlmap->update("UpdateAccountViaInlineParameters", $list1[0]);
 
-		$list3 = $this->sqlmap->queryForList("GetCachedAccountsViaResultMap");
+		$list3 = self::$sqlmap->queryForList("GetCachedAccountsViaResultMap");
 
 		$this->assertTrue($list1 !== $list3);
 	}

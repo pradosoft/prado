@@ -4,10 +4,10 @@ require_once(__DIR__ . '/BaseCase.php');
 
 class ResultClassTest extends BaseCase
 {
-	public function __construct()
+	public static function setUpBeforeClass(): void
 	{
-		parent::__construct();
-		$this->initSqlMap();
+		parent::setUpBeforeClass();
+		self::initSqlMap();
 	}
 
 	/**
@@ -15,7 +15,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testBoolean()
 	{
-		$bit = $this->sqlmap->queryForObject("GetBoolean", 1);
+		$bit = self::$sqlmap->queryForObject("GetBoolean", 1);
 		$this->assertSame(true, $bit);
 	}
 
@@ -24,7 +24,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testBooleanWithoutResultClass()
 	{
-		$bit = (boolean) $this->sqlmap->queryForObject("GetBooleanWithoutResultClass", 1);
+		$bit = (boolean) self::$sqlmap->queryForObject("GetBooleanWithoutResultClass", 1);
 		$this->assertSame(true, $bit);
 	}
 
@@ -33,7 +33,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testByte()
 	{
-		$letter = $this->sqlmap->queryForObject("GetByte", 1);
+		$letter = self::$sqlmap->queryForObject("GetByte", 1);
 		$this->assertSame(155, (int) $letter);
 	}
 
@@ -42,7 +42,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testByteWithoutResultClass()
 	{
-		$letter = $this->sqlmap->queryForObject("GetByteWithoutResultClass", 1);
+		$letter = self::$sqlmap->queryForObject("GetByteWithoutResultClass", 1);
 		$this->assertSame(155, (int) $letter);
 	}
 
@@ -51,7 +51,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testChar()
 	{
-		$letter = $this->sqlmap->queryForObject("GetChar", 1);
+		$letter = self::$sqlmap->queryForObject("GetChar", 1);
 		$this->assertSame('a', trim($letter));
 	}
 
@@ -60,7 +60,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testCharWithoutResultClass()
 	{
-		$letter = $this->sqlmap->queryForObject("GetCharWithoutResultClass", 1);
+		$letter = self::$sqlmap->queryForObject("GetCharWithoutResultClass", 1);
 		$this->assertSame('a', trim($letter));
 	}
 
@@ -69,7 +69,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDateTime()
 	{
-		$orderDate = $this->sqlmap->queryForObject("GetDate", 1);
+		$orderDate = self::$sqlmap->queryForObject("GetDate", 1);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
 		$this->assertSame($date, $orderDate->getTimeStamp());
 	}
@@ -79,7 +79,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDateTimeWithoutResultClass()
 	{
-		$date = $this->sqlmap->queryForObject("GetDateWithoutResultClass", 1);
+		$date = self::$sqlmap->queryForObject("GetDateWithoutResultClass", 1);
 		$orderDate = new TDateTime;
 		$orderDate->setDateTime($date);
 		$date = @mktime(8, 15, 00, 2, 15, 2003);
@@ -92,7 +92,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDecimal()
 	{
-		$price = $this->sqlmap->queryForObject("GetDecimal", 1);
+		$price = self::$sqlmap->queryForObject("GetDecimal", 1);
 		$this->assertSame(1.56, $price);
 	}
 
@@ -101,7 +101,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDecimalWithoutResultClass()
 	{
-		$price = $this->sqlmap->queryForObject("GetDecimalWithoutResultClass", 1);
+		$price = self::$sqlmap->queryForObject("GetDecimalWithoutResultClass", 1);
 		$this->assertSame(1.56, (float) $price);
 	}
 
@@ -110,7 +110,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDouble()
 	{
-		$price = $this->sqlmap->queryForObject("GetDouble", 1);
+		$price = self::$sqlmap->queryForObject("GetDouble", 1);
 		$this->assertSame(99.5, $price);
 	}
 
@@ -119,7 +119,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testDoubleWithoutResultClass()
 	{
-		$price = $this->sqlmap->queryForObject("GetDoubleWithoutResultClass", 1);
+		$price = self::$sqlmap->queryForObject("GetDoubleWithoutResultClass", 1);
 		$this->assertSame(99.5, (float) $price);
 	}
 
@@ -130,7 +130,7 @@ class ResultClassTest extends BaseCase
 		{
 			Guid newGuid = new Guid("CD5ABF17-4BBC-4C86-92F1-257735414CF4");
 
-			Guid guid = (Guid) $this->sqlmap->queryForObject("GetGuid", 1);
+			Guid guid = (Guid) self::$sqlmap->queryForObject("GetGuid", 1);
 
 			$this->assertSame(newGuid, guid);
 		}
@@ -143,7 +143,7 @@ class ResultClassTest extends BaseCase
 		{
 			Guid newGuid = new Guid("CD5ABF17-4BBC-4C86-92F1-257735414CF4");
 
-			string guidString = Convert.ToString($this->sqlmap->queryForObject("GetGuidWithoutResultClass", 1));
+			string guidString = Convert.ToString(self::$sqlmap->queryForObject("GetGuidWithoutResultClass", 1));
 
 			Guid guid = new Guid(guidString);
 
@@ -155,7 +155,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt16()
 	{
-		$integer = $this->sqlmap->queryForObject("GetInt16", 1);
+		$integer = self::$sqlmap->queryForObject("GetInt16", 1);
 
 		$this->assertSame(32111, $integer);
 	}
@@ -165,7 +165,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt16WithoutResultClass()
 	{
-		$integer = $this->sqlmap->queryForObject("GetInt16WithoutResultClass", 1);
+		$integer = self::$sqlmap->queryForObject("GetInt16WithoutResultClass", 1);
 		$this->assertSame(32111, (int) $integer);
 	}
 
@@ -174,7 +174,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt32()
 	{
-		$integer = $this->sqlmap->queryForObject("GetInt32", 1);
+		$integer = self::$sqlmap->queryForObject("GetInt32", 1);
 		$this->assertSame(999999, $integer);
 	}
 
@@ -183,7 +183,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt32WithoutResultClass()
 	{
-		$integer = $this->sqlmap->queryForObject("GetInt32WithoutResultClass", 1);
+		$integer = self::$sqlmap->queryForObject("GetInt32WithoutResultClass", 1);
 		$this->assertSame(999999, (int) $integer);
 	}
 
@@ -192,7 +192,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt64()
 	{
-		$bigInt = $this->sqlmap->queryForObject("GetInt64", 1);
+		$bigInt = self::$sqlmap->queryForObject("GetInt64", 1);
 		$this->assertEquals(9223372036854775800, $bigInt);
 	}
 
@@ -201,7 +201,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testInt64WithoutResultClass()
 	{
-		$bigInt = $this->sqlmap->queryForObject("GetInt64WithoutResultClass", 1);
+		$bigInt = self::$sqlmap->queryForObject("GetInt64WithoutResultClass", 1);
 		$this->assertEquals(9223372036854775800, (double) $bigInt);
 	}
 
@@ -210,7 +210,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testSingle()
 	{
-		$price = (float) $this->sqlmap->queryForObject("GetSingle", 1);
+		$price = (float) self::$sqlmap->queryForObject("GetSingle", 1);
 		$this->assertSame(92233.5, $price);
 	}
 
@@ -219,7 +219,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testSingleWithoutResultClass()
 	{
-		$price = $this->sqlmap->queryForObject("GetSingleWithoutResultClass", 1);
+		$price = self::$sqlmap->queryForObject("GetSingleWithoutResultClass", 1);
 		$this->assertSame(92233.5, (float) $price);
 	}
 
@@ -228,7 +228,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testString()
 	{
-		$cardType = $this->sqlmap->queryForObject("GetString", 1);
+		$cardType = self::$sqlmap->queryForObject("GetString", 1);
 		$this->assertSame("VISA", $cardType);
 	}
 
@@ -237,7 +237,7 @@ class ResultClassTest extends BaseCase
 	 */
 	public function testStringWithoutResultClass()
 	{
-		$cardType = $this->sqlmap->queryForObject("GetStringWithoutResultClass", 1);
+		$cardType = self::$sqlmap->queryForObject("GetStringWithoutResultClass", 1);
 		$this->assertSame("VISA", $cardType);
 	}
 	/**/
