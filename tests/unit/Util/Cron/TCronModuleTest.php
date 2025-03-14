@@ -668,10 +668,10 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 	public function testRunTask()
 	{
 		{ // no UserManager
-			$jobs = [['name' => 'testTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
+			$jobs = [['name' => 'testRunTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
-			$task = $this->obj->getTask('testTask1');
+			$task = $this->obj->getTask('testRunTask1');
 			self::assertTrue($task->executingUser === null || $task->executingUser === 'Guest');
 		}
 		
@@ -683,11 +683,11 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		$app->setUser($user);
 		
 		{ // without UserManager, current user is task executor, and needs to restore.
-			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
+			$jobs = [['name' => 'testRunTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
 			$this->obj = new $this->baseClass();
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
-			$task = $this->obj->getTask('testTask2');
+			$task = $this->obj->getTask('testRunTask2');
 			self::assertEquals('Guest', $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
@@ -700,44 +700,44 @@ class TCronModuleTest extends PHPUnit\Framework\TestCase
 		
 		{	//app user is restored 
 			//Task with no user ID, default module user
-			$jobs = [['name' => 'testTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
+			$jobs = [['name' => 'testRunTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
-			$task = $this->obj->getTask('testTask1');
+			$task = $this->obj->getTask('testRunTask1');
 			self::assertEquals($this->obj->getDefaultUserName(), $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
 		{	//task with user id
-			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin']];
+			$jobs = [['name' => 'testRunTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
-			$task = $this->obj->getTask('testTask2');
+			$task = $this->obj->getTask('testRunTask2');
 			self::assertEquals('admin', $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
 		
 		{	//task with bad user id
-			$jobs = [['name' => 'testTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
+			$jobs = [['name' => 'testRunTask1', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->init($jobs);
 			self::assertEquals(1, $this->obj->processPendingTasks());
-			$task = $this->obj->getTask('testTask1');
+			$task = $this->obj->getTask('testRunTask1');
 			self::assertEquals($this->obj->getDefaultUserName(), $task->executingUser);
 			self::assertEquals($user, $app->getUser());
 		}
 		
 		{	//task with bad user id, and bad default user id
-			$jobs = [['name' => 'testTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
+			$jobs = [['name' => 'testRunTask2', 'schedule' => '0 0 1 1 * 2020', 'task' => 'TTestCronUserTask', 'username' => 'admin2']];
 			$this->obj = new $this->baseClass();
 			$this->obj->setUserManager($users);
 			$this->obj->setDefaultUserName('cron2');
 			$this->obj->init($jobs);
-			$task = $this->obj->getTask('testTask2');
+			$task = $this->obj->getTask('testRunTask2');
 			$task->executingUser = null;
 			self::assertEquals(1, $this->obj->processPendingTasks());
 			self::assertEquals('Guest',$task->executingUser);
