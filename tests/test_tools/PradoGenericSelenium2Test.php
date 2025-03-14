@@ -14,7 +14,7 @@ use Facebook\WebDriver\Exception\NoSuchAlertException;
 class PradoGenericSelenium2Test extends PHPUnit\Framework\TestCase
 {
 	public static $serverUrl = 'http://localhost:4444';
-	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $baseurl = 'http://127.0.0.1/prado/tests/FunctionalTests/';
 	public static $driver;
 
 	public static function setUpBeforeClass(): void

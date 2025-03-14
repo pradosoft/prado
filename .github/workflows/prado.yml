@@ -29,7 +29,7 @@ jobs:
         php-versions: ['8.1', '8.2', '8.3']
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
@@ -79,5 +79,6 @@ jobs:
 
       - name: Run Functional Tests
         run: |
-          /usr/local/share/chromedriver-linux64 --port=4444 &
+          php -S 127.0.0.1:80 -t ../ &
+          /usr/local/share/chromedriver-linux64/chromedriver --port=4444 &
           composer functionaltest
