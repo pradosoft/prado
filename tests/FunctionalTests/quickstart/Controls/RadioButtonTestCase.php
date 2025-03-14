@@ -6,7 +6,7 @@ class QuickstartRadioButtonTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TRadioButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// a regular radiobutton
 		$this->byXPath("//input[@name='ctl0\$body\$ctl0' and @value='ctl0\$body\$ctl0']")->click();

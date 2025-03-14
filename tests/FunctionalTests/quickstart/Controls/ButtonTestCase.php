@@ -6,7 +6,7 @@ class QuickstartButtonTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// a regular button
 		$this->byXPath("//input[@type='submit' and @value='text']")->click();

@@ -11,7 +11,6 @@ class Issue120TestCase extends PradoGenericSelenium2Test
 		$this->assertSelectedValue("ctl0_Content_ddl1", 'PromptValue');
 
 		$this->byId("ctl0_Content_btn1")->click();
-		$this->pauseFairAmount();
 
 		$this->assertSelectedIndex("ctl0_Content_ddl1", 0);
 		$this->assertSelectedValue("ctl0_Content_ddl1", 'PromptValue');

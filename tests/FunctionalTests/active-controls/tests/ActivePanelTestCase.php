@@ -9,7 +9,6 @@ class ActivePanelTestCase extends PradoGenericSelenium2Test
 		$this->assertSourceContains("Active Panel replacement tests");
 		$this->assertSourceNotContains('Something lalala');
 		$this->byId("div1")->click();
-		$this->pauseFairAmount();
 		$this->assertSourceContains("Something lalala");
 	}
 }

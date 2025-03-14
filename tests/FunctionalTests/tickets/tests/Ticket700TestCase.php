@@ -78,6 +78,6 @@ class Ticket700TestCase extends PradoGenericSelenium2Test
 	public function assertTitleEquals($title)
 	{
 		$this->pause(50);
-		$this->assertEquals($this->title(), $title);
+		$this->assertTitle($title);
 	}
 }

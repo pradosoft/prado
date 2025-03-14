@@ -10,15 +10,11 @@ class PopulateListTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", "");
 
 		$this->byId("{$base}button1")->click();
-		$this->pauseFairAmount();
 		$this->select("{$base}list1", "World");
-		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "list1: World");
 
 		$this->byId("{$base}button2")->click();
-		$this->pauseFairAmount();
 		$this->select("{$base}list2", "Prado");
-		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "list2: Prado");
 	}
 }

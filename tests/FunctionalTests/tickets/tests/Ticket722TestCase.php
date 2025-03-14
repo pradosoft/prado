@@ -1,40 +1,37 @@
 <?php
 
+use Facebook\WebDriver\WebDriverKeys;
+
 class Ticket722TestCase extends PradoGenericSelenium2Test
 {
 	public function test()
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket722');
-		$this->assertEquals($this->title(), "Verifying Ticket 722");
+		$this->assertTitle("Verifying Ticket 722");
 
-		$label = $this->byID("{$base}InPlaceTextBox__label");
-		$this->assertEquals('Editable Text', $label->text());
-		$label->click();
-		$this->pauseFairAmount();
+		$this->assertText("{$base}InPlaceTextBox__label", 'Editable Text');
+		$this->byID("{$base}InPlaceTextBox__label")->click();
 
-		$textbox = $this->byID("{$base}InPlaceTextBox");
-		$this->assertTrue($textbox->displayed());
+		$this->assertVisible("{$base}InPlaceTextBox");
 
 		// calling clear() would trigger an onBlur event on the textbox
 		// so we empty the textbox one char at a time
-		$textbox->click();
-		$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::END);
+		$this->byID("{$base}InPlaceTextBox")->click();
+
+		$this->keys(WebDriverKeys::END);
 		for ($i = 0; $i < 13; ++$i) {
-			$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::BACKSPACE);
+			$this->keys(WebDriverKeys::BACKSPACE);
 		}
 
 		$this->type($base . 'InPlaceTextBox', "Prado");
-		$this->pauseFairAmount();
-		$this->assertFalse($textbox->displayed());
-		$this->assertEquals('Prado', $label->text());
+		$this->assertNotVisible("{$base}InPlaceTextBox");
+		$this->assertText("{$base}InPlaceTextBox__label", 'Prado');
 
 		$this->byId("{$base}ctl0")->click();
-		$this->pauseFairAmount();
-		$this->assertEquals('Prado [Read Only]', $label->text());
+		$this->assertText("{$base}InPlaceTextBox__label", 'Prado [Read Only]');
 
-		$label->click();
-		$this->pauseFairAmount();
-		$this->assertFalse($textbox->displayed());
+		$this->byID("{$base}InPlaceTextBox__label")->click();
+		$this->assertNotVisible("{$base}InPlaceTextBox");
 	}
 }

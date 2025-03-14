@@ -1,5 +1,6 @@
 <?php
 
+use Facebook\WebDriver\WebDriverKeys;
 
 /**
  * Testcase for TJuiDialog
@@ -10,7 +11,7 @@ class JuiDialogTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=JuiControls.Samples.TJuiDialog.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		$this->assertSourceContains('TJuiDialog Samples');
 
@@ -18,20 +19,17 @@ class JuiDialogTestCase extends PradoDemosSelenium2Test
 
 
 		$this->byId("${base}ctl0")->click();
-		$this->pause(500);
 		$this->assertVisible("${base}dlg1");
 
 		$this->active()->click(); // close
 
 
-		$this->assertEmpty($this->byId("${base}lbl3")->text());
+		$this->assertText("${base}lbl3", '');
 		$this->byId("${base}ctl2")->click();
-		$this->pause(500);
 		$this->assertVisible("${base}dlg3");
 
 		// Click OK (by keys...)
-		$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::ENTER);
-		$this->pause(500);
-		$this->assertEquals('Button Ok clicked', $this->byId("${base}lbl3")->text());
+		$this->keys(WebDriverKeys::ENTER);
+		$this->assertText("${base}lbl3", 'Button Ok clicked');
 	}
 }

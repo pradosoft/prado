@@ -6,7 +6,7 @@ class QuickstartMultiViewTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TMultiView.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// view 1 : type in a string
 		$this->assertElementNotPresent('ctl0_body_Result1');

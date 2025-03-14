@@ -46,6 +46,7 @@ class QuickstartRadioButtonListTestCase extends PradoDemosSelenium2Test
 //		$this->pause(1000);
 		$this->assertVisible('ctl0_body_ctl8');
 		$this->type("ctl0\$body\$TextBox", "test");
+		$this->pause(50);
 		$this->byXPath("//input[@name='ctl0\$body\$ctl9' and @value='Disagree']")->click();
 		$this->assertNotVisible('ctl0_body_ctl8');
 	}

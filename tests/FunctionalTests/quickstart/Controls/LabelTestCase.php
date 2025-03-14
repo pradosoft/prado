@@ -6,7 +6,7 @@ class QuickstartLabelTestCase extends PradoDemosSelenium2Test
 	public function test()
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TLabel.Home&amp;notheme=true&amp;lang=en");
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 		$this->assertSourceContains("This is a label with customized color and font.");
 		$this->assertSourceContains("This is a form label associated with the TTextBox control below");
 		$this->assertSourceContains("This is a label with empty Text property and <b>nonempty body</b>");

@@ -50,6 +50,7 @@ class CheckBoxTestCase extends PradoGenericSelenium2Test
 
 		// verify the third validator shows the error
 		$this->byId("ctl0_Content_ctl5")->click();
+		$this->pause(50);
 		$this->assertNotVisible('ctl0_Content_ctl0');
 		$this->assertNotVisible('ctl0_Content_ctl2');
 		$this->assertVisible('ctl0_Content_ctl4');

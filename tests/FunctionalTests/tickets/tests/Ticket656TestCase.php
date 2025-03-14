@@ -6,11 +6,10 @@ class Ticket656TestCase extends PradoGenericSelenium2Test
 	{
 		$base = 'ctl0_Content_';
 		$this->url('tickets/index.php?page=Ticket656');
-		$this->assertEquals($this->title(), "Verifying Ticket 656");
+		$this->assertTitle("Verifying Ticket 656");
 
 		// First test, current date
 		$this->byId($base . "btnUpdate")->click();
-		$this->pauseFairAmount();
 		$this->assertText($base . "lblStatus", date("d-m-Y"));
 
 		// Then, set another date
@@ -19,7 +18,6 @@ class Ticket656TestCase extends PradoGenericSelenium2Test
 		$this->select($base . "datePicker_month", 10);
 		$this->select($base . "datePicker_year", $year);
 		$this->byId($base . "btnUpdate")->click();
-		$this->pauseFairAmount();
 		$this->assertText($base . "lblStatus", date("d-m-Y", mktime(0, 0, 0, 10, 20, $year)));
 	}
 }

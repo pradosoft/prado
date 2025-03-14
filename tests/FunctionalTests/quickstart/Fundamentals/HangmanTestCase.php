@@ -5,7 +5,7 @@ class QuickstartHangmanTestCase extends PradoDemosSelenium2Test
 	public function test()
 	{
 		$this->url("quickstart/index.php?page=Fundamentals.Samples.Hangman.Home&amp;notheme=true&amp;lang=en");
-		$this->assertEquals("Hangman Game", $this->title());
+		$this->assertTitle("Hangman Game");
 		$this->assertSourceContains("Medium game; you are allowed 5 misses.");
 		$this->byXPath("//input[@type='submit' and @value='Play!']")->click();
 		$this->assertSourceContains("You must choose a difficulty level");

@@ -32,7 +32,7 @@ class BasicI18NTestCase extends PradoGenericSelenium2Test
 
 	function testI18N()
 	{
-		$this->assertEquals("Basic I18N Test", $this->title());
+		$this->assertTitle("Basic I18N Test");
 		$this->assertSourceContains("Hello");
 		$this->assertContains("US$10,000.00", $this->source());
 		$this->assertSourceContains("2006年1月15日 上午12时00分00秒");

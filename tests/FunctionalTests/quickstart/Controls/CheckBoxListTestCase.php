@@ -50,6 +50,7 @@ class QuickstartCheckBoxListTestCase extends PradoDemosSelenium2Test
 		$this->byXPath("//input[@name='ctl0\$body\$ctl9\$c0' and @value='Agree']")->click();
 		$this->assertVisible('ctl0_body_ctl8');
 		$this->type("ctl0\$body\$TextBox", "test");
+		$this->pause(50);
 		$this->byXPath("//input[@name='ctl0\$body\$ctl9\$c0' and @value='Agree']")->click();
 		$this->assertNotVisible('ctl0_body_ctl8');
 	}

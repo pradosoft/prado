@@ -22,6 +22,7 @@ class ImageButtonTestCase extends PradoGenericSelenium2Test
 		$this->pause(500);
 		$this->assertSourceNotContains('Button1 is clicked');
 		$this->type("ctl0_Content_TextBox1", "test");
+		$this->pause(50);
 		$this->byId("ctl0_Content_ctl1")->click();
 		$this->assertNotVisible('ctl0_Content_ctl0');
 		$this->assertNotVisible('ctl0_Content_ctl2');

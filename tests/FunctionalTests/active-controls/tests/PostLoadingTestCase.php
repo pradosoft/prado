@@ -18,7 +18,6 @@ class PostLoadingTestCase extends PradoGenericSelenium2Test
 		$this->byId("{$base}MyButton");
 		$this->byId("{$base}MyButton")->click();
 
-		$this->pauseFairAmount();
 		$this->assertSourceContains('Result is Hello World');
 	}
 }

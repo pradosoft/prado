@@ -6,7 +6,7 @@ class QuickstartImageButtonTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TImageButton.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// a click button
 		$this->byXPath("//input[@type='image' and @alt='hello world']")->click();

@@ -9,13 +9,11 @@ class Ticket659TestCase extends PradoGenericSelenium2Test
 		$this->url('tickets/index.php?page=ToggleTest');
 		$this->assertText("${base}lbl", "Down");
 		$this->byId("${base}btn")->click();
-		$this->pauseFairAmount();
 		$this->assertText("${base}lbl", "Up");
 		// Extended component (not working)
 		$this->url('tickets/index.php?page=Ticket659');
 		$this->assertText("${base}lbl", "Down");
 		$this->byId("${base}btn")->click();
-		$this->pauseFairAmount();
 		$this->assertText("${base}lbl", "Up");
 	}
 }

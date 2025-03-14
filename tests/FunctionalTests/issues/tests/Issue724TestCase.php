@@ -15,7 +15,6 @@ class Issue724TestCase extends PradoGenericSelenium2Test
 		$base = 'ctl0_Content_';
 
 		$this->byID("{$base}cmdA")->click();
-		$this->pauseFairAmount();
 		$this->byID("{$base}cmdB")->click();
 		sleep(6);
 		$this->assertText("{$base}labelA", "Button A Pressed");

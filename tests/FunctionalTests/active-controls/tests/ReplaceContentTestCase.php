@@ -14,14 +14,12 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 		$this->type("{$base}content", 'something');
 
 		$this->byId("{$base}btn_append")->click();
-		$this->pauseFairAmount();
 
 		$this->assertText("{$base}subpanel", 'Sub Panel something');
 		$this->assertText("{$base}panel1", "Main Panel\nSub Panel something");
 
 		$this->type("{$base}content", 'more');
 		$this->byId("{$base}btn_prepend")->click();
-		$this->pauseFairAmount();
 
 		$this->assertText("{$base}subpanel", 'more Sub Panel something');
 		$this->assertText("{$base}panel1", "Main Panel\nmore Sub Panel something");
@@ -29,14 +27,12 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 
 		$this->type("{$base}content", 'prado');
 		$this->byId("{$base}btn_before")->click();
-		$this->pauseFairAmount();
 
 		$this->assertText("{$base}subpanel", 'more Sub Panel something');
 		$this->assertText("{$base}panel1", "Main Panel prado\nmore Sub Panel something");
 
 		$this->type("{$base}content", ' php ');
 		$this->byId("{$base}btn_after")->click();
-		$this->pauseFairAmount();
 
 		$this->type("{$base}content", 'mauahahaha');
 		$this->byId("{$base}btn_replace")->click();
@@ -56,14 +52,12 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 			$this->type("{$base}content", 'something');
 
 			$this->byId('btn_append')->click();
-			$this->pauseFairAmount();
 
 			$this->assertText("{$base}subpanel", 'Sub Panel something');
 			$this->assertText("{$base}panel1", 'regexp:Main Panel\s*Sub Panel\s*something');
 
 			$this->type("{$base}content", 'more');
 			$this->byId('btn_prepend')->click();
-			$this->pauseFairAmount();
 
 			$this->assertText("{$base}subpanel", 'regexp:more\s*Sub Panel\s*something');
 			$this->assertText("{$base}panel1", 'regexp:Main Panel\s*moreSub Panel\s*something');
@@ -71,14 +65,12 @@ class ReplaceContentTestCase extends PradoGenericSelenium2Test
 
 			$this->type("{$base}content", 'prado');
 			$this->byId('btn_before')->click();
-			$this->pauseFairAmount();
 
 			$this->assertText("{$base}subpanel", 'regexp:more\s*Sub Panel\s*something');
 			$this->assertText("{$base}panel1", 'regexp:Main Panel\s*prado\s*more\s*Sub Panel\s*something');
 
 			$this->type("{$base}content", ' php ');
 			$this->byId('btn_after')->click();
-			$this->pauseFairAmount();
 
 			$this->type("{$base}content", 'mauahahaha');
 			$this->byId('btn_replace')->click();

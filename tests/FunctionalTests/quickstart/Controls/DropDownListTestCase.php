@@ -6,7 +6,7 @@ class QuickstartDropDownListTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TDropDownList.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// dropdown list with default settings
 		$this->assertElementPresent("ctl0\$body\$ctl0");

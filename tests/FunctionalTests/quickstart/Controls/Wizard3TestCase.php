@@ -6,7 +6,7 @@ class QuickstartWizard3TestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TWizard.Sample3&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// step 1
 		$this->assertSourceContains('A Mini Survey');

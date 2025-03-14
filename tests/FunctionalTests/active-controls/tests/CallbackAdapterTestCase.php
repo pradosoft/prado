@@ -14,13 +14,9 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 		$this->acceptAlert();
 
 		$this->byId("{$base}test6")->click();
-		$this->pauseFairAmount();
 		$this->byId("{$base}test7")->click();
-		$this->pauseFairAmount();
 		$this->byId("{$base}test8")->click();
-		$this->pauseFairAmount();
 		$this->byId("{$base}test9")->click();
-		$this->pauseFairAmount();
 
 		$this->byId("{$base}button1")->click();
 		$this->pause(50);
@@ -46,13 +42,9 @@ class CallbackAdapterTestCase extends PradoGenericSelenium2Test
 			$this->acceptAlert();
 
 			$this->byId('test6')->click();
-			$this->pauseFairAmount();
-			$this->byId('test7')->click();
-			$this->pauseFairAmount();
-			$this->byId('test8')->click();
-			$this->pauseFairAmount();
-			$this->byId('test9')->click();
-			$this->pauseFairAmount();
+				$this->byId('test7')->click();
+				$this->byId('test8')->click();
+				$this->byId('test9')->click();
 
 			$this->byId("{$base}button1")->click();
 			$this->assertEquals('haha!', $this->alertText());

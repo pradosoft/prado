@@ -10,7 +10,6 @@ class TextBoxCallbackTestCase extends PradoGenericSelenium2Test
 		$this->assertText("{$base}label1", "Label 1");
 
 		$this->type("{$base}textbox1", "hello!");
-		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Label 1: hello!");
 	}
 }

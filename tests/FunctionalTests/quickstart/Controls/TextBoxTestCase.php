@@ -6,7 +6,7 @@ class QuickstartTextBoxTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=Controls.Samples.TTextBox.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		// a normal textbox
 		$this->type("ctl0\$body\$ctl0", "test");

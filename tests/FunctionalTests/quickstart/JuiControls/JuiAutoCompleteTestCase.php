@@ -10,7 +10,7 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 	{
 		$this->url("quickstart/index.php?page=JuiControls.Samples.TJuiAutoComplete.Home&amp;notheme=true&amp;lang=en");
 
-		$this->assertEquals("PRADO QuickStart Sample", $this->title());
+		$this->assertTitle("PRADO QuickStart Sample");
 
 		$this->assertSourceContains('TJuiAutoComplete Samples');
 
@@ -25,7 +25,6 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 		$this->assertSourceContains('John');
 
 		$this->byCssSelector("#{$base}AutoComplete_result ul li")->click();
-		$this->pauseFairAmount();
 		$this->assertValue("{$base}AutoComplete", "John");
 		$this->assertText("{$base}Selection1", "Selected ID: 1");
 
@@ -34,11 +33,10 @@ class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
 		$this->keys('Joh');
 		$this->pause(500);
 		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();
-		$this->pauseFairAmount();
 		$this->assertValue("{$base}AutoComplete2", "John");
 		$this->assertText("{$base}Selection2", "Selected ID: 1");
 
-		//$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::END);
+		//$this->keys(WebDriverKeys::END);
 		$this->keys(',Ge');
 		$this->pause(500);
 		$this->byCssSelector("#{$base}AutoComplete2_result ul li")->click();

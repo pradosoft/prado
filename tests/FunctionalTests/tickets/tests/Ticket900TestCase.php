@@ -5,7 +5,7 @@ class Ticket900TestCase extends PradoGenericSelenium2Test
 	public function test()
 	{
 		$this->url('tickets/index.php?page=Ticket900');
-		$this->assertEquals($this->title(), "Verifying Ticket 900");
+		$this->assertTitle("Verifying Ticket 900");
 		$base = 'ctl0_Content_';
 
 		$this->byName('ctl0$Content$DataGrid$ctl1$ctl3')->click();

@@ -1,84 +1,45 @@
 <?php
 
-class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverKeys;
+use Facebook\WebDriver\WebDriverSelect;
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\NoAlertOpenException;
+use Facebook\WebDriver\Exception\NoSuchAlertException;
+
+class PradoGenericSelenium2Test extends PHPUnit\Framework\TestCase
 {
-	public static $browsers = [
-/*
-		array(
-			'name'    => 'Firefox on OSX',
-			'browserName' => '*firefox',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
-*/
-		[
-			'name' => 'Chrome on OSX',
-			'browserName' => 'chrome',
-			'sessionStrategy' => 'shared',
-			'host' => '127.0.0.1',
-			'port' => 4444,
-		],
-/*
-		array(
-			'name'    => 'Safari on OSX',
-			'browserName' => 'safari',
-			'sessionStrategy' => 'shared',
-			'host'    => '127.0.0.1',
-			'port'    => 4444,
-		),
-*/
-/*
-		array(
-			'name'    => 'Firefox on WindowsXP',
-			'browserName' => '*firefox',
-			'host'    => '127.0.0.1',
-			'port'    => 4445,
-		),
-		array(
-			'name'    => 'Internet Explorer 8 on WindowsXP',
-			'browserName' => '*iehta',
-			'host'    => '127.0.0.1',
-			'port'    => 4445,
-		)
-*/
-	];
-
+	public static $serverUrl = 'http://localhost:4444';
 	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $driver;
 
-	public static $timeout = 5; //seconds
-
-	protected function setUp(): void
+	public static function setUpBeforeClass(): void
 	{
+		$chromeOptions = new ChromeOptions();
+		//$chromeOptions->addArguments(['--headless']);
+		$capabilities = DesiredCapabilities::chrome();
+		$capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
 
-		// Workaround for https://github.com/giorgiosironi/phpunit-selenium/issues/436
-		$this->setDesiredCapabilities([
-			'goog:chromeOptions' => [
-				'w3c' => false,
-				// 'args' => ['headless'],
-			],
-		]);
-		self::shareSession(true);
-		$this->setBrowserUrl(static::$baseurl);
-		$this->setSeleniumServerRequestsTimeout(static::$timeout);
+		self::$driver = RemoteWebDriver::create(self::$serverUrl, $capabilities);
+	}
+
+	public static function tearDownAfterClass(): void
+	{
+		self::$driver->quit();
 	}
 
 	protected function url($t)
 	{
-		parent::url(static::$baseurl . $t);
+		self::$driver->get(static::$baseurl . $t);
 	}
 
-	protected function assertAttribute($idattr, $txt)
+	protected function refresh()
 	{
-		[$id, $attr] = explode('@', $idattr);
-
-		$element = $this->getElement($id);
-		$value = $element->attribute($attr);
-
-		if (strpos($txt, 'regexp:') === 0) {
-			$this->assertMatchesRegularExpression('/' . substr($txt, 7) . '/', $value);
-		} else {
-			$this->assertEquals($txt, $value);
-		}
+		self::$driver->navigate()->refresh();
 	}
 
 	protected function getElement($id)
@@ -88,115 +49,202 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 		} elseif (strpos($id, 'name=') === 0) {
 			return $this->byName(substr($id, 5));
 		} elseif (strpos($id, '//') === 0) {
-			return $this->byXPath($id);
+			return $this->byXpath($id);
 		} elseif (strpos($id, '$') !== false) {
-			return $this->byName($id);
+			return  $this->byName($id);
 		} else {
 			return $this->byId($id);
 		}
 	}
 
+	private static function WebDriverBy($id)
+	{
+		if (strpos($id, 'id=') === 0) {
+			return WebDriverBy::id(substr($id, 3));
+		} elseif (strpos($id, 'name=') === 0) {
+			return WebDriverBy::name(substr($id, 5));
+		} elseif (strpos($id, '//') === 0) {
+			return WebDriverBy::xpath($id);
+		} elseif (strpos($id, '$') !== false) {
+			return WebDriverBy::name($id);
+		} else {
+			return WebDriverBy::id($id);
+		}
+	}
+
+	protected function byId($id)
+	{
+		return self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id($id))
+		);
+	}
+
+	protected function byName($name)
+	{
+		return self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name($name))
+		);
+	}
+
+	protected function byCssSelector($css)
+	{
+		return self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($css))
+		);
+	}
+
+	protected function byXPath($xpath)
+	{
+		return self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::xpath($xpath))
+		);
+	}
+
+	protected function byLinkText($text)
+	{
+		return self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($text))
+		);
+	}
+
+	protected function source()
+	{
+		return self::$driver->getPageSource();
+	}
+
+	protected function assertTitle($title)
+	{
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::titleIs($title)
+		));
+	}
+
+	protected function moveto($element)
+	{
+		self::$driver->getMouse()->mouseMove($element->getCoordinates());
+	}
+
+	protected function keys($keys)
+	{
+		self::$driver->getKeyboard()->sendKeys($keys);
+	}
+
 	protected function assertText($id, $txt)
 	{
-		$this->assertEquals($txt, $this->getElement($id)->text());
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::elementTextIs(self::WebDriverBy($id), $txt)
+		));
 	}
 
 	protected function assertValue($id, $txt)
 	{
-		try {
-			$this->assertEquals($txt, $this->getElement($id)->value());
-		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
-			//stale element reference. try second time.
-			$this->pause(50);
-			$this->assertEquals($txt, $this->getElement($id)->value());
-		}
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::textToBePresentInElementValue(self::WebDriverBy($id), $txt)
+		));
+	}
+
+	protected function assertAttribute($idattr, $txt)
+	{
+		[$id, $attr] = explode('@', $idattr);
+
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			function () use ($id, $attr, $txt) {
+				$element = $this->getElement($id);
+				$value = $element->getAttribute($attr);
+
+				if (strpos($txt, 'regexp:') === 0) {
+					return preg_match('/' . substr($txt, 7) . '/', $value) > 0;
+				} else {
+					return $txt === $value;
+				}
+			}
+		));
 	}
 
 	protected function assertVisible($id)
 	{
-		try {
-			$this->assertTrue($this->getElement($id)->displayed());
-		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
-			//stale element reference. try second time.
-			$this->pause(50);
-			$this->assertTrue($this->getElement($id)->displayed());
-		}
+		$this->assertIsObject(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::visibilityOfElementLocated(self::WebDriverBy($id))
+		));
 	}
 
 	protected function assertNotVisible($id)
 	{
-		try {
-			$this->assertFalse($this->getElement($id)->displayed());
-		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
-			//stale element reference. try second time.
-			$this->pause(50);
-			$this->assertFalse($this->getElement($id)->displayed());
-		}
+		$this->pause(50);
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::invisibilityOfElementLocated(self::WebDriverBy($id))
+		));
 	}
 
 	protected function assertElementPresent($id)
 	{
-		$this->assertTrue($this->getElement($id) !== null);
+		$this->assertIsObject(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::presenceOfElementLocated(self::WebDriverBy($id))
+		));
 	}
 
 	protected function assertElementNotPresent($id)
 	{
+		// wait until element is not visible
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::invisibilityOfElementLocated(self::WebDriverBy($id))
+		));
+
+		// ensure it's not present
 		try {
-			$el = $this->getElement($id);
-		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
-			$this->assertEquals(\PHPUnit\Extensions\Selenium2TestCase\WebDriverException::NoSuchElement, $e->getCode());
-			return;
-		} catch (\InvalidArgumentException $e) {
-			$this->assertEquals('Element not found.', $e->getMessage());
+			$el = self::$driver->findElement(self::WebDriverBy($id));
+		} catch (\Facebook\WebDriver\Exception\NoSuchElementException $e) {
 			return;
 		}
+
+		// fail if the method did not return
 		$this->fail('The element ' . $id . ' shouldn\'t exist.');
+	}
+
+	protected function click($id)
+	{
+		$this->pause(50);
+		self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::elementToBeClickable(self::WebDriverBy($id))
+		)->click();
 	}
 
 	protected function type($id, $txt = '')
 	{
+		$this->pause(50);
 		$element = $this->getElement($id);
 		$element->clear();
-		$element->value($txt);
-		// trigger onblur() event
-		$this->byCssSelector('body')->click();
+		$element->sendKeys($txt);
+		// trigger onblur() event: click outside the element (to avoid datepicker popups causing a change to value)
+		self::$driver->findElement(WebDriverBy::tagName('body'))->click();
 	}
 
 	protected function typeSpecial($id, $txt = '')
 	{
 		$element = $this->getElement($id);
-		// clear the textbox without using clear() that triggers onchange()
-		// the idea is to focus the input, move to the end of the text and hit
-		// backspace until the input is empty.
-		// on multiline textareas, line feeds can make this difficult, so we mix
-		// sequences of end+backspace and start+delete
-
-		$element->click();
-		while (strlen($element->value()) > 0) {
-			$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::END);
-			// the number 100 is purely empiric
-			for ($i = 0;$i < 100;$i++) {
-				$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::BACKSPACE);
-			}
-
-			$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::HOME);
-			// the number 100 is purely empiric
-			for ($i = 0;$i < 100;$i++) {
-				$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::DELETE);
-			}
+		$element->sendKeys(WebDriverKeys::END);
+		for($i = 0; $i < 100; ++$i) {
+			$element->sendKeys(WebDriverKeys::BACKSPACE);
 		}
 
-		$element->value($txt);
-		// trigger onblur() event
-		$this->keys(\PHPUnit\Extensions\Selenium2TestCase\Keys::TAB);
+		$element->sendKeys($txt);
+		// trigger onblur() event: send tab key
+		$element->sendKeys(WebDriverKeys::TAB);
+	}
+
+	protected function executeScript($script, $args)
+	{
+		self::$driver->executeScript($script, $args);
 	}
 
 	protected function select($id, $value)
 	{
-		$select = parent::select($this->getElement($id));
-		$select->clearSelectedOptions();
+		$select = new WebDriverSelect($this->getElement($id));
+		if($select->isMultiple()) {
+			$select->deselectAll();
+		}
 
-		$select->selectOptionByLabel($value);
+		$select->selectByVisibleText($value);
 	}
 
 	protected function selectAndWait($id, $value)
@@ -206,23 +254,33 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 
 	protected function addSelection($id, $value)
 	{
-		parent::select($this->getElement($id))->selectOptionByLabel($value);
+		$select = new WebDriverSelect($this->getElement($id));
+		$select->selectByVisibleText($value);
 	}
 
 	protected function getSelectedLabels($id)
 	{
-		return parent::select($this->getElement($id))->selectedLabels();
+		$select = new WebDriverSelect($this->getElement($id));
+		$selectedOptions = $select->getAllSelectedOptions();
+		return array_map(function($n) {
+			return $n->getText();
+		}, $selectedOptions);
 	}
 
 	protected function getSelectOptions($id)
 	{
-		return parent::select($this->getElement($id))->selectOptionLabels();
+		$select = new WebDriverSelect($this->getElement($id));
+		$options = $select->getOptions();
+		return array_map(function($n) {
+			return $n->getText();
+		}, $options);
 	}
 
 	protected function assertSelectedIndex($id, $value)
 	{
-		$options = parent::select($this->getElement($id))->selectOptionValues();
-		$curval = parent::select($this->getElement($id))->selectedValue();
+		$options = $this->getSelectOptions($id);
+		$select = new WebDriverSelect($this->getElement($id));
+		$curval = $select->getFirstSelectedOption()->getText();
 
 		$i = 0;
 		foreach ($options as $option) {
@@ -237,28 +295,91 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 
 	protected function assertSelected($id, $label)
 	{
-		$this->assertSame($label, parent::select($this->getElement($id))->selectedLabel());
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			function () use ($id, $label) {
+				$select = new WebDriverSelect($this->getElement($id));
+				return $label === $select->getFirstSelectedOption()->getText();
+			}
+		));
+	}
+
+	protected function assertSelectedMultiple($id, $labelsArr)
+	{
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			function () use ($id, $labelsArr) {
+				$select = new WebDriverSelect($this->getElement($id));
+				$selectedOptions = $select->getAllSelectedOptions();
+				$selectedLabels = array_map(function($n) {
+					return $n->getText();
+				}, $selectedOptions);
+				return $labelsArr === $selectedLabels;
+			}
+		));
 	}
 
 	protected function assertNotSomethingSelected($id)
 	{
-		$this->assertSame([], $this->getSelectedLabels($id));
+		$select = new WebDriverSelect($this->byId($id));
+		$this->assertSame([], $select->getAllSelectedOptions());
 	}
 
-	protected function assertSelectedValue($id, $index)
+	protected function assertSelectedValue($id, $value)
 	{
-		$this->assertSame($index, parent::select($this->getElement($id))->selectedValue());
+		$select = new WebDriverSelect($this->byId($id));
+		$this->assertSame($value, $select->getFirstSelectedOption()->getAttribute('value'));
+	}
+
+	protected function assertChecked($id)
+	{
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::elementSelectionStateToBe(self::WebDriverBy($id), true)
+		));
+	}
+
+	protected function assertNotChecked($id)
+	{
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::elementSelectionStateToBe(self::WebDriverBy($id), false)
+		));
+	}
+
+	protected function alertText()
+	{
+		return self::$driver->switchTo()->alert()->getText();
+	}
+
+	protected function acceptAlert()
+	{
+		return self::$driver->switchTo()->alert()->accept();
+	}
+
+	protected function dismissAlert()
+	{
+		return self::$driver->switchTo()->alert()->dismiss();
+	}
+
+	protected function assertAlertPresent()
+	{
+		$this->assertTrue(self::$driver->wait(5, 200)->until(
+			WebDriverExpectedCondition::alertIsPresent()
+		));
 	}
 
 	protected function assertAlertNotPresent()
 	{
 		try {
 			$foo = $this->alertText();
-		} catch (\PHPUnit\Extensions\Selenium2TestCase\WebDriverException $e) {
-			$this->assertEquals(\PHPUnit\Extensions\Selenium2TestCase\WebDriverException::NoAlertOpenError, $e->getCode());
+		} catch (\Facebook\WebDriver\Exception\NoAlertOpenException $e) {
+			return;
+		} catch (\Facebook\WebDriver\Exception\NoSuchAlertException $e) {
 			return;
 		}
 		$this->fail('Failed asserting no alert is open');
+	}
+
+	protected function active()
+	{
+		return self::$driver->switchTo()->activeElement();
 	}
 
 	protected function pause($msec)
@@ -266,29 +387,24 @@ class PradoGenericSelenium2Test extends \PHPUnit\Extensions\Selenium2TestCase
 		usleep($msec * 1000);
 	}
 
-	protected function pauseFairAmount()
-	{
-		usleep(100000);
-	}
-
 	protected function assertSourceContains($text)
 	{
-		$found = strpos($this->source(), $text) !== false;
-		for ($i = 0;$i < 10 && ! $found; $i++) {
-			$this->pause(20);
-			$found = strpos($this->source(), $text) !== false;
-		}
+		$found = self::$driver->wait(5, 200)->until(
+			function () use ($text) {
+				return strpos(self::$driver->getPageSource(), $text) !== false;
+			}
+		);
 		$this->assertTrue($found, "Failed asserting that page source contains $text");
 	}
 
 	protected function assertSourceNotContains($text)
 	{
-		$found = strpos($this->source(), $text) !== false;
-		for ($i = 0;$i < 10 && $found; $i++) {
-			$this->pause(20);
-			$found = strpos($this->source(), $text) !== false;
-		}
-		$this->assertFalse($found, "Failed asserting that page source does not contain $text");
+		$notFound = self::$driver->wait(5, 200)->until(
+			function () use ($text) {
+				return strpos(self::$driver->getPageSource(), $text) === false;
+			}
+		);
+		$this->assertTrue($notFound, "Failed asserting that page source does not contain $text");
 	}
 }
 

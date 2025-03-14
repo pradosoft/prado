@@ -27,10 +27,13 @@ class QuickstartBulletedListTestCase extends PradoDemosSelenium2Test
 
 		// verify linkbutton list
 		$this->byId("ctl0_body_ctl40")->click();
+		$this->pause(50);
 		$this->assertSourceContains("You clicked google : http://www.google.com/.");
 		$this->byId("ctl0_body_ctl41")->click();
+		$this->pause(50);
 		$this->assertSourceContains("You clicked yahoo : http://www.yahoo.com/.");
 		$this->byId("ctl0_body_ctl42")->click();
+		$this->pause(50);
 		$this->assertSourceContains("You clicked amazon : http://www.amazon.com/.");
 	}
 }

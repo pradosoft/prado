@@ -5,7 +5,7 @@ class Ticket876TestCase extends PradoGenericSelenium2Test
 	public function test()
 	{
 		$this->url('tickets/index.php?page=Ticket876');
-		$this->assertEquals($this->title(), "Verifying Ticket 876");
+		$this->assertTitle("Verifying Ticket 876");
 		$base = 'ctl0_Content_';
 
 		$this->assertElementPresent('//link[@rel="stylesheet"]');

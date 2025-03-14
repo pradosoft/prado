@@ -11,7 +11,6 @@ class CustomTemplateTestCase extends PradoGenericSelenium2Test
 
 		$this->type("{$base}foo", 'Foo Bar!');
 		$this->byId("{$base}button2")->click();
-		$this->pauseFairAmount();
 
 		$this->assertVisible("{$base}ctl0_ThePanel");
 		$this->assertSourceContains("Client ID: {$base}ctl0_ThePanel");

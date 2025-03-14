@@ -12,12 +12,10 @@ class NestedActiveControlsTestCase extends PradoGenericSelenium2Test
 		$this->assertSourceNotContains("Label 3");
 
 		$this->byId("div1")->click();
-		$this->pauseFairAmount();
 		$this->assertSourceContains("Something lalala");
 		$this->assertText("{$base}label3", "Label 3");
 
 		$this->byId("{$base}button1")->click();
-		$this->pauseFairAmount();
 		$this->assertText("{$base}label1", "Label 1: Button 1 Clicked");
 		$this->assertText("{$base}label2", "Label 2: Button 1 Clicked");
 		$this->assertText("{$base}label3", "Label 3: Button 1 Clicked");
