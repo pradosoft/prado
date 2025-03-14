@@ -79,6 +79,6 @@ jobs:
 
       - name: Run Functional Tests
         run: |
-          php -S 127.0.0.1:80 -t ../ &
+          sudo php -S 127.0.0.1:80 -t ../ &
           /usr/local/share/chromedriver-linux64/chromedriver --port=4444 &
           composer functionaltest
