@@ -13,7 +13,7 @@ use Facebook\WebDriver\Exception\NoSuchAlertException;
 
 class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 {
-	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
+	public static $baseurl = 'http://127.0.0.1/prado/tests/FunctionalTests/';
 	public static $driver;
 	protected static $timeout = 5; // secs
 	protected static $polltime = 200; // msecs
