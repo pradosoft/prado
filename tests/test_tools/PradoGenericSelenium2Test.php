@@ -15,6 +15,8 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 {
 	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
 	public static $driver;
+	protected static $timeout = 5; // secs
+	protected static $polltime = 200; // msecs
 
 	public static function setUpBeforeClass(): void
 	{
@@ -29,6 +31,13 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 	protected function refresh()
 	{
 		self::$driver->navigate()->refresh();
+	}
+
+	protected static function waitForAjaxCalls()
+	{
+		self::$driver->wait(self::$timeout, self::$polltime)->until(function () {
+			return !self::$driver->executeScript('return typeof jQuery === "undefined" || jQuery.active');
+		});
 	}
 
 	protected function getElement($id)
@@ -63,35 +72,35 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function byId($id)
 	{
-		return self::$driver->wait(5, 200)->until(
+		return self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id($id))
 		);
 	}
 
 	protected function byName($name)
 	{
-		return self::$driver->wait(5, 200)->until(
+		return self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::name($name))
 		);
 	}
 
 	protected function byCssSelector($css)
 	{
-		return self::$driver->wait(5, 200)->until(
+		return self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($css))
 		);
 	}
 
 	protected function byXPath($xpath)
 	{
-		return self::$driver->wait(5, 200)->until(
+		return self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::xpath($xpath))
 		);
 	}
 
 	protected function byLinkText($text)
 	{
-		return self::$driver->wait(5, 200)->until(
+		return self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($text))
 		);
 	}
@@ -103,7 +112,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertTitle($title)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::titleIs($title)
 		));
 	}
@@ -120,14 +129,14 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertText($id, $txt)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::elementTextIs(self::WebDriverBy($id), $txt)
 		));
 	}
 
 	protected function assertValue($id, $txt)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::textToBePresentInElementValue(self::WebDriverBy($id), $txt)
 		));
 	}
@@ -136,7 +145,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 	{
 		[$id, $attr] = explode('@', $idattr);
 
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			function () use ($id, $attr, $txt) {
 				$element = $this->getElement($id);
 				$value = $element->getAttribute($attr);
@@ -152,7 +161,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertVisible($id)
 	{
-		$this->assertIsObject(self::$driver->wait(5, 200)->until(
+		$this->assertIsObject(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::visibilityOfElementLocated(self::WebDriverBy($id))
 		));
 	}
@@ -160,14 +169,14 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 	protected function assertNotVisible($id)
 	{
 		$this->pause(50);
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::invisibilityOfElementLocated(self::WebDriverBy($id))
 		));
 	}
 
 	protected function assertElementPresent($id)
 	{
-		$this->assertIsObject(self::$driver->wait(5, 200)->until(
+		$this->assertIsObject(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::presenceOfElementLocated(self::WebDriverBy($id))
 		));
 	}
@@ -175,7 +184,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 	protected function assertElementNotPresent($id)
 	{
 		// wait until element is not visible
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::invisibilityOfElementLocated(self::WebDriverBy($id))
 		));
 
@@ -196,7 +205,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 	protected function click($id)
 	{
 		$this->pause(50);
-		self::$driver->wait(5, 200)->until(
+		self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::elementToBeClickable(self::WebDriverBy($id))
 		)->click();
 	}
@@ -237,11 +246,6 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 		}
 
 		$select->selectByVisibleText($value);
-	}
-
-	protected function selectAndWait($id, $value)
-	{
-		$this->select($id, $value);
 	}
 
 	protected function addSelection($id, $value)
@@ -287,7 +291,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertSelected($id, $label)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			function () use ($id, $label) {
 				$select = new WebDriverSelect($this->getElement($id));
 				return $label === $select->getFirstSelectedOption()->getText();
@@ -297,7 +301,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertSelectedMultiple($id, $labelsArr)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			function () use ($id, $labelsArr) {
 				$select = new WebDriverSelect($this->getElement($id));
 				$selectedOptions = $select->getAllSelectedOptions();
@@ -323,14 +327,14 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertChecked($id)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::elementSelectionStateToBe(self::WebDriverBy($id), true)
 		));
 	}
 
 	protected function assertNotChecked($id)
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::elementSelectionStateToBe(self::WebDriverBy($id), false)
 		));
 	}
@@ -352,7 +356,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertAlertPresent()
 	{
-		$this->assertTrue(self::$driver->wait(5, 200)->until(
+		$this->assertTrue(self::$driver->wait(self::$timeout, self::$polltime)->until(
 			WebDriverExpectedCondition::alertIsPresent()
 		));
 	}
@@ -381,7 +385,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertSourceContains($text)
 	{
-		$found = self::$driver->wait(5, 200)->until(
+		$found = self::$driver->wait(self::$timeout, self::$polltime)->until(
 			function () use ($text) {
 				return strpos(self::$driver->getPageSource(), $text) !== false;
 			}
@@ -391,7 +395,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 
 	protected function assertSourceNotContains($text)
 	{
-		$notFound = self::$driver->wait(5, 200)->until(
+		$notFound = self::$driver->wait(self::$timeout, self::$polltime)->until(
 			function () use ($text) {
 				return strpos(self::$driver->getPageSource(), $text) === false;
 			}

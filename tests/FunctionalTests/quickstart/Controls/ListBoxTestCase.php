@@ -23,7 +23,7 @@ class QuickstartListBoxTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 
 		// an auto postback single selection list box
 		$this->assertStringNotContainsString("Your selection is: (Index: 2, Value: value 3, Text: item 3)", $this->source());
-		$this->selectAndWait("ctl0\$body\$ctl4", "item 3");
+		$this->select("ctl0\$body\$ctl4", "item 3");
 		$this->assertSourceContains("Your selection is: (Index: 2, Value: value 3, Text: item 3)");
 
 		// a single selection list box upon postback
@@ -51,15 +51,15 @@ class QuickstartListBoxTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 		$this->assertText("ctl0_body_MultiSelectionResult", "Your selection is: (Index: 0, Value: value 1, Text: item 1)(Index: 1, Value: value 2, Text: item 2)(Index: 3, Value: value 4, Text: item 4)");
 
 		// Databind to an integer-indexed array
-		$this->selectAndWait("ctl0\$body\$DBListBox1[]", "item 3");
+		$this->select("ctl0\$body\$DBListBox1[]", "item 3");
 		$this->assertSourceContains("Your selection is: (Index: 2, Value: 2, Text: item 3)");
 
 		// Databind to an associative array
-		$this->selectAndWait("ctl0\$body\$DBListBox2[]", "item 2");
+		$this->select("ctl0\$body\$DBListBox2[]", "item 2");
 		$this->assertSourceContains("Your selection is: (Index: 1, Value: key 2, Text: item 2)");
 
 		// Databind with DataTextField and DataValueField specified
-		$this->selectAndWait("ctl0\$body\$DBListBox3[]", "Cary");
+		$this->select("ctl0\$body\$DBListBox3[]", "Cary");
 		$this->assertSourceContains("Your selection is: (Index: 2, Value: 003, Text: Cary)");
 
 		// List box is being validated
@@ -75,7 +75,7 @@ class QuickstartListBoxTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 		$this->select("ctl0\$body\$VListBox2", "Agree");
 		$this->assertVisible('ctl0_body_ctl12');
 		$this->type("ctl0\$body\$TextBox", "test");
-		$this->selectAndWait("ctl0\$body\$VListBox2", "Disagree");
+		$this->select("ctl0\$body\$VListBox2", "Disagree");
 		$this->assertNotVisible('ctl0_body_ctl12');
 	}
 }

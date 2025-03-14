@@ -44,12 +44,12 @@ class QuickstartPagerTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 		$this->assertSourceNotContains('ITN005');
 
 		$this->assertSelected("ctl0_body_Pager3_ctl0", "2");
-		$this->selectAndWait("ctl0_body_Pager3_ctl0", "5");
+		$this->select("ctl0_body_Pager3_ctl0", "5");
 		$this->assertSourceContains('ITN009');
 		$this->assertSourceContains('ITN010');
 		$this->assertSourceNotContains('ITN008');
 		$this->assertSourceNotContains('ITN011');
-		$this->selectAndWait("ctl0_body_Pager3_ctl0", "10");
+		$this->select("ctl0_body_Pager3_ctl0", "10");
 		$this->assertSourceContains('ITN019');
 		$this->assertSourceNotContains('ITN018');
 	}
