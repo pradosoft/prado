@@ -73,6 +73,11 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
           composer unittest
+
+      - name: Run Functional Tests
+        run: |
+          /usr/local/share/chromedriver-linux64 --port=4444 &
+          composer functionaltest

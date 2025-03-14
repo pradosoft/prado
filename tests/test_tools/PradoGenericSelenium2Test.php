@@ -20,7 +20,7 @@ class PradoGenericSelenium2Test extends PHPUnit\Framework\TestCase
 	public static function setUpBeforeClass(): void
 	{
 		$chromeOptions = new ChromeOptions();
-		//$chromeOptions->addArguments(['--headless']);
+		$chromeOptions->addArguments(['--headless']);
 		$capabilities = DesiredCapabilities::chrome();
 		$capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
 
