@@ -43,17 +43,18 @@ class PradoGenericSelenium2TestSession
 
 	public static function startDriver(): void
 	{
+		/*
 		$chromeOptions = new ChromeOptions();
 		$chromeOptions->addArguments(['--headless']);
 		$capabilities = DesiredCapabilities::chrome();
 		$capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
+		*/
 
-/*
 		$firefoxOptions = new FirefoxOptions();
 		$firefoxOptions->addArguments(['-headless']);
 		$capabilities = DesiredCapabilities::firefox();
 		$capabilities->setCapability(FirefoxOptions::CAPABILITY, $firefoxOptions);
-*/
+
 		self::$driver = RemoteWebDriver::create(self::$serverUrl, $capabilities);
 	}
 

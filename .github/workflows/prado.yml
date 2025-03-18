@@ -29,7 +29,7 @@ jobs:
         php-versions: ['8.1', '8.2', '8.3']
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
@@ -73,6 +73,25 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
           composer unittest
+
+      - name: Prepare infrastructure for Functional Tests
+        run: |
+          git clone https://github.com/pradosoft/prado-demos ../prado-demos
+          composer update -d ../prado-demos
+          rm -rf ../prado-demos/vendor/pradosoft/prado
+          ln -s "$(pwd)" ../prado-demos/vendor/pradosoft/prado
+          ls -l ../prado-demos/vendor/pradosoft
+          sudo php -q -S 127.0.0.1:80 -t ../ &
+          #/usr/local/share/chromedriver-linux64/chromedriver --port=4444 &
+          /usr/local/share/gecko_driver/geckodriver &> /dev/null &
+          sleep 10
+
+      - name: Run Functional Tests
+        run: |
+          composer functionaltest
+
+
+
