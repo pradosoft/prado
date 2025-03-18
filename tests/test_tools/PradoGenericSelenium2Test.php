@@ -1,36 +1,24 @@
 <?php
 
 namespace Prado\Tests;
+
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverSelect;
-use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\NoAlertOpenException;
 use Facebook\WebDriver\Exception\NoSuchAlertException;
 
 class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 {
-	public static $serverUrl = 'http://localhost:4444';
 	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
 	public static $driver;
 
 	public static function setUpBeforeClass(): void
 	{
-		$chromeOptions = new ChromeOptions();
-		//$chromeOptions->addArguments(['--headless']);
-		$capabilities = DesiredCapabilities::chrome();
-		$capabilities->setCapability(ChromeOptions::CAPABILITY_W3C, $chromeOptions);
-
-		self::$driver = RemoteWebDriver::create(self::$serverUrl, $capabilities);
-	}
-
-	public static function tearDownAfterClass(): void
-	{
-		self::$driver->quit();
+		self::$driver = \Prado\Tests\PradoGenericSelenium2TestSession::getDriver();
 	}
 
 	protected function url($t)
@@ -190,6 +178,9 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 		$this->assertTrue(self::$driver->wait(5, 200)->until(
 			WebDriverExpectedCondition::invisibilityOfElementLocated(self::WebDriverBy($id))
 		));
+
+		// introduce an hardcoded wait to avoid false positives
+		$this->pause(50);
 
 		// ensure it's not present
 		try {

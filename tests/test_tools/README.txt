@@ -1,6 +1,7 @@
 == PRADO Functional Tests ==
 
-Functional tests are browser based that tests the overall functional of a Prado application. The tests can be written in PHP, see "framework/..." within this directory to see some examples. To run the tests, open your browser to "../tests/FunctionalTests/index.php" and click on the "All" button.
+Functional tests are browser based that tests the overall functional of a Prado application. The tests can be written in PHP, see "framework/..." within this directory to see some examples. To run the tests, run
+`composer functionaltest`
 
 
 === Writing Tests ===
@@ -10,11 +11,11 @@ testExample1.php
 
 <php>
 <?php
-class testExample1 extends SeleniumTestCase
+class testExample1 extends \Prado\Tests\PradoGenericSelenium2Test
 {
-	function setup()
+	protected function setUp(): void
 	{
-		$this->open('../examples/myexample/index.php');
+		$this->url('../examples/myexample/index.php');
 	}
 
 	function testButtonClickExample()
@@ -43,15 +44,15 @@ class MyButtonExample extends TPage
 }
 
 
-class testMyButtonExample extends SeleniumTestCase
+class testMyButtonExample extends \Prado\Tests\PradoGenericSelenium2Test
 {
-	function setup()
+	protected function setUp(): void
 	{
 		//get the test page url
 		$page = Prado::getApplication()->getTestPage(__FILE__);
 
 		//open MyButtonExample page
-		$this->open($page);
+		$this->url($page);
 	}
 
 	function testButtonClick()
@@ -72,7 +73,13 @@ File: MyButtonExample.tpl
 </com:TForm>
 </prado>
 
+== Command Reference ==
+Please refer to https://github.com/php-webdriver/php-webdriver/wiki for a complete overview of available commands.
+The PradoGenericSelenium2Test incudes some glue methods used to port tests from the old Selenium syntax to the new WebDriver syntax that may be useful also in new tests.
+
+
 == Selenium Reference ==
+*** NOTE: *** The following documentation refers to the old, Selenium syntax for tests. It's provived only to understand how the old tests works. While some of this sytax is still available in the PradoGenericSelenium2Test class, you may want to ensure you use the new WebDriver syntax for new tests.
 
 A '''command''' is what tells Selenium what to do. Selenium commands come in two 'flavors', '''Actions''' and '''Assertions'''. Each command call has the following syntax
 <php>
@@ -501,30 +508,3 @@ Selenium Checks
             click 	id=delegate
             verifyPrompt 	Delegate to who?
 
-Parameter construction and Variables
-
-    All Selenium command parameters can be constructed using both simple variable substitution as well as full javascript. Both of these mechanisms can access previously stored variables, but do so using different syntax.
-
-    Stored Variables
-
-    The commands store, storeValue and storeText can be used to store a variable value for later access. Internally, these variables are stored in a map called "storedVars", with values keyed by the variable name. These commands are documented in the command reference.
-
-    Variable substitution
-
-    Variable substitution provides a simple way to include a previously stored variable in a command parameter. This is a simple mechanism, by which the variable to substitute is indicated by ${variableName}. Multiple variables can be substituted, and intermixed with static text.
-
-    Example:
-
-        store 	Mr 	title
-        storeValue 	nameField 	surname
-        store 	${title} ${surname} 	fullname
-        type 	textElement 	Full name is: ${fullname}
-
-    Javascript evaluation
-
-    Javascript evaluation provides the full power of javascript in constructing a command parameter. To use this mechanism, the entire parameter value must be prefixed by 'javascript{' with a trailing '}'. The text inside the braces is evaluated as a javascript expression, and can access previously stored variables using the storedVars map detailed above. Note that variable substitution cannot be combined with javascript evaluation.
-
-    Example:
-
-        store 	javascript{'merchant' + (new Date()).getTime()} 	merchantId
-        type 	textElement 	javascript{storedVars['merchantId'].toUpperCase()}

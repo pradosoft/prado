@@ -11,8 +11,13 @@
   <logging>
     <testdoxHtml outputFile="./build/tests/index.html"/>
   </logging>
+  <extensions>
+    <bootstrap class="Prado\Tests\PradoTestListener"/>
+  </extensions>
   <php>
     <!-- selenium test cases can take up to 20 mins -->
     <ini name="max_execution_time" value="1200"/>
+    <ini name="memory_limit" value="1G"/>
+    <const name="PRADO_TEST_RUN" value="true"/>
   </php>
 </phpunit>
