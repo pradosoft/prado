@@ -4,7 +4,7 @@
 /**
  * Testcase for TJuiAutoComplete
  */
-class JuiAutoCompleteTestCase extends PradoDemosSelenium2Test
+class JuiAutoCompleteTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

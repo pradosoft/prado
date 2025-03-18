@@ -1,6 +1,6 @@
 <?php
 
-class ConditionalValidationTestCase extends PradoGenericSelenium2Test
+class ConditionalValidationTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

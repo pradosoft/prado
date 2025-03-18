@@ -1,6 +1,6 @@
 <?php
 
-class ActiveDatePickerTestCase extends PradoGenericSelenium2Test
+class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

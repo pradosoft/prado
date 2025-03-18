@@ -1,6 +1,6 @@
 <?php
 
-class TextBoxGroupValidationTestCase extends PradoGenericSelenium2Test
+class TextBoxGroupValidationTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

@@ -22,7 +22,7 @@ class BasicI18N extends TPage
  * @version $Revision: 1.66 $  $Date: ${DATE} ${TIME} $
  * @package ${package}
  *//*
-class BasicI18NTestCase extends PradoGenericSelenium2Test
+class BasicI18NTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	function setup()
 	{

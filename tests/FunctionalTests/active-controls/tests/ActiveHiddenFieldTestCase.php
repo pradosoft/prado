@@ -1,6 +1,6 @@
 <?php
 
-class ActiveHiddenFieldTestCase extends PradoGenericSelenium2Test
+class ActiveHiddenFieldTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

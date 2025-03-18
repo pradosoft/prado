@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartImageButtonTestCase extends PradoDemosSelenium2Test
+class QuickstartImageButtonTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

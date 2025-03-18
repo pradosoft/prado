@@ -1,6 +1,6 @@
 <?php
 
-class DelayedCallbackTestCase extends PradoGenericSelenium2Test
+class DelayedCallbackTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

@@ -3,7 +3,7 @@
  * Created on 24/04/2006
  */
 
-class ListControlTestCase extends PradoGenericSelenium2Test
+class ListControlTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

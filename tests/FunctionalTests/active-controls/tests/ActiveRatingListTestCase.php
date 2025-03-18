@@ -19,7 +19,7 @@
  *
  * Modifications:
  */
-class ActiveRatingListTestCase extends PradoGenericSelenium2Test
+class ActiveRatingListTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function testCheckBoxes()
 	{

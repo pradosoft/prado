@@ -1,6 +1,6 @@
 <?php
 
-class ActiveHyperLinkTestCase extends PradoGenericSelenium2Test
+class ActiveHyperLinkTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

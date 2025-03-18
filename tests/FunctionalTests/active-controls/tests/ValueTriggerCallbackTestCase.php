@@ -1,6 +1,6 @@
 <?php
 
-class ValueTriggerCallbackTestCase extends PradoGenericSelenium2Test
+class ValueTriggerCallbackTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

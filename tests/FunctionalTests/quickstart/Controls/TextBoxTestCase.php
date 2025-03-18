@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartTextBoxTestCase extends PradoDemosSelenium2Test
+class QuickstartTextBoxTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

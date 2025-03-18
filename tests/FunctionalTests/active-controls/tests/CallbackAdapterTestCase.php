@@ -1,6 +1,6 @@
 <?php
 
-class CallbackAdapterTestCase extends PradoGenericSelenium2Test
+class CallbackAdapterTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

@@ -1,5 +1,6 @@
 <?php
 
+namespace Prado\Tests;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\WebDriverBy;
@@ -11,7 +12,7 @@ use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\NoAlertOpenException;
 use Facebook\WebDriver\Exception\NoSuchAlertException;
 
-class PradoGenericSelenium2Test extends PHPUnit\Framework\TestCase
+class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 {
 	public static $serverUrl = 'http://localhost:4444';
 	public static $baseurl = 'http://127.0.0.1/prado-master/tests/FunctionalTests/';
@@ -408,7 +409,7 @@ class PradoGenericSelenium2Test extends PHPUnit\Framework\TestCase
 	}
 }
 
-class PradoDemosSelenium2Test extends PradoGenericSelenium2Test
+class PradoDemosSelenium2Test extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public static $baseurl = 'http://127.0.0.1/prado-demos/';
 }

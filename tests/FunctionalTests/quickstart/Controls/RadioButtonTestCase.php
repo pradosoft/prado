@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartRadioButtonTestCase extends PradoDemosSelenium2Test
+class QuickstartRadioButtonTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

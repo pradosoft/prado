@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartActiveCustomValidatorTestCase extends PradoDemosSelenium2Test
+class QuickstartActiveCustomValidatorTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

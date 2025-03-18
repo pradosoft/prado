@@ -1,6 +1,6 @@
 <?php
 
-class NestedActiveControlsTestCase extends PradoGenericSelenium2Test
+class NestedActiveControlsTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

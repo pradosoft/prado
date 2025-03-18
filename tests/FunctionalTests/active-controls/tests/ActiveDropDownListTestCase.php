@@ -1,6 +1,6 @@
 <?php
 
-class ActiveDropDownListTestCase extends PradoGenericSelenium2Test
+class ActiveDropDownListTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

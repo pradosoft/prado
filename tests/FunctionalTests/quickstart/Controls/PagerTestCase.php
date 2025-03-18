@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartPagerTestCase extends PradoDemosSelenium2Test
+class QuickstartPagerTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class QuickstartI18NTestCase extends PradoDemosSelenium2Test
+class QuickstartI18NTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

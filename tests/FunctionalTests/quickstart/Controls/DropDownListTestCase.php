@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartDropDownListTestCase extends PradoDemosSelenium2Test
+class QuickstartDropDownListTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

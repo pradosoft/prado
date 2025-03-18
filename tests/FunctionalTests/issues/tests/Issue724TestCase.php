@@ -6,7 +6,7 @@
  * If the previous one changed the state of controls, the following callbacks must use the
  * newly refreshed data from controls instead of the stale, old one.
  **/
-class Issue724TestCase extends PradoGenericSelenium2Test
+class Issue724TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

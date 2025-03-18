@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartDataList1TestCase extends PradoDemosSelenium2Test
+class QuickstartDataList1TestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

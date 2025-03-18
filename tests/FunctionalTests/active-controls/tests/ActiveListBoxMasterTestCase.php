@@ -1,6 +1,6 @@
 <?php
 
-class ActiveListBoxMasterTestCase extends PradoGenericSelenium2Test
+class ActiveListBoxMasterTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

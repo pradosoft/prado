@@ -1,6 +1,6 @@
 <?php
 
-class Ticket285TestCase extends PradoGenericSelenium2Test
+class Ticket285TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

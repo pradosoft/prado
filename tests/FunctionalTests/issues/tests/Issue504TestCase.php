@@ -2,7 +2,7 @@
 
 use Facebook\WebDriver\WebDriverKeys;
 
-class Issue504TestCase extends PradoGenericSelenium2Test
+class Issue504TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

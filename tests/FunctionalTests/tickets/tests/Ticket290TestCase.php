@@ -5,7 +5,7 @@ use Facebook\WebDriver\WebDriverKeys;
 /**
  *
  */
-class Ticket290TestCase extends PradoGenericSelenium2Test
+class Ticket290TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

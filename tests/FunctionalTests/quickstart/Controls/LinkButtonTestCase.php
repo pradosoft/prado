@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartLinkButtonTestCase extends PradoDemosSelenium2Test
+class QuickstartLinkButtonTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

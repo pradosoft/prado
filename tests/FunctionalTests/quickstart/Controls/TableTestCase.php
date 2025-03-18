@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartTableTestCase extends PradoDemosSelenium2Test
+class QuickstartTableTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

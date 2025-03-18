@@ -1,6 +1,6 @@
 <?php
 
-class ActiveControlExpressionTagTestCase extends PradoGenericSelenium2Test
+class ActiveControlExpressionTagTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

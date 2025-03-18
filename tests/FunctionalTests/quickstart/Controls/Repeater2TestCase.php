@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartRepeater2TestCase extends PradoDemosSelenium2Test
+class QuickstartRepeater2TestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

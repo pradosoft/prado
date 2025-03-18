@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartDataGrid3TestCase extends PradoDemosSelenium2Test
+class QuickstartDataGrid3TestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

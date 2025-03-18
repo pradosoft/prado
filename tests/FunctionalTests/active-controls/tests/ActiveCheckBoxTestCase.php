@@ -1,6 +1,6 @@
 <?php
 
-class ActiveCheckBoxTestCase extends PradoGenericSelenium2Test
+class ActiveCheckBoxTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

@@ -5,7 +5,7 @@
  * Encoding issues caused an error when serializing the
  * response
  **/
-class Issue524TestCase extends PradoGenericSelenium2Test
+class Issue524TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

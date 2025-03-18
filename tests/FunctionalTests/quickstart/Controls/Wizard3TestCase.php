@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartWizard3TestCase extends PradoDemosSelenium2Test
+class QuickstartWizard3TestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

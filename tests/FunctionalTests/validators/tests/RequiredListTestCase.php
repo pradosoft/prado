@@ -1,6 +1,6 @@
 <?php
 
-class RequiredListTestCase extends PradoGenericSelenium2Test
+class RequiredListTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

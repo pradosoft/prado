@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartActiveCheckBoxTestCase extends PradoDemosSelenium2Test
+class QuickstartActiveCheckBoxTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

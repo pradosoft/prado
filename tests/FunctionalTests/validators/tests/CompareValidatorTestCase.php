@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class CompareValidatorTestCase extends PradoGenericSelenium2Test
+class CompareValidatorTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

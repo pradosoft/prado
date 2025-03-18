@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class RangeValidatorTestCase extends PradoGenericSelenium2Test
+class RangeValidatorTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function testIntegerRange()
 	{

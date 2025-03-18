@@ -3,7 +3,7 @@
  * Created on 25/04/2006
  */
 
-class DataTypeValidatorTestCase extends PradoGenericSelenium2Test
+class DataTypeValidatorTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

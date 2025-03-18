@@ -1,6 +1,6 @@
 <?php
 
-class ActiveRadioButtonTestCase extends PradoGenericSelenium2Test
+class ActiveRadioButtonTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

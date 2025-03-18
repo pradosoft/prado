@@ -1,6 +1,6 @@
 <?php
 
-class QuickstartMultiViewTestCase extends PradoDemosSelenium2Test
+class QuickstartMultiViewTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

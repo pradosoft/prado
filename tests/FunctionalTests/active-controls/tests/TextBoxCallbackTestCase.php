@@ -1,6 +1,6 @@
 <?php
 
-class TextBoxCallbackTestCase extends PradoGenericSelenium2Test
+class TextBoxCallbackTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

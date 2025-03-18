@@ -1,6 +1,6 @@
 <?php
 
-class ReplaceContentTestCase extends PradoGenericSelenium2Test
+class ReplaceContentTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

@@ -1,6 +1,6 @@
 <?php
 
-class TimeTriggeredCallbackTestCase extends PradoGenericSelenium2Test
+class TimeTriggeredCallbackTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

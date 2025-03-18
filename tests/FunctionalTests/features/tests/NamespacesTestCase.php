@@ -1,7 +1,7 @@
 <?php
 
 
-class NamespacesTestCase extends \PradoGenericSelenium2Test
+class NamespacesTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

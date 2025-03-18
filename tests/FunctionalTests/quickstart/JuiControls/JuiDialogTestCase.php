@@ -5,7 +5,7 @@ use Facebook\WebDriver\WebDriverKeys;
 /**
  * Testcase for TJuiDialog
  */
-class JuiDialogTestCase extends PradoDemosSelenium2Test
+class JuiDialogTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 {
 	public function test()
 	{

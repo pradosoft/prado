@@ -1,6 +1,6 @@
 <?php
 
-class EventTriggerTestCase extends PradoGenericSelenium2Test
+class EventTriggerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{

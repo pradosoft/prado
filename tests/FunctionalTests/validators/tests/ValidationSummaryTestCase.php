@@ -1,7 +1,7 @@
 <?php
 
 //New Test
-class ValidationSummaryTestCase extends PradoGenericSelenium2Test
+class ValidationSummaryTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
 	public function test()
 	{
