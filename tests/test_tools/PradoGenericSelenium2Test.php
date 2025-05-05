@@ -150,7 +150,7 @@ class PradoGenericSelenium2Test extends \PHPUnit\Framework\TestCase
 				$element = $this->getElement($id);
 				$value = $element->getAttribute($attr);
 
-				if (strpos($txt, 'regexp:') === 0) {
+				if (is_string($txt) && strpos($txt, 'regexp:') === 0) {
 					return preg_match('/' . substr($txt, 7) . '/', $value) > 0;
 				} else {
 					return $txt === $value;

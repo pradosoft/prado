@@ -23,6 +23,6 @@ class Ticket205TestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		$this->typeSpecial("{$base}textbox1", "Prado");
 
 		$this->byId("{$base}button1")->click();
-		$this->assertNotVisible("${base}validator1");
+		$this->assertNotVisible("{$base}validator1");
 	}
 }

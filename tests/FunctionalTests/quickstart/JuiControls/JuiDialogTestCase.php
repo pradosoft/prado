@@ -18,18 +18,18 @@ class JuiDialogTestCase extends \Prado\Tests\PradoDemosSelenium2Test
 		$base = 'ctl0_body_';
 
 
-		$this->byId("${base}ctl0")->click();
-		$this->assertVisible("${base}dlg1");
+		$this->byId("{$base}ctl0")->click();
+		$this->assertVisible("{$base}dlg1");
 
 		$this->active()->click(); // close
 
 
-		$this->assertText("${base}lbl3", '');
-		$this->byId("${base}ctl2")->click();
-		$this->assertVisible("${base}dlg3");
+		$this->assertText("{$base}lbl3", '');
+		$this->byId("{$base}ctl2")->click();
+		$this->assertVisible("{$base}dlg3");
 
 		// Click OK (by keys...)
 		$this->keys(WebDriverKeys::ENTER);
-		$this->assertText("${base}lbl3", 'Button Ok clicked');
+		$this->assertText("{$base}lbl3", 'Button Ok clicked');
 	}
 }
