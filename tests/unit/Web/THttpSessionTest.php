@@ -55,6 +55,10 @@ class THttpSessionTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSetCookieModeNone()
 	{
+		if(PHP_VERSION_ID >= 80400) {
+			$this->markTestSkipped('Disabling session.use_only_cookies INI setting is deprecated on PHP => 8.4 ');
+			return;
+		}
 		$session = new THttpSession();
 		$session->CookieMode = THttpSessionCookieMode::None;
 
@@ -68,6 +72,10 @@ class THttpSessionTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSetCookieModeAllow()
 	{
+		if(PHP_VERSION_ID >= 80400) {
+			$this->markTestSkipped('Disabling session.use_only_cookies INI setting is deprecated on PHP => 8.4 ');
+			return;
+		}
 		$session = new THttpSession();
 		$session->CookieMode = THttpSessionCookieMode::Allow;
 

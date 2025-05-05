@@ -25,7 +25,17 @@ namespace Prado\Web;
  */
 class THttpSessionCookieMode extends \Prado\TEnumerable
 {
+	/**
+	 * @deprecated 4.3.1 Since PHP 8.4 disabling session.use_only_cookies
+	 * INI setting is deprecated; use THttpSessionCookieMode::Only instead.
+	 */
 	public const None = 'None';
+
+	/**
+	 * @deprecated 4.3.1 Since PHP 8.4 disabling session.use_only_cookies
+	 * INI setting is deprecated; use THttpSessionCookieMode::Only instead.
+	 */
 	public const Allow = 'Allow';
+
 	public const Only = 'Only';
 }
