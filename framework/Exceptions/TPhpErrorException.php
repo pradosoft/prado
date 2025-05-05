@@ -42,8 +42,10 @@ class TPhpErrorException extends TSystemException
 			E_USER_ERROR => "User Error",
 			E_USER_WARNING => "User Warning",
 			E_USER_NOTICE => "User Notice",
-			E_STRICT => "Runtime Notice",
 		];
+		if(PHP_VERSION_ID < 80400) {
+			$errorTypes[E_STRICT] = "Runtime Notice";
+		}
 		$errorType = $errorTypes[$errno] ?? 'Unknown Error';
 		parent::__construct("[$errorType] $errstr (@line $errline in file $errfile).");
 	}
