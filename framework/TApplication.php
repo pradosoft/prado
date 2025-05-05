@@ -690,7 +690,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	 * @param string $id ID of the module
 	 * @param null|IModule $module module object or null if the module has not been loaded yet
 	 */
-	public function setModule($id, IModule $module = null)
+	public function setModule($id, ?IModule $module = null)
 	{
 		if (isset($this->_modules[$id])) {
 			throw new TConfigurationException('application_moduleid_duplicated', $id);
