@@ -185,6 +185,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	private static $_relations = [];
 
 	/**
+	 * @var array holding relation objects for non explicitly defined properties
+	 */
+	protected $_relationsObjs = [];
+
+	/**
 	 * @var TDbConnection database connection object.
 	 */
 	protected $_connection; // use protected so that serialization is fine
@@ -248,7 +253,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	{
 		if ($this->hasRecordRelation($name) && !$this->canGetProperty($name)) {
 			$this->fetchResultsFor($name);
-			return $this->$name;
+			return $this->_relationsObjs[$name];
 		}
 		return parent::__get($name);
 	}
@@ -264,7 +269,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 	public function __set($name, $value)
 	{
 		if ($this->hasRecordRelation($name) && !$this->canSetProperty($name)) {
-			$this->$name = $value;
+			$this->_relationsObjs[$name] = $value;
 		} else {
 			parent::__set($name, $value);
 		}
