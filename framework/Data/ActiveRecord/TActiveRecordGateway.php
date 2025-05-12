@@ -90,6 +90,7 @@ class TActiveRecordGateway extends \Prado\TComponent
 			}
 			return $value;
 		} elseif ($class->hasMethod(self::TABLE_METHOD)) {
+			// @phpstan-ignore method.notFound
 			$value = $record->{self::TABLE_METHOD}();
 			if (empty($value)) {
 				throw new TActiveRecordException(

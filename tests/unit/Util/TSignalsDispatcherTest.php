@@ -222,13 +222,13 @@ class TSignalsDispatcherTest extends PHPUnit\Framework\TestCase
 	public function testTEventSubscription()
 	{
 		$this->dispatcher = TSignalsDispatcher::singleton();
-		$this->subscription = new TEventSubscription($this->dispatcher, SIGTERM, $handler = function($sender, $param) {return true;}, 5);
-		self::assertTrue($this->subscription->getIsSubscribed());
+		$subscription = new TEventSubscription($this->dispatcher, SIGTERM, $handler = function($sender, $param) {return true;}, 5);
+		self::assertTrue($subscription->getIsSubscribed());
 		$handlers = $this->dispatcher->getEventHandlers('fxSignalTerminate');
-		self::assertEquals($handlers, $this->subscription->getCollection());
+		self::assertEquals($handlers, $subscription->getCollection());
 		self::assertTrue($handlers->contains($handler));
-		$this->subscription->unsubscribe();
-		self::assertFalse($this->subscription->getIsSubscribed());
+		$subscription->unsubscribe();
+		self::assertFalse($subscription->getIsSubscribed());
 		self::assertFalse($handlers->contains($handler));
 	}
 	

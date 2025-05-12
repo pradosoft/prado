@@ -383,6 +383,7 @@ return [
 'THttpResponseAdapter' => 'Prado\Web\THttpResponseAdapter',
 'THttpSession' => 'Prado\Web\THttpSession',
 'THttpSessionCookieMode' => 'Prado\Web\THttpSessionCookieMode',
+'THttpSessionHandler' => 'Prado\Web\THttpSessionHandler',
 'THttpUtility' => 'Prado\Web\THttpUtility',
 'TSessionIterator' => 'Prado\Web\TSessionIterator',
 'TUri' => 'Prado\Web\TUri',
