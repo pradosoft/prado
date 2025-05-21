@@ -1,6 +1,14 @@
-## Version 4.3.x - TBD
+## Version 4.3.1 - May 21, 2025
 
 ENH: Issue #993 - Added TDatePicker::DropDownCssClass to apply a class to all the dropdowns
+ENH: Issue #997 - Nginx fixes to run appliaction in subfolder
+ENH: Issue #998 - Replace Exception by Throwable to catch eval ParseError and Error.
+ENH: Issue #1002 - Add THttpSessionhandler to avoid use of deprecated session_set_save_handler() ctor
+ENH: Migrate functional tests from phpunit-selenium to php-webdriver
+ENH: Php 8.4 compatibility: limit use of deprecated SID and E_STRICT constants
+ENH: Php 8.4 compatibility: use explicit nullable type
+ENH: Php 8.2 compatibility:remove deprecated usage of dynamic defined properties in TActiveRecord
+BUG: Avoid recursive error while reporting an error and the source file can't be loaded
 
 ## Version 4.3.0 - October 26, 2023
 

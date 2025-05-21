@@ -75,7 +75,7 @@ require 'vendor/autoload.php';
 
 ### PRADO Composer Extensions
 
-PRADO 4.2 supports Composer extensions to plug in new functionality directly into a PRADO application; such as new web controls, API integration, authorization, new services, analytics, custom behaviors, and CLI commands.  3rd party extensions can be found at [Packagist - Prado4-Extensions](https://packagist.org/?query=prado4&type=prado4-extension).  The community is encouraged to write and submit 3rd party PRADO 4 extensions for others to find and use.
+PRADO 4.x supports Composer extensions to plug in new functionality directly into a PRADO application; such as new web controls, API integration, authorization, new services, analytics, custom behaviors, and CLI commands.  3rd party extensions can be found at [Packagist - Prado4-Extensions](https://packagist.org/?query=prado4&type=prado4-extension).  The community is encouraged to write and submit 3rd party PRADO 4 extensions for others to find and use.
 
 PRADO provides a rich set of features for runtime extension of an application with composer extensions.  Behaviors modify existing functionality and add new properties and methods to instanced run-time objects.  Class-wide behaviors add default behaviors to classes, interfaces, and traits when instancing new objects and to "listen"ing instances.  "Global Events" enable extensions to communicate with other extensions without knowledge of application configuration.  "Dynamic Events" enable objects to communicate with their attached behaviors with direct function calls.
 
