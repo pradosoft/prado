@@ -25,6 +25,24 @@ use Prado\Prado;
 class TJavaScript
 {
 	/**
+	 * Renders javascript header block
+	 * @return string rendering result
+	 */
+	public static function renderScriptHeader()
+	{
+		return "<script>\n/*<![CDATA[*/\n";
+	}
+
+	/**
+	 * Renders javascript footer block
+	 * @return string rendering result
+	 */
+	public static function renderScriptFooter()
+	{
+		return "\n/*]]>*/\n</script>\n";
+	}
+
+	/**
 	 * Renders a list of javascript files
 	 * @param array $files URLs to the javascript files
 	 * @return string rendering result
@@ -59,7 +77,7 @@ class TJavaScript
 	public static function renderScriptBlocks($scripts)
 	{
 		if (count($scripts)) {
-			return "<script>\n/*<![CDATA[*/\n" . implode("\n", $scripts) . "\n/*]]>*/\n</script>\n";
+			return self::renderScriptHeader() . implode("\n", $scripts) . self::renderScriptFooter();
 		} else {
 			return '';
 		}
@@ -86,7 +104,7 @@ class TJavaScript
 	 */
 	public static function renderScriptBlock($script)
 	{
-		return "<script>\n/*<![CDATA[*/\n{$script}\n/*]]>*/\n</script>\n";
+		return self::renderScriptHeader() . $script . self::renderScriptFooter();
 	}
 
 	/**
