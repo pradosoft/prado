@@ -10,6 +10,7 @@
 
 namespace Prado\Web\UI\ActiveControls;
 
+use Prado\Web\Javascripts\TJavaScript;
 use Prado\Web\UI\WebControls\TClientScript;
 
 /**
@@ -50,7 +51,7 @@ class TActiveClientScript extends TClientScript
 					$cs->registerScriptFile($uniqueid, $scriptUrl);
 				}
 			} else {
-				$writer->write("<script src=\"$scriptUrl\"></script>\n");
+				$writer->write(TJavaScript::renderScriptFile($scriptUrl));
 			}
 		}
 	}
@@ -69,9 +70,9 @@ class TActiveClientScript extends TClientScript
 				$extWriter->write("\n/*]]>*/");
 				$this->getPage()->getCallbackClient()->appendScriptBlock($extWriter);
 			} else {
-				$writer->write("<script>\n/*<![CDATA[*/\n");
+				$writer->write(TJavaScript::renderScriptHeader());
 				$this->renderChildren($writer);
-				$writer->write("\n/*]]>*/\n</script>\n");
+				$writer->write(TJavaScript::renderScriptFooter());
 			}
 		}
 	}
