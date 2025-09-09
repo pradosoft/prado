@@ -375,6 +375,8 @@ return [
 'TCacheHttpSession' => 'Prado\Web\TCacheHttpSession',
 'THttpCookie' => 'Prado\Web\THttpCookie',
 'THttpCookieCollection' => 'Prado\Web\THttpCookieCollection',
+'THttpHeader' => 'Prado\Web\THttpHeader',
+'THttpHeadersManager' => 'Prado\Web\THttpHeadersManager',
 'THttpRequest' => 'Prado\Web\THttpRequest',
 'THttpRequestParameter' => 'Prado\Web\THttpRequestParameter',
 'THttpRequestResolveMethod' => 'Prado\Web\THttpRequestResolveMethod',

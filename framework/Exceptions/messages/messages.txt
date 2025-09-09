@@ -92,6 +92,10 @@ httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept
 httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 httpresponse_responsedata_method_unavailable = THttpResponse: method '{0}' cannot be used without a proper adapter implementing it.
+httpresponse_headersmanager_inexist     = THttpResponse.HeadersManager '{0}' does not point to an existing module.
+httpresponse_headersmanager_invalid		= THttpResponse.HeadersManager '{0}' must point to a module extending from THttpHeadersManager.
+
+httpheadersmanager_header_required		= THttpHeadersManager can only contain THttpHeader or its child classes.
 
 httpsession_sessionid_unchangeable		= THttpSession.SessionID cannot be modified after the session is started.
 httpsession_sessionname_unchangeable	= THttpSession.SessionName cannot be modified after the session is started.
