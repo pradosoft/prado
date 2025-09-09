@@ -11,6 +11,7 @@
 namespace Prado\Web;
 
 use Prado\Exceptions\TExitException;
+use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
@@ -142,6 +143,14 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @var bool whether content-type header has been sent
 	 */
 	private $_contentTypeHeaderSent;
+	/**
+	 * @var THttpHeadersManager the headers manager module
+	 */
+	private $_headersManager;
+	/**
+	 * @var string the ID of the headers manager module
+	 */
+	private $_headersManagerID = '';
 
 	/**
 	 * Destructor.
@@ -524,6 +533,10 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		$this->ensureHttpHeaderSent();
 		$this->ensureContentTypeHeaderSent();
+		$headersManager = $this->getHeadersManagerModule();
+		if ($headersManager !== null) {
+			$headersManager->ensureHeadersSent();
+		}
 	}
 
 	/**
@@ -819,5 +832,46 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	protected function sessionCacheLimiter(?string $value = null): string|false
 	{
 		return session_cache_limiter($value);
+	}
+
+	/**
+	 * @return string the ID of the URL manager module
+	 */
+	public function getHeadersManager()
+	{
+		return $this->_headersManagerID;
+	}
+
+	/**
+	 * Sets the headers manager module.
+	 * By default no header manager module is used
+	 * You may specify a different module for headers managing tasks
+	 * by loading it as an application module and setting this property
+	 * with the module ID.
+	 * @param string $value the ID of the URL manager module
+	 */
+	public function setHeadersManager($value)
+	{
+		$this->_headersManagerID = $value;
+	}
+
+	/**
+	 * @return null|THttpHeadersManager the URL manager module
+	 */
+	public function getHeadersManagerModule()
+	{
+		if (empty($this->_headersManagerID)) {
+			return null;
+		}
+
+		$this->_headersManager = $this->getApplication()->getModule($this->_headersManagerID);
+		if ($this->_headersManager === null) {
+			throw new TConfigurationException('httpresponse_headersmanager_inexist', $this->_headersManagerID);
+		}
+		if (!($this->_headersManager instanceof THttpHeadersManager)) {
+			throw new TConfigurationException('httpresponse_headersmanager_invalid', $this->_headersManagerID);
+		}
+
+		return $this->_headersManager;
 	}
 }
