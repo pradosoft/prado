@@ -376,6 +376,7 @@ return [
 'THttpCookie' => 'Prado\Web\THttpCookie',
 'THttpCookieCollection' => 'Prado\Web\THttpCookieCollection',
 'THttpHeader' => 'Prado\Web\THttpHeader',
+'THttpHeaderCSP' => 'Prado\Web\THttpHeaderCSP',
 'THttpHeadersManager' => 'Prado\Web\THttpHeadersManager',
 'THttpRequest' => 'Prado\Web\THttpRequest',
 'THttpRequestParameter' => 'Prado\Web\THttpRequestParameter',
