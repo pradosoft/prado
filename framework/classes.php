@@ -420,6 +420,7 @@ return [
 'THttpCookieCollection' => 'Prado\Web\THttpCookieCollection',
 'THttpCookieSameSite' => 'Prado\Web\THttpCookieSameSite',
 'THttpHeader' => 'Prado\Web\THttpHeader',
+'THttpHeaderCSP' => 'Prado\Web\THttpHeaderCSP',
 'THttpHeadersManager' => 'Prado\Web\THttpHeadersManager',
 'THttpRequest' => 'Prado\Web\THttpRequest',
 'THttpRequestParameter' => 'Prado\Web\THttpRequestParameter',
