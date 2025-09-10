@@ -31,7 +31,7 @@ class DatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		$this->type("{$base}picker1", "13/4/$year");
 		$this->select("{$base}picker2_month", "9");
 		$this->select("{$base}picker2_day", "10");
-		$this->select("{$base}picker2_year", "$year");
+		$this->select("{$base}picker2_year", "$year2");
 		$this->pause(250);
 		$this->type("{$base}picker3", "14/4/$year");
 		$this->pause(250);

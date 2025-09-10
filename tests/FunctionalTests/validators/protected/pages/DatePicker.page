@@ -21,9 +21,9 @@
 		ControlToValidate="picker2"
 		DataType="Date"
 		DateFormat="d/M/yyyy"
-		ErrorMessage="Please enter a date between 9/9/<%= date('Y') %> and 8/10/<%= date('Y') %>"
-		MinValue="9/9/<%= date('Y') %>"
-		MaxValue="8/10/<%= date('Y') %>" />
+		ErrorMessage="Please enter a date between 9/9/<%= date('Y')+1 %> and 8/10/<%= date('Y')+1 %>"
+		MinValue="9/9/<%= date('Y')+1 %>"
+		MaxValue="8/10/<%= date('Y')+1 %>" />
 
 	<hr />
 	Date 1:
