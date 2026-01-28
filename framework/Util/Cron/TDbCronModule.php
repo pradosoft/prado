@@ -214,7 +214,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * @throws TConfigurationException when the configuration task names interfere with the db tasks names.
-	 * @return array[TCronTask] combines the active configuration and db cron tasks
+	 * @return \Prado\Util\Cron\TCronTask[] combines the active configuration and db cron tasks
 	 */
 	public function getTasks()
 	{
