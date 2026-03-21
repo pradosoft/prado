@@ -235,7 +235,9 @@ class TSignalsDispatcher extends TComponent implements \Prado\ISingleton
 			$callable = is_callable($handler);
 			if ($callable) {
 				$handler = function ($sender, $param) use ($handler) {
-					return $handler($param->getSignal(), $param->getParameter());
+					if (is_callable($handler)) {
+						return $handler($param->getSignal(), $param->getParameter());
+					}
 				};
 				self::$_priorHandlers[$signal][1] = $handler;
 			}
