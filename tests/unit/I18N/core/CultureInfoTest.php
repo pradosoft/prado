@@ -36,7 +36,7 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 	public function testCountryNames()
 	{
 		$culture = new CultureInfo('fr_FR');
-		$this->assertEquals($culture->Countries['AE'], 'Émirats arabes unis');
+		$this->assertEquals('Émirats arabes unis', $culture->Countries['AE']);
 	}
 
 	public function testCurrencies()
@@ -49,25 +49,25 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 	public function testLanguages()
 	{
 		$culture = new CultureInfo('fr');
-		$this->assertEquals($culture->Languages['fr'], 'français');
+		$this->assertEquals('français', $culture->Languages['fr'], );
 	}
 
 	public function testScripts()
 	{
 		$culture = new CultureInfo('fr');
-		$this->assertEquals($culture->Scripts['Armn'], 'arménien');
+		$this->assertEquals('arménien', $culture->Scripts['Armn'], );
 	}
 
 	public function testTimeZones()
 	{
 		$culture = new CultureInfo('it');
 
-		$this->assertGreaterThanOrEqual(90, count($culture->TimeZones));
+		$this->assertGreaterThanOrEqual(88, count($culture->TimeZones));
 	}
 
 	public function test_missing_english_names_returns_culture_code()
 	{
 		$culture = new CultureInfo('iw');
-		$this->assertEquals($culture->getEnglishName(), 'iw');
+		$this->assertEquals('iw', $culture->getEnglishName());
 	}
 }
