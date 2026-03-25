@@ -20,7 +20,7 @@ use Prado\TPropertyValue;
  *
  * TSecurityManager provides private keys, hashing and encryption
  * functionalities that may be used by other PRADO components,
- * such as viewstate persister, cookies.
+ * such as viewstate persister, cookies, CSP nonces.
  *
  * TSecurityManager is mainly used to protect data from being tampered
  * and viewed. It can generate HMAC and encrypt the data.
@@ -271,5 +271,18 @@ class TSecurityManager extends \Prado\TModule
 	private function substr($string, $start, $length)
 	{
 		return $this->_mbstring ? mb_substr($string, $start, $length, '8bit') : substr($string, $start, $length);
+	}
+
+	/**
+	 * Returns a per-request nonce value to be used in a Content-security-policy
+	 * @return string nonce
+	 */
+	public function getCSPNonce()
+	{
+		static $nonce;
+		if ($nonce === null) {
+			$nonce = $this->generateRandomKey();
+		}
+		return $nonce;
 	}
 }

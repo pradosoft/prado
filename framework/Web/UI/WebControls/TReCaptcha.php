@@ -294,9 +294,11 @@ class TReCaptcha extends \Prado\Web\UI\WebControls\TWebControl implements \Prado
 			$errorpart = "&amp;error=" . $error;
 		}
 
-		return '<script src="' . $server . '/challenge?k=' . $pubkey . $errorpart . '"></script>
-		<noscript>
-		<iframe src="' . $server . '/noscript?k=' . $pubkey . $errorpart . '" height="300" width="500" frameborder="0"></iframe><br/>
+		$challengeUrl = $server . '/challenge?k=' . $pubkey . $errorpart;
+		$noscriptUrl = $server . '/noscript?k=' . $pubkey . $errorpart;
+		return TJavaScript::renderScriptFile($challengeUrl) .
+		'<noscript>
+		<iframe src="' . $noscriptUrl . '" height="300" width="500" frameborder="0"></iframe><br/>
 		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
 		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
 		</noscript>';

@@ -60,42 +60,22 @@ class TFirebugLogRoute extends TBrowserLogRoute
 			$content->getWriter()->setBoundary(TActivePageAdapter::CALLBACK_DEBUG_HEADER);
 			$content->write($blocks);
 			$response->write($content->flush());
+		} else {
+			$response->write(TJavaScript::renderScriptHeader());
+			$response->write('var blocks = ' . $blocks . ";\n");
+			$response->write($this->renderHeader());
+			$response->write($this->renderFooter());
+			$response->write(TJavaScript::renderScriptFooter());
 		}
 	}
 
 	protected function renderHeader()
 	{
-		$page = $this->getService()->getRequestedPage();
-		if ($page->getIsCallback()) {
-			return
-<<<EOD
-
-	<script>
-	/*<![CDATA[*/
-	if (typeof(console) == 'object')
-	{
-		var groupFunc = blocks.length < 10 ? 'group': 'groupCollapsed';
-		if(typeof log[groupFunc] === "function")
-			log[groupFunc]("Callback logs ("+blocks.length+" entries)");
-
-		console.log ("[Tot Time] [Time    ] [Level] [Category] [Message]");
-
-	EOD;
-		}
-		return '';
-	}
-
-	protected function renderMessage($log, $meta)
-	{
-		$logfunc = 'console.' . $this->getFirebugLoggingFunction($log[TLogger::LOG_LEVEL]);
-		$total = sprintf('%0.6f', $log['total']);
-		$delta = sprintf('%0.6f', $log['delta']);
-		$msg = trim($this->formatFirebugLogMessage($log));
-		$msg = preg_replace('/\(line[^\)]+\)$/', '', $msg); //remove line number info
-		$msg = "[{$total}] [{$delta}] " . $msg; // Add time spent and cumulated time spent
-		$string = $logfunc . '(\'' . addslashes($msg) . '\');' . "\n";
-
-		return $string;
+		return <<<EOD
+			if (typeof(console) == 'object')
+			{
+				Prado.CallbackRequestManager.logDebug(console, blocks);
+			EOD;
 	}
 
 	protected function renderMessageCallback($log)
@@ -111,19 +91,12 @@ class TFirebugLogRoute extends TBrowserLogRoute
 
 	protected function renderFooter()
 	{
-		$string =
-<<<EOD
-		if(typeof console.groupEnd === "function")
-			console.groupEnd();
-
+		return <<<EOD
+				if(typeof console.groupEnd === "function")
+					console.groupEnd();
+			}
+			EOD;
 	}
-	</script>
-
-	EOD;
-
-		return $string;
-	}
-
 
 	/**
 	 * Formats a log message given different fields.
