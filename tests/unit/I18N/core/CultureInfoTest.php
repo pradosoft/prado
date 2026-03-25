@@ -140,5 +140,13 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 		$unitFormatted = $culture->formatPerUnit(1, Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_METER);
 		$this->assertEquals('1 per meter', $unitFormatted);
 	}
+	
+	public function test_format_per_unit_no_per()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$noPerUnit = $culture->formatPerUnit(1, Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_BYTE);
+		$this->assertNull($noPerUnit);
+	}
 
 }

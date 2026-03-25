@@ -45,7 +45,7 @@ use IntlException;
  *
  * For example, Australian English is "en_AU".
  *
- * A culture can format a number with formatNumber.
+ * CultureInfo can format a number with formatNumber.
  *
  * The unit-related methods getUnit(), formatUnit(), and formatPerUnit() provide
  * access to localized unit names and formatted unit values based on the culture's
