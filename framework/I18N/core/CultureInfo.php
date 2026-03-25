@@ -551,7 +551,7 @@ class CultureInfo
 	 * @param float $number The number to format
 	 * @param int $format The format to apply to the number.
 	 *					  Default: \NumberFormatter::DECIMAL
-	 * @throws \IntlException
+	 * @throws \IntlException when format is bad.
 	 * @return string The culture-formatted number
 	 * @since 4.3.3
 	 */

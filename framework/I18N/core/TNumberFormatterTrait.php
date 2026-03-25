@@ -39,7 +39,7 @@ trait TNumberFormatterTrait
 	 * culture will be used.
 	 * @param string $culture The Culture to get the format information about.
 	 * @param int $format The format of the numbers, eg \NumberFormatter::PERCENT
-	 * @throws \IntlException
+	 * @throws \IntlException when format is bad.
 	 * @return null|\NumberFormatter
 	 */
 	protected function getFormatter($culture, $format)
