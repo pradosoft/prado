@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TNumberFromat component.
+ * TNumberFormat component.
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @link https://github.com/pradosoft/prado
@@ -13,6 +13,7 @@ namespace Prado\I18N;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Util\TUtf8Converter;
+use Prado\I18N\core\TNumberFormatterTrait;
 
 /**
  * To format numbers in locale sensitive manner use
@@ -22,7 +23,7 @@ use Prado\Util\TUtf8Converter;
  *
  * The format used for numbers can be selected by specifying the Type attribute.
  * The known types are "decimal", "currency", "percentage", "scientific",
- * "spellout", "ordinal" and "duration"
+ * "spellout", "ordinal", "duration", "rulebased", and "accounting".
  *
  * If someone from US want to see sales figures from a store in
  * Germany (say using the EURO currency), formatted using the german
@@ -41,11 +42,7 @@ use Prado\Util\TUtf8Converter;
  */
 class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 {
-	/**
-	 * Cached NumberFormatters set to the application culture.
-	 * @var \NumberFormatter
-	 */
-	protected static $formatters;
+	use TNumberFormatterTrait;
 
 	/**
 	 * Get the number formatting pattern.
@@ -138,7 +135,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 
 	/**
 	 * Set the formatting type for this control.
-	 * @param string $type formatting type, either "decimal", "currency", "percentage", "scientific", "spellout", "ordinal" or "duration"
+	 * @param string $type formatting type, either "decimal", "currency", "percentage", "scientific", "spellout", "ordinal", "duration", "rulebased", or "accounting"
 	 * @throws TInvalidDataValueException
 	 */
 	public function setType($type)
@@ -167,6 +164,13 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 			case 'duration':
 				$this->setViewState('Type', \NumberFormatter::DURATION);
 				break;
+			case 'rulebased':
+				$this->setViewState('Type', \NumberFormatter::PATTERN_RULEBASED);
+				break;
+			case 'accounting':
+				$this->setViewState('Type', \NumberFormatter::CURRENCY_ACCOUNTING);
+				break;
+				// @todo There are 4 new types in PHP 8.5.0
 			default:
 				throw new TInvalidDataValueException('numberformat_type_invalid', $type);
 		}
@@ -188,26 +192,6 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 	public function setCurrency($currency)
 	{
 		$this->setViewState('Currency', $currency, '');
-	}
-
-	/**
-	 * Formats the localized number, be it currency or decimal, or percentage.
-	 * If the culture is not specified, the default application
-	 * culture will be used.
-	 * @param string $culture
-	 * @param mixed $type
-	 * @return \NumberFormatter
-	 */
-	protected function getFormatter($culture, $type)
-	{
-		if (!isset(self::$formatters[$culture])) {
-			self::$formatters[$culture] = [];
-		}
-		if (!isset(self::$formatters[$culture][$type])) {
-			self::$formatters[$culture][$type] = new \NumberFormatter($culture, $type);
-		}
-
-		return self::$formatters[$culture][$type];
 	}
 
 	/**
