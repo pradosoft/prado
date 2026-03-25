@@ -13,6 +13,7 @@ namespace Prado\I18N\core;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\Util\TUtf8Converter;
+use IntlException;
 
 /**
  * TNumberFormatterTrait
@@ -28,19 +29,20 @@ trait TNumberFormatterTrait
 {
 	/**
 	 * Cached NumberFormatters set to the application culture.
-	 * @var \NumberFormatter
+	 * @var array
 	 */
-	protected static $formatters;
+	protected static array $formatters = [];
 
 	/**
 	 * Formats the localized number, be it currency or decimal, or percentage.
 	 * If the culture is not specified, the default application
 	 * culture will be used.
-	 * @param string $culture
-	 * @param mixed $type
-	 * @return \NumberFormatter
+	 * @param string $culture The Culture to get the format information about.
+	 * @param int $format The format of the numbers, eg \NumberFormatter::PERCENT
+	 * @throws \IntlException
+	 * @return null|\NumberFormatter
 	 */
-	protected function getFormatter($culture, $type)
+	protected function getFormatter($culture, $format)
 	{
 		if (!class_exists('NumberFormatter')) {
 			return null;
@@ -49,10 +51,10 @@ trait TNumberFormatterTrait
 		if (!isset(self::$formatters[$culture])) {
 			self::$formatters[$culture] = [];
 		}
-		if (!isset(self::$formatters[$culture][$type])) {
-			self::$formatters[$culture][$type] = new \NumberFormatter($culture, $type);
+		if (!isset(self::$formatters[$culture][$format])) {
+			self::$formatters[$culture][$format] = new \NumberFormatter($culture, $format);
 		}
 
-		return self::$formatters[$culture][$type];
+		return self::$formatters[$culture][$format];
 	}
 }

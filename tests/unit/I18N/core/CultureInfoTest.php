@@ -102,6 +102,24 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 		
 		$formattedNumber = $culture->formatNumber(1234.25);
 		$this->assertEquals('1,234.25', $formattedNumber);
+		
+		$formattedNumber = $culture->formatNumber(1234.25, \NumberFormatter::DECIMAL);
+		$this->assertEquals('1,234.25', $formattedNumber);
+	}
+	
+	public function test_format_number_percent()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$formattedNumber = $culture->formatNumber(1234.256, \NumberFormatter::PERCENT);
+		$this->assertEquals('123,426%', $formattedNumber);
+	}
+	
+	public function test_format_number_bad_format()
+	{
+		$culture = new CultureInfo('en_US');
+		$this->expectException(IntlException::class);
+		$formattedNumber = $culture->formatNumber(1234.25, -5000);
 	}
 
 	public function test_format_unit()

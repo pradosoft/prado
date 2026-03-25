@@ -20,6 +20,7 @@ namespace Prado\I18N\core;
 
 use Exception;
 use Prado\I18N\core\CultureInfoUnits;
+use IntlException;
 
 /**
  * CultureInfo class.
@@ -44,6 +45,8 @@ use Prado\I18N\core\CultureInfoUnits;
  *
  * For example, Australian English is "en_AU".
  *
+ * A culture can format a number with formatNumber.
+ *
  * The unit-related methods getUnit(), formatUnit(), and formatPerUnit() provide
  * access to localized unit names and formatted unit values based on the culture's
  * conventions. These methods utilize ICU's unit data bundles to return appropriate
@@ -60,7 +63,7 @@ class CultureInfo
 	 * The ICU data array, shared by all instances of this class.
 	 * @var array
 	 */
-	protected static $data = [];
+	protected static array $data = [];
 
 	/**
 	 * The current culture.
@@ -546,18 +549,25 @@ class CultureInfo
 	/**
 	 * Helper method to format number according to current culture settings.
 	 * @param float $number The number to format
+	 * @param int $format The format to apply to the number.
+	 *					  Default: \NumberFormatter::DECIMAL
+	 * @throws \IntlException
 	 * @return string The culture-formatted number
 	 * @since 4.3.3
 	 */
-	public function formatNumber($number)
+	public function formatNumber($number, $format = null)
 	{
 		if (class_exists('NumberFormatter')) {
-			$formatter = $this->getFormatter($this->culture, \NumberFormatter::DECIMAL);
+			if ($format == null) {
+				$format = \NumberFormatter::DECIMAL;
+			}
 
+			$formatter = $this->getFormatter($this->culture, $format);
 			return $formatter->format($number);
-		} else { // Fallback
-			return number_format($number, 2, '.', ',');
 		}
+
+		// Fallback
+		return number_format($number, 2, '.', ',');
 	}
 
 	/**
