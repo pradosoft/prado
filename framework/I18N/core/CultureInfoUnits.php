@@ -223,7 +223,7 @@ class CultureInfoUnits
 	public const TYPE_DIGITAL_TERABIT = 'digital-terabit';
 
 	/**
-	 * Future Digital unit - petabits - 10^15 bits
+	 * Digital unit - petabits - 10^15 bits
 	 * @var string
 	 */
 	public const TYPE_DIGITAL_PETABIT = 'digital-petabit';
@@ -286,7 +286,7 @@ class CultureInfoUnits
 	public const TYPE_DIGITAL_TERABYTE = 'digital-terabyte';
 
 	/**
-	 * Future Digital unit - petabytes - 10^15 bytes
+	 * Digital unit - petabytes - 10^15 bytes
 	 * @var string
 	 */
 	public const TYPE_DIGITAL_PETABYTE = 'digital-petabyte';
