@@ -2,6 +2,7 @@
 
 
 use Prado\I18N\core\CultureInfo;
+use Prado\I18N\core\CultureInfoUnits;
 
 class CultureInfoTest extends PHPUnit\Framework\TestCase
 {
@@ -36,7 +37,7 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 	public function testCountryNames()
 	{
 		$culture = new CultureInfo('fr_FR');
-		$this->assertEquals('Émirats arabes unis', $culture->Countries['AE']);
+		$this->assertEquals('Émirats arabes unis', $culture->Countries['AE'], );
 	}
 
 	public function testCurrencies()
@@ -49,7 +50,7 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 	public function testLanguages()
 	{
 		$culture = new CultureInfo('fr');
-		$this->assertEquals('français', $culture->Languages['fr'], );
+		$this->assertEquals('français', $culture->Languages['fr']);
 	}
 
 	public function testScripts()
@@ -70,4 +71,56 @@ class CultureInfoTest extends PHPUnit\Framework\TestCase
 		$culture = new CultureInfo('iw');
 		$this->assertEquals('iw', $culture->getEnglishName());
 	}
+	public function testUnits()
+	{
+		$culture = new CultureInfo('en');
+		
+		$this->assertGreaterThanOrEqual(23, count($culture->Units));
+	}
+	
+	public function test_get_unit()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$unitName = $culture->getUnit(Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABYTE);
+			
+		$this->assertEquals('gigabytes', $unitName);
+	}
+	
+	public function test_get_unit_not_found()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$unitName = $culture->getUnit(Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_QUETTABYTE);
+			
+		$this->assertNull($unitName);
+	}
+	
+	public function test_format_number()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$formattedNumber = $culture->formatNumber(1234.25);
+		$this->assertEquals('1,234.25', $formattedNumber);
+	}
+
+	public function test_format_unit()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$unitFormatted = $culture->formatUnit(1, Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABYTE);
+		$this->assertEquals('1 gigabyte', $unitFormatted);
+		
+		$unitFormatted = $culture->formatUnit(10, Prado\I18N\core\CultureInfoUnits::TYPE_DIGITAL_GIGABYTE);
+		$this->assertEquals('10 gigabytes', $unitFormatted);
+	}
+
+	public function test_format_per_unit()
+	{
+		$culture = new CultureInfo('en_US');
+		
+		$unitFormatted = $culture->formatPerUnit(1, Prado\I18N\core\CultureInfoUnits::TYPE_LENGTH_METER);
+		$this->assertEquals('1 per meter', $unitFormatted);
+	}
+
 }
