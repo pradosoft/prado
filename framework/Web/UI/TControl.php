@@ -353,7 +353,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	/**
 	 * Returns the module associated with the class path of the control.  This is for Composer
 	 * extensions adding their own Controls to access their associated Module.
-	 * @return null|\Prado\Util\IPluginModule the module associated with this TControl
+	 * @return null|mixed the module associated with this TControl
 	 * @since 4.2.0
 	 */
 	public function getPluginModule()
