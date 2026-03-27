@@ -66,7 +66,7 @@ class TUser extends \Prado\TComponent implements IUser
 	}
 
 	/**
-	 * @return IUserManager user manager
+	 * @return mixed user manager
 	 */
 	public function getManager()
 	{

@@ -669,7 +669,7 @@ class TApplication extends \Prado\TComponent implements ISingleton
 	}
 
 	/**
-	 * @return TService the currently requested service
+	 * @return mixed the currently requested service
 	 */
 	public function getService()
 	{
