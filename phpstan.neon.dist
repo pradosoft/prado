@@ -8,3 +8,8 @@ services:
         class: Prado\PHPStan\DynamicMethodsClassReflectionExtension
         tags:
             - phpstan.broker.methodsClassReflectionExtension
+
+    -
+        class: Prado\PHPStan\TComponentIsaTypeSpecifyingExtension
+        tags:
+            - phpstan.typeSpecifier.methodTypeSpecifyingExtension
