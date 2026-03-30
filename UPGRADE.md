@@ -1,4 +1,4 @@
-# Upgrading Instructions for PRADO Framework v4.3.1
+# Upgrading Instructions for PRADO Framework v4.3.2
 
 ### !!!IMPORTANT!!!
 
