@@ -4,6 +4,7 @@
  * DynamicMethodsClassReflectionExtension class
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
+ * @link https://github.com/pradosoft/prado
  */
 
 namespace Prado\PHPStan;
