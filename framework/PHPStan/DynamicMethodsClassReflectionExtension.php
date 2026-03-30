@@ -4,8 +4,6 @@
  * DynamicMethodsClassReflectionExtension class
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
- * @link https://github.com/pradosoft/prado
- * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
 
 namespace Prado\PHPStan;
@@ -57,6 +55,11 @@ class DynamicMethodsClassReflectionExtension implements MethodsClassReflectionEx
 		return strncasecmp($methodName, 'dy', 2) === 0 || strncasecmp($methodName, 'fx', 2) === 0;
 	}
 
+	/**
+	 * @param ClassReflection $classReflection The reflection of the class.
+	 * @param string $methodName The name of the Method we are looking up for reflection.
+	 * @return MethodReflection The Method Reflection of a Dynamic Method or Global Event.
+	 */
 	public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
 	{
 		return new DynamicMethodReflection($classReflection, $methodName);

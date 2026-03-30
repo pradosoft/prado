@@ -5,7 +5,7 @@
  *
  * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
- * @license https://github.com/pradosoft/prado/blob/master/LICENSE
+ * @license https://github.com/teamdigitale/licenses/blob/master/CC0-1.0
  */
 
 declare(strict_types=1);

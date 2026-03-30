@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DynamicMethodsClassReflectionExtension class
+ *
+ * @author Fabio Bas <ctrlaltca@gmail.com>
+ */
+
 namespace Prado\PHPStan;
 
 use PHPStan\Type\Generic\TemplateTypeMap;
@@ -13,6 +19,26 @@ use PHPStan\TrinaryLogic;
 use PHPStan\Type\Type;
 use PHPStan\Type\MixedType;
 
+/**
+ * DynamicMethodReflection class.
+ *
+ * This class extends \PHPStan\Reflections\MethodReflection.
+ *
+ * It provides PHPStan with what "DynamicMethods" reflections look like.
+ * Dynamic Method Reflection qualities:
+ *  - isStatic: No
+ *  - isPrivate: No
+ *  - isPublic: Yes
+ *  - docComment: null
+ *  - isDeprecated: No
+ *  - isFinal: No
+ *  - isInternal: No
+ *  - throwType: null
+ *  - hasSideEffects: Maybe
+ *
+ * @author Fabio Bas <ctrlaltca@gmail.com>
+ * @since 4.2.2
+ */
 class DynamicMethodReflection implements MethodReflection
 {
 	private $_classReflection;
