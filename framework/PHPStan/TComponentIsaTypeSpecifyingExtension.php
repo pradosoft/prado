@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * TComponentIsaTypeSpecifyingExtension class
+ *
+ * @author Brad Anderson <belisoful@icloud.com>
+ * @link https://github.com/pradosoft/prado
+ * @license https://github.com/pradosoft/prado/blob/master/LICENSE
+ */
+
 declare(strict_types=1);
 
 namespace Prado\PHPStan;
@@ -24,7 +32,7 @@ use Prado\TComponent;
  * ```php
  *		$component->isa(MyClass::class)
  * ```
- * is the same as
+ * is the same operation and effect as
  * ```php
  *		$component instanceof MyClass::class
  * ```
