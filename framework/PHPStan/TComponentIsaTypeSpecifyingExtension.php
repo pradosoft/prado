@@ -31,10 +31,11 @@ use Prado\TComponent;
  *
  * Within a projects `phpstan.neon.dist`, add the following configuration:
  * ```neon
- *	-
- *		class: Prado\PHPStan\TComponentIsaTypeSpecifyingExtension
- *		tags:
- *			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
+ * services:
+ *		-
+ *			class: Prado\PHPStan\TComponentIsaTypeSpecifyingExtension
+ *			tags:
+ *				- phpstan.typeSpecifier.methodTypeSpecifyingExtension
  * ```
  *
  * @author Brad Anderson <beisoful@icloud.com>
