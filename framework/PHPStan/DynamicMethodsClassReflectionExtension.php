@@ -17,20 +17,24 @@ use PHPStan\Reflection\MethodReflection;
 /**
  * DynamicMethodsClassReflectionExtension class.
  *
- * This is a PHPStan Extension that tells PHPStan that "dynamic methods",
- * with the prefix of "dy" or "fx", is present regardless of parameters.
+ * This is a PHPStan Extension which tells PHPStan that "dynamic methods"
+ * and global events, with the prefixes "dy" or "fx", are present
+ * regardless of parameters.
  *
- * 'dy-" and 'fx-' methods are events, and the entire space of the methods
- * are valid regardless of implementation.  The lack of an implementation
- * is simply a NO-OP.
+ * 'dy-" and 'fx-' methods are events, and the entire prefix space of
+ * these methods, are valid regardless of implementation.  The lack of an
+ * implementation is simply a NO-OP.
  *
  * ```php
- *		// For Example, does nothing if not implemented by the subclass
+ *		// For Example, the below does nothing if unimplemented
+ *      //  and PHPStan will not complain
  *		$component->dy(...)
  *		$component->fx(...)
  * ```
  *
- * Within a projects `phpstan.neon.dist`, add the following configuration:
+ * This class helps PHPStan understand the dynamic method and global event
+ * PRADO features and validate PRADO projects.
+ * To use this class, add the following PHPStan configuration to a project:
  * ```neon
  * services:
  *		-

@@ -28,16 +28,18 @@ use Prado\TComponent;
 /**
  * TComponentIsaTypeSpecifyingExtension class.
  *
- * This is a PHPStan Extension that tells PHPStan that
+ * This is a PHPStan Extension which tells PHPStan that:
  * ```php
  *		$component->isa(MyClass::class)
  * ```
- * is the same operation and effect as
+ * has the same operation and effect as:
  * ```php
  *		$component instanceof MyClass::class
  * ```
  *
- * Within a projects `phpstan.neon.dist`, add the following configuration:
+ * This class helps PHPStan understand the "isa" PRADO feature and validate
+ * PRADO projects.
+ * To use this class, add the following PHPStan configuration to a project:
  * ```neon
  * services:
  *		-
