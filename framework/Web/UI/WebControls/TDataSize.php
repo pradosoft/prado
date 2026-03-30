@@ -69,7 +69,7 @@ class TDataSize extends TLabel
 		$size /= pow($base, $orderOfMagnitude);
 
 		$sf = ($size >= 1000) ? 3 : 2;
-		$size = round($size, (int) ceil($sf - log10($size)));
+		$size = round($size, (int) ceil($sf - ($size == 0 ? 0 : log10($size))));
 		$culture = $this->getLocalizedInfo();
 
 		$contents = null;
