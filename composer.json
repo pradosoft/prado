@@ -71,6 +71,7 @@
 		"ext-memcached" : "Enables the use of TMemCache as a cache handler",
 		"ext-pdo" : "Used by all the Prado\\Data components, eg. TActiveRecord",
 		"ext-soap" : "Used by TSoapService to provide a soap backend",
+		"ext-sockets" : "Used by TCaptureForkLog to capture the log of a child process",
 		"ext-xdebug": "Useful to get stack traces on Php fatal errors",
 		"ext-xsl" : "Used by the TXmlTransform component",
 		"ext-zlib" : "Enables compression to reduce page size",
