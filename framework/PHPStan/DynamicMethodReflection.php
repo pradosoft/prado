@@ -1,7 +1,7 @@
 <?php
 
 /**
- * DynamicMethodsClassReflectionExtension class
+ * DynamicMethodReflection class
  *
  * @author Fabio Bas <ctrlaltca@gmail.com>
  */
