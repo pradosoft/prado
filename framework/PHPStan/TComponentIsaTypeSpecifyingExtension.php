@@ -11,12 +11,35 @@ use PHPStan\Analyser\TypeSpecifierAwareExtension;
 use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\ReflectionProvider;          // ← add
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
 use Prado\TComponent;
 
+/**
+ * TComponentIsaTypeSpecifyingExtension class.
+ *
+ * This is a PHPStan Extension that tells PHPStan that
+ * ```php
+ *		$component->isa(MyClass::class)
+ * ```
+ * is the same as
+ * ```php
+ *		$component instanceof MyClass::class
+ * ```
+ *
+ * Within a projects `phpstan.neon.dist`, add the following configuration:
+ * ```neon
+ *	-
+ *		class: Prado\PHPStan\TComponentIsaTypeSpecifyingExtension
+ *		tags:
+ *			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
+ * ```
+ *
+ * @author Brad Anderson <beisoful@icloud.com>
+ * @since 4.3.3
+ */
 class TComponentIsaTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
 {
 	private TypeSpecifier $typeSpecifier;
