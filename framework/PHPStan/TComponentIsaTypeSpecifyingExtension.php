@@ -51,7 +51,7 @@ use Prado\TComponent;
  * @author Brad Anderson <beisoful@icloud.com>
  * @since 4.3.3
  */
-class TComponentIsaTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
+final class TComponentIsaTypeSpecifyingExtension implements MethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
 {
 	private TypeSpecifier $typeSpecifier;
 
