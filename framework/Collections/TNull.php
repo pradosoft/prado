@@ -229,7 +229,6 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	// Predicates
 	// -----------------------------------------------------------------------
 
-
 	/**
 	 * Returns whether a value is an instance of TNull.
 	 *
