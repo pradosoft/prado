@@ -229,6 +229,29 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	// Predicates
 	// -----------------------------------------------------------------------
 
+
+	/**
+	 * Returns whether a value is an instance of TNull.
+	 *
+	 * Returns {@see true} when {@see $value} is an instance of TNull, allowing
+	 * call sites to check for just TNull.
+	 *
+	 * ```php
+	 * TNull::is_null_object(TNull::null());  // true
+	 * TNull::is_null_object(null);           // false
+	 * TNull::is_null_object('');             // false
+	 * TNull::is_null_object(0);              // false
+	 * ```
+	 *
+	 * @param mixed $value the value to test
+	 * @return bool {@see true} when {@see $value} is a TNull instance;
+	 *				{@see false} otherwise
+	 */
+	public static function is_null_object(mixed $value): bool
+	{
+		return $value instanceof static;
+	}
+
 	/**
 	 * Returns whether a value represents an absent value.
 	 *
@@ -256,28 +279,6 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	public static function is_null(mixed $value): bool
 	{
 		return $value === null || $value instanceof static;
-	}
-
-	/**
-	 * Returns whether a value is an instance of TNull.
-	 *
-	 * Returns {@see true} when {@see $value} is an instance of TNull, allowing
-	 * call sites to check for just TNull.
-	 *
-	 * ```php
-	 * TNull::is_null_object(TNull::null());  // true
-	 * TNull::is_null_object(null);           // false
-	 * TNull::is_null_object('');             // false
-	 * TNull::is_null_object(0);              // false
-	 * ```
-	 *
-	 * @param mixed $value the value to test
-	 * @return bool {@see true} when {@see $value} is a TNull instance;
-	 *				{@see false} otherwise
-	 */
-	public static function is_null_object(mixed $value): bool
-	{
-		return $value instanceof static;
 	}
 
 	/**
