@@ -29,10 +29,10 @@ use Prado\ISingleton;
  * Constructing and cloning is disallowed.  The shared instance is obtained
  * via the {@see null()} factory method or {@see singleton()}:
  *
- * <code>
+ * ```php
  * 	$n = TNull::null();      // factory method — mirrors NSNull +null
  * 	$n = TNull::singleton(); // ISingleton-compliant alternative
- * </code>
+ * ```
  *
  * Two static predicates are provided, named to mirror their PHP counterparts:
  * ```php
@@ -42,10 +42,10 @@ use Prado\ISingleton;
  *
  * {@see wrap()} and {@see unwrap()} convert between the two representations:
  *
- * <code>
+ * ```php
  * 	$obj = TNull::wrap(null);            // PHP null → TNull singleton
  * 	$raw = TNull::unwrap(TNull::null()); // TNull    → PHP null
- * </code>
+ * ```
  *
  * {@see __toString()} returns an empty string, consistent with PHP's own
  * cast behaviour: {@see (string)null} likewise yields {@see ''}.
@@ -55,9 +55,9 @@ use Prado\ISingleton;
  * TNull implements {@see \JsonSerializable} and encodes as JSON {@see null},
  * the natural representation of an absent value in a JSON payload:
  *
- * <code>
+ * ```php
  * echo json_encode(['value' => TNull::null()]);  // {"value":null}
- * </code>
+ * ```
  *
  * @author  Brad Anderson <belisoful@icloud.com>
  * @since   4.3.3
@@ -113,10 +113,10 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * This is the preferred way to obtain the shared instance programmatically.
 	 * It is a thin alias for {@see singleton()}.
 	 *
-	 * <code>
+	 * ```php
 	 * $placeholder = TNull::null();
 	 * $map->add('key', $placeholder);
-	 * </code>
+	 * ```
 	 *
 	 * @return static the singleton TNull instance
 	 */
@@ -132,13 +132,13 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * intended to be called during application startup to ensure the singleton
 	 * is created.
 	 *
-	 * <code>
+	 * ```php
 	 * // During application bootstrap:
 	 * TNull::init();
 	 *
 	 * // Subsequent access uses null() or singleton():
 	 * $n = TNull::null();
-	 * </code>
+	 * ```
 	 *
 	 * Calling {@see init()} more than once is safe; the singleton is created
 	 * only on the first call and subsequent calls are no-ops.
@@ -213,10 +213,10 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * absent value.  Collections containing TNull instances therefore produce
 	 * well-formed JSON without any special handling by the caller:
 	 *
-	 * <code>
+	 * ```php
 	 * echo json_encode(['a' => TNull::null(), 'b' => 1]);
 	 * // {"a":null,"b":1}
-	 * </code>
+	 * ```
 	 *
 	 * @return mixed Always null
 	 */
@@ -241,12 +241,12 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * TNull-aware {@see TNull::is_null()} call requires only the addition of
 	 * the class qualifier:
 	 *
-	 * <code>
+	 * ```php
 	 * TNull::is_null(TNull::null());  // true
 	 * TNull::is_null(null);           // true
 	 * TNull::is_null('');             // false
 	 * TNull::is_null(0);              // false
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value the value to test
 	 * @return bool {@see true} when {@see $value} is {@see null} or a TNull
@@ -264,12 +264,12 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * Returns {@see true} when {@see $value} is an instance of TNull, allowing
 	 * call sites to check for just TNull.
 	 *
-	 * <code>
+	 * ```php
 	 * TNull::is_null_object(TNull::null());  // true
 	 * TNull::is_null_object(null);           // false
 	 * TNull::is_null_object('');             // false
 	 * TNull::is_null_object(0);              // false
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value the value to test
 	 * @return bool {@see true} when {@see $value} is a TNull instance;
@@ -291,7 +291,7 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * that switching to a TNull-aware check requires only the addition of the
 	 * class qualifier.
 	 *
-	 * <code>
+	 * ```php
 	 * TNull::empty(TNull::null());  // true
 	 * TNull::empty(null);           // true
 	 * TNull::empty('');             // true
@@ -302,7 +302,7 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * // As a callable — array form required:
 	 * $isEmpty = [TNull::class, 'empty'];
 	 * array_filter($items, $isEmpty);
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value the value to test
 	 * @return bool {@see true} when {@see $value} is empty or a TNull instance
@@ -323,9 +323,9 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * Use {@see wrap()} when storing values into a collection that requires
 	 * objects in place of native {@see null}:
 	 *
-	 * <code>
+	 * ```php
 	 * $list->add(TNull::wrap($maybeNull));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value the value to wrap
 	 * @return mixed|static the TNull singleton when {@see $value} is
@@ -344,9 +344,9 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * uses TNull as a null placeholder, and downstream code expects native
 	 * {@see null}:
 	 *
-	 * <code>
+	 * ```php
 	 * $raw = TNull::unwrap($list->itemAt(0));
-	 * </code>
+	 * ```
 	 *
 	 * @param mixed $value the value to unwrap
 	 * @return null|mixed {@see null} when {@see $value} is a TNull instance;
@@ -369,11 +369,11 @@ class TNull implements ISingleton, \JsonSerializable, \Stringable
 	 * anywhere a {@see callable} returning {@see null} is expected, without
 	 * requiring an explicit wrapper closure:
 	 *
-	 * <code>
+	 * ```php
 	 * $fn     = TNull::null();
 	 * $result = $fn();                            // null
 	 * $filled = array_map($fn, $list->toArray()); // [null, null, ...]
-	 * </code>
+	 * ```
 	 *
 	 * @return mixed always {@see null}
 	 */
