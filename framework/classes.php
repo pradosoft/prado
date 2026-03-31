@@ -39,6 +39,7 @@ return [
 'TList' => 'Prado\Collections\TList',
 'TListItemCollection' => 'Prado\Collections\TListItemCollection',
 'TMap' => 'Prado\Collections\TMap',
+'TNull' => 'Prado\Collections\TNull',
 'TPagedDataSource' => 'Prado\Collections\TPagedDataSource',
 'TPagedList' => 'Prado\Collections\TPagedList',
 'TPagedListFetchDataEventParameter' => 'Prado\Collections\TPagedListFetchDataEventParameter',
