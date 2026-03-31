@@ -41,6 +41,8 @@ map_data_not_iterable					= Data must be either an array or an object implementi
 map_readonly							= {0} is read-only.
 map_readonly_set						= {0} cannot change Read-Only once it is already set.
 
+tnull_clone_disallowed					= TNull singleton cannot be cloned. Use TNull::null() instead.
+
 weakcallablecollection_callable_required = TWeakCallableCollection can only accept callables.
 
 arraysubscription_no_change				= TArraySubscription.{0} cannot be changed after being subscribed.
