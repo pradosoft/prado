@@ -2,6 +2,11 @@
 
 class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 {
+	public function days_in_month($month, $year)
+	{
+		// calculate number of days in a month
+		return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
+	}
 	public function test()
 	{
 		$base = 'ctl0_Content_';
@@ -26,8 +31,23 @@ class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
 		$this->assertText("{$base}status", date('m-d-Y'));
 		$this->byCssSelector("input.nextMonthButton")->click();
-		$this->assertValue("{$base}datepicker", date('m-d-Y', strtotime('+ 1 month')));
-		$this->assertText("{$base}status", date('m-d-Y', strtotime('+1 month')));
+		$nextMonthDate = (function () {	// nextMonth - datepicker.js:L532
+				$d = new DateTime(); // now
+				$currentDay = (int)$d->format('j');
+		
+				$d->modify('first day of next month');
+				$daysInMonth = (int)$d->format('t');
+		
+				$d->setDate(
+					(int)$d->format('Y'),
+					(int)$d->format('n'),
+					min($currentDay, $daysInMonth)
+				);
+		
+				return $d->getTimestamp();
+			})();
+		$this->assertValue("{$base}datepicker", date('m-d-Y', $nextMonthDate));
+		$this->assertText("{$base}status", date('m-d-Y', $nextMonthDate));
 
 		$this->byId("{$base}toggleButton")->click();
 		$this->pause(2000);
