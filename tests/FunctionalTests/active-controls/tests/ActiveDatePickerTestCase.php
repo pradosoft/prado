@@ -31,7 +31,7 @@ class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		$this->assertValue("{$base}datepicker", date('m-d-Y'));
 		$this->assertText("{$base}status", date('m-d-Y'));
 		$this->byCssSelector("input.nextMonthButton")->click();
-		$nextMonthDate = (function () {	// nextMonth - datepicker.js:L532
+		$dateToCheck = (function () {	// nextMonth - datepicker.js:L532
 				$d = new DateTime(); // now
 				$currentDay = (int)$d->format('j');
 		
@@ -46,8 +46,9 @@ class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		
 				return $d->getTimestamp();
 			})();
-		$this->assertValue("{$base}datepicker", date('m-d-Y', $nextMonthDate));
-		$this->assertText("{$base}status", date('m-d-Y', $nextMonthDate));
+		$nextMonthDate = $dateToCheck;
+		$this->assertValue("{$base}datepicker", date('m-d-Y', $dateToCheck));
+		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
 		$this->byId("{$base}toggleButton")->click();
 		$this->pause(2000);
@@ -93,7 +94,7 @@ class ActiveDatePickerTestCase extends \Prado\Tests\PradoGenericSelenium2Test
 		$this->assertText("{$base}status", date('m-d-Y', $dateToCheck));
 
 		$this->byCssSelector("input.nextMonthButton")->click();
-		$dateToCheck = strtotime('+ 1 month');
+		$dateToCheck = $nextMonthDate;
 		$this->assertSelected("{$base}datepicker_month", date('m', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_day", date('d', $dateToCheck));
 		$this->assertSelected("{$base}datepicker_year", date('Y', $dateToCheck));
