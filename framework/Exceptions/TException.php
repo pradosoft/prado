@@ -101,9 +101,9 @@ class TException extends \Exception
 	 */
 	public static function addMessageFile($file)
 	{
-		if (preg_match('/^(.*)(-.{2.4})?\.(.{2,4})$/', $file, $matching)) {
+		if (preg_match('/^(.*)(?:-(.{2,5}))?\.(.{2,4})$/', $file, $matching)) {
 			$lang = Prado::getPreferredLanguage();
-			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[2];
+			$msgFile = $matching[1] . '-' . $lang . '.' . $matching[3];
 			if (is_file($msgFile)) {
 				$file = $msgFile;
 			}
