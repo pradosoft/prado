@@ -208,7 +208,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 
 	/**
 	 * Finalizes a user with the application after it is set up but before it is returned
-	 * from {@see getUser() and {@see getUserFromCookie()}
+	 * from {@see getUser() and {@see getUserFromCookie()}.
 	 * @param TUser $user The user to finalize.
 	 * @since 4.3.3
 	 */
