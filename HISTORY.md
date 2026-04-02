@@ -1,5 +1,6 @@
 ## Version 4.3.3 - TBA
 
+ENH: Issue #1032 - Adds IUserManager::onFinalizeUser and TUserManager support for `hash` password modes.
 ENH: Issue #1027 - Adds TNull to represent `null` in Collections.
 ENH: Issue #776 - TDataSize supports ronna- and quetta- sizes, and uses cultural units for peta- and under (decimal only).
 ENH: Issue #782 - CultureInfo loads and formats units from ICU.

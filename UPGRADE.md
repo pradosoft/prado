@@ -9,7 +9,7 @@ for both A and B.
 
 Upgrading from v4.3.2
 ---------------------
-- IUserManager classes must implement `onFinalizeUser` at the end of `getUser` (or equivalent). PRADO Composer Extensions may require it.
+- IUserManager implementations must implement `onFinalizeUser` at the end of `getUser` (or equivalent). 3rd party PRADO Composer Extensions may require it.
 
 Upgrading from v4.2.2
 ---------------------
