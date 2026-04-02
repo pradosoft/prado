@@ -122,10 +122,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 		if ($username === null) {
 			$user = Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
-			return $user;
 		} else {
-			return $this->_userFactory->createUser($username);
+			$user = $this->_userFactory->createUser($username);
 		}
+		$this->onFinalizeUser($user);
+		return $user;
 	}
 
 	/**
@@ -187,7 +188,9 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 */
 	public function getUserFromCookie($cookie)
 	{
-		return $this->_userFactory->createUserFromCookie($cookie);
+		$user = $this->_userFactory->createUserFromCookie($cookie);
+		$this->onFinalizeUser($user);
+		return $user;
 	}
 
 	/**
@@ -201,5 +204,16 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 		if ($user instanceof TDbUser) {
 			$user->saveUserToCookie($cookie);
 		}
+	}
+
+	/**
+	 * Finalizes a user with the application after it is set up but before it is returned
+	 * from {@see getUser() and {@see getUserFromCookie()}
+	 * @param TUser $user The user to finalize.
+	 * @since 4.3.3
+	 */
+	public function onFinalizeUser($user): void
+	{
+		$this->raiseEvent('onFinalizeUser', $this, $user);
 	}
 }

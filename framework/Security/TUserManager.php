@@ -12,10 +12,12 @@ namespace Prado\Security;
 
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Prado;
 use Prado\TApplication;
 use Prado\TPropertyValue;
 use Prado\Xml\TXmlDocument;
+use Prado\Xml\TXmlElement;
 
 /**
  * TUserManager class
@@ -58,8 +60,11 @@ use Prado\Xml\TXmlDocument;
  * only accepts a file path in namespace format. The user file format is
  * similar to the above sample.
  *
- * The user passwords may be specified as clear text, SH1 or MD5 hashed by setting
- * {@see setPasswordMode PasswordMode} as <b>Clear</b>, <b>SHA1</b> or <b>MD5</b>.
+ * User passwords may be specified as Clear text, or hashed in MD5, SHA1, or any algorithm
+ * listed in `hash_algos` (when available). {@see setPasswordMode PasswordMode} is used to
+ * set how the the password is hashed. Valid values for setPasswordMode are <b>Clear</b>,
+ * <b>MD5</b>, <b>SHA1</b>, or any algorithm accepted by `hash`.
+ *
  * The default name for a guest user is <b>Guest</b>. It may be changed
  * by setting {@see setGuestName GuestName} property.
  *
@@ -68,7 +73,9 @@ use Prado\Xml\TXmlDocument;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carl Mathisen <carl@kamikazemedia.no>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
+ * @see `hash` https://www.php.net/manual/en/function.hash.php
  */
 class TUserManager extends \Prado\TModule implements IUserManager
 {
@@ -77,7 +84,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private $_users = [];
 	/**
-	 * @var array list of roles managed by this module
+	 * @var array list of unique roles managed by this module
+	 */
+	private $_uniqueRoles = [];
+	/**
+	 * @var array list of users and their rolls $_roles[user][(rolls)]
 	 */
 	private $_roles = [];
 	/**
@@ -109,15 +120,57 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		if ($this->_userFile !== null) {
 			if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
 				$userFile = include $this->_userFile;
-				$this->loadUserDataFromPhp($userFile);
 			} else {
 				$dom = new TXmlDocument();
 				$dom->loadFromFile($this->_userFile);
-				$this->loadUserDataFromXml($dom);
+				$userFile = $this->configXml2Php($dom);
 			}
+			$this->loadUserDataFromPhp($userFile);
 		}
 		$this->_initialized = true;
 		parent::init($config);
+	}
+
+	/*
+	 * This selects the children elements with a tag name from $xmlNode.
+	 * Each selected elements' attributes (array) are saved in an array and
+	 * returned.
+	 * @param TXmlElement $xmlNode The XML Element with children to search.
+	 * @param string	  $tagName The tagName for selecting children by tag.
+	 * @return array A list of arrays containing found elements' attributes.
+	 * @since 4.3.3
+	 * @note this may need to be elevated to TModule for more general use.
+	 */
+	protected function xmlChildren2AttributesArray(TXmlElement $xmlNode, string $tagName): array
+	{
+		$results = [];
+		foreach ($xmlNode->getElementsByTagName($tagName) as $node) {
+			$results[] = $node->getAttributes()->toArray();
+		}
+
+		return $results;
+	}
+
+	/*
+	 * Converts XML configuration to PHP configuration for TUserManager.
+	 * @param TXmlElement $xmlNode the variable containing the user information
+	 * @since 4.3.3
+	 * @note this may need to be elevated to TModule for more general use.
+	 */
+	protected function configXml2Php(?TXmlElement $xmlNode): array
+	{
+		$phpConfig = [];
+		if ($xmlNode) {
+			$users = $this->xmlChildren2AttributesArray($xmlNode, 'user');
+			if (!empty($users)) {
+				$phpConfig['users'] = $users;
+			}
+			$roles = $this->xmlChildren2AttributesArray($xmlNode, 'role');
+			if (!empty($roles)) {
+				$phpConfig['roles'] = $roles;
+			}
+		}
+		return $phpConfig;
 	}
 
 	/*
@@ -126,11 +179,10 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	private function loadUserData($config)
 	{
-		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_PHP) {
-			$this->loadUserDataFromPhp($config);
-		} else {
-			$this->loadUserDataFromXml($config);
+		if ($this->getApplication()->getConfigurationType() == TApplication::CONFIG_TYPE_XML && $config instanceof TXmlElement) {
+			$config = $this->configXml2Php($config);
 		}
+		$this->loadUserDataFromPhp($config);
 	}
 
 	/**
@@ -143,12 +195,17 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			foreach ($config['users'] as $user) {
 				$name = trim(strtolower($user['name'] ?? ''));
 				$password = $user['password'] ?? '';
+
 				$this->_users[$name] = $password;
+
 				$roles = $user['roles'] ?? '';
 				if ($roles !== '') {
 					foreach (explode(',', $roles) as $role) {
 						if (($role = trim($role)) !== '') {
 							$this->_roles[$name][] = $role;
+							if (!in_array($role, $this->_uniqueRoles)) {
+								$this->_uniqueRoles[] = $role;
+							}
 						}
 					}
 				}
@@ -157,37 +214,14 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		if (isset($config['roles']) && is_array($config['roles'])) {
 			foreach ($config['roles'] as $role) {
 				$name = $role['name'] ?? '';
+				if (!in_array($role, $this->_uniqueRoles)) {
+					$this->_uniqueRoles[] = $role;
+				}
 				$users = $role['users'] ?? '';
 				foreach (explode(',', $users) as $user) {
 					if (($user = trim($user)) !== '') {
 						$this->_roles[strtolower($user)][] = $name;
 					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Loads user/role information from an XML node.
-	 * @param \Prado\Xml\TXmlElement $xmlNode the XML node containing the user information
-	 */
-	private function loadUserDataFromXml($xmlNode)
-	{
-		foreach ($xmlNode->getElementsByTagName('user') as $node) {
-			$name = trim(strtolower($node->getAttribute('name')));
-			$this->_users[$name] = $node->getAttribute('password');
-			if (($roles = trim($node->getAttribute('roles') ?? '')) !== '') {
-				foreach (explode(',', $roles) as $role) {
-					if (($role = trim($role)) !== '') {
-						$this->_roles[$name][] = $role;
-					}
-				}
-			}
-		}
-		foreach ($xmlNode->getElementsByTagName('role') as $node) {
-			foreach (explode(',', $node->getAttribute('users')) as $user) {
-				if (($user = trim($user)) !== '') {
-					$this->_roles[strtolower($user)][] = $node->getAttribute('name');
 				}
 			}
 		}
@@ -203,6 +237,16 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	public function getUsers()
 	{
 		return $this->_users;
+	}
+
+	/**
+	 * Returns the configured unique roles for users.
+	 * @return array list of user role information
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoles()
+	{
+		return $this->_uniqueRoles;
 	}
 
 	/**
@@ -269,7 +313,21 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	 */
 	public function setPasswordMode($value)
 	{
-		$this->_passwordMode = TPropertyValue::ensureEnum($value, TUserManagerPasswordMode::class);
+		try {
+			$this->_passwordMode = TPropertyValue::ensureEnum($value, TUserManagerPasswordMode::class);
+		} catch (TInvalidDataValueException $e) {
+			$throw = true;
+			if (function_exists('hash_algos')) {
+				$availableHashes = array_flip(hash_algos());
+				if (isset($availableHashes[$value])) {
+					$this->_passwordMode = $value;
+					$throw = false;
+				}
+			}
+			if ($throw) {
+				throw $e;
+			}
+		}
 	}
 
 	/**
@@ -284,6 +342,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$password = md5($password);
 		} elseif ($this->_passwordMode === TUserManagerPasswordMode::SHA1) {
 			$password = sha1($password);
+		} elseif (function_exists('hash') && $this->_passwordMode !== TUserManagerPasswordMode::Clear) {
+			$password = hash($this->_passwordMode, $password);
 		}
 		$username = strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username] === $password);
@@ -299,7 +359,6 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		if ($username === null) {
 			$user = new TUser($this);
 			$user->setIsGuest(true);
-			return $user;
 		} else {
 			$username = strtolower($username);
 			if (isset($this->_users[$username])) {
@@ -309,15 +368,18 @@ class TUserManager extends \Prado\TModule implements IUserManager
 				if (isset($this->_roles[$username])) {
 					$user->setRoles($this->_roles[$username]);
 				}
-				return $user;
 			} else {
 				return null;
 			}
 		}
+
+		$this->onFinalizeUser($user);
+		return $user;
 	}
 
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
+	 * {@see getUserFromCookie()} uses {@see getUser()} to get the user.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
 	 * @return TUser the user instance generated based on the cookie auth data, null if the cookie does not have valid auth data.
 	 * @since 3.1.1
@@ -349,5 +411,16 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$data = [$username, md5($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
+	}
+
+	/**
+	 * Finalizes a user with the application after it is set up but before it is returned
+	 * from {@see getUser()}.
+	 * @param TUser $user The user to finalize.
+	 * @since 4.3.3
+	 */
+	public function onFinalizeUser($user): void
+	{
+		$this->raiseEvent('onFinalizeUser', $this, $user);
 	}
 }
