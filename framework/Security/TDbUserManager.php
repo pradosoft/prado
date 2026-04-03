@@ -10,6 +10,7 @@
 
 namespace Prado\Security;
 
+use Prado\Security\Traits\TUserManagerTrait;
 use Prado\Data\TDataSourceConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
@@ -56,43 +57,30 @@ use Prado\Util\IDbModule;
  */
 class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 {
-	/**
-	 * @var \Prado\Data\TDbConnection The connection to the database.
-	 */
+	use TUserManagerTrait;
+
+	/** @var \Prado\Data\TDbConnection The connection to the database. */
 	private $_dbConnection;
-	/**
-	 * @var string The string ID of the TDataSourceConfig.
-	 */
+
+	/** @var string The string ID of the TDataSourceConfig. */
 	private $_connectionID = '';
 
-	/**
-	 * @var string The name of users who are not logged in.
-	 */
+	/** @var string The name of users who are not logged in. */
 	private $_guestName = 'Guest';
 
-	/**
-	 * @var string The namespaced class of the User Factory.
-	 */
+	/** @var string The namespaced class of the User Factory. */
 	private $_userClass = '';
 
-	/**
-	 * @var ?array The application parameter ID of the unique roles.
-	 */
+	/** @var ?array The application parameter ID of the unique roles. */
 	private $_rolesAppParameterId;
 
-	/**
-	 * @var ?array The unique roles set on the module by configuration.
-	 */
+	/** @var ?array The unique roles set on the module by configuration. */
 	private $_uniqueRoles;
 
-	/**
-	 * @var TDbUser The Factory for users.
-	 */
+	/** @var TDbUser The Factory for users. */
 	private $_userFactory;
 
-	/**
-	 * @var bool whether the module has been initialized.
-	 */
+	/** @var bool whether the module has been initialized. */
 	private $_initialized = false;
 
 	/**
@@ -351,17 +339,6 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 			$this->onFinalizeUser($user);
 		}
 		return $user;
-	}
-
-	/**
-	 * Finalizes a user with the application after it is set up but before it is returned
-	 * from {@see getUser()} and {@see getUserFromCookie()}.
-	 * @param TUser $user The user to finalize.
-	 * @since 4.3.3
-	 */
-	public function onFinalizeUser($user): void
-	{
-		$this->raiseEvent('onFinalizeUser', $this, $user);
 	}
 
 	/**

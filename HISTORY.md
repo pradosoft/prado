@@ -1,6 +1,10 @@
+## Version 4.4.0 - TBD
+
+ENH: Issue #1xxx - Adds IUserManager::getUniqueRoles, getUniqueRoleCount, and onFinalizeUser. Composer Extensions may need this information.
+
 ## Version 4.3.3 - TBA
 
-ENH: Issue #1032 - Adds IUserManager::getUserClass, getUniqueRoles, getUniqueRoleCount, and onFinalizeUser; TUserManager support for `hash` password modes and custom hashes; TDbUserManager has roles from TDbUser, specified App Parameter, or Module Property.
+ENH: Issue #1032 - TUserManagerTrait with core User Manager functions. TUserManager support for PHP `hash` password modes and custom hashes; TDbUserManager has roles from TDbUser, a specified App Parameter, or Module Property.
 ENH: Issue #1027 - Adds TNull to represent `null` in Collections.
 ENH: Issue #776 - TDataSize supports ronna- and quetta- sizes, and uses cultural units for peta- and under (decimal only).
 ENH: Issue #782 - CultureInfo loads and formats units from ICU.

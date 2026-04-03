@@ -23,11 +23,6 @@ namespace Prado\Security;
 interface IUserManager
 {
 	/**
-	 * @return string the user class name in namespace format.
-	 */
-	public function getUserClass();
-
-	/**
 	 * @return string name for a guest user.
 	 */
 	public function getGuestName();
@@ -48,14 +43,6 @@ interface IUserManager
 	public function getUserFromCookie($cookie);
 
 	/**
-	 * Provides for finalizing a user object after it is created but before its returned
-	 * from the implementing User Manager.
-	 * @param TUser $user The user to finalize.
-	 * @since 4.3.3
-	 */
-	public function onFinalizeUser($user);
-
-	/**
 	 * Saves user auth data into a cookie.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
@@ -71,17 +58,25 @@ interface IUserManager
 	public function validateUser($username, #[\SensitiveParameter] $password);
 
 	/**
+	 * Provides for finalizing a user object after it is created but before its returned
+	 * from the implementing User Manager.
+	 * @param TUser $user The user to finalize.
+	 * @todo for v4.4, not for v4.3
+	 */
+	//public function onFinalizeUser($user);
+
+	/**
 	 * Returns the unique roles in the application. If there are none, `return [];`
 	 * @return array The unique roles in the User Manager.
-	 * @since 4.3.3
+	 * @todo for v4.4, not for v4.3
 	 */
-	public function getUniqueRoles();
+	//public function getUniqueRoles();
 
 	/**
 	 * Returns the number of unique roles in the application. This may be handy if there
-	 * are a lot of rolls.
+	 * are a lot of roles.
 	 * @return int The number of unique roles.
-	 * @since 4.3.3
+	 * @todo for v4.4, not for v4.3
 	 */
-	public function getUniqueRoleCount();
+	//public function getUniqueRoleCount();
 }

@@ -10,6 +10,7 @@
 
 namespace Prado\Security;
 
+use Prado\Security\Traits\TUserManagerTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TInvalidDataValueException;
@@ -79,33 +80,24 @@ use Prado\Xml\TXmlElement;
  */
 class TUserManager extends \Prado\TModule implements IUserManager
 {
-	/**
-	 * @var array list of users managed by this module
-	 */
+	use TUserManagerTrait;
+
+	/** @var array List of users managed by this module. */
 	private $_users = [];
-	/**
-	 * @var array list of unique roles managed by this module
-	 */
+
+	/** @var array List of unique roles managed by this module. */
 	private $_uniqueRoles = [];
-	/**
-	 * @var array list of users and their rolls $_roles[user][(rolls)]
-	 */
+
+	/** @var array Array of users, each array element is an array of the users' roles. */
 	private $_roles = [];
-	/**
-	 * @var string guest name
-	 */
-	private $_guestName = 'Guest';
-	/**
-	 * @var TUserManagerPasswordMode password mode
-	 */
+
+	/** @var TUserManagerPasswordMode Password mode. */
 	private $_passwordMode = TUserManagerPasswordMode::MD5;
-	/**
-	 * @var bool whether the module has been initialized
-	 */
+
+	/** @var bool Whether the module has been initialized. */
 	private $_initialized = false;
-	/**
-	 * @var string user/role information file
-	 */
+
+	/** @var string User/role information file. */
 	private $_userFile;
 
 	/**
@@ -129,6 +121,14 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		}
 		$this->_initialized = true;
 		parent::init($config);
+	}
+
+	/**
+	 * @return string The user class name.
+	 */
+	public function getUserClass()
+	{
+		return TUser::class;
 	}
 
 	/*
@@ -225,14 +225,6 @@ class TUserManager extends \Prado\TModule implements IUserManager
 				}
 			}
 		}
-	}
-
-	/**
-	 * @return string The user class name.
-	 */
-	public function getUserClass()
-	{
-		return TUser::class;
 	}
 
 	/**
@@ -418,17 +410,6 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Finalizes a user with the application after it is set up but before it is returned
-	 * from {@see getUser()}.
-	 * @param TUser $user The user to finalize.
-	 * @since 4.3.3
-	 */
-	public function onFinalizeUser($user): void
-	{
-		$this->raiseEvent('onFinalizeUser', $this, $user);
 	}
 
 	/**
