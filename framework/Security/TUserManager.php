@@ -258,6 +258,16 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
+	 * Returns the number of unique roles in the application.
+	 * @return int The number of unique roles.
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoleCount()
+	{
+		return count($this->_uniqueRoles);
+	}
+
+	/**
 	 * Returns an array of user role information.
 	 * Each array element represents the roles for a single user.
 	 * The array key is the username in lower case, and the array value is
@@ -407,6 +417,17 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
+	 * Finalizes a user with the application after it is set up but before it is returned
+	 * from {@see getUser()}.
+	 * @param TUser $user The user to finalize.
+	 * @since 4.3.3
+	 */
+	public function onFinalizeUser($user): void
+	{
+		$this->raiseEvent('onFinalizeUser', $this, $user);
+	}
+
+	/**
 	 * Saves user auth data into a cookie.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
@@ -419,16 +440,5 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$data = [$username, md5($username . $this->_users[$username])];
 			$cookie->setValue(serialize($data));
 		}
-	}
-
-	/**
-	 * Finalizes a user with the application after it is set up but before it is returned
-	 * from {@see getUser()}.
-	 * @param TUser $user The user to finalize.
-	 * @since 4.3.3
-	 */
-	public function onFinalizeUser($user): void
-	{
-		$this->raiseEvent('onFinalizeUser', $this, $user);
 	}
 }
