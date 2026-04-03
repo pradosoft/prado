@@ -17,6 +17,12 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		$element = new TXmlElement('tag');
 		self::assertEquals('tag', $element->getTagName());
 	}
+	
+	public function testConstructWithEmptyTagName()
+	{
+		$this->expectException(TInvalidDataValueException::class);
+		$element = new TXmlElement('');
+	}
 
 	public function testSetParent()
 	{
@@ -453,7 +459,7 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		
 		// Test last child element
 		self::assertEquals($child3, $parent->getLastElementChild());
-		self::assertEquals(null, $child1->getLastELementChild());
+		self::assertEquals(null, $child1->getLastElementChild());
 		
 		// Test next sibling
 		self::assertEquals($child2, $child1->getNextElementSibling());
@@ -866,7 +872,7 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 	/**
 	 * Test array access and count interfaces
 	 */
-	public function testArrayAccessInterfaces()
+	public function testArrayAccessInterface()
 	{
 		$element = new TXmlElement('parent');
 		
@@ -902,6 +908,23 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(1, count($element));
 		self::assertEquals(false, isset($element[1]));
 		self::assertEquals($child1, $element[0]);
+		
+		// Test attribute access via array syntax
+		$element->setAttribute('test-attr', 'test-value');
+		self::assertEquals('test-value', $element['test-attr']);
+		self::assertEquals(true, isset($element['test-attr']));
+		$element['test-attr'] = 'new-value';
+		self::assertEquals('new-value', $element['test-attr']);
+		unset($element['test-attr']);
+		self::assertEquals(false, isset($element['test-attr']));
+		
+		// Test text value access
+		$element->setValue('test text');
+		self::assertEquals('test text', $element[null]);
+		$element[null] = 'new text';
+		self::assertEquals('new text', $element[null]);
+		unset($element[null]);
+		self::assertEquals(null, $element[null]);
 	}
 	
 	/**
@@ -945,42 +968,6 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		// Test XPath with no results
 		$noResults = $element->xpath("//item[@id='3']");
 		self::assertEquals(0, count($noResults));
-	}
-	
-	/**
-	 * Test DOM compatibility methods thoroughly
-	 */
-	public function testDOMCompatibilityMethods()
-	{
-		// Test getNodeName
-		$element = new TXmlElement('test');
-		self::assertEquals('test', $element->getNodeName());
-		
-		// Test getNodeValue
-		$element->setValue('test value');
-		self::assertEquals('test value', $element->getNodeValue());
-		
-		// Test setNodeValue
-		$element->setNodeValue('new value');
-		self::assertEquals('new value', $element->getNodeValue());
-		
-		// Test getParentElement
-		$parent = new TXmlElement('parent');
-		$child = new TXmlElement('child');
-		$parent->getElements()->add($child);
-		self::assertEquals($parent, $child->getParentElement());
-		
-		// Test getChildNodes
-		$childNodes = $element->getChildNodes();
-		self::assertInstanceOf('Prado\Xml\TXmlElementList', $childNodes);
-		
-		// Test hasChildNodes
-		self::assertEquals(false, $element->hasChildNodes());
-		$element->getElements()->add(new TXmlElement('child'));
-		self::assertEquals(true, $element->hasChildNodes());
-		
-		// Test getNodeType
-		self::assertEquals(XML_ENTITY_NODE, $element->getNodeType());
 	}
 	
 	/**
@@ -1028,5 +1015,140 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		$found = $element->getElementByTagName('level5', TXmlElement::SEARCH_BREADTH_FIRST);
 		self::assertNotNull($found);
 		self::assertEquals('level5', $found->getTagName());
+	}
+
+	/**
+	 * Test DOM node compatibility methods
+	 */
+	public function testDOMNodeMethods()
+	{
+		// Test getNodeName
+		$element = new TXmlElement('test');
+		self::assertEquals('test', $element->getNodeName());
+		
+		// Test getNodeValue
+		$element->setValue('test value');
+		self::assertEquals('test value', $element->getNodeValue());
+		
+		// Test setNodeValue
+		$element->setNodeValue('new value');
+		self::assertEquals('new value', $element->getNodeValue());
+		
+		// Test getParentElement
+		$parent = new TXmlElement('parent');
+		$child = new TXmlElement('child');
+		$parent->getElements()->add($child);
+		self::assertEquals($parent, $child->getParentElement());
+		
+		// Test getChildNodes
+		$childNodes = $element->getChildNodes();
+		self::assertInstanceOf('Prado\Xml\TXmlElementList', $childNodes);
+		
+		// Test hasChildNodes
+		self::assertEquals(false, $element->hasChildNodes());
+		$element->getElements()->add(new TXmlElement('child'));
+		self::assertEquals(true, $element->hasChildNodes());
+		
+		// Test getNodeType
+		self::assertEquals(XML_ENTITY_NODE, $element->getNodeType());
+		
+		// Test getFirstChild
+		$element = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$element->getElements()->add($child1);
+		$element->getElements()->add($child2);
+		self::assertEquals($child1, $element->getFirstChild());
+		self::assertEquals(null, $child1->getFirstChild());
+		
+		// Test getLastChild
+		$element = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$element->getElements()->add($child1);
+		$element->getElements()->add($child2);
+		self::assertEquals($child2, $element->getLastChild());
+		self::assertEquals(null, $child2->getLastChild());
+		
+		// Test getPreviousSibling
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$child3 = new TXmlElement('child3');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		$parent->getElements()->add($child3);
+		self::assertEquals(null, $child1->getPreviousSibling());
+		self::assertEquals($child1, $child2->getPreviousSibling());
+		self::assertEquals($child2, $child3->getPreviousSibling());
+		
+		// Test getNextSibling
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$child3 = new TXmlElement('child3');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		$parent->getElements()->add($child3);
+		self::assertEquals($child2, $child1->getNextSibling());
+		self::assertEquals($child3, $child2->getNextSibling());
+		self::assertEquals(null, $child3->getNextSibling());
+	}
+	
+	/**
+	 * Test DOM element compatibility methods
+	 */
+	public function testDOMElementMethods()
+	{
+		// Test firstElementChild
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		self::assertEquals($child1, $parent->getFirstElementChild());
+		self::assertEquals(null, $child1->getFirstElementChild());
+		
+		// Test lastElementChild
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		self::assertEquals($child2, $parent->getLastElementChild());
+		self::assertEquals(null, $child1->getLastElementChild());
+		
+		// Test childElementCount
+		$element = new TXmlElement('parent');
+		self::assertEquals(0, $element->childElementCount());
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$element->getElements()->add($child1);
+		$element->getElements()->add($child2);
+		self::assertEquals(2, $element->childElementCount());
+		
+		// Test previousElementSibling
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$child3 = new TXmlElement('child3');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		$parent->getElements()->add($child3);
+		self::assertEquals(null, $child1->getPreviousElementSibling());
+		self::assertEquals($child1, $child2->getPreviousElementSibling());
+		self::assertEquals($child2, $child3->getPreviousElementSibling());
+		
+		// Test nextElementSibling
+		$parent = new TXmlElement('parent');
+		$child1 = new TXmlElement('child1');
+		$child2 = new TXmlElement('child2');
+		$child3 = new TXmlElement('child3');
+		$parent->getElements()->add($child1);
+		$parent->getElements()->add($child2);
+		$parent->getElements()->add($child3);
+		self::assertEquals($child2, $child1->getNextElementSibling());
+		self::assertEquals($child3, $child2->getNextElementSibling());
+		self::assertEquals(null, $child3->getNextElementSibling());
 	}
 }
