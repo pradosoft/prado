@@ -4,6 +4,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\Security\TUser;
 use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
@@ -177,6 +178,14 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 			self::fail('Exception TInvalidDataValueException not thrown');
 		} catch (TInvalidDataValueException $e) {
 		}
+	}
+	
+	public function testGetUserClass()
+	{
+		$userManager = new TUserManager();
+		$userManager->init(self::$configXml);
+		
+		self::assertEquals(TUser::class, $userManager->getUserClass());
 	}
 
 	public function testValidateUser()

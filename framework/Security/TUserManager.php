@@ -228,6 +228,14 @@ class TUserManager extends \Prado\TModule implements IUserManager
 	}
 
 	/**
+	 * @return string The user class name.
+	 */
+	public function getUserClass()
+	{
+		return TUser::class;
+	}
+
+	/**
 	 * Returns an array of all users.
 	 * Each array element represents a single user.
 	 * The array key is the username in lower case, and the array value is the

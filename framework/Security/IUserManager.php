@@ -23,6 +23,11 @@ namespace Prado\Security;
 interface IUserManager
 {
 	/**
+	 * @return string the user class name in namespace format.
+	 */
+	public function getUserClass();
+
+	/**
 	 * @return string name for a guest user.
 	 */
 	public function getGuestName();
