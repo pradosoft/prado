@@ -9,8 +9,12 @@ for both A and B.
 
 Upgrading from v4.3.2
 ---------------------
-- IUserManager requires implementation of `onFinalizeUser` and calling it at the end of `getUser` (or equivalent).
-- IUserManager requires `getUserClass` to return the base class for the User. 3rd party PRADO Composer Extensions will require it.
+- IUserManager requires implementation of:
+  * `onFinalizeUser`: called at the end of `getUser` (or equivalent).
+  * `getUserClass`: return the base class for the User.
+  * `getUniqueRoles`: the unique roles in the application.
+  * `getUniqueRoleCount`: number of unique roles.
+  These additions are for PRADO composer extensions.
 
 Upgrading from v4.2.2
 ---------------------

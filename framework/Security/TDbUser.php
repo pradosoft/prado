@@ -118,4 +118,24 @@ abstract class TDbUser extends TUser
 	public function saveUserToCookie($cookie)
 	{
 	}
+
+	/**
+	 * Returns the unique roles in the application.
+	 * @return ?array The unique roles in the User Manager. null if not supported.
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoles()
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the number of unique roles in the application.
+	 * @return ?int The number of unique roles. null if not supported.
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoleCount()
+	{
+		return null;
+	}
 }
