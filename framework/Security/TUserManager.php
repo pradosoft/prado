@@ -119,8 +119,8 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			}
 			$this->loadUserDataFromPhp($userFile);
 		}
-		$this->_initialized = true;
 		parent::init($config);
+		$this->_initialized = true;
 	}
 
 	/**
