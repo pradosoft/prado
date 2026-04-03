@@ -337,7 +337,7 @@ class TUserManager extends \Prado\TModule implements IUserManager
 			$throw = true;
 			if (function_exists('hash_algos')) {
 				$availableHashes = array_flip(hash_algos());
-				if (isset($availableHashes[$value])) {
+				if (isset($availableHashes[$value]) || $this->dyHasHash(false, $value)) {
 					$this->_passwordMode = $value;
 					$throw = false;
 				}
@@ -361,7 +361,11 @@ class TUserManager extends \Prado\TModule implements IUserManager
 		} elseif ($this->_passwordMode === TUserManagerPasswordMode::SHA1) {
 			$password = sha1($password);
 		} elseif (function_exists('hash') && $this->_passwordMode !== TUserManagerPasswordMode::Clear) {
-			$password = hash($this->_passwordMode, $password);
+			if ($this->dyHasHash(false, $this->_passwordMode)) {
+				$password = $this->dyHash($password, $this->_passwordMode);
+			} else {
+				$password = hash($this->_passwordMode, $password);
+			}
 		}
 		$username = strtolower($username);
 		return (isset($this->_users[$username]) && $this->_users[$username] === $password);

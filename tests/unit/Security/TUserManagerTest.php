@@ -9,6 +9,26 @@ use Prado\Security\TUserManager;
 use Prado\TApplication;
 use Prado\Xml\TXmlDocument;
 
+class CustomTestHashBehavior extends TBehavior {
+	
+	public function dyHasHash($value, $passwordMode, $callchain)
+	{
+		if (strtolower($passwordMode) == 'reverse' || strtolower($passwordMode) == 'esrever') {
+			$value |= true;
+		}
+		return $callchain->dyHasHash($value, $passwordMode);
+	}
+	
+	public function dyHash($password, $passwordMode, $callchain)
+	{
+		if (strtolower($passwordMode) == 'reverse' || strtolower($passwordMode) == 'esrever') {
+			$password = strrev($password);
+		}
+		return $callchain->dyHash($password, $passwordMode);
+	}
+}
+
+
 class TUserManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;
@@ -307,5 +327,25 @@ class TUserManagerTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(['Writer'], $user->getRoles());
 		self::assertFalse($user->getIsGuest());
 		self::assertNull($userManager->getUser('badUser'));
+	}
+	
+	public function testCustomHash()
+	{
+		$appMode = self::$app->getConfigurationType();
+		self::$app->setConfigurationType(TApplication::CONFIG_TYPE_PHP);
+			
+		$config = self::$configPhp;
+		$password = $config['users'][0]['password'];
+		$config['users'][0]['password'] = strrev($password);
+		
+		$userManager = new TUserManager();
+		$userManager->attachBehavior(null, new CustomTestHashBehavior());
+		$userManager->init($config);
+		$userManager->setPasswordMode('reverse');
+		
+		self::assertTrue($userManager->validateUser('Mary', $password));
+		self::assertTrue($userManager->validateUser('mary', $password));
+		self::assertFalse($userManager->validateUser('Mary', $password . '-'));
+		self::assertFalse($userManager->validateUser('Amy', $password));
 	}
 }
