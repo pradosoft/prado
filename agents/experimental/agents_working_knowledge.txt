@@ -1,0 +1,11 @@
+
+# Working Knowledge - Knowledge Retention Sub-Process Instructions
+- The point of "Working Knowledge" is to make Coding Agents more efficient at their project tasks.
+- The Working Knowledge directory, for saving planning, analysis, and accurate knowledge files, is "agents/working/"
+- Scan (via "find agents/working/ -type f -name '*.md'") and parse relevant knowledge files relating to the task at hand
+- Saved Working Knowledge file names must reflect its contents, for other agents to identify its contents
+- Update the Working Knowledge files and their names (by moving files) as needed for efficient analysis, tasks, and scanning
+- When Working Knowledge involves only a specific PRADO class, put the Working Knowledge files at "agents/working/classes/<relative_paths>/<class>.md" file location heuristic
+- A primary point into the Working Knowledge is agents/working/INDEX.md and Working Knowledge directory scans; and generally should only be added to
+- agents/working/INDEX.md must be compact with all the most important general Working Knowledge being added (and must contain links to other related files)
+- Clean up any Working Knowledge files (and its directories) that are not needed or which are superseded
