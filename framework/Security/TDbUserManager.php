@@ -65,9 +65,6 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	/** @var string The string ID of the TDataSourceConfig. */
 	private $_connectionID = '';
 
-	/** @var string The name of users who are not logged in. */
-	private $_guestName = 'Guest';
-
 	/** @var string The namespaced class of the User Factory. */
 	private $_userClass = '';
 
@@ -138,22 +135,6 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 		}
 
 		$this->_rolesAppParameterId = $value;
-	}
-
-	/**
-	 * @return string guest name, defaults to 'Guest'
-	 */
-	public function getGuestName()
-	{
-		return $this->_guestName;
-	}
-
-	/**
-	 * @param string $value name to be used for guest users.
-	 */
-	public function setGuestName($value)
-	{
-		$this->_guestName = $value;
 	}
 
 	/**
