@@ -35,6 +35,28 @@ use Prado\Exceptions\TInvalidDataValueException;
  * for traversing, accessing, and counting XML elements.  These are not standard but
  * provided for convenience.
  *
+ * ```php
+ *		// Attributes are accessible, by string key
+ *		$element['attribute'] = 'attribute value';
+ *		'attribute value' === $element['attribute']; // true
+ *
+ *		// children are accessible, by int key
+ *		$n = $element[] = new TXmlElement();
+ *		$n === $element[0]; // true
+ *
+ *		// value is accessible, by null key
+ *		$element[] = 'element value';
+ *		'element value' === $element[null]; // true
+ *
+ *		isset($element[null]); // references the value
+ *		isset($element[<int>]); // references children
+ *		isset($element[<string>]); // references attributes
+ *
+ *		unset($element[null]); // removes the value
+ *		unset($element[<int>]); // removes the child
+ *		unset($element[<string>]); // removes the attribute
+ * ```
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Brad Anderson <belisoful@icloud.com> xpath, cloning, DOM-compatibility
  * @since 3.0
@@ -167,7 +189,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Sets the text content enclosed between opening and closing tags of this element.
 	 * @param ?string $value Text content of this element
 	 */
-	public function setValue(?string $value): void
+	public function setValue($value): void
 	{
 		if ($value !== null) {
 			$this->_value = TPropertyValue::ensureString($value);
@@ -192,7 +214,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * Determines whether this element has any attributes.
 	 * @return bool True if this element has attributes, false otherwise
 	 */
-	public function getHasAttribute()
+	public function getHasAttribute(): bool
 	{
 		return $this->_attributes !== null && $this->_attributes->getCount() > 0;
 	}
@@ -203,7 +225,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @return bool True if the attribute exists, false otherwise
 	 * @since 4.3.3
 	 */
-	public function hasAttribute($name): bool
+	public function hasAttribute(string $name): bool
 	{
 		if ($this->_attributes !== null) {
 			return $this->_attributes->contains($name);
@@ -228,7 +250,8 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	/**
 	 * Sets an attribute value.
 	 * @param string $name Attribute name
-	 * @param string $value Attribute value
+	 * @param mixed $value Attribute value
+	 * @throws TInvalidDataTypeException if an invalid attribute value is provided
 	 */
 	public function setAttribute(string $name, $value)
 	{
@@ -276,8 +299,11 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 */
 	public function getElementAtIndex(int $index): ?TXmlElement
 	{
-		if ($this->_elements && $index >= 0 && $index < $this->_elements->getCount()) {
-			return $this->_elements->itemAt($index);
+		if ($this->getHasElement() && $index >= 0) {
+			$elements = $this->getElements();
+			if ($index < $elements->getCount()) {
+				return $elements->itemAt($index);
+			}
 		}
 		return null;
 	}
@@ -288,21 +314,21 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @param int $options Search type (SEARCH_ELEMENT, SEARCH_DEPTH_FIRST, or SEARCH_BREADTH_FIRST)
 	 * @return ?TXmlElement First child element with the tag name, or null if not found
 	 */
-	public function getElementByTagName(string $tagName, int $options = TXmlElement::SEARCH_ELEMENT): ?TXmlElement
+	public function getElementByTagName(string $tagName, int $options = self::SEARCH_ELEMENT): ?TXmlElement
 	{
-		if ($this->_elements) {
-			if ($options === TXmlElement::SEARCH_BREADTH_FIRST) {
+		if ($this->getHasElement()) {
+			if ($options === self::SEARCH_BREADTH_FIRST) {
 				$queue = [];
-				foreach ($this->_elements as $element) {
+				foreach ($this->getElements() as $element) {
 					$queue[] = $element;
 				}
 				while (!empty($queue)) {
 					$element = array_shift($queue);
-					if ($element->_tagName === $tagName) {
+					if ($element->getTagName() === $tagName) {
 						return $element;
 					}
-					if ($element->_elements) {
-						foreach ($element->_elements as $child) {
+					if ($element->getHasElement()) {
+						foreach ($element->getElements() as $child) {
 							$queue[] = $child;
 						}
 					}
@@ -310,11 +336,11 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				return null;
 			}
 
-			foreach ($this->_elements as $element) {
-				if ($element->_tagName === $tagName) {
+			foreach ($this->getElements() as $element) {
+				if ($element->getTagName() === $tagName) {
 					return $element;
 				}
-				if ($options === TXmlElement::SEARCH_DEPTH_FIRST) {
+				if ($options === self::SEARCH_DEPTH_FIRST) {
 					if (($result = $element->getElementByTagName($tagName, $options))) {
 						return $result;
 					}
@@ -331,15 +357,15 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @param ?TList $results The recursive list to add results to (optional).
 	 * @return TList List of all child elements with the tag name
 	 */
-	public function getElementsByTagName(string $tagName, int $options = TXmlElement::SEARCH_ELEMENT, ?TList $results = null): TList
+	public function getElementsByTagName(string $tagName, int $options = self::SEARCH_ELEMENT, ?TList $results = null): TList
 	{
 		if (!$results) {
 			$results = new TList();
 		}
-		if ($this->_elements) {
-			if ($options === TXmlElement::SEARCH_BREADTH_FIRST) {
+		if ($this->getHasElement()) {
+			if ($options === self::SEARCH_BREADTH_FIRST) {
 				$queue = [];
-				foreach ($this->_elements as $element) {
+				foreach ($this->getElements() as $element) {
 					$queue[] = $element;
 				}
 				while (!empty($queue)) {
@@ -347,8 +373,8 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 					if ($element->_tagName === $tagName) {
 						$results->add($element);
 					}
-					if ($element->_elements) {
-						foreach ($element->_elements as $child) {
+					if ($element->getHasElement()) {
+						foreach ($element->getElements() as $child) {
 							$queue[] = $child;
 						}
 					}
@@ -356,15 +382,34 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				return $results;
 			}
 
-			foreach ($this->_elements as $element) {
-				if ($element->_tagName === $tagName) {
+			foreach ($this->getElements() as $element) {
+				if ($element->getTagName() === $tagName) {
 					$results->add($element);
 				}
-				if ($options === TXmlElement::SEARCH_DEPTH_FIRST) {
+				if ($options === self::SEARCH_DEPTH_FIRST) {
 					$element->getElementsByTagName($tagName, $options, $results);
 				}
 			}
 		}
+		return $results;
+	}
+
+	/*
+	 * This selects the children elements with a specific tag name.
+	 * Each selected elements' attributes (as an array) are saved within the
+	 * returned array.
+	 * Module Configuration for XML => PHP uses this for arrays of XML nodes.
+	 * @param string	  $tagName The tagName for selecting children by tag.
+	 * @return array An array of selected child nodes' attributes array.
+	 * @since 4.3.3
+	 */
+	public function getElementsAttrArrayByTagName(string $tagName): array
+	{
+		$results = [];
+		foreach ($this->getElementsByTagName($tagName) as $node) {
+			$results[] = $node->getAttributes()->toArray();
+		}
+
 		return $results;
 	}
 
@@ -376,12 +421,12 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @return ?TXmlElement First child element matching the attribute, or null if not found
 	 * @since 4.3.3
 	 */
-	public function getElementByAttribute(string $name, ?string $value, int $options = TXmlElement::SEARCH_ELEMENT): ?TXmlElement
+	public function getElementByAttribute(string $name, ?string $value, int $options = self::SEARCH_ELEMENT): ?TXmlElement
 	{
-		if ($this->_elements) {
-			if ($options === TXmlElement::SEARCH_BREADTH_FIRST) {
+		if ($this->getHasElement()) {
+			if ($options === self::SEARCH_BREADTH_FIRST) {
 				$queue = [];
-				foreach ($this->_elements as $element) {
+				foreach ($this->getElements() as $element) {
 					$queue[] = $element;
 				}
 				while (!empty($queue)) {
@@ -389,8 +434,8 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 					if ($element->hasAttribute($name) && ($value === null || $element->getAttribute($name) === $value)) {
 						return $element;
 					}
-					if ($element->_elements) {
-						foreach ($element->_elements as $child) {
+					if ($element->getHasElement()) {
+						foreach ($element->getElements() as $child) {
 							$queue[] = $child;
 						}
 					}
@@ -398,11 +443,11 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				return null;
 			}
 
-			foreach ($this->_elements as $element) {
+			foreach ($this->getElements() as $element) {
 				if ($element->hasAttribute($name) && ($value === null || $element->getAttribute($name) === $value)) {
 					return $element;
 				}
-				if ($options === TXmlElement::SEARCH_DEPTH_FIRST) {
+				if ($options === self::SEARCH_DEPTH_FIRST) {
 					if (($result = $element->getElementByAttribute($name, $value, $options))) {
 						return $result;
 					}
@@ -421,15 +466,15 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 * @return TList List of all child elements matching the attribute
 	 * @since 4.3.3
 	 */
-	public function getElementsByAttribute(string $name, ?string $value, int $options = TXmlElement::SEARCH_ELEMENT, ?TList $results = null): TList
+	public function getElementsByAttribute(string $name, ?string $value, int $options = self::SEARCH_ELEMENT, ?TList $results = null): TList
 	{
 		if (!$results) {
 			$results = new TList();
 		}
-		if ($this->_elements) {
-			if ($options === TXmlElement::SEARCH_BREADTH_FIRST) {
+		if ($this->getHasElement()) {
+			if ($options === self::SEARCH_BREADTH_FIRST) {
 				$queue = [];
-				foreach ($this->_elements as $element) {
+				foreach ($this->getElements() as $element) {
 					$queue[] = $element;
 				}
 				while (!empty($queue)) {
@@ -437,19 +482,19 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 					if ($element->hasAttribute($name) && ($value === null || $element->getAttribute($name) === $value)) {
 						$results->add($element);
 					}
-					if ($element->_elements) {
-						foreach ($element->_elements as $child) {
+					if ($element->getHasElement()) {
+						foreach ($element->getElements() as $child) {
 							$queue[] = $child;
 						}
 					}
 				}
 				return $results;
 			}
-			foreach ($this->_elements as $element) {
+			foreach ($this->getElements() as $element) {
 				if ($element->hasAttribute($name) && ($value === null || $element->getAttribute($name) === $value)) {
 					$results->add($element);
 				}
-				if ($options === TXmlElement::SEARCH_DEPTH_FIRST) {
+				if ($options === self::SEARCH_DEPTH_FIRST) {
 					$element->getElementsByAttribute($name, $value, $options, $results);
 				}
 			}
@@ -468,12 +513,12 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	protected function insertPradoXmlId(?string $attrName = null, int &$index = 0): string
 	{
 		if (!$attrName) {
-			$attrName = TXmlElement::XML_ID_ATTR_PREFIX . mt_rand();
+			$attrName = self::XML_ID_ATTR_PREFIX . mt_rand();
 		}
 		$this->setAttribute($attrName, (string) $index++);
 
 		if ($this->getHasElement()) {
-			foreach ($this->_elements as $element) {
+			foreach ($this->getElements() as $element) {
 				$element->insertPradoXmlId($attrName, $index);
 			}
 		}
@@ -491,7 +536,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 		$this->removeAttribute($attrName);
 
 		if ($this->getHasElement()) {
-			foreach ($this->_elements as $element) {
+			foreach ($this->getElements() as $element) {
 				$element->removePradoXmlId($attrName);
 			}
 		}
@@ -520,7 +565,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 				$xmlId = $node->getAttribute($idAttrName);
 
 				// @todo This can be sped up with a private focused search function due to the known ordering of each node $xmlId.
-				$element = $this->getElementByAttribute($idAttrName, $xmlId, TXmlElement::SEARCH_BREADTH_FIRST);
+				$element = $this->getElementByAttribute($idAttrName, $xmlId, self::SEARCH_BREADTH_FIRST);
 				if ($element) {
 					$results->add($element);
 				}
@@ -552,7 +597,7 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 
 		// Clone child elements
 		if ($this->_elements) {
-			$oldElementList = $this->_elements;
+			$oldElementList = $this->getElements();
 
 			$this->_elements = null;
 			$elementList = $this->getElements();
@@ -574,10 +619,10 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	{
 		$attr = '';
 		if ($this->_attributes !== null) {
-			$len = strlen(TXmlElement::XML_ID_ATTR_PREFIX);
+			$len = strlen(self::XML_ID_ATTR_PREFIX);
 			// Add attributes
 			foreach ($this->_attributes as $name => $value) {
-				if ($excludeInternalId && strncmp($name, TXmlElement::XML_ID_ATTR_PREFIX, $len) === 0) {
+				if ($excludeInternalId && strncmp($name, self::XML_ID_ATTR_PREFIX, $len) === 0) {
 					continue;
 				}
 				$value = $this->xmlEncode($value);
@@ -700,64 +745,86 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	//	From \ArrayAccess
 
 	/**
-	 * Returns whether there is an item at the specified offset.
 	 * This method is required by the \ArrayAccess interface.
-	 * @param int $offset The offset to check on
+	 * @param mixed $offset The offset to check on
 	 * @return bool Whether an item exists at the specified offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetExists($offset): bool
 	{
-		if (!$this->_elements) {
-			return false;
+		if ($offset === null) {
+			return !empty($this->_value);
+		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
+			$offset = (int) $offset;
+			return 0 <= $offset && $offset < $this->getElements()->getCount();
+		} elseif ($this->getHasAttribute()) {
+			return $this->hasAttribute($offset);
 		}
-		return $this->_elements->offsetExists($offset);
+		return false;
 	}
 
 	/**
-	 * Returns the child element at the specified offset.
 	 * This method is required by the \ArrayAccess interface.
-	 * @param int $offset The offset to retrieve item.
+	 * @param mixed $offset The offset to retrieve item.
 	 * @throws TInvalidDataValueException if the offset is invalid
-	 * @return TXmlElement The item at the offset
+	 * @return mixed The item at the offset
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetGet($offset): mixed
 	{
-		if (!$this->_elements) {
-			throw new TInvalidDataValueException('list_index_invalid', $offset);
+		if ($offset === null) {
+			return $this->getValue();
+		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
+			if ($this->getHasElement()) {
+				return $this->getElements()->itemAt((int) $offset);
+			} else {
+				throw new TInvalidDataValueException('list_index_invalid', $offset);
+			}
+		} elseif ($this->getHasAttribute()) {
+			return $this->getAttribute($offset);
 		}
-		return $this->getElements()->itemAt($offset);
+		return null;
 	}
 
 	/**
-	 * Sets the child element at the specified offset.
 	 * This method is required by the \ArrayAccess interface.
-	 * @param int $offset The offset to set item
-	 * @param TXmlElement $item The item value
+	 * @param mixed $offset The offset to set item
+	 * @param mixed $item The item value
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetSet($offset, $item): void
 	{
-		$this->getElements()->offsetSet($offset, $item);
+		if ($offset === null) {
+			if ($item instanceof TXmlElement) {
+				$this->getElements()->add($item);
+			} else {
+				$this->setValue($item);
+			}
+		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
+			$this->getElements()->offsetSet((int) $offset, $item);
+		} else {
+			$this->setAttribute($offset, $item);
+		}
 	}
 
 	/**
-	 * Unsets the child element at the specified offset.
 	 * This method is required by the \ArrayAccess interface.
-	 * @param int $offset The offset to unset item
+	 * @param mixed $offset The offset to unset item
 	 * @see https://www.php.net/manual/en/class.arrayaccess.php
 	 * @since 4.3.3
 	 */
 	public function offsetUnset($offset): void
 	{
-		if (!$this->_elements) {
-			throw new TInvalidDataValueException('list_index_invalid', $offset);
+		if ($offset === null) {
+			$this->setValue(null);
+		} elseif (is_int($offset) || (is_string($offset) && filter_var($offset, FILTER_VALIDATE_INT) !== false)) {
+			$this->getElements()->offsetUnset((int) $offset);
+		} else {
+			$this->removeAttribute($offset);
 		}
-		$this->getElements()->offsetUnset($offset);
 	}
 
 
@@ -772,98 +839,10 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	 */
 	public function getIterator(): \Traversable
 	{
-		if (!$this->_elements) {
+		if (!$this->getHasElement()) {
 			return new \ArrayIterator([]);
 		}
-		return $this->_elements->getIterator();
-	}
-
-
-	//	From \DOMElement
-
-	/**
-	 * Gets the first child element.
-	 * This method mimics the DOMElement::firstElementChild property.
-	 * @return ?TXmlElement First child element or null if none exists
-	 * @see https://www.php.net/manual/en/class.domelement.php
-	 * @since 4.3.3
-	 */
-	public function getFirstELementChild(): ?TXmlElement
-	{
-		if ($this->_elements && $this->_elements->getCount() > 0) {
-			return $this->_elements->itemAt(0);
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the last child element.
-	 * This method mimics the DOMElement::lastElementChild property.
-	 * @return ?TXmlElement Last child element or null if none exists
-	 * @see https://www.php.net/manual/en/class.domelement.php
-	 * @since 4.3.3
-	 */
-	public function getLastElementChild(): ?TXmlElement
-	{
-		if ($this->_elements && $this->_elements->getCount() > 0) {
-			return $this->_elements->itemAt($this->_elements->getCount() - 1);
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the number of child elements.
-	 * This method mimics the DOMElement::childElementCount property.
-	 * @return int The number of items in the list
-	 * @see https://www.php.net/manual/en/class.domelement.php
-	 * @since 4.3.3
-	 */
-	public function childElementCount(): int
-	{
-		if (!$this->_elements) {
-			return 0;
-		}
-		return $this->_elements->getCount();
-	}
-
-	/**
-	 * Gets the previous sibling element.
-	 * This method mimics the DOMElement::previousElementSibling property.
-	 * @return ?TXmlElement Previous sibling element or null if none exists
-	 * @see https://www.php.net/manual/en/class.domelement.php
-	 * @since 4.3.3
-	 */
-	public function getPreviousElementSibling(): ?TXmlElement
-	{
-		if ($this->_parent === null) {
-			return null;
-		}
-		$elements = $this->_parent->getElements();
-		$index = $elements->indexOf($this);
-		if ($index !== false && $index > 0) {
-			return $elements->itemAt($index - 1);
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the next sibling element.
-	 * This method mimics the DOMElement::nextElementSibling property.
-	 * @return ?TXmlElement Next sibling element or null if none exists
-	 * @see https://www.php.net/manual/en/class.domelement.php
-	 * @since 4.3.3
-	 */
-	public function getNextElementSibling(): ?TXmlElement
-	{
-		if ($this->_parent === null) {
-			return null;
-		}
-		$elements = $this->_parent->getElements();
-		$index = $elements->indexOf($this);
-		if ($index !== false && $index < $elements->getCount() - 1) {
-			return $elements->itemAt($index + 1);
-		}
-		return null;
+		return $this->getElements()->getIterator();
 	}
 
 
@@ -942,6 +921,54 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	}
 
 	/**
+	 * Gets the first child node.
+	 * This method mimics the DOMElement::firstChild property.
+	 * @return ?TXmlElement First child node or null if none exists
+	 * @see https://www.php.net/manual/en/class.domnode.php
+	 * @since 4.3.3
+	 */
+	public function getFirstChild(): ?TXmlElement
+	{
+		return $this->getFirstElementChild();
+	}
+
+	/**
+	 * Gets the last child node.
+	 * This method mimics the DOMElement::lastChild property.
+	 * @return ?TXmlElement Last child node or null if none exists
+	 * @see https://www.php.net/manual/en/class.domnode.php
+	 * @since 4.3.3
+	 */
+	public function getLastChild(): ?TXmlElement
+	{
+		return $this->getLastElementChild();
+	}
+
+	/**
+	 * Gets the previous sibling node.
+	 * This method mimics the DOMElement::previousSibling property.
+	 * @return ?TXmlElement Previous sibling node or null if none exists
+	 * @see https://www.php.net/manual/en/class.domnode.php
+	 * @since 4.3.3
+	 */
+	public function getPreviousSibling(): ?TXmlElement
+	{
+		return $this->getPreviousElementSibling();
+	}
+
+	/**
+	 * Gets the next sibling node.
+	 * This method mimics the DOMElement::nextSibling property.
+	 * @return ?TXmlElement Next sibling node or null if none exists
+	 * @see https://www.php.net/manual/en/class.domnode.php
+	 * @since 4.3.3
+	 */
+	public function getNextSibling(): ?TXmlElement
+	{
+		return $this->getNextElementSibling();
+	}
+
+	/**
 	 * Determines whether this node has child nodes.
 	 * This method mimics the DOMNode::hasChildNodes method.
 	 * @return ?bool Whether there are child nodes.
@@ -951,5 +978,94 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	public function hasChildNodes(): ?bool
 	{
 		return $this->getHasElement();
+	}
+
+
+	//	From \DOMElement
+
+	/**
+	 * Gets the first child element.
+	 * This method mimics the DOMElement::firstElementChild property.
+	 * @return ?TXmlElement First child element or null if none exists
+	 * @see https://www.php.net/manual/en/class.domelement.php
+	 * @since 4.3.3
+	 */
+	public function getFirstElementChild(): ?TXmlElement
+	{
+		if ($this->getHasElement()) {
+			return $this->getElements()->itemAt(0);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the last child element.
+	 * This method mimics the DOMElement::lastElementChild property.
+	 * @return ?TXmlElement Last child element or null if none exists
+	 * @see https://www.php.net/manual/en/class.domelement.php
+	 * @since 4.3.3
+	 */
+	public function getLastElementChild(): ?TXmlElement
+	{
+		if ($this->getHasElement()) {
+			$elements = $this->getElements();
+			return $elements->itemAt($elements->getCount() - 1);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the number of child elements.
+	 * This method mimics the DOMElement::childElementCount property.
+	 * @return int The number of items in the list
+	 * @see https://www.php.net/manual/en/class.domelement.php
+	 * @since 4.3.3
+	 */
+	public function childElementCount(): int
+	{
+		if (!$this->_elements) {
+			return 0;
+		}
+		return $this->getElements()->getCount();
+	}
+
+	/**
+	 * Gets the previous sibling element.
+	 * This method mimics the DOMElement::previousElementSibling property.
+	 * @return ?TXmlElement Previous sibling element or null if none exists
+	 * @see https://www.php.net/manual/en/class.domelement.php
+	 * @since 4.3.3
+	 */
+	public function getPreviousElementSibling(): ?TXmlElement
+	{
+		if ($this->_parent === null) {
+			return null;
+		}
+		$elements = $this->_parent->getElements();
+		$index = $elements->indexOf($this);
+		if ($index !== false && $index > 0) {
+			return $elements->itemAt($index - 1);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the next sibling element.
+	 * This method mimics the DOMElement::nextElementSibling property.
+	 * @return ?TXmlElement Next sibling element or null if none exists
+	 * @see https://www.php.net/manual/en/class.domelement.php
+	 * @since 4.3.3
+	 */
+	public function getNextElementSibling(): ?TXmlElement
+	{
+		if ($this->_parent === null) {
+			return null;
+		}
+		$elements = $this->_parent->getElements();
+		$index = $elements->indexOf($this);
+		if ($index !== false && $index < $elements->getCount() - 1) {
+			return $elements->itemAt($index + 1);
+		}
+		return null;
 	}
 }
