@@ -76,6 +76,7 @@
 - Behaviors can be attached to any `TComponent` to alter its behavior and functionality.
 - Use the event-driven programming model with events; like `onLoad`, `onInit`, `onPreRender`
 - Methods with prefix 'dy' are dynamic events to call attached and active Behaviors; like 'dyShouldContinue', 'dyClone', and 'dyValidate'
+- Dynamic event are always implemented by attached behaviors not in the calling class
 - Methods with prefix 'fx' are global events that may or may not be automatically registered depending on getAutoGlobalListen(); like 'fxAttachClassBehavior'
 - getAutoGlobalListen() is optimized by class hierarchy for utility and speed
 - Follow the TApplication Lifecycle: onInitComplete (at end of TApplication::initApplication) → onBeginRequest → onLoadState → onLoadStateComplete → onAuthentication → onAuthenticationComplete → onAuthorization → onAuthorizationComplete → onPreRunService → runService → onSaveState → onSaveStateComplete → onPreFlushOutput → flushOutput → onEndRequest or onError (both at end of TApplication::run)
