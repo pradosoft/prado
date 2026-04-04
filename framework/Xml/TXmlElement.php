@@ -395,12 +395,11 @@ class TXmlElement extends \Prado\TComponent implements \IteratorAggregate, \Arra
 	}
 
 	/*
-	 * This selects the children elements with a tag name from $xmlNode.
+	 * This selects the children elements with a specific tag name.
 	 * Each selected elements' attributes (as an array) are saved within the
-	 * returned array.  Module Configuration for XML => PHP uses this for arrays
-	 * of nodes.
-	 * @param TXmlElement $xmlNode The XML Element with children to search.
-	 * @param string	  $childTagName The tagName for selecting children by tag.
+	 * returned array.
+	 * Module Configuration for XML => PHP uses this for arrays of XML nodes.
+	 * @param string	  $tagName The tagName for selecting children by tag.
 	 * @return array An array of selected child nodes' attributes array.
 	 * @since 4.3.3
 	 */
