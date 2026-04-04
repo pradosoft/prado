@@ -77,7 +77,9 @@
 - Use the event-driven programming model with events; like `onLoad`, `onInit`, `onPreRender`
 - Methods with prefix 'dy' are dynamic events to call attached and active Behaviors; like 'dyShouldContinue', 'dyClone', and 'dyValidate'
 - Called Dynamic Events must be documented in the class phpdoc with "@method"
-- Dynamic event are always implemented by attached behaviors not in the calling class
+- Dynamic event are implemented by attached behaviors not in the calling class
+- The first parameter of a dynamic event is always filtered and returned.
+- Optional class methods can directly be called on non-behavior classes as "dynamic events"
 - Methods with prefix 'fx' are global events that may or may not be automatically registered depending on getAutoGlobalListen(); like 'fxAttachClassBehavior'
 - getAutoGlobalListen() is optimized by class hierarchy for utility and speed
 - Follow the TApplication Lifecycle: onInitComplete (at end of TApplication::initApplication) → onBeginRequest → onLoadState → onLoadStateComplete → onAuthentication → onAuthenticationComplete → onAuthorization → onAuthorizationComplete → onPreRunService → runService → onSaveState → onSaveStateComplete → onPreFlushOutput → flushOutput → onEndRequest or onError (both at end of TApplication::run)
@@ -297,7 +299,7 @@ Between the next brackets, it is required without exception:
 - Changes to files and sub-directories in the directory should update the CLAUDE.md
 - Sub-Directories should be briefly summarized from their containing CLAUDE.md
 - Class Specific Summaries are at "agents/working/classes/" with the same directory hierarchy as "framework/"
-- The 'CLAUDE.md' file is the extensive summary of the directory's:
-  - sub directories and their purpose
+- A 'CLAUDE.md' file is the extensive summary of its:
+  - containing directory
   - the classes within the directory and their purpose
-  - what each class in the directory is, how they function, and important features and methods
+  - sub directories and their purpose/content
