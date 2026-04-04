@@ -111,6 +111,34 @@ class TXmlElementTest extends PHPUnit\Framework\TestCase
 		self::assertEquals(2, count($element->getElementsByTagName('tag')));
 	}
 	
+	public function testGetElementsAttrArrayByTagName()
+	{
+		$element = new TXmlElement('root');
+		$child1 = new TXmlElement('child');
+		$child1->setAttribute('id', '1');
+		$child2 = new TXmlElement('child');
+		$child2->setAttribute('id', '2');
+		$child3 = new TXmlElement('child');
+		$child3->setAttribute('id', '3');
+		$child3->setAttribute('attr', 'gray');
+		$child4 = new TXmlElement('child-alt');
+		$child4->setAttribute('id', '3');
+
+		self::assertEquals(0, count($element->getElementsAttrArrayByTagName('child')));
+		
+		$element->getElements()->add($child1);
+		$element->getElements()->add($child2);
+		$element->getElements()->add($child3);
+		$element->getElements()->add($child4);
+		
+		$result = $element->getElementsAttrArrayByTagName('child');
+		
+		self::assertEquals(3, count($result));
+		self::assertEquals(['id' => '1'], $result[0]);
+		self::assertEquals(['id' => '2'], $result[1]);
+		self::assertEquals(['id' => '3', 'attr' => 'gray'], $result[2]);
+	}
+	
 	/**
 	 * Test different search modes (element by tag name)
 	 */
