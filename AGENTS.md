@@ -76,6 +76,7 @@
 - Behaviors can be attached to any `TComponent` to alter its behavior and functionality.
 - Use the event-driven programming model with events; like `onLoad`, `onInit`, `onPreRender`
 - Methods with prefix 'dy' are dynamic events to call attached and active Behaviors; like 'dyShouldContinue', 'dyClone', and 'dyValidate'
+- Called Dynamic Events must be documented in the class phpdoc with "@method"
 - Dynamic event are always implemented by attached behaviors not in the calling class
 - Methods with prefix 'fx' are global events that may or may not be automatically registered depending on getAutoGlobalListen(); like 'fxAttachClassBehavior'
 - getAutoGlobalListen() is optimized by class hierarchy for utility and speed
