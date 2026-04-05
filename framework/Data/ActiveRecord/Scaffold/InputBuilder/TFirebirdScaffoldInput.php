@@ -48,7 +48,7 @@ class TFirebirdScaffoldInput extends TScaffoldInputCommon
 				return $this->createBooleanControl($container, $column, $record);
 			case 'CHAR':
 			case 'VARCHAR':
-				return $this->createTextControl($container, $column, $record);
+				return $this->createMultiLineControl($container, $column, $record);
 			case 'TEXT':
 			case 'BLOB':
 				return $this->createMultiLineControl($container, $column, $record);

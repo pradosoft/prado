@@ -26,7 +26,7 @@ class TIbmTableColumn extends TDbTableColumn
 	private static $types = [
 		'integer' => ['integer', 'int', 'bigint', 'smallint'],
 		'boolean' => ['boolean'],
-		'float'   => ['double', 'real', 'float', 'decimal', 'numeric', 'decfloat'],
+		'float' => ['double', 'real', 'float', 'decimal', 'numeric', 'decfloat'],
 	];
 
 	/**

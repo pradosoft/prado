@@ -26,7 +26,7 @@ class TFirebirdTableColumn extends TDbTableColumn
 	private static $types = [
 		'integer' => ['SMALLINT', 'INTEGER', 'BIGINT'],
 		'boolean' => ['BOOLEAN'],
-		'float'   => ['FLOAT', 'DOUBLE PRECISION', 'DECIMAL', 'NUMERIC', 'DECFLOAT(16)', 'DECFLOAT(34)'],
+		'float' => ['FLOAT', 'DOUBLE PRECISION', 'DECIMAL', 'NUMERIC', 'DECFLOAT(16)', 'DECFLOAT(34)'],
 	];
 
 	/**

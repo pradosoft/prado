@@ -36,8 +36,8 @@ class TFirebirdMetaData extends TDbMetaData
 	 * @var array
 	 */
 	private static $_fieldTypes = [
-		7  => 'SMALLINT',
-		8  => 'INTEGER',
+		7 => 'SMALLINT',
+		8 => 'INTEGER',
 		10 => 'FLOAT',
 		12 => 'DATE',
 		13 => 'TIME',
@@ -209,7 +209,7 @@ class TFirebirdMetaData extends TDbMetaData
 		}
 
 		$typeCode = (int) $col['FIELD_TYPE'];
-		$subType  = (int) ($col['FIELD_SUB_TYPE'] ?? 0);
+		$subType = (int) ($col['FIELD_SUB_TYPE'] ?? 0);
 
 		// BLOB sub_type 1 = TEXT, sub_type 0 = binary
 		if ($typeCode === 261 && $subType === 1) {
@@ -219,8 +219,8 @@ class TFirebirdMetaData extends TDbMetaData
 		}
 
 		$precision = (int) $col['FIELD_PRECISION'];
-		$scale     = (int) ($col['FIELD_SCALE'] ?? 0);
-		$length    = (int) ($col['FIELD_LENGTH'] ?? 0);
+		$scale = (int) ($col['FIELD_SCALE'] ?? 0);
+		$length = (int) ($col['FIELD_LENGTH'] ?? 0);
 
 		if ($this->isPrecisionType($info['DbType'])) {
 			if ($precision > 0) {

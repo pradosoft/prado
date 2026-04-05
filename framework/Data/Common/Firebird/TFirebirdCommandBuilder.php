@@ -60,15 +60,15 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	 */
 	public function applyLimitOffset($sql, $limit = -1, $offset = -1)
 	{
-		$limit  = $limit  !== null ? (int) $limit  : -1;
+		$limit = $limit !== null ? (int) $limit : -1;
 		$offset = $offset !== null ? (int) $offset : -1;
 
 		if ($limit < 0 && $offset < 0) {
 			return $sql;
 		}
 
-		$firstClause = $limit  >= 0 ? ' FIRST ' . $limit  : '';
-		$skipClause  = $offset >= 0 ? ' SKIP '  . $offset : '';
+		$firstClause = $limit >= 0 ? ' FIRST ' . $limit : '';
+		$skipClause = $offset >= 0 ? ' SKIP ' . $offset : '';
 
 		// Insert FIRST/SKIP after SELECT (handles SELECT DISTINCT too)
 		return preg_replace('/^(\s*SELECT(\s+DISTINCT)?)/i', '$1' . $firstClause . $skipClause, $sql, 1);
