@@ -1,0 +1,47 @@
+-- IBM DB2 test database schema for prado unit tests
+-- Run as a DB2 admin:
+--   db2 CREATE DATABASE prado_unitest
+--   db2 CONNECT TO prado_unitest
+--   db2 CREATE USER prado_unitest ... (OS-level user on Linux)
+--   db2 GRANT DBADM ON DATABASE TO USER prado_unitest
+--   db2 -td@ -f tests/initdb_ibm.sql
+
+DROP TABLE table1@
+CREATE TABLE table1 (
+	id              INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
+	name            VARCHAR(45)   NOT NULL DEFAULT '',
+	field1_smallint SMALLINT      NOT NULL DEFAULT 0,
+	field2_varchar  VARCHAR(4000),
+	field3_date     DATE,
+	field4_float    FLOAT         NOT NULL DEFAULT 10,
+	field5_decimal  DECIMAL(10,4) NOT NULL DEFAULT 0,
+	field6_double   DOUBLE        NOT NULL DEFAULT 0,
+	field7_timestamp TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	field8_time     TIME          NOT NULL DEFAULT '00:00:00',
+	field9_bigint   BIGINT        NOT NULL DEFAULT 0,
+	field10_char    CHAR(10),
+	field11_boolean BOOLEAN       NOT NULL DEFAULT FALSE,
+	field12_numeric NUMERIC(8,2)  NOT NULL DEFAULT 0,
+	PRIMARY KEY (id)
+)@
+
+DROP TABLE address@
+CREATE TABLE address (
+	username    VARCHAR(128)  NOT NULL,
+	phone       VARCHAR(40)   NOT NULL DEFAULT '',
+	field1_bool BOOLEAN       NOT NULL DEFAULT FALSE,
+	field2_date DATE          NOT NULL,
+	field3_dbl  DOUBLE        NOT NULL DEFAULT 0,
+	field4_int  INTEGER       NOT NULL DEFAULT 0 REFERENCES table1(id),
+	field5_text VARCHAR(4000),
+	field6_time TIME          NOT NULL DEFAULT '00:00:00',
+	field7_ts   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	field8_dec  DECIMAL(19,4) NOT NULL DEFAULT 0,
+	field9_num  NUMERIC(10,4) NOT NULL DEFAULT 0,
+	int_fk1     INTEGER       NOT NULL DEFAULT 0,
+	int_fk2     INTEGER       NOT NULL DEFAULT 0,
+	PRIMARY KEY (username)
+)@
+
+INSERT INTO table1 (name) VALUES ('test')@
+INSERT INTO address (username, phone, field2_date) VALUES ('wei', '1111111', CURRENT_DATE)@
