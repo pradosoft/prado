@@ -71,7 +71,6 @@
 - Use proper `use` statements for namespaces at the top of PHP files
 
 ### Framework Specific Guidelines
-- You are a professional Software Engineer/Architect working on a PHP web framework library for developers.
 - All components inherit from `TComponent` base class
 - `TComponent` has features for dynamic event and extension by attached Behaviors (__call, __callStatic), dynamic properties (__get, __set, __isset, __unset), __clone, __sleep, __wakeup, and _getZappableSleepProps
 - Behaviors can be attached to any `TComponent` to alter its behavior and functionality.
@@ -93,7 +92,7 @@
 - Data components should support `TActiveRecord` pattern
 - All UI controls should have proper template support and state management
 - All changes must be backward compatible
-- A full check consists of the 4 checks (in order): php compile, php-cs-fixer, phpstan, composer unittest (all checks must pass successfully)
+- A full check consists of the 4 checks (in order): `php -l` compile, php-cs-fixer, phpstan, phpunit (all checks must pass successfully)
 - A full check must be done for code to be ready for git commit.
 - The current version is 4.3.2. The next release version is 4.3.3
 
@@ -299,8 +298,7 @@ Between the next brackets, it is required without exception:
 - Every directory in the project might contain a CLAUDE.md file about the directory
 - Changes to files and sub-directories in the directory should update the CLAUDE.md
 - Sub-Directories should be briefly summarized from their containing CLAUDE.md
-- Class Specific Summaries are at "agents/working/classes/" with the same directory hierarchy as "framework/"
 - A 'CLAUDE.md' file is the extensive summary of its:
   - containing directory
-  - the classes within the directory and their purpose
-  - sub directories and their purpose/content
+  - the classes within the directory and their features, use, and purpose
+  - sub-directories and their purpose and content
