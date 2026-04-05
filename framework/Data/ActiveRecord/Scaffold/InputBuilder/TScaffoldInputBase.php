@@ -49,6 +49,10 @@ class TScaffoldInputBase
 			case 'ibm':
 				require_once(__DIR__ . '/TIbmScaffoldInput.php');
 				return new TIbmScaffoldInput();
+			case 'firebird':
+			case 'interbase':
+				require_once(__DIR__ . '/TFirebirdScaffoldInput.php');
+				return new TFirebirdScaffoldInput();
 			default:
 				throw new TConfigurationException(
 					'scaffold_invalid_database_driver',
