@@ -54,6 +54,7 @@
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
 - Inline comments should be in English and start with `//`
 - Use the next release version when adding new files, methods, or classes with "@since" in their docblock
+- All documentation should be written in present perfect tense
 
 ### Error Handling
 - Use try/catch blocks for operations that can fail
