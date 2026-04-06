@@ -36,7 +36,7 @@ minute  hour  day  month  dayOfWeek
 ```
 
 - Each field accepts: `*` (any), specific values, ranges (`1-5`), step values (`*/5`), lists (`1,3,5`).
-- Special expressions: `@yearly`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@reboot`.
+- Special expressions: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`.
 - Expressions are case-insensitive and support 8 language name sets for month/day names.
 
 ## Conventions
