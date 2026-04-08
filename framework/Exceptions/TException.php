@@ -44,8 +44,8 @@ use Throwable;
  *
  * By default, TException looks for a message file by calling
  * {@see getErrorMessageFile()} method, which uses the "message-xx.txt"
- * file located under "Prado\Exceptions" folder, where "xx" is the
- * code of the user preferred language. If such a file is not found,
+ * file located under "Prado\Exceptions\messages\" folder, where "xx" is
+ * the code of the user preferred language. If such a file is not found,
  * "message.txt" will be used instead.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -80,7 +80,7 @@ class TException extends \Exception
 			$errorCode = 0;
 		}
 		$this->_errorCode = $errorMessage;
-		$errorMessage = $this->translateErrorMessage($errorMessage);
+		$message = $this->translateErrorMessage($errorMessage);
 		$n = count($args);
 		$previous = null;
 		if ($n > 0 && ($args[$n - 1] instanceof Throwable)) {
@@ -91,7 +91,7 @@ class TException extends \Exception
 		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($errorMessage, $tokens), $errorCode, $previous);
+		parent::__construct(strtr($message, $tokens), $errorCode, $previous);
 	}
 
 	/**
@@ -112,12 +112,15 @@ class TException extends \Exception
 	}
 
 	/**
-	 * Translates an error code into an error message.
-	 * @param string $key error code that is passed in the exception constructor.
+	 * Translates an error code into an error message. Allows for '#' and ';' comments.
+	 * @param ?string $key error code that is passed in the exception constructor.
 	 * @return string the translated error message
 	 */
 	protected function translateErrorMessage($key)
 	{
+		if (empty($key)) {
+			return '';
+		}
 		$msgFiles = TException::$_messagefiles;
 		$msgFiles[] = $this->getErrorMessageFile();
 		$value = $key;
@@ -126,9 +129,19 @@ class TException extends \Exception
 		foreach ($msgFiles as $msgFile) {
 			if (!isset(self::$_messageCache[$msgFile])) {
 				if (($entries = @file($msgFile)) !== false) {
+					self::$_messageCache[$msgFile] = [];
 					foreach ($entries as $entry) {
-						[$code, $message] = array_merge(explode('=', $entry, 2), ['']);
-						self::$_messageCache[$msgFile][trim($code)] = trim($message);
+						$entry = trim($entry);
+
+						// Skip empty lines and comments starting with # or ;
+						if ($entry === '' || strncmp($entry, '#', 1) === 0 || strncmp($entry, ';', 1) === 0) {
+							continue;
+						}
+
+						if (strpos($entry, '=') !== false) {
+							[$code, $message] = explode('=', $entry, 2);
+							self::$_messageCache[$msgFile][trim($code)] = trim($message);
+						}
 					}
 				}
 			}
