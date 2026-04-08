@@ -153,7 +153,7 @@ class TClassBehavior extends TBaseBehavior implements IClassBehavior
 	 */
 	public function hasOwner(): bool
 	{
-		return $this->_owners !== null;
+		return $this->_owners !== null && $this->_owners->getCount() >= 1;
 	}
 
 	/**
