@@ -82,7 +82,6 @@ class TException extends \Exception
 			$errorCode = 0;
 		}
 		$this->_errorCode = $errorMessage;
-		$message = $this->translateErrorMessage($errorMessage);
 		$n = count($args);
 		$previous = null;
 		if ($n > 0 && ($args[$n - 1] instanceof Throwable)) {
@@ -93,7 +92,8 @@ class TException extends \Exception
 		for ($i = 0; $i < $n; ++$i) {
 			$tokens['{' . $i . '}'] = TPropertyValue::ensureString($args[$i]);
 		}
-		parent::__construct(strtr($message, $tokens), $errorCode, $previous);
+		$errorMessage = $this->translateErrorMessage($errorMessage);
+		parent::__construct(strtr($errorMessage, $tokens), $errorCode, $previous);
 	}
 
 	/**
