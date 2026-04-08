@@ -88,7 +88,7 @@ TApplication
   - **`on` prefix** — `onEventName(TEventParameter $param)` raised with `$this->raiseEvent('OnEventName', $this, $param)`.
   - **`dy` prefix** — dynamic events called on attached/active Behaviors (e.g., `dyShouldContinue`, `dyClone`, `dyValidate`).
   - **`fx` prefix** — global events, auto-registered depending on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
-- All event types are raised in specified priority order.
+- All events are raised in specified priority order.
 - `@method` PHPDoc tags document dynamic `dy-` events on classes.
 
 

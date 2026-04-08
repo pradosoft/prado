@@ -28,7 +28,7 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`). Ea
   - `--address=host:port` — network address (default `127.0.0.1:8080`).
   - Wraps `php -S` with the application entry point as the router script.
 
-## Adding a New Action
+## Adding a New Shell Action
 
 1. Create a class extending `TShellAction` in this directory.
 2. Set `$action` (command name), `$methods` (subcommand list), `$parameters`, `$optional`, and `$description`.
