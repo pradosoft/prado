@@ -18,7 +18,7 @@ Cron-style scheduled task engine for the Prado framework. Supports both file-con
 
 - **`TCronTaskInfo`** — Task metadata: name, schedule, task class, last run time.
 
-- **`TTimeScheduler`** — Cron expression parser. Supports multi-language expressions (8 languages) and special tokens (`@daily`, `@weekly`, `@monthly`, `@yearly`, `@annually`, `@hourly`, `@midnight`). `getNextTriggerTime($lastRun)` calculates the next execution timestamp.
+- **`TTimeScheduler`** — Cron expression parser. Supports multi-language expressions (8 languages) and special tokens (`@daily`, `@weekly`, `@monthly`, `@yearly`, `@annually`, `@hourly`, `@midnight`, `@{time()}`). `getNextTriggerTime($lastRun)` calculates the next execution timestamp.
 
 - **`TDbCronCleanLogTask`** — Pre-built task that auto-purges old cron log entries from the database.
 
@@ -36,7 +36,7 @@ minute  hour  day  month  dayOfWeek
 ```
 
 - Each field accepts: `*` (any), specific values, ranges (`1-5`), step values (`*/5`), lists (`1,3,5`).
-- Special expressions: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`.
+- Special expressions: `@yearly`, `@annually`, `@monthly`, `@weekly`, `@daily`, `@hourly`, `@midnight`, `@{time()}`.
 - Expressions are case-insensitive and support 8 language name sets for month/day names.
 
 ## Conventions

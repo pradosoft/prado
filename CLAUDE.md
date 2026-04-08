@@ -46,7 +46,7 @@ Run these four checks **in order** — all must pass:
 
 ### Core Abstractions
 
-- **`TComponent`** (`framework/TComponent.php`) — base class for nearly everything. Implements the property system (getters/setters via magic `__get`/`__set`), event system (`attachEventHandler`/`raiseEvent`), behavior attachment, `__clone`, `__sleep`/`__wakeup`, and `_getZappableSleepProps`.
+- **`TComponent`** (`framework/TComponent.php`) — base class for nearly everything. Implements the property system (getters/setters via magic `__get`/`__set`), event system (`attachEventHandler`/`raiseEvent`), priority based behavior attachment, `__clone`, `__sleep`/`__wakeup`, and `_getZappableSleepProps`.
 - **`TApplication`** (`framework/TApplication.php`) — top-level service container. Modules and services register with it via XML (or PHP) configuration; tests bootstrap one via `tests/test_tools/phpunit_bootstrap.php`.
 - **`TModule` / `TService`** — pluggable units registered with `TApplication`.
 
@@ -84,10 +84,13 @@ TApplication
 ### Event / Property / Behavior System
 
 - Properties: defined via `getXxx()`/`setXxx()` — no public fields.
-- Events: `onEventName(TEventParameter $param)` raised with `$this->raiseEvent('OnEventName', $this, $param)`.
-- **`dy` prefix** — dynamic events called on attached/active Behaviors (e.g., `dyShouldContinue`, `dyClone`, `dyValidate`).
-- **`fx` prefix** — global events, auto-registered depending on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
+- Events: 
+  - **`on` prefix** — `onEventName(TEventParameter $param)` raised with `$this->raiseEvent('OnEventName', $this, $param)`.
+  - **`dy` prefix** — dynamic events called on attached/active Behaviors (e.g., `dyShouldContinue`, `dyClone`, `dyValidate`).
+  - **`fx` prefix** — global events, auto-registered depending on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
+- All event types are raised in specified priority order.
 - `@method` PHPDoc tags document dynamic `dy-` events on classes.
+
 
 ### Custom PHPStan Extensions
 

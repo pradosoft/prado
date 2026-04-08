@@ -8,7 +8,7 @@ CLI application support for the Prado framework. Allows command-line scripts to 
 
 ## Classes
 
-- **`TShellApplication`** — Extends `TApplication` for CLI contexts. Loads the same `application.xml` as the web app; all configured modules are available. Properties: `QuietMode` (0=normal, 1=quiet, 2=silent), `OutputWriter`. Methods: `run()`, `renderException()`, `processRequest()`. Registers built-in shell actions on startup.
+- **`TShellApplication`** — Extends `TApplication` for CLI contexts. Loads the same `application.xml` as the web app; all configured modules are available. Properties: `QuietMode` (0=normal, 1=quiet, 2=silent), `OutputWriter`. Methods: `run()`, `renderException()`, `processRequest()`. Registers application shell actions on startup.
 
 - **`TShellAction`** — Abstract base for CLI commands. Subclass and implement `run(array $args)`. Define `Action` (command name), `Parameters` (required), `Optional` (optional params), `Methods` (subcommands). Use `getWriter()` for output. `options()` method provides parameter definitions.
 
@@ -28,8 +28,7 @@ Built-in shell commands:
 | `TPhpShellAction` | `shell` | Interactive PHP REPL with bootstrapped app context |
 | `TWebServerAction` | `serve` | Start PHP's built-in dev web server (`--address=host:port`) |
 | `TFlushCachesAction` | `cache` | List, flush one, or flush all `ICache` modules |
-| `TShellCronAction` | `cron` | Manually trigger cron tasks (see `Util/Cron/`) |
-| `TShellDbCronAction` | `db-cron` | Manage database-backed cron tasks |
+| `TShellCronAction`, `TShellDbCronAction` | `cron` | Manually trigger cron tasks (see `Util/Cron/`) |
 
 ## Patterns & Conventions
 

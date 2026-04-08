@@ -19,9 +19,9 @@ Authentication, authorization, user management, and role-based access control (R
 
 - **`TUserManager`** — In-memory user store implementing `IUserManager`. Supports configurable password hashing (`MD5`, `SHA1`, custom). Register in `application.xml` as a module.
 
-- **`TDbUserManager`** — Database-backed user manager extending `TUserManager`. Queries a user table; supports custom column mappings. Password verification against stored hash.
+- **`TDbUserManager`** — Database-backed user manager. Queries a factory subclass implementation of TDbUser.
 
-- **`TDbUser`** — Extends `TUser` with database persistence.
+- **`TDbUser`** — Extends `TUser` with database persistence. Implements the database functions of TDbUserManager.
 
 ### Authentication & Authorization
 
@@ -47,7 +47,7 @@ Advanced RBAC with permission hierarchies and dynamic authorization.
 
 - **`TPermissionsManagerPropertyTrait`** — Shared trait providing the `PermissionsManager` property accessor; used by controls and behaviors that need a typed reference to `TPermissionsManager`.
 
-- **`TPermissionsBehavior`** — Behavior automatically attached to `IPermissions` classes. Intercepts dynamic events to enforce permissions. Raises `onRequestPermission`.
+- **`TPermissionsBehavior`** — Behavior automatically attached to `IPermissions` classes. Intercepts specified dynamic events to enforce permissions.
 
 - **`TPermissionsConfigurationBehavior`** — Integrates per-page permission configuration with the page authorization lifecycle.
 

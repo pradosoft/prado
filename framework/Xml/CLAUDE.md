@@ -16,10 +16,10 @@ DOM-compatible XML document and element manipulation for the Prado framework. Us
   - `Attributes` — `TMap` of name→value attribute pairs
   - `Elements` — `TXmlElementList` of direct child elements
   - `Parent` — reference to parent `TXmlElement`
-  - `xpath($expression)` — run XPath query; returns array of `TXmlElement`. Internally assigns temporary `prado-xml-id-*` attributes for tracking — do not rely on these attributes.
+  - `xpath($expression)` — run XPath query; returns array of `TXmlElement`.
   - Implements `ArrayAccess` (index into child elements), `Countable`, `IteratorAggregate`
   - DOM compatibility: `getNodeType()`, node type constants (`XML_DOCUMENT_NODE`, etc.), partial DOM property support
-  - Search modes: `SEARCH_ELEMENT`, `SEARCH_DEPTH_FIRST`, `SEARCH_BREADTH_FIRST`
+  - Element Search modes: `SEARCH_ELEMENT`, `SEARCH_DEPTH_FIRST`, `SEARCH_BREADTH_FIRST`
 
 - **`TXmlElementList`** — `TList` subclass holding child `TXmlElement` objects. Maintains `Parent` references. Handles re-insertion correctly (removing from self before re-adding to avoid duplicates).
 
@@ -53,5 +53,5 @@ DOM-compatible XML document and element manipulation for the Prado framework. Us
 
 - `TXmlDocument` inherits from `TXmlElement` — the root element *is* the document, so `TagName` on a `TXmlDocument` is the root tag.
 - `Value` only returns text node content — CDATA sections and comments are not included.
-- XPath adds `prado-xml-id-*` attributes internally for node tracking; treat these as internal.
+- XPath adds (then removes) `prado-xml-id-*` attributes internally for node tracking; treat these as internal.
 - libxml errors are suppressed internally (`libxml_use_internal_errors(true)`) during parsing — check the return value of `loadFromString()`/`loadFromFile()` rather than expecting exceptions on malformed XML.

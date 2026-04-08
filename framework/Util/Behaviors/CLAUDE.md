@@ -11,7 +11,7 @@ Pre-built installable behaviors for common Prado application concerns. Each beha
 | Class | Attach To | Purpose |
 |---|---|---|
 | `TApplicationSignals` | `TApplication` | Connects POSIX signals (`SIGTERM`, `SIGINT`, `SIGHUP`) to application lifecycle events |
-| `TBehaviorParameterLoader` | Any `TComponent` | Loads behavior configuration from a parameter module |
+| `TBehaviorParameterLoader` | Any `TComponent` | Loads behavior configuration from a configuration parameter to be preset before the init phase |
 | `TCaptureForkLog` | `TApplication` | Captures log entries from forked child processes |
 | `TForkable` | Trait | Provides `fork()` helper for safe process forking with log capture |
 | `TGlobalClassAware` | Any | Checks class availability across the application |
@@ -22,7 +22,7 @@ Pre-built installable behaviors for common Prado application concerns. Each beha
 | `TPageNoCacheBehavior` | `TPage` | Adds HTTP no-cache headers to page responses |
 | `TPageTopAnchorBehavior` | `TPage` | Injects a `#top` anchor element at the top of the page |
 | `TParameterizeBehavior` | Any `TComponent` | Loads property values from application parameters at init time |
-| `TTimeZoneParameterBehavior` | `TApplication` | Sets PHP's default timezone from an application parameter |
+| `TTimeZoneParameterBehavior` | `TApplication` | Sets PHP's default timezone from a behavior property or an application parameter |
 
 ## Conventions
 

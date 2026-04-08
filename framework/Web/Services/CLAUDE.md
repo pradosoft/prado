@@ -22,7 +22,7 @@ Application services for the Prado framework. Each service handles a different t
 
 - **`TFeedService`** — RSS/Atom feed generation. Delegates to content provider classes.
 
-- **`TPageConfiguration`** — Parses per-directory `config.xml` files for page-level module loading, authorization rules, and default property values.
+- **`TPageConfiguration`** — Parses per-directory `config.xml`/`config.php` files for page-level module loading, authorization rules, and default property values.
 
 ## Conventions
 

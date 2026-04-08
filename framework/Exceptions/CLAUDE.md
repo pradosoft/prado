@@ -18,7 +18,7 @@ Exception hierarchy and error display for the Prado framework. Provides multilin
   - Static cache `TException::$_messageCache` — loaded once per language per request.
   - Last constructor argument may be a `Throwable` for exception chaining.
 
-- **`TErrorHandler`** — Application module for rendering errors/exceptions. Configured in `application.xml` as a module. Uses templates in `Exceptions/templates/` (`error.html`, `exception.html`; language-suffixed variants supported). Replaces `%%ErrorMessage%%`, `%%Version%%`, etc. in templates. `SOURCE_LINES = 12` lines of context shown around the error location.
+- **`TErrorHandler`** — Application module for rendering errors/exceptions. Configured in `application.xml` as a module, or created by TApplication if not configured. Uses templates in `Exceptions/templates/` (`error.html`, `exception.html`; language-suffixed variants supported). Replaces `%%ErrorMessage%%`, `%%Version%%`, etc. in templates. `SOURCE_LINES = 12` lines of context shown around the error location.
 
 ### Specific Exception Classes
 

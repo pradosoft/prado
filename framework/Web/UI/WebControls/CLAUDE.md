@@ -12,7 +12,7 @@ Standard HTML input, layout, data display, and validation controls for the Prado
 
 - **`TWebControlDecorator`** — Injects additional HTML before/after a WebControl's rendered output without subclassing.
 
-- **`TContent`** / **`TContentPlaceHolder`** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template.
+- **`TContent`** / **`TContentPlaceHolder`** — Master page content injection. `TContent` blocks are injected into matching `TContentPlaceHolder` elements in the master template. Supports hierarchy matching.
 
 ## Input Controls
 

@@ -14,7 +14,7 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
   - Property system via `getXxx()`/`setXxx()` magic (`__get`, `__set`, `__isset`, `__unset`)
   - Event system: `attachEventHandler()`, `raiseEvent()`, `detachEventHandler()`
   - Behavior attachment: `attachBehavior()`, `detachBehavior()`, `enableBehavior()`
-  - Dynamic events: `__call()` dispatches `dy*` (behavior events) and `fx*` (global events)
+  - Dynamic events: `__call()` dispatches `dy*` (attached behavior events)
   - Serialization: `__sleep()`, `__wakeup()`, `_getZappableSleepProps()`
   - Cloning: `__clone()` with `dyClone` dynamic event
 
@@ -28,7 +28,7 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 - **`TService.php`** — Base for application services (page, JSON, RPC, SOAP, feed).
 
-- **`TEventHandler.php`** — Invokable wrapper for event handlers; supports priority-based dispatch and hierarchical handler data.
+- **`TEventHandler.php`** — Invokable wrapper for event handlers; supports hierarchical invokable data.
 
 - **`TEventSubscription.php`** — Temporarily subscribes a handler to an `on*` event; auto-removes on destruct.
 
@@ -55,15 +55,15 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 | `Security/` | TAuthManager, TUserManager, TSecurityManager, RBAC (TPermissionsManager) |
 | `Shell/` | TShellApplication, TShellAction, TShellWriter — CLI application support |
 | `Util/` | Logging, behaviors, cron, RPC clients, helpers, TVarDumper, TCallChain |
-| `Web/` | HTTP layer, URL routing, asset management, UI controls, services |
+| `Web/` | HTTP layer, URL routing, asset management, UI controls, services, templates, javascript, active controls, jui, skins, themes |
 | `Xml/` | TXmlDocument, TXmlElement — DOM-compatible XML with XPath, ArrayAccess |
 
 ## Key Conventions
 
 - **`dy` prefix** — dynamic events dispatched to attached behaviors (e.g., `dyShouldContinue`, `dyValidate`).
 - **`fx` prefix** — global events auto-registered based on `getAutoGlobalListen()` (e.g., `fxAttachClassBehavior`).
-- **`on` prefix** — standard lifecycle events (e.g., `onInit`, `onLoad`, `onPreRender`).
+- **`on` prefix** — standard events (e.g., `onInit`, `onLoad`, `onLogin`).
 - **`@method` PHPDoc** — used on classes to document dynamic `dy*` events that aren't explicitly defined.
-- **`@since 4.3.3`** — tag all new files, classes, and public methods with the next release version.
+- **`@since 4.3.3`** — tag all new files, classes, and methods with the next release version.
 - **`if` blocks** — always use `{}`, never single-line bodies.
-- **Property setters** — use `TPropertyValue::ensureXxx()` for type coercion.
+- **Property setters** — use `TPropertyValue::ensureXxx()` for type coercion in Configuration and templates setters.
