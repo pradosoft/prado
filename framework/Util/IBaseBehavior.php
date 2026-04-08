@@ -121,6 +121,7 @@ interface IBaseBehavior extends IPriorityProperty
 	public function hasOwner(): bool;
 
 	/**
+	 * Property version of {@see hasOwner()}.
 	 * @return bool Is the behavior attached to an owner.
 	 * @since 4.3.3
 	 */
