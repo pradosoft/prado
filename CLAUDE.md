@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Agents when working with code in this repository.
 
 ## What This Is
 
@@ -114,7 +114,7 @@ TApplication
 - **`if` statements** always use a block (`{}`), never a single-line body.
 - **Error codes** for PRADO exceptions are defined in `framework/Exceptions/messages/messages.txt` (English master); language variants are `messages-<lang>.txt` in the same directory.
 - **Backward compatibility** — all changes must be backward compatible.
-- **`@since` tag** — use the next release version (`4.3.3`) when adding new files, methods, or classes.
+- **`@since` tag** — use the next release version (`4.3.3`) when adding new methods or classes.
 
 ## Test Bootstrap
 
@@ -127,9 +127,11 @@ Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit
 - PHP minimum: 8.1 (CI tests 8.1, 8.2, 8.3)
 - PSR-12 enforced via php-cs-fixer
 
-## Working Memory (`agents/`)
+## Working Knowledge (`agents/`)
 
-The `agents/working/` directory stores planning, analysis, and knowledge files for agent efficiency. Scan with `find agents/working/ -type f -name '*.md'` for relevant context. Class-specific knowledge lives at `agents/working/classes/<relative_path>/<Class>.md`. The primary index is `agents/working/INDEX.md`.
+Working Knowledge (`agents/`)
+
+`framework/` maps to `agents/framework/` for documentation and knowledge files. The typical `CLAUDE.md` file is named "LIBRARY.md". The directory hierarchy uses UPPER CASE with '-' between directories and the file, ending in "LIBRARY.md". Scan with `find agents/ -type f -name '*.md'` for relevant context. There may be other useful ".md" files.
 
 ## Anti-Patterns (Required Safeguards)
 

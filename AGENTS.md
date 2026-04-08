@@ -41,6 +41,7 @@
 - Namespace: `Prado\{Module}` (e.g., `Prado\Web\UI\TControl`)
 - Template file extension: ".tpl"
 - Web Page template file extension: ".page"
+- Knowledge files: `SCREAMING_SNAKE_CASE.md` (e.g., `WEB_UI_INDEX.md`)
 
 ### Documentation Standards
 - All public methods must have PHPDoc comments with:
@@ -53,7 +54,7 @@
   - `@since` for version
   - `@method` for dynamic events with prefix 'dy-'; which are called (on "$this->dy-") but not defined.
 - Inline comments should be in English and start with `//`
-- Use the next release version when adding new files, methods, or classes with "@since" in their docblock
+- When documenting new methods or classes with "@since" use the next release version.
 - All documentation should be written in present perfect tense
 
 ### Error Handling
@@ -184,10 +185,10 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 ```
 ./
 ├── agents/                     # The Coding Agents directory
-│   ├── PRADO_ANALYSIS.md       # An efficient understanding of PRADO
-│   └── working/                # Working Memory of the PRADO framework
+│   ├── DataGateway.md          # Database abstraction layer manual
+│   └── framework/              # Agent Working Knowledge of "framework/"
+│       ├── *_INDEX.md          # Directory Working Knowledge file, like CLAUDE.md; Directory hierary is formatted in SCREAMING_SNAKE_CASE.
 │       └── classes/            # Working Memory Documentation of PRADO framework classes
-│                               #    and follows the relative directory hierarchy from 'framework/'
 ├── framework/                  # The Source Code directory
 │   ├── Caching/                # APC, Database, Etcd, Mem, Redis
 │   ├── Collections/            # TList, TMap, TNull, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList, TArraySubscription
@@ -205,7 +206,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   │   └── Permissions         # TPermissionsManager
 │   ├── Shell/                  # TShellAction, TShellApplication, TShellWriter
 │   │   └── Actions/            # Framework Shell Actions: TWebServerAction, THelpAction, TFlushCachesAction, TDbParameterAction, TActiveRecordAction
-│   ├── classes.php             # List of All PRADO classes and namespaces; format: PHP Array
+│   ├── classes.php             # List of All PRADO classes with namespace; format: PHP Array, by path name order ascending
 │   ├── TComponent.php          # Base class
 │   ├── TApplicationComponent.php      # base class for application components
 │   ├── TApplication.php        # Main Application class
@@ -289,6 +290,7 @@ Between the next brackets, it is required without exception:
 - NEVER (without exception) execute "rm" commands on any paths without asking the developer for approval first
 - NEVER remove composer --dev dependencies because those are a required for development on the Project
 - NEVER perform an action that erases or overwrites files for the task of unit testing and fixing; file changes are important and must be kept, because the changes themselves are being unit tested.
+- NEVER delete any folders or files until the associated task is absolutely and totally complete.
 }
 
 # Search URL References
@@ -296,10 +298,14 @@ Between the next brackets, it is required without exception:
 - To look up inherent PHP functions, use url: "https://www.php.net/manual/en/function.<replace with PHP function>.php"
 
 # Directory Working Knowledge
-- Every directory in the project might contain a CLAUDE.md file about the directory
-- Changes to files and sub-directories in the directory should update the CLAUDE.md
-- Sub-Directories should be briefly summarized from their containing CLAUDE.md
-- A 'CLAUDE.md' file is the extensive summary of its:
-  - containing directory
-  - the classes within the directory and their features, use, and purpose
-  - sub-directories and their purpose and content
+- Every directory in the project may have an INDEX.md knowledge file but mapped within the "agents/" directory
+- All INDEX.md files are in "agents/"
+- All files in "agents/" contain information for agents.
+- Within "agents/framework/", the file name prefix before "INDEX.md" maps to the directory path that it is indexing; using SCREAMING_SNAKE_CASE. eg 'WEB_UI_WEBCONTROLS_INDEX.md' is the index for 'Web/UI/WebControls/INDEX.md'
+- Changes to files and sub-directories in a project directory should update its related INDEX.md, starting with the deepest in the hierarchy
+- Sub-Directories should be briefly summarized in their containing directory INDEX.md
+- Directory INDEX.md need their subdirectories listed at the top with links to their INDEX files.
+- An 'INDEX.md' knowledge file is the extensive summary of its:
+  - containing directory 
+  - classes within the directory and their features, use, and purpose
+  - sub-directories and their purpose and contents
