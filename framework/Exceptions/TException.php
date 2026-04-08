@@ -48,13 +48,15 @@ use Throwable;
  * the code of the user preferred language. If such a file is not found,
  * "message.txt" will be used instead.
  *
+ * The Message Files can have blank lines, and both '#' and ';' comments.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
 class TException extends \Exception
 {
 	private $_errorCode = '';
-	private static $_messagefiles = [];
+	private static $_messageFiles = [];
 	protected static $_messageCache = [];
 
 	/**
@@ -108,7 +110,7 @@ class TException extends \Exception
 				$file = $msgFile;
 			}
 		}
-		TException::$_messagefiles[] = $file;
+		TException::$_messageFiles[] = $file;
 	}
 
 	/**
@@ -121,7 +123,7 @@ class TException extends \Exception
 		if (empty($key)) {
 			return '';
 		}
-		$msgFiles = TException::$_messagefiles;
+		$msgFiles = TException::$_messageFiles;
 		$msgFiles[] = $this->getErrorMessageFile();
 		$value = $key;
 
