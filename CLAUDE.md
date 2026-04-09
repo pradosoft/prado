@@ -131,7 +131,7 @@ Tests require a running `TApplication`. The bootstrap (`tests/test_tools/phpunit
 
 Working Knowledge (`agents/`)
 
-`framework/` maps to `agents/framework/` for documentation and knowledge files. The typical `CLAUDE.md` file is named "LIBRARY.md". The directory hierarchy uses UPPER CASE with '-' between directories and the file, ending in "LIBRARY.md". Scan with `find agents/ -type f -name '*.md'` for relevant context. There may be other useful ".md" files.
+`framework/` directory hierarchy maps to `agents/framework/` for documentation and knowledge files. The typical `CLAUDE.md` file is named "INDEX.md". Classes have class knowledge files named "<class>.md" in the same relative directory. Brief summaries of directories are named "SUMMARY.md". Scan documentation with `find agents/ -type f -name '*.md'` for relevant context. There may be other useful ".md" files.
 
 ## Anti-Patterns (Required Safeguards)
 

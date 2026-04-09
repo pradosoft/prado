@@ -185,10 +185,9 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 ```
 ./
 ├── agents/                     # The Coding Agents directory
-│   ├── DataGateway.md          # Database abstraction layer manual
-│   └── framework/              # Agent Working Knowledge of "framework/"
-│       ├── *_INDEX.md          # Directory Working Knowledge file, like CLAUDE.md; Directory hierary is formatted in SCREAMING_SNAKE_CASE.
-│       └── classes/            # Working Memory Documentation of PRADO framework classes
+│   └── framework/              # Agent Working Knowledge of "framework/"; same relative directory hierarchy
+│       ├── <path>/INDEX.md     # Directory Knowledge file
+│       └── <path>/SUMMARY.md   # Directory classes summary
 ├── framework/                  # The Source Code directory
 │   ├── Caching/                # APC, Database, Etcd, Mem, Redis
 │   ├── Collections/            # TList, TMap, TNull, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList, TArraySubscription
@@ -212,7 +211,7 @@ All instances self-register in `Prado.Registry[controlId]` on construction and a
 │   ├── TApplication.php        # Main Application class
 │   ├── TApplicationConfiguration.php  # Configuration of Application class
 │   ├── TEventHandler.php       # Invokable to run "on" event handlers with associated hierarchical data
-│   ├── TEventSubscription.php  # Temporarily subscribes an handler to an "on" event
+│   ├── TEventSubscription.php  # Temporarily subscribes a handler to an event
 │   ├── TModule.php             # Base class for PRADO modules and managers
 │   ├── TService.php            # Base class for application services
 │   ├── Util/                   # Page templates directory
@@ -297,15 +296,24 @@ Between the next brackets, it is required without exception:
 - To Search the PHP language and libraries, use url: "https://www.php.net/search.php#gsc.tab=0&gsc.sort=&gsc.q=<replace with query string>"
 - To look up inherent PHP functions, use url: "https://www.php.net/manual/en/function.<replace with PHP function>.php"
 
-# Directory Working Knowledge
-- Every directory in the project may have an INDEX.md knowledge file but mapped within the "agents/" directory
-- All INDEX.md files are in "agents/"
-- All files in "agents/" contain information for agents.
-- Within "agents/framework/", the file name prefix before "INDEX.md" maps to the directory path that it is indexing; using SCREAMING_SNAKE_CASE. eg 'WEB_UI_WEBCONTROLS_INDEX.md' is the index for 'Web/UI/WebControls/INDEX.md'
-- Changes to files and sub-directories in a project directory should update its related INDEX.md, starting with the deepest in the hierarchy
-- Sub-Directories should be briefly summarized in their containing directory INDEX.md
-- Directory INDEX.md need their subdirectories listed at the top with links to their INDEX files.
+# Working Knowledge - Knowledge Retention Sub-Process Instructions
+- The goal of "Working Knowledge" is to make Coding Agents more efficient at project tasks.
+- The Working Knowledge directory is "agents/" and contain all Project Working Knowledge files.
+- The project directory hierarchy of "./" is replicated in "agents/"
+- INDEX.md is the main knowledge file of a directory, functioning like CLAUDE.md
+- SUMMARY.md is the optimized brief summary of a directory.
+- Every class has a knowledge file with the same relative path, ending in ".md"
+- If only a brief summary of a directory is needed, read its SUMMARY.md
+- If only a summary of a class is needed, read its "<class name>.md"
+- Scan for Project Knowledge (via "find agents/ -type f -name '*.md'") and parse relevant knowledge files relating to directories, classes, summaries, processes, and manuals for tasks at hand
+- When class files are updated, its directory Working Knowledge files and summaries must be updated.
+- When a directory Working Knowledge file is updated, the parent directory Knowledge files and summaries must be recursively updated; start with the deepest directory paths first
 - An 'INDEX.md' knowledge file is the extensive summary of its:
+  - subdirectories (with links to their INDEX.md) at the top (including "../"), with brief summary
   - containing directory 
   - classes within the directory and their features, use, and purpose
-  - sub-directories and their purpose and contents
+- A 'SUMMARY.md' must summarize each class in the containing directory with:
+  - a summary the purpose and public API signatures
+  - be at most 2 sentences
+- Knowledge file class and directory references must be hyperlinked to their related knowledge file
+- All Class Knowledge files must link back to their parent directories INDEX.md (recursively) in a bread crumb; see agents/framework/Util/INDEX.md for an example.

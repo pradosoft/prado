@@ -1,23 +1,25 @@
-# INDEX.md - INDEX.md
+# INDEX.md
 
 This file provides guidance to Agents when working with code in this repository.
 
-## Subdirectories
+### Directories
+
+[./](./INDEX.md)
 
 | Directory | Purpose |
 |---|---|
-| [Caching/](CACHING_INDEX.md) | Cache backends: `TAPCCache`, `TMemCache`, `TRedisCache`, `TDbCache`, `TEtcdCache`. Unified `ICache` / `TCache` abstraction with dependency invalidation (`TFileCacheDependency`, `TDirectoryCacheDependency`, `TChainedCacheDependency`, etc.) |
-| [Collections/](COLLECTIONS_INDEX.md) | TList, TMap, TPriorityList, TPriorityMap, TQueue, TStack, TWeakList and interfaces |
-| [Data/](DATA_INDEX.md) | Database: TDbConnection (PDO wrapper), ActiveRecord ORM, DataGateway, SqlMap |
-| [Exceptions/](EXCEPTIONS_INDEX.md) | Exception hierarchy, TErrorHandler, multilingual error messages |
-| [I18N/](I18N_INDEX.md) | TGlobalization, message translation, CultureInfo, date/number formatting |
-| [IO/](IO_INDEX.md) | Text writers, TTarFileExtractor, stream notifications |
-| [PHPStan/](PHPSTAN_INDEX.md) | Static analysis extensions for dynamic `dy*`/`fx*` methods and `TComponent::isa()` |
-| [Security/](SECURITY_INDEX.md) | TAuthManager, TUserManager, TSecurityManager, RBAC (TPermissionsManager) |
-| [Shell/](SHELL_INDEX.md) | TShellApplication, TShellAction, TShellWriter — CLI application support |
-| [Util/](UTIL_INDEX.md) | Logging, behaviors, cron, RPC clients, helpers, TVarDumper, TCallChain |
-| [Web/](WEB_INDEX.md) | HTTP layer, URL routing, asset management, UI controls, services, templates, javascript, active controls, jui, skins, themes |
-| [Xml/](XML_INDEX.md) | TXmlDocument, TXmlElement — DOM-compatible XML with XPath, ArrayAccess |
+| [Caching/](Caching/INDEX.md) | Cache backends: [`TAPCCache`](Caching/TAPCCache.md), [`TMemCache`](Caching/TMemCache.md), [`TRedisCache`](Caching/TRedisCache.md), [`TDbCache`](Caching/TDbCache.md), [`TEtcdCache`](Caching/TEtcdCache.md). Unified [`ICache`](Caching/ICache.md) / [`TCache`](Caching/TCache.md) abstraction with dependency invalidation ([`TFileCacheDependency`](Caching/TFileCacheDependency.md), [`TDirectoryCacheDependency`](Caching/TDirectoryCacheDependency.md), [`TChainedCacheDependency`](Caching/TChainedCacheDependency.md), etc.) |
+| [Collections/](Collections/INDEX.md) | [`TList`](Collections/TList.md), [`TMap`](Collections/TMap.md), [`TPriorityList`](Collections/TPriorityList.md), [`TPriorityMap`](Collections/TPriorityMap.md), [`TQueue`](Collections/TQueue.md), [`TStack`](Collections/TStack.md), [`TWeakList`](Collections/TWeakList.md) and interfaces |
+| [Data/](Data/INDEX.md) | Database: [`TDbConnection`](Data/TDbConnection.md) (PDO wrapper), ActiveRecord ORM, DataGateway, SqlMap |
+| [Exceptions/](Exceptions/INDEX.md) | Exception hierarchy, [`TErrorHandler`](Exceptions/TErrorHandler.md), multilingual error messages |
+| [I18N/](I18N/INDEX.md) | [`TGlobalization`](I18N/TGlobalization.md), message translation, CultureInfo, date/number formatting |
+| [IO/](IO/INDEX.md) | Text writers, [`TTarFileExtractor`](IO/TTarFileExtractor.md), stream notifications |
+| [PHPStan/](PHPStan/INDEX.md) | Static analysis extensions for dynamic `dy*`/`fx*` methods and [`TComponent::isa()`](TComponent.md) |
+| [Security/](Security/INDEX.md) | [`TAuthManager`](Security/TAuthManager.md), [`TUserManager`](Security/TUserManager.md), [`TSecurityManager`](Security/TSecurityManager.md), RBAC ([`TPermissionsManager`](Security/Permissions/TPermissionsManager.md)) |
+| [Shell/](Shell/INDEX.md) | [`TShellApplication`](Shell/TShellApplication.md), [`TShellAction`](Shell/TShellAction.md), [`TShellWriter`](Shell/TShellWriter.md) — CLI application support |
+| [Util/](Util/INDEX.md) | Logging, behaviors, cron, RPC clients, helpers, [`TVarDumper`](Util/TVarDumper.md), [`TCallChain`](Util/TCallChain.md) |
+| [Web/](Web/INDEX.md) | HTTP layer, URL routing, asset management, UI controls, services, templates, javascript, active controls, jui, skins, themes |
+| [Xml/](Xml/INDEX.md) | [`TXmlDocument`](Xml/TXmlDocument.md), [`TXmlElement`](Xml/TXmlElement.md) — DOM-compatible XML with XPath, ArrayAccess |
 
 ## Purpose
 
@@ -27,7 +29,7 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
 
 ## Top-Level Files
 
-- **`TComponent.php`** — Base class for nearly everything (~89KB). Implements:
+- **[`TComponent.php`](TComponent.md)** — Base class for nearly everything (~89KB). Implements:
   - Property system via `getXxx()`/`setXxx()` magic (`__get`, `__set`, `__isset`, `__unset`)
   - Event system: `attachEventHandler()`, `raiseEvent()`, `detachEventHandler()`
   - Behavior attachment: `attachBehavior()`, `detachBehavior()`, `enableBehavior()`
@@ -35,26 +37,26 @@ This is the root source directory of the **Prado** PHP framework (PSR-4 namespac
   - Serialization: `__sleep()`, `__wakeup()`, `_getZappableSleepProps()`
   - Cloning: `__clone()` with `dyClone` dynamic event
 
-- **`TApplication.php`** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request.
+- **[`TApplication.php`](TApplication.md)** — Top-level service container. Manages modules, services, configuration, and the application lifecycle. Entry point for every request.
 
-- **`TApplicationComponent.php`** — Base for application-aware components; provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
+- **[`TApplicationComponent.php`](TApplicationComponent.md)** — Base for application-aware components; provides `getApplication()`, `getService()`, `getRequest()`, `getResponse()`, `getSession()`, `getUser()`.
 
-- **`TApplicationConfiguration.php`** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions.
+- **[`TApplicationConfiguration.php`](TApplicationConfiguration.md)** — Parses `application.xml` (or `application.php`); loads module/service/parameter definitions.
 
-- **`TModule.php`** — Base for pluggable application modules registered in configuration.
+- **[`TModule.php`](TModule.md)** — Base for pluggable application modules registered in configuration.
 
-- **`TService.php`** — Base for application services (page, JSON, RPC, SOAP, feed).
+- **[`TService.php`](TService.md)** — Base for application services (page, JSON, RPC, SOAP, feed).
 
-- **`TEventHandler.php`** — Invokable wrapper for event handlers; supports hierarchical invokable data.
+- **[`TEventHandler.php`](TEventHandler.md)** — Invokable wrapper for event handlers; supports hierarchical invokable data.
 
-- **`TEventSubscription.php`** — Temporarily subscribes a handler to an `on*` event; auto-removes on destruct.
+- **[`TEventSubscription.php`](TEventSubscription.md)** — Temporarily subscribes a handler to an `on*` event; auto-removes on destruct.
 
 - **`TPropertyValue.php`** — Static type-conversion utilities used in property setters:
   - `ensureBoolean()`, `ensureInteger()`, `ensureFloat()`, `ensureString()`, `ensureArray()`, `ensureEnum()`
 
-- **`TComponentReflection.php`** — Introspection utilities for TComponent property/event metadata.
+- **`TComponentReflection.php`** — Introspection utilities for [`TComponent`](TComponent.md) property/event metadata.
 
-- **`Prado.php`** — Static framework utility class: `Prado::getApplication()`, `Prado::getLogger()`, `Prado::getUser()`, `Prado::log()`, `Prado::setPathOfAlias()`, `Prado::getPathOfAlias()`, `Prado::using()`.
+- **[`Prado.php`](Prado.md)** — Static framework utility class: `Prado::getApplication()`, `Prado::getLogger()`, `Prado::getUser()`, `Prado::log()`, `Prado::setPathOfAlias()`, `Prado::getPathOfAlias()`, `Prado::using()`.
 
 - **`classes.php`** — PHP array listing every framework class and its namespace path. **Must be updated for every new class.**
 
