@@ -42,7 +42,6 @@ class TRequestConnectionUpgrade extends \Prado\Util\TBehavior
 	 * The Service can select on the "Upgrade" HTTP header like "websocket".
 	 * @param \Prado\Web\THttpRequest $request
 	 * @param \Prado\Web\THttpRequestParameter $param
-	 * @return ?array the new url Parameters
 	 */
 	public function processHeaders($request, $param)
 	{
