@@ -10,6 +10,7 @@
 
 namespace Prado\Data\Common\Ibm;
 
+use Prado\Data\Common\IDbHasSchema;
 use Prado\Data\Common\TDbTableInfo;
 
 /**
@@ -18,16 +19,8 @@ use Prado\Data\Common\TDbTableInfo;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.3
  */
-class TIbmTableInfo extends TDbTableInfo
+class TIbmTableInfo extends TDbTableInfo implements IDbHasSchema
 {
-	/**
-	 * @return string schema (owner) name of this table.
-	 */
-	public function getSchemaName()
-	{
-		return $this->getInfo('SchemaName');
-	}
-
 	/**
 	 * @return string fully qualified table name (schema + table), double-quote delimited.
 	 */

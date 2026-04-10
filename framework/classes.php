@@ -93,6 +93,7 @@ return [
 'TIbmMetaData' => 'Prado\Data\Common\Ibm\TIbmMetaData',
 'TIbmTableColumn' => 'Prado\Data\Common\Ibm\TIbmTableColumn',
 'TIbmTableInfo' => 'Prado\Data\Common\Ibm\TIbmTableInfo',
+'IDbHasSchema' => 'Prado\Data\Common\IDbHasSchema',
 'TMssqlCommandBuilder' => 'Prado\Data\Common\Mssql\TMssqlCommandBuilder',
 'TMssqlMetaData' => 'Prado\Data\Common\Mssql\TMssqlMetaData',
 'TMssqlTableColumn' => 'Prado\Data\Common\Mssql\TMssqlTableColumn',
