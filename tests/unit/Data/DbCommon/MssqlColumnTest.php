@@ -20,7 +20,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$conn->setActive(true);
 			$conn->setActive(false);
 		} catch (\Exception $e) {
-			$this->markTestSkipped('SQL Server not reachable: ' . $e->getMessage());
+			$this->markTestSkipped('PDO SQL Server failed to connect: ' . $e->getMessage());
 		}
 	}
 
