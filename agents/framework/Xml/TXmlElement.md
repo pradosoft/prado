@@ -15,6 +15,17 @@ TXmlElement represents an XML element node. It provides properties for tag-name,
 - Supports XPath expressions through xpath() method
 - Implements DOM compatibility methods for better integration
 - Provides search functionality for elements and attributes
+- **Tag name validation** via `validateTagName()` method (can be overridden)
+- Throws `TInvalidDataTypeException` when tag name is null
+- Throws `TInvalidDataValueException` when tag name is empty
+
+## Constants
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `SEARCH_ELEMENT` | `0` | Search only in current element |
+| `SEARCH_DEPTH_FIRST` | `1` | Depth-first search (top to bottom) |
+| `SEARCH_BREADTH_FIRST` | `2` | Breadth-first search (level by level) |
 
 ## Constructor
 ```php
@@ -52,3 +63,14 @@ public function __construct(string $tagName)
 - `childElementCount()` - Gets number of child elements
 - `getPreviousElementSibling()` - Gets previous sibling element
 - `getNextElementSibling()` - Gets next sibling element
+
+## Validation
+
+`validateTagName()` is called by `setTagName()` to validate the tag name. Override this method in subclasses to implement custom validation rules.
+
+## Exceptions
+
+| Error Code | Exception | Description |
+|------------|-----------|-------------|
+| `xmlelement_null_tag` | `TInvalidDataTypeException` | Tag name cannot be null |
+| `xmlelement_empty_tag` | `TInvalidDataValueException` | Tag name cannot be empty |

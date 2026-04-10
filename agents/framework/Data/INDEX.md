@@ -20,7 +20,7 @@ Database access layer for the Prado framework. Provides a PDO wrapper plus three
 
 - **[`TDbConnection`](TDbConnection.md)** — PDO wrapper. Key properties: `ConnectionString` (DSN), `Username`, `Password`, `Charset`, `Attributes`. Methods: `open()`, `close()`, `createCommand($sql)`, `beginTransaction()`, `quoteTableName()`, `quoteColumnName()`. Handles driver-specific charset setup (MySQL, PostgreSQL, SQLite). Raises `OnAfterOpen` event.
 
-- **[`TDbCommand`](TDbCommand.md)** — Wraps a prepared PDO statement. Methods: `execute()`, `query()`, `queryRow()`, `queryColumn()`, `queryScalar()`. Parameter binding: `bindParameter()`, `bindValue()`. Lazily prepares statements.
+- **[`TDbCommand`](TDbCommand.md)** — Wraps a prepared PDO statement. Methods: `execute()`, `query()`, `queryRow()`, `queryColumn()`, `queryScalar()`, `queryAll()`. Parameter binding: `bindParameter()`, `bindValue()`. Lazily prepares statements.
 
 - **[`TDbDataReader`](TDbDataReader.md)** — Iterator over a PDO result set. Methods: `read()`, `readAll()`, `nextResult()`. Implements `Iterator` and `Countable`.
 

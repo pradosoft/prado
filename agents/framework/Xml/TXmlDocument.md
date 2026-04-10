@@ -50,6 +50,10 @@ Returns `true` on success. libxml errors are suppressed internally (`libxml_use_
 | `Elements` | `[TXmlElementList](./TXmlElementList.md)` of root's direct children |
 | `Attributes` | `[TMap](../Collections/TMap.md)` of root element attributes |
 
+## Tag Name Validation
+
+`TXmlDocument` overrides `validateTagName()` to return `false` until the document is loaded. This allows an empty tag name initially.
+
 ## Key Methods (from TXmlDocument)
 
 | Method | Description |

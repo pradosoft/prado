@@ -21,6 +21,7 @@ $reader = $command->query();           // Returns [`TDbDataReader`](./TDbDataRea
 $row = $command->queryRow();          // Returns single row array
 $column = $command->queryColumn();    // Returns single column array
 $scalar = $command->queryScalar();   // Returns single value
+$rows = $command->queryAll();        // Returns all rows as array
 
 // Parameter binding
 $command->bindParameter($name, $value);

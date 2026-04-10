@@ -10,6 +10,8 @@
 ## Overview
 PHPStan extension that makes `$component->isa(MyClass::class)` behave like `$component instanceof MyClass` for type specification.
 
+**This class is `final`** and cannot be extended.
+
 ## Problem Solved
 
 ```php
