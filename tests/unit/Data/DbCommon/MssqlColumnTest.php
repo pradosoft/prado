@@ -11,6 +11,17 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		if (!extension_loaded('pdo_sqlsrv')) {
 			$this->markTestSkipped('The pdo_sqlsrv extension is not available.');
 		}
+		// Also verify the ODBC Driver for SQL Server is installed and the server is
+		// reachable. Without the ODBC driver the extension loads but every connection
+		// attempt throws an IMSSP error. Skip gracefully in that case so the main
+		// test suite is not polluted with failures on runners that have no SQL Server.
+		try {
+			$conn = $this->get_conn();
+			$conn->setActive(true);
+			$conn->setActive(false);
+		} catch (\Exception $e) {
+			$this->markTestSkipped('SQL Server not reachable: ' . $e->getMessage());
+		}
 	}
 
 	public function get_conn()
