@@ -74,6 +74,12 @@ class TOracleMetaData extends TDbMetaData
 	protected function createTableInfo($table)
 	{
 		[$schemaName, $tableName] = $this->getSchemaTableName($table);
+		// Oracle system views (ALL_TAB_COLUMNS, ALL_CONSTRAINTS, etc.) store all
+		// unquoted identifiers in uppercase.  Keep the original case for TableInfo
+		// (so getTableName() / getTableFullName() reflect what the caller passed)
+		// but use uppercase-only variables for the SQL WHERE clauses.
+		$schemaUpper = strtoupper($schemaName);
+		$tableUpper  = strtoupper($tableName);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -92,15 +98,15 @@ class TOracleMetaData extends TDbMetaData
 	FROM
 		ALL_TAB_COLUMNS a
 	WHERE
-		TABLE_NAME = '{$tableName}'
-		AND OWNER = '{$schemaName}'
+		TABLE_NAME = '{$tableUpper}'
+		AND OWNER = '{$schemaUpper}'
 	ORDER BY a.COLUMN_ID
 	EOD;
 		$this->getDbConnection()->setActive(true);
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$command = $this->getDbConnection()->createCommand($sql);
-		//$command->bindValue(':table', $tableName);
-		//$command->bindValue(':schema', $schemaName);
+		//$command->bindValue(':table', $tableUpper);
+		//$command->bindValue(':schema', $schemaUpper);
 		$tableInfo = $this->createNewTableInfo($schemaName, $tableName);
 		$index = 0;
 		foreach ($command->query() as $col) {
@@ -153,12 +159,14 @@ class TOracleMetaData extends TDbMetaData
 	protected function getIsView($schemaName, $tableName)
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+		$schemaUpper = strtoupper($schemaName);
+		$tableUpper  = strtoupper($tableName);
 		$sql =
 <<<EOD
 	select OBJECT_TYPE
 	from ALL_OBJECTS
-	where OBJECT_NAME = '{$tableName}'
-	and OWNER = '{$schemaName}'
+	where OBJECT_NAME = '{$tableUpper}'
+	and OWNER = '{$schemaUpper}'
 	EOD;
 		$this->getDbConnection()->setActive(true);
 		$command = $this->getDbConnection()->createCommand($sql);
@@ -261,6 +269,8 @@ class TOracleMetaData extends TDbMetaData
 	protected function getConstraintKeys($schemaName, $tableName)
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+		$schemaUpper = strtoupper($schemaName);
+		$tableUpper  = strtoupper($tableName);
 		//		select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc,
 		$sql =
 <<<EOD
@@ -271,8 +281,8 @@ class TOracleMetaData extends TDbMetaData
 		ALL_CONSTRAINTS a, ALL_CONS_COLUMNS b
 	where
 		(a.constraint_name = b.constraint_name AND a.table_name = b.table_name AND a.owner = b.owner)
-		and	  a.TABLE_NAME = '{$tableName}'
-		and   a.OWNER = '{$schemaName}'
+		and	  a.TABLE_NAME = '{$tableUpper}'
+		and   a.OWNER = '{$schemaUpper}'
 		and   a.CONSTRAINT_TYPE in ('P','R')
 	EOD;
 		$this->getDbConnection()->setActive(true);

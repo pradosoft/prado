@@ -23,6 +23,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 			'prado_unitest',
 			'prado_unitest'
 		);
+		$conn->Active = true;
 		$meta = new TOracleMetaData($conn);
 		$meta->setDefaultSchema('PRADO_UNITEST');
 		return $meta;

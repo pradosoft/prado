@@ -161,7 +161,7 @@ jobs:
         ports:
           - 3050:3050
         options: >-
-          --health-cmd "test -f /firebird/data/prado_unitest.fdb"
+          --health-cmd "test -f /var/lib/firebird/data/prado_unitest.fdb"
           --health-interval 5s
           --health-timeout 3s
           --health-start-period 30s
@@ -198,7 +198,7 @@ jobs:
           docker exec ${{ job.services.firebird.id }} bash -c "
             ISQL=\$(which isql-fb 2>/dev/null || which isql 2>/dev/null)
             if [ -z \"\$ISQL\" ]; then echo 'isql binary not found'; exit 1; fi
-            OUTPUT=\$(\"\$ISQL\" localhost:/firebird/data/prado_unitest.fdb \
+            OUTPUT=\$(\"\$ISQL\" localhost:/var/lib/firebird/data/prado_unitest.fdb \
               -user SYSDBA -password masterkey \
               -i /tmp/initdb_firebird.sql 2>&1)
             RC=\$?
