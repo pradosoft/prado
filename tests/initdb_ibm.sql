@@ -52,4 +52,4 @@ CREATE TABLE address (
 )@
 
 INSERT INTO table1 (name) VALUES ('test')@
-INSERT INTO address (username, phone, field2_date) VALUES ('wei', '1111111', CURRENT_DATE)@
+INSERT INTO address (username, phone, field2_date, field4_int) VALUES ('wei', '1111111', CURRENT_DATE, 1)@

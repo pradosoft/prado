@@ -196,7 +196,7 @@ jobs:
           # (firebird3.0-utils is unavailable on ubuntu-24.04).
           docker cp ./tests/initdb_firebird.sql ${{ job.services.firebird.id }}:/tmp/initdb_firebird.sql
           docker exec ${{ job.services.firebird.id }} \
-            /opt/firebird/bin/isql-fb localhost:/firebird/data/prado_unitest.fdb \
+            /usr/bin/isql-fb localhost:/firebird/data/prado_unitest.fdb \
               -user SYSDBA -password masterkey \
               -i /tmp/initdb_firebird.sql
 
@@ -206,23 +206,42 @@ jobs:
   db-oracle:
     name: Oracle
     runs-on: ubuntu-latest
+    # Run Oracle as a service container (like the other DB jobs) so GitHub
+    # Actions owns the health-check loop and we control retries directly.
+    # The gvenzl/setup-oracle-free action has no input to increase its timeout,
+    # so it reliably times out on slower runners.
+    services:
+      oracle:
+        image: gvenzl/oracle-free:23.6-slim-faststart
+        env:
+          ORACLE_PASSWORD: prado_unitest
+          APP_USER: prado_unitest
+          APP_USER_PASSWORD: prado_unitest
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Starts Oracle Database Free on the runner, installs Oracle Instant Client,
-      # creates the prado_unitest user, and runs the setup script — all in one step.
-      # The action exports ORACLE_HOME / LD_LIBRARY_PATH to $GITHUB_ENV so that
-      # the following setup-php step can find the client libs for pdo_oci / oci8.
-      - name: Setup Oracle Free + Instant Client
-        uses: gvenzl/setup-oracle-free@v1
-        with:
-          tag: 23.6-slim-faststart
-          container-runtime: docker
-          health-max-retries: 120
-          app-user: prado_unitest
-          app-user-password: prado_unitest
-          setup-scripts: tests/initdb_oracle.sql
+      # Install Oracle Instant Client 19c on the runner so that setup-php can
+      # compile pdo_oci / oci8 against it.  19c client works fine against a
+      # 23c server and has a stable, auth-free download URL.
+      - name: Install Oracle Instant Client
+        run: |
+          sudo apt-get install -y libaio1t64 unzip 2>/dev/null || \
+            sudo apt-get install -y libaio1 unzip
+          wget -q -O /tmp/ic.zip \
+            "https://download.oracle.com/otn_software/linux/instantclient/193000/instantclient-basiclite-linux.x64-19.3.0.0.0dbru.zip"
+          sudo unzip -q /tmp/ic.zip -d /opt/oracle
+          echo "/opt/oracle/instantclient_19_3" | sudo tee /etc/ld.so.conf.d/oracle.conf
+          sudo ldconfig
+          echo "ORACLE_HOME=/opt/oracle/instantclient_19_3" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/opt/oracle/instantclient_19_3" >> $GITHUB_ENV
 
       - name: Setup PHP with OCI extensions
         uses: shivammathur/setup-php@v2
@@ -244,8 +263,16 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
+      - name: Setup Oracle schema
+        run: |
+          docker cp ./tests/initdb_oracle.sql ${{ job.services.oracle.id }}:/tmp/initdb_oracle.sql
+          docker exec ${{ job.services.oracle.id }} \
+            sqlplus prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql
+
       - name: Run Oracle tests
         run: php vendor/bin/phpunit tests/unit/Data/DbCommon/OciColumnTest.php
+        env:
+          ORACLE_SERVICE_NAME: FREEPDB1
 
   db-ibm:
     name: IBM DB2
