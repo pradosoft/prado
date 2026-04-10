@@ -231,12 +231,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 					continue;
 				}
 
-				if (preg_match('/\bAS\b/i', (string) $key)) {
+				if (preg_match('/\bAS\b/i', $key)) {
 					$result[] = $key;
 					continue;
 				}
 
-				if (preg_match('/\bAS\b/i', (string) $value)) {
+				if (preg_match('/\bAS\b/i', $value)) {
 					$result[] = $value;
 					continue;
 				}
