@@ -13,6 +13,9 @@
 -- Run as prado_unitest:
 --   sqlplus prado_unitest/prado_unitest@localhost/FREEPDB1 @tests/initdb_oracle.sql
 
+-- Exit with the SQL error code on any failure so the CI step fails visibly.
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+
 BEGIN
 	EXECUTE IMMEDIATE 'DROP TABLE address';
 EXCEPTION WHEN OTHERS THEN NULL;
@@ -51,3 +54,4 @@ INSERT INTO table1 (name, field1_number, field4_float, field5_number_ps, field8_
 	VALUES ('test', 1, 1.0, 1.0, SYSTIMESTAMP, 1.0);
 INSERT INTO address (username, phone, field4_int) VALUES ('wei', '1111111', 0);
 COMMIT;
+EXIT
