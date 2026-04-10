@@ -298,4 +298,17 @@ class TDbCommand extends \Prado\TComponent
 		}
 		return $column;
 	}
+	
+	/**
+	 * Executes the SQL statement and returns all rows as an array.
+	 * This is a convenience method equivalent to calling query()->readAll().
+	 *
+	 * @return array the query result as an array of rows
+	 * @throws TDbException execution failed
+	 * @since 4.3.3
+	 */
+	public function queryAll()
+	{
+		return $this->query()->readAll();
+	}
 }
