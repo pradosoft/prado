@@ -20,7 +20,9 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		return new TDbConnection(
 			// CI/Docker: Server=localhost,1433 (default unnamed instance, TCP port).
 			// Local named instance: Server=localhost\SQLEXPRESS;Database=prado_unitest
-			'sqlsrv:Server=localhost,1433;Database=prado_unitest',
+			// TrustServerCertificate=yes is required for ODBC Driver 18+ which enforces
+			// encrypted connections and rejects the self-signed cert used by Docker SQL Server.
+			'sqlsrv:Server=localhost,1433;Database=prado_unitest;TrustServerCertificate=yes',
 			'prado_unitest',
 			'prado_unitest'
 		);
