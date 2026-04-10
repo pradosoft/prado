@@ -248,7 +248,7 @@ jobs:
   db-ibm:
     name: IBM DB2
     # DB2 image takes 2-3 minutes to start; only run on explicit manual dispatch.
-    if: github.event_name == 'workflow_dispatch'
+    # if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     services:
       db2:
