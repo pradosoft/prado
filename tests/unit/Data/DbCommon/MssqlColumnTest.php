@@ -9,7 +9,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
-			$this->markTestSkipped('The pdo_sqlsrv extension is not available.');
+			$this->fail('The pdo_sqlsrv extension is not available.');
 		}
 	}
 
@@ -36,7 +36,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$table = $this->meta_data()->getTableInfo('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		// Schema: see tests/initdb_mssql.sql
@@ -214,7 +214,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$names = $this->meta_data()->findTableNames('dbo');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		$this->assertContains('table1', $names);
@@ -227,7 +227,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$meta = $this->meta_data();
 			$builder = $meta->createCommandBuilder('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		$data = ['name' => 'test_row', 'field1_tiny' => 1, 'field6_int' => 42];
@@ -243,7 +243,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$meta = $this->meta_data();
 			$builder = $meta->createCommandBuilder('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		$update = $builder->createUpdateCommand(['name' => 'updated'], 'id=1');
@@ -259,7 +259,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$meta = $this->meta_data();
 			$builder = $meta->createCommandBuilder('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		$delete = $builder->createDeleteCommand('id=1');
@@ -274,7 +274,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 			$table = new TTableGateway('table1', $this->get_conn());
 			$result = $table->insert(['name' => 'cool']);
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to SQL Server: ' . $e->getMessage());
+			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
 		}
 
 		$this->assertTrue(is_int($result));
