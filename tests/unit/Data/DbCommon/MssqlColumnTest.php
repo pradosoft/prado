@@ -30,7 +30,9 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function meta_data(): TMssqlMetaData
 	{
-		return new TMssqlMetaData($this->get_conn());
+		$conn = $this->get_conn();
+		$conn->Active = true;
+		return new TMssqlMetaData($conn);
 	}
 
 	public function test_columns()
