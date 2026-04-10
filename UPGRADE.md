@@ -7,6 +7,15 @@ if you want to upgrade from version A to version C and there is
 version B between A and C, you need to following the instructions
 for both A and B.
 
+Upgrading from v4.3.2
+---------------------
+- IUserManager requires implementation of:
+  * `onFinalizeUser`: called at the end of `getUser` (or equivalent).
+  * `getUserClass`: return the base class for the User.
+  * `getUniqueRoles`: the unique roles in the application.
+  * `getUniqueRoleCount`: number of unique roles.
+  These additions are for PRADO composer extensions.
+
 Upgrading from v4.2.2
 ---------------------
 - Deprecated TTextBoxAutoCompleteType values have been removed since they are not supported anymore by no browser.

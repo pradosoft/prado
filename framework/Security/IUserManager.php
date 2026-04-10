@@ -26,12 +26,14 @@ interface IUserManager
 	 * @return string name for a guest user.
 	 */
 	public function getGuestName();
+
 	/**
 	 * Returns a user instance given the user name.
 	 * @param null|string $username user name, null if it is a guest.
-	 * @return TUser the user instance, null if the specified username is not in the user database.
+	 * @return ?TUser the user instance, null if the specified username is not in the user database.
 	 */
 	public function getUser($username = null);
+
 	/**
 	 * Returns a user instance according to auth data stored in a cookie.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie storing user authentication information
@@ -39,12 +41,14 @@ interface IUserManager
 	 * @since 3.1.1
 	 */
 	public function getUserFromCookie($cookie);
+
 	/**
 	 * Saves user auth data into a cookie.
 	 * @param \Prado\Web\THttpCookie $cookie the cookie to receive the user auth data.
 	 * @since 3.1.1
 	 */
 	public function saveUserToCookie($cookie);
+
 	/**
 	 * Validates if the username and password are correct.
 	 * @param string $username user name
@@ -52,4 +56,27 @@ interface IUserManager
 	 * @return bool true if validation is successful, false otherwise.
 	 */
 	public function validateUser($username, #[\SensitiveParameter] $password);
+
+	/**
+	 * Provides for finalizing a user object after it is created but before its returned
+	 * from the implementing User Manager.
+	 * @param TUser $user The user to finalize.
+	 * @todo for v4.4, not for v4.3
+	 */
+	//public function onFinalizeUser($user);
+
+	/**
+	 * Returns the unique roles in the application. If there are none, `return [];`
+	 * @return array The unique roles in the User Manager.
+	 * @todo for v4.4, not for v4.3
+	 */
+	//public function getUniqueRoles();
+
+	/**
+	 * Returns the number of unique roles in the application. This may be handy if there
+	 * are a lot of roles.
+	 * @return int The number of unique roles.
+	 * @todo for v4.4, not for v4.3
+	 */
+	//public function getUniqueRoleCount();
 }

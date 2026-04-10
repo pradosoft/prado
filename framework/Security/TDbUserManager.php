@@ -10,9 +10,12 @@
 
 namespace Prado\Security;
 
+use Prado\Security\Traits\TUserManagerTrait;
 use Prado\Data\TDataSourceConfig;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
+use Prado\Exceptions\TInvalidDataValueException;
+use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\Util\IDbModule;
 
@@ -42,16 +45,40 @@ use Prado\Util\IDbModule;
  * {@see setConnectionID ConnectionID} refers to the ID of a {@see \Prado\Data\TDataSourceConfig} module
  * which specifies how to establish database connection to retrieve user information.
  *
+ * Roles for the class can be set up by comma-separated string or by PHP array via
+ * {@see setUniqueRoles()}. Roles can also be set in the Application Parameters via
+ * {@see setRolesAppParameterId()}. The resolution order for unique roles is:
+ *   1. The user class ({@see TDbUser::getUniqueRoles()}) — highest priority
+ *   2. Application Parameters (identified by {@see setRolesAppParameterId()})
+ *   3. The {@see setUniqueRoles()} value set directly on this module — lowest priority
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
 class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 {
-	private $_connID = '';
-	private $_conn;
-	private $_guestName = 'Guest';
+	use TUserManagerTrait;
+
+	/** @var \Prado\Data\TDbConnection The connection to the database. */
+	private $_dbConnection;
+
+	/** @var string The string ID of the TDataSourceConfig. */
+	private $_connectionID = '';
+
+	/** @var string The namespaced class of the User Factory. */
 	private $_userClass = '';
+
+	/** @var ?array The application parameter ID of the unique roles. */
+	private $_rolesAppParameterId;
+
+	/** @var ?array The unique roles set on the module by configuration. */
+	private $_uniqueRoles;
+
+	/** @var TDbUser The Factory for users. */
 	private $_userFactory;
+
+	/** @var bool whether the module has been initialized. */
+	private $_initialized = false;
 
 	/**
 	 * Initializes.
@@ -67,6 +94,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
 		}
 		parent::init($config);
+		$this->_initialized = true;
 	}
 
 	/**
@@ -86,19 +114,27 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	}
 
 	/**
-	 * @return string guest name, defaults to 'Guest'
+	 * This gets the ID of the Application Parameter for Roles.
+	 * @return ?string The parameter ID of the application roles. Default is null.
 	 */
-	public function getGuestName()
+	public function getRolesAppParameterId()
 	{
-		return $this->_guestName;
+		return $this->_rolesAppParameterId;
 	}
 
 	/**
-	 * @param string $value name to be used for guest users.
+	 * This sets the ID of the Application Parameter for Roles.
+	 * It may not be set after initialization.
+	 * @param ?string $value The parameter ID of the application roles.
+	 * @throws TInvalidOperationException when called after the module has been initialized.
 	 */
-	public function setGuestName($value)
+	public function setRolesAppParameterId($value)
 	{
-		$this->_guestName = $value;
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('dbusermanager_property_unchangeable', 'RolesAppParameterId');
+		}
+
+		$this->_rolesAppParameterId = $value;
 	}
 
 	/**
@@ -122,10 +158,102 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 		if ($username === null) {
 			$user = Prado::createComponent($this->_userClass, $this);
 			$user->setIsGuest(true);
-			return $user;
 		} else {
-			return $this->_userFactory->createUser($username);
+			$user = $this->_userFactory->createUser($username);
 		}
+		if ($user) {
+			$this->onFinalizeUser($user);
+		}
+		return $user;
+	}
+
+	/**
+	 * If the module is configured for roles by Application Parameter or by Module
+	 * parameter, then it is returned. Otherwise null.
+	 * @return ?array The unique roles from the application parameter, or null if no
+	 *   parameter ID is configured. Returns an empty array if the parameter ID is
+	 *   configured but not present in the application parameters.
+	 * @since 4.3.3
+	 */
+	protected function getUniqueRolesFromAppParameter()
+	{
+		$rolesParamId = $this->getRolesAppParameterId();
+		if (!$rolesParamId) {
+			return null;
+		}
+
+		$appParameters = $this->getApplication()->getParameters();
+		if (!$appParameters->contains($rolesParamId)) {
+			return [];
+		}
+		$appRoles = $appParameters->itemAt($rolesParamId);
+		return array_filter(array_map('trim', explode(',', (string) $appRoles)));
+	}
+
+	/**
+	 * Returns the unique roles in the application using the following priority order:
+	 *   1. The user class ({@see TDbUser::getUniqueRoles()}) — if it returns non-null, it wins.
+	 *   2. Application Parameters (identified by {@see getRolesAppParameterId()}) — if a
+	 *      parameter ID is configured and the parameter exists, its value is used.
+	 *   3. The {@see setUniqueRoles()} value set directly on this module.
+	 * @return array The unique roles in the User Manager.
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoles()
+	{
+		$roles = $this->_userFactory->getUniqueRoles();
+		if ($roles !== null) {
+			return $roles;
+		}
+		$roles = $this->getUniqueRolesFromAppParameter();
+		if ($roles !== null) {
+			return $roles;
+		}
+		return $this->_uniqueRoles;
+	}
+
+	/**
+	 * Returns the number of unique roles in the application, applying the same
+	 * priority order as {@see getUniqueRoles()}:
+	 *   1. The user class ({@see TDbUser::getUniqueRoleCount()}) — if it returns non-null, it wins.
+	 *   2. Application Parameters (identified by {@see getRolesAppParameterId()}).
+	 *   3. The {@see setUniqueRoles()} value set directly on this module.
+	 * @return int The number of unique roles.
+	 * @since 4.3.3
+	 */
+	public function getUniqueRoleCount()
+	{
+		$roleCount = $this->_userFactory->getUniqueRoleCount();
+		if ($roleCount !== null) {
+			return $roleCount;
+		}
+		$roles = $this->getUniqueRolesFromAppParameter();
+		return count($roles ?? $this->_uniqueRoles ?? []);
+	}
+
+	/**
+	 * Sets the unique roles for the application directly on this module.
+	 * This is the lowest-priority source; it is overridden by Application Parameters
+	 * and by the user class. Accepts either a comma-separated string (e.g. `"admin,editor,viewer"`)
+	 * or a PHP array of role name strings. Must be set before the module is initialized.
+	 *
+	 * @param array|string $value The unique roles in the application
+	 * @throws TInvalidOperationException when called after the module has been initialized.
+	 * @throws TInvalidDataValueException when $value is neither a string nor an array.
+	 * @since 4.3.3
+	 */
+	public function setUniqueRoles($value)
+	{
+		if ($this->_initialized) {
+			throw new TInvalidOperationException('dbusermanager_property_unchangeable', 'UniqueRoles');
+		}
+
+		if (is_string($value)) {
+			$value = array_filter(array_map('trim', explode(',', (string) $value)));
+		} elseif (!is_array($value)) {
+			throw new TInvalidDataValueException('dbusermanager_uniqueroles_bad_data');
+		}
+		$this->_uniqueRoles = $value;
 	}
 
 	/**
@@ -133,7 +261,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 */
 	public function getConnectionID()
 	{
-		return $this->_connID;
+		return $this->_connectionID;
 	}
 
 	/**
@@ -144,7 +272,7 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 */
 	public function setConnectionID($value)
 	{
-		$this->_connID = $value;
+		$this->_connectionID = $value;
 	}
 
 	/**
@@ -152,11 +280,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 */
 	public function getDbConnection()
 	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection($this->_connID);
-			$this->_conn->setActive(true);
+		if ($this->_dbConnection === null) {
+			$this->_dbConnection = $this->createDbConnection($this->_connectionID);
+			$this->_dbConnection->setActive(true);
 		}
-		return $this->_conn;
+		return $this->_dbConnection;
 	}
 
 	/**
@@ -187,7 +315,11 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	 */
 	public function getUserFromCookie($cookie)
 	{
-		return $this->_userFactory->createUserFromCookie($cookie);
+		$user = $this->_userFactory->createUserFromCookie($cookie);
+		if ($user) {
+			$this->onFinalizeUser($user);
+		}
+		return $user;
 	}
 
 	/**
