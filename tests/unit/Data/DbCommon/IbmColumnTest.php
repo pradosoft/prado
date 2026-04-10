@@ -14,10 +14,16 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 
 	public function create_meta_data()
 	{
+		// DB2 uses OS-level authentication; the username must be an OS user on the DB2 host.
+		// Docker / CI: DB2_USER=db2inst1 (the DB2 instance owner created by the image).
+		// Local install: set DB2_USER/DB2_PASSWORD/DB2_DATABASE to match your environment.
+		$user     = getenv('DB2_USER')     ?: 'db2inst1';
+		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
+		$database = getenv('DB2_DATABASE') ?: 'prado_unitest';
 		$conn = new TDbConnection(
-			'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=prado_unitest;HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP',
-			'prado_unitest',
-			'prado_unitest'
+			'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $database . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP',
+			$user,
+			$password
 		);
 		return new TIbmMetaData($conn);
 	}

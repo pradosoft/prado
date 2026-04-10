@@ -18,7 +18,9 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 		// Adjust Server and credentials to match your SQL Server instance.
 		// See tests/initdb_mssql.sql to create the prado_unitest database and table1.
 		return new TDbConnection(
-			'sqlsrv:Server=localhost\SQLEXPRESS;Database=prado_unitest',
+			// CI/Docker: Server=localhost,1433 (default unnamed instance, TCP port).
+			// Local named instance: Server=localhost\SQLEXPRESS;Database=prado_unitest
+			'sqlsrv:Server=localhost,1433;Database=prado_unitest',
 			'prado_unitest',
 			'prado_unitest'
 		);

@@ -1,12 +1,19 @@
 -- IBM DB2 test database schema for prado unit tests
--- Run as a DB2 admin:
---   db2 CREATE DATABASE prado_unitest
+-- Run as db2inst1 (DB2 instance owner) after connecting to the database:
 --   db2 CONNECT TO prado_unitest
---   db2 CREATE USER prado_unitest ... (OS-level user on Linux)
---   db2 GRANT DBADM ON DATABASE TO USER prado_unitest
 --   db2 -td@ -f tests/initdb_ibm.sql
+--
+-- The DROP blocks use CONTINUE HANDLERs so the script is safe to run on a
+-- fresh database (SQLSTATE 42704 = object not found is silently ignored).
 
-DROP TABLE table1@
+BEGIN
+  DECLARE CONTINUE HANDLER FOR SQLSTATE '42704' BEGIN END;
+  EXECUTE IMMEDIATE 'DROP TABLE address';
+END@
+BEGIN
+  DECLARE CONTINUE HANDLER FOR SQLSTATE '42704' BEGIN END;
+  EXECUTE IMMEDIATE 'DROP TABLE table1';
+END@
 CREATE TABLE table1 (
 	id              INTEGER       NOT NULL GENERATED ALWAYS AS IDENTITY,
 	name            VARCHAR(45)   NOT NULL DEFAULT '',
@@ -24,8 +31,6 @@ CREATE TABLE table1 (
 	field12_numeric NUMERIC(8,2)  NOT NULL DEFAULT 0,
 	PRIMARY KEY (id)
 )@
-
-DROP TABLE address@
 CREATE TABLE address (
 	username    VARCHAR(128)  NOT NULL,
 	phone       VARCHAR(40)   NOT NULL DEFAULT '',

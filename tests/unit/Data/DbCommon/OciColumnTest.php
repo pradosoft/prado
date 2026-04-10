@@ -13,11 +13,13 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 
 	public function create_meta_data()
 	{
-		// Adjust the DSN to match your Oracle installation.
-		// Oracle XE example: oci:dbname=localhost/XEPDB1
-		// Oracle TNS example: oci:dbname=//localhost:1521/XEPDB1
+		// Service name is the Oracle pluggable database (PDB) identifier.
+		// gvenzl/oracle-free (CI / Docker):  FREEPDB1
+		// Oracle XE local install:            XEPDB1
+		// Override via ORACLE_SERVICE_NAME env var for other installations.
+		$serviceName = getenv('ORACLE_SERVICE_NAME') ?: 'FREEPDB1';
 		$conn = new TDbConnection(
-			'oci:dbname=localhost/XEPDB1',
+			'oci:dbname=//localhost:1521/' . $serviceName,
 			'prado_unitest',
 			'prado_unitest'
 		);

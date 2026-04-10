@@ -1,13 +1,17 @@
 -- Oracle test database schema for prado unit tests
 -- Requires Oracle 12c+ (for GENERATED ... AS IDENTITY).
 --
--- Setup as DBA (e.g. sqlplus sys/password@localhost/XEPDB1 as sysdba):
+-- CI / Docker (gvenzl/oracle-free): the setup-oracle-free action creates prado_unitest
+-- and runs this script automatically; no manual DBA steps required.
+--
+-- Local setup as DBA (pluggable DB is FREEPDB1 for oracle-free, XEPDB1 for Oracle XE):
+--   sqlplus sys/password@localhost/FREEPDB1 as sysdba
 --   CREATE USER prado_unitest IDENTIFIED BY prado_unitest;
 --   GRANT CONNECT, RESOURCE, CREATE SESSION TO prado_unitest;
 --   GRANT UNLIMITED TABLESPACE TO prado_unitest;
 --
 -- Run as prado_unitest:
---   sqlplus prado_unitest/prado_unitest@localhost/XEPDB1 @tests/initdb_oracle.sql
+--   sqlplus prado_unitest/prado_unitest@localhost/FREEPDB1 @tests/initdb_oracle.sql
 
 BEGIN
 	EXECUTE IMMEDIATE 'DROP TABLE address';

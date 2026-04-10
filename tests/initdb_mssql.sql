@@ -1,14 +1,29 @@
 -- MSSQL test database schema for prado unit tests
--- Run as sa or a user with dbcreator:
---   sqlcmd -S localhost\SQLEXPRESS -U sa -P yourpassword -i tests/initdb_mssql.sql
+-- Run as sa or a user with dbcreator/securityadmin roles:
+--   sqlcmd -C -S localhost,1433 -U sa -P yourpassword -i tests/initdb_mssql.sql
 --
--- Or via SSMS using prado_unitest as the active database.
+-- For a named local instance:
+--   sqlcmd -S localhost\SQLEXPRESS -U sa -P yourpassword -i tests/initdb_mssql.sql
+
+-- Create a SQL login for tests. CHECK_POLICY=OFF allows a simple password.
+IF NOT EXISTS (SELECT name FROM sys.server_principals WHERE name = N'prado_unitest')
+	CREATE LOGIN prado_unitest WITH PASSWORD = 'prado_unitest',
+		CHECK_POLICY = OFF, CHECK_EXPIRATION = OFF;
+GO
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'prado_unitest')
 	CREATE DATABASE prado_unitest;
 GO
 
 USE prado_unitest;
+GO
+
+-- Grant db_owner so the test user can create/select/insert/delete.
+IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = N'prado_unitest')
+BEGIN
+	CREATE USER prado_unitest FOR LOGIN prado_unitest;
+	ALTER ROLE db_owner ADD MEMBER prado_unitest;
+END
 GO
 
 IF OBJECT_ID('dbo.address',  'U') IS NOT NULL DROP TABLE dbo.address;

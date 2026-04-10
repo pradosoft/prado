@@ -14,11 +14,13 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 
 	public function create_meta_data()
 	{
-		// Adjust the DSN to match your Firebird installation.
-		// Common paths: /var/lib/firebird/data/prado_unitest.fdb  (Linux)
-		//               C:\Firebird\data\prado_unitest.fdb        (Windows)
+		// Database path is the server-side path (inside the Firebird server or container).
+		// Docker / CI:          /firebird/data/prado_unitest.fdb   (firebirdsql/firebird image)
+		// Native Linux install: /var/lib/firebird/data/prado_unitest.fdb
+		// Windows:              C:\Firebird\data\prado_unitest.fdb
+		$dbPath = getenv('FIREBIRD_DB_PATH') ?: '/firebird/data/prado_unitest.fdb';
 		$conn = new TDbConnection(
-			'firebird:dbname=localhost:/var/lib/firebird/data/prado_unitest.fdb;charset=UTF8',
+			'firebird:dbname=localhost:' . $dbPath . ';charset=UTF8',
 			'SYSDBA',
 			'masterkey'
 		);
