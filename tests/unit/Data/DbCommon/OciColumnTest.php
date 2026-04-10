@@ -34,7 +34,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$table = $meta->getTableInfo('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Oracle: ' . $e->getMessage());
+			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
 		}
 
 		// Schema: see tests/initdb_oracle.sql
@@ -141,7 +141,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$names = $meta->findTableNames('PRADO_UNITEST');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Oracle: ' . $e->getMessage());
+			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
 		}
 
 		// findTableNames returns uppercase table names for Oracle
@@ -155,7 +155,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$builder = $meta->createCommandBuilder('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Oracle: ' . $e->getMessage());
+			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
 		}
 
 		$data = ['name' => 'test', 'field1_number' => 1, 'field4_float' => 1.0,
@@ -171,7 +171,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 		try {
 			$builder = $meta->createCommandBuilder('table1');
 		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Oracle: ' . $e->getMessage());
+			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
 		}
 
 		$query = 'SELECT id FROM table1';
