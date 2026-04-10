@@ -15,7 +15,6 @@ TXmlElement represents an XML element node. It provides properties for tag-name,
 - Supports XPath expressions through xpath() method
 - Implements DOM compatibility methods for better integration
 - Provides search functionality for elements and attributes
-- **Tag name validation** via `validateTagName()` method (can be overridden)
 - Throws `TInvalidDataTypeException` when tag name is null
 - Throws `TInvalidDataValueException` when tag name is empty
 
