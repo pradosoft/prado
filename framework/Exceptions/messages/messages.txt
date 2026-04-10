@@ -236,6 +236,9 @@ xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
 
 xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElement objects.
 
+xmlelement_null_tag						= TXmlElement Tag Name cannot be null.
+xmlelement_empty_tag					= TXmlElement Tag Name cannot be an empty string.
+
 authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
 authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
 
