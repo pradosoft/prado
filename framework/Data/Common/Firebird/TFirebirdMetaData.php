@@ -36,22 +36,22 @@ class TFirebirdMetaData extends TDbMetaData
 	 * @var array
 	 */
 	private static $_fieldTypes = [
-		7   => 'SMALLINT',
-		8   => 'INTEGER',
-		10  => 'FLOAT',
-		12  => 'DATE',
-		13  => 'TIME',
-		14  => 'CHAR',
-		16  => 'BIGINT',
-		23  => 'BOOLEAN',            // blr_bool (Firebird 3+)
-		24  => 'DECFLOAT(16)',       // blr_dec64 (Firebird 4+)
-		25  => 'DECFLOAT(34)',       // blr_dec128 (Firebird 4+)
-		26  => 'INT128',             // blr_int128 (Firebird 4+)
-		27  => 'DOUBLE PRECISION',
-		28  => 'TIME WITH TIME ZONE',       // blr_sql_time_tz (Firebird 4+)
-		29  => 'TIMESTAMP WITH TIME ZONE',  // blr_timestamp_tz (Firebird 4+)
-		35  => 'TIMESTAMP',
-		37  => 'VARCHAR',
+		7 => 'SMALLINT',
+		8 => 'INTEGER',
+		10 => 'FLOAT',
+		12 => 'DATE',
+		13 => 'TIME',
+		14 => 'CHAR',
+		16 => 'BIGINT',
+		23 => 'BOOLEAN',            // blr_bool (Firebird 3+)
+		24 => 'DECFLOAT(16)',       // blr_dec64 (Firebird 4+)
+		25 => 'DECFLOAT(34)',       // blr_dec128 (Firebird 4+)
+		26 => 'INT128',             // blr_int128 (Firebird 4+)
+		27 => 'DOUBLE PRECISION',
+		28 => 'TIME WITH TIME ZONE',       // blr_sql_time_tz (Firebird 4+)
+		29 => 'TIMESTAMP WITH TIME ZONE',  // blr_timestamp_tz (Firebird 4+)
+		35 => 'TIMESTAMP',
+		37 => 'VARCHAR',
 		261 => 'BLOB',
 	];
 
