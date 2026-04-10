@@ -79,7 +79,7 @@ class TOracleMetaData extends TDbMetaData
 		// (so getTableName() / getTableFullName() reflect what the caller passed)
 		// but use uppercase-only variables for the SQL WHERE clauses.
 		$schemaUpper = strtoupper($schemaName);
-		$tableUpper  = strtoupper($tableName);
+		$tableUpper = strtoupper($tableName);
 
 		// This query is made much more complex by the addition of the 'attisserial' field.
 		// The subquery to get that field checks to see if there is an internally dependent
@@ -160,7 +160,7 @@ class TOracleMetaData extends TDbMetaData
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$schemaUpper = strtoupper($schemaName);
-		$tableUpper  = strtoupper($tableName);
+		$tableUpper = strtoupper($tableName);
 		$sql =
 <<<EOD
 	select OBJECT_TYPE
@@ -270,7 +270,7 @@ class TOracleMetaData extends TDbMetaData
 	{
 		$this->getDbConnection()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 		$schemaUpper = strtoupper($schemaName);
-		$tableUpper  = strtoupper($tableName);
+		$tableUpper = strtoupper($tableName);
 		//		select decode( a.CONSTRAINT_TYPE, 'P', 'PRIMARY KEY (', 'FOREIGN KEY (' )||b.COLUMN_NAME||')' as consrc,
 		$sql =
 <<<EOD
