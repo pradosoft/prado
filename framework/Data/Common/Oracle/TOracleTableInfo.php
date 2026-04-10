@@ -17,7 +17,7 @@ use Prado\Prado;
 /**
  * TOracleTableInfo provides additional table information for Oracle databases.
  *
- * @author Marcos Nobre <marconobre[at]gmail[dot]com>
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
 class TOracleTableInfo extends TDbTableInfo implements IDbHasSchema
