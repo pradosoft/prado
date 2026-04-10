@@ -161,7 +161,11 @@ jobs:
         ports:
           - 3050:3050
         options: >-
-          --no-healthcheck
+          --health-cmd "test -f /firebird/data/prado_unitest.fdb"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-start-period 30s
+          --health-retries 24
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -185,22 +189,6 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
-
-      - name: Wait for Firebird to be ready
-        run: |
-          echo "Waiting for Firebird server and database file..."
-          # First wait for the TCP port — the server starts after the DB file is written.
-          for i in $(seq 1 40); do
-            if bash -c 'echo > /dev/tcp/127.0.0.1/3050' 2>/dev/null; then
-              echo "Firebird port open after ~$((i * 3))s"
-              break
-            fi
-            [ "$i" -eq 40 ] && { echo "Firebird did not start in 120s"; exit 1; }
-            sleep 3
-          done
-          # Confirm the database file exists inside the container before proceeding.
-          docker exec ${{ job.services.firebird.id }} test -f /firebird/data/prado_unitest.fdb \
-            || { echo "Database file still missing after port opened"; exit 1; }
 
       - name: Setup Firebird schema
         run: |
@@ -285,11 +273,12 @@ jobs:
       - name: Setup Oracle schema
         run: |
           docker cp ./tests/initdb_oracle.sql ${{ job.services.oracle.id }}:/tmp/initdb_oracle.sql
-          # su - oracle runs a login shell as the oracle OS user, whose .bash_profile
-          # sets ORACLE_HOME and adds sqlplus to PATH.  bash -l -c runs as root and
-          # root has no Oracle profile, so sqlplus is never found.
-          docker exec ${{ job.services.oracle.id }} \
-            su - oracle -c "sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql"
+          # -u oracle runs the command as the oracle OS user, whose login environment
+          # has ORACLE_HOME set and sqlplus on PATH.  source .bash_profile loads that
+          # environment; bare bash -c or su both fail because docker exec uses a
+          # minimal PATH that doesn't include /bin (where su lives on Oracle Linux).
+          docker exec -u oracle ${{ job.services.oracle.id }} \
+            bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
         run: php vendor/bin/phpunit tests/unit/Data/DbCommon/OciColumnTest.php
