@@ -5,7 +5,7 @@
 
 | Directory | Purpose |
 |---|---|
-| [Caching/](Caching/INDEX.md) | Cache backends: [`TAPCCache`](Caching/TAPCCache.md), [`TMemCache`](Caching/TMemCache.md), [`TRedisCache`](Caching/TRedisCache.md), [`TDbCache`](Caching/TDbCache.md), [`TEtcdCache`](Caching/TEtcdCache.md). Unified [`ICache`](Caching/ICache.md) / [`TCache`](Caching/TCache.md) abstraction with dependency invalidation ([`TFileCacheDependency`](Caching/TFileCacheDependency.md), [`TDirectoryCacheDependency`](Caching/TDirectoryCacheDependency.md), [`TChainedCacheDependency`](Caching/TChainedCacheDependency.md), etc.) |
+| [Caching/](Caching/INDEX.md) | Cache backends: [`TAPCCache`](Caching/TAPCCache.md), [`TMemCache`](Caching/TMemCache.md), [`TDbCache`](Caching/TDbCache.md), [`TCache`](Caching/TCache.md) abstraction with dependency invalidation ([`TFileCacheDependency`](Caching/TFileCacheDependency.md), [`TDirectoryCacheDependency`](Caching/TDirectoryCacheDependency.md), [`TChainedCacheDependency`](Caching/TChainedCacheDependency.md), etc.) |
 | [Collections/](Collections/INDEX.md) | [`TList`](Collections/TList.md), [`TMap`](Collections/TMap.md), [`TPriorityList`](Collections/TPriorityList.md), [`TPriorityMap`](Collections/TPriorityMap.md), [`TQueue`](Collections/TQueue.md), [`TStack`](Collections/TStack.md), [`TWeakList`](Collections/TWeakList.md) and interfaces |
 | [Data/](Data/INDEX.md) | Database: [`TDbConnection`](Data/TDbConnection.md) (PDO wrapper), ActiveRecord ORM, DataGateway, SqlMap |
 | [Exceptions/](Exceptions/INDEX.md) | Exception hierarchy, [`TErrorHandler`](Exceptions/TErrorHandler.md), multilingual error messages |
