@@ -9,7 +9,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 	protected function setUp(): void
 	{
 		if (!extension_loaded('pdo_sqlsrv')) {
-			$this->fail('The pdo_sqlsrv extension is not available.');
+			$this->markTestSkipped('The pdo_sqlsrv extension is not available.');
 		}
 	}
 
