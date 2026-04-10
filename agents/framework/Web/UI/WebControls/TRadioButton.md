@@ -1,13 +1,13 @@
-# TRadioButton
+# Web/UI/WebControls/TRadioButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRadioButton](./TRadioButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRadioButton`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRadioButton.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRadioButton displays a radio button on the page. It extends TCheckBox and uses GroupName to group together a set of radio buttons. The OnCheckedChanged event is raised when the checked state changes between posts to the server.
 
 ## Key Properties/Methods

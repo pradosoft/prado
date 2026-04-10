@@ -1,9 +1,13 @@
-# TObjectProxy
+# Data/SqlMap/DataMapper/TObjectProxy
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TObjectProxy`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TObjectProxy](./TObjectProxy.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TObjectProxy.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TObjectProxy`
 
 Generic proxy that intercepts property access for lazy loading.

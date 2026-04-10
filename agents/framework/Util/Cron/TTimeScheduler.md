@@ -1,14 +1,13 @@
-# TTimeScheduler
+# Util/Cron/TTimeScheduler
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TTimeScheduler`**
 
-[Util](../) > [Cron](Cron/) > TTimeScheduler
-
+## Class Info
 **Location:** `framework/Util/Cron/TTimeScheduler.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TTimeScheduler is a cron expression parser that calculates the next trigger time for a schedule. It supports standard Linux cron format (minute, hour, day, month, dayOfWeek, year) plus special expressions like `@daily`, `@hourly`, `@yearly`, and Unix timestamp shortcuts. Supports 8 languages for month/day names.
 
 ## Key Properties/Methods

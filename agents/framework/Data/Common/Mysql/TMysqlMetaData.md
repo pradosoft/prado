@@ -1,14 +1,13 @@
-# TMysqlMetaData
+# Data/Common/Mysql/TMysqlMetaData
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Mysql](./INDEX.md) / **`TMysqlMetaData`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](../INDEX.md) > [Mysql](./INDEX.md) > [TMysqlMetaData](./TMysqlMetaData.md)
-
+## Class Info
 **Location:** `framework/Data/Common/Mysql/TMysqlMetaData.php`
 **Namespace:** `Prado\Data\Common\Mysql`
 
 ## Overview
-
 `TMysqlMetaData` provides MySQL-specific database metadata introspection.
 
 ## See Also

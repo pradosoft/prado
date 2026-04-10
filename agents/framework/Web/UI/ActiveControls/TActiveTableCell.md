@@ -1,13 +1,13 @@
-# TActiveTableCell
+# Web/UI/ActiveControls/TActiveTableCell
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveTableCell](./TActiveTableCell.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveTableCell`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveTableCell.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TTableCell. Clicking the cell triggers a callback and raises `OnCellSelected` event. Also bubbles the event to parent [TActiveTableRow](./TActiveTableRow.md). Contents can be updated during callback response.
 
 ## Key Properties/Methods

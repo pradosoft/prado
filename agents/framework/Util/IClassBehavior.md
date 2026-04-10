@@ -1,14 +1,12 @@
-# IClassBehavior
+# Util/IClassBehavior
 
 ### Directories
-
-[Util](../) > IClassBehavior
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IClassBehavior`**
 
 **Location:** `framework/Util/IClassBehavior.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface for stateless class-wide behaviors. Each instance can attach to multiple owners. Implements `[IBaseBehavior](IBaseBehavior.md)`.
 
 ## Extends

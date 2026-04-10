@@ -1,9 +1,13 @@
-# TActiveRecordRelationContext
+# Data/ActiveRecord/Relations/TActiveRecordRelationContext
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordRelationContext`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordRelationContext](./TActiveRecordRelationContext.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordRelationContext.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordRelationContext`
 
 Holds metadata about Active Record relationships.

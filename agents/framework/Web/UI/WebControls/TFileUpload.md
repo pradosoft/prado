@@ -1,13 +1,13 @@
-# TFileUpload
+# Web/UI/WebControls/TFileUpload
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TFileUpload](./TFileUpload.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TFileUpload`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TFileUpload.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TFileUpload renders an `<input type="file">` element. On postback it reads the uploaded file(s) from `$_FILES` and provides methods to inspect and save them. It implements `IPostBackDataHandler` and `IValidatable`.
 
 Since Prado 4.0, TFileUpload supports multiple-file uploads via the `Multiple` property. When enabled, the `name` attribute gains `[]` brackets and the `multiple` attribute is added. All file-info methods accept an optional `$index` parameter for backward compatibility — single-file uploads default to index 0.

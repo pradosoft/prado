@@ -1,13 +1,13 @@
-# TPagedListFetchDataEventParameter
+# Collections/TPagedListFetchDataEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedListFetchDataEventParameter](./TPagedListFetchDataEventParameter.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedListFetchDataEventParameter`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedListFetchDataEventParameter.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Event parameter for the [TPagedList](./TPagedList.md)::OnFetchData event. Used in custom paging mode to request data from a handler.
 
 ## Properties

@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Shell/SUMMARY.md
 
 CLI application support via `prado-cli` executable allowing command-line scripts to access application configuration, modules, and services.
 

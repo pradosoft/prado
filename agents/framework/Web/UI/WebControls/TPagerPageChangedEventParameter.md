@@ -1,13 +1,13 @@
-# TPagerPageChangedEventParameter
+# Web/UI/WebControls/TPagerPageChangedEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPagerPageChangedEventParameter](./TPagerPageChangedEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPagerPageChangedEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPagerPageChangedEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPagerPageChangedEventParameter encapsulates the parameter data for the OnPageIndexChanged event of TPager controls. It contains the command source and the new page index.
 
 ## Key Properties/Methods

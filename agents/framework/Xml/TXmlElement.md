@@ -1,7 +1,11 @@
-# TXmlElement Class
+# Xml/TXmlElement
 
 ### Directories
-[./](../INDEX.md) > [Xml](./INDEX.md) > [TXmlElement](./TXmlElement.md)
+[framework](../INDEX.md) / [Xml](./INDEX.md) / **`TXmlElement`**
+
+## Class Info
+**Location:** `framework/Xml/TXmlElement.php`
+**Namespace:** `Prado\Xml`
 
 ## Overview
 TXmlElement represents an XML element node. It provides properties for tag-name, attributes, and text content, along with methods for parent/child element relationships.

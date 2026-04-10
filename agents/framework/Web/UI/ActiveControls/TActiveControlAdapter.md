@@ -1,13 +1,13 @@
-# TActiveControlAdapter
+# Web/UI/ActiveControls/TActiveControlAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveControlAdapter](./TActiveControlAdapter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveControlAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveControlAdapter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Adapts any control to add active/callback support. Instantiates [TBaseActiveControl](./TBaseActiveControl.md) or [TBaseActiveCallbackControl](./TBaseActiveCallbackControl.md) depending on whether the control implements [ICallbackEventHandler](./ICallbackEventHandler.md). Tracks viewstate changes via [TCallbackPageStateTracker](./TCallbackPageStateTracker.md).
 
 ## Key Properties/Methods

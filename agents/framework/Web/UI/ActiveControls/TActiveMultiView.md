@@ -1,13 +1,13 @@
-# TActiveMultiView
+# Web/UI/ActiveControls/TActiveMultiView
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveMultiView](./TActiveMultiView.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveMultiView`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveMultiView.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TMultiView. Re-renders on callback when ActiveView or ActiveViewIndex is changed. Uses a span container element for the MultiView content.
 
 ## Key Properties/Methods

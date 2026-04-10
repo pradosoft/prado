@@ -1,9 +1,13 @@
-# TSelectMappedStatement
+# Data/SqlMap/Statements/TSelectMappedStatement
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TSelectMappedStatement`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TSelectMappedStatement](./TSelectMappedStatement.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TSelectMappedStatement.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TSelectMappedStatement`
 
 Select statement executor.

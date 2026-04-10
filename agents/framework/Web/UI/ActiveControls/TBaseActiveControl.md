@@ -1,13 +1,13 @@
-# TBaseActiveControl
+# Web/UI/ActiveControls/TBaseActiveControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TBaseActiveControl](./TBaseActiveControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TBaseActiveControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TBaseActiveControl.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Basic properties for every active control. Provides options management and determines whether the active control can update client-side contents during callback response.
 
 ## Key Properties/Methods

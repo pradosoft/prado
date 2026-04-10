@@ -1,8 +1,9 @@
 # Web/Javascripts/INDEX.md
 
 ### Directories
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`Javascripts/INDEX.md`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md)
+## Purpose
 
 Client-side JavaScript/CSS package registry and asset utilities for the Prado web layer. Defines the package dependency graph consumed by [TClientScriptManager](Web/UI/WebControls/TClientScriptManager.md) and provides PHP-side helpers for rendering script/style tags.
 

@@ -1,12 +1,14 @@
-# TQueueIterator
+# Collections/TQueueIterator
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TQueueIterator](./TQueueIterator.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TQueueIterator`**
 
+## Class Info
 **Location:** `framework/Collections/TQueueIterator.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
+
 
 Iterator for traversing items in a TQueue. Used internally by [TQueue](./TQueue.md).
 

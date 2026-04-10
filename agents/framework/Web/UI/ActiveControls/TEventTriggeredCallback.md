@@ -1,13 +1,13 @@
-# TEventTriggeredCallback
+# Web/UI/ActiveControls/TEventTriggeredCallback
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TEventTriggeredCallback](./TEventTriggeredCallback.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TEventTriggeredCallback`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TEventTriggeredCallback.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Triggers callback requests when a specific DOM event occurs on a control. For example, can fire a callback when a user types in a textbox or moves focus. Optionally prevents the default event action.
 
 ## Key Properties/Methods

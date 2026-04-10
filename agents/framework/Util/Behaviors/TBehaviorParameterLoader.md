@@ -1,14 +1,13 @@
-# TBehaviorParameterLoader
+# Util/Behaviors/TBehaviorParameterLoader
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TBehaviorParameterLoader`**
 
-[Util](../) > [Behaviors](Behaviors/) > TBehaviorParameterLoader
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TBehaviorParameterLoader.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TBehaviorParameterLoader implements attaching Behaviors from Parameters before any work has been done. It allows behaviors to be loaded through application configuration parameters and can attach behaviors to specific classes, pages, modules, or the application itself.
 
 ## Key Properties/Methods

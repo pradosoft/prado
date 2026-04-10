@@ -1,13 +1,13 @@
-# TFont
+# Web/UI/WebControls/TFont
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TFont](./TFont.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TFont`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TFont.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TFont encapsulates CSS style fields related to font settings. It provides properties for font name, size, and style attributes like bold, italic, underline, overline, and strikeout.
 
 ## Key Properties/Methods

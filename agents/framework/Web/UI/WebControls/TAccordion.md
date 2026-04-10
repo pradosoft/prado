@@ -1,13 +1,13 @@
-# TAccordion
+# Web/UI/WebControls/TAccordion
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TAccordion](./TAccordion.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TAccordion`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TAccordion.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TAccordion displays an accordion control where users can click on view headers to switch among different accordion views. Only one accordion view is visible (active) at a time. Views can be activated by index, ID, or direct view instance.
 
 ## Key Properties/Methods

@@ -2,11 +2,13 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [SqlMap](./Data/SqlMap/INDEX.md) / [DataMapper](./Data/SqlMap/DataMapper/INDEX.md) / **`DataMapper/INDEX.md`**
 
 | Directory | Purpose |
-|---|---|---|
-| [`../`](../INDEX.md)] | SqlMap Directory |
+|---|---|
+| [`../`](../INDEX.md) | SqlMap Directory |
 
 ## Purpose
 

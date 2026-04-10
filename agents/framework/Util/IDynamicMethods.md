@@ -1,14 +1,12 @@
-# IDynamicMethods
+# Util/IDynamicMethods
 
 ### Directories
-
-[Util](../) > IDynamicMethods
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IDynamicMethods`**
 
 **Location:** `framework/Util/IDynamicMethods.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface for objects that receive undefined global or dynamic events via `__dycall`.
 
 ## Key Methods

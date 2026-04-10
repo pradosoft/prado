@@ -1,14 +1,13 @@
-# TPageGlobalizationCharsetBehavior
+# Util/Behaviors/TPageGlobalizationCharsetBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TPageGlobalizationCharsetBehavior`**
 
-[Util](../) > [Behaviors](Behaviors/) > TPageGlobalizationCharsetBehavior
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TPageGlobalizationCharsetBehavior.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TPageGlobalizationCharsetBehavior attaches to pages and adds a charset meta tag to the page head from the globalization settings. If there is no globalization configured, 'utf-8' is used as the default charset.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TMap
+# Collections/TMap
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TMap](./TMap.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TMap`**
 
+## Class Info
 **Location:** `framework/Collections/TMap.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 `TMap` is the framework's general-purpose key-value collection. It extends [TComponent](../TComponent.md) (giving it behavior/event support) and implements `IteratorAggregate`, `ArrayAccess`, and `Countable`. Keys can be any integer or string; values can be anything. It is the base class for [TPriorityMap](./TPriorityMap.md), [TAttributeCollection](./TAttributeCollection.md), and other specialized maps.
 
 ## Interfaces Implemented

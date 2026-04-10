@@ -1,14 +1,13 @@
-# TProcessWindowsPriority
+# Util/Helpers/TProcessWindowsPriority
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Helpers](./INDEX.md) / **`TProcessWindowsPriority`**
 
-[Util](../) > [Helpers](Helpers/) > TProcessWindowsPriority
-
+## Class Info
 **Location:** `framework/Util/Helpers/TProcessWindowsPriority.php`
 **Namespace:** `Prado\Util\Helpers`
 
 ## Overview
-
 Enum for Windows process priority levels.
 
 ## Constants

@@ -1,13 +1,13 @@
-# TInvalidDataTypeException
+# Exceptions/TInvalidDataTypeException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TInvalidDataTypeException](./TInvalidDataTypeException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TInvalidDataTypeException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TInvalidDataTypeException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by passing data of an invalid type. Extends `TSystemException`.
 
 ## Hierarchy

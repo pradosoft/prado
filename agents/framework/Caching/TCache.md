@@ -1,13 +1,13 @@
-# TCache / Cache Backends
+# Caching/TCache
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TCache](./TCache.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TCache`**
 
-**Location:** `framework/Caching/`
+## Class Info
+**Location:** `framework/Caching/TCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 Abstract base [TCache](./TCache.md) defines a unified key-value cache API over multiple storage backends. Implements [ICache](./ICache.md) and `ArrayAccess`. Registered as a module in `application.xml`; accessed via `Prado::getApplication()->getCache()`.
 
 ## ICache Interface

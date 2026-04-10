@@ -1,13 +1,13 @@
-# TButtonType
+# Web/UI/WebControls/TButtonType
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TButtonType](./TButtonType.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TButtonType`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TButtonType.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TButtonType defines the possible types for TButton controls.
 
 ## Constants

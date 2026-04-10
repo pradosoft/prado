@@ -1,9 +1,13 @@
-# TSqlMapCacheModel
+# Data/SqlMap/Configuration/TSqlMapCacheModel
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapCacheModel`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapCacheModel](./TSqlMapCacheModel.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapCacheModel.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapCacheModel`
 
 Cache configuration for statements.

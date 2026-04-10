@@ -1,13 +1,13 @@
-# TJuiCallbackPageStateTracker
+# Web/UI/JuiControls/TJuiCallbackPageStateTracker
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiCallbackPageStateTracker](./TJuiCallbackPageStateTracker.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiCallbackPageStateTracker`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiCallbackPageStateTracker.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Extends TCallbackPageStateTracker to track changes to JuiOptions during callbacks. When options change server-side, registers JavaScript to update the jQuery UI widget options on the client.
 
 ## Key Properties/Methods

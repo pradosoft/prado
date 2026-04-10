@@ -1,9 +1,13 @@
-# TMssqlScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TMssqlScaffoldInput`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TMssqlScaffoldInput](./TMssqlScaffoldInput.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TMssqlScaffoldInput.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput`
 
 MSSQL-specific scaffold input builder.

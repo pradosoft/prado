@@ -1,13 +1,13 @@
-# TCheckBoxList
+# Web/UI/WebControls/TCheckBoxList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCheckBoxList](./TCheckBoxList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCheckBoxList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TCheckBoxList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TCheckBoxList displays a list of checkboxes on a Web page. Supports multiple selection and various layout options.
 
 ## Key Properties/Methods

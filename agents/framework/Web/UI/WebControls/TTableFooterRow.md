@@ -1,13 +1,13 @@
-# TTableFooterRow
+# Web/UI/WebControls/TTableFooterRow
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableFooterRow](./TTableFooterRow.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableFooterRow`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableFooterRow.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableFooterRow displays a table footer row (tfoot element). It extends TTableRow and always returns 'Footer' for the TableSection property. This property is read-only and cannot be changed.
 
 ## Key Properties/Methods

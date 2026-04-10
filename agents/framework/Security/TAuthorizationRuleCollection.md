@@ -1,14 +1,13 @@
-# TAuthorizationRuleCollection
+# Security/TAuthorizationRuleCollection
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TAuthorizationRuleCollection`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TAuthorizationRuleCollection](./TAuthorizationRuleCollection.md)
-
+## Class Info
 **Location:** `framework/Security/TAuthorizationRuleCollection.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 An ordered collection of [TAuthorizationRule](./TAuthorizationRule.md) objects. Evaluates rules in priority order; first matching rule wins.
 
 Extends [TPriorityList](../Collections/TPriorityList.md) - rules are sorted by priority.

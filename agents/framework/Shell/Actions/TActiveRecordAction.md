@@ -1,13 +1,13 @@
-# Shell / Actions / TActiveRecordAction
+# Shell/Actions/TActiveRecordAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [TActiveRecordAction](./TActiveRecordAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`TActiveRecordAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/TActiveRecordAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Generates `TActiveRecord` class skeletons from database tables.
 
 ## Usage

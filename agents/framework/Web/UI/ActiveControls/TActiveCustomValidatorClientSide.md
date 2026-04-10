@@ -1,13 +1,13 @@
-# TActiveCustomValidatorClientSide
+# Web/UI/ActiveControls/TActiveCustomValidatorClientSide
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveCustomValidatorClientSide](./TActiveCustomValidatorClientSide.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveCustomValidatorClientSide`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveCustomValidatorClientSide.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Client-side options for [TActiveCustomValidator](./TActiveCustomValidator.md). Provides OnValidate, OnValidationSuccess, and OnValidationError events plus ObserveChanges option to revalidate when control value changes.
 
 ## Key Properties/Methods

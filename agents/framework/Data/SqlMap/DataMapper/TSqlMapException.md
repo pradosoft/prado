@@ -1,9 +1,13 @@
-# TSqlMapException
+# Data/SqlMap/DataMapper/TSqlMapException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapException](./TSqlMapException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapException`
 
 Base SqlMap exception.

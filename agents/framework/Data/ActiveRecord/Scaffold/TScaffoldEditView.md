@@ -1,9 +1,13 @@
-# TScaffoldEditView
+# Data/ActiveRecord/Scaffold/TScaffoldEditView
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](./INDEX.md) / **`TScaffoldEditView`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](./INDEX.md) > [TScaffoldEditView](./TScaffoldEditView.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/TScaffoldEditView.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\TScaffoldEditView`
 
 Template control for editing or creating an Active Record instance.

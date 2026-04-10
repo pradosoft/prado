@@ -1,7 +1,11 @@
-# TUrlMappingPattern Class
+# Web/TUrlMappingPattern
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TUrlMappingPattern](./TUrlMappingPattern.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TUrlMappingPattern`**
+
+## Class Info
+**Location:** `framework/Web/TUrlMappingPattern.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 TUrlMappingPattern represents a pattern used to parse and construct URLs in PRADO's URL mapping system. It defines how URLs should be matched against request paths and how URLs should be constructed from parameters.

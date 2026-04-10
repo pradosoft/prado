@@ -1,13 +1,13 @@
-# I18N / TI18NControl
+# I18N/TI18NControl
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TI18NControl](./TI18NControl.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TI18NControl`**
 
+## Class Info
 **Location:** `framework/I18N/TI18NControl.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Base class for I18N-aware PRADO controls. Provides `Culture` and `Charset` properties with hierarchical fallback to application globalization settings.
 
 ## Properties

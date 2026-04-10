@@ -2,12 +2,14 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [ActiveRecord](./Data/ActiveRecord/INDEX.md) / **`ActiveRecord/INDEX.md`**
 
 | Directory | Purpose |
 |---|---|
-| [`../`](../INDEX.md)] | Data Directory |
-| [`Exceptions/`](Exceptions/INDEX.md)] | `TActiveRecordException`, `TActiveRecordConfigurationException` |
+| [`../`](../INDEX.md) | Data Directory |
+| [`Exceptions/`](Exceptions/INDEX.md) | `TActiveRecordException`, `TActiveRecordConfigurationException` |
 | [`Relations/`](Relations/INDEX.md) | `TActiveRecordHasOne`, `HasMany`, `BelongsTo`, `HasManyAssociation` + context class |
 | [`Scaffold/`](Scaffolding/INDEX.md) | Auto-generated CRUD UI controls (`TScaffoldListView`, `TScaffoldEditView`, etc.) |
 | [`Scaffold/InputBuilder/`](Scaffolding/InputBuilder/INDEX.md) | Driver-specific column-to-control mapping for scaffold edit forms |

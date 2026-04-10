@@ -1,9 +1,13 @@
-# TStaticSql
+# Data/SqlMap/Statements/TStaticSql
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TStaticSql`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TStaticSql](./TStaticSql.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TStaticSql.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TStaticSql`
 
 Container for static SQL text.

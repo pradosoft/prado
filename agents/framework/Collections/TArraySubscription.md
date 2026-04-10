@@ -1,13 +1,13 @@
-# TArraySubscription / TCollectionSubscription
+# Collections/TArraySubscription
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TArraySubscription](./TArraySubscription.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TArraySubscription`**
 
+## Class Info
 **Location:** `framework/Collections/TArraySubscription.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 RAII-style subscribe/unsubscribe pattern for inserting an item into an array or collection for a limited scope. When the `TArraySubscription` instance goes out of scope (is destructed), the item is automatically removed from the collection.
 
 Supports PHP arrays, `ArrayAccess` objects, [TList](./TList.md) / [TMap](./TMap.md) subclasses, and [IPriorityCollection](./IPriorityCollection.md) instances. For associative arrays, the original value at the key is saved and restored on unsubscribe. [IWeakCollection](./IWeakCollection.md) objects are handled transparently.

@@ -1,14 +1,12 @@
-# IInstanceCheck
+# Util/IInstanceCheck
 
 ### Directories
-
-[Util](../) > IInstanceCheck
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IInstanceCheck`**
 
 **Location:** `framework/Util/IInstanceCheck.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface allowing objects to control their `instanceof` results when used with `[TComponent](../TComponent.md)::isa()`. Useful for behaviors that want to masquerade as specific objects.
 
 ## Key Methods

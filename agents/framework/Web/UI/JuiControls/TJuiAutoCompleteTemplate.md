@@ -1,13 +1,13 @@
-# TJuiAutoCompleteTemplate
+# Web/UI/JuiControls/TJuiAutoCompleteTemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiAutoCompleteTemplate](./TJuiAutoCompleteTemplate.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiAutoCompleteTemplate`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiAutoCompleteTemplate.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Default template class for TJuiAutoComplete item templates. Implements ITemplate for PRADO's templating system.
 
 ## Key Properties/Methods

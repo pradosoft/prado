@@ -1,13 +1,13 @@
-# TDataGridPagerButtonType
+# Web/UI/WebControls/TDataGridPagerButtonType
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridPagerButtonType](./TDataGridPagerButtonType.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridPagerButtonType`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridPagerButtonType.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridPagerButtonType defines button types for datagrid pager.
 
 ## Constants

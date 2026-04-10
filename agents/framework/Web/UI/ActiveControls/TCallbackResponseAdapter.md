@@ -1,13 +1,13 @@
-# TCallbackResponseAdapter
+# Web/UI/ActiveControls/TCallbackResponseAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TCallbackResponseAdapter](./TCallbackResponseAdapter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TCallbackResponseAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TCallbackResponseAdapter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Alters `THttpResponse` for callback output. Uses [TCallbackResponseWriter](./TCallbackResponseWriter.md) instances instead of plain writers, allowing multiple content chunks with boundary delimiters. Supports delayed redirects and response data.
 
 ## Key Properties/Methods

@@ -1,16 +1,14 @@
-# TCallChain
+# Util/TCallChain
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TCallChain`**
 
-[Util](../) > TCallChain
-
+## Class Info
 **Location:** `framework/Util/TCallChain.php`
 **Namespace:** `Prado\Util`
 **Extends:** `[TList](../Collections/TList.md)`
-**Implements:** `[IDynamicMethods](IDynamicMethods.md)`
 
 ## Overview
-
 AOP-style call chain for `dy*` dynamic events. When a `[TComponent](../TComponent.md)` raises a `dy*` event, `[TComponent](../TComponent.md).__call()` creates a `TCallChain` populated with matching behavior methods, then calls the first one. Each behavior may call `$chain->dyMethodName(args)` to continue to the next handler or return early to short-circuit.
 
 ## How It Works

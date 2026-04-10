@@ -1,13 +1,13 @@
-# TDataGrid
+# Web/UI/WebControls/TDataGrid
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGrid](./TDataGrid.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGrid`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGrid.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Tabular data display control with built-in paging, sorting, and inline editing. Renders an HTML `<table>`. Columns can be auto-generated or explicitly defined. Implements `INamingContainer`.
 
 Extends `[TBaseDataList](./TBaseDataList.md)`.

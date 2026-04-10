@@ -1,13 +1,13 @@
-# TEmailAddressValidator
+# Web/UI/WebControls/TEmailAddressValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TEmailAddressValidator](./TEmailAddressValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TEmailAddressValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TEmailAddressValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TEmailAddressValidator validates whether a value is a valid email address. Can optionally check MX records.
 
 ## Key Properties/Methods

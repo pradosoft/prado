@@ -1,13 +1,13 @@
-# TActiveCheckBox
+# Web/UI/ActiveControls/TActiveCheckBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveCheckBox](./TActiveCheckBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveCheckBox`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveCheckBox.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TCheckBox with AutoPostBack enabled by default. Text and Checked properties can be updated during callback and reflected on the client side.
 
 ## Key Properties/Methods

@@ -1,14 +1,13 @@
-# TUserManager
+# Security/TUserManager
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TUserManager`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TUserManager](./TUserManager.md)
-
+## Class Info
 **Location:** `framework/Security/TUserManager.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 `TUserManager` is a static, in-memory user store. User and role information is declared directly in the application configuration (XML or PHP) or loaded from an external file. It is the simplest [IUserManager](./IUserManager.md) implementation, suitable for small applications or demos. For production database-backed user management, use [TDbUserManager](./TDbUserManager.md) instead.
 
 ## Interfaces Implemented

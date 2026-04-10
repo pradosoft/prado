@@ -1,13 +1,13 @@
-# TUri
+# Web/TUri
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TUri](./TUri.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TUri`**
 
+## Class Info
 **Location:** `framework/Web/TUri.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 TUri represents a URI and decomposes it into its constituent parts: scheme, host, port, user, password, path, query, and fragment. It provides a structured way to parse and access URI components.
 
 ## Key Properties/Methods

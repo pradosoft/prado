@@ -1,13 +1,13 @@
-# TFileUploadItem
+# Web/UI/WebControls/TFileUploadItem
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TFileUploadItem](./TFileUploadItem.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TFileUploadItem`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TFileUploadItem.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TFileUploadItem represents a single uploaded file from TFileUpload, used especially when Multiple is enabled.
 
 ## Key Properties/Methods

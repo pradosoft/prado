@@ -1,13 +1,13 @@
-# TJuiAutoCompleteEventParameter
+# Web/UI/JuiControls/TJuiAutoCompleteEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiAutoCompleteEventParameter](./TJuiAutoCompleteEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiAutoCompleteEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiAutoCompleteEventParameter.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Event parameter for TJuiAutoComplete OnSuggest and OnSuggestionSelected events. Contains the token (partial word) for matching and the selected suggestion index.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TWizardNavigationEventParameter
+# Web/UI/WebControls/TWizardNavigationEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizardNavigationEventParameter](./TWizardNavigationEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizardNavigationEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizardNavigationEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWizardNavigationEventParameter represents the parameter for TWizard navigation events. It contains current and next step indices, and allows cancellation of navigation.
 
 ## Key Properties/Methods

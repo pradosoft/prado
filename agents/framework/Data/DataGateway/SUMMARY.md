@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/DataGateway/SUMMARY.md
 
 Stateless Table Gateway pattern providing thin object-based interface to a single database table without identity tracking.
 

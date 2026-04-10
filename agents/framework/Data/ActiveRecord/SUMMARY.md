@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/ActiveRecord/SUMMARY.md
 
 Active Record ORM where each AR class maps to one database table; instances represent rows and encapsulate data and persistence logic.
 

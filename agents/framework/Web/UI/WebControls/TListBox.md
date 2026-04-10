@@ -1,13 +1,13 @@
-# TListBox
+# Web/UI/WebControls/TListBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TListBox](./TListBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TListBox`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TListBox.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TListBox displays a list box on a Web page that allows single or multiple selection. The number of visible rows can be configured, and it supports optgroup for item grouping.
 
 ## Key Properties/Methods

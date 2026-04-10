@@ -1,13 +1,13 @@
-# TStyleSheet
+# Web/UI/WebControls/TStyleSheet
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TStyleSheet](./TStyleSheet.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TStyleSheet`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TStyleSheet.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TStyleSheet represents a link to a stylesheet file and/or inline CSS code. It supports importing bundled PRADO CSS libraries (like jQuery UI), external stylesheet URLs, and inline CSS content from child controls.
 
 ## Key Properties/Methods

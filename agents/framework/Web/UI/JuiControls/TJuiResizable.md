@@ -1,13 +1,13 @@
-# TJuiResizable
+# Web/UI/JuiControls/TJuiResizable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiResizable](./TJuiResizable.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiResizable`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiResizable.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Resizable panel based on jQuery UI Resizable interaction. Extends [TActivePanel](../ActiveControls/TActivePanel.md). Shows a resize handle on the bottom-right corner.
 
 ## Key Properties/Methods

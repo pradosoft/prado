@@ -1,13 +1,13 @@
-# I18N / Globalization
+# I18N/TGlobalization
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TGlobalization](./TGlobalization.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TGlobalization`**
 
-**Location:** `framework/I18N/`
+## Class Info
+**Location:** `framework/I18N/TGlobalization.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Internationalization and localization system. [TGlobalization](./TGlobalization.md) is the root module; it provides culture selection, charset management, and access to the translation engine. Format classes handle localized dates, numbers, and plural choice strings.
 
 ---

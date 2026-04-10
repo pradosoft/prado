@@ -1,13 +1,13 @@
-# TJuiAutoComplete
+# Web/UI/JuiControls/TJuiAutoComplete
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiAutoComplete](./TJuiAutoComplete.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiAutoComplete`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiAutoComplete.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Textbox with jQuery UI autocomplete suggestions. Extends [TActiveTextBox](../ActiveControls/TActiveTextBox.md). Suggestions are requested via callbacks and rendered server-side. OnSuggest event handler sets the data source for suggestions.
 
 ## Key Properties/Methods

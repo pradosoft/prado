@@ -1,13 +1,13 @@
-# TActiveRepeater
+# Web/UI/ActiveControls/TActiveRepeater
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveRepeater](./TActiveRepeater.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveRepeater`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveRepeater.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TRepeater for data-bound lists using callbacks instead of postbacks. Supports surrounding container tag configuration and automatic pager rendering when data source changes.
 
 ## Key Properties/Methods

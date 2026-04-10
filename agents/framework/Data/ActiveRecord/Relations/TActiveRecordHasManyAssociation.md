@@ -1,9 +1,13 @@
-# TActiveRecordHasManyAssociation
+# Data/ActiveRecord/Relations/TActiveRecordHasManyAssociation
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordHasManyAssociation`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordHasManyAssociation](./TActiveRecordHasManyAssociation.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordHasManyAssociation.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordHasManyAssociation`
 
 Implements the M-N (many-to-many) relationship via an association table.

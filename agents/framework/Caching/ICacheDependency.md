@@ -1,14 +1,12 @@
-# ICacheDependency
+# Caching/ICacheDependency
 
 ### Directories
-
-[./](../INDEX.md) > [Caching](./INDEX.md) > [ICacheDependency](./ICacheDependency.md)
+[framework](./INDEX.md) / [Caching](./Caching/INDEX.md) / **`ICacheDependency`**
 
 **Location:** `framework/Caching/ICacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 `ICacheDependency` defines the contract for cache dependency objects that can invalidate cached values when underlying data changes.
 
 ## Interface Methods

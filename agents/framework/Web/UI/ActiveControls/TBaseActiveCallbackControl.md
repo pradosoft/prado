@@ -1,13 +1,13 @@
-# TBaseActiveCallbackControl
+# Web/UI/ActiveControls/TBaseActiveCallbackControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TBaseActiveCallbackControl](./TBaseActiveCallbackControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TBaseActiveCallbackControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TBaseActiveCallbackControl.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Common options and functionality for active controls that perform callback requests. Extends [TBaseActiveControl](./TBaseActiveControl.md) with client-side options, validation support, and callback parameter handling.
 
 ## Key Properties/Methods

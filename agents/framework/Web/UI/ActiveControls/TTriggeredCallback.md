@@ -1,13 +1,13 @@
-# TTriggeredCallback
+# Web/UI/ActiveControls/TTriggeredCallback
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TTriggeredCallback](./TTriggeredCallback.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TTriggeredCallback`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TTriggeredCallback.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Abstract base class for triggered callback controls. Observes a server control and triggers callback requests when specific events or conditions occur on that control.
 
 ## Key Properties/Methods

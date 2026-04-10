@@ -1,13 +1,13 @@
-# TDataGridPagerStyle
+# Web/UI/WebControls/TDataGridPagerStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridPagerStyle](./TDataGridPagerStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridPagerStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridPagerStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridPagerStyle specifies styles and properties for datagrid pager display.
 
 ## Key Properties/Methods

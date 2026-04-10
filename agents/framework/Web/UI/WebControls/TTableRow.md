@@ -1,13 +1,13 @@
-# TTableRow
+# Web/UI/WebControls/TTableRow
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableRow](./TTableRow.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableRow`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableRow.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableRow displays a table row. Cells can be accessed via the Cells property. Supports horizontal and vertical alignment, and table section (Header, Body, Footer).
 
 ## Key Properties/Methods

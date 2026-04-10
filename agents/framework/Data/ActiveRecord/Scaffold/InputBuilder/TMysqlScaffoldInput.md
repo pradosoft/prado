@@ -1,9 +1,13 @@
-# TMysqlScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TMysqlScaffoldInput`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TMysqlScaffoldInput](./TMysqlScaffoldInput.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TMysqlScaffoldInput.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput`
 
 MySQL-specific scaffold input builder.

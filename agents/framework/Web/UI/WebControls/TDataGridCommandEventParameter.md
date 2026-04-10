@@ -1,13 +1,13 @@
-# TDataGridCommandEventParameter
+# Web/UI/WebControls/TDataGridCommandEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridCommandEventParameter](./TDataGridCommandEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridCommandEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridCommandEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Event parameter for TDataGrid onItemCommand events. Encapsulates information about the command source and datagrid item.
 
 ## Key Properties/Methods

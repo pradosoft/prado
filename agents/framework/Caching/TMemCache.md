@@ -1,13 +1,13 @@
-# TMemCache
+# Caching/TMemCache
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TMemCache](./TMemCache.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TMemCache`**
 
+## Class Info
 **Location:** `framework/Caching/TMemCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TMemCache](./TMemCache.md) provides distributed caching using the memcached server. Supports multiple servers with weighted distribution.
 
 ## Configuration

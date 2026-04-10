@@ -1,13 +1,13 @@
-# TWebColors
+# Web/UI/TWebColors
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TWebColors](./TWebColors.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TWebColors`**
 
+## Class Info
 **Location:** `framework/Web/UI/TWebColors.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Enumerable class defining all 147+ CSS named colors mapped to their hexadecimal web color values. Extends `TEnumerable`.
 
 Used by `TPropertyValue::ensureHexColor()` to convert CSS color name strings (e.g., `'CornflowerBlue'`) to their `#RRGGBB` hex equivalents for use in HTML attributes and CSS properties.

@@ -1,13 +1,12 @@
-# IItemDataRenderer
+# Web/UI/WebControls/IItemDataRenderer
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [IItemDataRenderer](./IItemDataRenderer.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IItemDataRenderer`**
 
 **Location:** `framework/Web/UI/WebControls/IItemDataRenderer.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 IItemDataRenderer defines the interface that item renderers must implement. It extends IDataRenderer and provides ItemIndex and ItemType properties.
 
 ## Key Properties/Methods

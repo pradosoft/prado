@@ -1,8 +1,7 @@
 # Web/UI/WebControls/assets/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](../INDEX.md) > [assets](./INDEX.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`assets/INDEX.md`**
 
 ## Purpose
 

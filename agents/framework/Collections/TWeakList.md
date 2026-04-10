@@ -1,13 +1,13 @@
-# TWeakList
+# Collections/TWeakList
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TWeakList](./TWeakList.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TWeakList`**
 
+## Class Info
 **Location:** `framework/Collections/TWeakList.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TWeakList implements an integer-indexed collection that stores objects as WeakReference. Objects that are garbage collected are automatically removed from the list.
 
 ## Inheritance

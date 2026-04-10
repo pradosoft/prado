@@ -1,13 +1,13 @@
-# TOutputCacheCalculateKeyEventParameter
+# Web/UI/WebControls/TOutputCacheCalculateKeyEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TOutputCacheCalculateKeyEventParameter](./TOutputCacheCalculateKeyEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TOutputCacheCalculateKeyEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TOutputCacheCalculateKeyEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TOutputCacheCalculateKeyEventParameter encapsulates the parameter data for the OnCalculateKey event of TOutputCache control.
 
 ## Key Properties/Methods

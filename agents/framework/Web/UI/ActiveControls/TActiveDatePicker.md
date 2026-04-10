@@ -1,13 +1,13 @@
-# TActiveDatePicker
+# Web/UI/ActiveControls/TActiveDatePicker
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveDatePicker](./TActiveDatePicker.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveDatePicker`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveDatePicker.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TDatePicker. Triggers callback when date selection changes. Text property can be updated during callback. Supports AutoPostBack and validation options.
 
 ## Key Properties/Methods

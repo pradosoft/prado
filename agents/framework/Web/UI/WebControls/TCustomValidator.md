@@ -1,13 +1,13 @@
-# TCustomValidator
+# Web/UI/WebControls/TCustomValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCustomValidator](./TCustomValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCustomValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TCustomValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TCustomValidator performs user-defined validation on both server-side and client-side. Supports custom validation functions.
 
 ## Key Properties/Methods

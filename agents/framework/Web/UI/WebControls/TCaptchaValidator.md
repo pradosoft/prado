@@ -1,13 +1,13 @@
-# TCaptchaValidator
+# Web/UI/WebControls/TCaptchaValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCaptchaValidator](./TCaptchaValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCaptchaValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TCaptchaValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TCaptchaValidator validates user input against a TCaptcha control. Provides both server-side and client-side validation.
 
 ## Key Properties/Methods

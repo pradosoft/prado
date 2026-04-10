@@ -1,13 +1,13 @@
-# TListItem
+# Web/UI/WebControls/TListItem
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TListItem](./TListItem.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TListItem`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TListItem.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TListItem represents an item in a list control. Each item has Text and Value properties, can be selected or enabled, and can have custom attributes rendered.
 
 ## Key Properties/Methods

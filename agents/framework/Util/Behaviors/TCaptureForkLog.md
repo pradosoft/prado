@@ -1,14 +1,13 @@
-# TCaptureForkLog
+# Util/Behaviors/TCaptureForkLog
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TCaptureForkLog`**
 
-[Util](../) > [Behaviors](Behaviors/) > TCaptureForkLog
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TCaptureForkLog.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 This behavior captures logs from forked child processes and sends them back to the parent process. When `[TProcessHelper](../Helpers/TProcessHelper.md)::fork()` is called, this behavior creates socket pairs before the fork and routes child process logs to the parent. The parent receives logs when processing its own logs via `onCollectLogs`.
 
 ## Key Properties/Methods

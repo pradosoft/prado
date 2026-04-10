@@ -1,13 +1,13 @@
-# TTemplateException
+# Exceptions/TTemplateException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TTemplateException](./TTemplateException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TTemplateException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TTemplateException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by invalid template syntax. Extends `TConfigurationException`.
 
 ## Hierarchy

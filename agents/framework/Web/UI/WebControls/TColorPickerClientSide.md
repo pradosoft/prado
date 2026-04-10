@@ -1,13 +1,13 @@
-# TColorPickerClientSide
+# Web/UI/WebControls/TColorPickerClientSide
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TColorPickerClientSide](./TColorPickerClientSide.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TColorPickerClientSide`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TColorPickerClientSide.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Client-side JavaScript options for TColorPicker control.
 
 ## Key Properties/Methods

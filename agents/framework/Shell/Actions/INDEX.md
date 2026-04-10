@@ -1,8 +1,7 @@
 # Shell/Actions/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md)
+[framework](./INDEX.md) / [Shell](./Shell/INDEX.md) / **`Actions/INDEX.md`**
 
 ## Purpose
 
@@ -43,5 +42,3 @@ Built-in CLI action handlers for the Prado shell (`php protected/index.php`). Ea
 - Use `$this->getWriter()` ([`TShellWriter`](../TShellWriter.md)) for all output — it handles colour, indentation, and verbosity levels.
 - Actions receive parsed CLI arguments as method parameters; optional arguments default to `null`.
 - Keep actions idempotent where possible (safe to run multiple times).
-
-(End of file - total 48 lines)

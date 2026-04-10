@@ -1,14 +1,13 @@
-# TBehaviorsModule / Pre-built Behaviors
+# Util/TBehaviorsModule
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TBehaviorsModule`**
 
-[Util](../) > TBehaviorsModule
-
-**Location:** `framework/Util/TBehaviorsModule.php`, `framework/Util/Behaviors/`
+## Class Info
+**Location:** `framework/Util/TBehaviorsModule.php`
 **Namespace:** `Prado\Util`
 
-## TBehaviorsModule
-
+## Overview
 `[TModule](../TModule.md)` that loads behavior configuration from `application.xml` and attaches behaviors to application components.
 
 ```xml

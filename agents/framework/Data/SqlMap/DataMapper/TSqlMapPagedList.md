@@ -1,9 +1,13 @@
-# TSqlMapPagedList
+# Data/SqlMap/DataMapper/TSqlMapPagedList
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapPagedList`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapPagedList](./TSqlMapPagedList.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapPagedList.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapPagedList`
 
 Paged result list for SqlMap queries.

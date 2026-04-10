@@ -1,7 +1,11 @@
-# TContentPlaceHolder Class
+# Web/UI/WebControls/TContentPlaceHolder
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TContentPlaceHolder](./TContentPlaceHolder.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TContentPlaceHolder`**
+
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TContentPlaceHolder.php`
+**Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
 TContentPlaceHolder reserves a place on a template where a TContent control can inject itself and its children. It works with TContent to implement a template decoration pattern for PRADO templated controls.

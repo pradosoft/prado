@@ -1,14 +1,13 @@
-# TDbNullConversionMode
+# Data/TDbNullConversionMode
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbNullConversionMode`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbNullConversionMode](./TDbNullConversionMode.md)
-
+## Class Info
 **Location:** `framework/Data/TDbNullConversionMode.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDbNullConversionMode` is an enumerable class that specifies how NULL and empty values should be converted when reading from the database.
 
 ## Constants

@@ -1,8 +1,9 @@
 # Web/INDEX.md
 
 ### Directories
+[framework](./INDEX.md) / **`Web/INDEX.md`**
 
-[./](../INDEX.md) > [Web](./INDEX.md)
+## Purpose
 
 HTTP layer, URL routing, asset management, session handling, and all web UI components for the Prado framework.
 

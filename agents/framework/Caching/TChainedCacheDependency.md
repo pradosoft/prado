@@ -1,13 +1,13 @@
-# TChainedCacheDependency
+# Caching/TChainedCacheDependency
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TChainedCacheDependency](./TChainedCacheDependency.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TChainedCacheDependency`**
 
+## Class Info
 **Location:** `framework/Caching/TChainedCacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TChainedCacheDependency](./TChainedCacheDependency.md) chains multiple dependency objects. The combined dependency reports "changed" if ANY child dependency has changed (OR logic).
 
 ## Usage

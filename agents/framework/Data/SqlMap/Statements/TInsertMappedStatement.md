@@ -1,9 +1,13 @@
-# TInsertMappedStatement
+# Data/SqlMap/Statements/TInsertMappedStatement
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TInsertMappedStatement`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TInsertMappedStatement](./TInsertMappedStatement.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TInsertMappedStatement.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TInsertMappedStatement`
 
 Insert statement executor.

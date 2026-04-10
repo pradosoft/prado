@@ -1,13 +1,13 @@
-# I18N / core / Gettext / TGettext
+# I18N/core/Gettext/TGettext
 
 ### Directories
-[./](../../INDEX.md) > [I18N](../INDEX.md) > [core](../INDEX.md) > [Gettext](./INDEX.md) > [TGettext](./TGettext.md)
+[framework](../../../INDEX.md) / [I18N](../../INDEX.md) / [core](../INDEX.md) / [Gettext](./INDEX.md) / **`TGettext`**
 
+## Class Info
 **Location:** `framework/I18N/core/Gettext/TGettext.php`
 **Namespace:** `Prado\I18N\core\Gettext`
 
 ## Overview
-
 Abstract base class for GNU Gettext `.po`/`.mo` file handling. Provides common interface and utilities for `TGettext_MO` and `TGettext_PO`.
 
 ## Data Structure

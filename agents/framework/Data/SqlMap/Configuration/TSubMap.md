@@ -1,9 +1,13 @@
-# TSubMap
+# Data/SqlMap/Configuration/TSubMap
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSubMap`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSubMap](./TSubMap.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSubMap.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSubMap`
 
 A discriminator sub-map entry mapping a value to a result map.

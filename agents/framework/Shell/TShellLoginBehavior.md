@@ -1,13 +1,13 @@
-# Shell / TShellLoginBehavior
+# Shell/TShellLoginBehavior
 
 ### Directories
-[./](../INDEX.md) > [Shell](./INDEX.md) > [TShellLoginBehavior](./TShellLoginBehavior.md)
+[framework](../INDEX.md) / [Shell](./INDEX.md) / **`TShellLoginBehavior`**
 
+## Class Info
 **Location:** `framework/Shell/TShellLoginBehavior.php`
 **Namespace:** `Prado\Shell`
 
 ## Overview
-
 Behavior for [TAuthManager](../Security/TAuthManager.md) that prompts for CLI login credentials before shell commands execute.
 
 ## Usage

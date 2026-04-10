@@ -1,14 +1,13 @@
-# TDataGatewayEventParameter
+# Data/DataGateway/TDataGatewayEventParameter
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [DataGateway](./INDEX.md) / **`TDataGatewayEventParameter`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [DataGateway](./INDEX.md) > [TDataGatewayEventParameter](./TDataGatewayEventParameter.md)
-
+## Class Info
 **Location:** `framework/Data/DataGateway/TDataGatewayEventParameter.php`
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-
 `TDataGatewayEventParameter` is the event parameter passed to `OnCreateCommand` handlers.
 
 ## Properties

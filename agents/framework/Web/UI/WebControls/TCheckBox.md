@@ -1,7 +1,11 @@
-# TCheckBox Class
+# Web/UI/WebControls/TCheckBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCheckBox](./TCheckBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCheckBox`**
+
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TCheckBox.php`
+**Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
 TCheckBox displays a check box on the page. It supports both single and tri-state check boxes with various configuration options for display, validation, and user experience.

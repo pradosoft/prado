@@ -1,8 +1,7 @@
 # Security/Permissions/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md)
+[framework](./INDEX.md) / [Security](./Security/INDEX.md) / **`Permissions/INDEX.md`**
 
 ## Purpose
 

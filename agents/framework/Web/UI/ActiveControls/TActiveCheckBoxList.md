@@ -1,13 +1,13 @@
-# TActiveCheckBoxList
+# Web/UI/ActiveControls/TActiveCheckBoxList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveCheckBoxList](./TActiveCheckBoxList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveCheckBoxList`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveCheckBoxList.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TCheckBoxList with AutoPostBack enabled. When a checkbox is clicked, raises OnSelectedIndexChanged followed by OnCallback. Selection changes are updated on the client side when EnableUpdate is true.
 
 ## Key Properties/Methods

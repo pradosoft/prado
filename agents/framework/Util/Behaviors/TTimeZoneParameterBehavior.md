@@ -1,14 +1,13 @@
-# TTimeZoneParameterBehavior
+# Util/Behaviors/TTimeZoneParameterBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TTimeZoneParameterBehavior`**
 
-[Util](../) > [Behaviors](Behaviors/) > TTimeZoneParameterBehavior
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TTimeZoneParameterBehavior.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TTimeZoneParameterBehavior sets PHP's default timezone from an application parameter. It can be attached to [TApplication](../../TApplication.md) or any [TComponent](../../TComponent.md). The behavior routes changes to the TimeZoneParameter to `date_default_timezone_set()`. If no application parameter is set, the TimeZone property is used as a fallback.
 
 ## Key Properties/Methods

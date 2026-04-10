@@ -1,14 +1,13 @@
-# TPageConfiguration
+# Web/Services/TPageConfiguration
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TPageConfiguration`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TPageConfiguration](./TPageConfiguration.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TPageConfiguration.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TPageConfiguration represents the merged configuration for a page, loaded from per-directory `config.xml` or `config.php` files along the page path. It aggregates application configurations, authorization rules, page properties, and external configuration includes. Configurations are merged bottom-up from parent directories to the specific page.
 
 ## Key Properties/Methods

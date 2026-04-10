@@ -1,13 +1,12 @@
-# IPostBackDataHandler
+# Web/UI/IPostBackDataHandler
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IPostBackDataHandler](./IPostBackDataHandler.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPostBackDataHandler`**
 
 **Location:** `framework/Web/UI/IPostBackDataHandler.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for controls that load postback data.
 
 ## Key Methods
@@ -21,5 +20,3 @@ Interface for controls that load postback data.
 ## See Also
 
 - [TControl](./TControl.md) - Base control class
-
-(End of file - total 20 lines)

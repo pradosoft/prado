@@ -1,14 +1,13 @@
-# TActiveRecordManager
+# Data/ActiveRecord/TActiveRecordManager
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordManager`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordManager](./TActiveRecordManager.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordManager.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordManager` is a singleton that manages the default database connection and table metadata for all Active Record classes.
 
 ## Configuration

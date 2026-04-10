@@ -1,14 +1,13 @@
-# TJsonResponse
+# Web/Services/TJsonResponse
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TJsonResponse`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TJsonResponse](./TJsonResponse.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TJsonResponse.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TJsonResponse is the abstract base class for JSON response providers used by TJsonService. Derived classes implement `getJsonContent()` to return data that gets serialized to JSON format. The response can be suppressed by returning null.
 
 ## Key Properties/Methods

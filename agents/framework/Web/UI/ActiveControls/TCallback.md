@@ -1,13 +1,13 @@
-# TCallback
+# Web/UI/ActiveControls/TCallback
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TCallback](./TCallback.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TCallback`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TCallback.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Basic callback handler component. Invoked from client-side JavaScript to trigger server-side processing without full page postback. Raises `OnCallback` event when requested. Can be used for arbitrary server actions triggered by custom UI elements.
 
 ## Key Properties/Methods

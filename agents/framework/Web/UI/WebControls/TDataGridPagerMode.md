@@ -1,13 +1,13 @@
-# TDataGridPagerMode
+# Web/UI/WebControls/TDataGridPagerMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridPagerMode](./TDataGridPagerMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridPagerMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridPagerMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridPagerMode defines the display mode for datagrid pager.
 
 ## Constants

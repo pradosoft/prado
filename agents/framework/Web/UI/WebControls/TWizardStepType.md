@@ -1,13 +1,13 @@
-# TWizardStepType
+# Web/UI/WebControls/TWizardStepType
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizardStepType](./TWizardStepType.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizardStepType`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizardStepType.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWizardStepType defines the enumerable type for the possible types of wizard steps.
 
 ## Key Properties/Methods

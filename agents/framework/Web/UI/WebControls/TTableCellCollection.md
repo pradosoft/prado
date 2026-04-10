@@ -1,13 +1,13 @@
-# TTableCellCollection
+# Web/UI/WebControls/TTableCellCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableCellCollection](./TTableCellCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableCellCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableCellCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableCellCollection maintains a list of table cells belonging to a TTableRow. It extends TControlCollection and ensures only TTableCell instances can be added.
 
 ## Key Properties/Methods

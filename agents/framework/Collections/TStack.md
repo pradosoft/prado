@@ -1,12 +1,14 @@
-# TStack
+# Collections/TStack
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TStack](./TStack.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TStack`**
 
+## Class Info
 **Location:** `framework/Collections/TStack.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
+
 
 TStack implements a LIFO (Last-In-First-Out) stack data structure. Items are added to and removed from the top.
 

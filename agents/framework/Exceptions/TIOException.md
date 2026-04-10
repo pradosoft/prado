@@ -1,13 +1,13 @@
-# TIOException
+# Exceptions/TIOException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TIOException](./TIOException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TIOException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TIOException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception related to improper I/O operations. Extends `TSystemException`.
 
 ## Hierarchy

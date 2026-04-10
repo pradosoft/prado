@@ -1,13 +1,13 @@
-# TScrollBars
+# Web/UI/WebControls/TScrollBars
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TScrollBars](./TScrollBars.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TScrollBars`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TScrollBars.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TScrollBars defines the enumerable type for scroll bar modes that can be applied to TPanel controls. It specifies when and how scroll bars appear in a panel.
 
 ## Values

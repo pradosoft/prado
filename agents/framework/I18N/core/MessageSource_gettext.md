@@ -1,13 +1,12 @@
-# I18N / core / MessageSource_gettext
+# I18N/core/MessageSource_gettext
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageSource_gettext](./MessageSource_gettext.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_gettext`**
 
 **Location:** `framework/I18N/core/MessageSource_gettext.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 GNU Gettext message source using `.mo` binary files at runtime and `.po` source files for authoring.
 
 ## File Structure

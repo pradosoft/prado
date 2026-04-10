@@ -1,13 +1,13 @@
-# TDatePickerMode
+# Web/UI/WebControls/TDatePickerMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDatePickerMode](./TDatePickerMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDatePickerMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDatePickerMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDatePickerMode defines the enumerable type for the possible UI modes that a TDatePicker control can take. It specifies how the date picker is displayed and triggered.
 
 ## Key Properties/Methods

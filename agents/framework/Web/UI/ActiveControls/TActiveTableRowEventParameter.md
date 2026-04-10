@@ -1,13 +1,13 @@
-# TActiveTableRowEventParameter
+# Web/UI/ActiveControls/TActiveTableRowEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveTableRowEventParameter](./TActiveTableRowEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveTableRowEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveTableRowEventParameter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Event parameter for [TActiveTableRow](./TActiveTableRow.md) callbacks. Extends [TCallbackEventParameter](./TCallbackEventParameter.md) with `SelectedRowIndex` property indicating the zero-based index of the selected row.
 
 ## Key Properties/Methods

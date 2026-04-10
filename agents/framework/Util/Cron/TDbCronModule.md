@@ -1,14 +1,13 @@
-# TDbCronModule
+# Util/Cron/TDbCronModule
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TDbCronModule`**
 
-[Util](../) > [Cron](Cron/) > TDbCronModule
-
+## Class Info
 **Location:** `framework/Util/Cron/TDbCronModule.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TDbCronModule extends TCronModule with database-backed task storage and management. It supports dynamic task registration, execution logging, failed-task retry logic, and runtime task execution at onEndRequest. Tasks and logs are stored in a configurable database table.
 
 ## Key Properties/Methods

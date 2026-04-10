@@ -1,13 +1,12 @@
-# IPriorityItem
+# Collections/IPriorityItem
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IPriorityItem](./IPriorityItem.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityItem`**
 
 **Location:** `framework/Collections/IPriorityItem.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Interface for objects that can specify their own priority when added to a priority collection. Objects implementing this interface can self-prioritize in [TPriorityList](./TPriorityList.md) or [TPriorityMap](./TPriorityMap.md).
 
 ## Methods

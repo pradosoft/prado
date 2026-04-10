@@ -1,13 +1,13 @@
-# TTableCell
+# Web/UI/WebControls/TTableCell
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableCell](./TTableCell.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableCell`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableCell.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableCell displays a table cell (td element) on a Web page. Content can be set via the Text property or child controls. Supports horizontal/vertical alignment, colspan, rowspan, and text wrapping.
 
 ## Key Properties/Methods

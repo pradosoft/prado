@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Security/SUMMARY.md
 
 Authentication, authorization, user management, and role-based access control (RBAC) for the Prado framework.
 

@@ -1,15 +1,14 @@
-# TList
+# Collections/TList
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TList](./TList.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TList`**
 
+## Class Info
 **Location:** `framework/Collections/TList.php`
 **Namespace:** `Prado\Collections`
 **Extends:** [TComponent](../TComponent.md)
-**Implements:** `IteratorAggregate`, `ArrayAccess`, `Countable`
 
 ## Overview
-
 Integer-indexed ordered collection. The primary extension point is `insertAt()` and `removeAt()` — subclasses override these rather than `add()`/`remove()`. All collection classes in Prado extend `TComponent` and support the standard property/event system.
 
 ## Constructor

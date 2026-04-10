@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Util/Math/SUMMARY.md
 
 Mathematical utility classes for exact rational number arithmetic; both classes are value objects (immutable).
 

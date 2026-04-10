@@ -1,7 +1,11 @@
-# TTemplateControl Class
+# Web/UI/TTemplateControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TTemplateControl](./TTemplateControl.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TTemplateControl`**
+
+## Class Info
+**Location:** `framework/Web/UI/TTemplateControl.php`
+**Namespace:** `Prado\Web\UI`
 
 ## Overview
 TTemplateControl is the base class for all controls that use templates in PRADO framework. It extends [TCompositeControl](./TCompositeControl.md) and provides template loading, management, and instantiation capabilities.

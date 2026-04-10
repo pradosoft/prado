@@ -1,13 +1,13 @@
-# TInvalidOperationException
+# Exceptions/TInvalidOperationException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TInvalidOperationException](./TInvalidOperationException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TInvalidOperationException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TInvalidOperationException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by an invalid operation, such as calling a method in an invalid state. Extends `TSystemException`.
 
 ## Hierarchy

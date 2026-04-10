@@ -1,13 +1,13 @@
-# TDbConnectionException
+# Exceptions/TDbConnectionException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TDbConnectionException](./TDbConnectionException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TDbConnectionException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TDbConnectionException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by database connection failure. Extends `[TDbException](./TDbException.md)`.
 
 ## Hierarchy

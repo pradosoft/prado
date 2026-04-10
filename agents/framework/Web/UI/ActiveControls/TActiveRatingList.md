@@ -1,13 +1,13 @@
-# TActiveRatingList
+# Web/UI/ActiveControls/TActiveRatingList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveRatingList](./TActiveRatingList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveRatingList`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveRatingList.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Clickable star rating control that behaves like a TRadioButtonList. Supports read-only mode, rating value changes during callback, and caption updates.
 
 ## Key Properties/Methods

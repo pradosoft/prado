@@ -1,13 +1,13 @@
-# Shell / Actions / TWebServerAction
+# Shell/Actions/TWebServerAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [TWebServerAction](./TWebServerAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`TWebServerAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/TWebServerAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Starts PHP's built-in development web server to serve the PRADO application.
 
 ## Usage

@@ -1,13 +1,13 @@
-# TBaseValidator
+# Web/UI/WebControls/TBaseValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TBaseValidator](./TBaseValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TBaseValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TBaseValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TBaseValidator is the abstract base class for all validator controls. It extends TLabel and implements `IValidator`. Validators run on every postback (or when `TPage::validate()` is called manually) and check the value of a target input control. If client-side scripting is enabled, validation is also performed in the browser before the form is submitted.
 
 Error display is controlled by the `Display` property. The displayed text is chosen from: `Text` property → `ErrorMessage` property → body content of the validator tag (in that priority order). Error messages also feed into `TValidationSummary` controls via `ErrorMessage`.

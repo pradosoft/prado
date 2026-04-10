@@ -1,9 +1,13 @@
-# TScaffoldView
+# Data/ActiveRecord/Scaffold/TScaffoldView
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](./INDEX.md) / **`TScaffoldView`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](./INDEX.md) > [TScaffoldView](./TScaffoldView.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/TScaffoldView.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\TScaffoldView`
 
 Composite scaffold control for viewing, editing, and searching Active Records.

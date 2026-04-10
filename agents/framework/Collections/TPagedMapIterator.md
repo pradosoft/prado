@@ -1,13 +1,13 @@
-# TPagedMapIterator
+# Collections/TPagedMapIterator
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedMapIterator](./TPagedMapIterator.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedMapIterator`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedMapIterator.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Iterator for traversing items in a paged TMap. Used by [TPagedDataSource](./TPagedDataSource.md) to iterate over a specific page of items in a map.
 
 ## Implementation

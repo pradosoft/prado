@@ -1,13 +1,13 @@
-# TValidatorDisplayStyle
+# Web/UI/WebControls/TValidatorDisplayStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TValidatorDisplayStyle](./TValidatorDisplayStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TValidatorDisplayStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TValidatorDisplayStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TValidatorDisplayStyle defines the enumerable type for the possible styles that a validator control can display error messages.
 
 ## Key Properties/Methods

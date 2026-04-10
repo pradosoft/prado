@@ -1,13 +1,13 @@
-# TKeyboard
+# Web/UI/WebControls/TKeyboard
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TKeyboard](./TKeyboard.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TKeyboard`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TKeyboard.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Renders a virtual on-screen keyboard attached to a text input control. When the user focuses the associated input, the keyboard widget appears. Clicking keys inserts characters into the input without requiring a physical keyboard.
 
 JavaScript: `controls/keyboard.js` (published via `TAssetManager`).

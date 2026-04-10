@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Web/Javascripts/SUMMARY.md
 
 Client-side JavaScript/CSS package registry and asset utilities consumed by `TClientScriptManager`.
 

@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/ActiveRecord/Scaffold/SUMMARY.md
 
 Auto-generated CRUD UI controls for Active Record classes; introspects table metadata to produce list, search, and edit interfaces.
 

@@ -1,14 +1,13 @@
-# TRpcServer
+# Web/Services/TRpcServer
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TRpcServer`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TRpcServer](./TRpcServer.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TRpcServer.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TRpcServer is middleware layer that sits between TRpcService and the protocol handler. It retrieves the raw request payload from `php://input`, passes it to the protocol handler for processing, and returns the formatted response. Can be subclassed for logging, debugging, or request/response filtering.
 
 ## Key Properties/Methods

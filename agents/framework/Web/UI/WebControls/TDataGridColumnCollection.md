@@ -1,13 +1,13 @@
-# TDataGridColumnCollection
+# Web/UI/WebControls/TDataGridColumnCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridColumnCollection](./TDataGridColumnCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridColumnCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridColumnCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridColumnCollection represents a collection of data grid columns. Only TDataGridColumn objects can be added.
 
 ## Key Properties/Methods

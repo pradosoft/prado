@@ -1,14 +1,13 @@
-# TRpcProtocol
+# Web/Services/TRpcProtocol
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TRpcProtocol`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TRpcProtocol](./TRpcProtocol.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TRpcProtocol.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TRpcProtocol is an abstract base class for implementing RPC protocols in TRpcService. It provides the foundation for different RPC formats (XML-RPC, JSON-RPC, etc.) by defining abstract methods for encoding/decoding requests and responses, and manages the registry of available RPC methods.
 
 ## Key Properties/Methods

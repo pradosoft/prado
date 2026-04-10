@@ -2,11 +2,13 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [Common](./Data/Common/INDEX.md) / [Sqlite](./Data/Common/Sqlite/INDEX.md) / **`Sqlite/INDEX.md`**
 
 | Directory | Purpose |
-|---|---|---|
-| [`../`](../INDEX.md)] | Data Common Directory |
+|---|---|
+| [`../`](../INDEX.md) | Data Common Directory |
 
 ## Purpose
 

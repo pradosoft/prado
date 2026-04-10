@@ -1,14 +1,13 @@
-# TDbColumnCaseMode
+# Data/TDbColumnCaseMode
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbColumnCaseMode`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbColumnCaseMode](./TDbColumnCaseMode.md)
-
+## Class Info
 **Location:** `framework/Data/TDbColumnCaseMode.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDbColumnCaseMode` is an enumerable class that specifies how column names should be handled when reading from the database.
 
 ## Constants

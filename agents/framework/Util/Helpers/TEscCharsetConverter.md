@@ -1,14 +1,13 @@
-# TEscCharsetConverter
+# Util/Helpers/TEscCharsetConverter
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Helpers](./INDEX.md) / **`TEscCharsetConverter`**
 
-[Util](../) > [Helpers](Helpers/) > TEscCharsetConverter
-
+## Class Info
 **Location:** `framework/Util/Helpers/TEscCharsetConverter.php`
 **Namespace:** `Prado\Util\Helpers`
 
 ## Overview
-
 ESC charset encoding converter. Translates between ISO/IEC escape character sequences and iconv character encodings.
 
 ## Key Methods

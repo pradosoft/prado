@@ -1,13 +1,13 @@
-# TPagedList
+# Collections/TPagedList
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedList](./TPagedList.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedList`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedList.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TPagedList implements a list with built-in paging functionality. Supports both managed paging (all data in memory) and custom paging (lazy loading).
 
 ## Inheritance

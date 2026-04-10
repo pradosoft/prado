@@ -1,13 +1,13 @@
-# TPriorityMap
+# Collections/TPriorityMap
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPriorityMap](./TPriorityMap.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPriorityMap`**
 
+## Class Info
 **Location:** `framework/Collections/TPriorityMap.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TPriorityMap implements a key-value collection with priority ordering. Keys are preserved but iteration occurs in priority order.
 
 ## Inheritance

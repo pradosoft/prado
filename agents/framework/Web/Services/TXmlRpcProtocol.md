@@ -1,14 +1,13 @@
-# TXmlRpcProtocol
+# Web/Services/TXmlRpcProtocol
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TXmlRpcProtocol`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TXmlRpcProtocol](./TXmlRpcProtocol.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TXmlRpcProtocol.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TXmlRpcProtocol implements the XML-RPC protocol for TRpcService. It wraps PHP's native `xmlrpc_server_*` functions to handle XML-encoded RPC requests and responses. The class processes incoming XML-RPC requests and returns XML-encoded responses.
 
 ## Key Properties/Methods

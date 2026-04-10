@@ -1,13 +1,13 @@
-# TWizardNavigationButtonStyle
+# Web/UI/WebControls/TWizardNavigationButtonStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizardNavigationButtonStyle](./TWizardNavigationButtonStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizardNavigationButtonStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizardNavigationButtonStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWizardNavigationButtonStyle defines the style applied to wizard navigation buttons. It specifies button type (Button, Image, or Link), image URL for image buttons, and button text/caption.
 
 ## Key Properties/Methods

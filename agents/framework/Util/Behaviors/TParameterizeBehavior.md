@@ -1,14 +1,13 @@
-# TParameterizeBehavior
+# Util/Behaviors/TParameterizeBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TParameterizeBehavior`**
 
-[Util](../) > [Behaviors](Behaviors/) > TParameterizeBehavior
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TParameterizeBehavior.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TParameterizeBehavior sets a specific property on the owner object to an application parameter value. It can optionally route changes to the application parameter to the property in real-time using a TMapRouteBehavior. Supports localization of parameter values and default values when parameters are not set.
 
 ## Key Properties/Methods

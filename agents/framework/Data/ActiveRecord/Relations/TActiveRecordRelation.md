@@ -1,9 +1,13 @@
-# TActiveRecordRelation
+# Data/ActiveRecord/Relations/TActiveRecordRelation
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordRelation`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordRelation](./TActiveRecordRelation.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordRelation.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordRelation`
 
 Abstract base class for Active Record relationships.

@@ -1,8 +1,7 @@
 # Web/UI/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](./INDEX.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`UI/INDEX.md`**
 
 ## Purpose
 

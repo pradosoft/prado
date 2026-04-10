@@ -1,13 +1,13 @@
-# TPageLoadTime
+# Web/UI/WebControls/TPageLoadTime
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPageLoadTime](./TPageLoadTime.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPageLoadTime`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPageLoadTime.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPageLoadTime writes the amount of time taken from the request start to rendering the contents of this control. It extends TLabel and displays the elapsed time in seconds with localizable suffix.
 
 ## Key Properties/Methods

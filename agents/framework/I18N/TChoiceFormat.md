@@ -1,13 +1,13 @@
-# I18N / TChoiceFormat
+# I18N/TChoiceFormat
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TChoiceFormat](./TChoiceFormat.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TChoiceFormat`**
 
+## Class Info
 **Location:** `framework/I18N/TChoiceFormat.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Plural/choice selection control. Maps a numeric value to a localized string based on ICU-style choice patterns.
 
 ## Usage

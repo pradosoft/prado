@@ -1,9 +1,13 @@
-# TSimpleDynamicParser
+# Data/SqlMap/Configuration/TSimpleDynamicParser
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSimpleDynamicParser`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSimpleDynamicParser](./TSimpleDynamicParser.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSimpleDynamicParser.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSimpleDynamicParser`
 
 Handles `$propertyName$` direct string substitution in SQL.

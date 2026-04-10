@@ -1,9 +1,13 @@
-# TScaffoldSearch
+# Data/ActiveRecord/Scaffold/TScaffoldSearch
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](./INDEX.md) / **`TScaffoldSearch`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](./INDEX.md) > [TScaffoldSearch](./TScaffoldSearch.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/TScaffoldSearch.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\TScaffoldSearch`
 
 Search control for filtering TScaffoldListView records.

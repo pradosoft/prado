@@ -3,12 +3,11 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
+[framework](./INDEX.md) / **`Caching/INDEX.md`**
 
-[./](../INDEX.md) > [Caching](./INDEX.md)
+## Purpose
 
-| Directory | Purpose |
-|---|---|
-| [Caching/](.) | Cache backends and cache dependency system |
+Cache backends and dependency system providing unified `ICache` interface over multiple storage backends.
 
 ### Interfaces
 

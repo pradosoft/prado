@@ -1,14 +1,13 @@
-# TActiveRecordChangeEventParameter
+# Data/ActiveRecord/TActiveRecordChangeEventParameter
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordChangeEventParameter`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordChangeEventParameter](./TActiveRecordChangeEventParameter.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordChangeEventParameter.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordChangeEventParameter` encapsulates parameter data for ActiveRecord change events (insert, update, delete).
 
 ## Properties

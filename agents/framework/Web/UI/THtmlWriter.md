@@ -1,13 +1,13 @@
-# THtmlWriter
+# Web/UI/THtmlWriter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [THtmlWriter](./THtmlWriter.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`THtmlWriter`**
 
+## Class Info
 **Location:** `framework/Web/UI/THtmlWriter.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 THtmlWriter renders valid XHTML output, providing methods to render HTML tags with their attributes and styles. Attribute and stylesheet values are automatically HTML-encoded. THtmlWriter wraps an underlying [ITextWriter](../IO/ITextWriter.md) and maintains a stack of open tags for proper nesting.
 
 ## Key Properties/Methods

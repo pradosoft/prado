@@ -1,13 +1,12 @@
-# ITheme
+# Web/UI/ITheme
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ITheme](./ITheme.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ITheme`**
 
 **Location:** `framework/Web/UI/ITheme.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for theme implementations.
 
 ## Key Methods
@@ -21,5 +20,3 @@ Interface for theme implementations.
 - [TTheme](./TTheme.md) - Theme implementation
 - [TThemeManager](./TThemeManager.md) - Theme management
 - [TControl](./TControl.md)
-
-(End of file - total 19 lines)

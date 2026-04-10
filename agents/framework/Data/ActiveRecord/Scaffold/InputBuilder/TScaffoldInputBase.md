@@ -1,9 +1,13 @@
-# TScaffoldInputBase
+# Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TScaffoldInputBase`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TScaffoldInputBase](./TScaffoldInputBase.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputBase.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputBase`
 
 Abstract base class for scaffold input builders.

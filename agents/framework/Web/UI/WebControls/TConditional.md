@@ -1,13 +1,13 @@
-# TConditional
+# Web/UI/WebControls/TConditional
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TConditional](./TConditional.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TConditional`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TConditional.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TConditional displays content based on evaluation of a PHP expression. If true, instantiates TrueTemplate; otherwise, FalseTemplate. Evaluated at early stage (before onInit).
 
 ## Key Properties/Methods

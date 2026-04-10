@@ -1,7 +1,11 @@
-# THttpRequest Class
+# Web/THttpRequest
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpRequest](./THttpRequest.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpRequest`**
+
+## Class Info
+**Location:** `framework/Web/THttpRequest.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 THttpRequest provides storage and access scheme for user requests sent via HTTP. It also encapsulates a uniform way to parse and construct URLs.

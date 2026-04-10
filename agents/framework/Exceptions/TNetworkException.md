@@ -1,13 +1,13 @@
-# TNetworkException
+# Exceptions/TNetworkException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TNetworkException](./TNetworkException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TNetworkException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TNetworkException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Base class for all streaming, socket, and network-level exceptions. Extends `TException`.
 
 ## Hierarchy

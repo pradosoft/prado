@@ -1,13 +1,13 @@
-# TRequiredFieldValidator
+# Web/UI/WebControls/TRequiredFieldValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRequiredFieldValidator](./TRequiredFieldValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRequiredFieldValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRequiredFieldValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRequiredFieldValidator makes the associated input control a required field. Validation fails if the value does not change from the InitialValue upon losing focus. Also works with TListControl and TRadioButton groups.
 
 ## Key Properties/Methods

@@ -1,14 +1,13 @@
-# TApplicationSignals
+# Util/Behaviors/TApplicationSignals
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TApplicationSignals`**
 
-[Util](../) > [Behaviors](Behaviors/) > TApplicationSignals
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TApplicationSignals.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 This behavior installs the [TSignalsDispatcher](../TSignalsDispatcher.md) for the application when PHP pcntl extension is available. It connects POSIX signals (SIGTERM, SIGINT, SIGHUP) to application lifecycle events. The signals dispatcher class can be customized via `setSignalsClass()`.
 
 ## Key Properties/Methods

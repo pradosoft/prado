@@ -3,8 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-
-[./](../INDEX.md) > [Util](./INDEX.md)
+[framework](./INDEX.md) / **`Util/INDEX.md`**
 
 | Directory | Purpose |
 |---|---|

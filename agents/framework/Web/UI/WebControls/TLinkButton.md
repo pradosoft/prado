@@ -1,13 +1,13 @@
-# TLinkButton
+# Web/UI/WebControls/TLinkButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TLinkButton](./TLinkButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TLinkButton`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TLinkButton.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TLinkButton creates a hyperlink-style button that posts back to the page. Can be a submit button or command button with parameters.
 
 ## Key Properties/Methods

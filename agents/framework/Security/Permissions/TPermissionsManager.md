@@ -1,14 +1,13 @@
-# TPermissionsManager
+# Security/Permissions/TPermissionsManager
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionsManager`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionsManager](./TPermissionsManager.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionsManager.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 `TPermissionsManager` is the central RBAC (Role-Based Access Control) module for Prado. It manages:
 
 - A **role hierarchy** (roles with recursive child roles/permissions).

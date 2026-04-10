@@ -1,13 +1,13 @@
-# TPhpErrorException
+# Exceptions/TPhpErrorException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TPhpErrorException](./TPhpErrorException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TPhpErrorException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TPhpErrorException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by a PHP error. This is typically thrown within a PHP error handler. Extends `TSystemException`.
 
 ## Hierarchy

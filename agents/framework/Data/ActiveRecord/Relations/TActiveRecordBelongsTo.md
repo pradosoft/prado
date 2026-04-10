@@ -1,9 +1,13 @@
-# TActiveRecordBelongsTo
+# Data/ActiveRecord/Relations/TActiveRecordBelongsTo
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordBelongsTo`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordBelongsTo](./TActiveRecordBelongsTo.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordBelongsTo.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordBelongsTo`
 
 Implements the BELONGS_TO relationship between Active Records.

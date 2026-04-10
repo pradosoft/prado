@@ -1,14 +1,13 @@
-# TPermissionsManagerPropertyTrait
+# Security/Permissions/TPermissionsManagerPropertyTrait
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionsManagerPropertyTrait`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionsManagerPropertyTrait](./TPermissionsManagerPropertyTrait.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionsManagerPropertyTrait.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Shared trait providing the `PermissionsManager` property accessor. Used by behaviors that need a typed reference to [TPermissionsManager](./TPermissionsManager.md).
 
 ## Methods

@@ -1,14 +1,13 @@
-# TDataSourceConfig
+# Data/TDataSourceConfig
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDataSourceConfig`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDataSourceConfig](./TDataSourceConfig.md)
-
+## Class Info
 **Location:** `framework/Data/TDataSourceConfig.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDataSourceConfig` is a module class that provides configuration for database connections in application.xml.
 
 ## Configuration

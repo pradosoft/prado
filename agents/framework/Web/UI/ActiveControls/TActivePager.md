@@ -1,13 +1,13 @@
-# TActivePager
+# Web/UI/ActiveControls/TActivePager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActivePager](./TActivePager.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActivePager`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActivePager.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TPager that uses callbacks instead of postbacks for page navigation. Raises OnCallback event after OnPageIndexChanged. Creates [TActiveDropDownList](./TActiveDropDownList.md) for dropdown mode and [TActiveLinkButton](./TActiveLinkButton.md)/[TActiveButton](./TActiveButton.md)/[TActiveImageButton](./TActiveImageButton.md) for button modes.
 
 ## Key Properties/Methods

@@ -1,13 +1,12 @@
-# IJuiOptions
+# Web/UI/JuiControls/IJuiOptions
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [IJuiOptions](./IJuiOptions.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [JuiControls](./Web/UI/JuiControls/INDEX.md) / **`IJuiOptions`**
 
 **Location:** `framework/Web/UI/JuiControls/IJuiOptions.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Interface that must be implemented by controls using TJuiControlOptions. Defines the contract for jQuery UI widget wrappers to provide widget configuration and validation.
 
 ## Key Properties/Methods

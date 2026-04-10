@@ -1,13 +1,13 @@
-# TReCaptcha2
+# Web/UI/WebControls/TReCaptcha2
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TReCaptcha2](./TReCaptcha2.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TReCaptcha2`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TReCaptcha2.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TReCaptcha2 displays the Google reCAPTCHA v2 widget with callback support. It extends TActivePanel and supports AJAX callbacks. This is the modern replacement for TReCaptcha with better user experience and callback event handling.
 
 ## Key Properties/Methods

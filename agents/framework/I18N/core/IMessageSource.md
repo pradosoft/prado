@@ -1,13 +1,12 @@
-# I18N / core / IMessageSource
+# I18N/core/IMessageSource
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [IMessageSource](./IMessageSource.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`IMessageSource`**
 
 **Location:** `framework/I18N/core/IMessageSource.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Interface for message translation backends. All message sources (XLIFF, PHP, gettext, Database) implement this interface.
 
 ## Methods

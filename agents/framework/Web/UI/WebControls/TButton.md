@@ -1,7 +1,11 @@
-# TButton Class
+# Web/UI/WebControls/TButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TButton](./TButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TButton`**
+
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TButton.php`
+**Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
 TButton creates a clickable button control on the page. It is primarily used for submitting data to a page and raises server-side events when clicked.

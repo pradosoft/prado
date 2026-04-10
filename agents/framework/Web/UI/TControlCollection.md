@@ -1,13 +1,13 @@
-# TControlCollection
+# Web/UI/TControlCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TControlCollection](./TControlCollection.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TControlCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/TControlCollection.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TControlCollection implements a collection that enables controls to maintain a list of their child controls. It extends [TList](../Collections/TList.md) and performs additional operations when child controls are added or removed, including calling `addedControl()` and `removedControl()` on the owner control.
 
 ## Key Properties/Methods

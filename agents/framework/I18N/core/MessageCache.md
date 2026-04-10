@@ -1,13 +1,12 @@
-# I18N / core / MessageCache
+# I18N/core/MessageCache
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageCache](./MessageCache.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageCache`**
 
 **Location:** `framework/I18N/core/MessageCache.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Filesystem cache for compiled message catalogues. Stores serialized translation arrays and auto-invalidates when source file `mtime` changes.
 
 ## Usage

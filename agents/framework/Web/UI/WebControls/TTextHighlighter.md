@@ -1,13 +1,13 @@
-# TTextHighlighter
+# Web/UI/WebControls/TTextHighlighter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTextHighlighter](./TTextHighlighter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTextHighlighter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTextHighlighter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTextHighlighter performs syntax highlighting on its body content using highlight.js. It supports many programming languages and styles. Content can be shown with line numbers and a copy code button. Requires THead on the page.
 
 ## Key Properties/Methods

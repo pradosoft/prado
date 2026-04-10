@@ -1,10 +1,13 @@
-# Security System
+# Security/TAuthManager
 
-**Location:** `framework/Security/`
+### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TAuthManager`**
+
+## Class Info
+**Location:** `framework/Security/TAuthManager.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 Prado's security layer has four main concerns: user identity, authentication (session-based + cookie), authorization (rules), and cryptography. The `Permissions/` subdirectory adds RBAC on top.
 
 ---

@@ -1,13 +1,13 @@
-# TCaptcha
+# Web/UI/WebControls/TCaptcha
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCaptcha](./TCaptcha.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCaptcha`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TCaptcha.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TCaptcha displays a CAPTCHA (token displayed as an image) to determine if input is from a real user. Does not require session or cookie. Note: Does not provide full security against replay attacks; consider using TReCaptcha instead.
 
 ## Key Properties/Methods

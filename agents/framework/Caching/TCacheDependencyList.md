@@ -1,13 +1,13 @@
-# TCacheDependencyList
+# Caching/TCacheDependencyList
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TCacheDependencyList](./TCacheDependencyList.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TCacheDependencyList`**
 
+## Class Info
 **Location:** `framework/Caching/TCacheDependencyList.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TCacheDependencyList](./TCacheDependencyList.md) is a typed collection that holds only [ICacheDependency](./ICacheDependency.md) objects. Extends [TList](../Collections/TList.md) with type validation.
 
 ## Usage

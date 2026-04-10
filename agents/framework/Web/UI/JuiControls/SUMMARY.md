@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Web/UI/JuiControls/SUMMARY.md
 
 jQuery UI widget wrappers for the Prado framework; each JuiControl configures and initializes a jQuery UI widget with optional AJAX callback support.
 

@@ -1,13 +1,11 @@
-# packages.php
+# Web/Javascripts/packages
 
 ### Directories
-
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md) > [packages](./packages.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Javascripts](./Web/Javascripts/INDEX.md) / **`packages`**
 
 **Location:** `framework/Web/Javascripts/packages.php`
 
 ## Overview
-
 This file defines the JavaScript package registry for PRADO. It declares all JS packages, their source files, folder mappings, and dependencies. Consumed by `TClientScriptManager` to resolve and publish packages in dependency order.
 
 ## Package Folders

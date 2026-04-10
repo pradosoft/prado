@@ -1,14 +1,13 @@
-# TUser
+# Security/TUser
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TUser`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TUser](./TUser.md)
-
+## Class Info
 **Location:** `framework/Security/TUser.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 `TUser` is the default user implementation for a Prado application. It stores user identity (name, roles, guest status) in a serialized state dictionary that is persisted in the session. It is designed to work alongside [IUserManager](./IUserManager.md) (typically [TUserManager](./TUserManager.md) or [TDbUserManager](./TDbUserManager.md)). The class auto-listens to global (`fx`) events.
 
 ## Interfaces Implemented

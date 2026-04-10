@@ -1,14 +1,12 @@
-# IPluginModule
+# Util/IPluginModule
 
 ### Directories
-
-[Util](../) > IPluginModule
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IPluginModule`**
 
 **Location:** `framework/Util/IPluginModule.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface for composer-based PRADO 4 extensions. Extends `[IModule](../TModule.md)`.
 
 ## Key Methods

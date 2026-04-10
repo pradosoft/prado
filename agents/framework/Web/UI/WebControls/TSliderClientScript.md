@@ -1,13 +1,13 @@
-# TSliderClientScript
+# Web/UI/WebControls/TSliderClientScript
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TSliderClientScript](./TSliderClientScript.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TSliderClientScript`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TSliderClientScript.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TSliderClientScript manages client-side slider events. It extends TClientSideOptions and provides OnChange and OnSlide event handlers.
 
 ## Key Properties/Methods

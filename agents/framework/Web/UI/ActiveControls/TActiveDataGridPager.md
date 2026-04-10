@@ -1,13 +1,13 @@
-# TActiveDataGridPager
+# Web/UI/ActiveControls/TActiveDataGridPager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveDataGridPager](./TActiveDataGridPager.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveDataGridPager`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveDataGridPager.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Specialized pager for [TActiveDataGrid](./TActiveDataGrid.md). Provides [TCallbackClientSide](./TCallbackClientSide.md) options for the pager through its ClientSide property.
 
 ## Key Properties/Methods

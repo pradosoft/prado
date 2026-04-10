@@ -1,10 +1,13 @@
-# TLogRoute (and built-in routes)
+# Util/TLogRoute
 
+### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TLogRoute`**
+
+## Class Info
 **Location:** `framework/Util/TLogRoute.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 `TLogRoute` is the abstract base for all log output destinations. A route receives a filtered subset of log entries and sends them somewhere (file, database, email, browser, stdout, etc.). Routes are registered with `TLogRouter`.
 
 Subclass `TLogRoute` and implement `processLogs()` to create a custom route.

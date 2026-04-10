@@ -1,14 +1,13 @@
-# TDbTableInfo
+# Data/Common/TDbTableInfo
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [Common](./INDEX.md) / **`TDbTableInfo`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](./INDEX.md) > [TDbTableInfo](./TDbTableInfo.md)
-
+## Class Info
 **Location:** `framework/Data/Common/TDbTableInfo.php`
 **Namespace:** `Prado\Data\Common`
 
 ## Overview
-
 `TDbTableInfo` describes the metadata of a database table including columns, primary keys, and foreign keys.
 
 ## Properties

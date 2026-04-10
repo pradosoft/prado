@@ -1,9 +1,13 @@
-# TParameterProperty
+# Data/SqlMap/Configuration/TParameterProperty
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TParameterProperty`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TParameterProperty](./TParameterProperty.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TParameterProperty.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TParameterProperty`
 
 Maps an object property to a SQL parameter.

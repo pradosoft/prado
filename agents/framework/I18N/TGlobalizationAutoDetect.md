@@ -1,13 +1,13 @@
-# I18N / TGlobalizationAutoDetect
+# I18N/TGlobalizationAutoDetect
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TGlobalizationAutoDetect](./TGlobalizationAutoDetect.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TGlobalizationAutoDetect`**
 
+## Class Info
 **Location:** `framework/I18N/TGlobalizationAutoDetect.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Extends [TGlobalization](./TGlobalization.md) to automatically detect the user's preferred culture from the HTTP `Accept-Language` header.
 
 ## Usage

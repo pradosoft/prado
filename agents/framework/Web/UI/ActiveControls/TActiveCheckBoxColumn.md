@@ -1,13 +1,13 @@
-# TActiveCheckBoxColumn
+# Web/UI/ActiveControls/TActiveCheckBoxColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveCheckBoxColumn](./TActiveCheckBoxColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveCheckBoxColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveCheckBoxColumn.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TCheckBoxColumn for use in [TActiveDataGrid](./TActiveDataGrid.md). Creates [TActiveCheckBox](./TActiveCheckBox.md) controls in cells. If sorting is allowed, replaces header links/buttons with active controls.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TExitException
+# Exceptions/TExitException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TExitException](./TExitException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TExitException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TExitException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 TExitException is thrown to gracefully terminate the application with a specified exit code. Unlike PHP's `exit`, this allows proper exception handling and cleanup.
 
 ## Hierarchy

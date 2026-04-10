@@ -1,13 +1,13 @@
-# THttpRequestResolveMethod
+# Web/THttpRequestResolveMethod
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpRequestResolveMethod](./THttpRequestResolveMethod.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpRequestResolveMethod`**
 
+## Class Info
 **Location:** `framework/Web/THttpRequestResolveMethod.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpRequestResolveMethod defines the enumerable type for determining which service handles a user request. It controls the matching logic between request parameters and configured services.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TJuiSlider
+# Web/UI/JuiControls/TJuiSlider
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiSlider](./TJuiSlider.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiSlider`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiSlider.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Slider widget based on jQuery UI Slider. Extends [TActivePanel](../ActiveControls/TActivePanel.md). Can be used for single or range values.
 
 ## Key Properties/Methods

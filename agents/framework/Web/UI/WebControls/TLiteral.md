@@ -1,13 +1,13 @@
-# TLiteral
+# Web/UI/WebControls/TLiteral
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TLiteral](./TLiteral.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TLiteral`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TLiteral.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TLiteral displays static text on a Web page without any style properties. Unlike TLabel, it does not have style properties like BackColor or Font. Text can be HTML-encoded if needed.
 
 ## Key Properties/Methods

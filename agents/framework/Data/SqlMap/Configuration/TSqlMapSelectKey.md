@@ -1,9 +1,13 @@
-# TSqlMapSelectKey
+# Data/SqlMap/Configuration/TSqlMapSelectKey
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapSelectKey`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapSelectKey](./TSqlMapSelectKey.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapSelectKey.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapSelectKey`
 
 Select key configuration for retrieving generated primary keys.

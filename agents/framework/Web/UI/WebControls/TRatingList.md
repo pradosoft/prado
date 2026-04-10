@@ -1,13 +1,13 @@
-# TRatingList
+# Web/UI/WebControls/TRatingList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRatingList](./TRatingList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRatingList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRatingList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRatingList displays a star-based rating control that allows users to select a rating. It extends TRadioButtonList and is experimental. The control supports half-star ratings, read-only mode, and integrates with client-side JavaScript for interactive rating selection.
 
 ## Key Properties/Methods

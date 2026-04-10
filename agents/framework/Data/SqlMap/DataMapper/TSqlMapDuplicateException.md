@@ -1,9 +1,13 @@
-# TSqlMapDuplicateException
+# Data/SqlMap/DataMapper/TSqlMapDuplicateException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapDuplicateException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapDuplicateException](./TSqlMapDuplicateException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapDuplicateException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapDuplicateException`
 
 Duplicate statement or map ID during configuration.

@@ -1,13 +1,12 @@
-# IButtonControl
+# Web/UI/IButtonControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IButtonControl](./IButtonControl.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IButtonControl`**
 
 **Location:** `framework/Web/UI/IButtonControl.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for button controls. Defines common properties and events for buttons.
 
 ## Key Properties
@@ -34,5 +33,3 @@ Interface for button controls. Defines common properties and events for buttons.
 - [TLinkButton](./TLinkButton.md) - Link button implementation
 - [TEventParameter](./TEventParameter.md)
 - [TCommandEventParameter](./TCommandEventParameter.md)
-
-(End of file - total 31 lines)

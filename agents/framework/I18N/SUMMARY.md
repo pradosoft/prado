@@ -1,4 +1,4 @@
-# SUMMARY.md
+# I18N/SUMMARY.md
 
 Internationalization and localization covering culture-aware date/number formatting, message translation, plural-choice formatting, and browser-language auto-detection.
 

@@ -1,7 +1,11 @@
-# THttpCookie Class
+# Web/THttpCookie
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpCookie](./THttpCookie.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpCookie`**
+
+## Class Info
+**Location:** `framework/Web/THttpCookie.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 THttpCookie class stores a single HTTP cookie, including properties such as name, value, domain, path, expire, and secure.

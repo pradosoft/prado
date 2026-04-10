@@ -1,13 +1,13 @@
-# TActiveListBox
+# Web/UI/ActiveControls/TActiveListBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveListBox](./TActiveListBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveListBox`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveListBox.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TListBox with AutoPostBack enabled. List items can be added dynamically during callback response. Selection mode can be changed during callback.
 
 ## Key Properties/Methods

@@ -1,14 +1,13 @@
-# TActiveRecordGateway
+# Data/ActiveRecord/TActiveRecordGateway
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordGateway`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordGateway](./TActiveRecordGateway.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordGateway.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordGateway` executes SQL commands for ActiveRecord operations and returns data as arrays.
 
 ## See Also

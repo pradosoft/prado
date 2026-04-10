@@ -1,13 +1,13 @@
-# TTemplateColumn
+# Web/UI/WebControls/TTemplateColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTemplateColumn](./TTemplateColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTemplateColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTemplateColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTemplateColumn customizes the layout of controls in a DataGrid column using templates. It supports ItemTemplate, EditItemTemplate, HeaderTemplate, and FooterTemplate. Since v3.1.0, it also supports ItemRenderer and EditItemRenderer for control-based cell rendering.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# THotSpotMode
+# Web/UI/WebControls/THotSpotMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THotSpotMode](./THotSpotMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THotSpotMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THotSpotMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THotSpotMode defines behaviors when a hotspot is clicked.
 
 ## Constants

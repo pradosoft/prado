@@ -1,9 +1,13 @@
-# TSqlMapLruCache
+# Data/SqlMap/DataMapper/TSqlMapLruCache
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapLruCache`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapLruCache](./TSqlMapLruCache.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapLruCache.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapLruCache`
 
 Least Recently Used (LRU) cache implementation.

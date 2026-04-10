@@ -1,8 +1,11 @@
-# TSoapService Class
+# Web/Services/TSoapService
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TSoapService`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TSoapService](./TSoapService.md)
+## Class Info
+**Location:** `framework/Web/Services/TSoapService.php`
+**Namespace:** `Prado\Web\Services`
 
 ## Overview
 TSoapService processes SOAP requests for a PRADO application. It requires PHP SOAP extension to be loaded and manages a set of SOAP providers.

@@ -1,14 +1,13 @@
-# TActiveRecordInvalidFinderResult
+# Data/ActiveRecord/TActiveRecordInvalidFinderResult
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordInvalidFinderResult`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordInvalidFinderResult](./TActiveRecordInvalidFinderResult.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordInvalidFinderResult.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordInvalidFinderResult` defines what happens when a finder method returns no results.
 
 ## Constants

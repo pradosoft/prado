@@ -1,13 +1,12 @@
-# IValidatable
+# Web/UI/IValidatable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IValidatable](./IValidatable.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IValidatable`**
 
 **Location:** `framework/Web/UI/IValidatable.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for controls that can be validated by validators.
 
 ## Key Methods
@@ -22,5 +21,3 @@ Interface for controls that can be validated by validators.
 
 - [TControl](./TControl.md) - Base control class
 - [IValidator](./IValidator.md) - Validator interface
-
-(End of file - total 21 lines)

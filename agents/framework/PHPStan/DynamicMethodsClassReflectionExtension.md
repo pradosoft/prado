@@ -1,12 +1,12 @@
-# PHPStan / DynamicMethodsClassReflectionExtension
+# PHPStan/DynamicMethodsClassReflectionExtension
 
-[./](../INDEX.md) > [PHPStan](./INDEX.md) > [DynamicMethodsClassReflectionExtension](./DynamicMethodsClassReflectionExtension.md)
+### Directories
+[framework](./INDEX.md) / [PHPStan](./PHPStan/INDEX.md) / **`DynamicMethodsClassReflectionExtension`**
 
 **Location:** `framework/PHPStan/DynamicMethodsClassReflectionExtension.php`
 **Namespace:** `Prado\PHPStan`
 
 ## Overview
-
 PHPStan extension that recognizes `dy*` and `fx*` method prefixes as valid dynamic methods on [TComponent](../TComponent.md).
 
 ## Problem Solved

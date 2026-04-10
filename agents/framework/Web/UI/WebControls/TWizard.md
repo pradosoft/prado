@@ -1,13 +1,13 @@
-# TWizard
+# Web/UI/WebControls/TWizard
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizard](./TWizard.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizard`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizard.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Multi-step wizard control. Manages a sequence of `TWizardStep` views with navigation (Previous/Next/Complete/Cancel) and an optional sidebar. Tracks navigation history so users can go back. Implements `INamingContainer`.
 
 Extends `[TWebControl](./TWebControl.md)`.

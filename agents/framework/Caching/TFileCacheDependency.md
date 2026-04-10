@@ -1,13 +1,13 @@
-# TFileCacheDependency
+# Caching/TFileCacheDependency
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TFileCacheDependency](./TFileCacheDependency.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TFileCacheDependency`**
 
+## Class Info
 **Location:** `framework/Caching/TFileCacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TFileCacheDependency](./TFileCacheDependency.md) tracks a single file's modification time. The cache is invalidated when the file changes.
 
 ## Usage

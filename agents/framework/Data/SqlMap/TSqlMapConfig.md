@@ -1,9 +1,13 @@
-# TSqlMapConfig
+# Data/SqlMap/TSqlMapConfig
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [SqlMap](./INDEX.md) / **`TSqlMapConfig`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](./INDEX.md) > [TSqlMapConfig](./TSqlMapConfig.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/TSqlMapConfig.php`
+**Namespace:** `Prado\Data\SqlMap`
 
+## Overview
 `Prado\Data\SqlMap\TSqlMapConfig`
 
 Module configuration class for SqlMap.

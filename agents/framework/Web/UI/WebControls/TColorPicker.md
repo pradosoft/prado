@@ -1,13 +1,13 @@
-# TColorPicker
+# Web/UI/WebControls/TColorPicker
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TColorPicker](./TColorPicker.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TColorPicker`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TColorPicker.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Color picker control. Extends `TTextBox`, displaying a color swatch button that opens a popup HSB color picker widget. The selected color is stored as a hex string (e.g., `#ff3300`) in the text box.
 
 JavaScript: `colorpicker/colorpicker.js` (published via `TAssetManager`).

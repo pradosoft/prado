@@ -2,11 +2,13 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [DataGateway](./Data/DataGateway/INDEX.md) / **`DataGateway/INDEX.md`**
 
 | Directory | Purpose |
-|---|---|---|
-| [`../`](../INDEX.md)] | Data Directory |
+|---|---|
+| [`../`](../INDEX.md) | Data Directory |
 
 ## Purpose
 

@@ -1,13 +1,13 @@
-# TRepeaterCommandEventParameter
+# Web/UI/WebControls/TRepeaterCommandEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeaterCommandEventParameter](./TRepeaterCommandEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeaterCommandEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeaterCommandEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeaterCommandEventParameter encapsulates event data for the TRepeater ItemCommand event. It extends TCommandEventParameter and adds information about the repeater item and command source.
 
 ## Key Properties/Methods

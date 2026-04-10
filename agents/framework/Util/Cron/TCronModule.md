@@ -1,14 +1,13 @@
-# TCronModule / Cron System
+# Util/Cron/TCronModule
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronModule`**
 
-[Util](../) > [Cron](Cron/) > TCronModule
-
-**Location:** `framework/Util/Cron/`
+## Class Info
+**Location:** `framework/Util/Cron/TCronModule.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 Cron-style scheduled task engine. `TCronModule` manages task registration and execution timing. Tasks run when `prado-cli cron` is invoked by the system crontab (typically every minute). The module tracks last-run times so it won't run a task more frequently than its schedule allows.
 
 ## Architecture

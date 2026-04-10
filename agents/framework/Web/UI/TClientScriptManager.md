@@ -1,13 +1,13 @@
-# TClientScriptManager
+# Web/UI/TClientScriptManager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TClientScriptManager](./TClientScriptManager.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TClientScriptManager`**
 
+## Class Info
 **Location:** `framework/Web/UI/TClientScriptManager.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TClientScriptManager manages JavaScript and CSS stylesheets for a page. It supports registering PRADO script libraries, custom scripts, stylesheets, hidden fields, callback/postback controls, default buttons, and focus controls. Scripts can be rendered in the head, at the beginning of the form, or at the end of the form.
 
 ## Key Properties/Methods

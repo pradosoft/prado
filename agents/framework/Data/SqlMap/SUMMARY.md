@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/SqlMap/SUMMARY.md
 
 Top-level entry points for SqlMap (iBATIS-style) SQL mapping framework; separates SQL from PHP code using external XML mapping files.
 

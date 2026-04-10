@@ -1,4 +1,4 @@
-# SUMMARY.md
+# IO/SUMMARY.md
 
 Input/output utilities: text writer abstractions, archive extraction, and stream notifications.
 

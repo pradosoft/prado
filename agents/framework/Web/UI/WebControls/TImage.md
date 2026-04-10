@@ -1,7 +1,11 @@
-# TImage Class
+# Web/UI/WebControls/TImage
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TImage](./TImage.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TImage`**
+
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TImage.php`
+**Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
 TImage displays an image on a page. It provides functionality for specifying image URL, alternative text, and various display options including alignment and description.

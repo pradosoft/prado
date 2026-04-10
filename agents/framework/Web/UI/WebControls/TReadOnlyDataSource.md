@@ -1,13 +1,13 @@
-# TReadOnlyDataSource
+# Web/UI/WebControls/TReadOnlyDataSource
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TReadOnlyDataSource](./TReadOnlyDataSource.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TReadOnlyDataSource`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TReadOnlyDataSource.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TReadOnlyDataSource is a data source control that provides read-only access to data. It can wrap arrays, Traversable objects, or other IDataSource instances.
 
 ## Key Properties/Methods

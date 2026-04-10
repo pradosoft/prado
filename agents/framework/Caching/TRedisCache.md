@@ -1,13 +1,13 @@
-# TRedisCache
+# Caching/TRedisCache
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TRedisCache](./TRedisCache.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TRedisCache`**
 
+## Class Info
 **Location:** `framework/Caching/TRedisCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TRedisCache](./TRedisCache.md) provides caching using the Redis key-value store. Supports both TCP and Unix socket connections.
 
 ## Configuration

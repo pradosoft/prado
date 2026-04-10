@@ -1,13 +1,13 @@
-# TActiveDataGrid
+# Web/UI/ActiveControls/TActiveDataGrid
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveDataGrid](./TActiveDataGrid.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveDataGrid`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveDataGrid.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Data-bound grid control using callbacks instead of postbacks. Supports paging, sorting, and editing through active controls. Uses surrounding div container for client-side content replacement. Includes active column counterparts ([TActiveBoundColumn](./TActiveBoundColumn.md), [TActiveLiteralColumn](./TActiveLiteralColumn.md), [TActiveCheckBoxColumn](./TActiveCheckBoxColumn.md), etc.).
 
 ## Key Properties/Methods

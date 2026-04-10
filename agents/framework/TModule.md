@@ -1,11 +1,14 @@
-# TModule / TService
+# TModule
 
-**Location:** `framework/TModule.php`, `TService.php`
+### Directories
+[framework](./INDEX.md) / **`TModule`**
+
+## Class Info
+**Location:** `framework/TModule.php`
 **Namespace:** `Prado`
 **Extends:** `TApplicationComponent`
 
-## TModule
-
+## Overview
 Base class for all application modules. Modules are persistent services registered in `application.xml` and initialized once per request.
 
 ### Interface (IModule)

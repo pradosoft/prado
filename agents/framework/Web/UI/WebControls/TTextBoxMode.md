@@ -1,13 +1,13 @@
-# TTextBoxMode
+# Web/UI/WebControls/TTextBoxMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTextBoxMode](./TTextBoxMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTextBoxMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTextBoxMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTextBoxMode defines the enumerable type for the possible modes of a TTextBox control. Includes standard modes and HTML5 types.
 
 ## Key Properties/Methods

@@ -1,14 +1,13 @@
-# TBaseBehavior
+# Util/TBaseBehavior
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TBaseBehavior`**
 
-[Util](../) > TBaseBehavior
-
+## Class Info
 **Location:** `framework/Util/TBaseBehavior.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 TBaseBehavior is the abstract base class for both TBehavior (per-instance) and TClassBehavior (class-wide) implementations. It provides event handler management, enable/disable functionality, and serialization support.
 
 ## Key Properties/Methods

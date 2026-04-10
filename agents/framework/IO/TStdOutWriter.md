@@ -1,12 +1,13 @@
-# IO / TStdOutWriter
+# IO/TStdOutWriter
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TStdOutWriter](./TStdOutWriter.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TStdOutWriter`**
 
+## Class Info
 **Location:** `framework/IO/TStdOutWriter.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Extends [TTextWriter](./TTextWriter.md) to write to STDOUT when flushed. Used for CLI testing.
 
 ## Constants

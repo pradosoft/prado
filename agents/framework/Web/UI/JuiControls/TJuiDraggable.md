@@ -1,13 +1,13 @@
-# TJuiDraggable
+# Web/UI/JuiControls/TJuiDraggable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiDraggable](./TJuiDraggable.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiDraggable`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiDraggable.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Draggable panel based on jQuery UI Draggable interaction. Extends [TActivePanel](../ActiveControls/TActivePanel.md). Can be moved using the mouse and dropped over a [TJuiDroppable](TJuiDroppable.md).
 
 ## Key Properties/Methods

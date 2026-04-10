@@ -1,13 +1,13 @@
-# TValidationSummary
+# Web/UI/WebControls/TValidationSummary
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TValidationSummary](./TValidationSummary.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TValidationSummary`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TValidationSummary.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TValidationSummary displays a summary of validation errors on a Web page. It collects error messages from all failed validators and displays them in a configurable format (list, bullet list, or paragraph). Can show inline and/or in a message box.
 
 ## Key Properties/Methods

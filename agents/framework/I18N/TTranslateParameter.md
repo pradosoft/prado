@@ -1,13 +1,13 @@
-# I18N / TTranslateParameter
+# I18N/TTranslateParameter
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TTranslateParameter](./TTranslateParameter.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TTranslateParameter`**
 
+## Class Info
 **Location:** `framework/I18N/TTranslateParameter.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Template control for specifying named parameters inside `TTranslate`. Provides key-value substitution for translated text placeholders.
 
 ## Usage

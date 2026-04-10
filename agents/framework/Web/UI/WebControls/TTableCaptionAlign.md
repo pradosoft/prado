@@ -1,13 +1,13 @@
-# TTableCaptionAlign
+# Web/UI/WebControls/TTableCaptionAlign
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableCaptionAlign](./TTableCaptionAlign.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableCaptionAlign`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableCaptionAlign.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableCaptionAlign defines the enumerable type for the possible alignments of an HTML table caption. Used with TTable controls to specify caption positioning.
 
 ## Values

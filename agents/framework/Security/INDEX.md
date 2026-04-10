@@ -1,8 +1,7 @@
 # Security/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Security](./INDEX.md)
+[framework](./INDEX.md) / **`Security/INDEX.md`**
 
 ## Purpose
 

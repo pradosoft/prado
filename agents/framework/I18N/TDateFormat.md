@@ -1,13 +1,13 @@
-# I18N / TDateFormat
+# I18N/TDateFormat
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TDateFormat](./TDateFormat.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TDateFormat`**
 
+## Class Info
 **Location:** `framework/I18N/TDateFormat.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Localized date/time formatting control. Uses PHP's `IntlDateFormatter` internally with ICU-style pattern strings.
 
 ## Usage

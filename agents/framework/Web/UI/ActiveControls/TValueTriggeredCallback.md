@@ -1,13 +1,13 @@
-# TValueTriggeredCallback
+# Web/UI/ActiveControls/TValueTriggeredCallback
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TValueTriggeredCallback](./TValueTriggeredCallback.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TValueTriggeredCallback`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TValueTriggeredCallback.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Triggers callback requests when a control property value changes. Polls the property every specified interval seconds and fires a callback when the value differs from the previous check. Supports decay rate to increase polling interval linearly when no changes are observed.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TInlineFrameAlign
+# Web/UI/WebControls/TInlineFrameAlign
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TInlineFrameAlign](./TInlineFrameAlign.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TInlineFrameAlign`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TInlineFrameAlign.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TInlineFrameAlign defines alignment options for inline frames.
 
 ## Constants

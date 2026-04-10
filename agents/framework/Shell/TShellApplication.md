@@ -1,13 +1,13 @@
-# Shell / CLI System
+# Shell/TShellApplication
 
 ### Directories
-[./](../INDEX.md) > [Shell](./INDEX.md) > [TShellApplication](./TShellApplication.md)
+[framework](../INDEX.md) / [Shell](./INDEX.md) / **`TShellApplication`**
 
-**Location:** `framework/Shell/`
+## Class Info
+**Location:** `framework/Shell/TShellApplication.php`
 **Namespace:** `Prado\Shell`
 
 ## Overview
-
 CLI application support for Prado. [TShellApplication](./TShellApplication.md) loads the full `application.xml` and makes all configured modules available to command-line scripts via the `prado-cli` binary (`bin/prado-cli`).
 
 ---

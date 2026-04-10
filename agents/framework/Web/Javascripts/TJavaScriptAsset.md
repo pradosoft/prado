@@ -1,14 +1,13 @@
-# TJavaScriptAsset
+# Web/Javascripts/TJavaScriptAsset
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](./INDEX.md) / **`TJavaScriptAsset`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md) > [TJavaScriptAsset](./TJavaScriptAsset.md)
-
+## Class Info
 **Location:** `framework/Web/Javascripts/TJavaScriptAsset.php`
 **Namespace:** `Prado\Web\Javascripts`
 
 ## Overview
-
 TJavaScriptAsset is a utility class for passing JavaScript asset files between PRADO components. It encapsulates the URL of an asset and whether to load it asynchronously. The class renders an HTML script tag via its `__toString()` method.
 
 ## Key Properties/Methods

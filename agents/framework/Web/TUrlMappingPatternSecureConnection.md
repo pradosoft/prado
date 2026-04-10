@@ -1,13 +1,13 @@
-# TUrlMappingPatternSecureConnection
+# Web/TUrlMappingPatternSecureConnection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TUrlMappingPatternSecureConnection](./TUrlMappingPatternSecureConnection.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TUrlMappingPatternSecureConnection`**
 
+## Class Info
 **Location:** `framework/Web/TUrlMappingPatternSecureConnection.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 TUrlMappingPatternSecureConnection defines the enumerable type for SecureConnection URL prefix behavior used by `TUrlMappingPattern::constructUrl()`. It controls HTTPS/HTTP prefixing when building URLs.
 
 ## Key Properties/Methods

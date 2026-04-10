@@ -1,13 +1,12 @@
-# IPageStatePersister
+# Web/UI/IPageStatePersister
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IPageStatePersister](./IPageStatePersister.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPageStatePersister`**
 
 **Location:** `framework/Web/UI/IPageStatePersister.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for page state persistence implementations.
 
 ## Key Methods
@@ -24,5 +23,3 @@ Interface for page state persistence implementations.
 - [TPage](./TPage.md) - Page class
 - [TSessionPageStatePersister](./TSessionPageStatePersister.md) - Session-based implementation
 - [TCachePageStatePersister](./TCachePageStatePersister.md) - Cache-based implementation
-
-(End of file - total 22 lines)

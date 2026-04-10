@@ -1,13 +1,13 @@
-# TPagerButtonType
+# Web/UI/WebControls/TPagerButtonType
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPagerButtonType](./TPagerButtonType.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPagerButtonType`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPagerButtonType.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPagerButtonType defines the enumerable type for the possible types of pager buttons.
 
 ## Key Properties/Methods

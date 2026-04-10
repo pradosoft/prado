@@ -1,14 +1,13 @@
-# TSqlCriteria
+# Data/DataGateway/TSqlCriteria
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [DataGateway](./INDEX.md) / **`TSqlCriteria`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [DataGateway](./INDEX.md) > [TSqlCriteria](./TSqlCriteria.md)
-
+## Class Info
 **Location:** `framework/Data/DataGateway/TSqlCriteria.php`
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-
 `TSqlCriteria` represents search criteria for data gateway finder methods.
 
 ## Properties

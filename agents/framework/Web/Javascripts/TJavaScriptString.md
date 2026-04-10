@@ -1,14 +1,13 @@
-# TJavaScriptString
+# Web/Javascripts/TJavaScriptString
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](./INDEX.md) / **`TJavaScriptString`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md) > [TJavaScriptString](./TJavaScriptString.md)
-
+## Class Info
 **Location:** `framework/Web/Javascripts/TJavaScriptString.php`
-**Namespace:** `Prado\Web Javascripts`
+**Namespace:** `Prado\Web\Javascripts`
 
 ## Overview
-
 TJavaScriptString is an internal class that marks strings which will be forcibly encoded when rendered inside a JavaScript block. It extends `TJavaScriptLiteral` and overrides `toJavaScriptLiteral()` to JSON-encode the string with hex escaping for quotes, apostrophes, and tags.
 
 ## Key Properties/Methods

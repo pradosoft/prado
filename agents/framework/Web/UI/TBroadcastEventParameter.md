@@ -1,13 +1,13 @@
-# TBroadcastEventParameter
+# Web/UI/TBroadcastEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TBroadcastEventParameter](./TBroadcastEventParameter.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TBroadcastEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/TBroadcastEventParameter.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TBroadcastEventParameter encapsulates parameter data for broadcast events. The parameter carries the event name and an optional parameter value. Broadcast events are used to distribute events to multiple handlers, such as in TEventContent for adding child controls.
 
 ## Key Properties/Methods

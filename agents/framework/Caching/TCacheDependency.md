@@ -1,13 +1,13 @@
-# TCacheDependency
+# Caching/TCacheDependency
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TCacheDependency](./TCacheDependency.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TCacheDependency`**
 
+## Class Info
 **Location:** `framework/Caching/TCacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TCacheDependency](./TCacheDependency.md) is the abstract base class for all cache dependency implementations. Implements [ICacheDependency](./ICacheDependency.md).
 
 ## Base Class

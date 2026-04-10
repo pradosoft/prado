@@ -1,14 +1,13 @@
-# TCronTaskInfo
+# Util/Cron/TCronTaskInfo
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronTaskInfo`**
 
-[Util](../) > [Cron](Cron/) > TCronTaskInfo
-
+## Class Info
 **Location:** `framework/Util/Cron/TCronTaskInfo.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TCronTaskInfo is a helper class that distributes metadata for application cron tasks. It encapsulates task information including name, task class/module method, module ID, title, and description for adding cron tasks via TDbCronModule.
 
 ## Key Properties/Methods

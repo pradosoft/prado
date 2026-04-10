@@ -1,13 +1,13 @@
-# TActiveFileUpload
+# Web/UI/ActiveControls/TActiveFileUpload
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveFileUpload](./TActiveFileUpload.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveFileUpload`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveFileUpload.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Async file upload using hidden iframe. Does postback in hidden iframe followed by callback to raise OnFileUpload event. Displays status icons (spinning, checkmark, error) during upload. Supports HTML5 multiple file uploads. Requires application cache or security manager.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TSessionIterator
+# Web/TSessionIterator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TSessionIterator](./TSessionIterator.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TSessionIterator`**
 
+## Class Info
 **Location:** `framework/Web/TSessionIterator.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 TSessionIterator implements the `\Iterator` interface and is used by [THttpSession](./THttpSession.md) to enable iteration over session variables. It allows THttpSession to return a new iterator for traversing session data.
 
 ## Key Properties/Methods

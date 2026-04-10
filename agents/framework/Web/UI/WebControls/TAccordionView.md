@@ -1,13 +1,13 @@
-# TAccordionView
+# Web/UI/WebControls/TAccordionView
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TAccordionView](./TAccordionView.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TAccordionView`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TAccordionView.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TAccordionView represents a single view in a TAccordion control. Each view has a header label (caption) and content area. Headers can optionally be hyperlinks with a NavigateUrl.
 
 ## Key Properties/Methods

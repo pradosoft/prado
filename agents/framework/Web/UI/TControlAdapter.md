@@ -1,13 +1,13 @@
-# TControlAdapter
+# Web/UI/TControlAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TControlAdapter](./TControlAdapter.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TControlAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/TControlAdapter.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Base class for the Adapter pattern applied to [TControl](./TControl.md). An adapter is attached to a control to override or extend specific lifecycle or rendering behaviors without subclassing the control itself.
 
 Extends [TApplicationComponent](../TApplicationComponent.md). Holds a reference to the control it is adapting (`$_control`) and provides default pass-through implementations of every lifecycle and render method — each simply delegates to the corresponding method on the attached control. Subclasses override only the methods they need to customize.

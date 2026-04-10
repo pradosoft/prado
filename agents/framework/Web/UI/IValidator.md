@@ -1,13 +1,12 @@
-# IValidator
+# Web/UI/IValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IValidator](./IValidator.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IValidator`**
 
 **Location:** `framework/Web/UI/IValidator.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for validator controls.
 
 ## Key Methods
@@ -24,5 +23,3 @@ Interface for validator controls.
 
 - [TBaseValidator](./TBaseValidator.md) - Base validator implementation
 - [IValidatable](./IValidatable.md)
-
-(End of file - total 22 lines)

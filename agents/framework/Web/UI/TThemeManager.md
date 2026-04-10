@@ -1,13 +1,13 @@
-# TThemeManager
+# Web/UI/TThemeManager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TThemeManager](./TThemeManager.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TThemeManager`**
 
+## Class Info
 **Location:** `framework/Web/UI/TThemeManager.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Module that manages themes for a Prado application. Each theme is a subdirectory under `BasePath`; the theme name equals the subdirectory name. Registered via `application.xml` and accessible via `Prado::getApplication()->getThemeManager()`.
 
 `BasePath` and `BaseUrl` are both lazily resolved: if not explicitly configured they are auto-derived from the application entry script location and request URL at first use. Both become immutable after `init()` is called.

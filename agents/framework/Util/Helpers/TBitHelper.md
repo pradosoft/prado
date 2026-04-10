@@ -1,14 +1,13 @@
-# TBitHelper
+# Util/Helpers/TBitHelper
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Helpers](./INDEX.md) / **`TBitHelper`**
 
-[Util](../) > [Helpers](Helpers/) > TBitHelper
-
+## Class Info
 **Location:** `framework/Util/Helpers/TBitHelper.php`
 **Namespace:** `Prado\Util\Helpers`
 
 ## Overview
-
 Static utility class for bitwise and floating-point format conversions. Includes color bit shifting, float encoding/decoding (FP16, BF16, FP8), bit mirroring, and endian conversion.
 
 ## Constants

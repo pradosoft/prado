@@ -1,4 +1,11 @@
-# TService Class
+# TService
+
+### Directories
+[framework](./INDEX.md) / **`TService`**
+
+## Class Info
+**Location:** `framework/TService.php`
+**Namespace:** `Prado`
 
 ## Overview
 TService is the base class for all application services in PRADO. It implements the basic methods required by IService and may be used as the foundation for creating custom application services.

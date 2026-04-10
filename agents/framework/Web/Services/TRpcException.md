@@ -1,14 +1,13 @@
-# TRpcException
+# Web/Services/TRpcException
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TRpcException`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TRpcException](./TRpcException.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TRpcException.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TRpcException represents an RPC fault error caused by invalid input data from the client. It extends TException and is used to signal method-not-found, internal errors, and protocol-level errors in RPC responses.
 
 ## Key Properties/Methods

@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/SUMMARY.md
 
 Database access layer providing PDO wrapper plus three complementary data-access patterns: raw commands, stateless table gateway, stateful active record, and XML-based SQL mapping.
 

@@ -1,13 +1,13 @@
-# I18N / core / TNumberFormatterTrait
+# I18N/core/TNumberFormatterTrait
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [TNumberFormatterTrait](./TNumberFormatterTrait.md)
+[framework](../../INDEX.md) / [I18N](../INDEX.md) / [core](./INDEX.md) / **`TNumberFormatterTrait`**
 
+## Class Info
 **Location:** `framework/I18N/core/TNumberFormatterTrait.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 PHP trait providing `\NumberFormatter` caching for number/currency/percentage formatting. Used by `CultureInfo` and `TNumberFormat`.
 
 ## Trait Methods

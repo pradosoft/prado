@@ -1,14 +1,13 @@
-# TActiveRecordCriteria
+# Data/ActiveRecord/TActiveRecordCriteria
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordCriteria`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordCriteria](./TActiveRecordCriteria.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordCriteria.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordCriteria` extends [`TSqlCriteria`](../DataGateway/TSqlCriteria.md) with Active Record-specific options for finder methods.
 
 ## Usage

@@ -1,13 +1,13 @@
-# TListItemType
+# Web/UI/WebControls/TListItemType
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TListItemType](./TListItemType.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TListItemType`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TListItemType.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TListItemType defines the enumerable type for possible types that databound list items can take in data grid controls.
 
 ## Key Properties/Methods

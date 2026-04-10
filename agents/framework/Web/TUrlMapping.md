@@ -1,7 +1,11 @@
-# TUrlMapping Class
+# Web/TUrlMapping
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TUrlMapping](./TUrlMapping.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TUrlMapping`**
+
+## Class Info
+**Location:** `framework/Web/TUrlMapping.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 TUrlMapping is a URL manager that allows PRADO to construct and recognize URLs based on specific patterns. It extends [TUrlManager](./TUrlManager.md) for enhanced URL handling capabilities.

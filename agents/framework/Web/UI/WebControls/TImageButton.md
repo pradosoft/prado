@@ -1,13 +1,13 @@
-# TImageButton
+# Web/UI/WebControls/TImageButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TImageButton](./TImageButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TImageButton`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TImageButton.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TImageButton creates an image button on a Web page for submitting data. It can be a submit button or a command button with command name and parameter. Click coordinates are captured and available via OnClick event parameter.
 
 ## Key Properties/Methods

@@ -1,13 +1,12 @@
-# IWeakCollection
+# Collections/IWeakCollection
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IWeakCollection](./IWeakCollection.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IWeakCollection`**
 
 **Location:** `framework/Collections/IWeakCollection.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Marker interface for weak collections. Implemented by collections that use `WeakReference` to store objects without preventing garbage collection.
 
 ## Implementations

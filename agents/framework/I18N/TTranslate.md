@@ -1,13 +1,13 @@
-# I18N / TTranslate
+# I18N/TTranslate
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TTranslate](./TTranslate.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TTranslate`**
 
+## Class Info
 **Location:** `framework/I18N/TTranslate.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Template control for translating text with parameter substitution. Renders translated text with support for named placeholders `{key}` that get replaced with values.
 
 ## Usage

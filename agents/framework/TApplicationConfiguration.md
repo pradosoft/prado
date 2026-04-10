@@ -1,10 +1,13 @@
 # TApplicationConfiguration
 
+### Directories
+[framework](./INDEX.md) / **`TApplicationConfiguration`**
+
+## Class Info
 **Location:** `framework/TApplicationConfiguration.php`
 **Namespace:** `Prado`
 
 ## Overview
-
 Used internally by `TApplication` to parse and represent the `application.xml` (or `application.php`) configuration file. Holds the parsed result as structured arrays for properties, aliases, modules, services, and parameters.
 
 Not typically used directly by application code — `TApplication` uses it during `initApplication()`.

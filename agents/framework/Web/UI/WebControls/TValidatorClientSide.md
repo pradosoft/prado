@@ -1,13 +1,13 @@
-# TValidatorClientSide
+# Web/UI/WebControls/TValidatorClientSide
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TValidatorClientSide](./TValidatorClientSide.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TValidatorClientSide`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TValidatorClientSide.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TValidatorClientSide provides client-side event options for validators. It extends TClientSideOptions and allows custom JavaScript handlers for validation events.
 
 ## Key Properties/Methods

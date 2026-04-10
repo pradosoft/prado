@@ -1,14 +1,13 @@
-# TProcessHelper
+# Util/TProcessHelper
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TProcessHelper`**
 
-[Util](../) > [Helpers](Helpers/) > TProcessHelper
-
-**Location:** `framework/Util/Helpers/TProcessHelper.php`
-**Namespace:** `Prado\Util\Helpers`
+## Class Info
+**Location:** `framework/Util/TProcessHelper.php`
+**Namespace:** `Prado\Util`
 
 ## Overview
-
 Static utility class for process management: fork, kill, signal, priority, and OS detection. All methods are static. Requires `pcntl` and/or `posix` PHP extensions for full functionality; methods degrade gracefully when extensions are unavailable.
 
 ## Constants

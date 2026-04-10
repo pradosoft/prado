@@ -1,8 +1,7 @@
 # Util/Behaviors/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Util](../INDEX.md) > [Behaviors](./INDEX.md)
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`Behaviors/INDEX.md`**
 
 ## Purpose
 

@@ -1,14 +1,13 @@
-# TRpcApiProvider
+# Web/Services/TRpcApiProvider
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TRpcApiProvider`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TRpcApiProvider](./TRpcApiProvider.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TRpcApiProvider.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TRpcApiProvider is an abstract class for implementing RPC API endpoints. Subclasses must implement `registerMethods()` to declare available RPC methods and their callbacks. The constructor automatically registers methods with the RPC server. Methods can be object methods or static class methods.
 
 ## Key Properties/Methods

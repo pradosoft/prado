@@ -1,13 +1,13 @@
-# TLogException
+# Exceptions/TLogException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TLogException](./TLogException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TLogException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TLogException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Thrown when there is an exception related to logging operations. Extends `TApplicationException`.
 
 ## Hierarchy

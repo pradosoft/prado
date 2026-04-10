@@ -1,13 +1,13 @@
-# TLabel
+# Web/UI/WebControls/TLabel
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TLabel](./TLabel.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TLabel`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TLabel.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TLabel displays a piece of text on a web page and optionally associates with another control via the HTML `<label for="">` mechanism. When `ForControl` is set, TLabel renders a `<label>` element whose `for` attribute is set to the client ID of the associated control; if `ForControl` is empty it renders a `<span>`. If `ForControl` is set and the target control is not visible, the label itself is also not rendered.
 
 TLabel implements `IDataRenderer` so it can participate in data-binding scenarios (`Data` property aliases `Text`).

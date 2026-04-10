@@ -1,13 +1,13 @@
-# TBulletedList
+# Web/UI/WebControls/TBulletedList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TBulletedList](./TBulletedList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TBulletedList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TBulletedList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TBulletedList displays items in a bullet format with configurable bullet styles (disc, circle, square, numbered, alphabetical, roman numerals) and display modes (text, hyperlink, linkbutton).
 
 ## Key Properties/Methods

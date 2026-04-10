@@ -1,14 +1,13 @@
-# TUserPermissionsBehavior
+# Security/Permissions/TUserPermissionsBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TUserPermissionsBehavior`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TUserPermissionsBehavior](./TUserPermissionsBehavior.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TUserPermissionsBehavior.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Behavior attached to [IUser](../IUser.md) (via `TUserPermissionsBehavior`). Adds permission checking via `can()` method and delegates role hierarchy checks to [TPermissionsManager](./TPermissionsManager.md).
 
 ## Interfaces Implemented

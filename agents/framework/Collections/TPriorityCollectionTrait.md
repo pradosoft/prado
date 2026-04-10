@@ -1,13 +1,13 @@
-# TPriorityCollectionTrait
+# Collections/TPriorityCollectionTrait
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPriorityCollectionTrait](./TPriorityCollectionTrait.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPriorityCollectionTrait`**
 
+## Class Info
 **Location:** `framework/Collections/TPriorityCollectionTrait.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Trait providing common functionality for priority collections. Implements the logic for managing priorities, sorting, and flattening priority-ordered data.
 
 ## Usage

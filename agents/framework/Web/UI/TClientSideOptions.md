@@ -1,13 +1,13 @@
-# TClientSideOptions
+# Web/UI/TClientSideOptions
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TClientSideOptions](./TClientSideOptions.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TClientSideOptions`**
 
+## Class Info
 **Location:** `framework/Web/UI/TClientSideOptions.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TClientSideOptions manages client-side options for components with common JavaScript behaviors and events. It provides a TMap-based options storage and helper methods for setting JavaScript function handlers. Options are commonly used between ActiveControls and validators.
 
 ## Key Properties/Methods

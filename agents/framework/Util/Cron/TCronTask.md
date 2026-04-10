@@ -1,14 +1,13 @@
-# TCronTask
+# Util/Cron/TCronTask
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronTask`**
 
-[Util](../) > [Cron](Cron/) > TCronTask
-
+## Class Info
 **Location:** `framework/Util/Cron/TCronTask.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TCronTask is the abstract base class for all cron tasks. Subclasses must implement the `execute()` method to perform the actual task logic. It extends TApplicationComponent and provides scheduling, timing, and persistence capabilities for tasks.
 
 ## Key Properties/Methods

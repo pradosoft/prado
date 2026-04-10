@@ -1,13 +1,13 @@
-# THtmlElement
+# Web/UI/WebControls/THtmlElement
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THtmlElement](./THtmlElement.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THtmlElement`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THtmlElement.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THtmlElement represents a generic HTML element with a configurable tag name. Extends TWebControl.
 
 ## Key Properties/Methods

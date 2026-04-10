@@ -1,14 +1,13 @@
-# TDbUser
+# Security/TDbUser
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TDbUser`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TDbUser](./TDbUser.md)
-
+## Class Info
 **Location:** `framework/Security/TDbUser.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 `TDbUser` is an **abstract** base class that extends [TUser](./TUser.md) for database-backed user accounts. It is paired with [TDbUserManager](./TDbUserManager.md). Subclasses must implement the two abstract methods `validateUser()` and `createUser()`. Optionally, `createUserFromCookie()` and `saveUserToCookie()` can be overridden to support persistent "remember me" login.
 
 ## Inheritance

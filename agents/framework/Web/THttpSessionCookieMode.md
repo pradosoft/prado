@@ -1,13 +1,13 @@
-# THttpSessionCookieMode
+# Web/THttpSessionCookieMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpSessionCookieMode](./THttpSessionCookieMode.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpSessionCookieMode`**
 
+## Class Info
 **Location:** `framework/Web/THttpSessionCookieMode.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpSessionCookieMode defines the enumerable type for session cookie storage methods. It controls how the session ID is stored and transmitted via cookies.
 
 ## Key Properties/Methods

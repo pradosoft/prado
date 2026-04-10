@@ -1,13 +1,13 @@
-# TDataListItemCollection
+# Web/UI/WebControls/TDataListItemCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataListItemCollection](./TDataListItemCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataListItemCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataListItemCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataListItemCollection represents a collection of data list items. Only TControl descendants can be added.
 
 ## Key Properties/Methods

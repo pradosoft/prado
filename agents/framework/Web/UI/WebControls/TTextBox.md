@@ -1,13 +1,13 @@
-# TTextBox
+# Web/UI/WebControls/TTextBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTextBox](./TTextBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTextBox`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTextBox.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTextBox renders an HTML `<input>` or `<textarea>` element for user text input. The rendered tag depends on `TextMode`: `MultiLine` produces `<textarea>`; all other modes produce `<input type="...">`. TTextBox implements `IPostBackDataHandler` (reads posted values), `IValidatable` (works with validators), and `IDataRenderer` (`Data` property aliases `Text`).
 
 **Critical:** The `Text` property is stored and rendered as-is — it is NOT HTML-encoded. Use `getSafeText()` before displaying user-supplied content to prevent XSS.

@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Web/UI/WebControls/assets/SUMMARY.md
 
 Static assets (CSS, fonts, images) and server-side CAPTCHA image generator published to web-accessible directory by `TAssetManager`.
 

@@ -1,13 +1,13 @@
-# TTableGridLines
+# Web/UI/WebControls/TTableGridLines
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableGridLines](./TTableGridLines.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableGridLines`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableGridLines.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableGridLines defines the enumerable type for HTML table grid line types. Note: This class is deprecated. Use CSS border properties instead to style table borders.
 
 ## Values

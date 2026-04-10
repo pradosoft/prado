@@ -1,13 +1,13 @@
-# TJuiDatePicker
+# Web/UI/JuiControls/TJuiDatePicker
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiDatePicker](./TJuiDatePicker.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiDatePicker`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiDatePicker.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Textbox with jQuery UI datepicker popup. Extends [TActiveTextBox](../ActiveControls/TActiveTextBox.md) to provide culture-aware date selection with callback support. When the textbox receives focus, a calendar popup allows users to select a date.
 
 ## Key Properties/Methods

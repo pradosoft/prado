@@ -1,7 +1,11 @@
-# TForm Class
+# Web/UI/TForm
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TForm](./TForm.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TForm`**
+
+## Class Info
+**Location:** `framework/Web/UI/TForm.php`
+**Namespace:** `Prado\Web\UI`
 
 ## Overview
 TForm is the base class for HTML forms in PRADO framework. It extends [TControl](./TControl.md) and provides form-specific functionality including form attributes, default button handling, and integration with page lifecycle for postback processing.

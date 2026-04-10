@@ -1,13 +1,13 @@
-# TPagedListIterator
+# Collections/TPagedListIterator
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedListIterator](./TPagedListIterator.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedListIterator`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedListIterator.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Iterator for traversing items in a paged TList. Used by [TPagedDataSource](./TPagedDataSource.md) to iterate over a specific page of items.
 
 ## Implementation

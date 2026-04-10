@@ -1,13 +1,13 @@
-# TDataListItemEventParameter
+# Web/UI/WebControls/TDataListItemEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataListItemEventParameter](./TDataListItemEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataListItemEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataListItemEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Event parameter for TDataList onItemCreated and onItemDataBound events.
 
 ## Key Properties/Methods

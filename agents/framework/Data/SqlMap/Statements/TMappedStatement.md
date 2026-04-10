@@ -1,9 +1,13 @@
-# TMappedStatement
+# Data/SqlMap/Statements/TMappedStatement
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TMappedStatement`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TMappedStatement](./TMappedStatement.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TMappedStatement.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TMappedStatement`
 
 Base class for executing SQL mapped statements.

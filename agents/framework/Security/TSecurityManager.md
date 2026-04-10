@@ -1,14 +1,13 @@
-# TSecurityManager
+# Security/TSecurityManager
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TSecurityManager`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TSecurityManager](./TSecurityManager.md)
-
+## Class Info
 **Location:** `framework/Security/TSecurityManager.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 Provides cryptographic utilities: HMAC generation, data hashing/validation, and encryption/decryption. Used internally for page-state signing and cookie token validation.
 
 ## Constants

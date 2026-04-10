@@ -1,14 +1,13 @@
-# TRational
+# Util/Math/TRational
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Math](./INDEX.md) / **`TRational`**
 
-[Util](../) > [Math](Math/) > TRational
-
+## Class Info
 **Location:** `framework/Util/Math/TRational.php`
 **Namespace:** `Prado\Util\Math`
 
 ## Overview
-
 TRational implements a rational number (fraction) with an integer numerator and denominator. Supports initialization from floats, strings (e.g., "21/13"), or arrays. Uses continued fraction algorithm to convert floats to precise fractions.
 
 ## Key Properties/Methods

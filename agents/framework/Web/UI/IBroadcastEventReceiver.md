@@ -1,13 +1,12 @@
-# IBroadcastEventReceiver
+# Web/UI/IBroadcastEventReceiver
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IBroadcastEventReceiver](./IBroadcastEventReceiver.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IBroadcastEventReceiver`**
 
 **Location:** `framework/Web/UI/IBroadcastEventReceiver.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for controls that receive broadcast events.
 
 ## Key Methods
@@ -20,5 +19,3 @@ Interface for controls that receive broadcast events.
 
 - [TControl](./TControl.md) - Base control class
 - [TBroadcastEventParameter](./TBroadcastEventParameter.md)
-
-(End of file - total 18 lines)

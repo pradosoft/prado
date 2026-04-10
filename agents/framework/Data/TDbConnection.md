@@ -1,14 +1,13 @@
-# TDbConnection / TDbCommand / TDbDataReader / TDbTransaction
+# Data/TDbConnection
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbConnection`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbConnection](./TDbConnection.md)
-
-**Location:** `framework/Data/`
+## Class Info
+**Location:** `framework/Data/TDbConnection.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 Thin PDO wrapper providing a consistent API for database operations. All four classes work together: `TDbConnection` creates `TDbCommand` objects; commands return `TDbDataReader` iterators or scalar results; transactions are managed via [`TDbTransaction`](./TDbTransaction.md).
 
 ---

@@ -1,9 +1,13 @@
-# TScaffoldInputCommon
+# Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputCommon
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TScaffoldInputCommon`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TScaffoldInputCommon](./TScaffoldInputCommon.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TScaffoldInputCommon.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TScaffoldInputCommon`
 
 Common scaffold input builder methods for all database drivers.

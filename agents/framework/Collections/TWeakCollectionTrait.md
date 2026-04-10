@@ -1,13 +1,13 @@
-# TWeakCollectionTrait
+# Collections/TWeakCollectionTrait
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TWeakCollectionTrait](./TWeakCollectionTrait.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TWeakCollectionTrait`**
 
+## Class Info
 **Location:** `framework/Collections/TWeakCollectionTrait.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Trait providing WeakMap-based caching for weak collections. Tracks objects using PHP's WeakMap and automatically detects when referenced objects are garbage collected.
 
 ## Usage

@@ -1,9 +1,13 @@
-# TSqlMapExecutionException
+# Data/SqlMap/DataMapper/TSqlMapExecutionException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapExecutionException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapExecutionException](./TSqlMapExecutionException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapExecutionException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapExecutionException`
 
 Runtime SQL execution errors.

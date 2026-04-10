@@ -1,13 +1,12 @@
-# I18N / core / MessageSource_Database
+# I18N/core/MessageSource_Database
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageSource_Database](./MessageSource_Database.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_Database`**
 
 **Location:** `framework/I18N/core/MessageSource_Database.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Database-backed message source. Stores translations in two tables: `catalogue` (metadata) and `trans_unit` (translation entries).
 
 ## Database Schema

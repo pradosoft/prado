@@ -1,13 +1,13 @@
-# TTemplatedWizardStep
+# Web/UI/WebControls/TTemplatedWizardStep
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTemplatedWizardStep](./TTemplatedWizardStep.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTemplatedWizardStep`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTemplatedWizardStep.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTemplatedWizardStep represents a wizard step whose content and navigation can be customized using templates. Extends TWizardStep and implements INamingContainer.
 
 ## Key Properties/Methods

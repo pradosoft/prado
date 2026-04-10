@@ -1,14 +1,13 @@
-# TParameterModule
+# Util/TParameterModule
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TParameterModule`**
 
-[Util](../) > TParameterModule
-
+## Class Info
 **Location:** `framework/Util/TParameterModule.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 `TParameterModule` is a `[TModule](TModule.md)` that loads named configuration parameters into the application's parameter store (`[TApplication](../TApplication.md)::getParameters()`). Parameters are simple name-value pairs or object instances that can be accessed anywhere in the application.
 
 ## Configuration

@@ -1,14 +1,13 @@
-# TUserManagerPasswordMode
+# Security/TUserManagerPasswordMode
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TUserManagerPasswordMode`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TUserManagerPasswordMode](./TUserManagerPasswordMode.md)
-
+## Class Info
 **Location:** `framework/Security/TUserManagerPasswordMode.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 Enumerable type defining how passwords are stored for [TUserManager](./TUserManager.md).
 
 ## Constants

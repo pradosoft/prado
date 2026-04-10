@@ -1,13 +1,13 @@
-# TRepeater
+# Web/UI/WebControls/TRepeater
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeater](./TRepeater.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeater`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeater.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeater is a lightweight data-bound container that renders a repeated set of items based on a data source. It is the most flexible and lowest-overhead data control in Prado — it has no built-in paging, sorting, or editing. Layout is entirely controlled by templates or renderer classes.
 
 TRepeater implements `INamingContainer`, so each item has a unique prefixed client ID. It renders no outer HTML element — its items are rendered inline.

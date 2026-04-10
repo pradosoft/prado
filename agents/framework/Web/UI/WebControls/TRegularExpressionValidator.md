@@ -1,13 +1,13 @@
-# TRegularExpressionValidator
+# Web/UI/WebControls/TRegularExpressionValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRegularExpressionValidator](./TRegularExpressionValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRegularExpressionValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRegularExpressionValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRegularExpressionValidator validates whether the value of an associated input control matches a specified regular expression pattern. Validation succeeds if the input is empty (use TRequiredFieldValidator to require non-empty input).
 
 ## Key Properties/Methods

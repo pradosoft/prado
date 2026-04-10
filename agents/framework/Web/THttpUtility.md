@@ -1,13 +1,13 @@
-# THttpUtility
+# Web/THttpUtility
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpUtility](./THttpUtility.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpUtility`**
 
+## Class Info
 **Location:** `framework/Web/THttpUtility.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpUtility provides static utility methods for HTML encoding and decoding. Unlike `htmlspecialchars`, the `htmlEncode` method does not translate `&` characters.
 
 ## Key Properties/Methods

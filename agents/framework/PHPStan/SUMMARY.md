@@ -1,4 +1,4 @@
-# SUMMARY.md
+# PHPStan/SUMMARY.md
 
 PHPStan static analysis extensions teaching PHPStan about Prado's dynamic method system (`dy*`/`fx*` methods) and `TComponent::isa()`.
 

@@ -1,9 +1,13 @@
-# TDiscriminator
+# Data/SqlMap/Configuration/TDiscriminator
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TDiscriminator`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TDiscriminator](./TDiscriminator.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TDiscriminator.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TDiscriminator`
 
 Supports polymorphic result mapping based on column values.

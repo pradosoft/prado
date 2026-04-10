@@ -1,12 +1,13 @@
-# IO / TStreamNotificationParameter
+# IO/TStreamNotificationParameter
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TStreamNotificationParameter](./TStreamNotificationParameter.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TStreamNotificationParameter`**
 
+## Class Info
 **Location:** `framework/IO/TStreamNotificationParameter.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Parameter class for stream notification callbacks. Wraps PHP stream notification constants into a structured object for PRADO events.
 
 ## Usage

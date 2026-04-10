@@ -1,5 +1,13 @@
-# TSqlMapGateway
+# Data/SqlMap/TSqlMapGateway
 
+### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [SqlMap](./INDEX.md) / **`TSqlMapGateway`**
+
+## Class Info
+**Location:** `framework/Data/SqlMap/TSqlMapGateway.php`
+**Namespace:** `Prado\Data\SqlMap`
+
+## Overview
 `Prado\Data\SqlMap\TSqlMapGateway`
 
 DataMapper client facade providing access to SqlMap operations.

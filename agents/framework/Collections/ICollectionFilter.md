@@ -1,13 +1,12 @@
-# ICollectionFilter
+# Collections/ICollectionFilter
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [ICollectionFilter](./ICollectionFilter.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`ICollectionFilter`**
 
 **Location:** `framework/Collections/ICollectionFilter.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Interface for collections that need to convert items for storage. Primarily used by weak collections ([TWeakCallableCollection](./TWeakCallableCollection.md), [TWeakList](./TWeakList.md)) to convert objects into `WeakReference` for storage and convert them back on retrieval.
 
 ## Methods

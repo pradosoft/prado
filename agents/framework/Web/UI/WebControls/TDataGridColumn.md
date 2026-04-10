@@ -1,13 +1,13 @@
-# TDataGridColumn
+# Web/UI/WebControls/TDataGridColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridColumn](./TDataGridColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridColumn serves as the base class for all DataGrid column types. Defines common properties and methods for header/footer cells, sorting, and cell rendering.
 
 ## Key Properties/Methods

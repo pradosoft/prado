@@ -1,9 +1,13 @@
-# TUpdateMappedStatement
+# Data/SqlMap/Statements/TUpdateMappedStatement
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TUpdateMappedStatement`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TUpdateMappedStatement](./TUpdateMappedStatement.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TUpdateMappedStatement.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TUpdateMappedStatement`
 
 Update statement executor.

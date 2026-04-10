@@ -1,13 +1,13 @@
-# TInlineFrame
+# Web/UI/WebControls/TInlineFrame
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TInlineFrame](./TInlineFrame.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TInlineFrame`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TInlineFrame.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TInlineFrame displays an inline frame (iframe) on a Web page with configurable URL, dimensions, margins, scrollbars, and borders.
 
 ## Key Properties/Methods

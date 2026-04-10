@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/SqlMap/Configuration/SUMMARY.md
 
 XML configuration parsing and in-memory object model for SqlMap mapped statements, parameter maps, result maps, and cache models.
 

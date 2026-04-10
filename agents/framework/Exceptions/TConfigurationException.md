@@ -1,13 +1,13 @@
-# TConfigurationException
+# Exceptions/TConfigurationException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TConfigurationException](./TConfigurationException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TConfigurationException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TConfigurationException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by invalid configurations, such as errors in application configuration files or control template files.
 
 ## Hierarchy

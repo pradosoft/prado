@@ -1,13 +1,13 @@
-# TRepeatInfo
+# Web/UI/WebControls/TRepeatInfo
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeatInfo](./TRepeatInfo.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeatInfo`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeatInfo.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeatInfo represents repeat information for controls like TCheckBoxList. It specifies the layout of repeated items via RepeatLayout (Table, Flow, or Raw), RepeatColumns, and RepeatDirection (Vertical or Horizontal).
 
 ## Key Properties/Methods

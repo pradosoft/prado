@@ -1,14 +1,13 @@
-# TDbMetaData
+# Data/Common/TDbMetaData
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [Common](./INDEX.md) / **`TDbMetaData`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](./INDEX.md) > [TDbMetaData](./TDbMetaData.md)
-
+## Class Info
 **Location:** `framework/Data/Common/TDbMetaData.php`
 **Namespace:** `Prado\Data\Common`
 
 ## Overview
-
 `TDbMetaData` is the abstract base class for retrieving metadata information (tables, columns) from a database connection.
 
 ## Key Methods

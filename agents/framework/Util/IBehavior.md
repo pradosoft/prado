@@ -1,14 +1,12 @@
-# IBehavior
+# Util/IBehavior
 
 ### Directories
-
-[Util](../) > IBehavior
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IBehavior`**
 
 **Location:** `framework/Util/IBehavior.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface for stateful per-instance behaviors. Each instance attaches to exactly one owner component. Implements `[IBaseBehavior](IBaseBehavior.md)`.
 
 ## Extends

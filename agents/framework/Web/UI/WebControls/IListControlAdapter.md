@@ -1,13 +1,12 @@
-# IListControlAdapter
+# Web/UI/WebControls/IListControlAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [IListControlAdapter](./IListControlAdapter.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IListControlAdapter`**
 
 **Location:** `framework/Web/UI/WebControls/IListControlAdapter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 IListControlAdapter defines the interface for list control adapters that manage client-side selection behavior.
 
 ## Key Properties/Methods

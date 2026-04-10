@@ -1,8 +1,9 @@
 # Web/Behaviors/INDEX.md
 
 ### Directories
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`Behaviors/INDEX.md`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Behaviors](./INDEX.md)
+## Purpose
 
 Behaviors that modify or extend objects in the `framework/Web/` layer.
 

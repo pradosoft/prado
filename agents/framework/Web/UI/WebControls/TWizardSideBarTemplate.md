@@ -1,13 +1,13 @@
-# TWizardSideBarTemplate
+# Web/UI/WebControls/TWizardSideBarTemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizardSideBarTemplate](./TWizardSideBarTemplate.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizardSideBarTemplate`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizardSideBarTemplate.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWizardSideBarTemplate is the default template for wizard sidebar. It creates a TDataList control with a TWizardSideBarListItemTemplate for each item.
 
 ## Key Properties/Methods

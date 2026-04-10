@@ -1,13 +1,13 @@
-# TValidationSummaryDisplayStyle
+# Web/UI/WebControls/TValidationSummaryDisplayStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TValidationSummaryDisplayStyle](./TValidationSummaryDisplayStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TValidationSummaryDisplayStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TValidationSummaryDisplayStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TValidationSummaryDisplayStyle defines the enumerable type for how a TValidationSummary displays error messages.
 
 ## Values

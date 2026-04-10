@@ -1,14 +1,12 @@
-# IBaseBehavior
+# Util/IBaseBehavior
 
 ### Directories
-
-[Util](../) > IBaseBehavior
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IBaseBehavior`**
 
 **Location:** `framework/Util/IBaseBehavior.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Base interface for all PRADO behaviors. Defines the contract for behaviors that extend owner components with new properties, methods, and dynamic event handling.
 
 ## Extends

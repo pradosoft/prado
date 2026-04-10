@@ -1,13 +1,13 @@
-# TDatePicker
+# Web/UI/WebControls/TDatePicker
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDatePicker](./TDatePicker.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDatePicker`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDatePicker.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Date picker control with popup calendar. Extends `TTextBox`, adding a calendar button/icon that opens a popup date selector. The selected date is stored in the text box in a configurable format. Supports both a text input mode and drop-down list mode.
 
 JavaScript: `datepicker/datepicker.js` (published via `TAssetManager`).

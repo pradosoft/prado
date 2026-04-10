@@ -1,13 +1,12 @@
-# IPostBackEventHandler
+# Web/UI/IPostBackEventHandler
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IPostBackEventHandler](./IPostBackEventHandler.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IPostBackEventHandler`**
 
 **Location:** `framework/Web/UI/IPostBackEventHandler.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for controls that respond to postback events.
 
 ## Key Methods
@@ -19,5 +18,3 @@ Interface for controls that respond to postback events.
 ## See Also
 
 - [TControl](./TControl.md) - Base control class
-
-(End of file - total 18 lines)

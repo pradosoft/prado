@@ -1,13 +1,12 @@
-# IRepeatInfoUser
+# Web/UI/WebControls/IRepeatInfoUser
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [IRepeatInfoUser](./IRepeatInfoUser.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IRepeatInfoUser`**
 
 **Location:** `framework/Web/UI/WebControls/IRepeatInfoUser.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 IRepeatInfoUser is the interface that classes must implement to use TRepeatInfo for rendering repeated items.
 
 ## Key Properties/Methods

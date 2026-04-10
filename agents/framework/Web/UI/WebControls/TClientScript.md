@@ -1,13 +1,13 @@
-# TClientScript
+# Web/UI/WebControls/TClientScript
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TClientScript](./TClientScript.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TClientScript`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TClientScript.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TClientScript allows importing PRADO client scripts and custom JavaScript from templates. Multiple scripts can be specified via the PradoScripts property.
 
 ## Key Properties/Methods

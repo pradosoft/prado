@@ -1,12 +1,13 @@
-# PHPStan / TComponentIsaTypeSpecifyingExtension
+# PHPStan/TComponentIsaTypeSpecifyingExtension
 
-[./](../INDEX.md) > [PHPStan](./INDEX.md) > [TComponentIsaTypeSpecifyingExtension](./TComponentIsaTypeSpecifyingExtension.md)
+### Directories
+[framework](../INDEX.md) / [PHPStan](./INDEX.md) / **`TComponentIsaTypeSpecifyingExtension`**
 
+## Class Info
 **Location:** `framework/PHPStan/TComponentIsaTypeSpecifyingExtension.php`
 **Namespace:** `Prado\PHPStan`
 
 ## Overview
-
 PHPStan extension that makes `$component->isa(MyClass::class)` behave like `$component instanceof MyClass` for type specification.
 
 ## Problem Solved

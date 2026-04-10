@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/ActiveRecord/Relations/SUMMARY.md
 
 Relationship implementations for Active Record ORM — HasOne, HasMany, BelongsTo, and many-to-many association loading.
 

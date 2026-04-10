@@ -1,14 +1,13 @@
-# TTableGateway / TSqlCriteria
+# Data/TTableGateway
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TTableGateway`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [DataGateway](./DataGateway/INDEX.md) > [TTableGateway](./TTableGateway.md)
-
-**Location:** `framework/Data/DataGateway/`
-**Namespace:** `Prado\Data\DataGateway`
+## Class Info
+**Location:** `framework/Data/TTableGateway.php`
+**Namespace:** `Prado\Data`
 
 ## Overview
-
 Stateless Table Gateway pattern. [`TTableGateway`](./TTableGateway.md) provides a lightweight object-oriented interface to a single database table. No identity tracking, no object state — every call hits the database directly. Use when you want SQL control without a full ORM.
 
 ## TTableGateway

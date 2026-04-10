@@ -1,13 +1,12 @@
-# I18N / core / MessageSource_PHP
+# I18N/core/MessageSource_PHP
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageSource_PHP](./MessageSource_PHP.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_PHP`**
 
 **Location:** `framework/I18N/core/MessageSource_PHP.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 PHP array-based message source. Each catalogue is a `.php` file returning an array structure.
 
 ## File Format

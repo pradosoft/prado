@@ -1,13 +1,13 @@
-# TTabView
+# Web/UI/WebControls/TTabView
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTabView](./TTabView.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTabView`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTabView.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 A single tab pane within a `TTabPanel`. Renders a `<div>` for content and a tab header. The tab header text is determined from `Caption`, `Text`, or `NavigateUrl` (in that order of precedence).
 
 Extends `[TWebControl](./TWebControl.md)`.

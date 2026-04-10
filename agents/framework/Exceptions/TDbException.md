@@ -1,13 +1,13 @@
-# TDbException
+# Exceptions/TDbException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TDbException](./TDbException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TDbException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TDbException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception related to database operations. Extends `TSystemException`.
 
 ## Hierarchy

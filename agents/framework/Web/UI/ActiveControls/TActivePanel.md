@@ -1,13 +1,13 @@
-# TActivePanel
+# Web/UI/ActiveControls/TActivePanel
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActivePanel](./TActivePanel.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActivePanel`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActivePanel.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TPanel. Allows client-side content updates during callback response via the `render()` method. Supports deferred rendering when render() is called before OnPreRender.
 
 ## Key Properties/Methods

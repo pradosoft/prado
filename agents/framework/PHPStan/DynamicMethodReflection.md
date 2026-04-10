@@ -1,12 +1,12 @@
-# PHPStan / DynamicMethodReflection
+# PHPStan/DynamicMethodReflection
 
-[./](../INDEX.md) > [PHPStan](./INDEX.md) > [DynamicMethodReflection](./DynamicMethodReflection.md)
+### Directories
+[framework](./INDEX.md) / [PHPStan](./PHPStan/INDEX.md) / **`DynamicMethodReflection`**
 
 **Location:** `framework/PHPStan/DynamicMethodReflection.php`
 **Namespace:** `Prado\PHPStan`
 
 ## Overview
-
 Implements `MethodReflection` for PRADO's dynamic methods (`dy*`) and global events (`fx*`). Used by [DynamicMethodsClassReflectionExtension](./DynamicMethodsClassReflectionExtension.md).
 
 ## Reflection Qualities

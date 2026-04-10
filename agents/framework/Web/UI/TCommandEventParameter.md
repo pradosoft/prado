@@ -1,13 +1,13 @@
-# TCommandEventParameter
+# Web/UI/TCommandEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TCommandEventParameter](./TCommandEventParameter.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TCommandEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/TCommandEventParameter.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TCommandEventParameter encapsulates parameter data for Command events on button controls. It provides access to the command name and optional command parameter, enabling buttons to carry semantic command information beyond simple click events.
 
 ## Key Properties/Methods

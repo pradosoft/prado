@@ -1,9 +1,13 @@
-# TInvalidPropertyException
+# Data/SqlMap/DataMapper/TInvalidPropertyException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TInvalidPropertyException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TInvalidPropertyException](./TInvalidPropertyException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TInvalidPropertyException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TInvalidPropertyException`
 
 Exception thrown when property access fails.

@@ -1,9 +1,13 @@
-# TScaffoldListView
+# Data/ActiveRecord/Scaffold/TScaffoldListView
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](./INDEX.md) / **`TScaffoldListView`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](./INDEX.md) > [TScaffoldListView](./TScaffoldListView.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/TScaffoldListView.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\TScaffoldListView`
 
 Displays a paginated, sortable list of Active Records.

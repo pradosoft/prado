@@ -1,13 +1,13 @@
-# TCompositeControl
+# Web/UI/TCompositeControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TCompositeControl](./TCompositeControl.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TCompositeControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/TCompositeControl.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TCompositeControl is the base class for controls composed of other controls. It implements INamingContainer and ensures child controls are created before the parent control proceeds with initialization. This is the base class for controls like TPanel, TRepeater, and custom composite controls.
 
 ## Key Properties/Methods

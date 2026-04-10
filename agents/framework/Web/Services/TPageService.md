@@ -1,14 +1,13 @@
-# Web Services
+# Web/Services/TPageService
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TPageService`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TPageService](./TPageService.md)
-
-**Location:** `framework/Web/Services/`
+## Class Info
+**Location:** `framework/Web/Services/TPageService.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 Application services handle different types of HTTP responses. Registered in `application.xml`; `TApplication` activates the appropriate service based on the incoming request. `TPageService` is the default and most commonly used.
 
 ---

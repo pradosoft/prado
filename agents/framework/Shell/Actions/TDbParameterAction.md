@@ -1,13 +1,13 @@
-# Shell / Actions / TDbParameterAction
+# Shell/Actions/TDbParameterAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [TDbParameterAction](./TDbParameterAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`TDbParameterAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/TDbParameterAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Manages `TDbParameterModule` database parameters from the command line.
 
 ## Usage

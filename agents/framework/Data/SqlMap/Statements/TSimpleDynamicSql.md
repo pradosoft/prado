@@ -1,9 +1,13 @@
-# TSimpleDynamicSql
+# Data/SqlMap/Statements/TSimpleDynamicSql
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TSimpleDynamicSql`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TSimpleDynamicSql](./TSimpleDynamicSql.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TSimpleDynamicSql.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TSimpleDynamicSql`
 
 Dynamic SQL with simple property substitution.

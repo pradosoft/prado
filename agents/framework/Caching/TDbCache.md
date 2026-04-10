@@ -1,13 +1,13 @@
-# TDbCache
+# Caching/TDbCache
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TDbCache](./TDbCache.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TDbCache`**
 
+## Class Info
 **Location:** `framework/Caching/TDbCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TDbCache](./TDbCache.md) stores cached data in a database using PDO. By default uses SQLite for zero-configuration caching.
 
 ## Configuration

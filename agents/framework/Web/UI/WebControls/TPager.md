@@ -1,13 +1,13 @@
-# TPager
+# Web/UI/WebControls/TPager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPager](./TPager.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPager`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPager.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPager creates a pager that provides UI for end-users to interactively specify which page of data to be rendered in a TDataBoundControl-derived control (such as TDataList, TRepeater, TCheckBoxList). It can display NextPrev, Numeric, or DropDownList modes.
 
 ## Key Properties/Methods

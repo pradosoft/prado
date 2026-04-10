@@ -1,9 +1,13 @@
-# TSqlMapDelete
+# Data/SqlMap/Configuration/TSqlMapDelete
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapDelete`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapDelete](./TSqlMapDelete.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapDelete.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapDelete`
 
 Delete statement configuration.

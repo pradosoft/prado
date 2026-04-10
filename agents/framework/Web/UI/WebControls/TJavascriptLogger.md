@@ -1,13 +1,13 @@
-# TJavascriptLogger
+# Web/UI/WebControls/TJavascriptLogger
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TJavascriptLogger](./TJavascriptLogger.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TJavascriptLogger`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TJavascriptLogger.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Embeds a client-side JavaScript logging console into the page. The console can be toggled visible/hidden with a keyboard shortcut (ALT + configured key). Useful for debugging client-side behavior in production without requiring browser devtools.
 
 Extends `[TWebControl](./TWebControl.md)`.

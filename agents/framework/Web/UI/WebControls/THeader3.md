@@ -1,13 +1,13 @@
-# THeader3
+# Web/UI/WebControls/THeader3
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THeader3](./THeader3.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THeader3`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THeader3.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THeader3 is a simple control for rendering h3 elements with theme support. It extends THtmlElement and allows themes to redefine the TagName via TWebControlDecorator.
 
 ## Key Properties/Methods

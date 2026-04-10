@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Web/UI/SUMMARY.md
 
 Core UI component system: control hierarchy, template engine, page lifecycle, theming, and client-side script/style management.
 

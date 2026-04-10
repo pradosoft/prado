@@ -1,13 +1,13 @@
-# THeader6
+# Web/UI/WebControls/THeader6
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THeader6](./THeader6.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THeader6`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THeader6.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THeader6 is a simple control for rendering h6 elements with theme support. It extends THtmlElement and allows themes to redefine the TagName via TWebControlDecorator.
 
 ## Key Properties/Methods

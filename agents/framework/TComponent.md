@@ -1,11 +1,13 @@
 # TComponent
 
+### Directories
+[framework](./INDEX.md) / **`TComponent`**
+
+## Class Info
 **Location:** `framework/TComponent.php`
 **Namespace:** `Prado`
-**Size:** ~89KB — the most complex single file in the framework.
 
 ## Overview
-
 Base class for nearly all Prado objects. Implements three orthogonal systems: **properties** (getter/setter via magic), **events** (listener lists, three prefixes), and **behaviors** (mixins with AOP-style interception). Also handles serialization, cloning, and weak-reference lifetime management.
 
 ## Property System

@@ -1,13 +1,13 @@
-# TActiveHyperLink
+# Web/UI/ActiveControls/TActiveHyperLink
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveHyperLink](./TActiveHyperLink.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveHyperLink`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveHyperLink.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to THyperLink. Text, ImageUrl, NavigateUrl, and Target properties can be updated during callback and reflected on the client.
 
 ## Key Properties/Methods

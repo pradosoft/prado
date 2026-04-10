@@ -1,13 +1,13 @@
-# TMetaTag
+# Web/UI/WebControls/TMetaTag
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TMetaTag](./TMetaTag.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TMetaTag`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TMetaTag.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TMetaTag represents a meta tag appearing in a page head section. Supports http-equiv, name, content, charset, and scheme attributes.
 
 ## Key Properties/Methods

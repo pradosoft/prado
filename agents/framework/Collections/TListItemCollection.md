@@ -1,13 +1,13 @@
-# TListItemCollection
+# Collections/TListItemCollection
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TListItemCollection](./TListItemCollection.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TListItemCollection`**
 
+## Class Info
 **Location:** `framework/Collections/TListItemCollection.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TListItemCollection maintains a list of [TListItem](../Web/UI/WebControls/TListItem.md) objects for list controls like [TDropDownList](../Web/UI/WebControls/TDropDownList.md), [TListBox](../Web/UI/WebControls/TListBox.md), and [TCheckBoxList](../Web/UI/WebControls/TCheckBoxList.md).
 
 ## Inheritance

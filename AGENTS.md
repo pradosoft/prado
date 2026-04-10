@@ -29,7 +29,6 @@
 - All method names must be in camelCase
 - All variable names must be in camelCase
 - Constants must be in SCREAMING_SNAKE_CASE
-- Use explicit return types for methods when possible
 - All class properties must be declared with visibility modifiers (public, protected, private)
 
 ### Naming Conventions
@@ -41,7 +40,6 @@
 - Namespace: `Prado\{Module}` (e.g., `Prado\Web\UI\TControl`)
 - Template file extension: ".tpl"
 - Web Page template file extension: ".page"
-- Knowledge files: `SCREAMING_SNAKE_CASE.md` (e.g., `WEB_UI_INDEX.md`)
 
 ### Documentation Standards
 - All public methods must have PHPDoc comments with:
@@ -308,12 +306,17 @@ Between the next brackets, it is required without exception:
 - Scan for Project Knowledge (via "find agents/ -type f -name '*.md'") and parse relevant knowledge files relating to directories, classes, summaries, processes, and manuals for tasks at hand
 - When class files are updated, its directory Working Knowledge files and summaries must be updated.
 - When a directory Working Knowledge file is updated, the parent directory Knowledge files and summaries must be recursively updated; start with the deepest directory paths first
-- An 'INDEX.md' knowledge file is the extensive summary of its:
-  - subdirectories (with links to their INDEX.md) at the top (including "../"), with brief summary
-  - containing directory 
+- An 'INDEX.md' knowledge file contains the extensive summary:
+  - "# <relative path and/or file>"
+  - "### Directories" at the top containing
+    - Hyperlinked breadcrumbs to all parent directories (except self-references)
+      - Breakcrumb Format (eg. Web/UI/WebControls/TWebControl): "[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWebControl`**”
+    - a table of hyperlinked subdirectories (if they exist), and a brief summary of their content and features
+  - then the directory "## Purpose"
   - classes within the directory and their features, use, and purpose
-- A 'SUMMARY.md' must summarize each class in the containing directory with:
-  - a summary the purpose and public API signatures
+  - any other information that a coding agent may need to efficiently understand the directory.
+- A 'SUMMARY.md' must summarize each class in the containing directory:
+  - with their purpose and public API signatures
   - be at most 2 sentences
-- Knowledge file class and directory references must be hyperlinked to their related knowledge file
-- All Class Knowledge files must link back to their parent directories INDEX.md (recursively) in a bread crumb; see agents/framework/Util/INDEX.md for an example.
+- All class and directory references must be hyperlinked to their related knowledge file; Self-references are bolded with backticks and no link
+- All INDEX.md and class Knowledge files must have the same bread crumb style for consistency: "### Directories

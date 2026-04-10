@@ -1,14 +1,13 @@
-# TMapRouteBehavior
+# Util/Behaviors/TMapRouteBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TMapRouteBehavior`**
 
-[Util](../) > [Behaviors](Behaviors/) > TMapRouteBehavior
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TMapRouteBehavior.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TMapRouteBehavior routes changes to Application Parameters to actual functions to affect change. When a specific parameter changes (or any parameter if no specific key is set), the behavior calls a handler callback. Useful for reacting to parameter changes in real-time.
 
 ## Key Properties/Methods

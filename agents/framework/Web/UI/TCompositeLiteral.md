@@ -1,13 +1,13 @@
-# TCompositeLiteral
+# Web/UI/TCompositeLiteral
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TCompositeLiteral](./TCompositeLiteral.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TCompositeLiteral`**
 
+## Class Info
 **Location:** `framework/Web/UI/TCompositeLiteral.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TCompositeLiteral is used internally by TTemplate to represent consecutive static strings, expressions, and statements. It maintains separate collections for expressions, statements, and databindings, evaluating them in the context of a container component during rendering.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TEtcdCache
+# Caching/TEtcdCache
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TEtcdCache](./TEtcdCache.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TEtcdCache`**
 
+## Class Info
 **Location:** `framework/Caching/TEtcdCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TEtcdCache](./TEtcdCache.md) provides caching using the etcd distributed key-value store via HTTP API v2.
 
 ## Configuration

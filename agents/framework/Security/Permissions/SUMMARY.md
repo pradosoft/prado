@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Security/Permissions/SUMMARY.md
 
 Advanced RBAC with named permissions, role hierarchies, dynamic event-level authorization, and page-level permission configuration.
 

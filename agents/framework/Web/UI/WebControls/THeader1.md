@@ -1,13 +1,13 @@
-# THeader1
+# Web/UI/WebControls/THeader1
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THeader1](./THeader1.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THeader1`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THeader1.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THeader1 is a simple control for rendering h1 elements with theme support. It extends THtmlElement and allows themes to redefine the TagName via TWebControlDecorator.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TMarkdown
+# Web/UI/WebControls/TMarkdown
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TMarkdown](./TMarkdown.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TMarkdown`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TMarkdown.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Renders Markdown text as HTML. Extends `TTextHighlighter`, which in turn handles syntax highlighting of fenced code blocks. `TMarkdown` post-processes the Markdown output to apply syntax highlighting to `<pre><code class="language-X">` blocks.
 
 Requires a Markdown library (e.g., `league/commonmark` or `michelf/php-markdown`) installed via Composer.

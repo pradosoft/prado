@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/Common/Pgsql/SUMMARY.md
 
 PostgreSQL driver-specific implementations of database metadata and query-builder abstractions.
 

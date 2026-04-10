@@ -1,14 +1,13 @@
-# TSqlMapGateway / SqlMap
+# Data/TSqlMapGateway
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TSqlMapGateway`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [SqlMap](./SqlMap/INDEX.md) > [TSqlMapGateway](./TSqlMapGateway.md)
-
-**Location:** `framework/Data/SqlMap/`
-**Namespace:** `Prado\Data\SqlMap`
+## Class Info
+**Location:** `framework/Data/TSqlMapGateway.php`
+**Namespace:** `Prado\Data`
 
 ## Overview
-
 iBATIS-style SQL mapping framework. SQL lives in external XML files; PHP code calls statements by name. Ideal for complex queries that are hard to express with ORM or DataGateway, and for DBA-managed SQL.
 
 ## Setup

@@ -1,14 +1,13 @@
-# TShellDbCronAction
+# Util/Cron/TShellDbCronAction
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TShellDbCronAction`**
 
-[Util](../) > [Cron](Cron/) > TShellDbCronAction
-
+## Class Info
 **Location:** `framework/Util/Cron/TShellDbCronAction.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TShellDbCronAction extends TShellCronAction to add database-backed cron management commands. In addition to `run`, `tasks`, and `index`, it provides `add`, `update`, and `remove` commands for managing cron tasks in the database via TDbCronModule.
 
 ## Key Properties/Methods

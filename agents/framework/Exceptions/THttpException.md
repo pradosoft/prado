@@ -1,13 +1,13 @@
-# THttpException
+# Exceptions/THttpException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [THttpException](./THttpException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`THttpException`**
 
+## Class Info
 **Location:** `framework/Exceptions/THttpException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 THttpException represents an exception caused by end-user operations. The status code indicates the HTTP response status (404, 500, etc.). Used by `TErrorHandler` to render appropriate error pages.
 
 ## Hierarchy

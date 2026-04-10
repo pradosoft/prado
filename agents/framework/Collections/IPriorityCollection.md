@@ -1,13 +1,12 @@
-# IPriorityCollection
+# Collections/IPriorityCollection
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IPriorityCollection](./IPriorityCollection.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityCollection`**
 
 **Location:** `framework/Collections/IPriorityCollection.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Interface for priority-ordered collections. Implemented by [TPriorityList](./TPriorityList.md) and [TPriorityMap](./TPriorityMap.md) to provide common priority collection functionality.
 
 ## Methods

@@ -1,13 +1,13 @@
-# THttpRequestParameter
+# Web/THttpRequestParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpRequestParameter](./THttpRequestParameter.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpRequestParameter`**
 
+## Class Info
 **Location:** `framework/Web/THttpRequestParameter.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpRequestParameter is the event parameter class for `THttpRequest::onResolveRequest()`. It encapsulates the service IDs and URL parameters associated with an HTTP request.
 
 ## Key Properties/Methods

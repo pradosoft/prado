@@ -2,11 +2,13 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [ActiveRecord](./Data/ActiveRecord/INDEX.md) / [Scaffold](./Data/ActiveRecord/Scaffold/INDEX.md) / **`Scaffold/INDEX.md`**
 
 | Directory | Purpose |
 |---|---|
-| [`../`](../INDEX.md)] | ActiveRecord Directory |
+| [`../`](../INDEX.md) | ActiveRecord Directory |
 | [`InputBuilder/`](InputBuilder/INDEX.md) | Driver-specific column-to-control mapping for scaffold edit forms |
 
 ## Purpose

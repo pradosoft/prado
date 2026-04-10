@@ -1,13 +1,13 @@
-# THttpResponseAdapter
+# Web/THttpResponseAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpResponseAdapter](./THttpResponseAdapter.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpResponseAdapter`**
 
+## Class Info
 **Location:** `framework/Web/THttpResponseAdapter.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpResponseAdapter allows the base HTTP response class to change behavior without modifying the class hierarchy. It wraps a [THttpResponse](./THttpResponse.md) and delegates operations while allowing subclasses to override specific behaviors.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TInPlaceTextBox
+# Web/UI/ActiveControls/TInPlaceTextBox
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TInPlaceTextBox](./TInPlaceTextBox.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TInPlaceTextBox`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TInPlaceTextBox.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Click-to-edit text box that displays as a label until clicked. When clicked, transforms into a text input for editing. Supports loading text from server via callback before allowing edit, and can auto-hide the textbox after losing focus.
 
 ## Key Properties/Methods

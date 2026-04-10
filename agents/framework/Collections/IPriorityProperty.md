@@ -1,13 +1,12 @@
-# IPriorityProperty
+# Collections/IPriorityProperty
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IPriorityProperty](./IPriorityProperty.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityProperty`**
 
 **Location:** `framework/Collections/IPriorityProperty.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Combined interface for objects that have both getting and setting of priority. Extends both [IPriorityItem](./IPriorityItem.md) and [IPriorityCapture](./IPriorityCapture.md).
 
 ## Interface Hierarchy

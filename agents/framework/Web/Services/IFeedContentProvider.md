@@ -1,14 +1,12 @@
-# IFeedContentProvider
+# Web/Services/IFeedContentProvider
 
 ### Directories
-
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [IFeedContentProvider](./IFeedContentProvider.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Services](./Web/Services/INDEX.md) / **`IFeedContentProvider`**
 
 **Location:** `framework/Web/Services/IFeedContentProvider.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 IFeedContentProvider is an interface that must be implemented by feed content provider classes for TFeedService. Implementations provide RSS/Atom feed content with proper XML formatting and content type headers.
 
 ## Key Methods

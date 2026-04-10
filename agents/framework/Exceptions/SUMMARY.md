@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Exceptions/SUMMARY.md
 
 Exception hierarchy and error display for the Prado framework with multilingual error messages.
 

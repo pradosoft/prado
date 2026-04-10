@@ -1,7 +1,11 @@
-# TTemplate Class
+# Web/UI/TTemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TTemplate](./TTemplate.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TTemplate`**
+
+## Class Info
+**Location:** `framework/Web/UI/TTemplate.php`
+**Namespace:** `Prado\Web\UI`
 
 ## Overview
 TTemplate implements PRADO template parsing logic. It represents a parsed PRADO control template and can instantiate the template as child controls of a specified control.

@@ -1,14 +1,13 @@
-# TLogger / TLogRouter
+# Util/TLogger
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TLogger`**
 
-[Util](../) > TLogger
-
-**Location:** `framework/Util/TLogger.php`, `TLogRouter.php`
+## Class Info
+**Location:** `framework/Util/TLogger.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Two-part logging system: `TLogger` accumulates log entries in memory; `[TLogRouter](TLogRouter.md)` module routes them to one or more output targets at flush time (end of request, or on `flush()`).
 
 ## Logging Levels

@@ -1,13 +1,13 @@
-# TPagedDataSource
+# Collections/TPagedDataSource
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedDataSource](./TPagedDataSource.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedDataSource`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedDataSource.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TPagedDataSource implements a paged data source for data-bound controls. It wraps a data source and provides pagination functionality for controls like [TDataGrid](../Web/UI/WebControls/TDataGrid.md) and [TDataList](../Web/UI/WebControls/TDataList.md).
 
 ## Key Features

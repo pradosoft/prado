@@ -1,13 +1,13 @@
-# TActiveImageButton
+# Web/UI/ActiveControls/TActiveImageButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveImageButton](./TActiveImageButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveImageButton`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveImageButton.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TImageButton. Clicking triggers a callback instead of postback. OnCallback is raised after OnClick. Properties like AlternateText, ImageUrl can be updated during callback.
 
 ## Key Properties/Methods

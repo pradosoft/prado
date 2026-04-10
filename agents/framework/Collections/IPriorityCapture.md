@@ -1,13 +1,12 @@
-# IPriorityCapture
+# Collections/IPriorityCapture
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IPriorityCapture](./IPriorityCapture.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IPriorityCapture`**
 
 **Location:** `framework/Collections/IPriorityCapture.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Interface for objects that can have their priority captured when added to priority collections. Used by [TPriorityList](./TPriorityList.md) and [TPriorityMap](./TPriorityMap.md) to set priority on items that support it.
 
 ## Methods

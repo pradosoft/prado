@@ -1,11 +1,14 @@
 # TApplication
 
+### Directories
+[framework](./INDEX.md) / **`TApplication`**
+
+## Class Info
 **Location:** `framework/TApplication.php`
 **Namespace:** `Prado`
 **Extends:** `TComponent`
 
 ## Overview
-
 The top-level service container for every Prado request. Loads `application.xml`, initializes all configured modules, determines which service handles the request, runs the request lifecycle, and flushes output. Entry point: `$app->run()`.
 
 ## Application Modes (TApplicationMode)

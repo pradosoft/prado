@@ -1,7 +1,11 @@
-# TXmlElementList Class
+# Xml/TXmlElementList
 
 ### Directories
-[./](../INDEX.md) > [Xml](./INDEX.md) > [TXmlElementList](./TXmlElementList.md)
+[framework](../INDEX.md) / [Xml](./INDEX.md) / **`TXmlElementList`**
+
+## Class Info
+**Location:** `framework/Xml/TXmlElementList.php`
+**Namespace:** `Prado\Xml`
 
 ## Overview
 [TXmlElement](./TXmlElement.md)List represents a collection of [TXmlElement](./TXmlElement.md) objects. It extends [TList](../Collections/TList.md) and adds proper parent/child relationship handling for XML elements.

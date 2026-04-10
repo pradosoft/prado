@@ -1,13 +1,12 @@
-# I18N / core / MessageFormat
+# I18N/core/MessageFormat
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageFormat](./MessageFormat.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageFormat`**
 
 **Location:** `framework/I18N/core/MessageFormat.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Looks up translated strings from a [MessageSource](./MessageSource.md) and performs token substitution. Handles untranslated message tracking.
 
 ## Usage

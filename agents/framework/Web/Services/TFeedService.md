@@ -1,8 +1,11 @@
-# TFeedService Class
+# Web/Services/TFeedService
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TFeedService`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TFeedService](./TFeedService.md)
+## Class Info
+**Location:** `framework/Web/Services/TFeedService.php`
+**Namespace:** `Prado\Web\Services`
 
 ## Overview
 TFeedService provides feed content (RSS/Atom) to end-users. It manages a set of feed providers that implement the IFeedContentProvider interface.

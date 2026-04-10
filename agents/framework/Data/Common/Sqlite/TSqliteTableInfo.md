@@ -1,14 +1,13 @@
-# TSqliteTableInfo
+# Data/Common/Sqlite/TSqliteTableInfo
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Sqlite](./INDEX.md) / **`TSqliteTableInfo`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](../INDEX.md) > [Sqlite](./INDEX.md) > [TSqliteTableInfo](./TSqliteTableInfo.md)
-
+## Class Info
 **Location:** `framework/Data/Common/Sqlite/TSqliteTableInfo.php`
 **Namespace:** `Prado\Data\Common\Sqlite`
 
 ## Overview
-
 `TSqliteTableInfo` provides SQLite-specific table metadata.
 
 ## See Also

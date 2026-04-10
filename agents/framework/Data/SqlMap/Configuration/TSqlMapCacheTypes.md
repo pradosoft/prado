@@ -1,9 +1,13 @@
-# TSqlMapCacheTypes
+# Data/SqlMap/Configuration/TSqlMapCacheTypes
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapCacheTypes`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapCacheTypes](./TSqlMapCacheTypes.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapCacheTypes.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapCacheTypes`
 
 Constants for cache model types.

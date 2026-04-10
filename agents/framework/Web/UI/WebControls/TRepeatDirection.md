@@ -1,13 +1,13 @@
-# TRepeatDirection
+# Web/UI/WebControls/TRepeatDirection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeatDirection](./TRepeatDirection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeatDirection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeatDirection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeatDirection defines the enumerable type for specifying the direction that repeated content flows. Used by list controls to determine if items are arranged horizontally or vertically.
 
 ## Values

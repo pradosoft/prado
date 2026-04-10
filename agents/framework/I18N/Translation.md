@@ -1,13 +1,12 @@
-# I18N / Translation
+# I18N/Translation
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [Translation](./Translation.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / **`Translation`**
 
 **Location:** `framework/I18N/Translation.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Static helper class for programmatic translation access outside of templates. Provides a static `MessageFormat` instance per catalogue.
 
 ## Key Methods

@@ -1,7 +1,11 @@
-# THttpSession Class
+# Web/THttpSession
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpSession](./THttpSession.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpSession`**
+
+## Class Info
+**Location:** `framework/Web/THttpSession.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 THttpSession provides session-level data management and the related configurations for PHP web applications. It implements PHP session handling with additional PRADO-specific features.

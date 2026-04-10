@@ -1,13 +1,13 @@
-# TDirectoryCacheDependency
+# Caching/TDirectoryCacheDependency
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TDirectoryCacheDependency](./TDirectoryCacheDependency.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TDirectoryCacheDependency`**
 
+## Class Info
 **Location:** `framework/Caching/TDirectoryCacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TDirectoryCacheDependency](./TDirectoryCacheDependency.md) tracks the modification time of all files within a directory. The cache is invalidated when any file changes.
 
 ## Usage

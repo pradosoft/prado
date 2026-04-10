@@ -1,13 +1,13 @@
-# TSystemException
+# Exceptions/TSystemException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TSystemException](./TSystemException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TSystemException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TSystemException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Base class for all framework-level exceptions. Extends `TException`.
 
 ## Hierarchy

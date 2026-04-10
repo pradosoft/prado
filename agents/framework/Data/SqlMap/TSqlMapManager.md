@@ -1,9 +1,13 @@
-# TSqlMapManager
+# Data/SqlMap/TSqlMapManager
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [SqlMap](./INDEX.md) / **`TSqlMapManager`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](./INDEX.md) > [TSqlMapManager](./TSqlMapManager.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/TSqlMapManager.php`
+**Namespace:** `Prado\Data\SqlMap`
 
+## Overview
 `Prado\Data\SqlMap\TSqlMapManager`
 
 Manages SqlMap configuration, statements, result maps, and type handlers.

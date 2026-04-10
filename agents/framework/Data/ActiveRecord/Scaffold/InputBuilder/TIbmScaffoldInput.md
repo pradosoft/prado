@@ -1,9 +1,13 @@
-# TIbmScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TIbmScaffoldInput`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TIbmScaffoldInput](./TIbmScaffoldInput.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TIbmScaffoldInput.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TIbmScaffoldInput`
 
 IBM DB2-specific scaffold input builder.

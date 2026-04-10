@@ -1,12 +1,13 @@
-# IO / TOutputWriter
+# IO/TOutputWriter
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TOutputWriter](./TOutputWriter.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TOutputWriter`**
 
+## Class Info
 **Location:** `framework/IO/TOutputWriter.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Extends [TTextWriter](./TTextWriter.md) to write buffer directly to PHP output (`echo`) when flushed.
 
 ## Constants

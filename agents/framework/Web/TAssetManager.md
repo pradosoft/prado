@@ -1,7 +1,11 @@
-# TAssetManager Class
+# Web/TAssetManager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TAssetManager](./TAssetManager.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TAssetManager`**
+
+## Class Info
+**Location:** `framework/Web/TAssetManager.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 TAssetManager provides a scheme to allow web clients visiting private files that are normally web-inaccessible. It copies files to be published into a web-accessible directory.

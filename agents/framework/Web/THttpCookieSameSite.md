@@ -1,13 +1,13 @@
-# THttpCookieSameSite
+# Web/THttpCookieSameSite
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpCookieSameSite](./THttpCookieSameSite.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpCookieSameSite`**
 
+## Class Info
 **Location:** `framework/Web/THttpCookieSameSite.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpCookieSameSite defines the enumerable type for the SameSite cookie attribute. This attribute mitigates CSRF attacks by controlling when cookies are sent with cross-site requests. Requires PHP 7.3.0+.
 
 ## Key Properties/Methods

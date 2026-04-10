@@ -1,10 +1,13 @@
 # TEventSubscription
 
+### Directories
+[framework](./INDEX.md) / **`TEventSubscription`**
+
+## Class Info
 **Location:** `framework/TEventSubscription.php`
 **Namespace:** `Prado`
 
 ## Overview
-
 `TEventSubscription` extends `TCollectionSubscription` (which extends `TArraySubscription`) to provide RAII-style event handler attachment. Attach an event handler to a `TComponent` event for a limited lifetime; when the subscription is destructed, the handler is automatically detached.
 
 The component is held via `WeakReference` so the subscription does not prevent garbage collection.

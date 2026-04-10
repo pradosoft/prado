@@ -1,13 +1,13 @@
-# TUnknownMethodException
+# Exceptions/TUnknownMethodException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TUnknownMethodException](./TUnknownMethodException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TUnknownMethodException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TUnknownMethodException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Raised when calling an undefined method on a component via `TComponent::__call()` or `TComponent::__callStatic()`. Extends `TSystemException`.
 
 ## Hierarchy

@@ -1,14 +1,12 @@
-# IDbModule
+# Util/IDbModule
 
 ### Directories
-
-[Util](../) > IDbModule
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`IDbModule`**
 
 **Location:** `framework/Util/IDbModule.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Interface for database modules. Extends `[IModule](../TModule.md)`.
 
 ## Key Methods

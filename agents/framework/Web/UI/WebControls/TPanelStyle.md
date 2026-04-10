@@ -1,13 +1,13 @@
-# TPanelStyle
+# Web/UI/WebControls/TPanelStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPanelStyle](./TPanelStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPanelStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPanelStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPanelStyle represents the CSS style specific for panel HTML tags. It extends TStyle with panel-specific properties like background image, direction, horizontal alignment, scroll bars, and wrapping.
 
 ## Key Properties/Methods

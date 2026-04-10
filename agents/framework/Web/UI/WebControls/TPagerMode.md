@@ -1,13 +1,13 @@
-# TPagerMode
+# Web/UI/WebControls/TPagerMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPagerMode](./TPagerMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPagerMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPagerMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPagerMode defines the enumerable type for the possible modes that a TPager control can take.
 
 ## Key Properties/Methods

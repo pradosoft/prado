@@ -1,13 +1,13 @@
-# TException Hierarchy
+# Exceptions/TException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TException](./TException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TException`**
 
-**Location:** `framework/Exceptions/`
+## Class Info
+**Location:** `framework/Exceptions/TException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Prado's exception hierarchy extends PHP's `Exception`. `TException` provides multilingual error messages loaded from `messages/messages.txt` keyed by error code string. `TErrorHandler` renders errors using HTML templates.
 
 ## TException

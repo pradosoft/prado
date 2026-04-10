@@ -1,13 +1,13 @@
-# TActiveDropDownList
+# Web/UI/ActiveControls/TActiveDropDownList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveDropDownList](./TActiveDropDownList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveDropDownList`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveDropDownList.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TDropDownList with AutoPostBack enabled. Selection changes trigger callbacks. List items can be added dynamically during callback. Uses [TActiveListControlAdapter](./TActiveListControlAdapter.md).
 
 ## Key Properties/Methods

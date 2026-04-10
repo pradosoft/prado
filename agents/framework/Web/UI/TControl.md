@@ -1,13 +1,13 @@
-# TControl / TPage / TTemplateControl
+# Web/UI/TControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TControl](./TControl.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TControl`**
 
-**Location:** `framework/Web/UI/`
+## Class Info
+**Location:** `framework/Web/UI/TControl.php`
 **Namespace:** `Prado\Web\UI`
 
-## TControl
-
+## Overview
 Base class for all Prado UI components (~57KB). Manages the control tree, IDs, visibility, viewstate, databinding, and the control lifecycle.
 
 ### Control Tree

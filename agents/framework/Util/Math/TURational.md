@@ -1,14 +1,13 @@
-# TURational
+# Util/Math/TURational
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Math](./INDEX.md) / **`TURational`**
 
-[Util](../) > [Math](Math/) > TURational
-
+## Class Info
 **Location:** `framework/Util/Math/TURational.php`
 **Namespace:** `Prado\Util\Math`
 
 ## Overview
-
 TURational is an unsigned rational number implementation extending TRational. Used for EXIF and GPS IFD data which store unsigned rational values. Supports 32-bit unsigned integers on both 32-bit and 64-bit PHP.
 
 ## Key Properties/Methods

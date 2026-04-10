@@ -1,14 +1,13 @@
-# TPermissionsAction
+# Security/Permissions/TPermissionsAction
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionsAction`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionsAction](./TPermissionsAction.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionsAction.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Shell action for viewing and managing roles and permissions. Provides CLI commands for inspecting and editing the permission database configuration.
 
 ## Actions

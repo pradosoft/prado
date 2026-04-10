@@ -1,14 +1,13 @@
-# TForkable
+# Util/Behaviors/TForkable
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TForkable`**
 
-[Util](../) > [Behaviors](Behaviors/) > TForkable
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TForkable.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 This behavior attaches the owner component's `fxPrepareForFork` and `fxRestoreAfterFork` methods as handlers for the PRADO global events of the same name. This enables components to participate in process forking via `[TProcessHelper](../Helpers/TProcessHelper.md)::fork()`.
 
 ## Key Properties/Methods

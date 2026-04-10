@@ -1,14 +1,13 @@
-# TDataGatewayResultEventParameter
+# Data/DataGateway/TDataGatewayResultEventParameter
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [DataGateway](./INDEX.md) / **`TDataGatewayResultEventParameter`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [DataGateway](./INDEX.md) > [TDataGatewayResultEventParameter](./TDataGatewayResultEventParameter.md)
-
+## Class Info
 **Location:** `framework/Data/DataGateway/TDataGatewayResultEventParameter.php`
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-
 `TDataGatewayResultEventParameter` is the event parameter passed to `OnExecuteCommand` handlers. The result can be modified by handlers.
 
 ## Properties

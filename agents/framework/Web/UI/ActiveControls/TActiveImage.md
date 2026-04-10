@@ -1,13 +1,13 @@
-# TActiveImage
+# Web/UI/ActiveControls/TActiveImage
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveImage](./TActiveImage.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveImage`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveImage.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TImage. AlternateText, ImageUrl, and DescriptionUrl properties can be updated during callback response.
 
 ## Key Properties/Methods

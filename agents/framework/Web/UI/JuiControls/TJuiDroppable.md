@@ -1,13 +1,13 @@
-# TJuiDroppable
+# Web/UI/JuiControls/TJuiDroppable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiDroppable](./TJuiDroppable.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiDroppable`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiDroppable.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Drop target based on jQuery UI Droppable interaction. Extends [TActivePanel](../ActiveControls/TActivePanel.md). When a [TJuiDraggable](TJuiDraggable.md) is dropped, the OnDrop event is raised with the DraggableControl reference.
 
 ## Key Properties/Methods

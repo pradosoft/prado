@@ -1,7 +1,11 @@
-# TUrlManager Class
+# Web/TUrlManager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [TUrlManager](./TUrlManager.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`TUrlManager`**
+
+## Class Info
+**Location:** `framework/Web/TUrlManager.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 TUrlManager is the base class for managing URLs that can be recognized by PRADO applications. It provides the default implementation for parsing and constructing URLs.

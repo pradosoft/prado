@@ -1,14 +1,12 @@
-# ICache
+# Caching/ICache
 
 ### Directories
-
-[./](../INDEX.md) > [Caching](./INDEX.md) > [ICache](./ICache.md)
+[framework](./INDEX.md) / [Caching](./Caching/INDEX.md) / **`ICache`**
 
 **Location:** `framework/Caching/ICache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 `ICache` defines the contract that all PRADO cache implementations must follow.
 
 ## Interface Methods

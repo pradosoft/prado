@@ -1,14 +1,13 @@
-# TPermissionsBehavior
+# Security/Permissions/TPermissionsBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionsBehavior`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionsBehavior](./TPermissionsBehavior.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionsBehavior.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Class behavior automatically attached to [IPermissions](./IPermissions.md) implementors. Intercepts dynamic events to enforce permission checks on behalf of [TPermissionsManager](./TPermissionsManager.md).
 
 ## Interfaces Implemented

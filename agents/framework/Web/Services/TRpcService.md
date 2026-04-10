@@ -1,15 +1,13 @@
-# TRpcService
+# Web/Services/TRpcService
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TRpcService`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TRpcService](./TRpcService.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TRpcService.php`
 **Namespace:** `Prado\Web\Services`
-**Related:** `TRpcServer.php`, `TRpcApiProvider.php` (same namespace)
 
 ## Overview
-
 Generic RPC (Remote Procedure Call) service supporting multiple wire protocols. Registered as a `TService` in `application.xml`; activated by `TApplication` for matching requests.
 
 The architecture is a four-layer pipeline:

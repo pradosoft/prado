@@ -1,13 +1,13 @@
-# I18N / TNumberFormat
+# I18N/TNumberFormat
 
 ### Directories
-[./](../INDEX.md) > [I18N](./INDEX.md) > [TNumberFormat](./TNumberFormat.md)
+[framework](../INDEX.md) / [I18N](./INDEX.md) / **`TNumberFormat`**
 
+## Class Info
 **Location:** `framework/I18N/TNumberFormat.php`
 **Namespace:** `Prado\I18N`
 
 ## Overview
-
 Localized number, currency, and percentage formatting control. Uses PHP's `NumberFormatter` internally.
 
 ## Usage

@@ -1,13 +1,13 @@
-# TOutputCacheTextWriterMulti
+# Web/UI/WebControls/TOutputCacheTextWriterMulti
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TOutputCacheTextWriterMulti](./TOutputCacheTextWriterMulti.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TOutputCacheTextWriterMulti`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TOutputCacheTextWriterMulti.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TOutputCacheTextWriterMulti is an internal class used by TOutputCache to write simultaneously to multiple writers. It extends TTextWriter and routes write operations to multiple underlying writers.
 
 ## Key Properties/Methods

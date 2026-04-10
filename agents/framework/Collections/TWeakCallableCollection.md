@@ -1,13 +1,13 @@
-# TWeakCallableCollection
+# Collections/TWeakCallableCollection
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TWeakCallableCollection](./TWeakCallableCollection.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TWeakCallableCollection`**
 
+## Class Info
 **Location:** `framework/Collections/TWeakCallableCollection.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 `TWeakCallableCollection` is a priority-ordered list of callables. It extends [TPriorityList](./TPriorityList.md) and is the backing store for Prado's event handler lists (both component `on*` events and global `fx*` events).
 
 Its primary purpose is to prevent circular references: object-based callables (e.g., `[$object, 'method']`) are stored as `[WeakReference::create($object), 'method']` internally. On output all weak references are resolved back to their real objects. If the referenced object has been garbage-collected, the entry is treated as invalid and optionally removed (scrubbed).

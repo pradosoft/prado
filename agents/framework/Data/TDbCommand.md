@@ -1,14 +1,13 @@
-# TDbCommand
+# Data/TDbCommand
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbCommand`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbCommand](./TDbCommand.md)
-
+## Class Info
 **Location:** `framework/Data/TDbCommand.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDbCommand` represents an SQL statement to execute against a database. It is created by calling [`TDbConnection::createCommand()`](./TDbConnection.md).
 
 ## Key Methods

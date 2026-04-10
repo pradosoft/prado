@@ -1,13 +1,13 @@
-# TDisplayStyle
+# Web/UI/WebControls/TDisplayStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDisplayStyle](./TDisplayStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDisplayStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDisplayStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDisplayStyle defines styles for web control display.
 
 ## Constants

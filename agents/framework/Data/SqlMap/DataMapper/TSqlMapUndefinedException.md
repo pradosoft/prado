@@ -1,9 +1,13 @@
-# TSqlMapUndefinedException
+# Data/SqlMap/DataMapper/TSqlMapUndefinedException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapUndefinedException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapUndefinedException](./TSqlMapUndefinedException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapUndefinedException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapUndefinedException`
 
 Reference to unknown statement or map.

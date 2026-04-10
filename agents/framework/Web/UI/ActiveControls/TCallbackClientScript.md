@@ -1,13 +1,13 @@
-# TCallbackClientScript
+# Web/UI/ActiveControls/TCallbackClientScript
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TCallbackClientScript](./TCallbackClientScript.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TCallbackClientScript`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TCallbackClientScript.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Server-side API for client-side DOM updates during callback responses. Provides methods to show/hide elements, update content, set attributes, manage selections, trigger events, and apply visual effects. Accessed via `$page->getCallbackClient()`.
 
 ## Key Properties/Methods

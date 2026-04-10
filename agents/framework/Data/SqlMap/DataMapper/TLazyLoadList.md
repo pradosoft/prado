@@ -1,9 +1,13 @@
-# TLazyLoadList
+# Data/SqlMap/DataMapper/TLazyLoadList
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TLazyLoadList`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TLazyLoadList](./TLazyLoadList.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TLazyLoadList.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TLazyLoadList`
 
 Proxy list that defers loading of nested collections until first access.

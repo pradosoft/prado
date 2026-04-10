@@ -1,9 +1,13 @@
-# TActiveRecordHasMany
+# Data/ActiveRecord/Relations/TActiveRecordHasMany
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordHasMany`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordHasMany](./TActiveRecordHasMany.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordHasMany.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordHasMany`
 
 Implements the HAS_MANY relationship between Active Records.

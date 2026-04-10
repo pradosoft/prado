@@ -1,14 +1,13 @@
-# TLogRouter
+# Util/TLogRouter
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TLogRouter`**
 
-[Util](../) > TLogRouter
-
+## Class Info
 **Location:** `framework/Util/TLogRouter.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 `TLogRouter` is a `[TModule](TModule.md)` that manages multiple `[TLogRoute](TLogRoute.md)` instances. It acts as the bridge between the `[TLogger](TLogger.md)` (which accumulates log entries in memory) and the output destinations (files, database, email, browser panel, etc.).
 
 On `init()`, it attaches to `[TLogger](TLogger.md)::onFlushLogs` so it receives logs whenever the logger flushes (end-of-request or manual flush).

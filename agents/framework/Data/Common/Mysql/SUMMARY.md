@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/Common/Mysql/SUMMARY.md
 
 MySQL/MariaDB driver-specific implementations of database metadata and query-builder abstractions.
 

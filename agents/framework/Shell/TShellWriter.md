@@ -1,13 +1,13 @@
-# Shell / TShellWriter
+# Shell/TShellWriter
 
 ### Directories
-[./](../INDEX.md) > [Shell](./INDEX.md) > [TShellWriter](./TShellWriter.md)
+[framework](../INDEX.md) / [Shell](./INDEX.md) / **`TShellWriter`**
 
+## Class Info
 **Location:** `framework/Shell/TShellWriter.php`
 **Namespace:** `Prado\Shell`
 
 ## Overview
-
 Terminal output writer with ANSI color formatting, cursor movement, and UI widgets.
 
 ## Color Constants

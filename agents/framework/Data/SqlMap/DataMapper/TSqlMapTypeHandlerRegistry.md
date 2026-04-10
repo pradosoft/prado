@@ -1,9 +1,13 @@
-# TSqlMapTypeHandlerRegistry
+# Data/SqlMap/DataMapper/TSqlMapTypeHandlerRegistry
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapTypeHandlerRegistry`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapTypeHandlerRegistry](./TSqlMapTypeHandlerRegistry.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapTypeHandlerRegistry.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandlerRegistry`
 
 Registry mapping database types to type handler instances.

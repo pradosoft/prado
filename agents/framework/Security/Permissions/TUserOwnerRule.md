@@ -1,14 +1,13 @@
-# TUserOwnerRule
+# Security/Permissions/TUserOwnerRule
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TUserOwnerRule`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TUserOwnerRule](./TUserOwnerRule.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TUserOwnerRule.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Extends [TAuthorizationRule](../TAuthorizationRule.md) to check object ownership. Allows access only when the current user matches the username in the `extra` data.
 
 ## Key Method

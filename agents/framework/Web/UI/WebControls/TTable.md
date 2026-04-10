@@ -1,13 +1,13 @@
-# TTable
+# Web/UI/WebControls/TTable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTable](./TTable.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTable`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTable.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Renders an HTML `<table>` element. Child rows are managed via `TTableRowCollection`. Supports caption, cell spacing/padding, grid lines, horizontal alignment, and a background image. Rows may be grouped into `<thead>`, `<tbody>`, and `<tfoot>` sections.
 
 Extends `[TWebControl](./TWebControl.md)`.

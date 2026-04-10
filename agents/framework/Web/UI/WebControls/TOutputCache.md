@@ -1,13 +1,13 @@
-# TOutputCache
+# Web/UI/WebControls/TOutputCache
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TOutputCache](./TOutputCache.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TOutputCache`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TOutputCache.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Caches the rendered HTML of its child controls in the application cache. When a valid cached version exists, the control's children are **not initialized, loaded, or rendered** — only the cached output is replayed, along with any registered actions (client scripts, etc.).
 
 Implements `INamingContainer`. Requires the application to have a cache module (`TCache` or compatible).

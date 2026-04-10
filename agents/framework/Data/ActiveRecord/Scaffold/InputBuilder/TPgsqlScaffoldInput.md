@@ -1,9 +1,13 @@
-# TPgsqlScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TPgsqlScaffoldInput`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TPgsqlScaffoldInput](./TPgsqlScaffoldInput.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TPgsqlScaffoldInput.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput`
 
 PostgreSQL-specific scaffold input builder.

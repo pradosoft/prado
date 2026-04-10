@@ -1,12 +1,12 @@
-# IO / ITextWriter
+# IO/ITextWriter
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [ITextWriter](./ITextWriter.md)
+### Directories
+[framework](./INDEX.md) / [IO](./IO/INDEX.md) / **`ITextWriter`**
 
 **Location:** `framework/IO/ITextWriter.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Interface for text writers. Defines the contract for writing and flushing text output.
 
 ## Methods

@@ -1,13 +1,13 @@
-# TDataGridPageChangedEventParameter
+# Web/UI/WebControls/TDataGridPageChangedEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridPageChangedEventParameter](./TDataGridPageChangedEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridPageChangedEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridPageChangedEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Event parameter for TDataGrid onPageIndexChanged events.
 
 ## Key Properties/Methods

@@ -1,9 +1,13 @@
-# TPropertyAccess
+# Data/SqlMap/DataMapper/TPropertyAccess
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TPropertyAccess`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TPropertyAccess](./TPropertyAccess.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TPropertyAccess.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TPropertyAccess`
 
 Static utility for reading/writing object and array properties.

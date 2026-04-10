@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Shell/Actions/SUMMARY.md
 
 Built-in CLI action handlers for the Prado shell (`php protected/index.php`); each class provides one or more subcommands.
 

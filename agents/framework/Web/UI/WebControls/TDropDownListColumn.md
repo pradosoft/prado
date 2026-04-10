@@ -1,13 +1,13 @@
-# TDropDownListColumn
+# Web/UI/WebControls/TDropDownListColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDropDownListColumn](./TDropDownListColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDropDownListColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDropDownListColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDropDownListColumn represents a column bound to a field in a data source for use in data grid controls. It displays cells with dropdown lists for editing data.
 
 ## Key Properties/Methods

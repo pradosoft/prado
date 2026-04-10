@@ -1,7 +1,11 @@
-# THttpResponse Class
+# Web/THttpResponse
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpResponse](./THttpResponse.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpResponse`**
+
+## Class Info
+**Location:** `framework/Web/THttpResponse.php`
+**Namespace:** `Prado\Web`
 
 ## Overview
 THttpResponse implements the mechanism for sending output to client users, managing HTTP response headers, cookies, and output buffering.

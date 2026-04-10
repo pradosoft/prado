@@ -1,13 +1,11 @@
-# css-packages.php
+# Web/Javascripts/css-packages
 
 ### Directories
-
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md) > [css-packages](./css-packages.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [Javascripts](./Web/Javascripts/INDEX.md) / **`css-packages`**
 
 **Location:** `framework/Web/Javascripts/css-packages.php`
 
 ## Overview
-
 This file defines the CSS package registry for PRADO. It declares all CSS packages, their source files, folder mappings, and dependencies. Consumed by `TClientScriptManager` to resolve and publish CSS packages in dependency order.
 
 ## Package Folders

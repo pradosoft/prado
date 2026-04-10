@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Collections/SUMMARY.md
 
 Data structure implementations extending `TComponent` with PHP standard interfaces (`ArrayAccess`, `Countable`, `IteratorAggregate`).
 

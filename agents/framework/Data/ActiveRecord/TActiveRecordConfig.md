@@ -1,14 +1,13 @@
-# TActiveRecordConfig
+# Data/ActiveRecord/TActiveRecordConfig
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [ActiveRecord](./INDEX.md) / **`TActiveRecordConfig`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecordConfig](./TActiveRecordConfig.md)
-
+## Class Info
 **Location:** `framework/Data/ActiveRecord/TActiveRecordConfig.php`
 **Namespace:** `Prado\Data\ActiveRecord`
 
 ## Overview
-
 `TActiveRecordConfig` is a module configuration class for setting up the ActiveRecord manager in application.xml.
 
 ## Configuration

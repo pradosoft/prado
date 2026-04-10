@@ -1,9 +1,13 @@
-# TActiveRecordException
+# Data/ActiveRecord/Exceptions/TActiveRecordException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Exceptions](./INDEX.md) / **`TActiveRecordException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Exceptions](./INDEX.md) > [TActiveRecordException](./TActiveRecordException.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Exceptions/TActiveRecordException.php`
+**Namespace:** `Prado\Data\ActiveRecord\Exceptions`
 
+## Overview
 `Prado\Data\ActiveRecord\Exceptions\TActiveRecordException`
 
 Base exception class for Active Records.

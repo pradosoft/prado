@@ -1,13 +1,13 @@
-# TUserException
+# Exceptions/TUserException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TUserException](./TUserException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TUserException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TUserException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Base class for exceptions designed for display to end users. These are typically caused by user mistakes (invalid input, wrong permissions, etc.). Extends `TApplicationException`.
 
 ## Hierarchy

@@ -1,13 +1,13 @@
-# TPageStateFormatter
+# Web/UI/TPageStateFormatter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TPageStateFormatter](./TPageStateFormatter.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TPageStateFormatter`**
 
+## Class Info
 **Location:** `framework/Web/UI/TPageStateFormatter.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TPageStateFormatter is a utility class that serializes and unserializes page state for persistent storage. It handles optional HMAC validation, encryption, and compression based on TPage settings. State data is serialized, optionally validated with hashData, optionally encrypted, and base64-encoded for transmission.
 
 ## Key Properties/Methods

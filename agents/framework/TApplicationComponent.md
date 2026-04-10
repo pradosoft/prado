@@ -1,4 +1,11 @@
-# TApplicationComponent Class
+# TApplicationComponent
+
+### Directories
+[framework](./INDEX.md) / **`TApplicationComponent`**
+
+## Class Info
+**Location:** `framework/TApplicationComponent.php`
+**Namespace:** `Prado`
 
 ## Overview
 TApplicationComponent is the base class for all application-related components in PRADO, including controls, modules, services, and other framework elements. It provides shortcuts to commonly used application methods and services.

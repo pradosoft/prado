@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/ActiveRecord/Scaffold/InputBuilder/SUMMARY.md
 
 Driver-specific input control builders mapping database column types to Prado form controls for auto-generated CRUD edit views.
 

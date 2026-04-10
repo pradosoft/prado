@@ -1,16 +1,14 @@
-# TClassBehavior
+# Util/TClassBehavior
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TClassBehavior`**
 
-[Util](../) > TClassBehavior
-
+## Class Info
 **Location:** `framework/Util/TClassBehavior.php`
 **Namespace:** `Prado\Util`
-**Implements:** `[IClassBehavior](IClassBehavior.md)`
 **Extends:** `[TBaseBehavior](TBaseBehavior.md)`
 
 ## Overview
-
 Class-wide behavior — one `TClassBehavior` instance can be attached to **many** owners simultaneously. Designed to be **stateless** (no per-object data). When `[TComponent](../TComponent.md)` calls a method on a class behavior, it automatically injects the calling owner as the **first parameter** so the behavior knows which object is involved.
 
 Contrast with `[TBehavior](TBehavior.md)` (stateful, one owner).

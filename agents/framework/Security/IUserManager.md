@@ -1,14 +1,12 @@
-# IUserManager
+# Security/IUserManager
 
 ### Directories
-
-[./](../INDEX.md) > [Security](./INDEX.md) > [IUserManager](./IUserManager.md)
+[framework](./INDEX.md) / [Security](./Security/INDEX.md) / **`IUserManager`**
 
 **Location:** `framework/Security/IUserManager.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 Interface for user manager classes. Must be implemented by any user manager that works with [TAuthManager](./TAuthManager.md) and [TUser](./TUser.md).
 
 ## Methods

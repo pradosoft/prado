@@ -1,9 +1,13 @@
-# TSqliteScaffoldInput
+# Data/ActiveRecord/Scaffold/InputBuilder/TSqliteScaffoldInput
 
 ### Directories
+[framework](../../../../INDEX.md) / [Data](../../../INDEX.md) / [ActiveRecord](../../INDEX.md) / [Scaffold](../INDEX.md) / [InputBuilder](./INDEX.md) / **`TSqliteScaffoldInput`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](../INDEX.md) > [InputBuilder](./INDEX.md) > [TSqliteScaffoldInput](./TSqliteScaffoldInput.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/InputBuilder/TSqliteScaffoldInput.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold\InputBuilder`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\InputBuilder\TSqliteScaffoldInput`
 
 SQLite-specific scaffold input builder.

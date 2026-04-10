@@ -1,14 +1,13 @@
-# TPermissionEvent
+# Security/Permissions/TPermissionEvent
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionEvent`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionEvent](./TPermissionEvent.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionEvent.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Data container linking a permission name to dynamic events and optional preset [TAuthorizationRule](../TAuthorizationRule.md) objects.
 
 ## Constructor

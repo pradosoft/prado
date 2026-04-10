@@ -1,13 +1,13 @@
-# TImageClickEventParameter
+# Web/UI/WebControls/TImageClickEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TImageClickEventParameter](./TImageClickEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TImageClickEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TImageClickEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TImageClickEventParameter encapsulates the X and Y coordinates of a click event on an image. This parameter is passed to OnClick event handlers of TImageButton controls.
 
 ## Key Properties/Methods

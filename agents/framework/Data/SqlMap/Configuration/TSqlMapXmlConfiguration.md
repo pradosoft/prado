@@ -1,9 +1,13 @@
-# TSqlMapXmlConfiguration
+# Data/SqlMap/Configuration/TSqlMapXmlConfiguration
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapXmlConfiguration`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapXmlConfiguration](./TSqlMapXmlConfiguration.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapXmlConfiguration.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapXmlConfiguration`
 
 Parses the main SqlMap XML configuration file.

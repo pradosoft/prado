@@ -1,13 +1,13 @@
-# THttpRequestUrlFormat
+# Web/THttpRequestUrlFormat
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpRequestUrlFormat](./THttpRequestUrlFormat.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpRequestUrlFormat`**
 
+## Class Info
 **Location:** `framework/Web/THttpRequestUrlFormat.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpRequestUrlFormat defines the enumerable type for URL formats that THttpRequest can recognize. It determines how URL parameters are parsed and structured.
 
 ## Key Properties/Methods

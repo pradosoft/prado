@@ -1,13 +1,13 @@
-# TDataTypeValidator
+# Web/UI/WebControls/TDataTypeValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataTypeValidator](./TDataTypeValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataTypeValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataTypeValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataTypeValidator verifies if input data matches a specified data type. Supported types include Integer, Float, Date, and String. For Date type, a custom date format can be specified.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TRepeatLayout
+# Web/UI/WebControls/TRepeatLayout
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeatLayout](./TRepeatLayout.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeatLayout`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeatLayout.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeatLayout defines the enumerable type for specifying how repeated content is laid out in list controls. Different layouts affect how HTML is generated for list items.
 
 ## Values

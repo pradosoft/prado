@@ -1,13 +1,13 @@
-# TDataListItemRenderer
+# Web/UI/WebControls/TDataListItemRenderer
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataListItemRenderer](./TDataListItemRenderer.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataListItemRenderer`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataListItemRenderer.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataListItemRenderer is a convenient base class for item renderers in TDataList. Extends TItemDataRenderer and implements IStyleable.
 
 ## Key Properties/Methods

@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/Common/Sqlite/SUMMARY.md
 
 SQLite driver-specific implementations of database metadata and query-builder abstractions.
 

@@ -1,13 +1,13 @@
-# TPriorityPropertyTrait
+# Collections/TPriorityPropertyTrait
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPriorityPropertyTrait](./TPriorityPropertyTrait.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPriorityPropertyTrait`**
 
+## Class Info
 **Location:** `framework/Collections/TPriorityPropertyTrait.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Trait implementing [IPriorityProperty](./IPriorityProperty.md) for objects that need priority capability. Used by subscription classes to provide priority functionality.
 
 ## Usage

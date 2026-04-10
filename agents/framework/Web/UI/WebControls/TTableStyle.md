@@ -1,13 +1,13 @@
-# TTableStyle
+# Web/UI/WebControls/TTableStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableStyle](./TTableStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableStyle represents the CSS style specific for HTML tables. It extends TStyle and adds properties for background image, horizontal alignment, cell padding/spacing, grid lines, and border collapse.
 
 ## Key Properties/Methods

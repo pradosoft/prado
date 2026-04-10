@@ -1,9 +1,13 @@
-# TSqlMapCache
+# Data/SqlMap/DataMapper/TSqlMapCache
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapCache`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapCache](./TSqlMapCache.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapCache.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapCache`
 
 Abstract base for statement-level result caches.

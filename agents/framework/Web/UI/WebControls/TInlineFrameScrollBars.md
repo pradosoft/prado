@@ -1,13 +1,13 @@
-# TInlineFrameScrollBars
+# Web/UI/WebControls/TInlineFrameScrollBars
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TInlineFrameScrollBars](./TInlineFrameScrollBars.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TInlineFrameScrollBars`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TInlineFrameScrollBars.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TInlineFrameScrollBars defines scroll bar modes for inline frames.
 
 ## Constants

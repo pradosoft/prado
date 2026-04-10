@@ -1,9 +1,13 @@
-# TPreparedCommand
+# Data/SqlMap/Statements/TPreparedCommand
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TPreparedCommand`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TPreparedCommand](./TPreparedCommand.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TPreparedCommand.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TPreparedCommand`
 
 SQL command preparer.

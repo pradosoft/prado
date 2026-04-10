@@ -1,13 +1,13 @@
-# TRadioButtonItem
+# Web/UI/WebControls/TRadioButtonItem
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRadioButtonItem](./TRadioButtonItem.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRadioButtonItem`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRadioButtonItem.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRadioButtonItem extends TRadioButton and is used within TRadioButtonList. It overrides the client implementation to avoid emitting JavaScript, as the parent list handles client-side behavior.
 
 ## Key Properties/Methods

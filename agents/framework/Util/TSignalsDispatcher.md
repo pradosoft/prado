@@ -1,14 +1,13 @@
-# TSignalsDispatcher
+# Util/TSignalsDispatcher
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TSignalsDispatcher`**
 
-[Util](../) > TSignalsDispatcher
-
+## Class Info
 **Location:** `framework/Util/TSignalsDispatcher.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Singleton POSIX signal dispatcher. Translates OS signals into PRADO global (`fx*`) events so application code can react to `SIGTERM`, `SIGINT`, `SIGCHLD`, `SIGALRM`, and others without using `pcntl_signal()` directly.
 
 Implements `[ISingleton](../I18N/TGlobalization.md)`. Requires the PHP `pcntl` extension.

@@ -1,16 +1,14 @@
-# TBehavior
+# Util/TBehavior
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TBehavior`**
 
-[Util](../) > TBehavior
-
+## Class Info
 **Location:** `framework/Util/TBehavior.php`
 **Namespace:** `Prado\Util`
-**Implements:** `[IBehavior](IBehavior.md)`
 **Extends:** `[TBaseBehavior](TBaseBehavior.md)`
 
 ## Overview
-
 Per-instance behavior. One `TBehavior` instance has exactly **one** owner component. Use for stateful behaviors that need to track per-object data. Contrast with `[TClassBehavior](TClassBehavior.md)` (stateless, many owners).
 
 Owner is stored as a `WeakReference` — the behavior does not prevent the owner from being garbage-collected.

@@ -1,13 +1,13 @@
-# TTextAlign
+# Web/UI/WebControls/TTextAlign
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTextAlign](./TTextAlign.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTextAlign`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTextAlign.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTextAlign defines the enumerable type for text alignment options.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TDataSourceControl
+# Web/UI/WebControls/TDataSourceControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataSourceControl](./TDataSourceControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataSourceControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataSourceControl.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataSourceControl is an abstract base class for data source controls. Implements IDataSource interface.
 
 ## Key Properties/Methods

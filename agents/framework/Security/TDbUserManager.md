@@ -1,14 +1,13 @@
-# TDbUserManager
+# Security/TDbUserManager
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TDbUserManager`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TDbUserManager](./TDbUserManager.md)
-
+## Class Info
 **Location:** `framework/Security/TDbUserManager.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 `TDbUserManager` is a database-backed user manager that delegates all user data operations to a developer-supplied [TDbUser](./TDbUser.md) subclass. The manager itself holds no user records — it acts as a factory and connection provider. It is designed for production use alongside [TAuthManager](./TAuthManager.md).
 
 ## Interfaces Implemented

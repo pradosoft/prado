@@ -1,9 +1,13 @@
-# TSqlMapTypeHandler
+# Data/SqlMap/DataMapper/TSqlMapTypeHandler
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapTypeHandler`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapTypeHandler](./TSqlMapTypeHandler.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapTypeHandler.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapTypeHandler`
 
 Abstract base class for custom type handlers.

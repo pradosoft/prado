@@ -1,13 +1,13 @@
-# TListControl
+# Web/UI/WebControls/TListControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TListControl](./TListControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TListControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TListControl.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TListControl is the base class for list controls like TListBox, TDropDownList, TCheckBoxList, and TRadioButtonList. It manages items, selections, data binding, and auto-postback behavior.
 
 ## Key Properties/Methods

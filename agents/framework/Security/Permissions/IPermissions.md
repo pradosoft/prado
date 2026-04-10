@@ -1,14 +1,12 @@
-# IPermissions
+# Security/Permissions/IPermissions
 
 ### Directories
-
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [IPermissions](./IPermissions.md)
+[framework](./INDEX.md) / [Security](./Security/INDEX.md) / [Permissions](./Security/Permissions/INDEX.md) / **`IPermissions`**
 
 **Location:** `framework/Security/Permissions/IPermissions.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Interface for classes that declare their own permissions. Classes implementing this interface will have [TPermissionsBehavior](./TPermissionsBehavior.md) automatically attached by [TPermissionsManager](./TPermissionsManager.md).
 
 ## Methods

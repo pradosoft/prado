@@ -1,13 +1,13 @@
-# TActiveCustomValidator
+# Web/UI/ActiveControls/TActiveCustomValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveCustomValidator](./TActiveCustomValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveCustomValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveCustomValidator.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Custom validation using server-side OnServerValidate event via callback. Client-side validation function is not supported. Raises OnServerValidate on callback and updates client-side validation state.
 
 ## Key Properties/Methods

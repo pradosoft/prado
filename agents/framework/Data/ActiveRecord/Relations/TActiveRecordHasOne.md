@@ -1,9 +1,13 @@
-# TActiveRecordHasOne
+# Data/ActiveRecord/Relations/TActiveRecordHasOne
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Relations](./INDEX.md) / **`TActiveRecordHasOne`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Relations](./INDEX.md) > [TActiveRecordHasOne](./TActiveRecordHasOne.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Relations/TActiveRecordHasOne.php`
+**Namespace:** `Prado\Data\ActiveRecord\Relations`
 
+## Overview
 `Prado\Data\ActiveRecord\Relations\TActiveRecordHasOne`
 
 Implements the HAS_ONE relationship between Active Records.

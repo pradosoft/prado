@@ -1,13 +1,12 @@
-# IStyleable
+# Web/UI/WebControls/IStyleable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [IStyleable](./IStyleable.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / [WebControls](./Web/UI/WebControls/INDEX.md) / **`IStyleable`**
 
 **Location:** `framework/Web/UI/WebControls/IStyleable.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 IStyleable is the interface that classes should implement to support CSS styles.
 
 ## Key Properties/Methods

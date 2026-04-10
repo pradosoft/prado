@@ -1,13 +1,13 @@
-# TDataGridPagerPosition
+# Web/UI/WebControls/TDataGridPagerPosition
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridPagerPosition](./TDataGridPagerPosition.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridPagerPosition`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridPagerPosition.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridPagerPosition defines where the pager can be positioned.
 
 ## Constants

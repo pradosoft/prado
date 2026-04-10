@@ -3,8 +3,7 @@
 This file provides guidance to Agents when working with code in this repository.
 
 ### Directories
-
-[./](../../INDEX.md) > [I18N](../INDEX.md) > [core](../core/INDEX.md) > [Gettext](./INDEX.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`Gettext/INDEX.md`**
 
 ## Purpose
 

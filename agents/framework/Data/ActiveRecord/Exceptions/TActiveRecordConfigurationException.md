@@ -1,9 +1,13 @@
-# TActiveRecordConfigurationException
+# Data/ActiveRecord/Exceptions/TActiveRecordConfigurationException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Exceptions](./INDEX.md) / **`TActiveRecordConfigurationException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Exceptions](./INDEX.md) > [TActiveRecordConfigurationException](./TActiveRecordConfigurationException.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Exceptions/TActiveRecordConfigurationException.php`
+**Namespace:** `Prado\Data\ActiveRecord\Exceptions`
 
+## Overview
 `Prado\Data\ActiveRecord\Exceptions\TActiveRecordConfigurationException`
 
 Exception thrown when Active Record is improperly configured.

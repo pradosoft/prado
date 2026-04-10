@@ -1,13 +1,13 @@
-# TQueue
+# Collections/TQueue
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TQueue](./TQueue.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TQueue`**
 
+## Class Info
 **Location:** `framework/Collections/TQueue.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TQueue implements a FIFO (First-In-First-Out) queue data structure. Items are added to the end and removed from the front.
 
 ## Inheritance

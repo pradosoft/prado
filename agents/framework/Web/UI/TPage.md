@@ -1,7 +1,11 @@
-# TPage Class
+# Web/UI/TPage
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TPage](./TPage.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TPage`**
+
+## Class Info
+**Location:** `framework/Web/UI/TPage.php`
+**Namespace:** `Prado\Web\UI`
 
 ## Overview
 TPage is the base class for all web pages in PRADO framework. It extends [TTemplateControl](./TTemplateControl.md) and implements complete page functionality including form handling, validation, state management, client script management, and theming support.

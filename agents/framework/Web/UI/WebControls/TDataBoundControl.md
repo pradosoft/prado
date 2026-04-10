@@ -1,13 +1,13 @@
-# TDataBoundControl
+# Web/UI/WebControls/TDataBoundControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataBoundControl](./TDataBoundControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataBoundControl`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataBoundControl.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataBoundControl is the base class for controls that populate data from data sources. Provides paging capabilities and data source management.
 
 ## Key Properties/Methods

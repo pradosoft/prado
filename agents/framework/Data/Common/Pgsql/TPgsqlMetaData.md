@@ -1,14 +1,13 @@
-# TPgsqlMetaData
+# Data/Common/Pgsql/TPgsqlMetaData
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [Common](../INDEX.md) / [Pgsql](./INDEX.md) / **`TPgsqlMetaData`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](../INDEX.md) > [Pgsql](./INDEX.md) > [TPgsqlMetaData](./TPgsqlMetaData.md)
-
+## Class Info
 **Location:** `framework/Data/Common/Pgsql/TPgsqlMetaData.php`
 **Namespace:** `Prado\Data\Common\Pgsql`
 
 ## Overview
-
 `TPgsqlMetaData` provides PostgreSQL-specific database metadata introspection.
 
 ## See Also

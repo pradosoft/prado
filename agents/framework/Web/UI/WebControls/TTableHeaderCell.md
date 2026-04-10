@@ -1,13 +1,13 @@
-# TTableHeaderCell
+# Web/UI/WebControls/TTableHeaderCell
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableHeaderCell](./TTableHeaderCell.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableHeaderCell`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableHeaderCell.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableHeaderCell displays a table header cell (th element) on a Web page. It extends TTableCell and adds scope attribute for accessibility.
 
 ## Key Properties/Methods

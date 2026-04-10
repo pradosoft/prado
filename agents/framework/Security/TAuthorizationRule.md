@@ -1,14 +1,13 @@
-# TAuthorizationRule
+# Security/TAuthorizationRule
 
 ### Directories
+[framework](../INDEX.md) / [Security](./INDEX.md) / **`TAuthorizationRule`**
 
-[./](../INDEX.md) > [Security](./INDEX.md) > [TAuthorizationRule](./TAuthorizationRule.md)
-
+## Class Info
 **Location:** `framework/Security/TAuthorizationRule.php`
 **Namespace:** `Prado\Security`
 
 ## Overview
-
 Represents a single authorization rule. Rules specify which users/roles are allowed or denied access based on HTTP verb and IP address.
 
 ## Special User Identifiers

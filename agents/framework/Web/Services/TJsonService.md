@@ -1,8 +1,11 @@
-# TJsonService Class
+# Web/Services/TJsonService
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TJsonService`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TJsonService](./TJsonService.md)
+## Class Info
+**Location:** `framework/Web/Services/TJsonService.php`
+**Namespace:** `Prado\Web\Services`
 
 ## Overview
 TJsonService provides JavaScript content response in JSON format for end-users. It manages a set of TJsonResponse objects, each representing specific JSON response content.

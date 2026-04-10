@@ -1,13 +1,13 @@
-# TTableRowCollection
+# Web/UI/WebControls/TTableRowCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableRowCollection](./TTableRowCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableRowCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableRowCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableRowCollection maintains a list of rows belonging to a table. It extends TControlCollection and ensures only TTableRow objects can be added.
 
 ## Key Properties/Methods

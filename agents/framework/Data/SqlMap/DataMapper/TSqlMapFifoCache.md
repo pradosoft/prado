@@ -1,9 +1,13 @@
-# TSqlMapFifoCache
+# Data/SqlMap/DataMapper/TSqlMapFifoCache
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapFifoCache`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapFifoCache](./TSqlMapFifoCache.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapFifoCache.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapFifoCache`
 
 First In, First Out (FIFO) cache implementation.

@@ -1,13 +1,13 @@
-# TAttributeCollection
+# Collections/TAttributeCollection
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TAttributeCollection](./TAttributeCollection.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TAttributeCollection`**
 
+## Class Info
 **Location:** `framework/Collections/TAttributeCollection.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TAttributeCollection extends [TMap](./TMap.md) to provide a collection for storing attribute names and values. It allows accessing and setting attribute values like object properties.
 
 ## Key Features

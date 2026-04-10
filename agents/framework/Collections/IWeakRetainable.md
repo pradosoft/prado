@@ -1,13 +1,12 @@
-# IWeakRetainable
+# Collections/IWeakRetainable
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [IWeakRetainable](./IWeakRetainable.md)
+[framework](./INDEX.md) / [Collections](./Collections/INDEX.md) / **`IWeakRetainable`**
 
 **Location:** `framework/Collections/IWeakRetainable.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Marker interface for objects that should be retained (not stored as WeakReference) in weak collections. Objects implementing this interface will be kept with full reference in [TWeakList](./TWeakList.md), [TWeakCallableCollection](./TWeakCallableCollection.md), and [TEventHandler](../TEventHandler.md).
 
 ## Usage

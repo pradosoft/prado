@@ -1,13 +1,12 @@
-# CultureInfo
+# I18N/core/CultureInfo
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [CultureInfo](./CultureInfo.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`CultureInfo`**
 
 **Location:** `framework/I18N/core/CultureInfo.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Represents a specific locale/culture (e.g., `en_AU`, `zh_CN`, `fr_FR`). Wraps PHP's `ResourceBundle` (ICU data) to expose localized culture data: language names, country names, currencies, time zones, calendars, number/date formats, and units.
 
 Culture names follow ISO 639 (`language`) + ISO 3166 (`REGION`) format, separated by underscore: `en_AU`, `pt_BR`. Neutral cultures are two-character language codes only (`en`, `fr`).

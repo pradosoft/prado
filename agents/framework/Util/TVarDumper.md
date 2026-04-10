@@ -1,14 +1,13 @@
-# TVarDumper
+# Util/TVarDumper
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TVarDumper`**
 
-[Util](../) > TVarDumper
-
+## Class Info
 **Location:** `framework/Util/TVarDumper.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Human-readable variable dump for Prado `[TComponent](../TComponent.md)` objects and complex data structures. Use instead of PHP's `var_dump()` or `print_r()` — it understands [TComponent](../TComponent.md)'s property/event system and avoids circular reference issues.
 
 ## Usage

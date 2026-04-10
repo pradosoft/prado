@@ -1,13 +1,13 @@
-# TApplicationException
+# Exceptions/TApplicationException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TApplicationException](./TApplicationException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TApplicationException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TApplicationException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Base class for all user application-level exceptions. Extends `[TException](./TException.md)`.
 
 ## Hierarchy

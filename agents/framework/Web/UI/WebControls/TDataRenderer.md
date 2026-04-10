@@ -1,13 +1,13 @@
-# TDataRenderer
+# Web/UI/WebControls/TDataRenderer
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataRenderer](./TDataRenderer.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataRenderer`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataRenderer.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataRenderer is a convenient base class for template-based renderer controls. Implements IDataRenderer interface.
 
 ## Key Properties/Methods

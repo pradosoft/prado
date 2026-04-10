@@ -1,13 +1,13 @@
-# TRadioButtonList
+# Web/UI/WebControls/TRadioButtonList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRadioButtonList](./TRadioButtonList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRadioButtonList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRadioButtonList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRadioButtonList displays a group of radio buttons on a Web page, allowing single selection only. It inherits from TCheckBoxList and overrides multi-select behavior.
 
 ## Key Properties/Methods

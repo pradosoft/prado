@@ -1,13 +1,13 @@
-# TNotSupportedException
+# Exceptions/TNotSupportedException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TNotSupportedException](./TNotSupportedException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TNotSupportedException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TNotSupportedException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Represents an exception caused by using an unsupported PRADO feature. Extends `TSystemException`.
 
 ## Hierarchy

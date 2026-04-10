@@ -1,14 +1,13 @@
-# TCronMethodTask
+# Util/Cron/TCronMethodTask
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TCronMethodTask`**
 
-[Util](../) > [Cron](Cron/) > TCronMethodTask
-
+## Class Info
 **Location:** `framework/Util/Cron/TCronMethodTask.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TCronMethodTask is a concrete cron task that evaluates and executes a specific method with parameters on a module when the task is triggered. It extends TCronTask and allows configuring tasks via module ID and method strings, with optional parameters.
 
 ## Key Properties/Methods

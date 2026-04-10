@@ -1,13 +1,13 @@
-# TWebControlDecorator
+# Web/UI/WebControls/TWebControlDecorator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWebControlDecorator](./TWebControlDecorator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWebControlDecorator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWebControlDecorator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWebControlDecorator customizes TWebControl rendering by adding HTML before and after both the open and close tags. Supports both text and template-based decoration for theming.
 
 ## Key Properties/Methods

@@ -1,12 +1,13 @@
-# IO / TTextWriter
+# IO/TTextWriter
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TTextWriter](./TTextWriter.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TTextWriter`**
 
+## Class Info
 **Location:** `framework/IO/TTextWriter.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Memory-based text writer. Accumulates written content in memory until flushed.
 
 ## Usage

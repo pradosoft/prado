@@ -1,13 +1,13 @@
-# TDataSize
+# Web/UI/WebControls/TDataSize
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataSize](./TDataSize.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataSize`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataSize.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataSize displays file sizes in human-readable format (bytes, KB, MB, GB, etc.) instead of raw byte counts.
 
 ## Key Properties/Methods

@@ -1,8 +1,7 @@
 # Util/Math/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Util](../INDEX.md) > [Math](./INDEX.md)
+[framework](./INDEX.md) / [Util](./Util/INDEX.md) / **`Math/INDEX.md`**
 
 ## Purpose
 

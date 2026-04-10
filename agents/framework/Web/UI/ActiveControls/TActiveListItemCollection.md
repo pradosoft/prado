@@ -1,13 +1,13 @@
-# TActiveListItemCollection
+# Web/UI/ActiveControls/TActiveListItemCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveListItemCollection](./TActiveListItemCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveListItemCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveListItemCollection.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Allows [TActiveDropDownList](./TActiveDropDownList.md) and [TActiveListBox](./TActiveListBox.md) to add new options during callback response. Tracks changes after OnLoad event and updates client-side list items when modified.
 
 ## Key Properties/Methods

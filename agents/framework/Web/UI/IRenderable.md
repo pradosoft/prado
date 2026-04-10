@@ -1,13 +1,12 @@
-# IRenderable
+# Web/UI/IRenderable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IRenderable](./IRenderable.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IRenderable`**
 
 **Location:** `framework/Web/UI/IRenderable.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for classes that can be rendered to end users.
 
 ## Key Methods
@@ -19,5 +18,3 @@ Interface for classes that can be rendered to end users.
 ## See Also
 
 - [TControl](./TControl.md) - Base control class
-
-(End of file - total 18 lines)

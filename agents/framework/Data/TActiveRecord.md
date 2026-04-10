@@ -1,14 +1,13 @@
-# TActiveRecord / Active Record ORM
+# Data/TActiveRecord
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TActiveRecord`**
 
-[./](../INDEX.md) > [Data](../INDEX.md) > [ActiveRecord](./INDEX.md) > [TActiveRecord](./TActiveRecord.md)
-
-**Location:** `framework/Data/ActiveRecord/`
-**Namespace:** `Prado\Data\ActiveRecord`
+## Class Info
+**Location:** `framework/Data/TActiveRecord.php`
+**Namespace:** `Prado\Data`
 
 ## Overview
-
 Active Record ORM. Each subclass maps to one database table; instances represent individual rows. Provides static finders, lazy-loaded relations, lifecycle events, and automatic SQL generation.
 
 ## Defining a Record Class

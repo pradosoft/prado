@@ -1,13 +1,13 @@
-# TDataSourceView
+# Web/UI/WebControls/TDataSourceView
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataSourceView](./TDataSourceView.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataSourceView`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataSourceView.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataSourceView is an abstract base class for data views. Provides select, insert, update, and delete operations.
 
 ## Key Properties/Methods

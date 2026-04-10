@@ -1,13 +1,13 @@
-# TStyleDiff
+# Web/UI/ActiveControls/TStyleDiff
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TStyleDiff](./TStyleDiff.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TStyleDiff`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TStyleDiff.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Calculates changes to control style properties including CSS class names and inline styles. Extends [TViewStateDiff](./TViewStateDiff.md) to compare style fields and custom styles, returning an array with `CssClass` and `Style` changes.
 
 ## Key Properties/Methods

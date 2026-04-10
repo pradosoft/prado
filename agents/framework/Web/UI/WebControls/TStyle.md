@@ -1,13 +1,13 @@
-# TStyle
+# Web/UI/WebControls/TStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TStyle](./TStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TStyle encapsulates CSS style properties applied to a control. It manages fields like background color, border styles, font, CSS class, and custom styles.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TListControlValidator
+# Web/UI/WebControls/TListControlValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TListControlValidator](./TListControlValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TListControlValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TListControlValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TListControlValidator validates selection count and values in list controls that allow multiple selection (TListBox, TCheckBoxList, etc.).
 
 ## Key Properties/Methods

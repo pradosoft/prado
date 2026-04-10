@@ -1,14 +1,13 @@
-# TMapLazyLoadBehavior
+# Util/Behaviors/TMapLazyLoadBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Behaviors](./INDEX.md) / **`TMapLazyLoadBehavior`**
 
-[Util](../) > [Behaviors](Behaviors/) > TMapLazyLoadBehavior
-
+## Class Info
 **Location:** `framework/Util/Behaviors/TMapLazyLoadBehavior.php`
 **Namespace:** `Prado\Util\Behaviors`
 
 ## Overview
-
 TMapLazyLoadBehavior handles Application Parameters when there is no parameter key found. This allows for lazy loading of parameters. When a key is not found in the [TMap](../../Collections/TMap.md) or [TPriorityMap](../../Collections/TPriorityMap.md), the behavior calls a handler callback to provide the value on-demand.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TRepeaterItem
+# Web/UI/WebControls/TRepeaterItem
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRepeaterItem](./TRepeaterItem.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRepeaterItem`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRepeaterItem.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRepeaterItem represents an item in the TRepeater control, such as heading, footer, or data item. It implements IItemDataRenderer and INamingContainer.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# THyperLink
+# Web/UI/WebControls/THyperLink
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THyperLink](./THyperLink.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THyperLink`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THyperLink.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THyperLink displays a hyperlink on a page. Can display text or an image, with configurable URL and target.
 
 ## Key Properties/Methods

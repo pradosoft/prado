@@ -1,9 +1,13 @@
-# TSqlMapConfigurationException
+# Data/SqlMap/DataMapper/TSqlMapConfigurationException
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapConfigurationException`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapConfigurationException](./TSqlMapConfigurationException.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapConfigurationException.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException`
 
 Configuration or parsing errors.

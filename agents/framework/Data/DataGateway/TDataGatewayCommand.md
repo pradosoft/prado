@@ -1,14 +1,13 @@
-# TDataGatewayCommand
+# Data/DataGateway/TDataGatewayCommand
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [DataGateway](./INDEX.md) / **`TDataGatewayCommand`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [DataGateway](./INDEX.md) > [TDataGatewayCommand](./TDataGatewayCommand.md)
-
+## Class Info
 **Location:** `framework/Data/DataGateway/TDataGatewayCommand.php`
 **Namespace:** `Prado\Data\DataGateway`
 
 ## Overview
-
 `TDataGatewayCommand` is the command builder and executor for [`TTableGateway`](./TTableGateway.md) and [`TActiveRecordGateway`](../ActiveRecord/TActiveRecordGateway.md).
 
 ## Events

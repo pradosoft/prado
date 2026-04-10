@@ -1,13 +1,13 @@
-# THeader5
+# Web/UI/WebControls/THeader5
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THeader5](./THeader5.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THeader5`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THeader5.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THeader5 is a simple control for rendering h5 elements with theme support. It extends THtmlElement and allows themes to redefine the TagName via TWebControlDecorator.
 
 ## Key Properties/Methods

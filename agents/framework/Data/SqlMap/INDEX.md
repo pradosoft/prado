@@ -2,11 +2,13 @@
 
 This file provides guidance to Agents when working with code in this repository.
 
-### Subdirectories
+### Directories
+
+[framework](./INDEX.md) / [Data](./Data/INDEX.md) / [SqlMap](./Data/SqlMap/INDEX.md) / **`SqlMap/INDEX.md`**
 
 | Directory | Purpose |
 |---|---|
-| [`../`](../INDEX.md)] | Data Directory |
+| [`../`](../INDEX.md) | Data Directory |
 | [`Configuration/`](Configuration/INDEX.md) | XML parsing: statements, parameter maps, result maps, cache models |
 | [`DataMapper/`](DataMapper/INDEX.md) | Runtime: type handlers, caches, lazy loading, exceptions |
 | [`Statements/`](Statements/INDEX.md) | Statement execution: SQL preparation, binding, result mapping |

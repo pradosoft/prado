@@ -1,12 +1,13 @@
-# IO / TTarFileExtractor
+# IO/TTarFileExtractor
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TTarFileExtractor](./TTarFileExtractor.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TTarFileExtractor`**
 
+## Class Info
 **Location:** `framework/IO/TTarFileExtractor.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Extracts files from TAR archives. Supports local files and remote URLs (http://, ftp://).
 
 ## Usage

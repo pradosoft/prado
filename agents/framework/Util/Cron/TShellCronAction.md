@@ -1,14 +1,13 @@
-# TShellCronAction
+# Util/Cron/TShellCronAction
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TShellCronAction`**
 
-[Util](../) > [Cron](Cron/) > TShellCronAction
-
+## Class Info
 **Location:** `framework/Util/Cron/TShellCronAction.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TShellCronAction provides CLI commands for managing TCronModule from the command line. It implements the `cron` action with sub-commands: `run` (execute pending tasks), `tasks` (show configured tasks), and `index` (show registered task information).
 
 ## Key Properties/Methods

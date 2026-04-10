@@ -1,9 +1,13 @@
-# TResultMap
+# Data/SqlMap/Configuration/TResultMap
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TResultMap`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TResultMap](./TResultMap.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TResultMap.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TResultMap`
 
 Defines how result set columns are mapped to object properties.

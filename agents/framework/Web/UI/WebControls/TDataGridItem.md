@@ -1,13 +1,13 @@
-# TDataGridItem
+# Web/UI/WebControls/TDataGridItem
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridItem](./TDataGridItem.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridItem`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridItem.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataGridItem represents an item in a TDataGrid control (heading, footer, or data item). Tracks item index, data source index, and item type.
 
 ## Key Properties/Methods

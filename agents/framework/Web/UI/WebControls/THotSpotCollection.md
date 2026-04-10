@@ -1,13 +1,13 @@
-# THotSpotCollection
+# Web/UI/WebControls/THotSpotCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THotSpotCollection](./THotSpotCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THotSpotCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THotSpotCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THotSpotCollection represents a collection of hotspots in an ImageMap control. It extends TList and ensures only THotSpot objects can be added to the collection.
 
 ## Key Properties/Methods

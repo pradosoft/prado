@@ -1,4 +1,4 @@
-# SUMMARY.md
+# I18N/core/SUMMARY.md
 
 Core I18N engine providing culture information, message source backends, message formatting, plural/choice rules, number formatting, and caching.
 

@@ -1,13 +1,13 @@
-# TValidationSummaryDisplayMode
+# Web/UI/WebControls/TValidationSummaryDisplayMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TValidationSummaryDisplayMode](./TValidationSummaryDisplayMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TValidationSummaryDisplayMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TValidationSummaryDisplayMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TValidationSummaryDisplayMode defines the enumerable type for the possible modes that a TValidationSummary can organize and display collected error messages.
 
 ## Key Properties/Methods

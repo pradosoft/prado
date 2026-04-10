@@ -1,13 +1,13 @@
-# TWebControl and WebControls Reference
+# Web/UI/WebControls/TWebControl
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWebControl](./TWebControl.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWebControl`**
 
-**Location:** `framework/Web/UI/WebControls/`
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TWebControl.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
-## TWebControl
-
+## Overview
 Base for all HTML-rendering WebControls. Extends `TControl` with HTML attribute management.
 
 ```php

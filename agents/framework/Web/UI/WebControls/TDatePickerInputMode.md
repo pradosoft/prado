@@ -1,13 +1,13 @@
-# TDatePickerInputMode
+# Web/UI/WebControls/TDatePickerInputMode
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDatePickerInputMode](./TDatePickerInputMode.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDatePickerInputMode`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDatePickerInputMode.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDatePickerInputMode defines the input method for TDatePicker.
 
 ## Constants

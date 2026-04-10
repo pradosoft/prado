@@ -1,13 +1,13 @@
-# TActiveRadioButton
+# Web/UI/ActiveControls/TActiveRadioButton
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveRadioButton](./TActiveRadioButton.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveRadioButton`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveRadioButton.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TRadioButton with AutoPostBack enabled by default. Text and Checked properties can be updated during callback. GroupName cannot be changed during callback as the client-side name attribute is read-only.
 
 ## Key Properties/Methods

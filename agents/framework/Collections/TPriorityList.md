@@ -1,13 +1,13 @@
-# TPriorityList / TPriorityMap
+# Collections/TPriorityList
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPriorityList](./TPriorityList.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPriorityList`**
 
-**Location:** `framework/Collections/TPriorityList.php`, `TPriorityMap.php`, `TPriorityCollectionTrait.php`
+## Class Info
+**Location:** `framework/Collections/TPriorityList.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Priority-ordered collections. Every item is assigned a numeric priority (lower number = higher priority). Items are stored internally in priority buckets and flattened into an ordered array on access. A flat array cache (`$_fd`) is invalidated whenever items change.
 
 Default priority: `10`. Configurable decimal precision (default `8`).

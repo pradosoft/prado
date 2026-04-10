@@ -1,13 +1,13 @@
-# THeader2
+# Web/UI/WebControls/THeader2
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THeader2](./THeader2.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THeader2`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THeader2.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THeader2 is a simple control for rendering h2 elements with theme support. It extends THtmlElement and allows themes to redefine the TagName via TWebControlDecorator.
 
 ## Key Properties/Methods

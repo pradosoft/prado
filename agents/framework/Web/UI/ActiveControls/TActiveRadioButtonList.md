@@ -1,13 +1,13 @@
-# TActiveRadioButtonList
+# Web/UI/ActiveControls/TActiveRadioButtonList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveRadioButtonList](./TActiveRadioButtonList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveRadioButtonList`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveRadioButtonList.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TRadioButtonList. AutoPostBack is true by default, so selection changes trigger callbacks. Supports dynamic selection updates on the client side when EnableUpdate is true.
 
 ## Key Properties/Methods

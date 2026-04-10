@@ -1,13 +1,13 @@
-# TLiteralColumn
+# Web/UI/WebControls/TLiteralColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TLiteralColumn](./TLiteralColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TLiteralColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TLiteralColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TLiteralColumn represents a static text column bound to a field in a data source. Cells display formatted text from the data field, or static text if no data field is specified.
 
 ## Key Properties/Methods

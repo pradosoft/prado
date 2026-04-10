@@ -1,13 +1,13 @@
-# TTabPanel
+# Web/UI/WebControls/TTabPanel
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTabPanel](./TTabPanel.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTabPanel`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTabPanel.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Tabbed panel control. Renders a `<div>` container with tab headers and content panes. Each tab corresponds to a `TTabView` child. The active tab is tracked via viewstate and handled via postback data (`IPostBackDataHandler`).
 
 JavaScript: `controls/tabpanel.js` (published via `TAssetManager`).

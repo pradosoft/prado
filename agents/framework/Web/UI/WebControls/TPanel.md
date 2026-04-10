@@ -1,13 +1,13 @@
-# TPanel
+# Web/UI/WebControls/TPanel
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPanel](./TPanel.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPanel`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPanel.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPanel is a container control that renders a `<div>` element. It acts as a grouping wrapper for other controls and is commonly used to show/hide entire regions, set a default submit button for a section of a form, or render a `<fieldset>` with a legend.
 
 When `GroupingText` is set, TPanel wraps its contents in a `<fieldset><legend>` structure inside the outer `<div>`. When `DefaultButton` is set, pressing Enter within the panel fires that button's click event via a registered JavaScript handler.

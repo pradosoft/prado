@@ -1,12 +1,13 @@
-# IO / TStreamNotificationCallback
+# IO/TStreamNotificationCallback
 
-[./](../INDEX.md) > [IO](./INDEX.md) > [TStreamNotificationCallback](./TStreamNotificationCallback.md)
+### Directories
+[framework](../INDEX.md) / [IO](./INDEX.md) / **`TStreamNotificationCallback`**
 
+## Class Info
 **Location:** `framework/IO/TStreamNotificationCallback.php`
 **Namespace:** `Prado\IO`
 
 ## Overview
-
 Wraps PHP's stream context notification callback mechanism into a `TComponent`-based event system. Intercepts the low-level callback triggered by `fopen()`, `file_get_contents()`, and `file_put_contents()` when using a stream context with a `notification` parameter.
 
 The class is **invokable** (`__invoke`) — it is passed directly as the stream context notification callable. Each `STREAM_NOTIFY_*` code is mapped to a corresponding Prado `on*` event (`onProgress`, `onMimeType`, `onFailure`, etc.) so handlers can be attached via the normal `$obj->onProgress[] = ...` event syntax.

@@ -1,13 +1,13 @@
-# TViewCollection
+# Web/UI/WebControls/TViewCollection
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TViewCollection](./TViewCollection.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TViewCollection`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TViewCollection.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TViewCollection represents a collection that maintains TView controls. It extends TControlCollection and ensures only TView instances can be added to the collection.
 
 ## Key Properties/Methods

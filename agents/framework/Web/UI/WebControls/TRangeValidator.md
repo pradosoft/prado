@@ -1,13 +1,13 @@
-# TRangeValidator
+# Web/UI/WebControls/TRangeValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TRangeValidator](./TRangeValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TRangeValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TRangeValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TRangeValidator tests whether an input value is within a specified range. It uses MinValue, MaxValue, and DataType properties to validate Integer, Float, Date, String, or StringLength values.
 
 ## Key Properties/Methods

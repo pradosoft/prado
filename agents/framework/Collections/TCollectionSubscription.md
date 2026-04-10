@@ -1,13 +1,13 @@
-# TCollectionSubscription
+# Collections/TCollectionSubscription
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TCollectionSubscription](./TCollectionSubscription.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TCollectionSubscription`**
 
+## Class Info
 **Location:** `framework/Collections/TCollectionSubscription.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TCollectionSubscription provides subscription to ArrayAccess collections without passing by reference. Unlike [TArraySubscription](./TArraySubscription.md) which works with PHP arrays, this class works only with ArrayAccess objects.
 
 ## Inheritance

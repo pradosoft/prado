@@ -1,13 +1,12 @@
-# I18N / core / MessageSource_XLIFF
+# I18N/core/MessageSource_XLIFF
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [MessageSource_XLIFF](./MessageSource_XLIFF.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`MessageSource_XLIFF`**
 
 **Location:** `framework/I18N/core/MessageSource_XLIFF.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 XLIFF (XML Localization Interchange File Format) message source. Industry-standard translation format.
 
 ## XLIFF File Format

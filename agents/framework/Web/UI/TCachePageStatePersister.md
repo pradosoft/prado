@@ -1,13 +1,13 @@
-# TCachePageStatePersister
+# Web/UI/TCachePageStatePersister
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TCachePageStatePersister](./TCachePageStatePersister.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TCachePageStatePersister`**
 
+## Class Info
 **Location:** `framework/Web/UI/TCachePageStatePersister.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TCachePageStatePersister implements page state persistence using a cache backend (memcache, DB, APC, etc.). Only a small token is passed to the client, reducing page state transmission size. The cache timeout limits how long state data is stored. Requires a cache module to be loaded.
 
 ## Key Properties/Methods

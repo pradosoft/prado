@@ -1,14 +1,13 @@
-# TShellCronLogBehavior
+# Util/Cron/TShellCronLogBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Cron](./INDEX.md) / **`TShellCronLogBehavior`**
 
-[Util](../) > [Cron](Cron/) > TShellCronLogBehavior
-
+## Class Info
 **Location:** `framework/Util/Cron/TShellCronLogBehavior.php`
 **Namespace:** `Prado\Util\Cron`
 
 ## Overview
-
 TShellCronLogBehavior is a behavior that enables cron logging to the shell. It wraps TShellWriter and provides dynamic event handlers for logging cron execution, including task start, task end, and flush operations.
 
 ## Key Properties/Methods

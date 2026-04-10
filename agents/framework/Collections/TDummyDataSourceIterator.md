@@ -1,13 +1,13 @@
-# TDummyDataSourceIterator
+# Collections/TDummyDataSourceIterator
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TDummyDataSourceIterator](./TDummyDataSourceIterator.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TDummyDataSourceIterator`**
 
+## Class Info
 **Location:** `framework/Collections/TDummyDataSourceIterator.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TDummyDataSourceIterator implements the PHP Iterator interface for traversing dummy/virtual data items. Used internally by [TDummyDataSource](./TDummyDataSource.md).
 
 ## Key Features

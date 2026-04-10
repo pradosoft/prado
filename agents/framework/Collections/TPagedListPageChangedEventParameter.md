@@ -1,13 +1,13 @@
-# TPagedListPageChangedEventParameter
+# Collections/TPagedListPageChangedEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TPagedListPageChangedEventParameter](./TPagedListPageChangedEventParameter.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TPagedListPageChangedEventParameter`**
 
+## Class Info
 **Location:** `framework/Collections/TPagedListPageChangedEventParameter.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 Event parameter for the [TPagedList](./TPagedList.md)::OnPageChanged event. Provides the previous page index when the page changes.
 
 ## Properties

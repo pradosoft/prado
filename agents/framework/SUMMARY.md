@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Framework/SUMMARY.md
 
 Root source directory of the Prado PHP framework (PSR-4 namespace `Prado\`).
 

@@ -1,13 +1,13 @@
-# TEditCommandColumn
+# Web/UI/WebControls/TEditCommandColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TEditCommandColumn](./TEditCommandColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TEditCommandColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TEditCommandColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TEditCommandColumn contains Edit/Update/Cancel command buttons for editing data items in a DataGrid row.
 
 ## Key Properties/Methods

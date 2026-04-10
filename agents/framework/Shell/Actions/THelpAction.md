@@ -1,13 +1,13 @@
-# Shell / Actions / THelpAction
+# Shell/Actions/THelpAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [THelpAction](./THelpAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`THelpAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/THelpAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Displays help information for shell commands.
 
 ## Usage

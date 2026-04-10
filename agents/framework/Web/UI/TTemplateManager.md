@@ -1,13 +1,13 @@
-# TTemplateManager
+# Web/UI/TTemplateManager
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TTemplateManager](./TTemplateManager.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TTemplateManager`**
 
+## Class Info
 **Location:** `framework/Web/UI/TTemplateManager.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Module responsible for loading and parsing control templates (`.tpl` and `.page` files). Registered with [TPageService](../Services/TPageService.md) as the template manager; accessible via `TPageService::getTemplateManager()`.
 
 Provides two loading paths:

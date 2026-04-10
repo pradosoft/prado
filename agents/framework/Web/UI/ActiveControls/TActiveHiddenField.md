@@ -1,13 +1,13 @@
-# TActiveHiddenField
+# Web/UI/ActiveControls/TActiveHiddenField
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveHiddenField](./TActiveHiddenField.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveHiddenField`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveHiddenField.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to THiddenField. Value property can be updated during callback after OnLoad stage.
 
 ## Key Properties/Methods

@@ -1,13 +1,12 @@
-# IBindable
+# Web/UI/IBindable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [IBindable](./IBindable.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`IBindable`**
 
 **Location:** `framework/Web/UI/IBindable.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for classes that can perform databinding.
 
 ## Key Methods
@@ -19,5 +18,3 @@ Interface for classes that can perform databinding.
 ## See Also
 
 - [TControl](./TControl.md) - Base control class
-
-(End of file - total 18 lines)

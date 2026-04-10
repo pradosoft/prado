@@ -1,13 +1,13 @@
-# TCompareValidator
+# Web/UI/WebControls/TCompareValidator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TCompareValidator](./TCompareValidator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TCompareValidator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TCompareValidator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TCompareValidator compares a value against another input control value or a constant value. Supports Integer, Float, Date, and String data types.
 
 ## Key Properties/Methods

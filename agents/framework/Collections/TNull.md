@@ -1,13 +1,13 @@
-# TNull
+# Collections/TNull
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TNull](./TNull.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TNull`**
 
+## Class Info
 **Location:** `framework/Collections/TNull.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TNull implements the Null Object pattern, providing a reusable singleton that represents "nothing". Acts as a type-safe, well-behaved substitute for PHP's native `null`.
 
 ## Key Features

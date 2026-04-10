@@ -1,13 +1,13 @@
-# TJuiDialog
+# Web/UI/JuiControls/TJuiDialog
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiDialog](./TJuiDialog.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiDialog`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiDialog.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Modal/non-modal dialog widget based on jQuery UI Dialog. Extends [TActivePanel](../ActiveControls/TActivePanel.md). Content is rendered server-side as child controls. Supports buttons via [TJuiDialogButton](TJuiDialogButton.md) children.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TActiveTableRow
+# Web/UI/ActiveControls/TActiveTableRow
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveTableRow](./TActiveTableRow.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveTableRow`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveTableRow.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TTableRow. Clicking the row triggers a callback and raises `OnRowSelected` event. Responds to bubbled `OnCellSelected` events from child [TActiveTableCell](./TActiveTableCell.md) controls. Contents can be updated during callback response.
 
 ## Key Properties/Methods

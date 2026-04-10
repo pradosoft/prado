@@ -1,13 +1,13 @@
-# TDataList
+# Web/UI/WebControls/TDataList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataList](./TDataList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDataList represents a data-bound and updatable list control. Displays items repeatedly based on data source, supports tiling layouts, and maintains item state for editing and selection.
 
 ## Key Properties/Methods

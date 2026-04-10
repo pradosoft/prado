@@ -1,9 +1,13 @@
-# TSqlMapXmlConfigBuilder
+# Data/SqlMap/Configuration/TSqlMapXmlConfigBuilder
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TSqlMapXmlConfigBuilder`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TSqlMapXmlConfigBuilder](./TSqlMapXmlConfigBuilder.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TSqlMapXmlConfigBuilder.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TSqlMapXmlConfigBuilder`
 
 Abstract base builder for parsing SqlMap XML configuration.

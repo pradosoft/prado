@@ -1,13 +1,13 @@
-# TSocketException
+# Exceptions/TSocketException
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TSocketException](./TSocketException.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TSocketException`**
 
+## Class Info
 **Location:** `framework/Exceptions/TSocketException.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 Handles all socket-related exceptions. Extends `TNetworkException`.
 
 ## Hierarchy

@@ -1,14 +1,13 @@
-# TJavaScriptLiteral
+# Web/Javascripts/TJavaScriptLiteral
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Javascripts](./INDEX.md) / **`TJavaScriptLiteral`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Javascripts](./INDEX.md) > [TJavaScriptLiteral](./TJavaScriptLiteral.md)
-
+## Class Info
 **Location:** `framework/Web/Javascripts/TJavaScriptLiteral.php`
 **Namespace:** `Prado\Web\Javascripts`
 
 ## Overview
-
 TJavaScriptLiteral encloses string literals that should not be escaped by `TJavaScript::encode()`. Since Prado 3.2, all data sent to the client-side is encoded by default to prevent injection attacks. This class allows bypassing that encoding for raw JavaScript code.
 
 ## Key Properties/Methods

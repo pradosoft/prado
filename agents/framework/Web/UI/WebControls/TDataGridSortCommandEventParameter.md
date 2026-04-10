@@ -1,13 +1,13 @@
-# TDataGridSortCommandEventParameter
+# Web/UI/WebControls/TDataGridSortCommandEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDataGridSortCommandEventParameter](./TDataGridSortCommandEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDataGridSortCommandEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDataGridSortCommandEventParameter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 Event parameter for TDataGrid onSortCommand events.
 
 ## Key Properties/Methods

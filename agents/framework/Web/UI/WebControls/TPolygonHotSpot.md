@@ -1,13 +1,13 @@
-# TPolygonHotSpot
+# Web/UI/WebControls/TPolygonHotSpot
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TPolygonHotSpot](./TPolygonHotSpot.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TPolygonHotSpot`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TPolygonHotSpot.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TPolygonHotSpot defines a polygon hot spot region in an ImageMap control. Coordinates are specified as pairs of x,y values for each vertex.
 
 ## Key Properties/Methods

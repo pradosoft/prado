@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/ActiveRecord/Exceptions/SUMMARY.md
 
 Exception classes specific to the Active Record ORM subsystem.
 

@@ -1,13 +1,13 @@
-# TGlobalStateCacheDependency
+# Caching/TGlobalStateCacheDependency
 
 ### Directories
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TGlobalStateCacheDependency](./TGlobalStateCacheDependency.md)
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TGlobalStateCacheDependency`**
 
+## Class Info
 **Location:** `framework/Caching/TGlobalStateCacheDependency.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 [TGlobalStateCacheDependency](./TGlobalStateCacheDependency.md) watches a PRADO global state value. The cache is invalidated when the global state value changes.
 
 ## Usage

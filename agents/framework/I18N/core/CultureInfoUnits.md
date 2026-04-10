@@ -1,13 +1,12 @@
-# I18N / core / CultureInfoUnits
+# I18N/core/CultureInfoUnits
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [CultureInfoUnits](./CultureInfoUnits.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`CultureInfoUnits`**
 
 **Location:** `framework/I18N/core/CultureInfoUnits.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Constants for culture-specific unit definitions following Unicode CLDR format. Used by `CultureInfo::getUnit()` and `formatUnit()`.
 
 ## Unit Type Constants

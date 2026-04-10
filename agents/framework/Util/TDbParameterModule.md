@@ -1,14 +1,13 @@
-# TDbParameterModule
+# Util/TDbParameterModule
 
 ### Directories
+[framework](../INDEX.md) / [Util](./INDEX.md) / **`TDbParameterModule`**
 
-[Util](../) > TDbParameterModule
-
+## Class Info
 **Location:** `framework/Util/TDbParameterModule.php`
 **Namespace:** `Prado\Util`
 
 ## Overview
-
 Database-backed parameter store. Extends `[TModule](TModule.md)` (not `[TParameterModule](TParameterModule.md)`) and implements `[IDbModule](IDbModule.md)` and `IPermissions`. Stores named key-value pairs in a database table, with optional in-memory capture of changes made to `[TApplication](../TApplication.md)::getParameters()` during the request.
 
 Supports WordPress-style `option_name`/`option_value` schema (configurable), auto-table creation, and custom serialization.

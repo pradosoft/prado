@@ -1,13 +1,13 @@
-# TDummyDataSource
+# Collections/TDummyDataSource
 
 ### Directories
-[./](../INDEX.md) > [Collections](./INDEX.md) > [TDummyDataSource](./TDummyDataSource.md)
+[framework](../INDEX.md) / [Collections](./INDEX.md) / **`TDummyDataSource`**
 
+## Class Info
 **Location:** `framework/Collections/TDummyDataSource.php`
 **Namespace:** `Prado\Collections`
 
 ## Overview
-
 TDummyDataSource implements a dummy data source with a specified number of virtual data items. Used for testing or when you need a data source that returns a fixed number of empty items.
 
 ## Key Features

@@ -1,13 +1,13 @@
-# TWizardStep
+# Web/UI/WebControls/TWizardStep
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWizardStep](./TWizardStep.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWizardStep`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWizardStep.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWizardStep represents a step in a TWizard. It extends TView and provides properties for title, step type, and allow return functionality.
 
 ## Key Properties/Methods

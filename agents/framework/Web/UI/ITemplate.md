@@ -1,13 +1,12 @@
-# ITemplate
+# Web/UI/ITemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ITemplate](./ITemplate.md)
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / [UI](./Web/UI/INDEX.md) / **`ITemplate`**
 
 **Location:** `framework/Web/UI/ITemplate.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Interface for template implementations.
 
 ## Key Methods
@@ -21,5 +20,3 @@ Interface for template implementations.
 
 - [TTemplate](./TTemplate.md) - Template implementation
 - [TControl](./TControl.md)
-
-(End of file - total 19 lines)

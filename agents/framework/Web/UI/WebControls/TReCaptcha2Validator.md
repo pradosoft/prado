@@ -1,13 +1,13 @@
-# TReCaptcha2Validator
+# Web/UI/WebControls/TReCaptcha2Validator
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TReCaptcha2Validator](./TReCaptcha2Validator.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TReCaptcha2Validator`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TReCaptcha2Validator.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TReCaptcha2Validator validates user input against a TReCaptcha2 control. It performs server-side validation of the reCAPTCHA response token. The validation fails if the user does not pass the humanity test.
 
 ## Key Properties/Methods

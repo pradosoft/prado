@@ -1,13 +1,13 @@
-# TCallbackClientSide
+# Web/UI/ActiveControls/TCallbackClientSide
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TCallbackClientSide](./TCallbackClientSide.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TCallbackClientSide`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TCallbackClientSide.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Stores client-side callback options and event handlers. Manages the callback lifecycle events (onPreDispatch, onLoading, onLoaded, onInteractive, onComplete, onSuccess, onFailure, onException) and configuration options like PostState, RequestTimeOut, and RetryLimit.
 
 ## Key Properties/Methods

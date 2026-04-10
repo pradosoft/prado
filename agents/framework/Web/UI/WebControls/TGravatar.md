@@ -1,13 +1,13 @@
-# TGravatar
+# Web/UI/WebControls/TGravatar
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TGravatar](./TGravatar.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TGravatar`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TGravatar.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TGravatar extends TImage to display a Gravatar image based on an email address. It supports configurable size (1-512px), rating levels (g, pg, r, x), and default image styles including mp, identicon, monsterid, wavatar, retro, robohash, blank, 404, or custom URL.
 
 ## Key Properties/Methods

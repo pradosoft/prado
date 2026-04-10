@@ -1,4 +1,4 @@
-# SUMMARY.md
+# Data/Common/SUMMARY.md
 
 Driver-agnostic base classes for database schema introspection and SQL query building; each database driver has a subdirectory extending these abstractions.
 

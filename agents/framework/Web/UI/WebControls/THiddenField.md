@@ -1,13 +1,13 @@
-# THiddenField
+# Web/UI/WebControls/THiddenField
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THiddenField](./THiddenField.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THiddenField`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THiddenField.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THiddenField displays a hidden input field on a Web page. The value can be accessed via the Value property, and if changed between posts, raises an OnValueChanged event.
 
 ## Key Properties/Methods

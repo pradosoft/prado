@@ -1,13 +1,13 @@
-# Shell / Actions / TPhpShellAction
+# Shell/Actions/TPhpShellAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [TPhpShellAction](./TPhpShellAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`TPhpShellAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/TPhpShellAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Starts an interactive PHP shell (REPL) with the PRADO application bootstrapped.
 
 ## Usage

@@ -1,13 +1,12 @@
-# I18N / core / Gettext / TGettext_PO
+# I18N/core/Gettext/TGettext_PO
 
 ### Directories
-[./](../../INDEX.md) > [I18N](../INDEX.md) > [core](../INDEX.md) > [Gettext](./INDEX.md) > [TGettext_PO](./TGettext_PO.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / [Gettext](./I18N/core/Gettext/INDEX.md) / **`TGettext_PO`**
 
 **Location:** `framework/I18N/core/Gettext/TGettext_PO.php`
 **Namespace:** `Prado\I18N\core\Gettext`
 
 ## Overview
-
 Reads and writes GNU gettext source text `.po` files. Used for translation authoring and editing.
 
 ## PO File Format

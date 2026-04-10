@@ -1,14 +1,13 @@
-# TAPCCache
+# Caching/TAPCCache
 
 ### Directories
+[framework](../INDEX.md) / [Caching](./INDEX.md) / **`TAPCCache`**
 
-[./](../INDEX.md) > [Caching](./INDEX.md) > [TAPCCache](./TAPCCache.md)
-
+## Class Info
 **Location:** `framework/Caching/TAPCCache.php`
 **Namespace:** `Prado\Caching`
 
 ## Overview
-
 `TAPCCache` provides in-memory caching using the APCu PHP extension. Data is stored in shared memory and persists for the duration of the PHP process (or PHP-FPM request).
 
 ## Quick Start

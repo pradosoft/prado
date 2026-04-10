@@ -1,13 +1,13 @@
-# TDropDownList
+# Web/UI/WebControls/TDropDownList
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDropDownList](./TDropDownList.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDropDownList`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDropDownList.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDropDownList displays a dropdown list on a Web page. It inherits from TListControl and supports optgroup for grouping items, and prompt text for displaying a selectable prompt item as the first option.
 
 ## Key Properties/Methods

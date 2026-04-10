@@ -1,13 +1,13 @@
-# THyperLinkColumn
+# Web/UI/WebControls/THyperLinkColumn
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [THyperLinkColumn](./THyperLinkColumn.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`THyperLinkColumn`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/THyperLinkColumn.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 THyperLinkColumn contains hyperlinks for each item in a DataGrid column. Text and URL can be static or bound to data fields.
 
 ## Key Properties/Methods

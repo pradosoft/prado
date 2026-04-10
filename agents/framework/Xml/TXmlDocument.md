@@ -1,14 +1,14 @@
-# TXmlDocument
+# Xml/TXmlDocument
 
 ### Directories
-[./](../INDEX.md) > [Xml](./INDEX.md) > [TXmlDocument](./TXmlDocument.md)
+[framework](../INDEX.md) / [Xml](./INDEX.md) / **`TXmlDocument`**
 
+## Class Info
 **Location:** `framework/Xml/TXmlDocument.php`
 **Namespace:** `Prado\Xml`
 **Extends:** `[TXmlElement](./TXmlElement.md)`
 
 ## Overview
-
 Represents an entire XML document. Extends `[TXmlElement](./TXmlElement.md)` so the root element *is* the document — `TagName` on the document is the root tag name. Internally backed by PHP's `DOMDocument`.
 
 Related classes: `[TXmlElement](./TXmlElement.md)`, `[TXmlElementList](./TXmlElementList.md)`.

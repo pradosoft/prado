@@ -1,13 +1,13 @@
-# TActiveHtmlArea5
+# Web/UI/ActiveControls/TActiveHtmlArea5
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveHtmlArea5](./TActiveHtmlArea5.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveHtmlArea5`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveHtmlArea5.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to THtmlArea5 (TinyMCE 5+). Supports callback handling and content updates during callback. Text property can be updated client-side when EnableVisualEdit is enabled.
 
 ## Key Properties/Methods

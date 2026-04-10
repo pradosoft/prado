@@ -1,4 +1,4 @@
-# SUMMARY.md
+# I18N/core/Gettext/SUMMARY.md
 
 GNU Gettext `.po`/`.mo` file reader/writer for the Prado I18N message source system.
 

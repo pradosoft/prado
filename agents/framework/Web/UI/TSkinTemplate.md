@@ -1,13 +1,13 @@
-# TSkinTemplate
+# Web/UI/TSkinTemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TSkinTemplate](./TSkinTemplate.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TSkinTemplate`**
 
+## Class Info
 **Location:** `framework/Web/UI/TSkinTemplate.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 Extends [TTemplate](./TTemplate.md) specifically for parsing `.skin` files used by the theming system. The single behavioral difference from `TTemplate` is that **attribute validation is disabled** before parsing begins.
 
 This allows skin files to reference control classes or properties that may not be available in all installations, making themes more portable. Parse-time errors that would normally abort template parsing are deferred: errors surface only when the skin is actually applied to a control and a property assignment fails.

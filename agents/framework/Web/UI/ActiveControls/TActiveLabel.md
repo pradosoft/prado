@@ -1,13 +1,13 @@
-# TActiveLabel
+# Web/UI/ActiveControls/TActiveLabel
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveLabel](./TActiveLabel.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveLabel`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveLabel.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Active counterpart to TLabel. Text and ForControl properties can be updated during callback and the changes are reflected on the client side.
 
 ## Key Properties/Methods

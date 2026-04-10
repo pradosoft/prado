@@ -1,13 +1,13 @@
-# TActiveDataGridPagerEventParameter
+# Web/UI/ActiveControls/TActiveDataGridPagerEventParameter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveDataGridPagerEventParameter](./TActiveDataGridPagerEventParameter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveDataGridPagerEventParameter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveDataGridPagerEventParameter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Event parameter for [TActiveDataGrid](./TActiveDataGrid.md) `onPagerCreated` event. Wraps [TActiveDataGridPager](./TActiveDataGridPager.md) to allow event handlers to access the created pager.
 
 ## Key Properties/Methods

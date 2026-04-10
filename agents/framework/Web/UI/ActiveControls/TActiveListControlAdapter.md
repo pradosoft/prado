@@ -1,13 +1,13 @@
-# TActiveListControlAdapter
+# Web/UI/ActiveControls/TActiveListControlAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActiveListControlAdapter](./TActiveListControlAdapter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActiveListControlAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActiveListControlAdapter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Adapts list controls ([TActiveDropDownList](./TActiveDropDownList.md), [TActiveListBox](./TActiveListBox.md), etc.) to allow client-side selection changes during callback. Manages setSelectedIndex, setSelectedValue, clearSelection, and list item updates.
 
 ## Key Properties/Methods

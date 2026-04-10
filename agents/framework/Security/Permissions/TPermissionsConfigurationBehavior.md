@@ -1,14 +1,13 @@
-# TPermissionsConfigurationBehavior
+# Security/Permissions/TPermissionsConfigurationBehavior
 
 ### Directories
+[framework](../../INDEX.md) / [Security](../INDEX.md) / [Permissions](./INDEX.md) / **`TPermissionsConfigurationBehavior`**
 
-[./](../INDEX.md) > [Security](../INDEX.md) > [Permissions](./INDEX.md) > [TPermissionsConfigurationBehavior](./TPermissionsConfigurationBehavior.md)
-
+## Class Info
 **Location:** `framework/Security/Permissions/TPermissionsConfigurationBehavior.php`
 **Namespace:** `Prado\Security\Permissions`
 
 ## Overview
-
 Behavior for [TPageConfiguration](../../Web/Services/TPageConfiguration.md) that reads permissions role hierarchy and permission rules from page configuration files (PHP or XML).
 
 ## Key Methods

@@ -1,14 +1,13 @@
-# TJsonRpcProtocol
+# Web/Services/TJsonRpcProtocol
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TJsonRpcProtocol`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TJsonRpcProtocol](./TJsonRpcProtocol.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TJsonRpcProtocol.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TJsonRpcProtocol implements the JSON-RPC protocol for TRpcService, supporting both version 1.0 and 2.0 of the specification. The server automatically responds using the same protocol version as the requesting client. Handles method calls, notifications, and proper error responses.
 
 ## Key Properties/Methods

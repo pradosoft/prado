@@ -1,13 +1,13 @@
-# Shell / Actions / TFlushCachesAction
+# Shell/Actions/TFlushCachesAction
 
 ### Directories
-[./](../INDEX.md) > [Shell](../INDEX.md) > [Actions](./INDEX.md) > [TFlushCachesAction](./TFlushCachesAction.md)
+[framework](../../INDEX.md) / [Shell](../INDEX.md) / [Actions](./INDEX.md) / **`TFlushCachesAction`**
 
+## Class Info
 **Location:** `framework/Shell/Actions/TFlushCachesAction.php`
 **Namespace:** `Prado\Shell\Actions`
 
 ## Overview
-
 Lists and flushes application cache modules implementing `ICache`.
 
 ## Usage

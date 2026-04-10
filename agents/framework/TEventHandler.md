@@ -1,4 +1,11 @@
-# TEventHandler Class
+# TEventHandler
+
+### Directories
+[framework](./INDEX.md) / **`TEventHandler`**
+
+## Class Info
+**Location:** `framework/TEventHandler.php`
+**Namespace:** `Prado`
 
 ## Overview
 TEventHandler is a helper class for passing specific data along with an event handler. It's invokable and will pass invoked method arguments forward to the managed handler with the specified data.

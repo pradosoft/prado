@@ -1,14 +1,13 @@
-# TDbTransaction
+# Data/TDbTransaction
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbTransaction`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbTransaction](./TDbTransaction.md)
-
+## Class Info
 **Location:** `framework/Data/TDbTransaction.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDbTransaction` represents a database transaction. It is created by calling [`TDbConnection::beginTransaction()`](./TDbConnection.md).
 
 ## Key Methods

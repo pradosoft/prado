@@ -1,6 +1,7 @@
 # PHPStan/INDEX.md
 
-[./](../INDEX.md) > [PHPStan](./INDEX.md)
+### Directories
+[framework](./INDEX.md) / **`PHPStan/INDEX.md`**
 
 ## Purpose
 

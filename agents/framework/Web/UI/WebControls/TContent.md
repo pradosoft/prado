@@ -1,7 +1,11 @@
-# TContent Class
+# Web/UI/WebControls/TContent
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TContent](./TContent.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TContent`**
+
+## Class Info
+**Location:** `framework/Web/UI/WebControls/TContent.php`
+**Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
 TContent specifies a block of content on a control's template that will be injected at a specific location in a master control's template. It works with TContentPlaceHolder to implement a template decoration pattern.

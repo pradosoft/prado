@@ -1,9 +1,13 @@
-# TScaffoldBase
+# Data/ActiveRecord/Scaffold/TScaffoldBase
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [ActiveRecord](../INDEX.md) / [Scaffold](./INDEX.md) / **`TScaffoldBase`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [ActiveRecord](../INDEX.md) > [Scaffold](./INDEX.md) > [TScaffoldBase](./TScaffoldBase.md)
+## Class Info
+**Location:** `framework/Data/ActiveRecord/Scaffold/TScaffoldBase.php`
+**Namespace:** `Prado\Data\ActiveRecord\Scaffold`
 
+## Overview
 `Prado\Data\ActiveRecord\Scaffold\TScaffoldBase`
 
 Abstract base class for Active Record scaffold views.

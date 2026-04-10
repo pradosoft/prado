@@ -1,9 +1,13 @@
-# TInlineParameterMapParser
+# Data/SqlMap/Configuration/TInlineParameterMapParser
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Configuration](./INDEX.md) / **`TInlineParameterMapParser`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Configuration](./INDEX.md) > [TInlineParameterMapParser](./TInlineParameterMapParser.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Configuration/TInlineParameterMapParser.php`
+**Namespace:** `Prado\Data\SqlMap\Configuration`
 
+## Overview
 `Prado\Data\SqlMap\Configuration\TInlineParameterMapParser`
 
 Parses inline `#propertyName#` parameter syntax in SQL strings.

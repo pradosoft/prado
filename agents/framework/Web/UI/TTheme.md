@@ -1,13 +1,13 @@
-# TTheme
+# Web/UI/TTheme
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [TTheme](./TTheme.md)
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [UI](./INDEX.md) / **`TTheme`**
 
+## Class Info
 **Location:** `framework/Web/UI/TTheme.php`
 **Namespace:** `Prado\Web\UI`
 
 ## Overview
-
 TTheme represents a particular theme as a collection of control skins stored in a directory. Each `.skin` file under the theme directory is parsed and saved as control skins. Skins apply initial property values to controls based on their class name and SkinID. TTheme supports caching to save parsing time and handles RTL CSS file prioritization for right-to-left languages.
 
 ## Key Properties/Methods

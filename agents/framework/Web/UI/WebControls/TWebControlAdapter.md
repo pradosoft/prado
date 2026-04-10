@@ -1,13 +1,13 @@
-# TWebControlAdapter
+# Web/UI/WebControls/TWebControlAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TWebControlAdapter](./TWebControlAdapter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TWebControlAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TWebControlAdapter.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TWebControlAdapter is the base class for adapters that customize rendering for Web controls. It may modify markup or behavior for specific browsers.
 
 ## Key Properties/Methods

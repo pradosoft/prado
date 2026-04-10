@@ -1,9 +1,13 @@
-# TPostSelectBinding
+# Data/SqlMap/Statements/TPostSelectBinding
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [Statements](./INDEX.md) / **`TPostSelectBinding`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [Statements](./INDEX.md) > [TPostSelectBinding](./TPostSelectBinding.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/Statements/TPostSelectBinding.php`
+**Namespace:** `Prado\Data\SqlMap\Statements`
 
+## Overview
 `Prado\Data\SqlMap\Statements\TPostSelectBinding`
 
 Post-select statement binding.

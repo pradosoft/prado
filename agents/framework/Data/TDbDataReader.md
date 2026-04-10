@@ -1,14 +1,13 @@
-# TDbDataReader
+# Data/TDbDataReader
 
 ### Directories
+[framework](../INDEX.md) / [Data](./INDEX.md) / **`TDbDataReader`**
 
-[./](../INDEX.md) > [Data](./INDEX.md) > [TDbDataReader](./TDbDataReader.md)
-
+## Class Info
 **Location:** `framework/Data/TDbDataReader.php`
 **Namespace:** `Prado\Data`
 
 ## Overview
-
 `TDbDataReader` represents a forward-only stream of rows from a query result set. It implements `Iterator` and `Countable`.
 
 ## Key Methods

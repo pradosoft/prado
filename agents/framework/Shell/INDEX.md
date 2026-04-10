@@ -1,8 +1,7 @@
 # Shell/INDEX.md
 
 ### Directories
-
-[./](../INDEX.md) > [Shell](./INDEX.md)
+[framework](./INDEX.md) / **`Shell/INDEX.md`**
 
 ## Purpose
 
@@ -39,5 +38,3 @@ Built-in shell commands:
 - **Exit codes** — Return non-zero from `run()` to signal error.
 - **User context** — Attach [`TShellLoginBehavior`](TShellLoginBehavior.md) to require authentication before action runs.
 - **Quiet mode** — Check `$this->getApplication()->getQuietMode()` before verbose output.
-
-(End of file - total 44 lines)

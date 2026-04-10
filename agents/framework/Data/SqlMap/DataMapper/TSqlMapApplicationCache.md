@@ -1,9 +1,13 @@
-# TSqlMapApplicationCache
+# Data/SqlMap/DataMapper/TSqlMapApplicationCache
 
 ### Directories
+[framework](../../../INDEX.md) / [Data](../../INDEX.md) / [SqlMap](../INDEX.md) / [DataMapper](./INDEX.md) / **`TSqlMapApplicationCache`**
 
-[./](../../INDEX.md) > [Data](../../INDEX.md) > [SqlMap](../INDEX.md) > [DataMapper](./INDEX.md) > [TSqlMapApplicationCache](./TSqlMapApplicationCache.md)
+## Class Info
+**Location:** `framework/Data/SqlMap/DataMapper/TSqlMapApplicationCache.php`
+**Namespace:** `Prado\Data\SqlMap\DataMapper`
 
+## Overview
 `Prado\Data\SqlMap\DataMapper\TSqlMapApplicationCache`
 
 Delegates to the Prado application cache.

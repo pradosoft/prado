@@ -1,14 +1,13 @@
-# TDbCommandBuilder
+# Data/Common/TDbCommandBuilder
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [Common](./INDEX.md) / **`TDbCommandBuilder`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](./INDEX.md) > [TDbCommandBuilder](./TDbCommandBuilder.md)
-
+## Class Info
 **Location:** `framework/Data/Common/TDbCommandBuilder.php`
 **Namespace:** `Prado\Data\Common`
 
 ## Overview
-
 `TDbCommandBuilder` provides methods to create SQL query commands for a specific table.
 
 ## Key Methods

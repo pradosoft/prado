@@ -1,13 +1,13 @@
-# TDatePickerClientScript
+# Web/UI/WebControls/TDatePickerClientScript
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TDatePickerClientScript](./TDatePickerClientScript.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TDatePickerClientScript`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TDatePickerClientScript.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TDatePickerClientScript extends TClientSideOptions to provide client-side event handling for TDatePicker controls. It allows customization of JavaScript code that executes when the date picker's date changes.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# THttpSessionHandler
+# Web/THttpSessionHandler
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [THttpSessionHandler](./THttpSessionHandler.md)
+[framework](../INDEX.md) / [Web](./INDEX.md) / **`THttpSessionHandler`**
 
+## Class Info
 **Location:** `framework/Web/THttpSessionHandler.php`
 **Namespace:** `Prado\Web`
 
 ## Overview
-
 THttpSessionHandler implements PHP's `SessionHandlerInterface` and is used internally when `THttpSession::UseCustomStorage` is enabled. It delegates session operations to [THttpSession](./THttpSession.md)'s internal methods.
 
 ## Key Properties/Methods

@@ -1,13 +1,13 @@
-# TMultiView
+# Web/UI/WebControls/TMultiView
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TMultiView](./TMultiView.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TMultiView`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TMultiView.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TMultiView serves as a container for a group of TView controls. Only one view can be active at a time. It responds to command events from buttons to switch views and raises OnActiveViewChanged when the active view changes.
 
 ## Key Properties/Methods

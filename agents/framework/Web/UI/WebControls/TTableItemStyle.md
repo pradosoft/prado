@@ -1,13 +1,13 @@
-# TTableItemStyle
+# Web/UI/WebControls/TTableItemStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TTableItemStyle](./TTableItemStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TTableItemStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TTableItemStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TTableItemStyle represents the CSS style specific for HTML table items (td/th). It extends TStyle and adds horizontal/vertical alignment and text wrapping properties.
 
 ## Key Properties/Methods

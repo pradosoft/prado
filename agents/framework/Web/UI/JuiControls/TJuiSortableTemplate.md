@@ -1,13 +1,13 @@
-# TJuiSortableTemplate
+# Web/UI/JuiControls/TJuiSortableTemplate
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiSortableTemplate](./TJuiSortableTemplate.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiSortableTemplate`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiSortableTemplate.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Default template class for TJuiSortable item templates. Implements ITemplate for PRADO's templating system.
 
 ## Key Properties/Methods

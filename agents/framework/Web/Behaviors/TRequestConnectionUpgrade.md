@@ -1,14 +1,13 @@
-# TRequestConnectionUpgrade
+# Web/Behaviors/TRequestConnectionUpgrade
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Behaviors](./INDEX.md) / **`TRequestConnectionUpgrade`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Behaviors](./INDEX.md) > [TRequestConnectionUpgrade](./TRequestConnectionUpgrade.md)
-
+## Class Info
 **Location:** `framework/Web/Behaviors/TRequestConnectionUpgrade.php`
 **Namespace:** `Prado\Web\Behaviors`
 
 ## Overview
-
 A behavior for `THttpRequest` that injects HTTP "Connection: Upgrade" and "Upgrade" headers into URL parameters. This enables service selection (e.g., WebSocket) via HTTP upgrade headers without requiring explicit URL parameters. Attaches to the `onResolveRequest` event via the `events()` method.
 
 ## Key Properties/Methods

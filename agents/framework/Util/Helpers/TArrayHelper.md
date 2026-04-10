@@ -1,14 +1,13 @@
-# TArrayHelper
+# Util/Helpers/TArrayHelper
 
 ### Directories
+[framework](../../INDEX.md) / [Util](../INDEX.md) / [Helpers](./INDEX.md) / **`TArrayHelper`**
 
-[Util](../) > [Helpers](Helpers/) > TArrayHelper
-
+## Class Info
 **Location:** `framework/Util/Helpers/TArrayHelper.php`
 **Namespace:** `Prado\Util\Helpers`
 
 ## Overview
-
 Static utility class for array operations.
 
 ## Key Methods

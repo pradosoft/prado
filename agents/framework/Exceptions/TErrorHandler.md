@@ -1,13 +1,13 @@
-# TErrorHandler
+# Exceptions/TErrorHandler
 
 ### Directories
-[./](../INDEX.md) > [Exceptions](./INDEX.md) > [TErrorHandler](./TErrorHandler.md)
+[framework](../INDEX.md) / [Exceptions](./INDEX.md) / **`TErrorHandler`**
 
+## Class Info
 **Location:** `framework/Exceptions/TErrorHandler.php`
 **Namespace:** `Prado\Exceptions`
 
 ## Overview
-
 TErrorHandler is a module that handles all PHP errors and exceptions during request processing. It displays errors using configurable templates and supports multilingual error messages.
 
 ## Key Features

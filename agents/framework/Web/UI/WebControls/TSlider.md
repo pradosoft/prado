@@ -1,13 +1,13 @@
-# TSlider
+# Web/UI/WebControls/TSlider
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TSlider](./TSlider.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TSlider`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TSlider.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TSlider displays a slider for numeric input. It consists of a track defining the range and a handle that slides to select a value. Supports horizontal and vertical directions, step sizes, and custom values.
 
 ## Key Properties/Methods

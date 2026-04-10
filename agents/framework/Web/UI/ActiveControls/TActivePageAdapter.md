@@ -1,13 +1,13 @@
-# TActivePageAdapter
+# Web/UI/ActiveControls/TActivePageAdapter
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [ActiveControls](./INDEX.md) > [TActivePageAdapter](./TActivePageAdapter.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [ActiveControls](./INDEX.md) / **`TActivePageAdapter`**
 
+## Class Info
 **Location:** `framework/Web/UI/ActiveControls/TActivePageAdapter.php`
 **Namespace:** `Prado\Web\UI\ActiveControls`
 
 ## Overview
-
 Callback request handler for TPage. Intercepts callback requests, routes to `raiseCallbackEvent()`, and sends response via `X-PRADO-*` headers. Manages deferred control rendering, response data, page state updates, and delayed redirects.
 
 ## Key Properties/Methods

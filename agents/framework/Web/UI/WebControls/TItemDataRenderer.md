@@ -1,13 +1,13 @@
-# TItemDataRenderer
+# Web/UI/WebControls/TItemDataRenderer
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TItemDataRenderer](./TItemDataRenderer.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TItemDataRenderer`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TItemDataRenderer.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TItemDataRenderer is a convenient base class for item data renderers in repeater/list controls. Implements IItemDataRenderer interface.
 
 ## Key Properties/Methods

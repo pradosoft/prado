@@ -1,14 +1,13 @@
-# TSoapServer
+# Web/Services/TSoapServer
 
 ### Directories
+[framework](../../INDEX.md) / [Web](../INDEX.md) / [Services](./INDEX.md) / **`TSoapServer`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md) > [TSoapServer](./TSoapServer.md)
-
+## Class Info
 **Location:** `framework/Web/Services/TSoapServer.php`
 **Namespace:** `Prado\Web\Services`
 
 ## Overview
-
 TSoapServer wraps PHP's SoapServer class to provide SOAP/WSDL web services. It associates a provider class with the SOAP server, manages service URIs, and auto-generates WSDL from provider classes using reflection. Supports SOAP 1.1 and 1.2, session persistence, and WSDL caching.
 
 ## Key Properties/Methods

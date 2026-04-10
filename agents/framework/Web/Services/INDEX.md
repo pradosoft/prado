@@ -1,8 +1,9 @@
 # Web/Services/INDEX.md
 
 ### Directories
+[framework](./INDEX.md) / [Web](./Web/INDEX.md) / **`Services/INDEX.md`**
 
-[./](../INDEX.md) > [Web](../INDEX.md) > [Services](./INDEX.md)
+## Purpose
 
 Application services for the Prado framework. Each service handles a different type of response. Services are registered in `application.xml` and activated by [TApplication](framework/TApplication.md) based on the incoming request.
 

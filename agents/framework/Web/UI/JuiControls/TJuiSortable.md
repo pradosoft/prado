@@ -1,13 +1,13 @@
-# TJuiSortable
+# Web/UI/JuiControls/TJuiSortable
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [JuiControls](./INDEX.md) > [TJuiSortable](./TJuiSortable.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [JuiControls](./INDEX.md) / **`TJuiSortable`**
 
+## Class Info
 **Location:** `framework/Web/UI/JuiControls/TJuiSortable.php`
 **Namespace:** `Prado\Web\UI\JuiControls`
 
 ## Overview
-
 Sortable list based on jQuery UI Sortable interaction. Extends [TActivePanel](../ActiveControls/TActivePanel.md) and internally renders a [TRepeater](../WebControls/TRepeater.md) as an unordered list. Items can be sorted by dragging and dropping.
 
 ## Key Properties/Methods

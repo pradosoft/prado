@@ -1,13 +1,13 @@
-# TBulletStyle
+# Web/UI/WebControls/TBulletStyle
 
 ### Directories
-[./](../INDEX.md) > [Web](../INDEX.md) > [UI](../INDEX.md) > [WebControls](./INDEX.md) > [TBulletStyle](./TBulletStyle.md)
+[framework](../../../INDEX.md) / [Web](../../INDEX.md) / [UI](../INDEX.md) / [WebControls](./INDEX.md) / **`TBulletStyle`**
 
+## Class Info
 **Location:** `framework/Web/UI/WebControls/TBulletStyle.php`
 **Namespace:** `Prado\Web\UI\WebControls`
 
 ## Overview
-
 TBulletStyle defines enumerable values for bullet styles in TBulletedList controls.
 
 ## Constants

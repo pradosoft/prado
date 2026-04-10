@@ -1,13 +1,12 @@
-# I18N / core / ChoiceFormat
+# I18N/core/ChoiceFormat
 
 ### Directories
-[./](../INDEX.md) > [I18N](../INDEX.md) > [core](./INDEX.md) > [ChoiceFormat](./ChoiceFormat.md)
+[framework](./INDEX.md) / [I18N](./I18N/INDEX.md) / [core](./I18N/core/INDEX.md) / **`ChoiceFormat`**
 
 **Location:** `framework/I18N/core/ChoiceFormat.php`
 **Namespace:** `Prado\I18N\core`
 
 ## Overview
-
 Evaluates ICU-style plural/interval expressions. Used by `MessageFormat` for pluralization. Maps numeric ranges to localized string choices.
 
 ## Usage

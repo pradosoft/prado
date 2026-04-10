@@ -1,14 +1,13 @@
-# TDbTableColumn
+# Data/Common/TDbTableColumn
 
 ### Directories
+[framework](../../INDEX.md) / [Data](../INDEX.md) / [Common](./INDEX.md) / **`TDbTableColumn`**
 
-[./](../INDEX.md) > [Data](../../INDEX.md) > [Common](./INDEX.md) > [TDbTableColumn](./TDbTableColumn.md)
-
+## Class Info
 **Location:** `framework/Data/Common/TDbTableColumn.php`
 **Namespace:** `Prado\Data\Common`
 
 ## Overview
-
 `TDbTableColumn` describes the metadata of a single database table column.
 
 ## Properties
