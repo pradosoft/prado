@@ -191,14 +191,16 @@ jobs:
 
       - name: Setup Firebird schema
         run: |
-          # Copy the SQL file into the container and run isql-fb from inside it,
-          # avoiding the need to install host-side Firebird client packages
-          # (firebird3.0-utils is unavailable on ubuntu-24.04).
           docker cp ./tests/initdb_firebird.sql ${{ job.services.firebird.id }}:/tmp/initdb_firebird.sql
-          docker exec ${{ job.services.firebird.id }} \
-            /usr/bin/isql-fb localhost:/firebird/data/prado_unitest.fdb \
+          # Wrap in bash -c so the container's $PATH is active.
+          # The upstream Firebird release names the tool "isql"; Debian packages
+          # rename it "isql-fb" to avoid a conflict with unixodbc.  We try both.
+          docker exec ${{ job.services.firebird.id }} bash -c "
+            ISQL=\$(which isql-fb 2>/dev/null || which isql 2>/dev/null) &&
+            \$ISQL localhost:/firebird/data/prado_unitest.fdb \
               -user SYSDBA -password masterkey \
               -i /tmp/initdb_firebird.sql
+          "
 
       - name: Run Firebird tests
         run: php vendor/bin/phpunit tests/unit/Data/DbCommon/FirebirdColumnTest.php
