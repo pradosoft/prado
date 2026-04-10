@@ -1,7 +1,10 @@
 -- IBM DB2 test database schema for prado unit tests
 -- Run as db2inst1 (DB2 instance owner) after connecting to the database:
---   db2 CONNECT TO prado_unitest
+--   db2 CONNECT TO pradount
 --   db2 -td@ -f tests/initdb_ibm.sql
+--
+-- NOTE: DB2 database names are limited to 8 characters and may not contain
+-- underscores — hence "prado" rather than "prado_unitest".
 --
 -- The DROP blocks use CONTINUE HANDLERs so the script is safe to run on a
 -- fresh database (SQLSTATE 42704 = object not found is silently ignored).

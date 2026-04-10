@@ -196,7 +196,7 @@ jobs:
           # (firebird3.0-utils is unavailable on ubuntu-24.04).
           docker cp ./tests/initdb_firebird.sql ${{ job.services.firebird.id }}:/tmp/initdb_firebird.sql
           docker exec ${{ job.services.firebird.id }} \
-            isql-fb localhost:/firebird/data/prado_unitest.fdb \
+            /opt/firebird/bin/isql-fb localhost:/firebird/data/prado_unitest.fdb \
               -user SYSDBA -password masterkey \
               -i /tmp/initdb_firebird.sql
 
@@ -217,7 +217,9 @@ jobs:
       - name: Setup Oracle Free + Instant Client
         uses: gvenzl/setup-oracle-free@v1
         with:
-          tag: latest-faststart
+          tag: 23.6-slim-faststart
+          container-runtime: docker
+          health-max-retries: 120
           app-user: prado_unitest
           app-user-password: prado_unitest
           setup-scripts: tests/initdb_oracle.sql
@@ -256,13 +258,13 @@ jobs:
         env:
           DB2INSTANCE: db2inst1
           DB2INST1_PASSWORD: Prado_Unitest1
-          DBNAME: prado_unitest
+          DBNAME: pradount
           LICENSE: accept
         ports:
           - 50000:50000
         options: >-
           --privileged
-          --health-cmd "su - db2inst1 -c 'db2 connect to prado_unitest'"
+          --health-cmd "su - db2inst1 -c 'db2 connect to pradount'"
           --health-interval 30s
           --health-timeout 20s
           --health-retries 20
@@ -294,12 +296,12 @@ jobs:
         run: |
           docker cp ./tests/initdb_ibm.sql ${{ job.services.db2.id }}:/tmp/initdb.sql
           docker exec ${{ job.services.db2.id }} \
-            su - db2inst1 -c "db2 connect to prado_unitest && db2 -td@ -f /tmp/initdb.sql"
+            su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
         run: php vendor/bin/phpunit tests/unit/Data/DbCommon/IbmColumnTest.php
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1
-          DB2_DATABASE: prado_unitest
+          DB2_DATABASE: pradount
 
