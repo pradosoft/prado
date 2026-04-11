@@ -35,7 +35,7 @@ jobs:
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, openssl, pcre, spl, zlib
+          extensions: ctype, dom, intl, json, mbstring, memcached, pdo_mysql, pdo_pgsql, pdo_sqlite, openssl, pcre, spl, zlib
           tools: php-cs-fixer, phpstan, cs2pr
 
       - name: Validate composer.json and composer.lock
@@ -93,5 +93,253 @@ jobs:
         run: |
           composer functionaltest
 
+  db-mssql:
+    name: SQL Server
+    runs-on: ubuntu-latest
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Prado_Unitest1
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -U sa -P Prado_Unitest1 -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Setup PHP with SQL Server extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_sqlsrv, sqlsrv, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install mssql-tools18
+        run: |
+          curl -sSL -O https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update -qq
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+
+      - name: Setup SQL Server schema
+        run: >-
+          /opt/mssql-tools18/bin/sqlcmd -C
+          -U sa -P Prado_Unitest1
+          -i ./tests/initdb_mssql.sql
+
+      - name: Run SQL Server tests
+        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/MssqlColumnTest.php
+
+  db-firebird:
+    name: Firebird
+    runs-on: ubuntu-latest
+    services:
+      firebird:
+        image: firebirdsql/firebird:4-jammy
+        env:
+          FIREBIRD_DATABASE: prado_unitest.fdb
+          FIREBIRD_ROOT_PASSWORD: masterkey
+        ports:
+          - 3050:3050
+        options: >-
+          --health-cmd "test -f /var/lib/firebird/data/prado_unitest.fdb"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-start-period 30s
+          --health-retries 24
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with Firebird extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_firebird, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup Firebird schema
+        run: |
+          docker cp ./tests/initdb_firebird.sql ${{ job.services.firebird.id }}:/tmp/initdb_firebird.sql
+          # bash -c loads the container's PATH; isql exits 0 on SQL errors so we
+          # capture output and treat any "Statement failed" line as a hard failure.
+          docker exec ${{ job.services.firebird.id }} bash -c "
+            ISQL=\$(which isql-fb 2>/dev/null || which isql 2>/dev/null)
+            if [ -z \"\$ISQL\" ]; then echo 'isql binary not found'; exit 1; fi
+            OUTPUT=\$(\"\$ISQL\" localhost:/var/lib/firebird/data/prado_unitest.fdb \
+              -user SYSDBA -password masterkey \
+              -i /tmp/initdb_firebird.sql 2>&1)
+            RC=\$?
+            printf '%s\n' \"\$OUTPUT\"
+            echo \"\$OUTPUT\" | grep -q 'Statement failed' && exit 1
+            exit \$RC
+          "
+
+      - name: Run Firebird tests
+        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/FirebirdColumnTest.php
+
+  db-oracle:
+    name: Oracle
+    runs-on: ubuntu-latest
+    # Run Oracle as a service container (like the other DB jobs) so GitHub
+    # Actions owns the health-check loop and we control retries directly.
+    # The gvenzl/setup-oracle-free action has no input to increase its timeout,
+    # so it reliably times out on slower runners.
+    services:
+      oracle:
+        image: gvenzl/oracle-free:23.6-slim-faststart
+        env:
+          ORACLE_PASSWORD: prado_unitest
+          APP_USER: prado_unitest
+          APP_USER_PASSWORD: prado_unitest
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install Oracle Instant Client 19c on the runner so that setup-php can
+      # compile pdo_oci / oci8 against it.  19c client works fine against a
+      # 23c server and has a stable, auth-free download URL.
+      - name: Install Oracle Instant Client
+        run: |
+          sudo apt-get install -y libaio1t64 unzip 2>/dev/null || \
+            sudo apt-get install -y libaio1 unzip
+          wget -q -O /tmp/ic.zip \
+            "https://download.oracle.com/otn_software/linux/instantclient/193000/instantclient-basiclite-linux.x64-19.3.0.0.0dbru.zip"
+          sudo unzip -q /tmp/ic.zip -d /opt/oracle
+          echo "/opt/oracle/instantclient_19_3" | sudo tee /etc/ld.so.conf.d/oracle.conf
+          sudo ldconfig
+          echo "ORACLE_HOME=/opt/oracle/instantclient_19_3" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/opt/oracle/instantclient_19_3" >> $GITHUB_ENV
+
+      - name: Setup PHP with OCI extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_oci, oci8, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup Oracle schema
+        run: |
+          docker cp ./tests/initdb_oracle.sql ${{ job.services.oracle.id }}:/tmp/initdb_oracle.sql
+          # -u oracle runs the command as the oracle OS user, whose login environment
+          # has ORACLE_HOME set and sqlplus on PATH.  source .bash_profile loads that
+          # environment; bare bash -c or su both fail because docker exec uses a
+          # minimal PATH that doesn't include /bin (where su lives on Oracle Linux).
+          docker exec -u oracle ${{ job.services.oracle.id }} \
+            bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
+
+      - name: Run Oracle tests
+        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/OciColumnTest.php
+        env:
+          ORACLE_SERVICE_NAME: FREEPDB1
+
+  db-ibm:
+    name: IBM DB2
+    # DB2 image takes 2-3 minutes to start; only run on explicit manual dispatch.
+    # if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      db2:
+        image: icr.io/db2_community/db2
+        env:
+          DB2INSTANCE: db2inst1
+          DB2INST1_PASSWORD: Prado_Unitest1
+          DBNAME: pradount
+          LICENSE: accept
+        ports:
+          - 50000:50000
+        options: >-
+          --privileged
+          --health-cmd "su - db2inst1 -c 'db2 connect to pradount'"
+          --health-interval 30s
+          --health-timeout 20s
+          --health-retries 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP with IBM DB2 extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: ctype, dom, intl, json, mbstring, pdo_ibm, ibm_db2, openssl, pcre, spl, zlib
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Setup IBM DB2 schema
+        run: |
+          docker cp ./tests/initdb_ibm.sql ${{ job.services.db2.id }}:/tmp/initdb.sql
+          docker exec ${{ job.services.db2.id }} \
+            su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
+
+      - name: Run IBM DB2 tests
+        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/IbmColumnTest.php
+        env:
+          DB2_USER: db2inst1
+          DB2_PASSWORD: Prado_Unitest1
+          DB2_DATABASE: pradount
 

@@ -34,7 +34,7 @@ trait TNoUnserializeClassBehaviorTrait
 	 */
 	public function dyWakeUp(object $owner, TCallChain $chain)
 	{
-		if ($index = array_search($this, $owner->getBehaviors())) {
+		if (($index = array_search($this, $owner->getBehaviors())) !== false) {
 			$owner->detachBehavior($index);
 		}
 		return $chain->dyWakeUp();

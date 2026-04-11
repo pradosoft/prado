@@ -20,7 +20,7 @@ use Prado\Shell\TShellAction;
  *
  * Create active record skeleton
  *
- * @author Brad Anderson <belisoful[at]icloud[dot]com> - Shell refactor
+ * @author Brad Anderson <belisoful[at]icloud[dot]com> - Shell refactor, expanded DB support
  * @author Matthias Endres <me[at]me23[dot]de> - Generate-All
  * @author Daniel Sampedro Bello <darthdaniel85[at]gmail[dot]com> - Generate-All
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com> - Generate
@@ -78,11 +78,23 @@ class TActiveRecordAction extends TShellAction
 					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
 					break;
 				case 'pgsql':
+					$command = $con->createCommand("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
+					break;
 				case 'mssql': // Mssql driver on windows hosts
 				case 'sqlsrv': // sqlsrv driver on windows hosts
 				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+					$command = $con->createCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'");
+					break;
 				case 'oci':
-					//				case 'ibm':
+					$command = $con->createCommand("SELECT table_name FROM user_tables");
+					break;
+				case 'ibm':
+					$command = $con->createCommand("SELECT TABNAME FROM SYSCAT.TABLES WHERE TABSCHEMA = CURRENT SCHEMA AND TYPE = 'T' ORDER BY TABNAME");
+					break;
+				case 'firebird':
+				case 'interbase':
+					$command = $con->createCommand("SELECT TRIM(RDB\$RELATION_NAME) AS tbl_name FROM RDB\$RELATIONS WHERE RDB\$SYSTEM_FLAG = 0 AND RDB\$VIEW_BLR IS NULL ORDER BY RDB\$RELATION_NAME");
+					break;
 				default:
 					$this->_outWriter->writeError("Sorry, generateAll is not implemented for " . $con->getDriverName() . ".");
 			}

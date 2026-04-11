@@ -76,8 +76,8 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	}
 
 	/**
-	 * Behaviors do not automatically listen to global events.
-	 *
+	 * Behaviors do not automatically listen to global events. Behaviors must
+	 * individually elect by overriding and returning true.
 	 * @return bool returns whether or not to listen.
 	 */
 	public function getAutoGlobalListen()
@@ -247,6 +247,15 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	}
 
 	/**
+	 * @return bool Is the behavior attached to an owner.
+	 * @since 4.3.3
+	 */
+	public function getHasOwner(): bool
+	{
+		return $this->hasOwner();
+	}
+
+	/**
 	 * RetainDisabledHandlers has three states:
 	 *   1) "true" is to always install the event handlers regardless of behavior enabled
 	 *      or owner behaviors enabled status.
@@ -401,6 +410,44 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 * @since 4.3.0
 	 */
 	abstract protected function setHandlersStatus(TComponent $component, bool $attach): bool;
+
+	/**
+	 * This throws an exception if there is an owner on the behavior.
+	 * @param string $property     The name of the Property requiring no owner.
+	 * @param string $exceptionKey The key name of the exception message, default is null
+	 *							   and uses {@see getWithoutOwnerExceptionKey()} for the
+	 *							   backup default message.
+	 * @since 4.3.3
+	 */
+	protected function assertWithoutOwner(string $property, ?string $exceptionKey = null): void
+	{
+		if ($this->hasOwner()) {
+			throw new TInvalidOperationException(
+				$exceptionKey ?? $this->getWithoutOwnerExceptionKey(),
+				$property,
+				array_slice(explode('\\', static::class), -1)[0]
+			);
+		}
+	}
+
+	/**
+	 * Returns the PRADO error message catalogue key used by {@see assertWithoutOwner()}
+	 * when it throws a {@see TInvalidOperationException}.
+	 *
+	 * The key's corresponding message should contain a `{0}` placeholder for
+	 * the property name, for example:
+	 * ```
+	 * "MyClass.{0} cannot be changed after attachment."
+	 * ```
+	 * Override to return a module-specific key.
+	 *
+	 * @return string a PRADO error message catalogue key.
+	 * @since 4.3.3
+	 */
+	protected function getWithoutOwnerExceptionKey(): string
+	{
+		return 'behavior_property_unchangeable';
+	}
 
 	/**
 	 * Returns an array with the names of all variables of this object that should NOT be serialized
