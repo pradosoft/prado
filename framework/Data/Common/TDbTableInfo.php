@@ -81,6 +81,22 @@ class TDbTableInfo extends \Prado\TComponent
 	}
 
 	/**
+	 * Returns the schema (owner/namespace) name for database engines that support
+	 * schemas.  Returns null for schema-less engines (SQLite, Firebird).
+	 *
+	 * The concrete class must implement {@see IDbHasSchema} for a non-null value
+	 * to be returned; this prevents schema-less drivers from accidentally exposing
+	 * a stored value if one were ever written to the info array.
+	 *
+	 * @return ?string schema name, or null if the engine does not support schemas.
+	 * @since 4.3.3
+	 */
+	public function getSchemaName(): ?string
+	{
+		return $this instanceof IDbHasSchema ? $this->getInfo('SchemaName') : null;
+	}
+
+	/**
 	 * @return string name of the table this column belongs to.
 	 */
 	public function getTableName()

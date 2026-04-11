@@ -10,6 +10,8 @@
 
 namespace Prado\Data\Common;
 
+use Prado\Data\Common\Firebird\TFirebirdMetaData;
+use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;
@@ -78,6 +80,11 @@ abstract class TDbMetaData extends \Prado\TComponent
 				return new TMssqlMetaData($conn);
 			case 'oci':
 				return new TOracleMetaData($conn);
+			case 'ibm':
+				return new TIbmMetaData($conn);
+			case 'firebird':
+			case 'interbase':
+				return new TFirebirdMetaData($conn);
 			default:
 				throw new TDbException('ar_invalid_database_driver', $driver);
 		}

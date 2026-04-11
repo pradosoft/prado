@@ -1,0 +1,235 @@
+<?php
+
+use Prado\Data\Common\Ibm\TIbmMetaData;
+use Prado\Data\Common\TDbTableColumn;
+
+class IbmColumnTest extends PHPUnit\Framework\TestCase
+{
+	protected function setUp(): void
+	{
+		if (!extension_loaded('pdo_ibm')) {
+			$this->markTestSkipped('The pdo_ibm extension is not available.');
+		}
+	}
+
+	public function create_meta_data()
+	{
+		// DB2 uses OS-level authentication; the username must be an OS user on the DB2 host.
+		// Docker / CI: DB2_USER=db2inst1 (the DB2 instance owner created by the image).
+		// Local install: set DB2_USER/DB2_PASSWORD/DB2_DATABASE to match your environment.
+		$user     = getenv('DB2_USER')     ?: 'db2inst1';
+		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
+		$database = getenv('DB2_DATABASE') ?: 'pradount';
+		$conn = new TDbConnection(
+			'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $database . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP',
+			$user,
+			$password
+		);
+		return new TIbmMetaData($conn);
+	}
+
+	public function test_columns()
+	{
+		$meta = $this->create_meta_data();
+		try {
+			$table = $meta->getTableInfo('table1');
+		} catch (\Exception $e) {
+			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
+		}
+
+		// Schema: see tests/initdb_ibm.sql
+		$this->assertCount(14, $table->getColumns());
+		// TIbmMetaData always resolves the schema to the DB2 current schema (e.g. the DB2 user name)
+		$this->assertNotNull($table->getSchemaName());
+		$this->assertEquals('TABLE1', $table->getTableName());
+		$this->assertEquals(['id'], $table->getPrimaryKeys());
+
+		$columns = [];
+
+		$columns['id'] = [
+			'ColumnName'   => '"ID"',
+			'ColumnIndex'  => 0,
+			'DbType'       => 'integer',
+			'AllowNull'    => false,
+			'IsPrimaryKey' => true,
+			'IsForeignKey' => false,
+			'AutoIncrement' => true,
+		];
+
+		$columns['name'] = [
+			'ColumnName'   => '"NAME"',
+			'ColumnIndex'  => 1,
+			'DbType'       => 'varchar',
+			'ColumnSize'   => 45,
+			'AllowNull'    => false,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+			'AutoIncrement' => false,
+		];
+
+		$columns['field1_smallint'] = [
+			'ColumnName'   => '"FIELD1_SMALLINT"',
+			'ColumnIndex'  => 2,
+			'DbType'       => 'smallint',
+			'AllowNull'    => false,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+			'AutoIncrement' => false,
+		];
+
+		$columns['field2_varchar'] = [
+			'ColumnName'   => '"FIELD2_VARCHAR"',
+			'ColumnIndex'  => 3,
+			'DbType'       => 'varchar',
+			'ColumnSize'   => 4000,
+			'AllowNull'    => true,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+		];
+
+		$columns['field3_date'] = [
+			'ColumnName'   => '"FIELD3_DATE"',
+			'ColumnIndex'  => 4,
+			'DbType'       => 'date',
+			'AllowNull'    => true,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+		];
+
+		$columns['field5_decimal'] = [
+			'ColumnName'       => '"FIELD5_DECIMAL"',
+			'ColumnIndex'      => 6,
+			'DbType'           => 'decimal',
+			'AllowNull'        => false,
+			'NumericPrecision' => 10,
+			'NumericScale'     => 4,
+			'IsPrimaryKey'     => false,
+			'IsForeignKey'     => false,
+		];
+
+		$columns['field9_bigint'] = [
+			'ColumnName'   => '"FIELD9_BIGINT"',
+			'ColumnIndex'  => 10,
+			'DbType'       => 'bigint',
+			'AllowNull'    => false,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+		];
+
+		$columns['field10_char'] = [
+			'ColumnName'   => '"FIELD10_CHAR"',
+			'ColumnIndex'  => 11,
+			// DB2 SYSCAT.COLUMNS reports CHAR as TYPENAME='CHARACTER'
+			'DbType'       => 'character',
+			'ColumnSize'   => 10,
+			'AllowNull'    => true,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+		];
+
+		$columns['field11_boolean'] = [
+			'ColumnName'   => '"FIELD11_BOOLEAN"',
+			'ColumnIndex'  => 12,
+			'DbType'       => 'boolean',
+			'AllowNull'    => false,
+			'IsPrimaryKey' => false,
+			'IsForeignKey' => false,
+		];
+
+		$columns['field12_numeric'] = [
+			'ColumnName'       => '"FIELD12_NUMERIC"',
+			'ColumnIndex'      => 13,
+			// DB2: NUMERIC is a synonym for DECIMAL; SYSCAT reports TYPENAME='DECIMAL'
+			'DbType'           => 'decimal',
+			'AllowNull'        => false,
+			'NumericPrecision' => 8,
+			'NumericScale'     => 2,
+			'IsPrimaryKey'     => false,
+			'IsForeignKey'     => false,
+		];
+
+		$this->assertColumn($columns, $table);
+	}
+
+	public function test_schema_name()
+	{
+		$meta = $this->create_meta_data();
+		try {
+			$schema = $meta->getDefaultSchema();
+			$table = $meta->getTableInfo($schema . '.table1');
+		} catch (\Exception $e) {
+			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
+		}
+
+		$this->assertEquals(strtoupper($schema), $table->getSchemaName());
+		$this->assertEquals('TABLE1', $table->getTableName());
+		$this->assertEquals('"' . strtoupper($schema) . '"."TABLE1"', $table->getTableFullName());
+	}
+
+	public function test_find_table_names()
+	{
+		$meta = $this->create_meta_data();
+		try {
+			$names = $meta->findTableNames();
+		} catch (\Exception $e) {
+			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
+		}
+
+		$this->assertContains('table1', $names);
+		$this->assertContains('address', $names);
+	}
+
+	public function test_command_builder_insert()
+	{
+		$meta = $this->create_meta_data();
+		try {
+			$builder = $meta->createCommandBuilder('table1');
+		} catch (\Exception $e) {
+			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
+		}
+
+		$data = ['name' => 'test_insert', 'field1_smallint' => 1, 'field9_bigint' => 100];
+		$insert = $builder->createInsertCommand($data);
+		$this->assertStringContainsString('INSERT INTO', $insert->Text);
+		$this->assertStringContainsString('"TABLE1"', $insert->Text);
+	}
+
+	public function test_select_limit()
+	{
+		$meta = $this->create_meta_data();
+		try {
+			$builder = $meta->createCommandBuilder('table1');
+		} catch (\Exception $e) {
+			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
+		}
+
+		$query = 'SELECT * FROM ' . $meta->getTableInfo('table1')->getTableFullName();
+
+		$limit = $builder->applyLimitOffset($query, 1);
+		$this->assertEquals($query . ' FETCH FIRST 1 ROWS ONLY', $limit);
+
+		$limit = $builder->applyLimitOffset($query, 5, 0);
+		$this->assertEquals($query . ' FETCH FIRST 5 ROWS ONLY', $limit);
+
+		$limit = $builder->applyLimitOffset($query, 5, 10);
+		$this->assertStringContainsString('ROW_NUMBER() OVER()', $limit);
+		$this->assertStringContainsString('BETWEEN 11 AND 15', $limit);
+	}
+
+	public function assertColumn($columns, $table)
+	{
+		foreach ($columns as $id => $asserts) {
+			$column = $table->Columns[$id];
+			foreach ($asserts as $property => $assert) {
+				$ofAssert = var_export($assert, true);
+				$value = $column->{$property};
+				$ofValue = var_export($value, true);
+				$this->assertEquals(
+					$value,
+					$assert,
+					"Column [{$id}] {$property} value {$ofValue} did not match {$ofAssert}"
+				);
+			}
+		}
+	}
+}
