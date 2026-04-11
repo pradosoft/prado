@@ -5,6 +5,14 @@ use Prado\Exceptions\TNotSupportedException;
 use Prado\Security\TSecurityManager;
 use Prado\TApplication;
 
+class TCustomTestSecurityManager extends TSecurityManager
+{
+	public function publicGenerateRandomKey()
+	{
+		return $this->generateRandomKey();
+	}
+}
+
 class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app;
@@ -25,6 +33,16 @@ class TSecurityManagerTest extends PHPUnit\Framework\TestCase
 		$sec = new TSecurityManager();
 		$sec->init(null);
 		self::assertEquals($sec, self::$app->getSecurityManager());
+	}
+	
+	public function testGenerateRandomKey()
+	{
+		$sec = new TCustomTestSecurityManager();
+		$sec->init(null);
+		$randomKey = $sec->publicGenerateRandomKey();
+		
+		self::assertIsString($randomKey);
+		$this->assertSame(32, strlen($randomKey));
 	}
 
 	public function testValidationKey()
