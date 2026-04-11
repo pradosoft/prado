@@ -1,0 +1,7 @@
+Everything is documented in Working Knowlodge up to the Last Update commit stated in “agents/framework/INDEX.md”.
+
+Please add any new class, trait, or interface markdown, update the markdown of existing classes, traits, or interfaces that changed. Update their directory INDEX.md, then update any parents directories (recursively)- if necessary, and only when necessary.
+
+The goal of Working Knowledge is to make Coding Agents more efficient at project tasks.
+Use the same formatting as existing markdown documentation.
+When the process is complete, and only when complete, update the "agents/framework/INDEX.md" Last Update commit # to the current commit #.

@@ -1,0 +1,18 @@
+
+# Working Knowledge - Knowledge Retention Sub-Process Instructions
+- The goal of "Working Knowledge" is to make Coding Agents more efficient at project tasks.
+- The Working Knowledge directory is "agents/" and contains all Project Working Knowledge files.
+- The project directory path hierarchy "./*" is duplicated in "agents/*" to give directories their own Working Knowledge while keeping it separate from the project files.
+- INDEX.md is the main Knowledge file of a directory.
+- SUMMARY.md is the optimized brief summary of a directory.
+- Project classes may have a Knowledge files named after them at its relative directory in "agents/"
+- Scan files (via "find agents/ -type f -name '*.md'") and parse relevant knowledge files relating to directories and tasks at hand
+- When class files are updated, its directory Working Knowledge files must be updated.
+- When a directory Working Knowledge file is updated, the parent directory knowledge files must be recursively updated; start with the deepest directory paths first.
+- An 'INDEX.md' knowledge file is the extensive summary of its:
+  - subdirectories (with links to their INDEX.md) at the top (including "../"), with brief summary
+  - containing directory 
+  - classes within the directory and their features, use, and purpose
+- A 'SUMMARY.md' must summarize each class in the containing directory with:
+  - a summary the purpose and public API signatures
+  - be at most 2 sentences
