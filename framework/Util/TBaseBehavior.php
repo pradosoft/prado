@@ -76,7 +76,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	}
 
 	/**
-	 * Behaviors do not automatically listen to global events. Behaviors must 
+	 * Behaviors do not automatically listen to global events. Behaviors must
 	 * individually elect by overriding and returning true.
 	 * @return bool returns whether or not to listen.
 	 */
