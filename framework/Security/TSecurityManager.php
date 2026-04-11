@@ -236,7 +236,7 @@ class TSecurityManager extends \Prado\TModule
 
 		$hmac = $this->substr($data, 0, $len);
 		$data2 = $this->substr($data, $len, $this->strlen($data));
-		return $hmac === $this->computeHMAC($data2) ? $data2 : false;
+		return hash_equals($this->computeHMAC($data2), $hmac) ? $data2 : false;
 	}
 
 	/**
