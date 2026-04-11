@@ -124,7 +124,7 @@ interface IBaseBehavior extends IPriorityProperty
 	 * Property version of {@see hasOwner()}.
 	 * @todo 4.4
 	 * @param object $component
-	 * @return bool Is the behavior attached to an owner.
+	 * @ return bool Is the behavior attached to an owner.
 	 */
 	//public function getHasOwner(): bool;
 
