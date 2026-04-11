@@ -53,12 +53,25 @@ class TTarFileExtractor
 	private $_temp_tarname = '';
 
 	/**
+	 * @var bool Whether to fail on security issues (zip slip, symlink/hardlink attacks).
+	 *            When true (default), extraction fails on any security issue.
+	 *            When false, security issues are logged but extraction continues.
+	 */
+	private $_strict = true;
+
+	/**
+	 * @var array List of skipped files due to security issues when Strict is false.
+	 *            Each entry contains: type, filename, linkname (if symlink/hardlink),
+	 *            header copy, timestamp
+	 */
+	private array $_skippedFiles = [];
+
+	/**
 	 * Archive_Tar Class constructor. This flavour of the constructor only
 	 * declare a new Archive_Tar object, identifying it by the name of the
 	 * tar file.
 	 *
-	 * @param    string $p_tarname $p_tarname  The name of the tar archive to create
-	 * @access public
+	 * @param string $p_tarname The name of the tar archive to create
 	 */
 	public function __construct($p_tarname)
 	{
@@ -77,6 +90,68 @@ class TTarFileExtractor
 	public function extract($p_path = '')
 	{
 		return $this->extractModify($p_path, '');
+	}
+
+	/**
+	 * Returns whether strict mode is enabled.
+	 * When strict, extraction fails on any security issue (zip slip, symlink/hardlink attacks).
+	 * When not strict, security issues are logged but extraction continues.
+	 *
+	 * @return bool
+	 */
+	public function getStrict(): bool
+	{
+		return $this->_strict;
+	}
+
+	/**
+	 * Sets whether strict mode is enabled.
+	 * When strict (true, default), extraction fails on any security issue.
+	 * When not strict (false), security issues are logged but extraction continues.
+	 *
+	 * @param bool $value
+	 * @return static $this
+	 */
+	public function setStrict(bool $value): static
+	{
+		$this->_strict = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns whether any files were skipped due to security issues.
+	 *
+	 * @return bool True if files were skipped, false otherwise
+	 */
+	public function hasSkippedFiles(): bool
+	{
+		return count($this->_skippedFiles) > 0;
+	}
+
+	/**
+	 * Returns the list of files skipped due to security issues.
+	 *
+	 * @return array List of skipped file info, each containing:
+	 *   - type: string The type of security issue ('zip_slip', 'symlink', 'hardlink')
+	 *   - filename: string The filename that was skipped
+	 *   - linkname: string|null The link target (for symlink/hardlink)
+	 *   - header: array Copy of the tar header entry
+	 *   - timestamp: float Unix timestamp when the file was skipped
+	 */
+	public function getSkippedFiles(): array
+	{
+		return $this->_skippedFiles;
+	}
+
+	/**
+	 * Clears the skipped files list.
+	 *
+	 * @return static $this
+	 */
+	public function clearSkippedFiles(): static
+	{
+		$this->_skippedFiles = [];
+		return $this;
 	}
 
 	/**
@@ -222,6 +297,29 @@ class TTarFileExtractor
 		return true;
 	}
 
+	/**
+	 * Records a skipped file due to a security issue.
+	 *
+	 * @param string $type The type of security issue ('zip_slip', 'symlink', 'hardlink')
+	 * @param string $filename The filename that was skipped
+	 * @param null|string $linkname The link target (for symlink/hardlink)
+	 * @param array $header Copy of the tar header entry
+	 */
+	private function _addSkippedFile(string $type, string $filename, ?string $linkname, array $header): void
+	{
+		$this->_skippedFiles[] = [
+			'type' => $type,
+			'filename' => $filename,
+			'linkname' => $linkname,
+			'header' => $header,
+			'timestamp' => microtime(true),
+		];
+		Prado::warning(
+			"{$type} detected and skipped: {$filename}" . ($linkname !== null ? " (target: {$linkname})" : ''),
+			'Prado\IO\TTarFileExtractor'
+		);
+	}
+
 	private function _readBlock()
 	{
 		$v_block = null;
@@ -301,6 +399,7 @@ class TTarFileExtractor
 		$v_header['gid'] = OctDec(trim($v_data['gid']));
 		$v_header['size'] = OctDec(trim($v_data['size']));
 		$v_header['mtime'] = OctDec(trim($v_data['mtime']));
+		$v_header['linkname'] = trim($v_data['link']);
 		if (($v_header['typeflag'] = $v_data['typeflag']) == "5") {
 			$v_header['size'] = 0;
 		}
@@ -444,6 +543,19 @@ class TTarFileExtractor
 						$v_header['filename'] = $p_path . '/' . $v_header['filename'];
 					}
 				}
+
+				// ----- Validate path doesn't escape destination (Zip Slip prevention)
+				if (!$this->_validatePathSecurity($v_header['filename'], $p_path)) {
+					$message = 'Zip Slip path traversal attempt detected: ' . $v_header['filename'];
+					if ($this->_strict) {
+						$this->_error($message);
+						return false;
+					}
+					$this->_addSkippedFile('zip_slip', $v_header['filename'], null, $v_header);
+					$this->_jumpBlock(ceil(($v_header['size'] / 512)));
+					continue;
+				}
+
 				if (file_exists($v_header['filename'])) {
 					if ((@is_dir($v_header['filename']))
 			  && ($v_header['typeflag'] == '')) {
@@ -485,6 +597,39 @@ class TTarFileExtractor
 								return false;
 							}
 							chmod($v_header['filename'], Prado::getDefaultDirPermissions());
+						}
+					} elseif ($v_header['typeflag'] == "2") {
+						// ----- Symlink (typeflag = "2")
+						$v_linkname = trim($v_header['linkname'] ?? '');
+						if (!$this->_validateSymlinkTarget($v_linkname, dirname($v_header['filename']), $p_path)) {
+							$message = 'Symlink target outside extraction directory: ' . $v_linkname;
+							if ($this->_strict) {
+								$this->_error($message);
+								return false;
+							}
+							$this->_addSkippedFile('symlink', $v_header['filename'], $v_linkname, $v_header);
+							continue;
+						}
+						if (!@symlink($v_linkname, $v_header['filename'])) {
+							$this->_error('Unable to create symlink: ' . $v_header['filename']);
+							return false;
+						}
+					} elseif ($v_header['typeflag'] == "1") {
+						// ----- Hard link (typeflag = "1")
+						$v_linkname = trim($v_header['linkname'] ?? '');
+						if (!$this->_validateHardLinkTarget($v_linkname, dirname($v_header['filename']), $p_path)) {
+							$message = 'Hard link target outside extraction directory: ' . $v_linkname;
+							if ($this->_strict) {
+								$this->_error($message);
+								return false;
+							}
+							$this->_addSkippedFile('hardlink', $v_header['filename'], $v_linkname, $v_header);
+							continue;
+						}
+						$v_target_path = $p_path . '/' . $v_linkname;
+						if (!@link($v_target_path, $v_header['filename'])) {
+							$this->_error('Unable to create hard link: ' . $v_header['filename']);
+							return false;
 						}
 					} else {
 						if (($v_dest_file = @fopen($v_header['filename'], "wb")) == 0) {
@@ -550,6 +695,118 @@ class TTarFileExtractor
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validates that the extracted path doesn't escape the destination directory.
+	 * Prevents Zip Slip attacks via path traversal sequences like ../
+	 *
+	 * @param string $v_header_filename The constructed file path from tar entry
+	 * @param string $p_path The extraction destination path
+	 * @return bool True if path is contained, false if it escapes
+	 */
+	private function _validatePathSecurity($v_header_filename, $p_path)
+	{
+		$normalizedFilename = $this->_normalizePath($v_header_filename);
+		$normalizedDest = $this->_normalizePath($p_path);
+
+		if (strpos($normalizedFilename . '/', $normalizedDest . '/') !== 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates that a symlink target is within the extraction directory.
+	 *
+	 * @param string $v_linkname The symlink target
+	 * @param string $v_dir The directory where the symlink is being created
+	 * @param string $p_path The extraction destination path
+	 * @return bool True if target is safe, false if it escapes
+	 */
+	private function _validateSymlinkTarget($v_linkname, $v_dir, $p_path)
+	{
+		if ($v_linkname === '') {
+			return false;
+		}
+
+		// Determine the full path the symlink would resolve to
+		if (substr($v_linkname, 0, 1) === '/') {
+			// Absolute path symlink
+			$resolvedPath = $this->_normalizePath($v_linkname);
+		} else {
+			// Relative path - resolve relative to where symlink is created
+			$resolvedPath = $this->_normalizePath($v_dir . '/' . $v_linkname);
+		}
+
+		$normalizedDest = $this->_normalizePath($p_path);
+
+		// Check if resolved path is outside extraction directory
+		if (strpos($resolvedPath . '/', $normalizedDest . '/') !== 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validates that a hard link target is within the extraction directory.
+	 *
+	 * @param string $v_linkname The hard link target (file that already exists)
+	 * @param string $v_dir The directory where the hard link is being created
+	 * @param string $p_path The extraction destination path
+	 * @return bool True if target is safe, false if it escapes
+	 */
+	private function _validateHardLinkTarget($v_linkname, $v_dir, $p_path)
+	{
+		if ($v_linkname === '') {
+			return false;
+		}
+
+		if (substr($v_linkname, 0, 1) === '/') {
+			$resolvedPath = $this->_normalizePath($v_linkname);
+		} else {
+			$resolvedPath = $this->_normalizePath($v_dir . '/' . $v_linkname);
+		}
+
+		$normalizedDest = $this->_normalizePath($p_path);
+
+		if (strpos($resolvedPath . '/', $normalizedDest . '/') !== 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Normalizes a path for comparison by resolving . and .. sequences.
+	 *
+	 * @param string $path The path to normalize
+	 * @return string The normalized path
+	 */
+	private function _normalizePath($path)
+	{
+		$parts = explode('/', $path);
+		$normalized = [];
+
+		foreach ($parts as $part) {
+			if ($part === '' || $part === '.') {
+				continue;
+			}
+			if ($part === '..') {
+				array_pop($normalized);
+				continue;
+			}
+			$normalized[] = $part;
+		}
+
+		$result = implode('/', $normalized);
+		if (substr($path, 0, 1) === '/') {
+			$result = '/' . $result;
+		}
+
+		return $result === '' ? '.' : $result;
 	}
 
 	/**
