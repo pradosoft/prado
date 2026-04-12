@@ -24,7 +24,20 @@ use Prado\Prado;
  * TDbMetaData is the base class for retrieving metadata information, such as
  * table and columns information, from a database connection.
  *
- * Use the {@see getTableInfo} method to retrieve a table information.
+ * This class provides the foundation for database-specific metadata implementations
+ * (e.g., TMysqlMetaData, TSqliteMetaData, TPgsqlMetaData, etc.) that retrieve
+ * table and column information from the database.
+ *
+ * The metadata instances are created via the static {@see getInstance} method which
+ * determines the appropriate metadata handler based on the database driver. When no built-in driver
+ * matches, the {@see fxGetMetaDataInstance()} global event is raised to allow
+ * for extensibility through custom implementations.
+ *
+ * Example usage:
+ * ```php
+ * $metaData = TDbMetaData::getInstance($connection);
+ * $tableInfo = $metaData->getTableInfo('my_table');
+ * ```
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -57,9 +70,15 @@ abstract class TDbMetaData extends \Prado\TComponent
 	}
 
 	/**
-	 * Obtain database specific TDbMetaData class using the driver name of the database connection.
+	 * Obtains a database-specific TDbMetaData class based on the database connection driver.
+	 *
+	 * This method determines the appropriate metadata handler for the given database driver.
+	 * If no built-in driver is found, the {@see fxGetMetaDataInstance} global event
+	 * is raised to allow custom implementations to provide a metadata handler.
+	 *
 	 * @param \Prado\Data\TDbConnection $conn database connection.
-	 * @return TDbMetaData database specific TDbMetaData.
+	 * @throws TDbException if no metadata handler can be created for the driver.
+	 * @return TDbMetaData database-specific TDbMetaData.
 	 */
 	public static function getInstance($conn)
 	{
@@ -86,7 +105,15 @@ abstract class TDbMetaData extends \Prado\TComponent
 			case 'interbase':
 				return new TFirebirdMetaData($conn);
 			default:
-				throw new TDbException('ar_invalid_database_driver', $driver);
+				$instances = $conn->raiseEvent('fxGetMetaDataInstance', self::class, $conn);
+				if (empty($instances)) {
+					throw new TDbException('dbmetadata_invalid_database_driver', $driver);
+				}
+				$metaData = $instances[0];
+				if ($metaData instanceof static) {
+					throw new TDbException('dbmetadata_not_meta_data', $metaData::class, static::class);
+				}
+				return $metaData;
 		}
 	}
 

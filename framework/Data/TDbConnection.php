@@ -83,7 +83,7 @@ use Prado\TPropertyValue;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbConnection extends \Prado\TComponent
+class TDbConnection extends \Prado\TComponent implements IDataConnection
 {
 	/**
 	 *
@@ -334,7 +334,7 @@ class TDbConnection extends \Prado\TComponent
 	}
 
 	/**
-	 * @return TDbTransaction the currently active transaction. Null if no active transaction.
+	 * @return null|TDbTransaction the currently active transaction. Null if no active transaction.
 	 */
 	public function getCurrentTransaction()
 	{

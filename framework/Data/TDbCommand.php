@@ -40,7 +40,7 @@ use Prado\Prado;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
-class TDbCommand extends \Prado\TComponent
+class TDbCommand extends \Prado\TComponent implements IDataCommand
 {
 	private $_connection;
 	private $_text = '';
