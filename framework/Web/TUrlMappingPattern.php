@@ -107,9 +107,17 @@ use Prado\TPropertyValue;
  * <url ServiceParameter="MyPage" pattern="/mypage/mypath/list/detail/{pageidx}" parameters.pageidx="\d+" constants.listtype="detailed"/>
  * <url ServiceParameter="MyPage" pattern="/mypage/mypath/list/summary/{pageidx}" parameters.pageidx="\d+" constants.listtype="summarized"/>
  *
- * These rules, when matched by the actual request, will make the application see a "lisstype" parameter present
+ * These rules, when matched by the actual request, will make the application see a "listtype" parameter present
  * (even through not supplied in the request) and equal to "detailed" or "summarized", depending on the friendly url matched.
  * The constants is practically a table-based validation and translation of specified, fixed-set parameter values.
+ *
+ * Since 4.3.3 you can also use HTTP verb matching. The Verbs property restricts a pattern to match only
+ * specific HTTP methods (GET, POST, PUT, DELETE, etc.). Use a comma-separated list for multiple verbs.
+ * Use the prefix '~' or '!' to negate a verb. For example:
+ * - verbs="GET" - only matches GET requests
+ * - verbs="POST,PUT" - matches POST or PUT requests
+ * - verbs="!DELETE" or verbs="~DELETE" - matches any request except DELETE requests
+ * - verbs="!PUT, ~DELETE" - matches any request except PUT and DELETE
  *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @since 3.0.5
@@ -158,6 +166,12 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 * @since 3.2
 	 */
 	private $_secureConnection = TUrlMappingPatternSecureConnection::Automatic;
+
+	/**
+	 * @var null|array list of allowed HTTP verbs for this pattern. Null means any verb is allowed.
+	 * @since 4.3.3
+	 */
+	private $_verbs;
 
 	/**
 	 * Constructor.
@@ -348,6 +362,14 @@ class TUrlMappingPattern extends \Prado\TComponent
 	 */
 	public function getPatternMatches($request)
 	{
+		$verbs = $this->getVerbs();
+		if ($verbs !== null) {
+			$requestVerb = $request->getRequestType();
+			if (!in_array($requestVerb, $verbs) || in_array('!' . $requestVerb, $verbs) || in_array('~' . $requestVerb, $verbs)) {
+				return [];
+			}
+		}
+
 		$matches = [];
 		if (($pattern = $this->getRegularExpression()) !== '') {
 			preg_match($pattern, $request->getPathInfo(), $matches);
@@ -473,6 +495,36 @@ class TUrlMappingPattern extends \Prado\TComponent
 	public function setSecureConnection($value)
 	{
 		$this->_secureConnection = TPropertyValue::ensureEnum($value, TUrlMappingPatternSecureConnection::class);
+	}
+
+	/**
+	 * @return null|array list of allowed HTTP verbs for this pattern, null means any verb is allowed.
+	 *                       Use prefixes '~' or '!' to negate a verb (e.g., '~GET' means NOT GET).
+	 * @since 4.3.3
+	 */
+	public function getVerbs()
+	{
+		return $this->_verbs;
+	}
+
+	/**
+	 * Sets the list of allowed HTTP verbs for this pattern.
+	 * @param null|array|string $value list of verbs (e.g., 'GET,POST'), null for any verb.
+	 *                          Use prefix '~' or '!' to negate (e.g., '~GET' or '!GET' excludes GET).
+	 * @since 4.3.3
+	 */
+	public function setVerbs($value)
+	{
+		if (is_string($value)) {
+			$value = explode(',', $value);
+		}
+		if (is_array($value)) {
+			$value = array_filter(array_map('trim', $value));
+		}
+		if (empty($value)) {
+			$value = null;
+		}
+		$this->_verbs = $value;
 	}
 
 	/**
