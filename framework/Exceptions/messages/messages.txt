@@ -623,6 +623,9 @@ ar_data_invalid							= {0}.copyFrom() can only take an object or array as param
 ar_save_invalid							= The {0} instance cannot be saved because it is either deleted or in an unknown state.
 ar_delete_invalid						= The {0} instance cannot be deleted because it is either a new record or a record already deleted.
 
+dbmetadata_invalid_database_driver		= Driver '{0}' is unsupported. Please install its PRADO Driver, if available.
+dbmetadata_not_meta_data				= Expected driver class {1} but got class {0}.
+
 datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' is invalid. Please make sure it points to a valid application module.
 distributeddatasource_child_required		= {0} requires one '{1}' child element at minimum.
 masterslavedbconnection_connection_exists	= {0}.{1} connection already exists.
