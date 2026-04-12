@@ -74,7 +74,13 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function generateRandomKey()
 	{
-		return sprintf('%08x%08x%08x%08x', mt_rand(), mt_rand(), mt_rand(), mt_rand());
+		try {
+			return bin2hex(random_bytes(16));
+		} catch (\Exception $e) {
+			// @todo from PHP 8.2, this is \Random\RandomException
+			// Fallback for environments without proper random support
+			return sha1(uniqid(mt_rand(), true));
+		}
 	}
 
 	/**
