@@ -711,45 +711,6 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	}
 
 	/**
-	 * This keeps `setcookie` isolated, and subject to children overrides.
-	 * @param string $name
-	 * @param mixed ...$args
-	 * @return bool Returns true on success or false on failure.
-	 * @since 4.3.3
-	 * @see https://www.php.net/manual/en/function.setcookie.php
-	 */
-	protected function responseSetCookie(
-		string $name,
-		...$args
-	): bool {
-		return setcookie($name, ...$args);
-	}
-
-	/**
-	 * Wrapper for `session_cache_expire`, and returns the name of the current cache expiration.
-	 * @param ?int $value length of time until being removed from the cache.
-	 * @return false|int Returns the current setting of session.cache_expire. The value returned should be read in minutes, defaults to 180. On failure to change the value, false is returned
-	 * @since 4.3.3
-	 * @see https://www.php.net/manual/en/function.session-cache-expire.php
-	 */
-	protected function sessionCacheExpire(?int $value = null): int|false
-	{
-		return session_cache_expire($value);
-	}
-
-	/**
-	 * Wrapper for `session_cache_limiter`, and returns the name of the current cache limiter.
-	 * @param ?string $value
-	 * @return false|string the type of HTML writer to be used, defaults to THtmlWriter
-	 * @since 4.3.3
-	 * @see https://www.php.net/manual/en/function.session-cache-limiter.php
-	 */
-	protected function sessionCacheLimiter(?string $value = null): string|false
-	{
-		return session_cache_limiter($value);
-	}
-
-	/**
 	 * @return string the type of HTML writer to be used, defaults to THtmlWriter
 	 */
 	public function getHtmlWriterType()
@@ -791,5 +752,46 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function createNewHtmlWriter($type, $writer)
 	{
 		return Prado::createComponent($type, $writer);
+	}
+
+	//	----- session_* abstractions
+
+	/**
+	 * This keeps `setcookie` isolated, and subject to children overrides.
+	 * @param string $name
+	 * @param mixed ...$args
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.setcookie.php
+	 */
+	protected function responseSetCookie(
+		string $name,
+		...$args
+	): bool {
+		return setcookie($name, ...$args);
+	}
+
+	/**
+	 * Wrapper for `session_cache_expire`, and returns the name of the current cache expiration.
+	 * @param ?int $value length of time until being removed from the cache.
+	 * @return false|int Returns the current setting of session.cache_expire. The value returned should be read in minutes, defaults to 180. On failure to change the value, false is returned
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-expire.php
+	 */
+	protected function sessionCacheExpire(?int $value = null): int|false
+	{
+		return session_cache_expire($value);
+	}
+
+	/**
+	 * Wrapper for `session_cache_limiter`, and returns the name of the current cache limiter.
+	 * @param ?string $value
+	 * @return false|string the type of HTML writer to be used, defaults to THtmlWriter
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-limiter.php
+	 */
+	protected function sessionCacheLimiter(?string $value = null): string|false
+	{
+		return session_cache_limiter($value);
 	}
 }
