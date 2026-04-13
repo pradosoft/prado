@@ -5,6 +5,15 @@ use Prado\Exceptions\TInvalidOperationException;
 use Prado\TApplication;
 use Prado\Web\THttpResponse;
 
+class TTestHttpResponse extends THttpResponse {
+	public $headers = [];
+
+	public function appendHeader($header, bool $replace = true, int $response_code = 0): void {
+		$this->headers[] = $header;
+	}
+}
+
+
 class THttpResponseTest extends PHPUnit\Framework\TestCase
 {
 	public static $app = null;
@@ -137,11 +146,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testWriteFile()
 	{
-		$headers = [];
 		$response = new class() extends THttpResponse {
-			public function appendHeader($header, bool $replace = true, int $response_code = 0): void {
-				$headers[] = $header;
-			}
 		};
 		$response->init(null);
 		
