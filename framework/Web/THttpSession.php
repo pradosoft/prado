@@ -144,8 +144,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			if ($this->_cookie !== null) {
 				session_set_cookie_params($this->_cookie->getPhpOptions('lifetime'));
 			}
-			if (ini_get('session.auto_start') !== '1') {
-				session_start();
+			if (static::getSessionIniConfig('auto_start') !== '1') {
+				$this->sessionStart();
 			}
 			$this->_started = true;
 		}
@@ -157,7 +157,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function close()
 	{
 		if ($this->_started) {
-			session_write_close();
+			$this->sessionWriteClose();
 			$this->_started = false;
 		}
 	}
@@ -168,7 +168,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function destroy()
 	{
 		if ($this->_started) {
-			session_destroy();
+			$this->sessionDestroy();
 			$this->_started = false;
 		}
 	}
@@ -183,7 +183,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function regenerate($deleteOld = false)
 	{
 		$old = $this->getSessionID();
-		session_regenerate_id($deleteOld);
+		$this->sessionRegenerateId($deleteOld);
 		return $old;
 	}
 
@@ -299,9 +299,9 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getCookieMode()
 	{
-		if (ini_get('session.use_cookies') === '0') {
+		if (static::getSessionIniConfig('use_cookies') === '0') {
 			return THttpSessionCookieMode::None;
-		} elseif (ini_get('session.use_only_cookies') === '0') {
+		} elseif (static::getSessionIniConfig('use_only_cookies') === '0') {
 			return THttpSessionCookieMode::Allow;
 		} else {
 			return THttpSessionCookieMode::Only;
@@ -321,15 +321,15 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		} else {
 			$value = TPropertyValue::ensureEnum($value, THttpSessionCookieMode::class);
 			if ($value === THttpSessionCookieMode::None) {
-				ini_set('session.use_cookies', '0');
-				ini_set('session.use_only_cookies', '0');
+				static::setSessionIniConfig('use_cookies', '0');
+				static::setSessionIniConfig('use_only_cookies', '0');
 			} elseif ($value === THttpSessionCookieMode::Allow) {
-				ini_set('session.use_cookies', '1');
-				ini_set('session.use_only_cookies', '0');
+				static::setSessionIniConfig('use_cookies', '1');
+				static::setSessionIniConfig('use_only_cookies', '0');
 			} else {
-				ini_set('session.use_cookies', '1');
-				ini_set('session.use_only_cookies', '1');
-				ini_set('session.use_trans_sid', 0);
+				static::setSessionIniConfig('use_cookies', '1');
+				static::setSessionIniConfig('use_only_cookies', '1');
+				static::setSessionIniConfig('use_trans_sid', 0);
 			}
 		}
 	}
@@ -360,7 +360,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getGCProbability()
 	{
-		return TPropertyValue::ensureInteger(ini_get('session.gc_probability'));
+		return TPropertyValue::ensureInteger(static::getSessionIniConfig('gc_probability'));
 	}
 
 	/**
@@ -375,8 +375,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		} else {
 			$value = TPropertyValue::ensureInteger($value);
 			if ($value >= 0 && $value <= 100) {
-				ini_set('session.gc_probability', $value);
-				ini_set('session.gc_divisor', '100');
+				static::setSessionIniConfig('gc_probability', $value);
+				static::setSessionIniConfig('gc_divisor', '100');
 			} else {
 				throw new TInvalidDataValueException('httpsession_gcprobability_invalid', $value);
 			}
@@ -388,7 +388,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getUseTransparentSessionID()
 	{
-		return ini_get('session.use_trans_sid') === '1';
+		return static::getSessionIniConfig('use_trans_sid') === '1';
 	}
 
 	/**
@@ -407,7 +407,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 			if ($value && $this->getCookieMode() == THttpSessionCookieMode::Only) {
 				throw new TInvalidOperationException('httpsession_transid_cookieonly');
 			}
-			ini_set('session.use_trans_sid', $value ? '1' : '0');
+			static::setSessionIniConfig('use_trans_sid', $value ? '1' : '0');
 		}
 	}
 
@@ -416,7 +416,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function getTimeout()
 	{
-		return TPropertyValue::ensureInteger(ini_get('session.gc_maxlifetime'));
+		return TPropertyValue::ensureInteger(static::getSessionIniConfig('gc_maxlifetime'));
 	}
 
 	/**
@@ -428,7 +428,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ($this->_started) {
 			throw new TInvalidOperationException('httpsession_maxlifetime_unchangeable');
 		} else {
-			ini_set('session.gc_maxlifetime', $value);
+			static::setSessionIniConfig('gc_maxlifetime', $value);
 		}
 	}
 
@@ -499,7 +499,7 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		return true;
 	}
 
-	//------ The following methods enable THttpSession to be TMap-like -----
+	//	----- The following methods enable THttpSession to be TMap-like -----
 
 	/**
 	 * Returns an iterator for traversing the session variables.
@@ -603,6 +603,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		return $_SESSION;
 	}
 
+	//	----- \ArrayAccess -----
+
 	/**
 	 * This method is required by the interface \ArrayAccess.
 	 * @param mixed $offset the offset to check on
@@ -641,5 +643,91 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	public function offsetUnset($offset): void
 	{
 		unset($_SESSION[$offset]);
+	}
+
+	//	----- ini access -----
+
+	/**
+	 * Calls {@see \ini_get()} to retrieve the PHP ini configuration.
+	 * This is provided so subclasses can override, specifically for testing without calling {@see \ini_get()}.
+	 * @param string $key the key of the php `session.` configuration options.
+	 * @return false|string returns the string or false if not found..
+	 * @since 4.3.3
+	 */
+	public static function getSessionIniConfig(string $key): string|false
+	{
+		$sessionPrefix = 'session.';
+		if (!str_starts_with($key, $sessionPrefix)) {
+			$key = $sessionPrefix . $key;
+		}
+		return ini_get($key);
+	}
+
+	/**
+	 * This isolates setting the php `session.*` configuration options.
+	 * This is provided so subclasses can override, specifically for testing without calling {@see \ini_get()}.
+	 * @param string $key the key of the ini config to set.
+	 * @param string $value the value to set the ini config. null for restore.
+	 * @return bool|string $value whether the cache is enabled. true if restored, false if not set, string of the old value if successful.
+	 * @since 4.3.3
+	 */
+	protected static function setSessionIniConfig(string $key, mixed $value): string|bool
+	{
+		$sessionPrefix = 'session.';
+		if (!str_starts_with($key, $sessionPrefix)) {
+			$key = $sessionPrefix . $key;
+		}
+		if ($value === null) {
+			ini_restore($key);
+			return true;
+		} else {
+			return ini_set($key, $value);
+		}
+	}
+
+	/**
+	 * Internal: Call sessionStart  instead of `session_start`.
+	 * This keeps `session_start` isolated, and subject to children overrides.
+	 * @return bool Returns true if a session was successfully started, otherwise false.
+	 * @since 4.3.3
+	 */
+	protected function sessionStart(): bool
+	{
+		return session_start();
+	}
+
+	/**
+	 * Internal: Call sessionWriteClose  instead of `session_write_close`.
+	 * This keeps `session_write_close` isolated, and subject to children overrides.
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 */
+	protected function sessionWriteClose(): bool
+	{
+		return session_write_close();
+	}
+
+	/**
+	 * Internal: Call sessionDestroy  instead of `session_destroy`.
+	 * This keeps `session_destroy` isolated, and subject to children overrides.
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 */
+	protected function sessionDestroy(): bool
+	{
+		return session_destroy();
+	}
+
+	/**
+	 * Internal: Call sessionRegenerateId  instead of `session_regenerate_id`.
+	 * This keeps `session_regenerate_id` isolated, and subject to children overrides.
+	 * @param bool $delete_old_session Whether to delete the old associated session file or not. You should not delete old session if you need to avoid races caused by deletion or detect/avoid session hijack attacks.
+	 * @return bool whether the session should be automatically started when the session module is initialized, defaults to false.
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 */
+	protected function sessionRegenerateId(bool $delete_old_session = false): bool
+	{
+		return session_regenerate_id($delete_old_session);
 	}
 }
