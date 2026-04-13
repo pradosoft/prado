@@ -18,7 +18,11 @@ class TGravatarTest extends PHPUnit\Framework\TestCase
 
 	public function testConstruct()
 	{
-		self::assertInstanceOf(TGravatar::class, $this->obj);
+		// Default state: empty email, no size/rating/default-image-style set
+		self::assertEquals('', $this->obj->getEmail());
+		self::assertNull($this->obj->getSize());
+		self::assertNull($this->obj->getRating());
+		self::assertNull($this->obj->getDefaultImageStyle());
 	}
 
 	public function testDefaultImageStyle()
