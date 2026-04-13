@@ -180,7 +180,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getCacheExpire()
 	{
-		return session_cache_expire();
+		return $this->sessionCacheExpire();
 	}
 
 	/**
@@ -188,7 +188,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheExpire($value)
 	{
-		session_cache_expire(TPropertyValue::ensureInteger($value));
+		$this->sessionCacheExpire(TPropertyValue::ensureInteger($value));
 	}
 
 	/**
@@ -196,7 +196,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getCacheControl()
 	{
-		return session_cache_limiter();
+		return $this->sessionCacheLimiter();
 	}
 
 	/**
@@ -205,7 +205,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheControl($value)
 	{
-		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']));
+		$value = TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']);
+		$this->sessionCacheLimiter($value);
 	}
 
 	/**
@@ -386,21 +387,21 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$this->sendHttpHeader();
 		if (is_array($headers)) {
 			foreach ($headers as $h) {
-				header($h);
+				$this->appendHeader($h);
 			}
 		} else {
-			header('Pragma: public');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header("Content-Type: $mimeType");
+			$this->appendHeader('Pragma: public');
+			$this->appendHeader('Expires: 0');
+			$this->appendHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			$this->appendHeader("Content-Type: $mimeType");
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		header('Content-Length: ' . $fileSize);
-		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
-		header('Content-Transfer-Encoding: binary');
+		$this->appendHeader('Content-Length: ' . $fileSize);
+		$this->appendHeader("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
+		$this->appendHeader('Content-Transfer-Encoding: binary');
 		if ($content === null) {
-			readfile($fileName);
+			$this->appendFile($fileName);
 		} else {
 			echo $content;
 		}
@@ -446,18 +447,18 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_status >= 300 && $this->_status < 400) {
 			// The status code has been modified to a valid redirection status, send it
 			if ($isIIS) {
-				header('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
+				$this->appendHeader('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
 					array_key_exists($this->_status, self::$HTTP_STATUS_CODES)
 						? $this->_status
 						: 302
 					]);
 			}
-			header('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
+			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
 			if ($isIIS) {
-				header('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
+				$this->appendHeader('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
 			}
-			header('Location: ' . str_replace('&amp;', '&', $url));
+			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url));
 		}
 
 		if (!$this->getApplication()->getRequestCompleted()) {
@@ -544,7 +545,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$protocol = 'HTTP/1.1';
 		}
 
-		header($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
+		$this->appendHeader($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
 
 		$this->_httpHeaderSent = true;
 	}
@@ -634,13 +635,28 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Sends a header.
-	 * @param string $value header
+	 * @param string $header header
 	 * @param bool $replace whether the header should replace a previous similar header, or add a second header of the same type
+	 * @param int $response_code the code to add to the header
 	 */
-	public function appendHeader($value, $replace = true)
+	public function appendHeader($header, bool $replace = true, int $response_code = 0): void
 	{
-		Prado::trace("Sending header '$value'", THttpResponse::class);
-		header($value, $replace);
+		Prado::trace("Sending header '$header'", static::class);
+		header($header, $replace, $response_code);
+	}
+
+	/**
+	 * Reads a file and writes it to the output buffer.
+	 * @param string $filename The filename being read.
+	 * @param bool $use_include_path You can use the optional second parameter and set it to true, if you want to search for the file in the include_path, too.
+	 * @param mixed $context A context stream resource.
+	 * @return false|int Returns the number of bytes read from the file on success, or false on failure;
+	 * @since 4.3.3
+	 */
+	public function appendFile(string $filename, bool $use_include_path = false, mixed $context = null): int|false
+	{
+		Prado::trace("Sending file '$filename'", static::class);
+		return readfile($filename, $use_include_path, $context);
 	}
 
 	/**
@@ -671,7 +687,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$value = $cookie->getValue();
 		}
 
-		setcookie(
+		$this->responseSetCookie(
 			$cookie->getName(),
 			$value,
 			$cookie->getPhpOptions()
@@ -687,7 +703,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		$options = $cookie->getPhpOptions();
 		$options['expires'] = 0;
-		setcookie(
+		$this->responseSetCookie(
 			$cookie->getName(),
 			null,
 			$options
@@ -736,5 +752,46 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	public function createNewHtmlWriter($type, $writer)
 	{
 		return Prado::createComponent($type, $writer);
+	}
+
+	//	----- session_* abstractions
+
+	/**
+	 * This keeps `setcookie` isolated, and subject to children overrides.
+	 * @param string $name
+	 * @param mixed ...$args
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.setcookie.php
+	 */
+	protected function responseSetCookie(
+		string $name,
+		...$args
+	): bool {
+		return setcookie($name, ...$args);
+	}
+
+	/**
+	 * Wrapper for `session_cache_expire`, and returns the name of the current cache expiration.
+	 * @param ?int $value length of time until being removed from the cache.
+	 * @return false|int Returns the current setting of session.cache_expire. The value returned should be read in minutes, defaults to 180. On failure to change the value, false is returned
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-expire.php
+	 */
+	protected function sessionCacheExpire(?int $value = null): int|false
+	{
+		return session_cache_expire($value);
+	}
+
+	/**
+	 * Wrapper for `session_cache_limiter`, and returns the name of the current cache limiter.
+	 * @param ?string $value
+	 * @return false|string the type of HTML writer to be used, defaults to THtmlWriter
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-limiter.php
+	 */
+	protected function sessionCacheLimiter(?string $value = null): string|false
+	{
+		return session_cache_limiter($value);
 	}
 }
