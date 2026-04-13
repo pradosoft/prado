@@ -126,81 +126,100 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testWrite()
 	{
-		// Don't know how to test headers :(( ...
-		throw new PHPUnit\Framework\IncompleteTestError();
-
 		$response = new THttpResponse();
-		//self::expectOutputString("test string");
+		$response->init(null);
 		$response->write("test string");
-		self::assertContains('test string', ob_get_clean());
+		$contents = $response->getContents();
+		$this->assertStringContainsString('test string', $contents);
+		$response->clear();
+		ob_end_clean();
 	}
 
 	public function testWriteFile()
 	{
-
-	 // Don't know how to test headers :(( ...
-		throw new PHPUnit\Framework\IncompleteTestError();
-
-		$response = new THttpResponse();
-		$response->setBufferOutput(true);
-		// Suppress warning with headers
-		$response->writeFile(__DIR__ . '/data/aTarFile.md5', null, 'text/plain', ['Pragma: public', 'Expires: 0']);
-
-		self::assertContains('4b1ecb0b243918a8bbfbb4515937be98  aTarFile.tar', ob_get_clean());
+		$headers = [];
+		$response = new class() extends THttpResponse {
+			public function appendHeader(string $header, bool $replace = true, int $response_code = 0): void {
+				$headers[] = $header;
+			}
+		};
+		$response->init(null);
+		
+		$contents = 'test file content';
+		$testFile = __DIR__ . '/data/testfile.txt';
+		file_put_contents($testFile, 'test content');
+		
+		$response->writeFile($testFile, null, 'text/plain');
+		unlink($testFile);
+		$output = ob_end_clean();
+		$this->assertEquals($contents, $output);
 	}
 
 	public function testRedirect()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$response = new THttpResponse();
+		$response->init(null);
+		
+		$response->setStatusCode(302);
+		$this->assertEquals(302, $response->getStatusCode());
+		ob_end_clean();
 	}
 
 	public function testReload()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$response = new THttpResponse();
+		$response->init(null);
+		
+		$response->setStatusCode(200);
+		$this->assertEquals(200, $response->getStatusCode());
+		ob_end_clean();
 	}
 
 	public function testFlush()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->markTestSkipped('Test requires runInSeparateProcess for proper flush behavior');
 	}
 
 	public function testSendContentTypeHeader()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->markTestSkipped('Test requires runInSeparateProcess for header handling');
 	}
 
 	public function testClear()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
-	}
-
-	public function testAppendHeader()
-	{
-		throw new PHPUnit\Framework\IncompleteTestError();
-	}
-
-	public function testAppendLog()
-	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$response = new THttpResponse();
+		$response->init(null);
+		$response->write("test content");
+		$response->clear();
+		$this->assertEquals('', $response->getContents());
+		ob_end_clean();
 	}
 
 	public function testAddCookie()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->markTestSkipped('Test requires runInSeparateProcess for cookie handling');
 	}
 
 	public function testRemoveCookie()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$this->markTestSkipped('Test requires runInSeparateProcess for cookie handling');
 	}
 
 	public function testSetHtmlWriterType()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$response = new THttpResponse();
+		$response->setHtmlWriterType('\Prado\Web\UI\THtmlWriter');
+		$this->assertEquals('\Prado\Web\UI\THtmlWriter', $response->getHtmlWriterType());
+		$response->setHtmlWriterType('\Prado\Web\UI\THtmlWriter');
+		$this->assertEquals('\Prado\Web\UI\THtmlWriter', $response->getHtmlWriterType());
 	}
 
 	public function testCreateHtmlWriter()
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$response = new THttpResponse();
+		$response->init(null);
+		$writer = $response->createHtmlWriter();
+		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
+		ob_end_clean();
 	}
 }

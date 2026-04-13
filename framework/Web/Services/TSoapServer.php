@@ -143,7 +143,7 @@ class TSoapServer extends \Prado\TApplicationComponent
 	{
 		if ($this->_server === null) {
 			if ($this->getApplication()->getMode() === TApplicationMode::Debug) {
-				ini_set("soap.wsdl_cache_enabled", 0);
+				static::setIniWsdlCache(false);
 			}
 			$this->_server = new \SoapServer($this->getWsdlUri(), $this->getOptions());
 		}
@@ -346,5 +346,37 @@ class TSoapServer extends \Prado\TApplicationComponent
 	public function setClassMaps($classes)
 	{
 		$this->_classMap = $classes;
+	}
+
+	/**
+	 * Provides if the PHP SOAP WSDL cache is enabled. This accounts for
+	 * if `soap.wsdl_cache_enabled` is unset or without a value (default: true), and when the value is not zero.
+	 * This is provided so subclasses can override, specifically for testing without calling {@see \ini_get()}.
+	 * @return bool Returns whether the cache is enabled.
+	 * @since 4.3.3
+	 */
+	public static function getIniWsdlCache(): bool
+	{
+		// on by default, meaning false, '', or '1'
+		$enabled = ini_get('soap.wsdl_cache_enabled');
+		return $enabled === false || $enabled === '' || (int) $enabled !== 0;
+	}
+
+	/**
+	 * This isolates setting the php.ini `soap.wsdl_cache_enabled`.
+	 * This is provided so subclasses can override, specifically for testing without calling {@see \ini_set()}.
+	 * without calling {@see \ini_set()}.
+	 * @param bool $value Whether the cache is enabled. null for restore.
+	 * @return bool|string True if restored, false if not set, string of the old value if successful.
+	 * @since 4.3.3
+	 */
+	public static function setIniWsdlCache(?bool $value): string|bool
+	{
+		if ($value === null) {
+			ini_restore('soap.wsdl_cache_enabled');
+			return true;
+		} else {
+			return ini_set('soap.wsdl_cache_enabled', (int) $value);
+		}
 	}
 }
