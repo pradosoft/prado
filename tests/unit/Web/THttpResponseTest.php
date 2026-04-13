@@ -139,7 +139,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 	{
 		$headers = [];
 		$response = new class() extends THttpResponse {
-			public function appendHeader(string $header, bool $replace = true, int $response_code = 0): void {
+			public function appendHeader($header, bool $replace = true, int $response_code = 0): void {
 				$headers[] = $header;
 			}
 		};
