@@ -386,21 +386,21 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		$this->sendHttpHeader();
 		if (is_array($headers)) {
 			foreach ($headers as $h) {
-				header($h);
+				$this->appendHeader($h);
 			}
 		} else {
-			header('Pragma: public');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header("Content-Type: $mimeType");
+			$this->appendHeader('Pragma: public');
+			$this->appendHeader('Expires: 0');
+			$this->appendHeader('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			$this->appendHeader("Content-Type: $mimeType");
 			$this->_contentTypeHeaderSent = true;
 		}
 
-		header('Content-Length: ' . $fileSize);
-		header("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
-		header('Content-Transfer-Encoding: binary');
+		$this->appendHeader('Content-Length: ' . $fileSize);
+		$this->appendHeader("Content-Disposition: " . ($forceDownload ? 'attachment' : 'inline') . "; filename=\"$clientFileName\"");
+		$this->appendHeader('Content-Transfer-Encoding: binary');
 		if ($content === null) {
-			readfile($fileName);
+			$this->appendFile($fileName);
 		} else {
 			echo $content;
 		}
@@ -446,18 +446,18 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_status >= 300 && $this->_status < 400) {
 			// The status code has been modified to a valid redirection status, send it
 			if ($isIIS) {
-				header('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
+				$this->appendHeader('HTTP/1.1 ' . $this->_status . ' ' . self::$HTTP_STATUS_CODES[
 					array_key_exists($this->_status, self::$HTTP_STATUS_CODES)
 						? $this->_status
 						: 302
 					]);
 			}
-			header('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
+			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url), true, $this->_status);
 		} else {
 			if ($isIIS) {
-				header('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
+				$this->appendHeader('HTTP/1.1 302 ' . self::$HTTP_STATUS_CODES[302]);
 			}
-			header('Location: ' . str_replace('&amp;', '&', $url));
+			$this->appendHeader('Location: ' . str_replace('&amp;', '&', $url));
 		}
 
 		if (!$this->getApplication()->getRequestCompleted()) {
@@ -544,7 +544,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$protocol = 'HTTP/1.1';
 		}
 
-		header($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
+		$this->appendHeader($protocol . ' ' . $this->_status . ' ' . $this->_reason, true, TPropertyValue::ensureInteger($this->_status));
 
 		$this->_httpHeaderSent = true;
 	}
@@ -634,13 +634,28 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 
 	/**
 	 * Sends a header.
-	 * @param string $value header
+	 * @param string $header header
 	 * @param bool $replace whether the header should replace a previous similar header, or add a second header of the same type
+	 * @param int $response_code the code to add to the header
 	 */
-	public function appendHeader($value, $replace = true)
+	public function appendHeader($header, bool $replace = true, int $response_code = 0): void
 	{
-		Prado::trace("Sending header '$value'", THttpResponse::class);
-		header($value, $replace);
+		Prado::trace("Sending header '$header'", static::class);
+		header($header, $replace, $response_code);
+	}
+
+	/**
+	 * Reads a file and writes it to the output buffer.
+	 * @param string $filename The filename being read.
+	 * @param bool $use_include_path You can use the optional second parameter and set it to true, if you want to search for the file in the include_path, too.
+	 * @param mixed $context A context stream resource.
+	 * @return false|int Returns the number of bytes read from the file on success, or false on failure;
+	 * @since 4.3.3
+	 */
+	public function appendFile(string $filename, bool $use_include_path = false, mixed $context = null): int|false
+	{
+		Prado::trace("Sending file '$filename'", static::class);
+		return readfile($filename, $use_include_path, $context);
 	}
 
 	/**
@@ -671,7 +686,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 			$value = $cookie->getValue();
 		}
 
-		setcookie(
+		$this->responseSetCookie(
 			$cookie->getName(),
 			$value,
 			$cookie->getPhpOptions()
@@ -687,11 +702,35 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	{
 		$options = $cookie->getPhpOptions();
 		$options['expires'] = 0;
-		setcookie(
+		$this->responseSetCookie(
 			$cookie->getName(),
 			null,
 			$options
 		);
+	}
+
+	/**
+	 * This keeps `setcookie` isolated, and subject to children overrides.
+	 * @param string $name
+	 * @param string $value
+	 * @param mixed $expires_or_options
+	 * @param string $path
+	 * @param string $domain
+	 * @param bool $secure
+	 * @param bool $httponly
+	 * @return bool Returns true on success or false on failure.
+	 * @since 4.3.3
+	 */
+	protected function responseSetCookie(
+		string $name,
+		string $value = "",
+		mixed $expires_or_options = 0,
+		string $path = "",
+		string $domain = "",
+		bool $secure = false,
+		bool $httponly = false
+	): bool {
+		return setcookie($name, $value, $expires_or_options, $path, $domain, $secure, $httponly);
 	}
 
 	/**
