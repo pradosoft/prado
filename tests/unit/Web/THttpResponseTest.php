@@ -31,7 +31,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testInit()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		self::assertEquals($response, self::$app->getResponse());
 		// force a flush
@@ -43,7 +43,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSetCacheExpire()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->setCacheExpire(300);
 		self::assertEquals(300, $response->getCacheExpire());
@@ -56,7 +56,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 	 */
 	public function testSetCacheControl()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		foreach (['none', 'nocache', 'private', 'private_no_expire', 'public'] as $cc) {
 			$response->setCacheControl($cc);
@@ -74,7 +74,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testSetContentType()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->setContentType('image/jpeg');
 		self::assertEquals('image/jpeg', $response->getContentType());
@@ -86,7 +86,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testSetCharset()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->setCharset('UTF-8');
 		self::assertEquals('UTF-8', $response->getCharset());
@@ -98,7 +98,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testSetBufferOutput()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->setBufferOutput(true);
 		self::assertTrue($response->getBufferOutput());
 		$response->init(null);
@@ -113,7 +113,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testSetStatusCode()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->setStatusCode(401);
 		self::assertEquals(401, $response->getStatusCode());
@@ -125,7 +125,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testGetCookies()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		self::assertInstanceOf(\Prado\Web\THttpCookieCollection::class, $response->getCookies());
 		self::assertEquals(0, $response->getCookies()->getCount());
@@ -135,7 +135,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testWrite()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->write("test string");
 		$contents = $response->getContents();
@@ -146,8 +146,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testWriteFile()
 	{
-		$response = new class() extends THttpResponse {
-		};
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		
 		$contents = 'test file content';
@@ -162,7 +161,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testRedirect()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		
 		$response->setStatusCode(302);
@@ -172,7 +171,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testReload()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		
 		$response->setStatusCode(200);
@@ -192,7 +191,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testClear()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$response->write("test content");
 		$response->clear();
@@ -212,7 +211,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testSetHtmlWriterType()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->setHtmlWriterType('\Prado\Web\UI\THtmlWriter');
 		$this->assertEquals('\Prado\Web\UI\THtmlWriter', $response->getHtmlWriterType());
 		$response->setHtmlWriterType('\Prado\Web\UI\THtmlWriter');
@@ -221,7 +220,7 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 
 	public function testCreateHtmlWriter()
 	{
-		$response = new THttpResponse();
+		$response = new TTestHttpResponse();
 		$response->init(null);
 		$writer = $response->createHtmlWriter();
 		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
