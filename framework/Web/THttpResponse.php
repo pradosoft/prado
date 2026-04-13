@@ -180,7 +180,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getCacheExpire()
 	{
-		return session_cache_expire();
+		return $this->sessionCacheExpire();
 	}
 
 	/**
@@ -188,7 +188,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheExpire($value)
 	{
-		session_cache_expire(TPropertyValue::ensureInteger($value));
+		$this->sessionCacheExpire(TPropertyValue::ensureInteger($value));
 	}
 
 	/**
@@ -196,7 +196,7 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function getCacheControl()
 	{
-		return session_cache_limiter();
+		return $this->sessionCacheLimiter();
 	}
 
 	/**
@@ -205,7 +205,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setCacheControl($value)
 	{
-		session_cache_limiter(TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']));
+		$value = TPropertyValue::ensureEnum($value, ['none', 'nocache', 'private', 'private_no_expire', 'public']);
+		$this->sessionCacheLimiter($value);
 	}
 
 	/**
@@ -712,25 +713,40 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	/**
 	 * This keeps `setcookie` isolated, and subject to children overrides.
 	 * @param string $name
-	 * @param string $value
-	 * @param mixed $expires_or_options
-	 * @param string $path
-	 * @param string $domain
-	 * @param bool $secure
-	 * @param bool $httponly
+	 * @param mixed ...$args
 	 * @return bool Returns true on success or false on failure.
 	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.setcookie.php
 	 */
 	protected function responseSetCookie(
 		string $name,
-		string $value = "",
-		mixed $expires_or_options = 0,
-		string $path = "",
-		string $domain = "",
-		bool $secure = false,
-		bool $httponly = false
+		...$args
 	): bool {
-		return setcookie($name, $value, $expires_or_options, $path, $domain, $secure, $httponly);
+		return setcookie($name, ...$args);
+	}
+
+	/**
+	 * Wrapper for `session_cache_expire`, and returns the name of the current cache expiration.
+	 * @param ?int $value length of time until being removed from the cache.
+	 * @return false|int Returns the current setting of session.cache_expire. The value returned should be read in minutes, defaults to 180. On failure to change the value, false is returned
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-expire.php
+	 */
+	protected function sessionCacheExpire(?int $value = null): int|false
+	{
+		return session_cache_expire($value);
+	}
+
+	/**
+	 * Wrapper for `session_cache_limiter`, and returns the name of the current cache limiter.
+	 * @param ?string $value
+	 * @return false|string the type of HTML writer to be used, defaults to THtmlWriter
+	 * @since 4.3.3
+	 * @see https://www.php.net/manual/en/function.session-cache-limiter.php
+	 */
+	protected function sessionCacheLimiter(?string $value = null): string|false
+	{
+		return session_cache_limiter($value);
 	}
 
 	/**

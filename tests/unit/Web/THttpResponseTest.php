@@ -11,6 +11,24 @@ class TTestHttpResponse extends THttpResponse {
 	public function appendHeader($header, bool $replace = true, int $response_code = 0): void {
 		$this->headers[] = $header;
 	}
+	
+	public $sessionExpires = 180;
+	public function sessionCacheExpire(?int $value = null): int|false
+	{
+		if ($value !== null) {
+			$this->sessionExpires = $value;
+		}
+		return $this->sessionExpires;
+	}
+	
+	public $cacheLimiter;
+	public function sessionCacheLimiter(?string $value = null): string|false
+	{
+		if ($value !== null) {
+			$this->cacheLimiter = $value;
+		}
+		return $this->cacheLimiter;
+	}
 }
 
 
@@ -29,7 +47,6 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 	{
 	}
 
-/*
 	public function testInit()
 	{
 		$response = new TTestHttpResponse();
@@ -221,5 +238,4 @@ class THttpResponseTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Web\UI\THtmlWriter::class, $writer);
 		ob_end_clean();
 	}
-	*/
 }
