@@ -15,7 +15,7 @@ class TDropDownListTest extends PHPUnit\Framework\TestCase
 		$list->setDataSource($data);
 		$list->dataBind();
 		$items = $list->getItems();
-		$this->assertTrue($items instanceof TListItemCollection);
+		$this->assertCount(3, $items);
 		$expected_keys = array_keys($data);
 		$i = 0;
 		foreach ($items as $item) {
