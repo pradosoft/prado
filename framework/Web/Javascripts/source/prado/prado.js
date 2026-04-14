@@ -415,7 +415,11 @@ Prado.Element =
 	{
 		var el = jQuery("#" + element);
 		if(!el) return;
-		if((attribute == "disabled" || attribute == "multiple" || attribute == "readonly" || attribute == "href") && value==false)
+		// "disabled" is for <button>, <fieldset>, <input>, <optgroup>, <option>, <select>, <textarea>
+		// "readonly is for <input>, <textarea>
+		// global presence attributes: hidden, inert, popover
+		// removed 'href' and 'multiple' was a hack - they use removeAttribute now
+		if((attribute == "disabled" || attribute == "readonly" || attribute == "hidden" || attribute == "inert" || attribute == "popover") && value==false)
 			el.removeAttr(attribute);
 		else if(attribute.match(/^on/i)) //event methods
 		{
@@ -432,6 +436,20 @@ Prado.Element =
 		}
 		else
 			el.attr(attribute, value);
+	},
+	
+	/**
+	 * Removes an attribute of a DOM element.
+	 * @function ?
+	 * @param {string} element - Element id
+	 * @param {string} attribute - Name of attribute
+	 * @since 4.3.3
+	 */
+	removeAttribute : function(element, attribute)
+	{
+		var el = jQuery("#" + element);
+		if(!el) return;
+		el.removeAttr(attribute);
 	},
 
 	scrollTo : function(element, options)
