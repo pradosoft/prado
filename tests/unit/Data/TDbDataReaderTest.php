@@ -51,6 +51,7 @@ class TDbDataReaderTest extends PHPUnit\Framework\TestCase
 	protected function tearDown(): void
 	{
 		$this->_connection = null;
+		@unlink(TEST_DB_FILE);
 	}
 
 	public function testRead()
