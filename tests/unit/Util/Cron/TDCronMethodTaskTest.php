@@ -7,6 +7,7 @@ use Prado\Util\Cron\TCronMethodTask;
 use Prado\Util\Cron\TCronModule;
 use Prado\Util\Cron\TCronTask;
 
+// Cron Method Task Module
 class TCMeTTModule extends TModule
 {
 	public $property;

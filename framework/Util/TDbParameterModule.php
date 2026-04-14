@@ -14,6 +14,7 @@ use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -78,6 +79,10 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  */
 class TDbParameterModule extends TModule implements IDbModule, IPermissions
 {
+	use TDbPropertiesTrait {
+		setConnectionID as setTraitConnectionID;
+	}
+
 	public const SERIALIZE_PHP = 'php';
 
 	public const SERIALIZE_JSON = 'json';
@@ -94,16 +99,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
 	public const APP_PARAMETER_SET_BEHAVIOR = 'setTDbParameter';
-
-	/**
-	 * @var string the ID of TDataSourceConfig module
-	 */
-	private $_connID = '';
-
-	/**
-	 * @var TDbConnection the DB connection instance
-	 */
-	private $_conn;
 
 	/**
 	 * @var bool whether or not the database parameters have been loaded.
@@ -469,7 +464,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 * @param string $key parameter to check in the database
 	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return bool whether the key exists in the database table
-	 * @return mixed the value of the parameter, one last time
 	 */
 	public function exists($key)
 	{
@@ -489,7 +483,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 * @param string $key parameter to remove from the database
 	 * @throws \Prado\Exceptions\TDbException if the Fields and table is not correct
 	 * @return mixed the value of the key removed
-	 * @return mixed the value of the parameter, one last time
 	 */
 	public function remove($key)
 	{
@@ -509,14 +502,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	}
 
 	/**
-	 * @return string the ID of a TDataSourceConfig module. Defaults to empty string, meaning not set.
-	 */
-	public function getConnectionID()
-	{
-		return $this->_connID;
-	}
-
-	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection
 	 * that will be used by the user manager.
@@ -528,46 +513,25 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		if ($this->_initialized) {
 			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'ConnectionID');
 		}
-		$this->_connID = $value;
+		$this->setTraitConnectionID($value);
 	}
 
 	/**
-	 * @return TDbConnection the database connection that may be used to retrieve user data.
+	 * @return string the error message key when createDbConnection could not find the ConnectionID.
+	 * @since 4.3.3
 	 */
-	public function getDbConnection()
+	protected function getConnectionInvalidExceptionKey()
 	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection($this->_connID);
-			$this->_conn->setActive(true);
-		}
-		return $this->_conn;
+		return 'dbparametermodule_connectionid_invalid';
 	}
 
 	/**
-	 * Creates the DB connection.  If no ConnectionID is set, this creates a
-	 * sqlite3 database in the RuntimePath "sqlite3.params".  If the
-	 * {@see getAutoLoadField} is not set, the default, then the autoLoadField
-	 * is set to "autoload" to enable the feature by default.
-	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws \Prado\Exceptions\TConfigurationException if module ID is invalid or empty
-	 * @return TDbConnection the created DB connection
+	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
+	 * @since 4.3.3
 	 */
-	protected function createDbConnection($connectionID)
+	protected function getSqliteDatabaseName()
 	{
-		if ($connectionID !== '') {
-			$conn = $this->getApplication()->getModule($connectionID);
-			if ($conn instanceof TDataSourceConfig) {
-				return $conn->getDbConnection();
-			} else {
-				throw new TConfigurationException('dbparametermodule_connectionid_invalid', $connectionID);
-			}
-		} else {
-			$db = new TDbConnection();
-			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'app.params';
-			$db->setConnectionString('sqlite:' . $dbFile);
-			return $db;
-		}
+		return 'app.params';
 	}
 
 	/**

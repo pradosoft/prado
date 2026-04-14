@@ -13,7 +13,7 @@ atlassian-ide-plugin.xml
 /.cache
 .claude/
 tests/FunctionalTests/results.dat
-tests/unit/Data/db/test.db
+tests/unit/Data/db/
 
 # Composer stuff
 vendor/*

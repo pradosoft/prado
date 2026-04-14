@@ -13,6 +13,7 @@ namespace Prado\Util;
 use Exception;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TLogException;
 use Prado\TPropertyValue;
@@ -48,14 +49,8 @@ use Prado\TPropertyValue;
  */
 class TDbLogRoute extends TLogRoute
 {
-	/**
-	 * @var string the ID of TDataSourceConfig module
-	 */
-	private $_connID = '';
-	/**
-	 * @var TDbConnection the DB connection instance
-	 */
-	private $_db;
+	use TDbPropertiesTrait;
+
 	/**
 	 * @var string name of the DB log table
 	 */
@@ -70,18 +65,6 @@ class TDbLogRoute extends TLogRoute
 	 * @since 4.3.0
 	 */
 	private ?float $_retainPeriod = null;
-
-	/**
-	 * Destructor.
-	 * Disconnect the db connection.
-	 */
-	public function __destruct()
-	{
-		if ($this->_db !== null) {
-			$this->_db->setActive(false);
-		}
-		parent::__destruct();
-	}
 
 	/**
 	 * Initializes this module.
@@ -228,7 +211,7 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * Gets the number of logs in the database fitting the provided criteria.
+	 * Gets the logs from the database fitting the provided criteria.
 	 * @param ?int $level  The bit mask of log levels to search for
 	 * @param null|null|array|string $categories The categories to search for.  Strings
 	 *   are exploded with ','.
@@ -307,58 +290,31 @@ class TDbLogRoute extends TLogRoute
 	}
 
 	/**
-	 * Creates the DB connection.
-	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return \Prado\Data\TDbConnection the created DB connection
+	 * Do not activate on getDbConnection.
+	 * @return ?bool What kind of activation for the connection on retrieving.
+	 * @since 4.3.3
 	 */
-	protected function createDbConnection()
+	protected function getDbConnectionActivationType(): ?bool
 	{
-		if ($this->_connID !== '') {
-			$config = $this->getApplication()->getModule($this->_connID);
-			if ($config instanceof TDataSourceConfig) {
-				return $config->getDbConnection();
-			} else {
-				throw new TConfigurationException('dblogroute_connectionid_invalid', $this->_connID);
-			}
-		} else {
-			$db = new TDbConnection();
-			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'sqlite3.log';
-			$db->setConnectionString('sqlite:' . $dbFile);
-			return $db;
-		}
+		return null;
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection the DB connection instance
+	 * @return string the error message key when createDbConnection could not find the ConnectionID.
+	 * @since 4.3.3
 	 */
-	public function getDbConnection()
+	protected function getConnectionInvalidExceptionKey()
 	{
-		if ($this->_db === null) {
-			$this->_db = $this->createDbConnection();
-		}
-		return $this->_db;
+		return 'dblogroute_connectionid_invalid';
 	}
 
 	/**
-	 * @return string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
+	 * @return string the SQLite database filename within the PRADO runtime path.
+	 * @since 4.3.3
 	 */
-	public function getConnectionID()
+	protected function getSqliteDatabaseName()
 	{
-		return $this->_connID;
-	}
-
-	/**
-	 * Sets the ID of a TDataSourceConfig module.
-	 * The datasource module will be used to establish the DB connection for this log route.
-	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
-	 * @return static The current object.
-	 */
-	public function setConnectionID($value): static
-	{
-		$this->_connID = $value;
-
-		return $this;
+		return 'sqlite3.log';
 	}
 
 	/**
@@ -448,7 +404,7 @@ class TDbLogRoute extends TLogRoute
 
 	/**
 	 * @param string $timespan The time span to compute the number of seconds.
-	 * @retutrn ?int the number of seconds of the time span.
+	 * @return ?int the number of seconds of the time span.
 	 * @since 4.3.0
 	 */
 	public static function timespanToSeconds(string $timespan): ?int

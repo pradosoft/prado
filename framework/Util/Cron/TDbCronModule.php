@@ -16,11 +16,13 @@ use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Security\Permissions\TUserOwnerRule;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\IDbModule;
 use Prado\Util\TLogger;
 
 /**
@@ -51,8 +53,12 @@ use Prado\Util\TLogger;
  * @method bool dyUpdateTask(bool $return, \Prado\Util\Cron\TCronTask $task, array $extraData)
  * @method bool dyRemoveTask(bool $return, \Prado\Util\Cron\TCronTask|string $untask, array $extraData)
  */
-class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
+class TDbCronModule extends TCronModule implements IDbModule
 {
+	use TDbPropertiesTrait {
+		setConnectionID as setTraitConnectionID;
+	}
+
 	/** Name Regular Expression, no spaces, single or double quotes, less than or greater than, no percent, and cannot start with star */
 	public const NAME_VALIDATOR_REGEX = '/^[^\s`\'\"\\*<>%][^\s`\'\"<>%]*$/i';
 
@@ -89,12 +95,6 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/** @var array[] the row data from the database */
 	private $_taskRows;
-
-	/** @var string the ID of TDataSourceConfig module  */
-	private $_connID = '';
-
-	/**  @var TDbConnection the DB connection instance  */
-	private $_conn;
 
 	/** @var TCronTask[] */
 	private $_runtimeTasks;
@@ -415,7 +415,7 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 
 	/**
 	 * Gets the runtime tasks.
-	 * @return \Prado\Util\Cron\TCronTask the tasks to run on {@see executeRuntimeTasks}
+	 * @return null|\Prado\Util\Cron\TCronTask[] the tasks to run on {@see executeRuntimeTasks}
 	 */
 	public function getRuntimeTasks()
 	{
@@ -830,50 +830,6 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 	}
 
 	/**
-	 * Creates the DB connection. If no ConnectionId is provided, then this
-	 * creates a sqlite database in runtime named 'cron.jobs'.
-	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return \Prado\Data\TDbConnection the created DB connection
-	 */
-	protected function createDbConnection()
-	{
-		if ($this->_connID !== '') {
-			$config = $this->getApplication()->getModule($this->_connID);
-			if ($config instanceof TDataSourceConfig) {
-				return $config->getDbConnection();
-			} else {
-				throw new TConfigurationException('dbcron_connectionid_invalid', $this->_connID);
-			}
-		} else {
-			$db = new TDbConnection();
-			// default to SQLite3 database
-			$dbFile = $this->getApplication()->getRuntimePath() . DIRECTORY_SEPARATOR . 'cron.jobs';
-			$db->setConnectionString('sqlite:' . $dbFile);
-			return $db;
-		}
-	}
-
-	/**
-	 * @return \Prado\Data\TDbConnection the DB connection instance
-	 */
-	public function getDbConnection()
-	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection();
-			$this->_conn->setActive(true);
-		}
-		return $this->_conn;
-	}
-
-	/**
-	 * @return null|string the ID of a {@see \Prado\Data\TDataSourceConfig} module. Defaults to empty string, meaning not set.
-	 */
-	public function getConnectionID()
-	{
-		return $this->_connID;
-	}
-
-	/**
 	 * Sets the ID of a TDataSourceConfig module.
 	 * The datasource module will be used to establish the DB connection for this cron module.
 	 * @param string $value ID of the {@see \Prado\Data\TDataSourceConfig} module
@@ -884,7 +840,25 @@ class TDbCronModule extends TCronModule implements \Prado\Util\IDbModule
 		if ($this->_initialized) {
 			throw new TInvalidOperationException('dbcron_property_unchangeable', 'ConnectionID');
 		}
-		$this->_connID = $value;
+		$this->setTraitConnectionID($value);
+	}
+
+	/**
+	 * @return string the error message key when createDbConnection could not find the ConnectionID.
+	 * @since 4.3.3
+	 */
+	protected function getConnectionInvalidExceptionKey()
+	{
+		return 'dbcron_connectionid_invalid';
+	}
+
+	/**
+	 * @return string the SQLite database filename within the PRADO runtime path.
+	 * @since 4.3.3
+	 */
+	protected function getSqliteDatabaseName()
+	{
+		return 'cron.jobs';
 	}
 
 	/**
