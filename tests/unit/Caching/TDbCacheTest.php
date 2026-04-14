@@ -24,7 +24,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 		}
 		$this->_dbFile = $this->_dbDir . '/test_cache.db';
 		$this->_dbFiles = [$this->_dbFile];
-		
+
 		$app = new TApplication(__DIR__ . '/../Data/SqlMap/app', false, TApplication::CONFIG_TYPE_PHP);
 		$app->setRuntimePath($this->_dbDir);
 
@@ -34,7 +34,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 
 	protected function tearDown(): void
 	{
-		if ($this->_cache) {
+		if ($this->_cache && $this->_cache->getHasDbConnection()) {
 			$this->_cache->flush();
 			$this->_cache->deactivateDbConnection(true);
 			$this->_cache = null;
