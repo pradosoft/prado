@@ -23,6 +23,7 @@ class TDbCacheTest extends PHPUnit\Framework\TestCase
 			mkdir($this->_dbDir, 0777, true);
 		}
 		$this->_dbFile = $this->_dbDir . '/test_cache.db';
+		$this->_dbFiles = [$this->_dbFile];
 		
 		$app = new TApplication(__DIR__ . '/../Data/SqlMap/app', false, TApplication::CONFIG_TYPE_PHP);
 		$app->setRuntimePath($this->_dbDir);
