@@ -276,13 +276,13 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	{
 		$this->_flushInterval = (int) $value;
 	}
-	
+
 	/**
 	 * Active on every getDbConnection.
 	 * @return ?bool What kind of activation for the connection on retrieving.
 	 * @since 4.3.3
 	 */
-	protected function getDbConnectionActivation(): ?bool
+	protected function getDbConnectionActivationType(): ?bool
 	{
 		return true;
 	}
