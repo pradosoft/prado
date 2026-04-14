@@ -3,6 +3,8 @@
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Util\TBaseBehavior;
 use Prado\Util\TBehavior;
+use Prado\Util\TClassBehavior;
+use Prado\TComponent;
 
 class StrictEventsBehavior extends TBehavior
 {
@@ -15,206 +17,433 @@ class StrictEventsBehavior extends TBehavior
 	}
 }
 
-// New helper/test scaffolding for assertWithoutOwner and default/override keys
-class TestAssertBehavior extends TBehavior
-{
-    public function testAssertProp(string $prop, ?string $exceptionKey = null): void
-    {
-        $this->assertWithoutOwner($prop, $exceptionKey);
-    }
-    public function getDefaultKeyPublic(): string
-    {
-        return $this->getWithoutOwnerExceptionKey();
-    }
-}
-
-class TestAssertBehaviorWithCustomKey extends TestAssertBehavior
-{
-    protected function getWithoutOwnerExceptionKey(): string
-    {
-        return 'custom_behavior_key';
-    }
-    public function getCustomKeyPublic(): string
-    {
-        return $this->getWithoutOwnerExceptionKey();
-    }
-    public function testAssertPropWithCustomKey(string $prop): void
-    {
-        $this->assertWithoutOwner($prop);
-    }
-}
-
-class TestAssertClassBehavior extends Prado\Util\TClassBehavior
-{
-    public function testAssertProp(string $prop, ?string $exceptionKey = null): void
-    {
-        $this->assertWithoutOwner($prop, $exceptionKey);
-    }
-}
-
-class TestAssertClassBehaviorWithCustomKey extends TestAssertClassBehavior
-{
-    protected function getWithoutOwnerExceptionKey(): string
-    {
-        return 'custom_classbehavior_key';
-    }
-    public function testAssertPropPublic(string $prop): void
-    {
-        $this->assertWithoutOwner($prop);
-    }
-    public function getKeyPublic(): string
-    {
-        return $this->getWithoutOwnerExceptionKey();
-    }
-}
-
-class TestAssertClassBehaviorDefaultKey extends TestAssertClassBehavior
-{
-    public function getDefaultKeyPublic(): string
-    {
-        return $this->getWithoutOwnerExceptionKey();
-    }
-}
-
 class NonStrictEventsBehavior extends StrictEventsBehavior
 {
 	public function getStrictEvents(): bool
 	{
 		return false;
 	}
-    
-    public function events()
-    {
-        return ['onMyEvent' => 'myHandler'];
-    }
-    public function myHandler($sender, $param)
-    {
-    }
+}
+
+class TestAssertOwnerBehavior extends TBehavior
+{
+	public function callAssertOwner(string $property, ?string $exceptionKey = null): void
+	{
+		$this->assertOwner($property, $exceptionKey);
+	}
+
+	public function callAssertWithoutOwner(string $property, ?string $exceptionKey = null): void
+	{
+		$this->assertWithoutOwner($property, $exceptionKey);
+	}
+
+	public function getOwnerExceptionKeyPublic(): string
+	{
+		return $this->getOwnerExceptionKey();
+	}
+
+	public function getWithoutOwnerExceptionKeyPublic(): string
+	{
+		return $this->getWithoutOwnerExceptionKey();
+	}
+}
+
+class TestAssertOwnerClassBehavior extends TClassBehavior
+{
+	public function callAssertOwner(string $property, ?string $exceptionKey = null): void
+	{
+		$this->assertOwner($property, $exceptionKey);
+	}
+
+	public function callAssertWithoutOwner(string $property, ?string $exceptionKey = null): void
+	{
+		$this->assertWithoutOwner($property, $exceptionKey);
+	}
+
+	public function getOwnerExceptionKeyPublic(): string
+	{
+		return $this->getOwnerExceptionKey();
+	}
+
+	public function getWithoutOwnerExceptionKeyPublic(): string
+	{
+		return $this->getWithoutOwnerExceptionKey();
+	}
 }
 
 class TBaseBehaviorTest extends PHPUnit\Framework\TestCase
-{	
-	public function testMergeHandlers()
+{
+	// === mergeHandlers ===
+
+	public function testMergeHandlers_emptyArgs()
 	{
-		self::assertEquals([], TBaseBehavior::mergeHandlers());
-		self::assertEquals([], TBaseBehavior::mergeHandlers([]));
-		self::assertEquals([
-			'onEvent1' => [ 'behaviorHandler' ],
-			'onEvent2' => [$closure = function ($sender, $param) {}, [$this, 'testMergeHandlers']],
-			'onEvent3' => ['behaviorHandler2', [$this, 'testMergeHandlers']],
-		], TBaseBehavior::mergeHandlers( ['onEvent2' => $closure],
-			['onEvent1' => 'behaviorHandler', 'onEvent2' => [$this, 'testMergeHandlers'], 'onEvent3' => ['behaviorHandler2', [$this, 'testMergeHandlers']]]));
+		$this->assertEquals([], TBaseBehavior::mergeHandlers());
 	}
-	
-	public function testStrictEvents() 
+
+	public function testMergeHandlers_emptyArray()
 	{
-		// We cannot attach when behavior event handlers are strict.
+		$this->assertEquals([], TBaseBehavior::mergeHandlers([]));
+	}
+
+	public function testMergeHandlers_stringHandler()
+	{
+		$result = TBaseBehavior::mergeHandlers(['onEvent' => 'handlerName']);
+		$this->assertEquals(['onEvent' => ['handlerName']], $result);
+	}
+
+	public function testMergeHandlers_callableHandler()
+	{
+		$closure = function () {};
+		$result = TBaseBehavior::mergeHandlers(['onEvent' => $closure]);
+		$this->assertEquals(['onEvent' => [$closure]], $result);
+	}
+
+	public function testMergeHandlers_arrayHandler()
+	{
+		$result = TBaseBehavior::mergeHandlers(['onEvent' => ['h1', 'h2']]);
+		$this->assertEquals(['onEvent' => ['h1', 'h2']], $result);
+	}
+
+	public function testMergeHandlers_mergesMultipleEvents()
+	{
+		$closure = function ($sender, $param) {};
+		$result = TBaseBehavior::mergeHandlers(
+			['onEvent2' => $closure],
+			['onEvent1' => 'behaviorHandler', 'onEvent2' => [$this, __METHOD__], 'onEvent3' => ['behaviorHandler2', [$this, __METHOD__]]]
+		);
+		$this->assertEquals([
+			'onEvent2' => [$closure, [$this, __METHOD__]],
+			'onEvent1' => ['behaviorHandler'],
+			'onEvent3' => ['behaviorHandler2', [$this, __METHOD__]],
+		], $result);
+	}
+
+	// === StrictEvents ===
+
+	public function testStrictEvents_throwsOnMissingEvent()
+	{
 		$component = new TComponent();
-		$strictBehavior = new StrictEventsBehavior();
-		self::assertTrue($strictBehavior->getStrictEvents());
+		$strict = new StrictEventsBehavior();
+		$this->assertTrue($strict->getStrictEvents());
 		try {
-			$component->attachBehavior('strict', $strictBehavior);
-			self::fail("TInvalidOperationException not thrown when attaching strict behavior event handlers");
-		} catch(TInvalidOperationException $e){
+			$component->attachBehavior('strict', $strict);
+			$this->fail("TInvalidOperationException not thrown when attaching strict behavior event handlers");
+		} catch (TInvalidOperationException $e) {
 		}
 	}
-	
-    public function testNonStrictEvents()
-    {
-        $component = new TComponent();
-        // We can attach when behavior event handlers are not strict.
-        $nonStrictBehavior = new NonStrictEventsBehavior();
-        self::assertFalse($nonStrictBehavior->getStrictEvents());
-        $component->attachBehavior('nonstrict', $nonStrictBehavior);
-    }
 
-    // New tests for assertWithoutOwner and default/override exception keys
-    public function testAssertWithoutOwner_NoOwnerDoesNotThrow()
-    {
-        $b = new TestAssertBehavior();
-        // Should not throw when there is no owner
-        $b->testAssertProp('testProperty');
-        $this->assertTrue(true);
-    }
+	public function testNonStrictEvents_attachesSuccessfully()
+	{
+		$component = new TComponent();
+		$nonStrict = new NonStrictEventsBehavior();
+		$this->assertFalse($nonStrict->getStrictEvents());
+		$component->attachBehavior('nonstrict', $nonStrict);
+	}
 
-    public function testAssertWithoutOwner_WithOwnerThrowsDefaultKey()
-    {
-        $b = new TestAssertBehavior();
-        $component = new TComponent();
-        $b->attach($component);
-        try {
-            $b->testAssertProp('testProperty');
-            $this->fail('Expected TInvalidOperationException to be thrown');
-        } catch (TInvalidOperationException $e) {
-            $this->assertInstanceOf(TInvalidOperationException::class, $e);
-        }
-    }
+	// === assertOwner (TBehavior) ===
 
-    public function testAssertWithoutOwner_WithOwnerThrowsCustomKey()
-    {
-        $b = new TestAssertBehaviorWithCustomKey();
-        $component = new TComponent();
-        $b->attach($component);
-        try {
-            $b->testAssertPropWithCustomKey('testProperty');
-            $this->fail('Expected TInvalidOperationException to be thrown');
-        } catch (TInvalidOperationException $e) {
-            $this->assertInstanceOf(TInvalidOperationException::class, $e);
-            $msg = $e->getMessage();
-            $this->assertTrue(str_contains($msg, 'custom_behavior_key') || strpos($msg, 'testProperty') !== false);
-        }
-    }
+	public function testAssertOwner_throwsWithoutOwner()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$this->expectException(TInvalidOperationException::class);
+		$b->callAssertOwner('myProperty');
+	}
 
-    public function testDefaultKeyGetter()
-    {
-        $b = new TestAssertBehavior();
-        $this->assertEquals('behavior_property_unchangeable', $b->getDefaultKeyPublic());
-    }
+	public function testAssertOwner_passesWithOwner()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$c = new TComponent();
+		$b->attach($c);
+		$b->callAssertOwner('myProperty');
+		$this->assertTrue(true);
+	}
 
-    public function testCustomKeyGetter()
-    {
-        $b = new TestAssertBehaviorWithCustomKey();
-        $this->assertEquals('custom_behavior_key', $b->getCustomKeyPublic());
-    }
+	public function testAssertOwner_passesAfterDetachThenReattach()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$c = new TComponent();
+		$b->attach($c);
+		$b->callAssertOwner('prop');
+		$b->detach($c);
+		$this->expectException(TInvalidOperationException::class);
+		$b->callAssertOwner('prop');
+	}
 
-    public function testClassBehaviorAssert_NoOwner_DoesNotThrow()
-    {
-        $cb = new TestAssertClassBehavior();
-        $cb->testAssertProp('prop');
-        $this->assertTrue(true);
-    }
+	public function testAssertOwner_defaultKey()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$this->assertEquals('behavior_requires_owner', $b->getOwnerExceptionKeyPublic());
+	}
 
-    public function testClassBehaviorAssert_WithOwnerThrowsDefaultKey()
-    {
-        $cb = new TestAssertClassBehavior();
-        $component = new TComponent();
-        $cb->attach($component);
-        try {
-            $cb->testAssertProp('prop');
-            $this->fail('Expected TInvalidOperationException');
-        } catch (TInvalidOperationException $e) {
-            $this->assertInstanceOf(TInvalidOperationException::class, $e);
-        }
-    }
+	public function testAssertOwner_nullExceptionKeyUsesDefault()
+	{
+		$b = new TestAssertOwnerBehavior();
+		try {
+			$b->callAssertOwner('someProp', null);
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('behavior_requires_owner', $e->getErrorCode());
+		}
+	}
 
-    public function testClassBehaviorOverrideKey()
-    {
-        $cb = new TestAssertClassBehaviorWithCustomKey();
-        $component = new TComponent();
-        $cb->attach($component);
-        try {
-            $cb->testAssertPropPublic('prop');
-            $this->fail('Expected TInvalidOperationException');
-        } catch (TInvalidOperationException $e) {
-            $this->assertInstanceOf(TInvalidOperationException::class, $e);
-            $msg = $e->getMessage();
-            $this->assertTrue(str_contains($msg, 'custom_classbehavior_key') || strpos($msg, 'prop') !== false);
-        }
-    }
+	public function testAssertOwner_explicitKeyOverridesDefault()
+	{
+		$b = new TestAssertOwnerBehavior();
+		try {
+			$b->callAssertOwner('someProp', 'custom_override_key');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('custom_override_key', $e->getErrorCode());
+		}
+	}
 
-    public function testClassBehaviorDefaultKeyGetter()
-    {
-        $cb = new TestAssertClassBehaviorDefaultKey();
-        $this->assertEquals('behavior_property_unchangeable', $cb->getDefaultKeyPublic());
-    }
+	public function testAssertOwner_customOwnerKeyOverride()
+	{
+		$b = new class extends TestAssertOwnerBehavior {
+			protected function getOwnerExceptionKey(): string
+			{
+				return 'custom_requires_owner';
+			}
+		};
+		try {
+			$b->callAssertOwner('someProp');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('custom_requires_owner', $e->getErrorCode());
+		}
+	}
+
+	public function testAssertOwner_includesPropertyAndShortClassName()
+	{
+		$b = new TestAssertOwnerBehavior();
+		try {
+			$b->callAssertOwner('testPropertyName');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$msg = $e->getMessage();
+			$this->assertStringContainsString('testPropertyName', $msg);
+			$this->assertStringContainsString('TestAssertOwnerBehavior', $msg);
+		}
+	}
+
+	// === assertOwner (TClassBehavior) ===
+
+	public function testAssertOwner_classBehavior_throwsWithoutOwner()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$this->expectException(TInvalidOperationException::class);
+		$cb->callAssertOwner('myProp');
+	}
+
+	public function testAssertOwner_classBehavior_passesWithSingleOwner()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c = new TComponent();
+		$cb->attach($c);
+		$cb->callAssertOwner('myProp');
+		$this->assertTrue(true);
+	}
+
+	public function testAssertOwner_classBehavior_passesWithMultipleOwners()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c1 = new TComponent();
+		$c2 = new TComponent();
+		$cb->attach($c1);
+		$cb->attach($c2);
+		$cb->callAssertOwner('myProp');
+		$this->assertTrue(true);
+	}
+
+	public function testAssertOwner_classBehavior_defaultKey()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$this->assertEquals('behavior_requires_owner', $cb->getOwnerExceptionKeyPublic());
+	}
+
+	public function testAssertOwner_classBehavior_explicitKeyOverridesDefault()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		try {
+			$cb->callAssertOwner('prop', 'class_custom_key');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('class_custom_key', $e->getErrorCode());
+		}
+	}
+
+	public function testAssertOwner_classBehavior_includesShortClassName()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		try {
+			$cb->callAssertOwner('someProp');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertStringContainsString('TestAssertOwnerClassBehavior', $e->getMessage());
+		}
+	}
+
+	public function testAssertOwner_classBehavior_throwsAfterAllOwnersDetached()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c1 = new TComponent();
+		$c2 = new TComponent();
+		$cb->attach($c1);
+		$cb->attach($c2);
+		$cb->detach($c1);
+		$cb->callAssertOwner('prop');
+		$cb->detach($c2);
+		$this->expectException(TInvalidOperationException::class);
+		$cb->callAssertOwner('prop');
+	}
+
+	public function testAssertOwner_classBehavior_customOwnerKeyOverride()
+	{
+		$cb = new class extends TestAssertOwnerClassBehavior {
+			protected function getOwnerExceptionKey(): string
+			{
+				return 'class_custom_requires_owner';
+			}
+		};
+		try {
+			$cb->callAssertOwner('someProp');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('class_custom_requires_owner', $e->getErrorCode());
+		}
+	}
+
+	// === assertWithoutOwner (TBehavior) ===
+
+	public function testAssertWithoutOwner_passesWithoutOwner()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$b->callAssertWithoutOwner('anyProp');
+		$this->assertTrue(true);
+	}
+
+	public function testAssertWithoutOwner_throwsWithOwner()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$c = new TComponent();
+		$b->attach($c);
+		$this->expectException(TInvalidOperationException::class);
+		$b->callAssertWithoutOwner('anyProp');
+	}
+
+	public function testAssertWithoutOwner_defaultKey()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$this->assertEquals('behavior_property_unchangeable', $b->getWithoutOwnerExceptionKeyPublic());
+	}
+
+	public function testAssertWithoutOwner_explicitKeyOverridesDefault()
+	{
+		$b = new TestAssertOwnerBehavior();
+		$c = new TComponent();
+		$b->attach($c);
+		try {
+			$b->callAssertWithoutOwner('someProp', 'explicit_noowner_key');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertStringContainsString('explicit_noowner_key', $e->getErrorCode());
+		}
+	}
+
+	public function testAssertWithoutOwner_customKeyOverride()
+	{
+		$b = new class extends TestAssertOwnerBehavior {
+			protected function getWithoutOwnerExceptionKey(): string
+			{
+				return 'custom_property_unchangeable';
+			}
+		};
+		$c = new TComponent();
+		$b->attach($c);
+		try {
+			$b->callAssertWithoutOwner('someProp');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('custom_property_unchangeable', $e->getErrorCode());
+		}
+	}
+
+	// === assertWithoutOwner (TClassBehavior) ===
+
+	public function testAssertWithoutOwner_classBehavior_passesWithoutOwner()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$cb->callAssertWithoutOwner('anyProp');
+		$this->assertTrue(true);
+	}
+
+	public function testAssertWithoutOwner_classBehavior_throwsWithOwner()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c = new TComponent();
+		$cb->attach($c);
+		$this->expectException(TInvalidOperationException::class);
+		$cb->callAssertWithoutOwner('anyProp');
+	}
+
+	public function testAssertWithoutOwner_classBehavior_defaultKey()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$this->assertEquals('behavior_property_unchangeable', $cb->getWithoutOwnerExceptionKeyPublic());
+	}
+
+	public function testAssertWithoutOwner_classBehavior_explicitKeyOverridesDefault()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c = new TComponent();
+		$cb->attach($c);
+		try {
+			$cb->callAssertWithoutOwner('prop', 'explicit_class_noowner_key');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('explicit_class_noowner_key', $e->getErrorCode());
+		}
+	}
+
+	public function testAssertWithoutOwner_classBehavior_customKeyOverride()
+	{
+		$cb = new class extends TestAssertOwnerClassBehavior {
+			protected function getWithoutOwnerExceptionKey(): string
+			{
+				return 'custom_class_property_unchangeable';
+			}
+		};
+		$c = new TComponent();
+		$cb->attach($c);
+		try {
+			$cb->callAssertWithoutOwner('someProp');
+			$this->fail('Expected TInvalidOperationException');
+		} catch (TInvalidOperationException $e) {
+			$this->assertEquals('custom_class_property_unchangeable', $e->getErrorCode());
+		}
+	}
+
+	public function testAssertWithoutOwner_classBehavior_throwsWithMultipleOwners()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c1 = new TComponent();
+		$c2 = new TComponent();
+		$cb->attach($c1);
+		$cb->attach($c2);
+		$this->expectException(TInvalidOperationException::class);
+		$cb->callAssertWithoutOwner('prop');
+	}
+
+	public function testAssertWithoutOwner_classBehavior_passesAfterAllOwnersDetached()
+	{
+		$cb = new TestAssertOwnerClassBehavior();
+		$c1 = new TComponent();
+		$c2 = new TComponent();
+		$cb->attach($c1);
+		$cb->attach($c2);
+		$cb->detach($c1);
+		$cb->detach($c2);
+		$cb->callAssertWithoutOwner('anyProp');
+		$this->assertTrue(true);
+	}
 }

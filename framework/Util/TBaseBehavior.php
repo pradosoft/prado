@@ -412,6 +412,44 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	abstract protected function setHandlersStatus(TComponent $component, bool $attach): bool;
 
 	/**
+	 * This throws an exception if there is no owner on the behavior.
+	 * @param string $property     The name of the Property requiring no owner.
+	 * @param string $exceptionKey The key name of the exception message, default is null
+	 *							   and uses {@see getWithoutOwnerExceptionKey()} for the
+	 *							   backup default message.
+	 * @since 4.3.3
+	 */
+	protected function assertOwner(string $property, ?string $exceptionKey = null): void
+	{
+		if (!$this->hasOwner()) {
+			throw new TInvalidOperationException(
+				$exceptionKey ?? $this->getOwnerExceptionKey(),
+				$property,
+				array_slice(explode('\\', static::class), -1)[0]
+			);
+		}
+	}
+
+	/**
+	 * Returns the PRADO error message catalogue key used by {@see assertOwner()}
+	 * when it throws a {@see TInvalidOperationException}.
+	 *
+	 * The key's corresponding message should contain a `{0}` placeholder for
+	 * the property name, for example:
+	 * ```
+	 * behavior_requires_owner = {1}.{0} requires an owner.
+	 * ```
+	 * Override to return a module-specific key.
+	 *
+	 * @return string a PRADO error message catalogue key.
+	 * @since 4.3.3
+	 */
+	protected function getOwnerExceptionKey(): string
+	{
+		return 'behavior_requires_owner';
+	}
+
+	/**
 	 * This throws an exception if there is an owner on the behavior.
 	 * @param string $property     The name of the Property requiring no owner.
 	 * @param string $exceptionKey The key name of the exception message, default is null
@@ -437,7 +475,7 @@ abstract class TBaseBehavior extends TApplicationComponent implements IBaseBehav
 	 * The key's corresponding message should contain a `{0}` placeholder for
 	 * the property name, for example:
 	 * ```
-	 * "MyClass.{0} cannot be changed after attachment."
+	 * behavior_property_unchangeable = {1}.{0} cannot be changed after attachment.
 	 * ```
 	 * Override to return a module-specific key.
 	 *
