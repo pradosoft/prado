@@ -276,16 +276,15 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	{
 		$this->_flushInterval = (int) $value;
 	}
-
+	
 	/**
-	 * Replace the trait getDbConnection to always make the connection "Active" = true.
-	 * @return \Prado\Data\TDbConnection the DB connection instance
+	 * Active on every getDbConnection.
+	 * @return ?bool What kind of activation for the connection on retrieving.
+	 * @since 4.3.3
 	 */
-	public function getDbConnection()
+	protected function getDbConnectionActivation(): ?bool
 	{
-		$connection = $this->getTraitDbConnection();
-		$connection->setActive(true);
-		return $connection;
+		return true;
 	}
 
 	/**

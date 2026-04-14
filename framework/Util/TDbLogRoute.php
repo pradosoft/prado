@@ -288,16 +288,15 @@ class TDbLogRoute extends TLogRoute
 			message VARCHAR(255))';
 		$db->createCommand($sql)->execute();
 	}
-
+	
 	/**
-	 * @return \Prado\Data\TDbConnection the DB connection instance
+	 * Do not activate on getDbConnection.
+	 * @return ?bool What kind of activation for the connection on retrieving.
+	 * @since 4.3.3
 	 */
-	public function getDbConnection()
+	protected function getDbConnectionActivation(): ?bool
 	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection();
-		}
-		return $this->_conn;
+		return null;
 	}
 
 	/**

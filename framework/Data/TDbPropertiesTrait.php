@@ -103,8 +103,14 @@ trait TDbPropertiesTrait
 	 */
 	public function getDbConnection(): TDbConnection
 	{
+		$activation = $this->getDbConnectionActivation();
 		if ($this->_conn === null) {
 			$this->_conn = $this->createDbConnection();
+			if ($activation === false) {
+				$this->_conn->setActive(true);
+			}
+		}
+		if ($activation === true) {
 			$this->_conn->setActive(true);
 		}
 		return $this->_conn;
@@ -112,7 +118,6 @@ trait TDbPropertiesTrait
 
 	/**
 	 * Checks if a database connection has been established.
-	 *
 	 * @return bool true if a connection exists, false otherwise
 	 */
 	public function getHasDbConnection(): bool
@@ -138,6 +143,16 @@ trait TDbPropertiesTrait
 			}
 		}
 		return $this;
+	}
+
+	/**
+	 * How to activate the Connection on retrieval.
+	 * null is not activated, false is on instancing, and true for every time.
+	 * @return ?bool What kind of activation for the connection on retrieving.
+	 */
+	protected function getDbConnectionActivation(): ?bool
+	{
+		return false;
 	}
 
 	/**
@@ -250,16 +265,20 @@ trait TDbPropertiesTrait
 	 * @param string $tableName the name of the table for the Gateway
 	 * @return TTableGateway the table gateway instance
 	 */
-	public function getTableGateway(string $tableName): TTableGateway
+	public function getTableGateway(string $tableName, bool $cache = true): TTableGateway
 	{
-		if ($this->_gateways === null) {
-			$this->_gateways = [];
-		}
-		if (isset($this->_gateways[$tableName])) {
-			return $this->_gateways[$tableName];
+		if ($cache) {
+			if ($this->_gateways === null) {
+				$this->_gateways = [];
+			}
+			if (isset($this->_gateways[$tableName])) {
+				return $this->_gateways[$tableName];
+			}
 		}
 		$gateway = new TTableGateway($tableName, $this->getDbConnection());
-		$this->_gateways[$tableName] = $gateway;
+		if ($cache) {
+			$this->_gateways[$tableName] = $gateway;
+		}
 		return $gateway;
 	}
 }
