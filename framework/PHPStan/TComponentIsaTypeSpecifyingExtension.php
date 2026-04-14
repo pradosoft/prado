@@ -125,12 +125,11 @@ final class TComponentIsaTypeSpecifyingExtension implements MethodTypeSpecifying
 			? $types[0]
 			: new UnionType($types);
 
-		// ← 4th argument `true` means overwrite existing type
 		return $this->typeSpecifier->create(
 			$node->var,
 			$type,
 			$context,
-			true                // ← was missing
+			$scope
 		);
 	}
 }
