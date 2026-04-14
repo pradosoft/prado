@@ -18,6 +18,7 @@ namespace Prado\I18N\core;
 
 use PDO;
 use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Prado;
 
@@ -31,8 +32,7 @@ use Prado\Prado;
  */
 class MessageSource_Database extends MessageSource
 {
-	private $_connID = '';
-	private $_conn;
+	use TDbPropertiesTrait;
 
 	/**
 	 * Constructor.
@@ -42,39 +42,35 @@ class MessageSource_Database extends MessageSource
 	 */
 	public function __construct($source)
 	{
-		$this->_connID = (string) $source;
+		$this->setConnectionID((string) $source);
 	}
 
 	/**
-	 * @return \Prado\Data\TDbConnection the database connection that may be used to retrieve messages.
+	 * This overrides the trait setConnectionID to make it protected.
+	 * @param mixed $value
+	 * @since 4.3.3
 	 */
-	public function getDbConnection()
+	protected function setConnectionID($value)
 	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection($this->_connID);
-			$this->_conn->setActive(true);
-		}
-		return $this->_conn;
+		$this->_connID = $value;
 	}
 
 	/**
-	 * Creates the DB connection.
-	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return \Prado\Data\TDbConnection the created DB connection
+	 * @return string the error message key when createDbConnection could not find the ConnectionID.
+	 * @since 4.3.3
 	 */
-	protected function createDbConnection($connectionID)
+	protected function getConnectionInvalidExceptionKey()
 	{
-		if ($connectionID !== '') {
-			$conn = Prado::getApplication()->getModule($connectionID);
-			if ($conn instanceof TDataSourceConfig) {
-				return $conn->getDbConnection();
-			} else {
-				throw new TConfigurationException('messagesource_connectionid_invalid', $connectionID);
-			}
-		} else {
-			throw new TConfigurationException('messagesource_connectionid_required');
-		}
+		return 'messagesource_connectionid_invalid';
+	}
+
+	/**
+	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
+	 * @since 4.3.3
+	 */
+	protected function getConnectionRequiredExceptionKey()
+	{
+		return 'messagesource_connectionid_required';
 	}
 
 	/**
@@ -85,7 +81,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function &loadData($variant)
 	{
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'SELECT t.id, t.source, t.target, t.comments
 				FROM trans_unit t, catalogue c
 				WHERE c.cat_id =  t.cat_id
@@ -112,7 +108,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function getLastModified($source)
 	{
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'SELECT date_modified FROM catalogue WHERE name = :source'
 		);
 		$command->bindParameter(':source', $source, PDO::PARAM_STR);
@@ -129,7 +125,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	protected function isValidSource($variant)
 	{
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'SELECT COUNT(*) FROM catalogue WHERE name = :variant'
 		);
 		$command->bindParameter(':variant', $variant, PDO::PARAM_STR);
@@ -171,7 +167,7 @@ class MessageSource_Database extends MessageSource
 
 		$variant = $catalogue . '.' . $this->culture;
 
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'SELECT cat_id FROM catalogue WHERE name = :variant'
 		);
 		$command->bindParameter(':variant', $variant, PDO::PARAM_STR);
@@ -181,7 +177,7 @@ class MessageSource_Database extends MessageSource
 			return false;
 		}
 
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'SELECT COUNT(msg_id) FROM trans_unit WHERE cat_id = :catid '
 		);
 		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
@@ -199,7 +195,7 @@ class MessageSource_Database extends MessageSource
 	private function updateCatalogueTime($cat_id, $variant)
 	{
 		$time = time();
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'UPDATE catalogue SET date_modified = :moddate WHERE cat_id = :catid'
 		);
 		$command->bindParameter(':moddate', $time, PDO::PARAM_INT);
@@ -243,7 +239,7 @@ class MessageSource_Database extends MessageSource
 
 		$time = time();
 
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'INSERT INTO trans_unit (cat_id,id,source,date_added) VALUES (:catid,:id,:source,:dateadded)'
 		);
 		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
@@ -280,7 +276,7 @@ class MessageSource_Database extends MessageSource
 			return false;
 		}
 
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'DELETE FROM trans_unit WHERE cat_id = :catid AND source = :message'
 		);
 		$command->bindParameter(':catid', $cat_id, PDO::PARAM_INT);
@@ -307,7 +303,7 @@ class MessageSource_Database extends MessageSource
 		}
 
 		$time = time();
-		$command = $this->getDBConnection()->createCommand(
+		$command = $this->getDbConnection()->createCommand(
 			'UPDATE trans_unit SET target = :target, comments = :comments, date_modified = :datemod
 					WHERE cat_id = :catid AND source = :source'
 		);
@@ -326,7 +322,7 @@ class MessageSource_Database extends MessageSource
 	 */
 	public function catalogues()
 	{
-		$command = $this->getDBConnection()->createCommand('SELECT name FROM catalogue ORDER BY name');
+		$command = $this->getDbConnection()->createCommand('SELECT name FROM catalogue ORDER BY name');
 		$dataReader = $command->query();
 
 		$result = [];

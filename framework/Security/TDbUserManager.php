@@ -11,9 +11,11 @@
 namespace Prado\Security;
 
 use Prado\Data\TDataSourceConfig;
+use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Prado;
+use Prado\TModule;
 use Prado\Util\IDbModule;
 
 /**
@@ -45,10 +47,10 @@ use Prado\Util\IDbModule;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
-class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
+class TDbUserManager extends TModule implements IUserManager, IDbModule
 {
-	private $_connID = '';
-	private $_conn;
+	use TDbPropertiesTrait;
+
 	private $_guestName = 'Guest';
 	private $_userClass = '';
 	private $_userFactory;
@@ -129,54 +131,21 @@ class TDbUserManager extends \Prado\TModule implements IUserManager, IDbModule
 	}
 
 	/**
-	 * @return string the ID of a TDataSourceConfig module. Defaults to empty string, meaning not set.
+	 * @return string if the using class wants a sqlite db then return the name.
+	 * @since 4.3.3
 	 */
-	public function getConnectionID()
+	protected function getConnectionInvalidExceptionKey()
 	{
-		return $this->_connID;
+		return 'dbusermanager_connectionid_invalid';
 	}
 
 	/**
-	 * Sets the ID of a TDataSourceConfig module.
-	 * The datasource module will be used to establish the DB connection
-	 * that will be used by the user manager.
-	 * @param string $value module ID.
+	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
+	 * @since 4.3.3
 	 */
-	public function setConnectionID($value)
+	protected function getConnectionRequiredExceptionKey()
 	{
-		$this->_connID = $value;
-	}
-
-	/**
-	 * @return \Prado\Data\TDbConnection the database connection that may be used to retrieve user data.
-	 */
-	public function getDbConnection()
-	{
-		if ($this->_conn === null) {
-			$this->_conn = $this->createDbConnection($this->_connID);
-			$this->_conn->setActive(true);
-		}
-		return $this->_conn;
-	}
-
-	/**
-	 * Creates the DB connection.
-	 * @param string $connectionID the module ID for TDataSourceConfig
-	 * @throws TConfigurationException if module ID is invalid or empty
-	 * @return \Prado\Data\TDbConnection the created DB connection
-	 */
-	protected function createDbConnection($connectionID)
-	{
-		if ($connectionID !== '') {
-			$conn = $this->getApplication()->getModule($connectionID);
-			if ($conn instanceof TDataSourceConfig) {
-				return $conn->getDbConnection();
-			} else {
-				throw new TConfigurationException('dbusermanager_connectionid_invalid', $connectionID);
-			}
-		} else {
-			throw new TConfigurationException('dbusermanager_connectionid_required');
-		}
+		return 'dbusermanager_connectionid_required';
 	}
 
 	/**
