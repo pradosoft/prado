@@ -185,6 +185,23 @@ class MockButtonControl extends TControl implements \Prado\Web\UI\IButtonControl
 	}
 }
 
+function rrmdir($src) {
+	$dir = opendir($src);
+	while(false !== ( $file = readdir($dir)) ) {
+		if (( $file != '.' ) && ( $file != '..' )) {
+			$full = $src . '/' . $file;
+			if ( is_dir($full) ) {
+				rrmdir($full);
+			}
+			else {
+				unlink($full);
+			}
+		}
+	}
+	closedir($dir);
+	rmdir($src);
+}
+
 class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 {
 	public static $app;
@@ -208,7 +225,7 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 			$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0';
 
 			
-			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../app/runtime/';
+			$_SERVER['SCRIPT_FILENAME'] = dirname(__FILE__) . '/../../../FunctionalTests/features/protected/';
 			$_SERVER['SCRIPT_NAME'] = '/index.php';
 			self::$app = new TApplication(realpath(dirname(__FILE__) . '/../app'));
 			self::$app->initApplication();
@@ -228,19 +245,17 @@ class TClientScriptManagerTest extends PHPUnit\Framework\TestCase
 		if (self::$app !== null) {
 			$assetManager = self::$app->getAssetManager();
 			$basePath = $assetManager->getBasePath();
-			if ($basePath !== null && is_dir($basePath)) {
-				$iterator = new RecursiveIteratorIterator(
-					new RecursiveDirectoryIterator($basePath, RecursiveDirectoryIterator::SKIP_DOTS),
-					RecursiveIteratorIterator::CHILD_FIRST
-				);
-				foreach ($iterator as $file) {
-					if ($file->isDir()) {
-						rmdir($file->getPathname());
-					} else {
-						unlink($file->getPathname());
+			
+			$dirIterator = opendir($basePath);
+			while(false !== ( $file = readdir($dirIterator)) ) {
+				if ( $file[0] != '.' ) {
+					$full = $basePath . '/' . $file;
+					if ( is_dir($full) ) {
+						rrmdir($full);
 					}
 				}
 			}
+			closedir($dirIterator);
 		}
 	}
 
