@@ -61,7 +61,17 @@ class TCallbackErrorHandler extends TErrorHandler
 			$content->write($trace);
 		} else {
 			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
-			$this->getResponse()->appendHeader('HTTP/1.0 500 Internal Server Error', true, 500);
+
+			$header = 'HTTP/1.0 500 Internal Server Error';
+			$replaceHeader = true;
+			$code = 500;
+
+			$response = $this->getResponse();
+			if ($response) {
+				$response->appendHeader($header, $replaceHeader, $code);
+			} else {
+				header($header, $replaceHeader, $code);
+			}
 		}
 		$this->getApplication()->getResponse()->flush();
 	}

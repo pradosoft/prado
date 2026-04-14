@@ -137,7 +137,13 @@ class TErrorHandler extends \Prado\TModule
 				$response->clear();
 			}
 			if (!headers_sent()) {
-				$this->getResponse()->appendHeader('Content-Type: text/html; charset=UTF-8');
+				$header = 'Content-Type: text/html; charset=UTF-8';
+				$response = $this->getResponse();
+				if ($response) {
+					$response->appendHeader($header);
+				} else {
+					header($header);
+				}
 			}
 			if ($param instanceof THttpException) {
 				$this->handleExternalError($param->getStatusCode(), $param);
@@ -240,7 +246,14 @@ class TErrorHandler extends \Prado\TModule
 			echo "</body></html>";
 		} else {
 			error_log("Error happened while processing an existing error:\n" . $exception->__toString());
-			$this->getResponse()->appendHeader('HTTP/1.0 500 Internal Error');
+
+			$header = 'HTTP/1.0 500 Internal Error';
+			$response = $this->getResponse();
+			if ($response) {
+				$response->appendHeader($header);
+			} else {
+				header($header);
+			}
 		}
 	}
 
