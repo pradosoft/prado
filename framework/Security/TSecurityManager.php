@@ -36,7 +36,10 @@ use Prado\TPropertyValue;
  *
  * To encrypt and decrypt data, call {@see encrypt()} and {@see decrypt()}
  * respectively. The encryption algorithm can be set by {@see setCryptAlgorithm CryptAlgorithm}.
- * The algorithm used to hash the encryption key can be set by {@see setEncryptionKeyAlgorithm EncryptionKeyAlgorithm}.
+ * The algorithm used to hash the encryption key can be set by
+ * {@see setEncryptionKeyAlgorithm EncryptionKeyAlgorithm}. By default this is `md5` for
+ * backward compatibility. It is highly recommended that EncryptionKeyAlgorithm be set to,
+ * at least, `sha1` or `sha256`.
  *
  * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
  * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
