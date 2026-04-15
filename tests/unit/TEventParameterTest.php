@@ -15,18 +15,21 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$this->assertNull($param->getParameter());
 		$this->assertEquals('', $param->getEventName());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithParameter()
 	{
 		$param = new TEventParameter('test value');
 		$this->assertEquals('test value', $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithNullParameter()
 	{
 		$param = new TEventParameter(null);
 		$this->assertNull($param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithArrayParameter()
@@ -34,18 +37,21 @@ class TEventParameterTest extends TestCase
 		$data = ['key1' => 'value1', 'key2' => 'value2'];
 		$param = new TEventParameter($data);
 		$this->assertEquals($data, $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithIntegerParameter()
 	{
 		$param = new TEventParameter(42);
 		$this->assertEquals(42, $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithBooleanParameter()
 	{
 		$param = new TEventParameter(true);
 		$this->assertTrue($param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	public function testConstructorWithObjectParameter()
@@ -54,6 +60,14 @@ class TEventParameterTest extends TestCase
 		$obj->key = 'value';
 		$param = new TEventParameter($obj);
 		$this->assertSame($obj, $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testConstructorWithEmptyArray()
+	{
+		$param = new TEventParameter([]);
+		$this->assertEquals([], $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	// ================================================================================
@@ -80,13 +94,6 @@ class TEventParameterTest extends TestCase
 		$this->assertEquals('', $param->getEventName());
 	}
 
-	public function testEventNameCanBeSetViaConstructor()
-	{
-		$param = new TEventParameter();
-		$param->setEventName('OnClick');
-		$this->assertEquals('OnClick', $param->getEventName());
-	}
-
 	// ================================================================================
 	// Parameter Property Tests
 	// ================================================================================
@@ -96,6 +103,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$param->setParameter('test');
 		$this->assertEquals('test', $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testSetParameterToNull()
@@ -103,6 +111,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter('initial');
 		$param->setParameter(null);
 		$this->assertNull($param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testSetParameterToArray()
@@ -110,6 +119,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$param->setParameter(['a' => 1, 'b' => 2]);
 		$this->assertEquals(['a' => 1, 'b' => 2], $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testSetParameterToZero()
@@ -117,6 +127,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$param->setParameter(0);
 		$this->assertEquals(0, $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testSetParameterToFalse()
@@ -124,6 +135,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$param->setParameter(false);
 		$this->assertFalse($param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testSetParameterToEmptyString()
@@ -131,6 +143,23 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter();
 		$param->setParameter('');
 		$this->assertEquals('', $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testSetParameterToNullNoChange()
+	{
+		$param = new TEventParameter();
+		$param->setParameter(null);
+		$this->assertEquals(null, $param->getParameter());
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testSetParameterInitialArrayToNull()
+	{
+		$param = new TEventParameter([]);
+		$param->setParameter(null);
+		$this->assertEquals(null, $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	// ================================================================================
@@ -163,6 +192,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter(['initial' => 'value']);
 		$param->offsetSet('newKey', 'newValue');
 		$this->assertEquals('newValue', $param->getParameter()['newKey']);
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testOffsetUnsetWithArray()
@@ -171,6 +201,17 @@ class TEventParameterTest extends TestCase
 		$param->offsetUnset('key1');
 		$this->assertFalse($param->offsetExists('key1'));
 		$this->assertTrue($param->offsetExists('key2'));
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testOffsetUnsetWithArrayNoKey()
+	{
+		$param = new TEventParameter(['key2' => 'value2']);
+		$param->resetParameterChanged();
+		$param->offsetUnset('key1');
+		$this->assertFalse($param->offsetExists('key1'));
+		$this->assertTrue($param->offsetExists('key2'));
+		$this->assertFalse($param->getParameterChanged());
 	}
 
 	// ================================================================================
@@ -238,6 +279,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter(null);
 		$param->offsetSet('key', 'value');
 		$this->assertEquals(['key' => 'value'], $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testOffsetUnsetWithStringParameter()
@@ -286,6 +328,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter($collection);
 		$param->offsetSet('newKey', 'newValue');
 		$this->assertEquals('newValue', $param->offsetGet('newKey'));
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	// Note: offsetUnset does NOT check for ArrayAccess, only is_array
@@ -300,6 +343,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter([]);
 		$param->offsetSet('0', 'first');
 		$this->assertEquals('first', $param->getParameter()['0']);
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testOffsetGetWithNullKey()
@@ -319,6 +363,7 @@ class TEventParameterTest extends TestCase
 		$param = new TEventParameter(['key' => 'original']);
 		$param->offsetSet('key', 'overwritten');
 		$this->assertEquals('overwritten', $param->getParameter()['key']);
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testOffsetSetAddsNewKey()
@@ -327,6 +372,7 @@ class TEventParameterTest extends TestCase
 		$param->offsetSet('new', 'newValue');
 		$this->assertEquals('value', $param->getParameter()['existing']);
 		$this->assertEquals('newValue', $param->getParameter()['new']);
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testOffsetUnsetWithNonexistentKey()
@@ -343,6 +389,7 @@ class TEventParameterTest extends TestCase
 		$param->offsetUnset(null);
 		$this->assertFalse($param->offsetExists(null));
 		$this->assertTrue($param->offsetExists('key1'));
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	// ================================================================================
@@ -361,13 +408,6 @@ class TEventParameterTest extends TestCase
 		$this->assertInstanceOf(ArrayAccess::class, $param);
 	}
 
-	public function testEventNameGetterSetter()
-	{
-		$param = new TEventParameter();
-		$param->setEventName('CustomEvent');
-		$this->assertEquals('CustomEvent', $param->getEventName());
-	}
-
 	// ================================================================================
 	// Complex Scenarios
 	// ================================================================================
@@ -380,6 +420,7 @@ class TEventParameterTest extends TestCase
 
 		$this->assertEquals('TestEvent', $param->getEventName());
 		$this->assertEquals(['key' => 'value'], $param->getParameter());
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testModifyArrayViaOffsetAndRetrieve()
@@ -388,6 +429,7 @@ class TEventParameterTest extends TestCase
 		$param->offsetSet('added', 'new');
 		$this->assertEquals('new', $param->offsetGet('added'));
 		$this->assertEquals('value', $param->offsetGet('initial'));
+		$this->assertTrue($param->getParameterChanged());
 	}
 
 	public function testEmptyArrayHandling()
@@ -445,5 +487,238 @@ class TEventParameterTest extends TestCase
 		$this->assertEquals('zeroValue', $param->offsetGet(0));
 		$this->assertEquals('nullValue', $param->offsetGet(null));
 		$this->assertEquals(true, $param->offsetGet('bool'));
+	}
+
+	// ================================================================================
+	// ParameterChanged Manual Set Tests
+	// ================================================================================
+
+	public function testSetParameterChangedToTrue()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getParameterChanged());
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testSetParameterChangedIsOneWay()
+	{
+		$param = new TEventParameter();
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+		$param->setParameterChanged(false);
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testSetParameterChangedFalseToTrue()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getParameterChanged());
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testResetParameterChanged()
+	{
+		$param = new TEventParameter();
+		$param->setParameterChanged(true);
+		$this->assertTrue($param->getParameterChanged());
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testResetParameterChangedWhenNotChanged()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getParameterChanged());
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testResetParameterChangedAfterOffsetSet()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->offsetSet('newKey', 'newValue');
+		$this->assertTrue($param->getParameterChanged());
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testResetParameterChangedAfterOffsetUnset()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->offsetUnset('key');
+		$this->assertTrue($param->getParameterChanged());
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testResetParameterChangedAfterSetParameter()
+	{
+		$param = new TEventParameter('initial');
+		$param->setParameter('changed');
+		$this->assertTrue($param->getParameterChanged());
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	// ================================================================================
+	// EventName Resets ParameterChanged Tests
+	// ================================================================================
+
+	public function testSetEventNameDoesNotAffectParameter()
+	{
+		$param = new TEventParameter('original');
+		$param->setEventName('TestEvent');
+		$this->assertEquals('original', $param->getParameter());
+		$this->assertEquals('TestEvent', $param->getEventName());
+	}
+
+	public function testSetEventNameWithNoPriorChange()
+	{
+		$param = new TEventParameter();
+		$param->setEventName('Event');
+		$this->assertFalse($param->getParameterChanged());
+		$this->assertEquals('Event', $param->getEventName());
+	}
+
+	public function testSetEventNameWithPriorParameterChanged()
+	{
+		$param = new TEventParameter();
+		$param->setParameter('value');
+		$this->assertTrue($param->getParameterChanged());
+		$param->setEventName('TestEvent');
+		$this->assertFalse($param->getParameterChanged());
+		$this->assertEquals('TestEvent', $param->getEventName());
+	}
+
+	// ================================================================================
+	// ParameterHasChanged Tests
+	// ================================================================================
+
+	public function testgetParameterChangedDefault()
+	{
+		$param = new TEventParameter();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedConstructor()
+	{
+		$param = new TEventParameter('value');
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedConstructorNull()
+	{
+		$param = new TEventParameter(null);
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedWithArrayParameter()
+	{
+		$param = new TEventParameter(['a' => 1]);
+		$param->resetParameterChanged();
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedAfterSetParameter()
+	{
+		$param = new TEventParameter();
+		$param->setParameter('value');
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedWithSameValue()
+	{
+		$param = new TEventParameter('value');
+		$param->resetParameterChanged();
+		$param->setParameter('value');
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedWithDifferentValue()
+	{
+		$param = new TEventParameter('initial');
+		$param->setParameter('changed');
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedAfterOffsetSet()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->offsetSet('newKey', 'newValue');
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedAfterOffsetSetSameValue()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->resetParameterChanged();
+		$param->offsetSet('key', 'value');
+		$this->assertFalse($param->getParameterChanged());
+	}
+
+	public function testgetParameterChangedAfterOffsetUnset()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$param->offsetUnset('key');
+		$this->assertTrue($param->getParameterChanged());
+	}
+
+	// ================================================================================
+	// ParameterIsArray Tests
+	// ================================================================================
+
+	public function testGetParameterIsArrayWithArray()
+	{
+		$param = new TEventParameter(['key' => 'value']);
+		$this->assertTrue($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithArrayAccess()
+	{
+		$collection = new TAttributeCollection();
+		$collection['key'] = 'value';
+		$param = new TEventParameter($collection);
+		$this->assertTrue($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithNull()
+	{
+		$param = new TEventParameter(null);
+		$this->assertFalse($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithString()
+	{
+		$param = new TEventParameter('string');
+		$this->assertFalse($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithInteger()
+	{
+		$param = new TEventParameter(42);
+		$this->assertFalse($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithBoolean()
+	{
+		$param = new TEventParameter(true);
+		$this->assertFalse($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithObject()
+	{
+		$param = new TEventParameter(new stdClass());
+		$this->assertFalse($param->getParameterIsArray());
+	}
+
+	public function testGetParameterIsArrayWithEmptyArray()
+	{
+		$param = new TEventParameter([]);
+		$this->assertTrue($param->getParameterIsArray());
 	}
 }
