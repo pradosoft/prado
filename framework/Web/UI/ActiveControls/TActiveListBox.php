@@ -98,7 +98,11 @@ class TActiveListBox extends TListBox implements IActiveControl, ICallbackEventH
 		$multi_id = $id . '[]';
 		if ($this->getActiveControl()->canUpdateClientSide()) {
 			$client = $this->getPage()->getCallbackClient();
-			$client->setAttribute($this, 'multiple', $multiple ? 'multiple' : false);
+			if ($multiple) {
+				$client->setAttribute($this, 'multiple', 'multiple');
+			} else {
+				$client->removeAttribute($this, 'multiple');
+			}
 			$client->setAttribute($this, 'name', $multiple ? $multi_id : $id);
 		}
 	}
