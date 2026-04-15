@@ -36,6 +36,10 @@ use Prado\TPropertyValue;
  *
  * To encrypt and decrypt data, call {@see encrypt()} and {@see decrypt()}
  * respectively. The encryption algorithm can be set by {@see setCryptAlgorithm CryptAlgorithm}.
+ * The algorithm used to hash the encryption key can be set by
+ * {@see setEncryptionKeyAlgorithm EncryptionKeyAlgorithm}. By default this is `md5` for
+ * backward compatibility. It is highly recommended that EncryptionKeyAlgorithm be set to,
+ * at least, `sha1` or `sha256`.
  *
  * Note, to use encryption, the PHP OpenSSL extension must be loaded. This was introduced in
  * Prado4, older versions used the deprecated mcrypt extension with rijndael-256 cipher as
@@ -55,6 +59,7 @@ class TSecurityManager extends \Prado\TModule
 	private $_encryptionKey;
 	private $_hashAlgorithm = 'sha256';
 	private $_cryptAlgorithm = 'aes-256-cbc';
+	private $_encryptionKeyAlgorithm = 'md5';
 	private $_mbstring;
 
 	/**
@@ -118,9 +123,10 @@ class TSecurityManager extends \Prado\TModule
 	public function getEncryptionKey()
 	{
 		if (null === $this->_encryptionKey) {
-			if (null === ($this->_encryptionKey = $this->getApplication()->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
+			$application = $this->getApplication();
+			if (null === ($this->_encryptionKey = $application->getGlobalState(self::STATE_ENCRYPTION_KEY))) {
 				$this->_encryptionKey = $this->generateRandomKey();
-				$this->getApplication()->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null, true);
+				$application->setGlobalState(self::STATE_ENCRYPTION_KEY, $this->_encryptionKey, null, true);
 			}
 		}
 		return $this->_encryptionKey;
@@ -140,7 +146,7 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * @return string hashing algorithm used to generate HMAC. Defaults to 'sha256'.
+	 * @return string Hashing algorithm used to generate HMAC. Defaults to 'sha256'.
 	 */
 	public function getHashAlgorithm()
 	{
@@ -148,20 +154,45 @@ class TSecurityManager extends \Prado\TModule
 	}
 
 	/**
-	 * This method accepts all hash algorithms returned by hash_algos().
-	 * @param string $value hashing algorithm used to generate HMAC.
-	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
+	 * This method accepts all hash algorithms returned by {@see supportedHashAlgorithms()}.
+	 * @param string $value Hashing algorithm used to generate HMAC.
+	 * @throws TInvalidDataValueException If the hash algorithm is not supported.
 	 */
 	public function setHashAlgorithm($value)
 	{
-		$this->_hashAlgorithm = TPropertyValue::ensureString($value);
-		if (!in_array($this->_hashAlgorithm, function_exists('hash_hmac_algos') ? hash_hmac_algos() : hash_algos())) {
+		$value = TPropertyValue::ensureString($value);
+		if (!in_array($value, $this->supportedHashAlgorithms())) {
 			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
 		}
+		$this->_hashAlgorithm = $value;
 	}
 
 	/**
-	 * @return mixed the algorithm used to encrypt/decrypt data. Defaults to the string 'aes-256-cbc'.
+	 * @return string Hashing algorithm used to hash {@see getEncryptionKey} during {@see encrypt()} and {@see decrypt()}. Defaults to 'md5'.
+	 * @since 4.3.3
+	 */
+	public function getEncryptionKeyAlgorithm()
+	{
+		return $this->_encryptionKeyAlgorithm;
+	}
+
+	/**
+	 * This method accepts all hash algorithms returned by {@see supportedHashAlgorithms()}.
+	 * @param string $value Hashing algorithm used to hash {@see getEncryptionKey} during {@see encrypt()} and {@see decrypt()}.
+	 * @throws TInvalidDataValueException if the hash algorithm is not supported.
+	 * @since 4.3.3
+	 */
+	public function setEncryptionKeyAlgorithm($value)
+	{
+		$value = TPropertyValue::ensureString($value);
+		if (!in_array($value, $this->supportedHashAlgorithms())) {
+			throw new TInvalidDataValueException('securitymanager_hash_algorithm_invalid');
+		}
+		$this->_encryptionKeyAlgorithm = $value;
+	}
+
+	/**
+	 * @return string the algorithm used to encrypt/decrypt data. Defaults to the string 'aes-256-cbc'.
 	 */
 	public function getCryptAlgorithm()
 	{
@@ -170,14 +201,15 @@ class TSecurityManager extends \Prado\TModule
 
 	/**
 	 * Sets the crypt algorithm (also known as cipher or cypher) that will be used for {@see encrypt} and {@see decrypt}.
-	 * @param mixed $value either a string containing the cipther name.
+	 * @param string $value either a string containing the cipher name.
 	 */
 	public function setCryptAlgorithm($value)
 	{
-		$this->_cryptAlgorithm = TPropertyValue::ensureString($value);
-		if (!in_array($this->_cryptAlgorithm, openssl_get_cipher_methods())) {
+		$value = TPropertyValue::ensureString($value);
+		if (!in_array($value, $this->supportedCipherAlgorithms())) {
 			throw new TInvalidDataValueException('securitymanager_crypt_algorithm_invalid');
 		}
+		$this->_cryptAlgorithm = $value;
 	}
 
 	/**
@@ -189,9 +221,10 @@ class TSecurityManager extends \Prado\TModule
 	public function encrypt($data)
 	{
 		if (extension_loaded('openssl')) {
-			$key = md5($this->getEncryptionKey());
-			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return $iv . openssl_encrypt($data, $this->_cryptAlgorithm, $key, 0, $iv);
+			$key = hash($this->getEncryptionKeyAlgorithm(), $this->getEncryptionKey());
+			$cryptAlgorithm = $this->getCryptAlgorithm();
+			$iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cryptAlgorithm));
+			return $iv . openssl_encrypt($data, $cryptAlgorithm, $key, 0, $iv);
 		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
 		}
@@ -206,9 +239,10 @@ class TSecurityManager extends \Prado\TModule
 	public function decrypt($data)
 	{
 		if (extension_loaded('openssl')) {
-			$key = md5($this->getEncryptionKey());
-			$iv = $this->substr($data, 0, openssl_cipher_iv_length($this->_cryptAlgorithm));
-			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $this->_cryptAlgorithm, $key, 0, $iv);
+			$key = hash($this->getEncryptionKeyAlgorithm(), $this->getEncryptionKey());
+			$cryptAlgorithm = $this->getCryptAlgorithm();
+			$iv = $this->substr($data, 0, openssl_cipher_iv_length($cryptAlgorithm));
+			return openssl_decrypt($this->substr($data, $this->strlen($iv), $this->strlen($data)), $cryptAlgorithm, $key, 0, $iv);
 		} else {
 			throw new TNotSupportedException('securitymanager_openssl_required');
 		}
@@ -252,7 +286,28 @@ class TSecurityManager extends \Prado\TModule
 	 */
 	protected function computeHMAC($data)
 	{
-		return hash_hmac($this->_hashAlgorithm, $data, $this->getValidationKey());
+		return hash_hmac($this->getHashAlgorithm(), $data, $this->getValidationKey());
+	}
+
+	/**
+	 * When `hash_hmac_algos` exists it is called and results returned.
+	 * Otherwise, this calls `hash_algos` and its results are returned.
+	 * @return array Array of supported hash methods, eg md5, sha1, sha256
+	 * @since 4.3.3
+	 */
+	public function supportedHashAlgorithms()
+	{
+		return function_exists('hash_hmac_algos') ? hash_hmac_algos() : hash_algos();
+	}
+
+	/**
+	 * When `openssl_get_cipher_methods` exists it is called and results returned.
+	 * @return array Array of supported cipher methods, e.g. aes-256-cbc, aes-256-gcm
+	 * @since 4.3.3
+	 */
+	public function supportedCipherAlgorithms()
+	{
+		return function_exists('openssl_get_cipher_methods') ? openssl_get_cipher_methods() : [];
 	}
 
 	/**
