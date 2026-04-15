@@ -29,7 +29,7 @@ use ArrayAccess;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.0
  */
-class TEventParameter extends \Prado\TComponent implements IEventParameter, \ArrayAccess
+class TEventParameter extends \Prado\TComponent implements IEventParameter, ArrayAccess
 {
 	private string $_eventName = '';
 	private mixed $_param;
