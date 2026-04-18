@@ -151,7 +151,7 @@ class TPageService extends \Prado\TService
 		$pageConfig = $this->loadPageConfig($config);
 
 		$this->initPageContext($pageConfig);
-
+		parent::init($config);
 		$this->_initialized = true;
 	}
 
@@ -555,8 +555,9 @@ class TPageService extends \Prado\TService
 	}
 
 	/**
-	 * This event is raised just before the page is run.  Any part of the system can  patch into the page
-	 * events with an onPreRunPage handler.
+	 * This event is raised just before the page is run.  Any part of the system can
+	 * patch into the page through this method. Modules can link into each page with
+	 * their event handlers on this event. This is a critical event in PRADO.
 	 * @param mixed $param what is passed as the parameter to the event
 	 * @since 4.2.0
 	 */
