@@ -17,7 +17,7 @@ use Prado\Exceptions\TInvalidDataValueException;
  * TSimpleDateFormatter class.
  *
  * Formats and parses dates using the SimpleDateFormat pattern.
- * This pattern is compatible with Java's SimpleDateFormat.
+ * This pattern is compatible with the I18N and java's SimpleDateFormatter.
  * ```
  * Pattern |      Description
  * ----------------------------------------------------
