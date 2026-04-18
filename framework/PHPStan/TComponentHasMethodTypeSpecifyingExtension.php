@@ -20,6 +20,7 @@ use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Accessory\HasMethodType;
+use PHPStan\Type\Accessory\HasPropertyType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MethodTypeSpecifyingExtension;
 use Prado\TComponent;
@@ -106,12 +107,31 @@ final class TComponentHasMethodTypeSpecifyingExtension implements MethodTypeSpec
 
 		$methodName = $constantStrings[0]->getValue();
 
-		// Intersect the object type with HasMethodType so PHPStan understands
+		// Always narrow the object type with HasMethodType so PHPStan understands
 		// that the method exists on the object inside the if-block, matching
 		// the same narrowing behaviour as method_exists().
+		$types = [$calledOnType, new HasMethodType($methodName)];
+
+		// If the method follows the PRADO virtual-property convention
+		// (get{Name} / set{Name} / getjs{Name} / setjs{Name}), also narrow the
+		// virtual property so that $obj->name access inside the guard is accepted
+		// without a false "Access to an undefined property" error.
+		$lowerMethod = strtolower($methodName);
+		if (str_starts_with($lowerMethod, 'getjs') || str_starts_with($lowerMethod, 'setjs')) {
+			$propPart = substr($methodName, 5);
+			if ($propPart !== '') {
+				$types[] = new HasPropertyType(lcfirst($propPart));
+			}
+		} elseif (str_starts_with($lowerMethod, 'get') || str_starts_with($lowerMethod, 'set')) {
+			$propPart = substr($methodName, 3);
+			if ($propPart !== '') {
+				$types[] = new HasPropertyType(lcfirst($propPart));
+			}
+		}
+
 		return $this->typeSpecifier->create(
 			$node->var,
-			new IntersectionType([$calledOnType, new HasMethodType($methodName)]),
+			new IntersectionType($types),
 			$context,
 			$scope
 		);

@@ -113,6 +113,38 @@ class PHPStanExtensionsTest extends TestCase
 		return 0;
 	}
 
+	/**
+	 * Build a human-readable list of PHPStan errors for a fixture file.
+	 *
+	 * Appended to assertion failure messages so you can see exactly which
+	 * errors remain rather than just a bare count.
+	 *
+	 * @param array<string,mixed> $result  Return value of runPhpStan()
+	 * @param string $fixtureFile          Basename of the fixture file
+	 */
+	private function describeErrors(array $result, string $fixtureFile): string
+	{
+		$fixturePath = realpath(__DIR__ . '/fixtures/' . $fixtureFile) ?: (__DIR__ . '/fixtures/' . $fixtureFile);
+		foreach ($result['files'] ?? [] as $path => $data) {
+			$realPath = realpath($path) ?: $path;
+			if ($realPath !== $fixturePath && basename($path) !== $fixtureFile) {
+				continue;
+			}
+			$messages = $data['messages'] ?? [];
+			if (empty($messages)) {
+				return '';
+			}
+			$lines = ["\nPHPStan errors in {$fixtureFile}:"];
+			foreach ($messages as $msg) {
+				$line = $msg['line'] ?? '?';
+				$text = $msg['message'] ?? '(no message)';
+				$lines[] = "  line {$line}: {$text}";
+			}
+			return implode("\n", $lines);
+		}
+		return '';
+	}
+
 	/** Path to the "no extensions" config used for the negative pass. */
 	private function noExtensionsConfig(): string
 	{
@@ -153,6 +185,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for dy*/fx* calls with DynamicMethodsClassReflectionExtension.'
+				. $this->describeErrors($result, 'DynamicMethodsFixture.php')
 		);
 	}
 
@@ -190,6 +223,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for hasMethod()-guarded method calls with the extension.'
+				. $this->describeErrors($result, 'HasMethodFixture.php')
 		);
 	}
 
@@ -227,6 +261,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for Prado::method_visible()-guarded method calls with the extension.'
+				. $this->describeErrors($result, 'MethodVisibleFixture.php')
 		);
 	}
 
@@ -264,6 +299,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for isa()-guarded subclass calls with the extension.'
+				. $this->describeErrors($result, 'IsaFixture.php')
 		);
 	}
 
@@ -301,6 +337,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for canGetProperty()-guarded getter calls with the extension.'
+				. $this->describeErrors($result, 'CanGetPropertyFixture.php')
 		);
 	}
 
@@ -338,6 +375,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for canSetProperty()-guarded setter calls with the extension.'
+				. $this->describeErrors($result, 'CanSetPropertyFixture.php')
 		);
 	}
 
@@ -376,6 +414,7 @@ class PHPStanExtensionsTest extends TestCase
 			0,
 			$errors,
 			'Expected zero PHPStan errors for virtual property access with TComponentPropertiesReflectionExtension.'
+				. $this->describeErrors($result, 'PropertiesReflectionFixture.php')
 		);
 	}
 }
