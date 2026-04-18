@@ -43,6 +43,20 @@ class MethodVisibleCaller extends TComponent
 		if (Prado::method_visible($component, 'initialize')) {
 			$component->initialize('myId');
 		}
+		
+		if ($component->hasMethod('getTitle')) {
+			$value = $component->title; // only get property should validate
+		}
+		if ($component->hasMethod('setTitle')) {
+			$component->title = 'value'; // only get property should validate
+		}
+		
+		if ($component->hasMethod('getjsTitle')) {
+			$value = $component->title; // only get property should validate
+		}
+		if ($component->hasMethod('setjsTitle')) {
+			$component->title = 'value'; // only get property should validate
+		}
 	}
 
 	/**
@@ -53,6 +67,20 @@ class MethodVisibleCaller extends TComponent
 		if (Prado::method_visible($this, 'initialize')) {
 			$this->initialize('myId');
 		}
+		
+		if ($this->hasMethod('getTitle')) {
+			$value = $this->title; // only get property should validate
+		}
+		if ($this->hasMethod('setTitle')) {
+			$this->title = 'value'; // only get property should validate
+		}
+		
+		if ($this->hasMethod('getjsTitle')) {
+			$value = $this->title; // only get property should validate
+		}
+		if ($this->hasMethod('setjsTitle')) {
+			$this->title = 'value'; // only get property should validate
+		}
 	}
 
 	/**
@@ -62,6 +90,20 @@ class MethodVisibleCaller extends TComponent
 	{
 		if (Prado::method_visible($component, 'configure')) {
 			$component->configure([]);
+		}
+		
+		if ($component->hasMethod('getValue')) {
+			$value = $component->value; // only get property should validate
+		}
+		if ($component->hasMethod('setValue')) {
+			$component->value = 'value'; // only get property should validate
+		}
+		
+		if ($component->hasMethod('getjsValue')) {
+			$value = $component->value; // only get property should validate
+		}
+		if ($component->hasMethod('setjsValue')) {
+			$component->value = 'value'; // only get property should validate
 		}
 	}
 }
