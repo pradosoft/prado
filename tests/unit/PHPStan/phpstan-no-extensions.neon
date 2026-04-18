@@ -1,0 +1,6 @@
+## PHPStan configuration with all PRADO extensions disabled.
+## Used to verify that the fixture files DO produce errors without the extensions,
+## confirming the extensions are actually doing useful work.
+parameters:
+    phpVersion: 80300
+    level: 2
