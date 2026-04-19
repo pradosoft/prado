@@ -18,6 +18,7 @@ namespace Prado;
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
+ * @method void dyInit(mixed $config)
  */
 abstract class TService extends \Prado\TApplicationComponent implements IService
 {
@@ -37,6 +38,7 @@ abstract class TService extends \Prado\TApplicationComponent implements IService
 	 */
 	public function init($config)
 	{
+		$this->dyInit($config);
 	}
 
 	/**
