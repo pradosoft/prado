@@ -107,6 +107,7 @@
         	"Composer\\Config::disableProcessTimeout",
         	"phpunit --testsuite functional"
         ],
+		"stantest": "vendor/bin/phpunit --testsuite phpstan",
 		"fulltest": [
 			"php-cs-fixer fix",
 			"phpstan analyse --memory-limit=512M",
