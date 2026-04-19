@@ -195,28 +195,29 @@ class TSimpleDateFormatter
 
 		$sortedTokens = $bits;
 		uksort($sortedTokens, function ($a, $b) {
-			return strlen($b) - strlen($a);
+			return $this->length($b) - $this->length($a);
 		});
 
 		$pattern = $this->pattern;
 		$result = '';
 		$idx = 0;
-		while ($idx < strlen($pattern)) {
-			if ($pattern[$idx] === "'") {
+		$pattern_length = $this->length($pattern);
+		while ($idx < $pattern_length) {
+			if ($this->charAt($pattern, $idx) === "'") {
 				$idx++;
-				while ($idx < strlen($pattern) && $pattern[$idx] !== "'") {
-					$result .= $pattern[$idx];
+				while ($idx < $pattern_length && $this->charAt($pattern, $idx) !== "'") {
+					$result .= $this->charAt($pattern, $idx);
 					$idx++;
 				}
-				if ($idx < strlen($pattern)) {
+				if ($idx < $pattern_length) {
 					$idx++;
 				}
 				continue;
 			}
 			$matched = false;
 			foreach ($sortedTokens as $token => $replacement) {
-				$tokenLen = strlen($token);
-				if ($idx + $tokenLen <= strlen($pattern) && substr($pattern, $idx, $tokenLen) === $token) {
+				$tokenLen = $this->length($token);
+				if ($idx + $tokenLen <= $pattern_length && $this->substring($pattern, $idx, $tokenLen) === $token) {
 					$result .= $replacement;
 					$idx += $tokenLen;
 					$matched = true;
@@ -224,7 +225,7 @@ class TSimpleDateFormatter
 				}
 			}
 			if (!$matched) {
-				$result .= $pattern[$idx];
+				$result .= $this->charAt($pattern, $idx);
 				$idx++;
 			}
 		}
@@ -349,39 +350,39 @@ class TSimpleDateFormatter
 		if (empty($this->pattern)) {
 			return time();
 		}
-		if (strlen(trim($value)) < 1) {
+		if ($this->length(trim($value)) < 1) {
 			return $defaultToCurrentTime ? time() : null;
 		}
 
 		$i_val = 0;
 		$i_format = 0;
-		$pattern_length = strlen($this->pattern);
+		$pattern_length = $this->length($this->pattern);
 		$year = $month = $day = $hour = $minute = $second = null;
 		$ampm = null;
 		$hourMode = null;
 
 		while ($i_format < $pattern_length) {
-			if ($this->pattern[$i_format] === "'") {
+			if ($this->charAt($this->pattern, $i_format) === "'") {
 				$startQuote = $i_format + 1;
 				$i_format++;
-				while ($i_format < $pattern_length && $this->pattern[$i_format] !== "'") {
+				while ($i_format < $pattern_length && $this->charAt($this->pattern, $i_format) !== "'") {
 					$i_format++;
 				}
-				$literalText = substr($this->pattern, $startQuote, $i_format - $startQuote);
-				if (substr($value, $i_val, strlen($literalText)) !== $literalText) {
+				$literalText = $this->substring($this->pattern, $startQuote, $i_format - $startQuote);
+				if ($this->substring($value, $i_val, $this->length($literalText)) !== $literalText) {
 					return null;
 				}
-				$i_val += strlen($literalText);
+				$i_val += $this->length($literalText);
 				if ($i_format < $pattern_length) {
 					$i_format++;
 				}
 				continue;
 			}
 
-			$c = $this->pattern[$i_format];
+			$c = $this->charAt($this->pattern, $i_format);
 			$token = '';
-			while ($i_format < $pattern_length && $this->pattern[$i_format] === $c) {
-				$token .= $this->pattern[$i_format++];
+			while ($i_format < $pattern_length && $this->charAt($this->pattern, $i_format) === $c) {
+				$token .= $this->charAt($this->pattern, $i_format++);
 			}
 
 			switch ($token) {
@@ -390,14 +391,14 @@ class TSimpleDateFormatter
 					if ($year === null) {
 						return null;
 					}
-					$i_val += strlen($year);
+					$i_val += $this->length($year);
 					break;
 				case 'yy':
 					$year = $this->getInteger($value, $i_val, 2, 2);
 					if ($year === null) {
 						return null;
 					}
-					$i_val += strlen($year);
+					$i_val += $this->length($year);
 					$yInt = (int) $year;
 					$year = ($yInt > 70) ? $yInt + 1900 : $yInt + 2000;
 					break;
@@ -406,32 +407,32 @@ class TSimpleDateFormatter
 					if ($year === null) {
 						return null;
 					}
-					$i_val += strlen($year);
-					if (strlen($year) <= 2) {
+					$i_val += $this->length($year);
+					if ($this->length($year) <= 2) {
 						$yInt = (int) $year;
 						$year = ($yInt > 70) ? $yInt + 1900 : $yInt + 2000;
 					}
 					break;
 				case 'MMMM': case 'MMM': case 'MM': case 'M':
-					$month = $this->getInteger($value, $i_val, strlen($token), 2);
+					$month = $this->getInteger($value, $i_val, $this->length($token), 2);
 					if ($month === null || $month < 1 || $month > 12) {
 						return null;
 					}
-					$i_val += strlen($month);
+					$i_val += $this->length($month);
 					break;
 				case 'dd': case 'd':
-					$day = $this->getInteger($value, $i_val, strlen($token), 2);
+					$day = $this->getInteger($value, $i_val, $this->length($token), 2);
 					if ($day === null || $day < 1 || $day > 31) {
 						return null;
 					}
-					$i_val += strlen($day);
+					$i_val += $this->length($day);
 					break;
 				case 'kk': case 'k':
 					$hour = $this->getInteger($value, $i_val, 1, 2);
 					if ($hour === null || $hour < 1 || $hour > 24) {
 						return null;
 					}
-					$i_val += strlen($hour);
+					$i_val += $this->length($hour);
 					$hourMode = 'k';
 					break;
 				case 'HH': case 'H':
@@ -439,7 +440,7 @@ class TSimpleDateFormatter
 					if ($hour === null || $hour > 23) {
 						return null;
 					}
-					$i_val += strlen($hour);
+					$i_val += $this->length($hour);
 					$hourMode = 'H';
 					break;
 				case 'KK': case 'K':
@@ -447,7 +448,7 @@ class TSimpleDateFormatter
 					if ($hour === null || $hour > 11) {
 						return null;
 					}
-					$i_val += strlen($hour);
+					$i_val += $this->length($hour);
 					$hourMode = 'K';
 					break;
 				case 'hh': case 'h':
@@ -455,7 +456,7 @@ class TSimpleDateFormatter
 					if ($hour === null || $hour < 1 || $hour > 12) {
 						return null;
 					}
-					$i_val += strlen($hour);
+					$i_val += $this->length($hour);
 					$hourMode = 'h';
 					break;
 				case 'mm': case 'm':
@@ -463,24 +464,24 @@ class TSimpleDateFormatter
 					if ($minute === null || $minute > 59) {
 						return null;
 					}
-					$i_val += strlen($minute);
+					$i_val += $this->length($minute);
 					break;
 				case 'ss': case 's':
 					$second = $this->getInteger($value, $i_val, 1, 2);
 					if ($second === null || $second > 59) {
 						return null;
 					}
-					$i_val += strlen($second);
+					$i_val += $this->length($second);
 					break;
 				case 'D':
 					$dayInYear = $this->getInteger($value, $i_val, 1, 3);
 					if ($dayInYear === null) {
 						return null;
 					}
-					$i_val += strlen($dayInYear);
+					$i_val += $this->length($dayInYear);
 					break;
 				case 'a':
-					$sub = substr($value, $i_val, 2);
+					$sub = $this->substring($value, $i_val, 2);
 					$ampm = strtoupper($sub);
 					if ($ampm !== 'AM' && $ampm !== 'PM') {
 						return null;
@@ -488,15 +489,15 @@ class TSimpleDateFormatter
 					$i_val += 2;
 					break;
 				default:
-					if (substr($value, $i_val, strlen($token)) !== $token) {
+					if ($this->substring($value, $i_val, $this->length($token)) !== $token) {
 						return null;
 					}
-					$i_val += strlen($token);
+					$i_val += $this->length($token);
 					break;
 			}
 		}
 
-		if ($i_val != strlen($value)) {
+		if ($i_val != $this->length($value)) {
 			return null;
 		}
 
@@ -536,6 +537,50 @@ class TSimpleDateFormatter
 	}
 
 	/**
+	 * Calculate the length of a string using iconv_strlen.
+	 * @param mixed $string
+	 * @return int
+	 */
+	private function length($string)
+	{
+		return iconv_strlen($string, $this->charset);
+	}
+
+	/**
+	 * Get the char at a position.
+	 * @param mixed $string
+	 * @param mixed $pos
+	 * @return string
+	 */
+	private function charAt($string, $pos)
+	{
+		return $this->substring($string, $pos, 1);
+	}
+
+	/**
+	 * Gets a portion of a string using iconv_substr.
+	 * @param mixed $string
+	 * @param mixed $start
+	 * @param mixed $length
+	 * @return string
+	 */
+	private function substring($string, $start, $length)
+	{
+		return iconv_substr($string, $start, $length, $this->charset);
+	}
+
+	/**
+	 * Returns true if char at position equals a particular char.
+	 * @param mixed $string
+	 * @param mixed $pos
+	 * @param mixed $char
+	 */
+	private function charEqual($string, $pos, $char)
+	{
+		return $this->charAt($string, $pos) == $char;
+	}
+
+	/**
 	 * Get integer from a string at a given position.
 	 * @param string $str string to extract integer from.
 	 * @param int $i starting position.
@@ -545,9 +590,13 @@ class TSimpleDateFormatter
 	 */
 	private function getInteger($str, $i, $minlength, $maxlength)
 	{
+		//match for digits backwards
 		for ($x = $maxlength; $x >= $minlength; $x--) {
-			$token = substr($str, $i, $x);
-			if (strlen($token) >= $minlength && preg_match('/^\d+$/', $token)) {
+			$token = $this->substring($str, $i, $x);
+			if ($this->length($token) < $minlength) {
+				return null;
+			}
+			if (preg_match('/^\d+$/', $token)) {
 				return $token;
 			}
 		}

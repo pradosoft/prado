@@ -838,4 +838,68 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 		$this->formatter->setPattern('yyyy-MM-dd');
 		$this->assertSame('2026-04-17', $this->formatter->format($ts));
 	}
+
+	public function test_format_with_multibyte_literal_strings(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
+		$this->assertSame('2026年04月17日', $this->formatter->format($ts));
+	}
+
+	public function test_format_multibyte_charset(): void
+	{
+		$formatter = new \Prado\Util\TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$ts = strtotime('2026-04-17');
+		$this->assertSame('2026-04-17', $formatter->format($ts));
+	}
+
+	public function test_parse_multibyte_literal_strings(): void
+	{
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
+		$result = $this->formatter->parse('2026年04月17日', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_multibyte_charset(): void
+	{
+		$formatter = new \Prado\Util\TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$result = $formatter->parse('2026-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_format_multibyte_day_names(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('EEEE, MMMM d, yyyy');
+		$result = $this->formatter->format($ts);
+		$this->assertSame('Friday, April 17, 2026', $result);
+		$this->assertEquals(22, strlen($result));
+	}
+
+	public function test_format_multibyte_month_names(): void
+	{
+		$ts = strtotime('2026-01-15');
+		$this->formatter->setPattern('MMMM');
+		$result = $this->formatter->format($ts);
+		$this->assertSame('January', $result);
+		$this->assertEquals(7, strlen($result));
+	}
+
+	public function test_round_trip_multibyte_literal(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:45');
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日' HH:mm:ss");
+		$formatted = $this->formatter->format($ts);
+		$this->assertSame('2026年04月17日 14:30:45', $formatted);
+		$parsed = $this->formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+		$this->assertSame('14:30:45', date('H:i:s', $parsed));
+	}
+
+	public function test_parse_multibyte_with_different_charset(): void
+	{
+		$formatter = new \Prado\Util\TSimpleDateFormatter("yyyy'年'MM'月'dd'日'", 'UTF-8');
+		$result = $formatter->parse('2026年04月17日', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
 }
