@@ -309,9 +309,9 @@ class TSimpleDateFormatter
 	 */
 	private function getDate($value)
 	{
-		$date = new \DateTime();
 		if (is_numeric($value)) {
-			$date->setTimestamp((int) $value);
+			$date = new \DateTime();
+			$date->setTimeStamp($value);
 		} else {
 			$date = new \DateTime($value);
 		}
