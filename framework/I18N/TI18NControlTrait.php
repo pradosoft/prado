@@ -35,6 +35,15 @@ use Prado\Util\TUtf8Converter;
 trait TI18NControlTrait
 {
 	/**
+	 * @param null|mixed $culture
+	 * @return \Prado\I18N\core\CultureInfo The Culture Info for the {@see getCulture()}.
+	 */
+	protected function getCultureInfo($culture = null)
+	{
+		return CultureInfo::getCultureInfo($culture ?? $this->getCulture());
+	}
+
+	/**
 	 * Converts the text to the charset property through {@see TUtf8Converter::fromUTF8()}.
 	 * @param string $text the text to convert.
 	 * @return string the converted text.
@@ -111,14 +120,5 @@ trait TI18NControlTrait
 	public function setCulture($culture)
 	{
 		$this->setViewState('Culture', $culture, '');
-	}
-
-	/**
-	 * @param null|mixed $culture
-	 * @return \Prado\I18N\core\CultureInfo The Culture Info for the {@see getCulture()}.
-	 */
-	protected function getCultureInfo($culture = null)
-	{
-		return CultureInfo::getCultureInfo($culture ?? $this->getCulture());
 	}
 }
