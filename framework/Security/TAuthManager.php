@@ -13,6 +13,7 @@ namespace Prado\Security;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\Services\TPageService;
 use Prado\Web\THttpCookie;
 
@@ -47,14 +48,12 @@ use Prado\Web\THttpCookie;
  */
 class TAuthManager extends \Prado\TModule
 {
+	use TInitializedTrait;
+
 	/**
 	 * GET variable name for return url
 	 */
 	public const RETURN_URL_VAR = 'ReturnUrl';
-	/**
-	 * @var bool if the module has been initialized
-	 */
-	private $_initialized = false;
 	/**
 	 * @var IUserManager user manager instance
 	 */
@@ -111,8 +110,8 @@ class TAuthManager extends \Prado\TModule
 		$application->attachEventHandler('OnAuthentication', [$this, 'doAuthentication']);
 		$application->attachEventHandler('OnEndRequest', [$this, 'leave']);
 		$application->attachEventHandler('OnAuthorization', [$this, 'doAuthorization']);
-		$this->_initialized = true;
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -129,9 +128,7 @@ class TAuthManager extends \Prado\TModule
 	 */
 	public function setUserManager($provider)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('authmanager_usermanager_unchangeable');
-		}
+		$this->assertUninitialized('UserManager');
 		if (!is_string($provider) && !($provider instanceof IUserManager)) {
 			throw new TConfigurationException('authmanager_usermanager_invalid', $provider);
 		}

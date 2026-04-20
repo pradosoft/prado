@@ -14,6 +14,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\TPropertyValue;
 use Prado\Prado;
+use Prado\Util\Traits\TInitializedTrait;
 
 /**
  * THttpSession class
@@ -74,10 +75,8 @@ use Prado\Prado;
  */
 class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggregate, \ArrayAccess, \Countable, \Prado\IModule
 {
-	/**
-	 * @var bool whether this module has been initialized
-	 */
-	private $_initialized = false;
+	use TInitializedTrait;
+
 	/**
 	 * @var bool whether the session has started
 	 */
@@ -126,9 +125,9 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 		if ($this->_autoStart) {
 			$this->open();
 		}
-		$this->_initialized = true;
 		$this->getApplication()->setSession($this);
 		register_shutdown_function([$this, "close"]);
+		$this->markInitialized();
 	}
 
 	/**
@@ -348,11 +347,8 @@ class THttpSession extends \Prado\TApplicationComponent implements \IteratorAggr
 	 */
 	public function setAutoStart($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('httpsession_autostart_unchangeable');
-		} else {
-			$this->_autoStart = TPropertyValue::ensureBoolean($value);
-		}
+		$this->assertUninitialized('AutoStart');
+		$this->_autoStart = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

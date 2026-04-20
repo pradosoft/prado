@@ -303,7 +303,7 @@ class TDbLogRoute extends TLogRoute
 	 * @return string the error message key when createDbConnection could not find the ConnectionID.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionInvalidExceptionKey()
+	protected function getConnectionInvalidExceptionKey(): string
 	{
 		return 'dblogroute_connectionid_invalid';
 	}
@@ -312,7 +312,7 @@ class TDbLogRoute extends TLogRoute
 	 * @return string the SQLite database filename within the PRADO runtime path.
 	 * @since 4.3.3
 	 */
-	protected function getSqliteDatabaseName()
+	protected function getSqliteDatabaseName(): string
 	{
 		return 'sqlite3.log';
 	}

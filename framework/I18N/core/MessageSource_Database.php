@@ -59,7 +59,7 @@ class MessageSource_Database extends MessageSource
 	 * @return string the error message key when createDbConnection could not find the ConnectionID.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionInvalidExceptionKey()
+	protected function getConnectionInvalidExceptionKey(): string
 	{
 		return 'messagesource_connectionid_invalid';
 	}
@@ -68,7 +68,7 @@ class MessageSource_Database extends MessageSource
 	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionRequiredExceptionKey()
+	protected function getConnectionRequiredExceptionKey(): string
 	{
 		return 'messagesource_connectionid_required';
 	}

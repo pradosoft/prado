@@ -20,6 +20,7 @@ use Prado\TApplication;
 use Prado\TComponent;
 use Prado\TPropertyValue;
 use Prado\Util\TDbParameterModule;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
@@ -160,6 +161,8 @@ use Prado\Xml\TXmlElement;
  */
 class TPermissionsManager extends \Prado\TModule implements IPermissions
 {
+	use TInitializedTrait;
+
 	public const PERMISSIONS_BEHAVIOR = 'permissions';
 
 	public const USER_PERMISSIONS_BEHAVIOR = 'usercan';
@@ -190,9 +193,6 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var array<string, string[]> contains the hierarchy of roles and children roles/permissions */
 	private $_hierarchy = [];
 
-	/** @var bool is the module initialized */
-	private $_initialized = false;
-
 	/** @var string role hierarchy and permission rules information file */
 	private $_permissionFile;
 
@@ -205,7 +205,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	/** @var bool add module rules, allows User's data, default true */
 	private $_autoRulePresetRules = true;
 
-	/** @var bool add Deny All rule to every permissions as the last rule, default true */
+	/** @var bool|int add Deny All rule to every permissions as the last rule, default true */
 	private $_autoDenyAll = true;
 
 	/** @var numeric the priority of the module Rule, usually these are Allow User As Owner, default 1000000 */
@@ -250,6 +250,10 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function init($config)
 	{
+		if ($this->getIsInitialized()) {
+			throw new TInvalidOperationException('permissions_init_once');
+		}
+
 		$app = $this->getApplication();
 		if (is_string($this->_dbParameter)) {
 			if (($dbParameter = $app->getModule($this->_dbParameter)) === null) {
@@ -260,11 +264,6 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 			}
 			$this->_dbParameter = $dbParameter;
 		}
-
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_init_once');
-		}
-		$this->_initialized = true;
 
 		$manager = \WeakReference::create($this);
 		TComponent::attachClassBehavior(static::PERMISSIONS_BEHAVIOR, ['class' => TPermissionsBehavior::class, 'permissionsmanager' => $manager], IPermissions::class, -10);
@@ -293,6 +292,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -318,10 +318,10 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 		} else {
 			throw new TInvalidOperationException('permissions_duplicate_permission', $permissionName);
 		}
-		if ($this->_autoAllowWithPermission) {
+		if ($this->getAutoAllowWithPermission()) {
 			$this->_permissionRules[$permission]->add(new TAuthorizationRule('allow', '*', $permission, '*', '*', $this->_autoRulePriority));
 		}
-		if ($this->_autoRulePresetRules && $rules) {
+		if ($this->getAutoPresetRules() && $rules) {
 			if (!is_array($rules)) {
 				$rules = [$rules];
 			}
@@ -735,9 +735,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setSuperRoles($roles)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'SuperRoles');
-		}
+		$this->assertUninitialized('SuperRoles');
 		if (!is_array($roles)) {
 			$roles = array_map('trim', explode(',', $roles));
 		}
@@ -760,9 +758,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setDefaultRoles($roles)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'DefaultRoles');
-		}
+		$this->assertUninitialized('DefaultRoles');
 		if (!is_array($roles)) {
 			$roles = array_filter(array_map('trim', explode(',', $roles)));
 		}
@@ -785,11 +781,11 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setPermissionFile($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'PermissionFile');
-		} elseif (($this->_permissionFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($this->_permissionFile)) {
+		$this->assertUninitialized('PermissionFile');
+		if (($filePath = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($filePath)) {
 			throw new TConfigurationException('permissions_permissionfile_invalid', $value);
 		}
+		$this->_permissionFile = $filePath;
 	}
 
 	/**
@@ -806,9 +802,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setAutoRulePriority($priority)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'AutoRulePriority');
-		}
+		$this->assertUninitialized('AutoRulePriority');
 		$this->_autoRulePriority = is_numeric($priority) ? $priority : (float) $priority;
 	}
 
@@ -826,9 +820,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setAutoAllowWithPermission($enable)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'AutoAllowWithPermission');
-		}
+		$this->assertUninitialized('AutoAllowWithPermission');
 		$this->_autoAllowWithPermission = TPropertyValue::ensureBoolean($enable);
 	}
 
@@ -846,9 +838,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setAutoPresetRules($enable)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'AutoPresetRules');
-		}
+		$this->assertUninitialized('AutoPresetRules');
 		$this->_autoRulePresetRules = TPropertyValue::ensureBoolean($enable);
 	}
 
@@ -866,9 +856,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setAutoDenyAll($enable)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'AutoDenyAll');
-		}
+		$this->assertUninitialized('AutoDenyAll');
 		$this->_autoDenyAll = TPropertyValue::ensureBoolean($enable);
 	}
 
@@ -886,9 +874,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setAutoDenyAllPriority($priority)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'AutoDenyAllPriority');
-		}
+		$this->assertUninitialized('AutoDenyAllPriority');
 		$this->_autoDenyAllPriority = is_numeric($priority) ? $priority : (float) $priority;
 	}
 
@@ -907,9 +893,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setDbParameter($provider)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'DbParameter');
-		}
+		$this->assertUninitialized('DbParameter');
 		if ($provider !== null && !is_string($provider) && !($provider instanceof TDbParameterModule)) {
 			throw new TConfigurationException('permissions_dbparameter_invalid', is_object($provider) ? $provider::class : $provider);
 		}
@@ -930,9 +914,7 @@ class TPermissionsManager extends \Prado\TModule implements IPermissions
 	 */
 	public function setLoadParameter($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('permissions_property_unchangeable', 'LoadParameter');
-		}
+		$this->assertUninitialized('LoadParameter');
 		$this->_parameter = $value;
 	}
 

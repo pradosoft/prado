@@ -14,6 +14,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\Services\TPageService;
 
 /**
@@ -42,6 +43,8 @@ use Prado\Web\Services\TPageService;
  */
 class TThemeManager extends \Prado\TModule
 {
+	use TInitializedTrait;
+
 	/**
 	 * default themes base path
 	 */
@@ -58,10 +61,6 @@ class TThemeManager extends \Prado\TModule
 	private $_themeClass = self::DEFAULT_THEMECLASS;
 
 	/**
-	 * @var bool whether this module has been initialized
-	 */
-	private $_initialized = false;
-	/**
 	 * @var string the directory containing all themes
 	 */
 	private $_basePath;
@@ -77,9 +76,9 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function init($config)
 	{
-		$this->_initialized = true;
 		Prado::getApplication()->setThemeManager($this);
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -148,13 +147,10 @@ class TThemeManager extends \Prado\TModule
 	 */
 	public function setBasePath($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('thememanager_basepath_unchangeable');
-		} else {
-			$this->_basePath = Prado::getPathOfNamespace($value);
-			if ($this->_basePath === null || !is_dir($this->_basePath)) {
-				throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
-			}
+		$this->assertUninitialized('BasePath');
+		$this->_basePath = Prado::getPathOfNamespace($value);
+		if ($this->_basePath === null || !is_dir($this->_basePath)) {
+			throw new TInvalidDataValueException('thememanager_basepath_invalid', $value);
 		}
 	}
 

@@ -15,6 +15,7 @@ use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Traits\TInitializedTrait;
 
 /**
  * THttpResponse class
@@ -65,11 +66,14 @@ use Prado\TPropertyValue;
  */
 class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 {
+	use TInitializedTrait;
+
 	public const DEFAULT_CONTENTTYPE = 'text/html';
 	public const DEFAULT_CHARSET = 'UTF-8';
 
 	/**
-	 * @var array<int, string> The differents defined status code by RFC 2616 {@see http://www.faqs.org/rfcs/rfc2616}
+	 * @var array<int, string> The status codes defined in RFC 2616
+	 * @see http://www.faqs.org/rfcs/rfc2616
 	 */
 	private static $HTTP_STATUS_CODES = [
 		100 => 'Continue', 101 => 'Switching Protocols',
@@ -83,10 +87,6 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 * @var bool whether to buffer output
 	 */
 	private $_bufferOutput = true;
-	/**
-	 * @var bool if the application is initialized
-	 */
-	private $_initialized = false;
 	/**
 	 * @var THttpCookieCollection list of cookies to return
 	 */
@@ -170,9 +170,9 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 		if ($this->_bufferOutput) {
 			ob_start();
 		}
-		$this->_initialized = true;
 		$this->getApplication()->setResponse($this);
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -258,11 +258,8 @@ class THttpResponse extends \Prado\TModule implements \Prado\IO\ITextWriter
 	 */
 	public function setBufferOutput($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('httpresponse_bufferoutput_unchangeable');
-		} else {
-			$this->_bufferOutput = TPropertyValue::ensureBoolean($value);
-		}
+		$this->assertUninitialized('BufferOutput');
+		$this->_bufferOutput = TPropertyValue::ensureBoolean($value);
 	}
 
 	/**

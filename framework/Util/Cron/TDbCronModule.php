@@ -837,9 +837,7 @@ class TDbCronModule extends TCronModule implements IDbModule
 	 */
 	public function setConnectionID($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'ConnectionID');
-		}
+		$this->assertUninitialized('ConnectionID');
 		$this->setTraitConnectionID($value);
 	}
 
@@ -847,7 +845,7 @@ class TDbCronModule extends TCronModule implements IDbModule
 	 * @return string the error message key when createDbConnection could not find the ConnectionID.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionInvalidExceptionKey()
+	protected function getConnectionInvalidExceptionKey(): string
 	{
 		return 'dbcron_connectionid_invalid';
 	}
@@ -856,7 +854,7 @@ class TDbCronModule extends TCronModule implements IDbModule
 	 * @return string the SQLite database filename within the PRADO runtime path.
 	 * @since 4.3.3
 	 */
-	protected function getSqliteDatabaseName()
+	protected function getSqliteDatabaseName(): string
 	{
 		return 'cron.jobs';
 	}
@@ -891,9 +889,7 @@ class TDbCronModule extends TCronModule implements IDbModule
 	 */
 	public function setTableName($table)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'TableName');
-		}
+		$this->assertUninitialized('TableName');
 		$this->_tableName = TPropertyValue::ensureString($table);
 	}
 
@@ -913,9 +909,7 @@ class TDbCronModule extends TCronModule implements IDbModule
 	 */
 	public function setAutoCreateCronTable($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbcron_property_unchangeable', 'AutoCreateCronTable');
-		}
+		$this->assertUninitialized('AutoCreateCronTable');
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 }

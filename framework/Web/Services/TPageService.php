@@ -10,12 +10,13 @@
 
 namespace Prado\Web\Services;
 
-use Prado\Prado;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\THttpException;
 use Prado\Exceptions\TInvalidOperationException;
+use Prado\Prado;
 use Prado\TApplication;
 use Prado\TApplicationMode;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Web\UI\TPage;
 use Prado\Web\UI\TTemplateManager;
 use Prado\Web\UI\TThemeManager;
@@ -77,6 +78,8 @@ use Prado\Web\UI\TThemeManager;
  */
 class TPageService extends \Prado\TService
 {
+	use TInitializedTrait;
+
 	/**
 	 * Configuration file name
 	 */
@@ -134,10 +137,6 @@ class TPageService extends \Prado\TService
 	 * @var array list of initial page property values
 	 */
 	private $_properties = [];
-	/**
-	 * @var bool whether service is initialized
-	 */
-	private $_initialized = false;
 
 	/**
 	 * Initializes the service.
@@ -152,7 +151,7 @@ class TPageService extends \Prado\TService
 
 		$this->initPageContext($pageConfig);
 		parent::init($config);
-		$this->_initialized = true;
+		$this->markInitialized();
 	}
 
 	/**
@@ -358,11 +357,8 @@ class TPageService extends \Prado\TService
 	 */
 	public function setDefaultPage($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('pageservice_defaultpage_unchangeable');
-		} else {
-			$this->_defaultPage = $value;
-		}
+		$this->assertUninitialized('DefaultPage');
+		$this->_defaultPage = $value;
 	}
 
 	/**
@@ -396,9 +392,8 @@ class TPageService extends \Prado\TService
 	 */
 	public function setBasePath($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('pageservice_basepath_unchangeable');
-		} elseif (($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path)) {
+		$this->assertUninitialized('BasePath');
+		if (($path = Prado::getPathOfNamespace($value)) === null || !is_dir($path)) {
 			throw new TConfigurationException('pageservice_basepath_invalid', $value);
 		}
 		$this->_basePath = realpath($path);

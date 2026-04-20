@@ -15,6 +15,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TPropertyValue;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlElement;
 
 /**
@@ -89,10 +90,8 @@ use Prado\Xml\TXmlElement;
  */
 class TMemCache extends TCache
 {
-	/**
-	 * @var bool if the module is initialized
-	 */
-	private $_initialized = false;
+	use TInitializedTrait;
+
 	/**
 	 * @var \Memcached the Memcached instance
 	 */
@@ -164,8 +163,8 @@ class TMemCache extends TCache
 				}
 			}
 		}
-		$this->_initialized = true;
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -218,11 +217,9 @@ class TMemCache extends TCache
 	 */
 	public function setHost($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('memcache_host_unchangeable');
-		} else {
-			$this->_host = $value;
-		}
+		$this->assertUninitialized('Host');
+		$this->_host = $value;
+
 	}
 
 	/**
@@ -239,11 +236,8 @@ class TMemCache extends TCache
 	 */
 	public function setPort($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('memcache_port_unchangeable');
-		} else {
-			$this->_port = TPropertyValue::ensureInteger($value);
-		}
+		$this->assertUninitialized('Port');
+		$this->_port = TPropertyValue::ensureInteger($value);
 	}
 
 	/**
@@ -252,11 +246,10 @@ class TMemCache extends TCache
 	 */
 	public function setOptions($value)
 	{
-		if (!$this->_initialized) {
+		if (!$this->getIsInitialized()) {
 			throw new TInvalidOperationException('memcache_not_initialized');
-		} else {
-			$this->_cache->setOptions(TPropertyValue::ensureArray($value));
 		}
+		$this->_cache->setOptions(TPropertyValue::ensureArray($value));
 	}
 
 	/**
@@ -282,8 +275,8 @@ class TMemCache extends TCache
 	 */
 	public function setUseMemcached($value)
 	{
-		if ($this->_initialized || TPropertyValue::ensureBoolean($value) === false) {
-			throw new TInvalidOperationException('memcache_host_unchangeable');
+		if ($this->getIsInitialized() || TPropertyValue::ensureBoolean($value) === false) {
+			throw new TInvalidOperationException('memcache_property_unchangeable', 'Host');
 		}
 	}
 

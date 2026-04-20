@@ -11,12 +11,12 @@
 namespace Prado\Security;
 
 use Prado\Data\TDataSourceConfig;
-use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Prado;
-use Prado\TModule;
+use Prado\Util\TDbModule;
 use Prado\Util\IDbModule;
+use Prado\Util\Traits\TInitializedTrait;
 
 /**
  * TDbUserManager class
@@ -47,9 +47,9 @@ use Prado\Util\IDbModule;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.1.0
  */
-class TDbUserManager extends TModule implements IUserManager, IDbModule
+class TDbUserManager extends TDbModule implements IUserManager, IDbModule
 {
-	use TDbPropertiesTrait;
+	use TInitializedTrait;
 
 	private $_guestName = 'Guest';
 	private $_userClass = '';
@@ -69,6 +69,7 @@ class TDbUserManager extends TModule implements IUserManager, IDbModule
 			throw new TInvalidDataTypeException('dbusermanager_userclass_invalid', $this->_userClass);
 		}
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -76,6 +77,7 @@ class TDbUserManager extends TModule implements IUserManager, IDbModule
 	 */
 	public function getUserClass()
 	{
+		$this->assertUninitialized('UserClass');
 		return $this->_userClass;
 	}
 
@@ -134,7 +136,7 @@ class TDbUserManager extends TModule implements IUserManager, IDbModule
 	 * @return string if the using class wants a sqlite db then return the name.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionInvalidExceptionKey()
+	protected function getConnectionInvalidExceptionKey(): string
 	{
 		return 'dbusermanager_connectionid_invalid';
 	}
@@ -143,7 +145,7 @@ class TDbUserManager extends TModule implements IUserManager, IDbModule
 	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionRequiredExceptionKey()
+	protected function getConnectionRequiredExceptionKey(): string
 	{
 		return 'dbusermanager_connectionid_required';
 	}
