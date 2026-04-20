@@ -20,6 +20,7 @@ namespace Prado\I18N\core;
 
 use Exception;
 use Prado\I18N\core\CultureInfoUnits;
+use Prado\Prado;
 use IntlException;
 
 /**
@@ -52,6 +53,8 @@ use IntlException;
  * conventions. These methods utilize ICU's unit data bundles to return appropriate
  * localized representations for various unit types.
  *
+ * `CultureInfo::getCultureInfo` provides for caching ICU resources.
+ *
  * @author Xiang Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Fabio Bas <ctrlaltca[at]gmail[dot]com>
  */
@@ -60,8 +63,16 @@ class CultureInfo
 	use TNumberFormatterTrait;
 
 	/**
-	 * The ICU data array, shared by all instances of this class.
+	 * Shared cache of CultureInfo.
+	 * Format self::$cultureInfos[$culture] = new CultureInfo($culture);
 	 * @var array
+	 */
+	private static array $cultureInfos = [];
+
+	/**
+	 * The ICU data array, shared by all instances of this class.
+	 * Format: self::$data[$culture][$ICUBundleKey] = \ResourceBundle::create($culture, $ICUBundleKey, true);
+	 * @var array[]
 	 */
 	protected static array $data = [];
 
@@ -110,6 +121,23 @@ class CultureInfo
 	 * @var int
 	 */
 	public const SPECIFIC = 2;
+
+	/**
+	 * @param null|mixed $culture
+	 * @return \Prado\I18N\core\CultureInfo The Culture Info for the {@see getCulture()}.
+	 */
+	public static function getCultureInfo($culture = null)
+	{
+		if ($culture === null && ($app = Prado::getApplication()) && ($globalize = $app->getGlobalization(false))) {
+			$culture = $globalize->getCulture();
+		}
+		if (isset(self::$cultureInfos[$culture])) {
+			return self::$cultureInfos[$culture];
+		}
+		$info = new CultureInfo($culture);
+		self::$cultureInfos[$culture] = $info;
+		return $info;
+	}
 
 	/**
 	 * Display the culture name.

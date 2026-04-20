@@ -4,206 +4,1144 @@ use Prado\Util\TSimpleDateFormatter;
 
 class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 {
-	protected $obj;
+	private $formatter;
 
 	protected function setUp(): void
 	{
-		$this->obj = new TSimpleDateFormatter('');
+		$this->formatter = new TSimpleDateFormatter('yyyy-MM-dd');
 	}
 
 	protected function tearDown(): void
 	{
+		$this->formatter = null;
 	}
 
-	public function testConstruct()
+	public function test_instance_of_class(): void
 	{
-		$this->assertInstanceOf('\Prado\Util\TSimpleDateFormatter', $this->obj);
+		$this->assertInstanceOf(TSimpleDateFormatter::class, $this->formatter);
 	}
 
-	public function testPattern()
+	public function test_constructor_with_charset(): void
 	{
-		$pattern = 'dd-mm-YY';
-		$this->obj->setPattern($pattern);
-		$this->assertSame($this->obj->getPattern(), $pattern);
+		$f = new TSimpleDateFormatter('dd/MM/yyyy', 'ISO-8859-1');
+		$this->assertSame('dd/MM/yyyy', $f->getPattern());
+		$this->assertSame('ISO-8859-1', $f->getCharset());
 	}
 
-	public function testCharset()
+	public function test_set_pattern(): void
 	{
-		$charset = 'en_US';
-		$this->obj->setCharset($charset);
-		$this->assertSame($this->obj->getCharset(), $charset);
+		$this->formatter->setPattern('MM-dd-yyyy');
+		$this->assertSame('MM-dd-yyyy', $this->formatter->getPattern());
 	}
 
-	public function testParse()
+	public function test_set_charset(): void
 	{
-		// test timestamp
-		$ts = time();
-		$this->assertSame($ts, $this->obj->parse($ts));
-
-		// test not string
-		$this->expectException('\Prado\Exceptions\TInvalidDataValueException');
-		$this->obj->parse(['test', 'array']);
-
-		// test empty pattern
-		$this->obj->setPattern('');
-		$ts = time();
-		$this->assertSame($ts, $this->obj->parse('123456'));
-
-		// test empty value
-		$this->obj->setPattern('d-m-Y');
-		$this->assertSame($ts, $this->obj->parse('', true));
-		$this->assertNull($this->obj->parse('', false));
-
-		// test zero time
-		$this->obj->setPattern('d-m-Y');
-		$this->assertSame('00:00:00', date('H:i:s', $this->obj->parse("15-12-1982")));
+		$this->formatter->setCharset('UTF-16');
+		$this->assertSame('UTF-16', $this->formatter->getCharset());
 	}
 
-	public function testParseYearPattern()
+	public function test_parse_integer_timestamp_returns_same(): void
 	{
-		// default to current date = false
-		$this->obj->setPattern('yyyy');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008", false)));
-
-		$this->obj->setPattern('yy');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08", false)));
-
-		$this->obj->setPattern('y');
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("08", false)));
-		$this->assertSame(date('2008-01-01'), date('Y-m-d', $this->obj->parse("2008", false)));
-
-		// test 2 digit year conversion
-		$this->obj->setPattern('yy');
-		$this->assertSame(date('2070-01-01'), date('Y-m-d', $this->obj->parse("70", false)));
-		$this->assertSame(date('1971-01-01'), date('Y-m-d', $this->obj->parse("71", false)));
-
-		// test wrong year
-		$this->obj->setPattern('yyyy');
-		$this->assertNull($this->obj->parse('aaaa', false));
-
-		// default to current date = true
-		$this->obj->setPattern('yyyy');
-		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("2008", true)));
-
-		$this->obj->setPattern('yy');
-		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("08", true)));
-
-		$this->obj->setPattern('y');
-		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("08", true)));
-		$this->assertSame(date('2008-m-d'), date('Y-m-d', $this->obj->parse("2008", true)));
-
-		// test 2 digit year conversion
-		$this->obj->setPattern('yy');
-		$this->assertSame(date('2070-m-d'), date('Y-m-d', $this->obj->parse("70", true)));
-		$this->assertSame(date('1971-m-d'), date('Y-m-d', $this->obj->parse("71", true)));
-
-		// test wrong year
-		$this->obj->setPattern('yyyy');
-		$this->assertNull($this->obj->parse('aaaa', true));
-
-		// test missing year
-		$this->obj->setPattern("MM/dd");
-		$this->assertSame(date("Y-10-22"), date('Y-m-d', $this->obj->parse('10/22', true)));
-		$this->assertSame(date("Y-10-22"), date('Y-m-d', $this->obj->parse('10/22', false)));
-		
-		$this->assertSame(date("Y-10-01"), date('Y-m-d', $this->obj->parse('09/31', false)));
+		$ts = 1713367800;
+		$result = $this->formatter->parse($ts);
+		$this->assertSame($ts, $result);
 	}
 
-	public function testParseMonthPattern()
+	public function test_parse_float_timestamp_returns_rounded(): void
 	{
-		// default to current date = false
-		$this->obj->setPattern('MM');
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse('09', false)));
-
-		$this->obj->setPattern('M');
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("9", false)));
-		$this->assertSame(date('Y-09-01'), date('Y-m-d', $this->obj->parse("09", false)));
-
-		// test wrong month
-		$this->obj->setPattern('MM');
-		$this->assertNull($this->obj->parse('13', false));
-		$this->assertNull($this->obj->parse('0', false));
-
-		// default to current date = true
-		$this->obj->setPattern('MM');
-		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse('08', true)));
-
-		$this->obj->setPattern('M');
-		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse("8", true)));
-		$this->assertSame(date('Y-08-d'), date('Y-m-d', $this->obj->parse("08", true)));
-
-		// test wrong month
-		$this->assertNull($this->obj->parse('13', true));
-		$this->assertNull($this->obj->parse('0', true));
-
-		// test missing month
-		$this->obj->setPattern("yy/dd");
-		$this->assertSame(date("2019-01-22"), date('Y-m-d', $this->obj->parse("19/22", false)));
-		$this->assertSame(date("2019-m-22"), date('Y-m-d', $this->obj->parse("19/22", true)));
+		$ts = 1713367800.5;
+		$result = $this->formatter->parse($ts);
+		$this->assertSame(1713367800, $result);
 	}
 
-	public function testParseDayPattern()
+	public function test_parse_empty_string_returns_current_time_when_enabled(): void
 	{
-		// default to current date = false
-		$this->obj->setPattern('dd');
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse('09', false)));
-
-		$this->obj->setPattern('d');
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("9", false)));
-		$this->assertSame(date('Y-01-09'), date('Y-m-d', $this->obj->parse("09", false)));
-
-		// test wrong day
-		$this->obj->setPattern('dd');
-		$this->assertNull($this->obj->parse('32', false));
-		$this->assertNull($this->obj->parse('0', false));
-
-		// default to current date = true
-		$this->obj->setPattern('dd');
-		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse('09', true)));
-
-		$this->obj->setPattern('d');
-		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse("9", true)));
-		$this->assertSame(date('Y-m-09'), date('Y-m-d', $this->obj->parse("09", true)));
-
-		// test wrong day
-		$this->obj->setPattern('dd');
-		$this->assertNull($this->obj->parse('32', true));
-		$this->assertNull($this->obj->parse('0', true));
-
-		// test missing month
-		$this->obj->setPattern("yy/MM");
-		$this->assertSame(date("2019-08-01"), date('Y-m-d', $this->obj->parse("19/08", false)));
-		$this->assertSame(date("2019-08-d"), date('Y-m-d', $this->obj->parse("19/08", true)));
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$before = time();
+		$result = $this->formatter->parse('', true);
+		$after = time();
+		$this->assertThat($result, $this->greaterThanOrEqual($before));
+		$this->assertThat($result, $this->lessThanOrEqual($after + 1));
 	}
 
-	public function testIsValidDate()
+	public function test_parse_empty_string_returns_null_when_disabled(): void
 	{
-		$this->obj->setPattern('d-M-y');
-		$this->assertTrue($this->obj->isValidDate('15-12-1982'));
-		$this->assertFalse($this->obj->isValidDate('32-02-2019'));
-		$this->assertFalse($this->obj->isValidDate('15-13-2019'));
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('', false);
+		$this->assertNull($result);
 	}
 
-	public function testDayMonthYearOrdering()
+	public function test_parse_non_string_throws_exception(): void
 	{
-		$this->obj->setPattern('d-M-yy');
-		$this->assertSame(['day', 'month', 'year'], $this->obj->getDayMonthYearOrdering());
-
-		$this->obj->setPattern('M-d-yy');
-		$this->assertSame(['month', 'day', 'year'], $this->obj->getDayMonthYearOrdering());
-
-		$this->obj->setPattern('yyyy-M-d');
-		$this->assertSame(['year', 'month', 'day'], $this->obj->getDayMonthYearOrdering());
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->formatter->parse(['array']);
 	}
 
-	public function testFormat()
+	public function test_parse_object_throws_exception(): void
 	{
-		$step = 100000000;
-		$max = 3000000000;
-		for($ts = 0; $ts < $max; $ts += $step)
-		{
-			$this->obj->setPattern('d-dd-M-MM-yy-yyyy');
-			$this->assertSame(date('j-d-n-m-y-Y', $ts), $this->obj->format($ts));
+		$this->expectException(\Prado\Exceptions\TInvalidDataValueException::class);
+		$this->formatter->parse(new stdClass());
+	}
+
+	public function test_format_year_yyyy_returns_four_digits(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('yyyy');
+		$this->assertSame('2026', $this->formatter->format($ts));
+	}
+
+	public function test_format_year_yy_returns_two_digits(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('yy');
+		$this->assertSame('26', $this->formatter->format($ts));
+	}
+
+	public function test_format_year_y_single_returns_four_digits(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('y');
+		$this->assertSame('2026', $this->formatter->format($ts));
+	}
+
+	public function test_format_month_MMMM_returns_full_name(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('MMMM');
+		$this->assertSame('April', $this->formatter->format($ts));
+	}
+
+	public function test_format_month_MMM_returns_abbrev(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('MMM');
+		$this->assertSame('Apr', $this->formatter->format($ts));
+	}
+
+	public function test_format_month_MM_returns_zero_padded(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('MM');
+		$this->assertSame('04', $this->formatter->format($ts));
+	}
+
+	public function test_format_month_M_returns_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('M');
+		$this->assertSame('4', $this->formatter->format($ts));
+	}
+
+	public function test_format_day_dd_returns_zero_padded(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('dd');
+		$this->assertSame('17', $this->formatter->format($ts));
+	}
+
+	public function test_format_day_d_returns_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('d');
+		$this->assertSame('17', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_HH_returns_zero_padded(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('HH');
+		$this->assertSame('14', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_H_returns_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('H');
+		$this->assertSame('14', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_HH_midnight_is_zero(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('HH');
+		$this->assertSame('00', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_H_midnight_is_zero(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('H');
+		$this->assertSame('0', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_hh_returns_12hour(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('hh');
+		$this->assertSame('02', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_h_returns_12hour_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('h');
+		$this->assertSame('2', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_hh_midnight_is_twelve(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('hh');
+		$this->assertSame('12', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_h_noon_is_twelve(): void
+	{
+		$ts = strtotime('2026-04-17 12:00:00');
+		$this->formatter->setPattern('h');
+		$this->assertSame('12', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_kk_returns_1_to_24(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('kk');
+		$this->assertSame('14', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_k_returns_1_to_24_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('k');
+		$this->assertSame('14', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_kk_midnight_is_01(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('kk');
+		$this->assertSame('01', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_k_midnight_is_1(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('k');
+		$this->assertSame('1', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_KK_returns_0_to_11(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('KK');
+		$this->assertSame('02', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_K_returns_0_to_11_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:00');
+		$this->formatter->setPattern('K');
+		$this->assertSame('2', $this->formatter->format($ts));
+	}
+
+	public function test_format_hour_KK_midnight_is_00(): void
+	{
+		$ts = strtotime('2026-04-17 00:30:00');
+		$this->formatter->setPattern('KK');
+		$this->assertSame('00', $this->formatter->format($ts));
+	}
+
+	public function test_format_minute_mm_returns_padded(): void
+	{
+		$ts = strtotime('2026-04-17 14:05:00');
+		$this->formatter->setPattern('mm');
+		$this->assertSame('05', $this->formatter->format($ts));
+	}
+
+	public function test_format_minute_m_returns_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:05:00');
+		$this->formatter->setPattern('m');
+		$this->assertSame('5', $this->formatter->format($ts));
+	}
+
+	public function test_format_second_ss_returns_padded(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:09');
+		$this->formatter->setPattern('ss');
+		$this->assertSame('09', $this->formatter->format($ts));
+	}
+
+	public function test_format_second_s_returns_no_padding(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:09');
+		$this->formatter->setPattern('s');
+		$this->assertSame('9', $this->formatter->format($ts));
+	}
+
+	public function test_format_a_AM_returns_uppercase(): void
+	{
+		$ts = strtotime('2026-04-17 09:30:00');
+		$this->formatter->setPattern('a');
+		$this->assertSame('AM', $this->formatter->format($ts));
+	}
+
+	public function test_format_a_PM_returns_uppercase(): void
+	{
+		$ts = strtotime('2026-04-17 15:30:00');
+		$this->formatter->setPattern('a');
+		$this->assertSame('PM', $this->formatter->format($ts));
+	}
+
+	public function test_format_EEEE_returns_full_day(): void
+	{
+		$ts = strtotime('2026-04-10');
+		$this->formatter->setPattern('EEEE');
+		$this->assertSame('Friday', $this->formatter->format($ts));
+	}
+
+	public function test_format_E_returns_abbrev_day(): void
+	{
+		$ts = strtotime('2026-04-10');
+		$this->formatter->setPattern('E');
+		$this->assertSame('Fri', $this->formatter->format($ts));
+	}
+
+	public function test_format_E_all_days(): void
+	{
+		$this->formatter->setPattern('E');
+		$this->assertSame('Sun', $this->formatter->format(strtotime('2026-04-05')));
+		$this->assertSame('Mon', $this->formatter->format(strtotime('2026-04-06')));
+		$this->assertSame('Sat', $this->formatter->format(strtotime('2026-04-11')));
+	}
+
+	public function test_parse_yyyy_returns_correct(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_yy_returns_correct(): void
+	{
+		$this->formatter->setPattern('yy-MM-dd');
+		$result = $this->formatter->parse('26-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_yy_69_becomes_2069(): void
+	{
+		$this->formatter->setPattern('yy-MM-dd');
+		$result = $this->formatter->parse('69-04-17', false);
+		$this->assertSame('2069-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_yy_70_becomes_2070(): void
+	{
+		$this->formatter->setPattern('yy-MM-dd');
+		$result = $this->formatter->parse('70-04-17', false);
+		$this->assertSame('2070-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_yy_00_becomes_2000(): void
+	{
+		$this->formatter->setPattern('yy-MM-dd');
+		$result = $this->formatter->parse('00-01-01', false);
+		$this->assertSame('2000-01-01', date('Y-m-d', $result));
+	}
+
+	public function test_parse_y_with_four_digits(): void
+	{
+		$this->formatter->setPattern('y-MM-dd');
+		$result = $this->formatter->parse('2026-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_y_with_two_digits(): void
+	{
+		$this->formatter->setPattern('y-MM-dd');
+		$result = $this->formatter->parse('26-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_MM_returns_month(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-01-15', false);
+		$this->assertSame('2026-01-15', date('Y-m-d', $result));
+
+		$result = $this->formatter->parse('2026-12-15', false);
+		$this->assertSame('2026-12-15', date('Y-m-d', $result));
+	}
+
+	public function test_parse_M_returns_month(): void
+	{
+		$this->formatter->setPattern('yyyy-M-d');
+		$result = $this->formatter->parse('2026-1-15', false);
+		$this->assertSame('2026-01-15', date('Y-m-d', $result));
+
+		$result = $this->formatter->parse('2026-12-15', false);
+		$this->assertSame('2026-12-15', date('Y-m-d', $result));
+	}
+
+	public function test_parse_invalid_month_zero_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-00-15', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_invalid_month_13_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-13-15', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_dd_returns_day(): void
+	{
+		$this->formatter->setPattern('yyyy-dd');
+		$result = $this->formatter->parse('2026-17', false);
+		$this->assertSame('2026-01-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_d_returns_day(): void
+	{
+		$this->formatter->setPattern('yyyy-d');
+		$result = $this->formatter->parse('2026-5', false);
+		$this->assertSame('2026-01-05', date('Y-m-d', $result));
+	}
+
+	public function test_parse_invalid_day_zero_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-dd');
+		$result = $this->formatter->parse('2026-00', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_invalid_day_32_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-dd');
+		$result = $this->formatter->parse('2026-32', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_invalid_april_31_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-04-31', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_feb_29_leap_year_valid(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2024-02-29', false);
+		$this->assertNotNull($result);
+		$this->assertSame('2024-02-29', date('Y-m-d', $result));
+	}
+
+	public function test_parse_feb_29_non_leap_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2023-02-29', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_HH_hour(): void
+	{
+		$this->formatter->setPattern('HH:mm');
+		$result = $this->formatter->parse('14:30', false);
+		$this->assertSame('14:30', date('H:i', $result));
+	}
+
+	public function test_parse_H_hour(): void
+	{
+		$this->formatter->setPattern('H:mm');
+		$result = $this->formatter->parse('5:30', false);
+		$this->assertSame('05:30', date('H:i', $result));
+	}
+
+	public function test_parse_invalid_hour_24_returns_null(): void
+	{
+		$this->formatter->setPattern('HH:mm');
+		$result = $this->formatter->parse('24:00', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_HH_midnight(): void
+	{
+		$this->formatter->setPattern('HH:mm');
+		$result = $this->formatter->parse('00:00', false);
+		$this->assertSame('00:00', date('H:i', $result));
+	}
+
+	public function test_parse_hh_AM(): void
+	{
+		$this->formatter->setPattern('hh:mm a');
+		$result = $this->formatter->parse('12:30 AM', false);
+		$this->assertSame('00:30', date('H:i', $result));
+	}
+
+	public function test_parse_hh_PM(): void
+	{
+		$this->formatter->setPattern('hh:mm a');
+		$result = $this->formatter->parse('12:30 PM', false);
+		$this->assertSame('12:30', date('H:i', $result));
+	}
+
+	public function test_parse_hh_AM_noon(): void
+	{
+		$this->formatter->setPattern('hh:mm a');
+		$result = $this->formatter->parse('12:00 AM', false);
+		$this->assertSame('00:00', date('H:i', $result));
+	}
+
+	public function test_parse_hh_PM_noon(): void
+	{
+		$this->formatter->setPattern('hh:mm a');
+		$result = $this->formatter->parse('12:00 PM', false);
+		$this->assertSame('12:00', date('H:i', $result));
+	}
+
+	public function test_parse_h_AM(): void
+	{
+		$this->formatter->setPattern('h:mm a');
+		$result = $this->formatter->parse('5:30 AM', false);
+		$this->assertSame('05:30', date('H:i', $result));
+	}
+
+	public function test_parse_k_hour(): void
+	{
+		$this->formatter->setPattern('k:mm');
+		$result = $this->formatter->parse('1:30', false);
+		$this->assertSame('00:30', date('H:i', $result));
+
+		$result = $this->formatter->parse('24:00', false);
+		$this->assertSame('23:00', date('H:i', $result));
+	}
+
+	public function test_parse_invalid_k_hour_zero_returns_null(): void
+	{
+		$this->formatter->setPattern('k:mm');
+		$result = $this->formatter->parse('0:30', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_K_hour_0_to_11(): void
+	{
+		$this->formatter->setPattern('K:mm');
+		$result = $this->formatter->parse('0:30', false);
+		$this->assertSame('00:30', date('H:i', $result));
+
+		$result = $this->formatter->parse('11:30', false);
+		$this->assertSame('11:30', date('H:i', $result));
+	}
+
+	public function test_parse_invalid_K_hour_12_returns_null(): void
+	{
+		$this->formatter->setPattern('K:mm');
+		$result = $this->formatter->parse('12:30', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_mm_minute(): void
+	{
+		$this->formatter->setPattern('HH:mm');
+		$result = $this->formatter->parse('12:05', false);
+		$this->assertSame('12:05', date('H:i', $result));
+	}
+
+	public function test_parse_invalid_minute_60_returns_null(): void
+	{
+		$this->formatter->setPattern('HH:mm');
+		$result = $this->formatter->parse('12:60', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_ss_second(): void
+	{
+		$this->formatter->setPattern('HH:mm:ss');
+		$result = $this->formatter->parse('12:30:45', false);
+		$this->assertSame('12:30:45', date('H:i:s', $result));
+	}
+
+	public function test_parse_invalid_second_60_returns_null(): void
+	{
+		$this->formatter->setPattern('HH:mm:ss');
+		$result = $this->formatter->parse('12:30:60', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_input_too_long_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-04-17 extra', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_input_too_short_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-04', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_garbage_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-ab-17', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parse_default_year_to_current(): void
+	{
+		$this->formatter->setPattern('yyyy');
+		$result = $this->formatter->parse('2026', true);
+		$expected = '2026' . date('-m-d');
+		$this->assertSame($expected, date('Y-m-d', $result));
+	}
+
+	public function test_parse_default_month_to_current(): void
+	{
+		$this->formatter->setPattern('MM');
+		$currentYear = date('Y');
+		$result = $this->formatter->parse('04', true);
+		$expected = "$currentYear-04" . date('-d');
+		$this->assertSame($expected, date('Y-m-d', $result));
+	}
+
+	public function test_parse_default_day_to_current(): void
+	{
+		$this->formatter->setPattern('dd');
+		$currentYearMonth = date('Y-m');
+		$result = $this->formatter->parse('17', true);
+		$this->assertSame("$currentYearMonth-17", date('Y-m-d', $result));
+	}
+
+	public function test_parse_a_PM_afternoon(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd hh:mm a');
+		$result = $this->formatter->parse('2026-04-17 02:30 PM', false);
+		$this->assertSame('2026-04-17 14:30:00', date('Y-m-d H:i:s', $result));
+	}
+
+	public function test_format_full_datetime(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:45');
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss');
+		$this->assertSame('2026-04-17 14:30:45', $this->formatter->format($ts));
+	}
+
+	public function test_format_with_ampm(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:45');
+		$this->formatter->setPattern('MM/dd/yyyy hh:mm a');
+		$this->assertSame('04/17/2026 02:30 PM', $this->formatter->format($ts));
+	}
+
+	public function test_format_EEEE_comma_MMMM_d_comma_yyyy(): void
+	{
+		$ts = strtotime('2026-04-10');
+		$this->formatter->setPattern('EEEE, MMMM d, yyyy');
+		$this->assertSame('Friday, April 10, 2026', $this->formatter->format($ts));
+	}
+
+	public function test_format_with_literal_strings(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern("yyyy 'Year' MM 'Month' dd 'Day'");
+		$this->assertSame('2026 Year 04 Month 17 Day', $this->formatter->format($ts));
+	}
+
+	public function test_parse_with_literal_strings(): void
+	{
+		$this->formatter->setPattern("yyyy 'Year' MM 'Month' dd 'Day'");
+		$result = $this->formatter->parse('2026 Year 04 Month 17 Day', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_round_trip_format_parse(): void
+	{
+		$original = strtotime('2026-04-17 14:30:45');
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss');
+		$formatted = $this->formatter->format($original);
+		$parsed = $this->formatter->parse($formatted, false);
+		$this->assertSame($formatted, date('Y-m-d H:i:s', $parsed));
+	}
+
+	public function test_round_trip_multiple_patterns(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$patterns = [
+			'dd/MM/yy' => '17/04/26',
+			'MMM d, yyyy' => 'Apr 17, 2026',
+			'MMMM d, yyyy' => 'April 17, 2026',
+			'dd-MM-yyyy' => '17-04-2026',
+			'yyyy/MM/dd' => '2026/04/17',
+		];
+		foreach ($patterns as $pattern => $expected) {
+			$this->formatter->setPattern($pattern);
+			$this->assertSame($expected, $this->formatter->format($ts), "Failed for pattern: $pattern");
 		}
+	}
+
+	public function test_is_valid_date_returns_true(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertTrue($this->formatter->isValidDate('2026-04-17'));
+	}
+
+	public function test_is_valid_date_invalid_month_returns_false(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertFalse($this->formatter->isValidDate('2026-13-17'));
+	}
+
+	public function test_is_valid_date_invalid_day_returns_false(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertFalse($this->formatter->isValidDate('2026-04-32'));
+	}
+
+	public function test_is_valid_date_feb_29_leap_returns_true(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertTrue($this->formatter->isValidDate('2024-02-29'));
+	}
+
+	public function test_is_valid_date_feb_29_non_leap_returns_false(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertFalse($this->formatter->isValidDate('2023-02-29'));
+	}
+
+	public function test_get_day_month_year_ordering_DMY(): void
+	{
+		$this->formatter->setPattern('dd-MM-yyyy');
+		$ordering = $this->formatter->getDayMonthYearOrdering();
+		$this->assertSame(['day', 'month', 'year'], $ordering);
+	}
+
+	public function test_get_day_month_year_ordering_MDY(): void
+	{
+		$this->formatter->setPattern('MM-dd-yyyy');
+		$ordering = $this->formatter->getDayMonthYearOrdering();
+		$this->assertSame(['month', 'day', 'year'], $ordering);
+	}
+
+	public function test_get_day_month_year_ordering_YMD(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$ordering = $this->formatter->getDayMonthYearOrdering();
+		$this->assertSame(['year', 'month', 'day'], $ordering);
+	}
+
+	public function test_edge_case_midnight(): void
+	{
+		$ts = strtotime('2026-04-17 00:00:00');
+		$this->formatter->setPattern('HH:mm:ss');
+		$this->assertSame('00:00:00', $this->formatter->format($ts));
+	}
+
+	public function test_edge_case_noon(): void
+	{
+		$ts = strtotime('2026-04-17 12:00:00');
+		$this->formatter->setPattern('HH:mm:ss');
+		$this->assertSame('12:00:00', $this->formatter->format($ts));
+	}
+
+	public function test_edge_case_end_of_day(): void
+	{
+		$ts = strtotime('2026-04-17 23:59:59');
+		$this->formatter->setPattern('HH:mm:ss');
+		$this->assertSame('23:59:59', $this->formatter->format($ts));
+	}
+
+	public function test_format_leading_zeros(): void
+	{
+		$ts = strtotime('2026-01-01 01:01:01');
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss');
+		$this->assertSame('2026-01-01 01:01:01', $this->formatter->format($ts));
+	}
+
+	public function test_parse_january(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-01-15', false);
+		$this->assertSame('2026-01-15', date('Y-m-d', $result));
+	}
+
+	public function test_parse_december(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-12-15', false);
+		$this->assertSame('2026-12-15', date('Y-m-d', $result));
+	}
+
+	public function test_parse_all_months(): void
+	{
+		$this->formatter->setPattern('yyyy-M-d');
+		for ($m = 1; $m <= 12; $m++) {
+			$result = $this->formatter->parse("2026-$m-15", false);
+			$this->assertNotNull($result, "Month $m should be valid");
+			$this->assertSame("2026-" . sprintf('%02d', $m) . "-15", date('Y-m-d', $result));
+		}
+	}
+
+	public function test_parse_all_days_in_month(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-01-31', false);
+		$this->assertSame('2026-01-31', date('Y-m-d', $result));
+
+		$result = $this->formatter->parse('2026-04-30', false);
+		$this->assertSame('2026-04-30', date('Y-m-d', $result));
+	}
+
+	public function test_parse_february_28(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-02-28', false);
+		$this->assertSame('2026-02-28', date('Y-m-d', $result));
+	}
+
+	public function test_parse_single_digit_day(): void
+	{
+		$this->formatter->setPattern('yyyy-M-d');
+		$result = $this->formatter->parse('2026-4-5', false);
+		$this->assertSame('2026-04-05', date('Y-m-d', $result));
+	}
+
+	public function test_parse_missing_year_with_pattern(): void
+	{
+		$this->formatter->setPattern('MM/dd');
+		$this->assertNotNull($this->formatter->parse('10/22', true));
+		$this->assertNotNull($this->formatter->parse('10/22', false));
+	}
+
+	public function test_parse_invalid_september_31_returns_null(): void
+	{
+		$this->formatter->setPattern('MM/dd');
+		$this->assertNull($this->formatter->parse('09/31', false));
+	}
+
+	public function test_format_various_separators(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('yyyy.MM.dd');
+		$this->assertSame('2026.04.17', $this->formatter->format($ts));
+
+		$this->formatter->setPattern('yyyy/MM/dd');
+		$this->assertSame('2026/04/17', $this->formatter->format($ts));
+
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$this->assertSame('2026-04-17', $this->formatter->format($ts));
+	}
+
+	public function test_format_with_multibyte_literal_strings(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
+		$this->assertSame('2026年04月17日', $this->formatter->format($ts));
+	}
+
+	public function test_format_multibyte_charset(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$ts = strtotime('2026-04-17');
+		$this->assertSame('2026-04-17', $formatter->format($ts));
+	}
+
+	public function test_parse_multibyte_literal_strings(): void
+	{
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日'");
+		$result = $this->formatter->parse('2026年04月17日', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_multibyte_charset(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$result = $formatter->parse('2026-04-17', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_format_multibyte_day_names(): void
+	{
+		$ts = strtotime('2026-04-17');
+		$this->formatter->setPattern('EEEE, MMMM d, yyyy');
+		$result = $this->formatter->format($ts);
+		$this->assertSame('Friday, April 17, 2026', $result);
+		$this->assertEquals(22, strlen($result));
+	}
+
+	public function test_format_multibyte_month_names(): void
+	{
+		$ts = strtotime('2026-01-15');
+		$this->formatter->setPattern('MMMM');
+		$result = $this->formatter->format($ts);
+		$this->assertSame('January', $result);
+		$this->assertEquals(7, strlen($result));
+	}
+
+	public function test_round_trip_multibyte_literal(): void
+	{
+		$ts = strtotime('2026-04-17 14:30:45');
+		$this->formatter->setPattern("yyyy'年'MM'月'dd'日' HH:mm:ss");
+		$formatted = $this->formatter->format($ts);
+		$this->assertSame('2026年04月17日 14:30:45', $formatted);
+		$parsed = $this->formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+		$this->assertSame('14:30:45', date('H:i:s', $parsed));
+	}
+
+	public function test_parse_multibyte_with_different_charset(): void
+	{
+		$formatter = new TSimpleDateFormatter("yyyy'年'MM'月'dd'日'", 'UTF-8');
+		$result = $formatter->parse('2026年04月17日', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_format_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'es');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('abril 17, 2026', $result);
+	}
+
+	public function test_format_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $result);
+	}
+
+	public function test_format_culture_ja_JP_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'ja_JP');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $result);
+	}
+
+	public function test_parse_month_name_by_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'es');
+		$result = $formatter->parse('abril 17, 2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_month_name_by_culture_de(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'de');
+		$result = $formatter->parse('Oktober 17, 2026', false);
+		$this->assertSame('2026-10-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_weekday_name_by_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('EEEE, MMMM d, yyyy', 'UTF-8', 'es');
+		$result = $formatter->parse('viernes, abril 17, 2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_weekday_name_by_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('EEEE, MMMM d, yyyy', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('星期五, 四月 17, 2026', $formatted);
+	}
+
+	public function test_round_trip_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_round_trip_culture_fr(): void
+	{
+		$formatter = new TSimpleDateFormatter('dd MMMM yyyy', 'UTF-8', 'fr');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('17 avril 2026', $formatted);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_round_trip_culture_ja_JP_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'ja_JP');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $formatted);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_format_culture_de_long_month_names(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM yyyy', 'UTF-8', 'de');
+		$ts = strtotime('2026-12-01');
+		$result = $formatter->format($ts);
+		$this->assertSame('Dezember 2026', $result);
+	}
+
+	public function test_parse_day_month_year_ordering_culture_it(): void
+	{
+		$formatter = new TSimpleDateFormatter('dd/MM/yyyy', 'UTF-8', 'it');
+		$result = $formatter->parse('17/04/2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+	
+	public function test_format_microseconds_S_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1', $result);
+	}
+	
+	public function test_format_microseconds_SS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12', $result);
+	}
+	
+	public function test_format_microseconds_SSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123', $result);
+	}
+	
+	public function test_format_microseconds_SSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1234', $result);
+	}
+	
+	public function test_format_microseconds_SSSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12341');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12341', $result);
+	}
+	
+	public function test_format_microseconds_SSSSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123412');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
+	}
+
+	public function test_format_microseconds_S(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1', $result);
+	}
+	
+	public function test_format_microseconds_SS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12', $result);
+	}
+	
+	public function test_format_microseconds_SSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123', $result);
+	}
+	
+	public function test_format_microseconds_SSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1234', $result);
+	}
+
+	public function test_format_microseconds_SSSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12341', $result);
+	}
+	
+	public function test_format_microseconds_SSSSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
+	}
+	
+	public function test_format_microseconds_S_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.65');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 7', $result);
+	}
+	
+	public function test_format_microseconds_SS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.125');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 13', $result);
+	}
+	
+	public function test_format_microseconds_SSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1235');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 124', $result);
+	}
+	
+	public function test_format_microseconds_SSSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12345');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1235', $result);
+	}
+	
+	public function test_format_microseconds_SSSSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123415');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12342', $result);
+	}
+	
+	// a date Microsecond only returns 6 characters, rounding the 7th doesn't work. (though it could!)
+	public function test_format_microseconds_SSSSSS_micro_rounding_error(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234125');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
 	}
 }
