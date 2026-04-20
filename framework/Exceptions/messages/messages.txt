@@ -91,7 +91,6 @@ httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' must point to a
 
 httpcookiecollection_httpcookie_required = THttpCookieCollection can only accept THttpCookie objects.
 
-httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput cannot be modified after THttpResponse is initialized.
 httpresponse_file_inexistent			= THttpResponse cannot send file '{0}'. The file does not exist.
 httpresponse_responsedata_method_unavailable = THttpResponse: method '{0}' cannot be used without a proper adapter implementing it.
 
@@ -128,8 +127,6 @@ sqlitecache_dbfile_invalid				= TSqliteCache.DbFile is invalid. Make sure it is 
 
 memcache_extension_required				= TMemCache requires memcache PHP extension.
 memcache_connection_failed				= TMemCache failed to connect to memcache server {0}:{1}.
-memcache_host_unchangeable				= TMemCache.Host cannot be modified after the module is initialized.
-memcache_port_unchangeable				= TMemCache.Port cannot be modified after the module is initialized.
 memcache_not_initialized				= Options cannot be set on TMemCache before the module is initialized.
 
 apccache_extension_required				= TAPCCache requires APC PHP extension.
@@ -208,6 +205,9 @@ appsignals_not_a_dispatcher				= '{0}' is not a TSignalsDispatcher.
 signalsdispatcher_bad_pid				= '{0}' is not a valid PID.
 signalsdispatcher_no_change				= TSignalsDispatcher::{0} cannot be changed after attaching.
 
+initialized_property_unchangeable		= {1}.{0} cannot be set because it is already initialized.
+initialized_requires_initialization		= {1}.{0} requires initialization before processing.
+
 template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
 template_closingtag_expected			= Closing tag '{0}' is expected, found '{1}'.
 template_directive_nonunique			= Directive '<%@ ... %>' must appear at the beginning of the template and can appear at most once.
@@ -247,7 +247,6 @@ usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. T
 authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
 authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
 authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refer to a valid TUserManager application module.
-authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
 authmanager_session_required			= TAuthManager requires a session application module.
 
 permissions_events_invalid				= TPermissionEvent.Event cannot set an invalid value '{0}'.
@@ -260,7 +259,6 @@ permissions_role_children_invalid		= TPermissionsManager configuration role '{0}
 permissions_rule_invalid				= TPermissionsManager configuration permission rule '{0}' has properties that is not an array.
 permissions_rules_require_name			= TPermissionsManager rules must have a permission "name" property.
 permissions_children_invalid			= TPermissionsManager.*RoleChildren children must be a string or array but is '{0}'.
-permissions_property_unchangeable		= TPermissionsManager.{0} cannot be set because it is already initialized.
 permissions_permissionfile_invalid		= TPermissionsManager.PermissionFile '{0}' is not a valid file.
 
 thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
@@ -592,7 +590,6 @@ db_cachetable_inexistent				= TDbCache cannot find DB table '{0}' to store cache
 dbparametermodule_table_nonexistent		= TDbParameterModule cannot find DB table '{0}' to store parameter data.
 dbparametermodule_get_no_blank_key		= TDbParameterModule cannot get an empty key.
 dbparametermodule_set_no_blank_key		= TDbParameterModule cannot set an empty key with a value.
-dbparametermodule_property_unchangeable = TDbParameterModule.{0} cannot change after initialization.
 dbparametermodule_connectionid_invalid	= TDbParameterModule.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
 dbparametermodule_serializer_not_callable= TDbParameterModule Serializer is not a callable.
 
@@ -604,7 +601,6 @@ cron_duplicate_task_name				= TCronModule must have task jobs that hare of uniqu
 cron_schedule_required					= Cron Task must have a schedule.
 cron_task_required						= Cron Task must have a task.
 cron_not_a_crontask						= Cron Task '{0}' is not a TCronTask.
-cron_property_unchangeable				= TCronModule.{0} is already initialized and cannot be changed.
 cron_additional_tasks_invalid			= '{0}' is not a valid additional cron task.
 crontask_no_module						= TCronTask could not find module '{0}'.
 dbcronclean_moduleid_is_null			= TDbCronCleanLogTask could not find the specified module '{0}'.
@@ -612,7 +608,6 @@ dbcron_invalid_name						= TDbCronModule the task name '{0}' is invalid .
 dbcron_conflicting_task_names			= Configuration cron tasks conflict with DB cron tasks '{0}'.
 dbcron_table_nonexistent				= TDbCronModule database table does not exist.
 dbcron_connectionid_invalid				= TDbCronModule.ConnectionID '{0}' is not a TDataSourceConfig.
-dbcron_property_unchangeable			= TDbCronModule.{0} is already initialized and cannot be changed.
 
 timescheduler_invalid_string			= TTimeScheduler could not parse the schedule element '{0}'
 

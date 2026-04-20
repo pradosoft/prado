@@ -10,20 +10,44 @@
 
 namespace Prado\Util\Traits;
 
-use Prado\Data\TDataSourceConfig;
-use Prado\Data\TDbConnection;
 use Prado\Exceptions\TInvalidOperationException;
 
 /**
- * TInitializedTrait class.
+ * TInitializedTrait trait
+ *
+ * TInitializedTrait provides initialization state management for classes.
+ *
+ * This trait tracks whether the owning class has completed its `init()` phase,
+ * allowing configuration properties to remain mutable during initialization 
+ * while preventing changes afterward. It provides guard methods to enforce 
+ * initialization requirements on properties and methods.
+ *
+ * Basic usage:
  * ```php
  * public function init($config): void
  * {
- *    $this->markInitialized();
- *     // … your initialization setup that behaviors depend upon …
+ *     // … your setup …
  *     parent::init($config);
- *     // … further init after behaviors are initialized …
  *     $this->markInitialized();
+ * }
+ * ```
+ *
+ * {@see markStartInitialize} can be used to prevent modification of properties
+ * during initialization, without flagging {@see getIsInitialized}.
+ *
+ * Safe initialization with error handling:
+ * ```php
+ * public function init($config): void
+ * {
+ *     try {
+ *         $this->markStartInitialize();
+ *         // … your setup …
+ *         parent::init($config);
+ *         $this->markInitialized();
+ *     } catch(\Exception $e) {
+ *         $this->resetInitialized();
+ *         throw $e;
+ *     }
  * }
  * ```
  *
@@ -37,7 +61,7 @@ trait TInitializedTrait
 
 	/**
 	 * Returns whether the owning object has not yet started to initialize.
-	 * @return bool `true` once {@see markInitialized()} has been called
+	 * @return bool `true` when initialization has not started
 	 */
 	public function getIsUninitialized(): bool
 	{
@@ -46,7 +70,7 @@ trait TInitializedTrait
 
 	/**
 	 * Returns whether the owning object is in the process of initializing.
-	 * @return bool `true` once {@see markInitialized()} has been called
+	 * @return bool `true` during the initialization phase
 	 */
 	public function getIsInitializing(): bool
 	{
@@ -63,11 +87,11 @@ trait TInitializedTrait
 	}
 
 	/**
-	 * Marks the owning object as complete in its initialization.
+	 * Marks the start of the initialization phase.
 	 *
-	 * Call this at the end of `init()`, after `parent::init($config)`, so that
-	 * configuration properties remain mutable during the entire initialization
-	 * sequence (including any parent class setup):
+	 * Call this at the start of `init()`, before any setup operations, to track
+	 * that initialization is in progress. When combined with try/catch and
+	 * {@see resetInitialized()}, this allows safe cleanup on initialization failure:
 	 *
 	 * ```php
 	 * public function init($config): void
@@ -95,23 +119,25 @@ trait TInitializedTrait
 	}
 
 	/**
-	 * Marks the owning object as complete in its initialization.
+	 * Resets the initialization state, allowing properties to be modified again.
 	 *
-	 * Call this at the end of `init()`, after `parent::init($config)`, so that
-	 * configuration properties remain mutable during the entire initialization
-	 * sequence (including any parent class setup):
+	 * Call this in a catch block when initialization fails, enabling retry
+	 * or cleanup:
 	 *
 	 * ```php
 	 * public function init($config): void
 	 * {
-	 *     // … your setup …
-	 *     parent::init($config);
-	 *     $this->markInitialized();
+	 *     try {
+	 *         $this->markStartInitialize();
+	 *         // … your setup …
+	 *         parent::init($config);
+	 *         $this->markInitialized();
+	 *     } catch(\Exception $e) {
+	 *         $this->resetInitialized();
+	 *         throw $e;
+	 *     }
 	 * }
 	 * ```
-	 *
-	 * This method is intentionally idempotent: calling it more than once is
-	 * safe and produces no error.
 	 */
 	protected function resetInitialized(): void
 	{
@@ -181,26 +207,26 @@ trait TInitializedTrait
 	/**
 	 * Guards a method or process against operation before initialization.
 	 *
-	 * Place this as the very first statement of any method or process that must be
-	 * initialized before continuing:
+	 * Place this as the very first statement of any method or process that requires
+	 * the owning object to be initialized before continuing:
 	 *
 	 * ```php
-	 * public function setTableName(string $value): void
+	 * public function runProcess(): void
 	 * {
-	 *     $this->assertUninitialized('TableName');
-	 *     $this->_tableName = $value;
+	 *     $this->assertInitialized('Process');
+	 *     // … run the process …
 	 * }
 	 * ```
 	 *
-	 * The exception message key is controlled by {@see getIsInitializedExceptionKey()}.
+	 * The exception message key is controlled by {@see getIsNotInitializedExceptionKey()}.
 	 * Override it in the consuming class to supply a module-specific
 	 * catalogue key.
 	 *
-	 * @param string $property the property name included in the exception message
+	 * @param string $property the property or process name included in the exception message
 	 * @param string $exceptionKey The key name of the exception message, default is null
-	 *							   and uses {@see getIsInitializedExceptionKey()} for the
+	 *							   and uses {@see getIsNotInitializedExceptionKey()} for the
 	 *							   backup default message.
-	 * @throws TInvalidOperationException when the object is already initialized
+	 * @throws TInvalidOperationException when the object is not yet initialized
 	 */
 	protected function assertInitialized(string $property, ?string $exceptionKey = null): void
 	{
@@ -251,7 +277,7 @@ trait TInitializedTrait
 	 *
 	 * For example:
 	 * ```
-	 * "{1}.{0} requires initialization before running."
+	 * "{1}.{0} requires initialization before processing."
 	 * ```
 	 *
 	 * Override in the consuming class to return a module-specific key:
