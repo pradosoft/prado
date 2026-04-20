@@ -18,8 +18,8 @@ use Prado\Exceptions\TInvalidOperationException;
  * TInitializedTrait provides initialization state management for classes.
  *
  * This trait tracks whether the owning class has completed its `init()` phase,
- * allowing configuration properties to remain mutable during initialization 
- * while preventing changes afterward. It provides guard methods to enforce 
+ * allowing configuration properties to remain mutable during initialization
+ * while preventing changes afterward. It provides guard methods to enforce
  * initialization requirements on properties and methods.
  *
  * Basic usage:
