@@ -225,7 +225,7 @@ class TNumberFormat extends TI18NControl implements \Prado\IDataRenderer
 			$result = $formatter->format($value);
 		}
 
-		return TUtf8Converter::fromUTF8($result, $this->getCharset());
+		return $this->convertToCharset($result);
 	}
 
 	public function render($writer)

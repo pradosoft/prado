@@ -10,8 +10,9 @@
 
 namespace Prado\Util;
 
-use Prado\Prado;
 use Prado\Exceptions\TInvalidDataValueException;
+use Prado\I18N\core\TIntlDateFormatterTrait;
+use Prado\Util\TUtf8Converter;
 
 /**
  * TSimpleDateFormatter class.
@@ -42,6 +43,12 @@ use Prado\Exceptions\TInvalidDataValueException;
  * mm      | Minute 00-59, zero padding
  * s       | Second 0-59, no padding
  * ss      | Second 00-59, zero padding
+ * S       | Fractional second, 1 digit, tenths
+ * SS      | Fractional second, 2 digits, hundredths
+ * SSS     | Fractional second, 3 digits, milliseconds
+ * SSSS    | Fractional second, 4 digits,
+ * SSSSS   | Fractional second, 5 digits,
+ * SSSSSS  | Fractional second, 6 digits, microseconds
  * a       | AM/PM marker
  * E       | Day abbreviation (Mon, Tue)
  * EEEE    | Full day name (Monday, Tuesday)
@@ -61,10 +68,15 @@ use Prado\Exceptions\TInvalidDataValueException;
  * ```
  *
  * Parsing behavior:
+ * - Supports Java style Date Time patterns. (see link below)
  * - Integer or float timestamps are returned unchanged.
+ * - Locally Aware Months and Days of the Week.
+ * - Literal text when quoted with `'`.
  * - Missing components default to the current date/time (unless $defaultToCurrentTime is false).
  * - Two-digit years 00-70 become 2000-2070, 71-99 become 1971-1999.
  * - Invalid dates (e.g., Feb 30) return null.
+ * - DateTimeInterface objects (including DateTimeImmutable) are passed through.
+ * - Supports fractions of seconds up to microsecond precision.
  *
  * Usage example, to format a date
  * ```php
@@ -78,12 +90,21 @@ use Prado\Exceptions\TInvalidDataValueException;
  * echo $formatter->parse("24-6-2005");
  * ```
  *
+ * To format with fractional seconds and locale-aware month names:
+ * ```
+ * $formatter = new TSimpleDateFormatter("MMMM d, yyyy 'at' HH:mm:ss.SSS", "UTF-8", "de_DE");
+ * echo $formatter->format($dateTimeWithMicroseconds);
+ * ```
+ *
  * @author Wei Zhuo <weizhuo[at]gmail[dot]com>
  * @author Brad Anderson <belisoful@icloud.com> 2026 update
  * @since 3.0
+ * @see https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
  */
 class TSimpleDateFormatter
 {
+	use TIntlDateFormatterTrait;
+
 	/**
 	 * Formatting pattern.
 	 * @var string
@@ -97,14 +118,24 @@ class TSimpleDateFormatter
 	private $charset = 'UTF-8';
 
 	/**
+	 * The culture of the date formatter. default to invariant
+	 * @var string
+	 */
+	private $culture = '';
+
+	/**
 	 * Constructor, create a new date time formatter.
 	 * @param string $pattern formatting pattern.
 	 * @param string $charset pattern and value charset
+	 * @param null|mixed $culture
 	 */
-	public function __construct($pattern, $charset = 'UTF-8')
+	public function __construct($pattern, $charset = 'UTF-8', $culture = null)
 	{
 		$this->setPattern($pattern);
 		$this->setCharset($charset);
+		if ($culture !== null) {
+			$this->setCulture($culture);
+		}
 	}
 
 	/**
@@ -140,13 +171,32 @@ class TSimpleDateFormatter
 	}
 
 	/**
+	 * @return string culture
+	 */
+	public function getCulture()
+	{
+		return $this->culture;
+	}
+
+	/**
+	 * @param string $value culture
+	 */
+	public function setCulture($value)
+	{
+		$this->culture = (string) $value;
+	}
+
+	/**
 	 * Format the date according to the pattern.
+	 * Uses IntlDateFormatter for internationalization when culture is set.
+	 * Falls back to PHP DateTime for patterns not supported by ICU (e.g., k/kk hour formats).
 	 * @param int|string $value the date to format, either integer or a string readable by strtotime.
 	 * @return string formatted date.
 	 */
 	public function format($value)
 	{
 		$dt = $this->getDate($value);
+		$culture = $this->getCulture();
 
 		$map = [
 			'yyyy' => 'Y', 'yy' => 'y', 'y' => 'Y',
@@ -214,6 +264,23 @@ class TSimpleDateFormatter
 				}
 				continue;
 			}
+			if ($this->charAt($pattern, $idx) === 'S') {
+				$sCount = 0;
+				while ($idx + $sCount < $pattern_length && $this->charAt($pattern, $idx + $sCount) === 'S') {
+					$sCount++;
+				}
+				$microseconds = (int) $dt->format('u');
+
+				if ($sCount < 6) {
+					$divisor = pow(10, 6 - $sCount);
+					$value = (string) round($microseconds / $divisor);
+				} else {
+					$value = substr(sprintf('%06d', $microseconds), 0, $sCount);
+				}
+				$result .= $value;
+				$idx += $sCount;
+				continue;
+			}
 			$matched = false;
 			foreach ($sortedTokens as $token => $replacement) {
 				$tokenLen = $this->length($token);
@@ -229,6 +296,43 @@ class TSimpleDateFormatter
 				$idx++;
 			}
 		}
+
+		$result = $this->applyCultureLocalization($result, $culture);
+
+		return $result;
+	}
+
+	/**
+	 * Apply culture-specific month and day name localization.
+	 * @param string $result formatted result
+	 * @param string $culture culture code
+	 * @return string result with localized month/day names
+	 */
+	private function applyCultureLocalization($result, $culture)
+	{
+		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
+		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+
+		if ($hasLocalizedMonth) {
+			$monthNames = $this->getLocalizedMonthNames($culture, $this->getMonthPattern() === 'MMM' ? 'short' : 'full');
+			if ($monthNames) {
+				$englishMonths = $this->getLocalizedMonthNames('en', $this->getMonthPattern() === 'MMM' ? 'short' : 'full');
+				foreach ($englishMonths as $idx => $engMonth) {
+					$result = str_replace($engMonth, $monthNames[$idx], $result);
+				}
+			}
+		}
+
+		if ($hasLocalizedWeekday) {
+			$weekdayNames = $this->getLocalizedWeekdayNames($culture, strpos($this->pattern, 'EEEE') !== false ? 'full' : 'short');
+			if ($weekdayNames) {
+				$englishWeekdays = $this->getLocalizedWeekdayNames('en', strpos($this->pattern, 'EEEE') !== false ? 'full' : 'short');
+				foreach ($englishWeekdays as $idx => $engDay) {
+					$result = str_replace($engDay, $weekdayNames[$idx], $result);
+				}
+			}
+		}
+
 		return $result;
 	}
 
@@ -310,6 +414,9 @@ class TSimpleDateFormatter
 	 */
 	private function getDate($value)
 	{
+		if ($value instanceof \DateTimeInterface) {
+			return $value;
+		}
 		if (is_numeric($value)) {
 			$date = new \DateTime();
 			$date->setTimeStamp($value);
@@ -334,9 +441,23 @@ class TSimpleDateFormatter
 	 * @param int|string $value date string or integer to parse
 	 * @param bool $defaultToCurrentTime
 	 * @throws TInvalidDataValueException if date string is malformed.
-	 * @return int date time stamp
+	 * @return ?int date time stamp, null when $defaultToCurrentTime is false
 	 */
 	public function parse($value, $defaultToCurrentTime = true)
+	{
+		$result = $this->parseExact($value, $defaultToCurrentTime);
+		return $result !== null ? (int) floor($result) : null;
+	}
+
+
+	/**
+	 * Parse the string according to the pattern.
+	 * @param int|string $value date string or integer to parse
+	 * @param bool $defaultToCurrentTime
+	 * @throws TInvalidDataValueException if date string is malformed.
+	 * @return ?float exact date time stamp, null when $defaultToCurrentTime is false
+	 */
+	public function parseExact($value, $defaultToCurrentTime = true): ?float
 	{
 		if (is_int($value)) {
 			return $value;
@@ -354,12 +475,44 @@ class TSimpleDateFormatter
 			return $defaultToCurrentTime ? time() : null;
 		}
 
+		$hasLocalizedMonth = preg_match('/M{3,4}/', $this->pattern) === 1;
+		$hasLocalizedWeekday = strpos($this->pattern, 'EEEE') !== false || (strpos($this->pattern, 'E') !== false && strpos($this->pattern, 'EEEE') === false);
+
+		if ($hasLocalizedMonth || $hasLocalizedWeekday) {
+			$culture = $this->getCulture() ?: 'en';
+
+			if ($hasLocalizedMonth) {
+				$monthNames = $this->getLocalizedMonthNames($culture, $this->getMonthPattern() === 'MMM' ? 'short' : 'full');
+				if ($monthNames) {
+					$monthIdx = $this->findStringInArray($value, $monthNames);
+					if ($monthIdx !== null) {
+						$month = $monthIdx + 1;
+						$escaped = preg_quote($monthNames[$monthIdx], '/');
+						$value = preg_replace('/' . $escaped . '/', sprintf('%02d', $month), $value, 1);
+					}
+				}
+			}
+
+			if ($hasLocalizedWeekday) {
+				$weekdayNames = $this->getLocalizedWeekdayNames($culture, strpos($this->pattern, 'EEEE') !== false ? 'full' : 'short');
+				if ($weekdayNames) {
+					$weekdayIdx = $this->findStringInArray($value, $weekdayNames);
+					if ($weekdayIdx !== null) {
+						$escaped = preg_quote($weekdayNames[$weekdayIdx], '/');
+						$placeholder = str_repeat('?', $this->length($weekdayNames[$weekdayIdx]));
+						$value = preg_replace('/' . $escaped . '/', $placeholder, $value, 1);
+					}
+				}
+			}
+		}
+
 		$i_val = 0;
 		$i_format = 0;
 		$pattern_length = $this->length($this->pattern);
 		$year = $month = $day = $hour = $minute = $second = null;
 		$ampm = null;
 		$hourMode = null;
+		$fraction = 0.0;
 
 		while ($i_format < $pattern_length) {
 			if ($this->charAt($this->pattern, $i_format) === "'") {
@@ -414,11 +567,12 @@ class TSimpleDateFormatter
 					}
 					break;
 				case 'MMMM': case 'MMM': case 'MM': case 'M':
-					$month = $this->getInteger($value, $i_val, $this->length($token), 2);
+					$monthMinLen = ($token === 'MMMM' || $token === 'MMM') ? 1 : $this->length($token);
+					$month = $this->getInteger($value, $i_val, $monthMinLen, 2);
 					if ($month === null || $month < 1 || $month > 12) {
 						return null;
 					}
-					$i_val += $this->length($month);
+					$i_val += $this->length((string) $month);
 					break;
 				case 'dd': case 'd':
 					$day = $this->getInteger($value, $i_val, $this->length($token), 2);
@@ -473,6 +627,66 @@ class TSimpleDateFormatter
 					}
 					$i_val += $this->length($second);
 					break;
+				case 'S':
+					$fractionLen = 1;
+					$fraction = $this->getInteger($value, $i_val, 1, 1);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 10;
+					$i_val += $fractionLen;
+					break;
+				case 'SS':
+					$fractionLen = 2;
+					$fraction = $this->getInteger($value, $i_val, 2, 2);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 100;
+					$i_val += $fractionLen;
+					break;
+				case 'SSS':
+					$fractionLen = 3;
+					$fraction = $this->getInteger($value, $i_val, 3, 3);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 1000;
+					$i_val += $fractionLen;
+					break;
+				case 'SSSS':
+					$fractionLen = 4;
+					$fraction = $this->getInteger($value, $i_val, 4, 4);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 10000;
+					$i_val += $fractionLen;
+					break;
+				case 'SSSSS':
+					$fractionLen = 5;
+					$fraction = $this->getInteger($value, $i_val, 5, 5);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 100000;
+					$i_val += $fractionLen;
+					break;
+				case 'SSSSSS':
+					$fractionLen = 6;
+					$fraction = $this->getInteger($value, $i_val, 6, 6);
+					if ($fraction === null) {
+						return null;
+					}
+					$fraction = (int) $fraction;
+					$fraction = $fraction / 1000000;
+					$i_val += $fractionLen;
+					break;
 				case 'D':
 					$dayInYear = $this->getInteger($value, $i_val, 1, 3);
 					if ($dayInYear === null) {
@@ -487,6 +701,34 @@ class TSimpleDateFormatter
 						return null;
 					}
 					$i_val += 2;
+					break;
+				case 'EEEE': case 'E':
+					$placeholderLen = $this->length($value);
+					while ($placeholderLen > 0) {
+						$check = $this->substring($value, $i_val, $placeholderLen);
+						if ($check !== null) {
+							$allQuestion = true;
+							for ($j = 0; $j < $placeholderLen; $j++) {
+								$c = $this->substring($check, $j, 1);
+								if ($c !== '?') {
+									$allQuestion = false;
+									break;
+								}
+							}
+							if ($allQuestion) {
+								$i_val += $placeholderLen;
+								break;
+							}
+						}
+						$placeholderLen--;
+					}
+					if ($placeholderLen <= 0) {
+						$sub = $this->substring($value, $i_val, 1);
+						if ($sub === null || $this->length($sub) < 1) {
+							return null;
+						}
+						$i_val += $this->length($sub);
+					}
 					break;
 				default:
 					if ($this->substring($value, $i_val, $this->length($token)) !== $token) {
@@ -533,7 +775,7 @@ class TSimpleDateFormatter
 		$s = new \DateTime();
 		$s->setDate($year, $month, $day);
 		$s->setTime($hour, (int) $minute, (int) $second);
-		return $s->getTimestamp();
+		return $s->getTimestamp() + $fraction;
 	}
 
 	/**
@@ -543,7 +785,7 @@ class TSimpleDateFormatter
 	 */
 	private function length($string)
 	{
-		return iconv_strlen($string, $this->charset);
+		return iconv_strlen($string, $this->getCharset());
 	}
 
 	/**
@@ -566,7 +808,7 @@ class TSimpleDateFormatter
 	 */
 	private function substring($string, $start, $length)
 	{
-		return iconv_substr($string, $start, $length, $this->charset);
+		return iconv_substr($string, $start, $length, $this->getCharset());
 	}
 
 	/**
@@ -598,6 +840,73 @@ class TSimpleDateFormatter
 			}
 			if (preg_match('/^\d+$/', $token)) {
 				return $token;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get localized weekday names for a culture using IntlDateFormatter.
+	 * @param string $culture the culture code
+	 * @param string $type 'short' for abbreviated, 'full' for full names
+	 * @return null|array array of weekday names (0=Sunday) or null if unavailable
+	 * @since 4.3.3
+	 */
+	private function getLocalizedWeekdayNames($culture, $type = 'full')
+	{
+		$formatter = $this->getIntlDateFormatter($culture, \IntlDateFormatter::FULL, \IntlDateFormatter::FULL);
+		if (!$formatter) {
+			return null;
+		}
+
+		$weekdayNames = [];
+		$date = new \DateTime('2026-04-05');
+		$pattern = $type === 'short' ? 'EEE' : 'EEEE';
+		for ($d = 0; $d < 7; $d++) {
+			$formatter->setPattern($pattern);
+			$weekdayNames[$d] = $formatter->format($date);
+			$date->modify('+1 day');
+		}
+		return $weekdayNames;
+	}
+
+	/**
+	 * Get localized month names for a culture using IntlDateFormatter.
+	 * @param string $culture the culture code
+	 * @param string $type 'short' for abbreviated, 'full' for full names
+	 * @return null|array array of month names (0-indexed) or null if unavailable
+	 * @since 4.3.3
+	 */
+	private function getLocalizedMonthNames($culture, $type = 'full')
+	{
+		$formatter = $this->getIntlDateFormatter($culture, \IntlDateFormatter::FULL, \IntlDateFormatter::FULL);
+		if (!$formatter) {
+			return null;
+		}
+
+		$monthNames = [];
+		$date = new \DateTime('2026-01-15');
+		for ($m = 0; $m < 12; $m++) {
+			$date->setDate(2026, $m + 1, 15);
+			$pattern = $type === 'short' ? 'MMM' : 'MMMM';
+			$formatter->setPattern($pattern);
+			$monthNames[$m] = $formatter->format($date);
+		}
+		return $monthNames;
+	}
+
+	/**
+	 * Find the localized month or weekday index in the value string.
+	 * @param string $value the date string to search
+	 * @param array $stringArray array of localized names
+	 * @return null|int index or null if not found
+	 * @since 4.3.3
+	 */
+	private function findStringInArray($value, $stringArray)
+	{
+		foreach ($stringArray as $idx => $name) {
+			if (strpos($value, $name) !== false) {
+				return $idx;
 			}
 		}
 		return null;

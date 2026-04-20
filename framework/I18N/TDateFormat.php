@@ -10,6 +10,7 @@
 
 namespace Prado\I18N;
 
+use Prado\I18N\core\TIntlDateFormatterTrait;
 use Prado\Prado;
 use Prado\Util\TUtf8Converter;
 
@@ -51,11 +52,7 @@ use Prado\Util\TUtf8Converter;
  */
 class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 {
-	/**
-	 * Cached IntlDateFormatter set to the application culture.
-	 * @var \IntlDateFormatter
-	 */
-	protected static $formatters;
+	use TIntlDateFormatterTrait;
 
 	/**
 	 * A set of pattern presets and their respective formatting shorthand.
@@ -181,30 +178,6 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 	}
 
 	/**
-	 * Formats the localized number, be it currency or decimal, or percentage.
-	 * If the culture is not specified, the default application
-	 * culture will be used.
-	 * @param string $culture
-	 * @param mixed $datetype
-	 * @param mixed $timetype
-	 * @return \NumberFormatter
-	 */
-	protected function getFormatter($culture, $datetype, $timetype)
-	{
-		if (!isset(self::$formatters[$culture])) {
-			self::$formatters[$culture] = [];
-		}
-		if (!isset(self::$formatters[$culture][$datetype])) {
-			self::$formatters[$culture][$datetype] = [];
-		}
-		if (!isset(self::$formatters[$culture][$datetype][$timetype])) {
-			self::$formatters[$culture][$datetype][$timetype] = new \IntlDateFormatter($culture, $datetype, $timetype);
-		}
-
-		return self::$formatters[$culture][$datetype][$timetype];
-	}
-
-	/**
 	 * Renders the localized version of the date-time value.
 	 * If the culture is not specified, the default application
 	 * culture will be used.
@@ -259,7 +232,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 		}
 
 		if (empty($pattern)) {
-			$formatter = $this->getFormatter($culture, $datetype, $timetype);
+			$formatter = $this->getIntlDateFormatter($culture, $datetype, $timetype);
 		} else {
 			$formatter = new \IntlDateFormatter($culture, $datetype, $timetype);
 			$formatter->setPattern($pattern);
@@ -267,7 +240,7 @@ class TDateFormat extends TI18NControl implements \Prado\IDataRenderer
 
 		$result = $formatter->format($date);
 
-		return TUtf8Converter::fromUTF8($result, $this->getCharset());
+		return $this->convertToCharset($result);
 	}
 
 	public function render($writer)

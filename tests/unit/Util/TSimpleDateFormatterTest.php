@@ -848,7 +848,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function test_format_multibyte_charset(): void
 	{
-		$formatter = new \Prado\Util\TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
 		$ts = strtotime('2026-04-17');
 		$this->assertSame('2026-04-17', $formatter->format($ts));
 	}
@@ -862,7 +862,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function test_parse_multibyte_charset(): void
 	{
-		$formatter = new \Prado\Util\TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd', 'UTF-8');
 		$result = $formatter->parse('2026-04-17', false);
 		$this->assertSame('2026-04-17', date('Y-m-d', $result));
 	}
@@ -898,8 +898,250 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 
 	public function test_parse_multibyte_with_different_charset(): void
 	{
-		$formatter = new \Prado\Util\TSimpleDateFormatter("yyyy'年'MM'月'dd'日'", 'UTF-8');
+		$formatter = new TSimpleDateFormatter("yyyy'年'MM'月'dd'日'", 'UTF-8');
 		$result = $formatter->parse('2026年04月17日', false);
 		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_format_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'es');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('abril 17, 2026', $result);
+	}
+
+	public function test_format_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $result);
+	}
+
+	public function test_format_culture_ja_JP_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'ja_JP');
+		$ts = strtotime('2026-04-17');
+		$result = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $result);
+	}
+
+	public function test_parse_month_name_by_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'es');
+		$result = $formatter->parse('abril 17, 2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_month_name_by_culture_de(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM d, yyyy', 'UTF-8', 'de');
+		$result = $formatter->parse('Oktober 17, 2026', false);
+		$this->assertSame('2026-10-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_weekday_name_by_culture_es(): void
+	{
+		$formatter = new TSimpleDateFormatter('EEEE, MMMM d, yyyy', 'UTF-8', 'es');
+		$result = $formatter->parse('viernes, abril 17, 2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+
+	public function test_parse_weekday_name_by_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('EEEE, MMMM d, yyyy', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('星期五, 四月 17, 2026', $formatted);
+	}
+
+	public function test_round_trip_culture_zh_CN_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'zh_CN');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_round_trip_culture_fr(): void
+	{
+		$formatter = new TSimpleDateFormatter('dd MMMM yyyy', 'UTF-8', 'fr');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('17 avril 2026', $formatted);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_round_trip_culture_ja_JP_multibyte(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy年MM月dd日', 'UTF-8', 'ja_JP');
+		$ts = strtotime('2026-04-17');
+		$formatted = $formatter->format($ts);
+		$this->assertSame('2026年04月17日', $formatted);
+		$parsed = $formatter->parse($formatted, false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $parsed));
+	}
+
+	public function test_format_culture_de_long_month_names(): void
+	{
+		$formatter = new TSimpleDateFormatter('MMMM yyyy', 'UTF-8', 'de');
+		$ts = strtotime('2026-12-01');
+		$result = $formatter->format($ts);
+		$this->assertSame('Dezember 2026', $result);
+	}
+
+	public function test_parse_day_month_year_ordering_culture_it(): void
+	{
+		$formatter = new TSimpleDateFormatter('dd/MM/yyyy', 'UTF-8', 'it');
+		$result = $formatter->parse('17/04/2026', false);
+		$this->assertSame('2026-04-17', date('Y-m-d', $result));
+	}
+	
+	public function test_format_microseconds_S_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1', $result);
+	}
+	
+	public function test_format_microseconds_SS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12', $result);
+	}
+	
+	public function test_format_microseconds_SSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123', $result);
+	}
+	
+	public function test_format_microseconds_SSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1234', $result);
+	}
+	
+	public function test_format_microseconds_SSSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12341');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12341', $result);
+	}
+	
+	public function test_format_microseconds_SSSSSS_exact(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123412');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
+	}
+
+	public function test_format_microseconds_S(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1', $result);
+	}
+	
+	public function test_format_microseconds_SS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12', $result);
+	}
+	
+	public function test_format_microseconds_SSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123', $result);
+	}
+	
+	public function test_format_microseconds_SSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1234', $result);
+	}
+
+	public function test_format_microseconds_SSSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12341', $result);
+	}
+	
+	public function test_format_microseconds_SSSSSS(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234123');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
+	}
+	
+	public function test_format_microseconds_S_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss S', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.65');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 7', $result);
+	}
+	
+	public function test_format_microseconds_SS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.125');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 13', $result);
+	}
+	
+	public function test_format_microseconds_SSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1235');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 124', $result);
+	}
+	
+	public function test_format_microseconds_SSSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.12345');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 1235', $result);
+	}
+	
+	public function test_format_microseconds_SSSSS_rounding(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.123415');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 12342', $result);
+	}
+	
+	// a date Microsecond only returns 6 characters, rounding the 7th doesn't work. (though it could!)
+	public function test_format_microseconds_SSSSSS_micro_rounding_error(): void
+	{
+		$formatter = new TSimpleDateFormatter('yyyy-MM-dd HH:mm:ss SSSSSS', 'UTF-8');
+		$dt = new \DateTime('2026-04-17 14:30:45.1234125');
+		$result = $formatter->format($dt);
+		$this->assertSame('2026-04-17 14:30:45 123412', $result);
 	}
 }
