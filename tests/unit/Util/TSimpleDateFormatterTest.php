@@ -44,6 +44,7 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	{
 		$ts = 1713367800;
 		$result = $this->formatter->parse($ts);
+		$this->assertIsInt($result);
 		$this->assertSame($ts, $result);
 	}
 
@@ -51,7 +52,47 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 	{
 		$ts = 1713367800.5;
 		$result = $this->formatter->parse($ts);
+		$this->assertIsInt($result);
 		$this->assertSame(1713367800, $result);
+	}
+
+	public function test_parse_date_string_returns_int(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('2026-04-17', false);
+		$this->assertIsInt($result);
+		$this->assertSame(strtotime('2026-04-17'), $result);
+	}
+
+	public function test_parse_with_fractional_seconds_returns_int(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.S');
+		$result = $this->formatter->parse('2026-04-17 14:30:45.1', false);
+		$this->assertIsInt($result);
+		$this->assertSame(strtotime('2026-04-17 14:30:45'), $result);
+	}
+
+	public function test_parse_SSS_returns_int_floored(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.SSS');
+		$result = $this->formatter->parse('2026-04-17 14:30:45.123', false);
+		$this->assertIsInt($result);
+		$this->assertSame(strtotime('2026-04-17 14:30:45'), $result);
+	}
+
+	public function test_parse_SSSSSS_returns_int_floored(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.SSSSSS');
+		$result = $this->formatter->parse('2026-04-17 14:30:45.123456', false);
+		$this->assertIsInt($result);
+		$this->assertSame(strtotime('2026-04-17 14:30:45'), $result);
+	}
+
+	public function test_parse_invalid_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parse('invalid', false);
+		$this->assertNull($result);
 	}
 
 	public function test_parse_empty_string_returns_current_time_when_enabled(): void
@@ -1143,5 +1184,78 @@ class TSimpleDateFormatterTest extends PHPUnit\Framework\TestCase
 		$dt = new \DateTime('2026-04-17 14:30:45.1234125');
 		$result = $formatter->format($dt);
 		$this->assertSame('2026-04-17 14:30:45 123412', $result);
+	}
+
+	public function test_parseExact_integer_returns_float(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parseExact('2026-04-17', false);
+		$this->assertIsFloat($result);
+		$this->assertSame((float) strtotime('2026-04-17'), $result);
+	}
+
+	public function test_parseExact_float_input_returns_float(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$ts = 1713367800.5;
+		$result = $this->formatter->parseExact($ts, false);
+		$this->assertIsFloat($result);
+		$this->assertSame(1713367800.5, $result);
+	}
+
+	public function test_parseExact_fractional_seconds_returns_float(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.S');
+		$result = $this->formatter->parseExact('2026-04-17 14:30:45.1', false);
+		$this->assertIsFloat($result);
+		$this->assertNotEquals((int) $result, $result);
+		$this->assertEqualsWithDelta(strtotime('2026-04-17 14:30:45') + 0.1, $result, 0.001);
+	}
+
+	public function test_parseExact_SSS_returns_float(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.SSS');
+		$result = $this->formatter->parseExact('2026-04-17 14:30:45.123', false);
+		$this->assertIsFloat($result);
+		$this->assertNotEquals((int) $result, $result);
+		$this->assertEqualsWithDelta(strtotime('2026-04-17 14:30:45') + 0.123, $result, 0.001);
+	}
+
+	public function test_parseExact_invalid_returns_null(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd');
+		$result = $this->formatter->parseExact('invalid', false);
+		$this->assertNull($result);
+	}
+
+	public function test_parseExact_SSSSSS_returns_float(): void
+	{
+		$this->formatter->setPattern('yyyy-MM-dd HH:mm:ss.SSSSSS');
+		$result = $this->formatter->parseExact('2026-04-17 14:30:45.123456', false);
+		$this->assertIsFloat($result);
+		$this->assertNotEquals((int) $result, $result);
+		$this->assertEqualsWithDelta(strtotime('2026-04-17 14:30:45') + 0.123456, $result, 0.000001);
+	}
+
+	public function test_parseExact_null_pattern_returns_current_time_float(): void
+	{
+		$formatter = new TSimpleDateFormatter(null);
+		$before = time();
+		$result = $formatter->parseExact('', true);
+		$after = time();
+		$this->assertIsFloat($result);
+		$this->assertThat($result, $this->greaterThanOrEqual((float) $before));
+		$this->assertThat($result, $this->lessThanOrEqual((float) ($after + 1)));
+	}
+
+	public function test_parse_null_pattern_returns_current_time_int(): void
+	{
+		$formatter = new TSimpleDateFormatter(null);
+		$before = time();
+		$result = $formatter->parse('', true);
+		$after = time();
+		$this->assertIsInt($result);
+		$this->assertThat($result, $this->greaterThanOrEqual($before));
+		$this->assertThat($result, $this->lessThanOrEqual($after + 1));
 	}
 }

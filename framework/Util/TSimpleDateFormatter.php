@@ -460,16 +460,16 @@ class TSimpleDateFormatter
 	public function parseExact($value, $defaultToCurrentTime = true): ?float
 	{
 		if (is_int($value)) {
-			return $value;
+			return (float) $value;
 		}
 		if (is_float($value)) {
-			return (int) $value;
+			return $value;
 		}
 		if (!is_string($value)) {
 			throw new TInvalidDataValueException('date_to_parse_must_be_string');
 		}
 		if (empty($this->pattern)) {
-			return time();
+			return microtime(true);
 		}
 		if ($this->length(trim($value)) < 1) {
 			return $defaultToCurrentTime ? time() : null;
@@ -775,7 +775,7 @@ class TSimpleDateFormatter
 		$s = new \DateTime();
 		$s->setDate($year, $month, $day);
 		$s->setTime($hour, (int) $minute, (int) $second);
-		return $s->getTimestamp() + $fraction;
+		return (float) ($s->getTimestamp() + $fraction);
 	}
 
 	/**
