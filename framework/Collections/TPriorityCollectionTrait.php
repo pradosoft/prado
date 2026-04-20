@@ -1,9 +1,9 @@
 <?php
 
 /**
- * TPriorityCollectionTrait class
+ * TPriorityCollectionTrait trait file
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -17,7 +17,7 @@ use Prado\Prado;
 use Prado\TPropertyValue;
 
 /**
- * TPriorityCollectionTrait class
+ * TPriorityCollectionTrait trait
  *
  * This trait implements the common properties and methods of Priority Collection
  * classes.

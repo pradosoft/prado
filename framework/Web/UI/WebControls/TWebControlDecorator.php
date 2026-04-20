@@ -3,7 +3,7 @@
 /**
  * TWebControlDecorator class file.
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -54,7 +54,7 @@ use Prado\Web\UI\TTemplate;
  * * PostTagTemplate
  *
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2
  */
 class TWebControlDecorator extends \Prado\TComponent

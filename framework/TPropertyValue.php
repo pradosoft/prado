@@ -1,13 +1,9 @@
 <?php
 
 /**
- * TComponent, TPropertyValue classes
+ * TPropertyValue class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
- *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */

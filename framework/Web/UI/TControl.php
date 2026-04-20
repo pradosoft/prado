@@ -1021,7 +1021,7 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 
 	/**
 	 * Creates child controls.
-	 * This method can be overriden for controls who want to have their controls.
+	 * This method can be overridden for controls who want to have their controls.
 	 * Do not call this method directly. Instead, call {@see ensureChildControls}
 	 * to ensure child controls are created only once.
 	 */

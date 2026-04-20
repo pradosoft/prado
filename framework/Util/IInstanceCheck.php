@@ -1,12 +1,12 @@
 <?php
 
 /**
- * TComponent, TPropertyValue classes
+ * IInstanceCheck interface file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  *
  * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
@@ -20,7 +20,7 @@ namespace Prado\Util;
  * important with behaviors because behaviors may want to look like
  * particular objects other than themselves.
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2.3
  */
 interface IInstanceCheck
