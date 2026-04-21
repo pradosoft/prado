@@ -14,7 +14,6 @@ use Exception;
 use PDO;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
-use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataTypeException;
 use Prado\Exceptions\TInvalidOperationException;
@@ -24,6 +23,7 @@ use Prado\Security\Permissions\IPermissions;
 use Prado\Security\Permissions\TPermissionEvent;
 use Prado\Util\Behaviors\TMapLazyLoadBehavior;
 use Prado\Util\Behaviors\TMapRouteBehavior;
+use Prado\Util\Traits\TInitializedTrait;
 
 /**
  * TDbParameterModule class
@@ -77,11 +77,9 @@ use Prado\Util\Behaviors\TMapRouteBehavior;
  * @since 4.2.0
  * @method bool dyRegisterShellAction($returnValue)
  */
-class TDbParameterModule extends TModule implements IDbModule, IPermissions
+class TDbParameterModule extends TDbModule implements IPermissions
 {
-	use TDbPropertiesTrait {
-		setConnectionID as setTraitConnectionID;
-	}
+	use TInitializedTrait;
 
 	public const SERIALIZE_PHP = 'php';
 
@@ -99,12 +97,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 * The name of the Application Parameter Lazy Load Behavior
 	 */
 	public const APP_PARAMETER_SET_BEHAVIOR = 'setTDbParameter';
-
-	/**
-	 * @var bool whether or not the database parameters have been loaded.
-	 * when true none of the variables can be changed
-	 */
-	private $_initialized = false;
 
 	/**
 	 * @var string The key field for the parameter from the database
@@ -168,7 +160,6 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	public function init($config)
 	{
 		$this->loadDbParameters();
-		$this->_initialized = true;
 
 		if ($this->_autoLoadField) {
 			$this->getApplication()->getParameters()->attachBehavior(self::APP_PARAMETER_LAZY_BEHAVIOR, new TMapLazyLoadBehavior([$this, 'getFromBehavior']));
@@ -179,6 +170,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 		$app = $this->getApplication();
 		$app->attachEventHandler('onAuthenticationComplete', [$this, 'registerShellAction']);
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -510,17 +502,15 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setConnectionID($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'ConnectionID');
-		}
-		$this->setTraitConnectionID($value);
+		$this->assertUninitialized('ConnectionID');
+		parent::setConnectionID($value);
 	}
 
 	/**
 	 * @return string the error message key when createDbConnection could not find the ConnectionID.
 	 * @since 4.3.3
 	 */
-	protected function getConnectionInvalidExceptionKey()
+	protected function getConnectionInvalidExceptionKey(): string
 	{
 		return 'dbparametermodule_connectionid_invalid';
 	}
@@ -529,7 +519,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 * @return string the error message key when createDbConnection has no ConnectionID and no sqlite database.
 	 * @since 4.3.3
 	 */
-	protected function getSqliteDatabaseName()
+	protected function getSqliteDatabaseName(): string
 	{
 		return 'app.params';
 	}
@@ -548,9 +538,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setKeyField($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'KeyField');
-		}
+		$this->assertUninitialized('KeyField');
 		$this->_keyField = TPropertyValue::ensureString($value);
 	}
 
@@ -568,9 +556,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setValueField($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'ValueField');
-		}
+		$this->assertUninitialized('ValueField');
 		$this->_valueField = TPropertyValue::ensureString($value);
 	}
 
@@ -588,9 +574,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setTableName($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'TableName');
-		}
+		$this->assertUninitialized('TableName');
 		$this->_tableName = TPropertyValue::ensureString($value);
 	}
 
@@ -608,9 +592,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setAutoLoadField($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadField');
-		}
+		$this->assertUninitialized('AutoLoadField');
 		$this->_autoLoadField = TPropertyValue::ensureString($value);
 	}
 
@@ -628,9 +610,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setAutoLoadValue($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadValue');
-		}
+		$this->assertUninitialized('AutoLoadValue');
 		$this->_autoLoadValue = TPropertyValue::ensureString($value);
 	}
 
@@ -648,9 +628,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setAutoLoadValueFalse($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'AutoLoadValueFalse');
-		}
+		$this->assertUninitialized('AutoLoadValueFalse');
 		$this->_autoLoadValueFalse = TPropertyValue::ensureString($value);
 	}
 
@@ -669,6 +647,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setAutoCreateParamTable($value)
 	{
+		$this->assertUninitialized('AutoCreateParamTable');
 		$this->_autoCreate = TPropertyValue::ensureBoolean($value);
 	}
 
@@ -691,9 +670,7 @@ class TDbParameterModule extends TModule implements IDbModule, IPermissions
 	 */
 	public function setSerializer($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('dbparametermodule_property_unchangeable', 'Serializer');
-		}
+		$this->assertUninitialized('Serializer');
 		if ($value !== self::SERIALIZE_PHP && $value !== self::SERIALIZE_JSON && !is_callable($value)) {
 			throw new TInvalidDataTypeException('dbparametermodule_serializer_not_callable');
 		}

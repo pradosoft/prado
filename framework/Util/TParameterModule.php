@@ -15,6 +15,7 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Prado;
 use Prado\TApplication;
+use Prado\Util\Traits\TInitializedTrait;
 use Prado\Xml\TXmlDocument;
 use Prado\Xml\TXmlElement;
 
@@ -58,7 +59,8 @@ use Prado\Xml\TXmlElement;
  */
 class TParameterModule extends \Prado\TModule
 {
-	private $_initialized = false;
+	use TInitializedTrait;
+
 	private $_paramFile;
 
 	/**
@@ -87,8 +89,8 @@ class TParameterModule extends \Prado\TModule
 			}
 			$this->loadParameters($configFile);
 		}
-		$this->_initialized = true;
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -156,10 +158,10 @@ class TParameterModule extends \Prado\TModule
 	 */
 	public function setParameterFile($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('parametermodule_parameterfile_unchangeable');
-		} elseif (($this->_paramFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($this->_paramFile)) {
+		$this->assertUninitialized('ParameterFile');
+		if (($paramFile = Prado::getPathOfNamespace($value, $this->getApplication()->getConfigurationFileExt())) === null || !is_file($paramFile)) {
 			throw new TConfigurationException('parametermodule_parameterfile_invalid', $value);
 		}
+		$this->_paramFile = $paramFile;
 	}
 }

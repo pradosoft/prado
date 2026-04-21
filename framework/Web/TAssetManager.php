@@ -14,9 +14,10 @@ use Prado\Exceptions\TConfigurationException;
 use Prado\Exceptions\TInvalidDataValueException;
 use Prado\Exceptions\TInvalidOperationException;
 use Prado\Exceptions\TIOException;
+use Prado\IO\TTarFileExtractor;
 use Prado\Prado;
 use Prado\TApplicationMode;
-use Prado\IO\TTarFileExtractor;
+use Prado\Util\Traits\TInitializedTrait;
 
 /**
  * TAssetManager class
@@ -50,6 +51,8 @@ use Prado\IO\TTarFileExtractor;
  */
 class TAssetManager extends \Prado\TModule
 {
+	use TInitializedTrait;
+
 	/**
 	 * Default web accessible base path for storing private files
 	 */
@@ -70,10 +73,6 @@ class TAssetManager extends \Prado\TModule
 	 * @var array published assets
 	 */
 	private $_published = [];
-	/**
-	 * @var bool whether the module is initialized
-	 */
-	private $_initialized = false;
 
 	/**
 	 * Initializes the module.
@@ -93,8 +92,8 @@ class TAssetManager extends \Prado\TModule
 			$this->_baseUrl = rtrim(dirname($application->getRequest()->getApplicationUrl()), '/\\') . '/' . self::DEFAULT_BASEPATH;
 		}
 		$application->setAssetManager($this);
-		$this->_initialized = true;
 		parent::init($config);
+		$this->markInitialized();
 	}
 
 	/**
@@ -113,13 +112,10 @@ class TAssetManager extends \Prado\TModule
 	 */
 	public function setBasePath($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('assetmanager_basepath_unchangeable');
-		} else {
-			$this->_basePath = Prado::getPathOfNamespace($value);
-			if ($this->_basePath === null || !is_dir($this->_basePath) || !is_writable($this->_basePath)) {
-				throw new TInvalidDataValueException('assetmanager_basepath_invalid', $value);
-			}
+		$this->assertUninitialized('BasePath');
+		$this->_basePath = Prado::getPathOfNamespace($value);
+		if ($this->_basePath === null || !is_dir($this->_basePath) || !is_writable($this->_basePath)) {
+			throw new TInvalidDataValueException('assetmanager_basepath_invalid', $value);
 		}
 	}
 
@@ -137,11 +133,9 @@ class TAssetManager extends \Prado\TModule
 	 */
 	public function setBaseUrl($value)
 	{
-		if ($this->_initialized) {
-			throw new TInvalidOperationException('assetmanager_baseurl_unchangeable');
-		} else {
-			$this->_baseUrl = rtrim($value, '/');
-		}
+		$this->assertUninitialized('BaseUrl');
+		$this->_baseUrl = rtrim($value, '/');
+
 	}
 
 	/**

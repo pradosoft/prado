@@ -358,6 +358,7 @@ return [
 'TLogRouter' => 'Prado\Util\TLogRouter',
 'TParameterModule' => 'Prado\Util\TParameterModule',
 'TPluginModule' => 'Prado\Util\TPluginModule',
+'TInitializedTrait' => 'Prado\Util\Traits\TInitializedTrait',
 'TRpcClient' => 'Prado\Util\TRpcClient',
 'TRpcClientRequestException' => 'Prado\Util\TRpcClientRequestException',
 'TRpcClientResponseException' => 'Prado\Util\TRpcClientResponseException',
