@@ -1,9 +1,9 @@
 <?php
 
 /**
- * TPriorityPropertyTrait class
+ * TPriorityPropertyTrait trait file
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -13,7 +13,7 @@ namespace Prado\Collections;
 use Prado\TPropertyValue;
 
 /**
- * TPriorityPropertyTrait class
+ * TPriorityPropertyTrait trait
  *
  * This trait implements the common properties and methods of IPriorityItem. You still
  * must "implement IPriorityItem" in your class when you use this trait as they go

@@ -3,7 +3,7 @@
 /**
  * THeader1 class file
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
@@ -14,10 +14,10 @@ namespace Prado\Web\UI\WebControls;
  * THeader1 class
  *
  * This is a simple class to enable your application to have headers but then have your
- * theme be able to redefine the TagName
+ * theme be able to change the TagName with skins.
  * This is also useful for the {@see \Prado\Web\UI\WebControls\TWebControlDecorator} (used by themes).
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2a
  */
 class THeader1 extends THtmlElement

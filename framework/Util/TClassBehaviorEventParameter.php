@@ -1,12 +1,12 @@
 <?php
 
 /**
- * TComponent, TPropertyValue classes
+ * TClassBehaviorEventParameter class file
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  *
  * Global Events, intra-object events, Class behaviors, expanded behaviors
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  *
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
@@ -18,7 +18,7 @@ namespace Prado\Util;
  * TClassBehaviorEventParameter class.
  * TClassBehaviorEventParameter is the parameter sent with the class behavior changes.
  *
- * @author Brad Anderson <javalizard@mac.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @since 3.2.3
  */
 class TClassBehaviorEventParameter extends \Prado\TEventParameter

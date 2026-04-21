@@ -1,9 +1,9 @@
 <?php
 
 /**
- * TPriorityList class
+ * TPriorityList class file
  *
- * @author Brad Anderson <javalizard@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com>
  * @link https://github.com/pradosoft/prado
  * @license https://github.com/pradosoft/prado/blob/master/LICENSE
  */
