@@ -1,6 +1,6 @@
 <?php
 
-
+require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
@@ -21,7 +21,14 @@ class DynamicParameterTest extends PHPUnit\Framework\TestCase
 			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 		}
 
-		$conn->setActive(true);
+		try {
+			$conn->setActive(true);
+		} catch(\Exception $e) {
+			if (!PradoUnit::skipDatabaseTests()) {
+				throw $e;
+			}
+			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+		}
 
 		if ($sqlMapManager === null) {
 			$sqlMapManager = new TSqlMapManager($conn);

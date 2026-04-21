@@ -1,5 +1,6 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
@@ -15,9 +16,16 @@ class MysqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function create_meta_data()
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-		$conn->Active = true;
-		return new TMysqlMetaData($conn);
+		try {
+			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+			$conn->setActive(true);
+			return new TMysqlMetaData($conn);
+		} catch(\Exception $e) {
+			if (!PradoUnit::skipDatabaseTests()) {
+				throw $e;
+			}
+			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+		}
 	}
 
 	public function test_columns()

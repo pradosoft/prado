@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
+
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
 class PgsqlColumnTest extends PHPUnit\Framework\TestCase
@@ -19,10 +21,22 @@ class PgsqlColumnTest extends PHPUnit\Framework\TestCase
 		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', $cred, $cred);
 		return new TPgsqlMetaData($conn);
 	}
+	
+	public function getTableInfo($table)
+	{
+		try {
+			return $this->create_meta_data()->getTableInfo($table);
+		} catch(\Exception $e) {
+			if (!PradoUnit::skipDatabaseTests()) {
+				throw $e;
+			}
+			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+		}
+	}
 
 	public function test_text_column_def()
 	{
-		$table = $this->create_meta_data()->getTableInfo('public.address');
+		$table = $this->getTableInfo('public.address');
 		$this->assertEquals(count($table->getColumns()), 14);
 
 		$columns['id'] = [

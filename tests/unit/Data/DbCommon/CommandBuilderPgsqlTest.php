@@ -2,6 +2,8 @@
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
+require_once(__DIR__ . '/../../PradoUnit.php');
+
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
 	protected function setUp(): void
@@ -19,10 +21,22 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', $cred, $cred);
 		return new TPgsqlMetaData($conn);
 	}
+	
+	public function getCommandBuilder($table)
+	{
+		try {
+			return $this->pgsql_meta_data()->createCommandBuilder($table);
+		} catch(\Exception $e) {
+			if (!PradoUnit::skipDatabaseTests()) {
+				throw $e;
+			}
+			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+		}
+	}
 
 	public function test_insert_command_using_named_array()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$address = [
 			'username' => 'Username',
 			'phone' => 121987,
@@ -44,7 +58,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_update_command()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$data = [
 			'phone' => 9809,
 			'int_fk1' => 1212,
@@ -56,7 +70,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_delete_command()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$where = 'phone is NULL';
 		$delete = $builder->createDeleteCommand($where);
 		$sql = 'DELETE FROM public.address WHERE phone is NULL';
@@ -65,9 +79,8 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_select_limit()
 	{
-		$meta = $this->pgsql_meta_data();
-		$builder = $meta->createCommandBuilder('address');
-		$query = 'SELECT * FROM ' . $meta->getTableInfo('address')->getTableFullName();
+		$builder = $this->getCommandBuilder('address');
+		$query = 'SELECT * FROM ' . $builder->getTableInfo('address')->getTableFullName();
 
 		$limit = $builder->applyLimitOffset($query, 1);
 		$expect = $query . ' LIMIT 1';

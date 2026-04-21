@@ -1,5 +1,6 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\DataGateway\TTableGateway;
 
 class BaseGateway extends PHPUnit\Framework\TestCase
@@ -13,20 +14,37 @@ class BaseGateway extends PHPUnit\Framework\TestCase
 	public function getGateway()
 	{
 		if ($this->gateway1 === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$this->gateway1 = new TTableGateway('address', $conn);
+			try {
+				$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+				$conn->setActive(true);
+				$this->gateway1 = new TTableGateway('address', $conn);
+			} catch(\Exception $e) {
+				if (!PradoUnit::skipDatabaseTests()) {
+					throw $e;
+				}
+				$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+			}
 		}
 		return $this->gateway1;
 	}
 
 	/**
+	 * @todo 
 	 * @return TTableGateway
 	 */
 	public function getGateway2()
 	{
 		if ($this->gateway2 === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$this->gateway2 = new TTableGateway('department_sections', $conn);
+			try {
+				$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+				$conn->setActive(true);
+				$this->gateway2 = new TTableGateway('department_sections', $conn);
+			} catch(\Exception $e) {
+				if (!PradoUnit::skipDatabaseTests()) {
+					throw $e;
+				}
+				$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+			}
 		}
 		return $this->gateway2;
 	}
