@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../PradoUnit.php');
+require_once(__DIR__ . '/../../../PradoUnit.php');
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase

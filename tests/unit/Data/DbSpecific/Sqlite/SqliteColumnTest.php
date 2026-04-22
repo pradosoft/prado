@@ -1,12 +1,31 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\TDbConnection;
 
 class SqliteColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+
 	private static string $_dbFile;
+
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupSqliteConnection';
+	}
+
+	protected function getDatabaseName(): ?string
+	{
+		return null;
+	}
+
+	protected function getTestTables(): array
+	{
+		return [];
+	}
 
 	public static function setUpBeforeClass(): void
 	{
@@ -50,9 +69,10 @@ class SqliteColumnTest extends PHPUnit\Framework\TestCase
 
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_sqlite')) {
-			$this->markTestSkipped('The pdo_sqlite extension is not available.');
-		}
+		// setUpConnection() skips the test if pdo_sqlite is unavailable (via PradoUnit).
+		// getTestTables() returns [] so no table existence checks are performed here;
+		// the file DB and its tables are managed by setUpBeforeClass().
+		$this->setUpConnection();
 	}
 
 	public function create_meta_data(): TSqliteMetaData

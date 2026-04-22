@@ -1,58 +1,57 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 use Prado\Data\Common\Mssql\TMssqlMetaData;
 use Prado\Data\Common\TDbTableColumn;
 use Prado\Data\DataGateway\TTableGateway;
 
 class MssqlColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+
+	protected static $msConn = null;
+	protected static $msMetaData = null;
+
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupMssqlConnection';
+	}
+
+	protected function getDatabaseName(): ?string
+	{
+		return 'prado_unitest';
+	}
+
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_sqlsrv')) {
-			$this->markTestSkipped('The pdo_sqlsrv extension is not available.');
-		}
-		// Also verify the ODBC Driver for SQL Server is installed and the server is
-		// reachable. Without the ODBC driver the extension loads but every connection
-		// attempt throws an IMSSP error. Skip gracefully in that case so the main
-		// test suite is not polluted with failures on runners that have no SQL Server.
-		try {
-			$conn = $this->get_conn();
-			$conn->setActive(true);
-			$conn->setActive(false);
-		} catch (\Exception $e) {
-			$this->markTestSkipped('PDO SQL Server failed to connect: ' . $e->getMessage());
+		if (static::$msConn === null) {
+			$conn = $this->setUpConnection();
+			if ($conn instanceof TDbConnection) {
+				static::$msConn = $conn;
+				static::$msMetaData = new TMssqlMetaData($conn);
+			}
 		}
 	}
 
-	public function get_conn()
+	public function get_conn(): TDbConnection
 	{
-		// Adjust Server and credentials to match your SQL Server instance.
-		// See tests/initdb_mssql.sql to create the prado_unitest database and table1.
-		return new TDbConnection(
-			// CI/Docker: Server=localhost,1433 (default unnamed instance, TCP port).
-			// Local named instance: Server=localhost\SQLEXPRESS;Database=prado_unitest
-			// TrustServerCertificate=yes is required for ODBC Driver 18+ which enforces
-			// encrypted connections and rejects the self-signed cert used by Docker SQL Server.
-			'sqlsrv:Server=localhost,1433;Database=prado_unitest;TrustServerCertificate=yes',
-			'prado_unitest',
-			'prado_unitest'
-		);
+		return static::$msConn;
 	}
 
 	public function meta_data(): TMssqlMetaData
 	{
-		$conn = $this->get_conn();
-		$conn->Active = true;
-		return new TMssqlMetaData($conn);
+		return static::$msMetaData;
 	}
 
 	public function test_columns()
 	{
-		try {
-			$table = $this->meta_data()->getTableInfo('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$table = $this->meta_data()->getTableInfo('table1');
 
 		// Schema: see tests/initdb_mssql.sql
 		$this->assertCount(13, $table->getColumns());
@@ -226,11 +225,7 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_find_table_names()
 	{
-		try {
-			$names = $this->meta_data()->findTableNames('dbo');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$names = $this->meta_data()->findTableNames('dbo');
 
 		$this->assertContains('table1', $names);
 		$this->assertContains('address', $names);
@@ -238,12 +233,8 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_command_builder_insert()
 	{
-		try {
-			$meta = $this->meta_data();
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$meta = $this->meta_data();
+		$builder = $meta->createCommandBuilder('table1');
 
 		$data = ['name' => 'test_row', 'field1_tiny' => 1, 'field6_int' => 42];
 		$insert = $builder->createInsertCommand($data);
@@ -254,12 +245,8 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_command_builder_update()
 	{
-		try {
-			$meta = $this->meta_data();
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$meta = $this->meta_data();
+		$builder = $meta->createCommandBuilder('table1');
 
 		$update = $builder->createUpdateCommand(['name' => 'updated'], 'id=1');
 		$this->assertStringContainsString('UPDATE', $update->Text);
@@ -270,12 +257,8 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_command_builder_delete()
 	{
-		try {
-			$meta = $this->meta_data();
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$meta = $this->meta_data();
+		$builder = $meta->createCommandBuilder('table1');
 
 		$delete = $builder->createDeleteCommand('id=1');
 		$this->assertStringContainsString('DELETE FROM', $delete->Text);
@@ -285,12 +268,8 @@ class MssqlColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_insert()
 	{
-		try {
-			$table = new TTableGateway('table1', $this->get_conn());
-			$result = $table->insert(['name' => 'cool']);
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to SQL Server: ' . $e->getMessage());
-		}
+		$table = new TTableGateway('table1', $this->get_conn());
+		$result = $table->insert(['name' => 'cool']);
 
 		$this->assertTrue(is_int($result));
 	}

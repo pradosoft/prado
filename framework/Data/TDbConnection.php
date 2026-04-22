@@ -22,27 +22,46 @@ use Prado\TPropertyValue;
  *
  * TDbConnection represents a connection to a database.
  *
- * TDbConnection works together with {@see \Prado\Data\TDbCommand}, {@see \Prado\Data\TDbDataReader}
- * and {@see \Prado\Data\TDbTransaction} to provide data access to various DBMS
- * in a common set of APIs. They are a thin wrapper of the {@see http://www.php.net/manual/en/ref.pdo.php PDO}
+ * TDbConnection works together with {@see \Prado\Data\TDbCommand},
+ * {@see \Prado\Data\TDbDataReader} and {@see \Prado\Data\TDbTransaction} to
+ * provide data access to various DBMS in a common set of APIs. They are a
+ * thin wrapper of the {@see http://www.php.net/manual/en/ref.pdo.php PDO}
  * PHP extension.
  *
  * To establish a connection, set {@see setActive Active} to true after
- * specifying {@see setConnectionString ConnectionString}, {@see setUsername Username}
- * and {@see setPassword Password}.
+ * specifying {@see setConnectionString ConnectionString},
+ * {@see setUsername Username} and {@see setPassword Password}.
  *
- * Since 3.1.2, the connection charset can be set (for MySQL and PostgreSQL databases only)
- * using the {@see setCharset Charset} property. The value of this property is database dependant.
- * e.g. for mysql, you can use 'latin1' for cp1252 West European, 'utf8' for unicode, ...
+ * Since 4.3.3, the connection charset could be set (for PDO databases, except
+ * IBM) using the {@see setCharset Charset} property. The value of this property
+ * was database **independent**.
  *
- * The following example shows how to create a TDbConnection instance and establish
- * the actual connection:
+ * Firebird (firebird), MSSQL (mssql, sqlsrv, dblib), IBM DB2 (ibm), and
+ * Oracle (oci) do not support runtime charset switching via SQL; configure
+ * their charset at the DSN or with {@see setCharset Charset} property before
+ * activating the connection.
+ *
+ * Most formats of the Charset are supported and translated to the proper
+ * database specific charset. The database specific format gat be retrieved
+ * on active connections with the method {@see getDatabaseCharset()}.
+ * Only mysql, pgsql, sqlite and firebird support discovery of the database
+ * charset.
+ *
+ * Pgsql, sqlite, ibm databases do not support DSN charset.
+ * Pgsql must set the charset after the connection is established.
+ * sqlite only supports UTF-8 and UTF-16, set before tables are created.
+ * When a table is present in sqlite, {@see setCharset()} becomes no-op.
+ * Ibm Db2 has no charset support.
+ *
+ * The following example shows how to create a TDbConnection instance and
+ * establish the actual connection:
  * ```php
- * $connection=new TDbConnection($dsn,$username,$password);
- * $connection->Active=true;
+ * $connection = new TDbConnection($dsn, $username, $password [, $charset]);
+ * $connection->Active = true;
  * ```
  *
- * After the DB connection is established, one can execute an SQL statement like the following:
+ * After the DB connection is established, one can execute an SQL statement
+ * like the following:
  * ```php
  * $command=$connection->createCommand($sqlStatement);
  * $command->execute();   // a non-query SQL statement execution
@@ -81,6 +100,7 @@ use Prado\TPropertyValue;
  * of certain DBMS attributes, such as {@see getNullConversion NullConversion}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ * @author Brad Anderson <belisoful@icloud.com> Charset.
  * @since 3.0
  */
 class TDbConnection extends \Prado\TComponent implements IDataConnection
@@ -121,7 +141,10 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * @param string $dsn The Data Source Name, or DSN, contains the information required to connect to the database.
 	 * @param string $username The user name for the DSN string.
 	 * @param string $password The password for the DSN string.
-	 * @param string $charset Charset used for DB Connection (MySql & pgsql only). If not set, will use the default charset of your database server
+	 * @param string $charset Charset used for DB Connection; except IBM DB2 (ibm).
+	 *   MSSQL (mssql, sqlsrv, dblib), and Oracle (oci) require configuration
+	 * 	 of the charset before opening.
+	 *   If not set, will use the default charset of your database server.
 	 * @see http://www.php.net/manual/en/function.PDO-construct.php
 	 */
 	public function __construct($dsn = '', $username = '', #[\SensitiveParameter] $password = '', $charset = '')
@@ -189,7 +212,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		if ($this->_pdo === null) {
 			try {
 				$this->_pdo = new PDO(
-					$this->getConnectionString(),
+					$this->applyCharsetToDsn($this->getConnectionString()),
 					$this->getUsername(),
 					$this->getPassword(),
 					$this->_attributes
@@ -202,7 +225,9 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 				@$this->_pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, true);
 				$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				$this->_active = true;
-				$this->setConnectionCharset();
+				if ($this->getCanCharsetChange()) {
+					$this->setConnectionCharset();
+				}
 			} catch (PDOException $e) {
 				throw new TDbException('dbconnection_open_failed', $e->getMessage());
 			}
@@ -220,8 +245,23 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/*
-	 * Set the database connection charset.
-	 * Only MySql databases are supported for now.
+	 * Apply the connection charset via a driver-appropriate SQL command.
+	 *
+	 * MySQL uses  SET NAMES <charset>.
+	 * PostgreSQL uses  SET client_encoding TO <charset>.
+	 * SQLite uses  PRAGMA encoding = <charset>  which can only take effect
+	 * before any tables are created; errors are silently ignored so the method
+	 * is safe to call on any SQLite connection regardless of state.
+	 * Firebird, Oracle (oci), MSSQL (mssql, sqlsrv, dblib), and IBM DB2 (ibm) do not
+	 * support runtime charset switching via SQL; their charset is injected into
+	 * the DSN before the connection opens by {@see applyCharsetToDsn}.
+	 * Changing Charset after the connection is already active has no effect for
+	 * those drivers.
+	 *
+	 * All charset values are resolved through {@see resolveCharsetForDriver}
+	 * before being sent to the database, so universal names like 'UTF-8' or
+	 * 'ISO-8859-1' work across all supported drivers without any
+	 * driver-specific knowledge from the caller.
 	 * @since 3.1.2
 	 */
 	protected function setConnectionCharset()
@@ -230,18 +270,243 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			return;
 		}
 		$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$charset = $this->resolveCharsetForDriver($this->_charset, $driver);
 		switch ($driver) {
 			case 'mysql':
-			case 'sqlite':
 				$stmt = $this->_pdo->prepare('SET NAMES ?');
 				break;
 			case 'pgsql':
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 				break;
+			case 'sqlite':
+				// PRAGMA encoding sets the internal storage encoding, but only takes
+				// effect before any tables are created.  PRAGMA does not support
+				// parameterised values, so PDO::quote is used to safely embed the
+				// resolved charset name.
+				try {
+					$this->_pdo->exec('PRAGMA encoding = ' . $this->_pdo->quote($charset));
+				} catch (\Exception $e) {
+					// Silently ignored.
+				}
+				return;
+			case 'firebird':
+			case 'mssql':
+			case 'sqlsrv':
+			case 'dblib':
+			case 'ibm':
+			case 'oci':
+				// These drivers do not support runtime charset switching via SQL.
+				return;
 			default:
 				throw new TDbException('dbconnection_unsupported_driver_charset', $driver);
 		}
-		$stmt->execute([$this->_charset]);
+		$stmt->execute([$charset]);
+	}
+
+	/**
+	 * Resolves a charset name to its driver-specific equivalent, allowing callers to
+	 * use universal IANA-style names like 'UTF-8' or 'ISO-8859-1' regardless of the
+	 * underlying database driver.
+	 *
+	 * The lookup key is derived by lowercasing $charset and stripping all hyphens,
+	 * underscores, and spaces, so 'UTF-8', 'utf8', 'UTF_8', and 'Utf 8' all resolve
+	 * to the same entry.  If no mapping is found the original $charset string is
+	 * returned unchanged, preserving backward compatibility with driver-specific names.
+	 *
+	 * The same table is used by both {@see setConnectionCharset} (SQL-level charset
+	 * commands) and {@see applyCharsetToDsn} (DSN parameter injection), so driver
+	 * columns for oci, sqlsrv, mssql, and dblib resolve to their DSN charset values.
+	 *
+	 * Override this method to add or change mappings for custom database configurations.
+	 *
+	 * @param string $charset the charset name as supplied by the caller (e.g. 'UTF-8')
+	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', 'oci')
+	 * @return string the charset name appropriate for $driver
+	 * @since 4.3.3
+	 */
+	protected function resolveCharsetForDriver(string $charset, string $driver): string
+	{
+		static $aliases = [
+			// canonical_key => [driver => resolved_name, ...]
+			// Key = charset lowercased with hyphens, underscores, and spaces removed.
+			// Drivers mysql/pgsql/firebird: SQL-level charset names.
+			// Drivers sqlite: PRAGMA encoding values (only UTF-8 and UTF-16 variants
+			//   are valid; unsupported values are passed through and silently ignored).
+			// Drivers oci/sqlsrv/mssql/dblib: DSN-parameter charset names.
+			'utf8' => [
+				'mysql' => 'utf8mb4',
+				'sqlite' => 'UTF-8',
+				'pgsql' => 'UTF8',
+				'firebird' => 'UTF8',
+				'oci' => 'AL32UTF8',
+				'sqlsrv' => 'UTF-8',
+				'mssql' => 'UTF-8',
+				'dblib' => 'UTF-8',
+			],
+			'utf8mb4' => [
+				'mysql' => 'utf8mb4',
+				'sqlite' => 'UTF-8',
+				'pgsql' => 'UTF8',
+				'firebird' => 'UTF8',
+				'oci' => 'AL32UTF8',
+				'sqlsrv' => 'UTF-8',
+				'mssql' => 'UTF-8',
+				'dblib' => 'UTF-8',
+			],
+			'utf16' => [
+				'mysql' => 'utf16',
+				'sqlite' => 'UTF-16',
+				'firebird' => 'UTF16BE',
+				'oci' => 'AL16UTF16',
+			],
+			'latin1' => [
+				'mysql' => 'latin1',
+				// sqlite: no PRAGMA encoding support for latin1 — pass-through and
+				// silently ignored; SQLite stores all text internally as UTF-8/UTF-16.
+				'pgsql' => 'LATIN1',
+				'firebird' => 'ISO8859_1',
+				'oci' => 'WE8ISO8859P1',
+				'mssql' => 'ISO-8859-1',
+				'dblib' => 'ISO-8859-1',
+			],
+			'iso88591' => 'latin1',
+			'latin2' => [
+				'mysql' => 'latin2',
+				'pgsql' => 'LATIN2',
+				'firebird' => 'ISO8859_2',
+				'oci' => 'EE8ISO8859P2',
+				'mssql' => 'ISO-8859-2',
+				'dblib' => 'ISO-8859-2',
+			],
+			'iso88592' => 'latin2',
+			'ascii' => [
+				'mysql' => 'ascii',
+				'pgsql' => 'SQL_ASCII',
+				'firebird' => 'ASCII',
+				'oci' => 'US7ASCII',
+				'mssql' => 'ASCII',
+				'dblib' => 'ASCII',
+			],
+			'win1250' => [
+				'mysql' => 'cp1250',
+				'pgsql' => 'WIN1250',
+				'firebird' => 'WIN1250',
+				'oci' => 'EE8MSWIN1250',
+				'mssql' => 'CP1250',
+				'dblib' => 'CP1250',
+			],
+			'windows1250' => 'win1250',
+			'cp1250' => 'win1250',
+			'win1251' => [
+				'mysql' => 'cp1251',
+				'pgsql' => 'WIN1251',
+				'firebird' => 'WIN1251',
+				'oci' => 'CL8MSWIN1251',
+				'mssql' => 'CP1251',
+				'dblib' => 'CP1251',
+			],
+			'windows1251' => 'win1251',
+			'cp1251' => 'win1251',
+			'win1252' => [
+				'mysql' => 'cp1252',
+				'pgsql' => 'WIN1252',
+				'firebird' => 'WIN1252',
+				'oci' => 'WE8MSWIN1252',
+				'mssql' => 'CP1252',
+				'dblib' => 'CP1252',
+			],
+			'windows1252' => 'win1252',
+			'cp1252' => 'win1252',
+			'koi8r' => [
+				'mysql' => 'koi8r',
+				'pgsql' => 'KOI8R',
+				'firebird' => 'KOI8R',
+				'oci' => 'CL8KOI8R',
+				'mssql' => 'KOI8-R',
+				'dblib' => 'KOI8-R',
+			],
+			'koi8u' => [
+				'mysql' => 'koi8u',
+				'pgsql' => 'KOI8U',
+				'firebird' => 'KOI8U',
+				'oci' => 'CL8KOI8U',
+				'mssql' => 'KOI8-U',
+				'dblib' => 'KOI8-U',
+			],
+		];
+
+		$key = strtolower(preg_replace('/[-_ ]+/', '', $charset));
+
+		if (isset($aliases[$key]) && is_string($aliases[$key])) {
+			$key = $aliases[$key];
+		}
+
+		return $aliases[$key][$driver] ?? $charset;
+	}
+
+	/**
+	 * Returns the DSN string with a charset parameter appended for the current
+	 * driver, if {@see $_charset} is set and the DSN does not already contain
+	 * a charset directive.
+	 *
+	 * This method is called by {@see open} before the PDO instance is created so
+	 * that drivers which only support charset configuration at connection time
+	 * (Oracle, MSSQL family) receive the correct encoding without requiring the
+	 * caller to embed a driver-specific parameter in the DSN manually.
+	 *
+	 * The internal {@see $_dsn} field is never mutated; the method returns a
+	 * (potentially modified) copy.  DSN charset takes priority: if the caller
+	 * already included a charset directive in the DSN it is left unchanged.
+	 *
+	 * Drivers handled (DSN parameter name):
+	 *   mysql, firebird → charset=
+	 *   oci             → charset=
+	 *   sqlsrv          → CharacterSet=
+	 *   mssql, dblib    → charset=
+	 *
+	 * PostgreSQL has no standard DSN charset parameter (charset is applied via
+	 * {@see setConnectionCharset} after the connection opens).  SQLite is always
+	 * UTF-8.  IBM DB2 (ibm) has no reliable DSN charset parameter.  These drivers
+	 * are returned unchanged.
+	 *
+	 * @param string $dsn the raw DSN string as set by the caller
+	 * @return string the DSN, with a charset parameter appended if required
+	 * @since 4.3.3
+	 */
+	protected function applyCharsetToDsn(string $dsn): string
+	{
+		if ($this->_charset === '' || $dsn === '') {
+			return $dsn;
+		}
+
+		$driver = $this->getDriverName();
+
+		// Maps each supported driver to [dsn_param_name, regex_detecting_existing_param].
+		// Drivers absent from this table (pgsql, sqlite, ibm) are returned unchanged.
+		$dsnCharsetParams = [
+			'mysql' => ['charset',      '/[;?]charset\s*=/i'],
+			'firebird' => ['charset',      '/[;?]charset\s*=/i'],
+			'oci' => ['charset',      '/[;?]charset\s*=/i'],
+			'sqlsrv' => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
+			'mssql' => ['charset',      '/[;?]charset\s*=/i'],
+			'dblib' => ['charset',      '/[;?]charset\s*=/i'],
+		];
+
+		if (!isset($dsnCharsetParams[$driver])) {
+			// Driver does not use a DSN charset parameter (pgsql, sqlite, ibm, …).
+			return $dsn;
+		}
+
+		[$paramName, $existingPattern] = $dsnCharsetParams[$driver];
+
+		// If the caller already embedded a charset directive, honour it (DSN wins).
+		if (preg_match($existingPattern, $dsn)) {
+			return $dsn;
+		}
+
+		$resolved = $this->resolveCharsetForDriver($this->_charset, $driver);
+
+		return $dsn . ';' . $paramName . '=' . $resolved;
 	}
 
 	/**
@@ -294,7 +559,8 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * @return string the charset used for database connection. Defaults to emtpy string.
+	 * @return string the charset used for database connection. Defaults to empty string.
+	 * @see getDatabaseCharset to read the charset actually reported by the active connection.
 	 */
 	public function getCharset()
 	{
@@ -306,8 +572,86 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 */
 	public function setCharset($value)
 	{
+		$driver = $this->getDriverName();
+		if (!$this->getCanCharsetChange()) {
+			throw new TDbException('dbconnection_charset_unchangeable', $driver);
+		}
 		$this->_charset = $value;
 		$this->setConnectionCharset();
+	}
+
+	/**
+	 * If the connection is not active or
+	 * @return bool if the charset can change
+	 * @since 4.3.3
+	 */
+	public function getCanCharsetChange(): bool
+	{
+		$driver = $this->getDriverName();
+		return !$this->getActive() || in_array($driver, ['mysql', 'pgsql', 'sqlite']);
+	}
+
+	/**
+	 * Returns the charset currently reported by the active database connection.
+	 *
+	 * Unlike {@see getCharset}, which returns the value stored in the Charset
+	 * property, this method queries the database directly so the result always
+	 * reflects the real connection state — useful for verifying that a charset
+	 * was applied correctly or for discovering the server default when no Charset
+	 * was configured.
+	 *
+	 * Driver query used:
+	 *   mysql    — SELECT @@character_set_client
+	 *   pgsql    — SELECT pg_client_encoding()
+	 *   sqlite   — PRAGMA encoding
+	 *   firebird — MON$ATTACHMENTS ⋈ RDB$CHARACTER_SETS; falls back to the
+	 *              resolved Charset property value if the MONITOR privilege is
+	 *              absent
+	 *   oci, mssql, sqlsrv, dblib, ibm — charset is configured at the DSN
+	 *              level and cannot be queried cheaply; returns the charset
+	 *              name as resolved for the driver from the Charset property
+	 *
+	 * When the connection is not active, returns the raw Charset property value
+	 * (same as {@see getCharset}).  On query failure, falls back to the stored
+	 * Charset property value.
+	 *
+	 * @return string the charset in use, or empty string if none was configured
+	 * @since 4.3.3
+	 */
+	public function getDatabaseCharset()
+	{
+		if (!$this->_active || $this->_pdo === null) {
+			return $this->_charset;
+		}
+		$driver = $this->getDriverName();
+		try {
+			switch ($driver) {
+				case 'mysql':
+					return (string) $this->createCommand('SELECT @@character_set_connection')->queryScalar();
+				case 'pgsql':
+					return (string) $this->createCommand('SELECT pg_client_encoding()')->queryScalar();
+				case 'sqlite':
+					return (string) $this->createCommand('PRAGMA encoding')->queryScalar();
+				case 'firebird':
+					$result = $this->createCommand(
+						'SELECT TRIM(c.RDB$CHARACTER_SET_NAME)' .
+						'  FROM MON$ATTACHMENTS a' .
+						'  JOIN RDB$CHARACTER_SETS c' .
+						'    ON c.RDB$CHARACTER_SET_ID = a.MON$CHARACTER_SET_ID' .
+						' WHERE a.MON$ATTACHMENT_ID = CURRENT_CONNECTION'
+					)->queryScalar();
+					return ($result !== false && $result !== null)
+						? (string) $result
+						: $this->resolveCharsetForDriver($this->_charset, $driver);
+				default:
+					// Drivers that configure charset via DSN (oci, mssql, sqlsrv, dblib, ibm):
+					// return the charset name as it was resolved for this driver so the caller
+					// can confirm what was injected into the connection string.
+					return $this->resolveCharsetForDriver($this->_charset, $driver);
+			}
+		} catch (\Throwable $e) {
+			return $this->_charset;
+		}
 	}
 
 	/**

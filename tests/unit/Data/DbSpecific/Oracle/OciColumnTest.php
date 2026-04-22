@@ -1,42 +1,52 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 use Prado\Data\Common\Oracle\TOracleMetaData;
 
 class OciColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+
+	protected static $ociMetaData = null;
+
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupOciConnection';
+	}
+
+	protected function getDatabaseName(): ?string
+	{
+		// Service name resolved inside setupOciConnection via ORACLE_SERVICE_NAME env var.
+		return null;
+	}
+
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_oci')) {
-			$this->markTestSkipped('The pdo_oci extension is not available.');
+		if (static::$ociMetaData === null) {
+			$conn = $this->setUpConnection();
+			if ($conn instanceof TDbConnection) {
+				$meta = new TOracleMetaData($conn);
+				$meta->setDefaultSchema('PRADO_UNITEST');
+				static::$ociMetaData = $meta;
+			}
 		}
 	}
 
-	public function create_meta_data()
+	public function create_meta_data(): TOracleMetaData
 	{
-		// Service name is the Oracle pluggable database (PDB) identifier.
-		// gvenzl/oracle-free (CI / Docker):  FREEPDB1
-		// Oracle XE local install:            XEPDB1
-		// Override via ORACLE_SERVICE_NAME env var for other installations.
-		$serviceName = getenv('ORACLE_SERVICE_NAME') ?: 'FREEPDB1';
-		$conn = new TDbConnection(
-			'oci:dbname=//localhost:1521/' . $serviceName,
-			'prado_unitest',
-			'prado_unitest'
-		);
-		$conn->Active = true;
-		$meta = new TOracleMetaData($conn);
-		$meta->setDefaultSchema('PRADO_UNITEST');
-		return $meta;
+		return static::$ociMetaData;
 	}
 
 	public function test_columns()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$table = $meta->getTableInfo('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
-		}
+		$table = $meta->getTableInfo('table1');
 
 		// Schema: see tests/initdb_oracle.sql
 		// TOracleMetaData uses lowercase column IDs; ColumnName is NOT quoted (by design).
@@ -139,11 +149,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 	public function test_find_table_names()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$names = $meta->findTableNames('PRADO_UNITEST');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
-		}
+		$names = $meta->findTableNames('PRADO_UNITEST');
 
 		// findTableNames returns uppercase table names for Oracle
 		$this->assertContains('TABLE1', $names);
@@ -153,11 +159,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 	public function test_command_builder_insert()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
-		}
+		$builder = $meta->createCommandBuilder('table1');
 
 		$data = ['name' => 'test', 'field1_number' => 1, 'field4_float' => 1.0,
 			'field5_number_ps' => 1.0, 'field8_timestamp' => '2024-01-01 00:00:00',
@@ -169,11 +171,7 @@ class OciColumnTest extends PHPUnit\Framework\TestCase
 	public function test_select_limit_and_offset()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->fail('Cannot connect to Oracle: ' . $e->getMessage());
-		}
+		$builder = $meta->createCommandBuilder('table1');
 
 		$query = 'SELECT id FROM table1';
 
