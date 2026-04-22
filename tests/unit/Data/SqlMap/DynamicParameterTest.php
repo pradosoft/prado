@@ -8,6 +8,27 @@ use Prado\TApplication;
 
 class DynamicParameterTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $myMetaData = null;
+	
+	protected function getTestTables(): array
+	{
+		return ['dynamicparametertest1'];
+	}
+	
+	protected function setUp(): void
+	{
+		if (static::$myMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$myMetaData = new TMysqlMetaData($conn);;
+			}
+		}
+	}
+	
+	
+	//	------- Tests
 	protected function getMysqlSqlMapManager()
 	{
 		static $conn;
@@ -18,16 +39,7 @@ class DynamicParameterTest extends PHPUnit\Framework\TestCase
 		}
 
 		if ($conn === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-		}
-
-		try {
-			$conn->setActive(true);
-		} catch(\Exception $e) {
-			if (!PradoUnit::skipDatabaseTests()) {
-				throw $e;
-			}
-			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
+			$conn = $this->setupConnection('prado_unitest');
 		}
 
 		if ($sqlMapManager === null) {

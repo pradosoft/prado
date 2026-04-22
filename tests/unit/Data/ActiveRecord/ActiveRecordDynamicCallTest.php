@@ -6,8 +6,39 @@ require_once(__DIR__ . '/records/DepSections.php');
 
 class ActiveRecordDynamicCallTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected function getIsForActiveRecord(): bool
+	{
+		return true;
+	}
+	
+	protected function getTestTables(): array
+	{
+		return [DepartmentRecord::TABLE];
+	}
+	
+	
+	//	------- Tests
+	/*
 	protected function setUp(): void
 	{
+		$conn = PradoUnit::setupMysqlConnection('prado_unitest', true);
+		if (is_string($conn)) {
+			$this->markTestSkipped($conn);
+		} elseif ($conn instanceof \Exception) {
+			throw $conn;
+		} elseif ($conn instanceof TDbConnection) {
+			$tableException = PradoUnit::checkForTable($conn, DepartmentRecord::TABLE);
+			if (is_string($tableException)) {
+				$this->markTestSkipped($tableException);
+			} elseif ($tableException instanceof \Exception) {
+				throw $tableException;
+			}
+		}
+		
+		
+
 		try {
 			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
 			$conn->setActive(true);
@@ -18,7 +49,9 @@ class ActiveRecordDynamicCallTest extends PHPUnit\Framework\TestCase
 			}
 			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
 		}
-	}
+		
+		
+	} */
 
 	public function test_multiple_field_and_or()
 	{

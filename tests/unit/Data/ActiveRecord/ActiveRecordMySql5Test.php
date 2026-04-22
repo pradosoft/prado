@@ -5,20 +5,21 @@ require_once(__DIR__ . '/records/Blogs.php');
 
 class ActiveRecordMySql5Test extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
+	use PradoUnitDataConnectionTrait;
+	
+	protected function getIsForActiveRecord(): bool
 	{
-		try {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$conn->setActive(true);
-			TActiveRecordManager::getInstance()->setDbConnection($conn);
-		} catch(\Exception $e) {
-			if (!PradoUnit::skipDatabaseTests()) {
-				throw $e;
-			}
-			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
-		}
+		return true;
 	}
+	
+	protected function getTestTables(): array
+	{
+		return [DepartmentRecord::TABLE];
+	}
+	
 
+	//	------- Tests
+	
 	public function test_find_first_blog()
 	{
 		$blog = Blogs::finder()->findByPk(1);

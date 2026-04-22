@@ -35,23 +35,20 @@ class ActiveRecordSqlMapTest extends BaseCase
 
 	public function testLoadWithSqlMap_SaveWithActiveRecord()
 	{
-		$this->markTestSkipped('Needs fixing');
-		/*
-				$record = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
-				$record->Account_FirstName = "Testing 123";
+		$record = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
+		$record->Account_FirstName = "Testing 123";
 
-				$this->assertTrue($record->save());
+		$this->assertTrue($record->save());
 
-				$check1 = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
-				$finder = ActiveAccount::finder();
-				$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
+		$check1 = self::$sqlmap->queryForObject('GetActiveRecordAccounts');
+		$finder = ActiveAccount::finder();
+		$check2 = $finder->findByAccount_FirstName($record->Account_FirstName);
 
 
-				$this->assertSameAccount($record,$check1);
-				$this->assertSameAccount($record,$check2);
+		$this->assertSameAccount($record,$check1);
+		$this->assertSameAccount($record,$check2);
 
-				$this->initScript('account-init.sql');
-		*/
+		$this->initScript('account-init.sql');
 	}
 
 	public function assertSameAccount($account1, $account2)

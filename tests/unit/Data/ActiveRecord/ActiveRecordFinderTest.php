@@ -5,19 +5,20 @@ require_once(__DIR__ . '/records/DepartmentRecord.php');
 
 class ActiveRecordFinderTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
+	use PradoUnitDataConnectionTrait;
+	
+	protected function getIsForActiveRecord(): bool
 	{
-		try {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$conn->setActive(true);
-			TActiveRecordManager::getInstance()->setDbConnection($conn);
-		} catch(\Exception $e) {
-			if (!PradoUnit::skipDatabaseTests()) {
-				throw $e;
-			}
-			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
-		}
+		return true;
 	}
+	
+	protected function getTestTables(): array
+	{
+		return [DepartmentRecord::TABLE];
+	}
+	
+	
+	//	------- Tests
 
 	public function testFindBySQL_returns_one_record()
 	{

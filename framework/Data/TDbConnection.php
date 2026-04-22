@@ -562,7 +562,18 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 */
 	public function getDriverName()
 	{
-		return $this->getAttribute(PDO::ATTR_DRIVER_NAME);
+		if ($this->getActive()) {
+			return $this->getAttribute(PDO::ATTR_DRIVER_NAME);
+		}
+
+		$connection = $this->getConnectionString();
+
+		if (is_string($connection) && strpos($connection, ':') !== false) {
+			[$driver] = explode(':', $connection, 2);
+			return $driver;
+		}
+
+		throw new TDbException('dbconnection_connection_inactive');
 	}
 
 	/**

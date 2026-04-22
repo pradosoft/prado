@@ -5,32 +5,36 @@ use Prado\Data\Common\Mysql\TMysqlMetaData;
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $myMetaData = null;
+	
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+	
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_mysql')) {
-			$this->markTestSkipped(
-				'The pdo_mysql extension is not available.'
-			);
-		}
-	}
-
-	public function create_meta_data()
-	{
-		try {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-			$conn->setActive(true);
-			return new TMysqlMetaData($conn);
-		} catch(\Exception $e) {
-			if (!PradoUnit::skipDatabaseTests()) {
-				throw $e;
+		if (static::$myMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$myMetaData = new TMysqlMetaData($conn);
 			}
-			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
 		}
 	}
+	
+	public function getCommandBuilder($table)
+	{
+		return static::$myMetaData->createCommandBuilder($table);
+	}
+	
+	
+	//	------- Tests
 
 	public function test_columns()
 	{
-		$table = $this->create_meta_data()->getTableInfo('table1');
+		$table = static::$myMetaData->getTableInfo('table1');
 		$this->assertEquals(count($table->getColumns()), 14);
 
 		$columns = [];

@@ -6,33 +6,37 @@ require_once(__DIR__ . '/../../PradoUnit.php');
 
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $pgMetaData = null;
+	
+	protected function getPradoUnitSetup(): ?string
 	{
-		if (!extension_loaded('pdo_pgsql')) {
-			$this->markTestSkipped(
-				'The pdo_pgsql extension is not available.'
-			);
-		}
+		return 'setupPgsqlConnection';
 	}
 
-	public function pgsql_meta_data()
+	protected function getTestTables(): array
 	{
-		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', $cred, $cred);
-		return new TPgsqlMetaData($conn);
+		return ['address'];
+	}
+
+	protected function setUp(): void
+	{
+		if (static::$pgMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$pgMetaData = new TPgsqlMetaData($conn);;
+			}
+		}
 	}
 	
 	public function getCommandBuilder($table)
 	{
-		try {
-			return $this->pgsql_meta_data()->createCommandBuilder($table);
-		} catch(\Exception $e) {
-			if (!PradoUnit::skipDatabaseTests()) {
-				throw $e;
-			}
-			$this->markTestSkipped('Env set PRADO_UNITTEST_SKIP_DB=1 - skip for missing database connection.');
-		}
+		return static::$pgMetaData->createCommandBuilder($table);
 	}
+	
+	
+	//	------- Tests
 
 	public function test_insert_command_using_named_array()
 	{
