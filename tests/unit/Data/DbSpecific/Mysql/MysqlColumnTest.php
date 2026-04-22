@@ -1,28 +1,40 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
 use Prado\Data\Common\Mysql\TMysqlMetaData;
 
 class MysqlColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $myMetaData = null;
+	
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+	
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_mysql')) {
-			$this->markTestSkipped(
-				'The pdo_mysql extension is not available.'
-			);
+		if (static::$myMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$myMetaData = new TMysqlMetaData($conn);
+			}
 		}
 	}
-
-	public function create_meta_data()
+	
+	public function getCommandBuilder($table)
 	{
-		$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
-		$conn->Active = true;
-		return new TMysqlMetaData($conn);
+		return static::$myMetaData->createCommandBuilder($table);
 	}
+	
+	
+	//	------- Tests
 
 	public function test_columns()
 	{
-		$table = $this->create_meta_data()->getTableInfo('table1');
+		$table = static::$myMetaData->getTableInfo('table1');
 		$this->assertEquals(count($table->getColumns()), 14);
 
 		$columns = [];

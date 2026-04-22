@@ -30,7 +30,7 @@ use Prado\Prado;
  *
  * The metadata instances are created via the static {@see getInstance} method which
  * determines the appropriate metadata handler based on the database driver. When no built-in driver
- * matches, the {@see fxGetMetaDataInstance()} global event is raised to allow
+ * matches, the {@see fxDataGetMetaDataInstance()} global event is raised to allow
  * for extensibility through custom implementations.
  *
  * Example usage:
@@ -73,7 +73,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * Obtains a database-specific TDbMetaData class based on the database connection driver.
 	 *
 	 * This method determines the appropriate metadata handler for the given database driver.
-	 * If no built-in driver is found, the {@see fxGetMetaDataInstance} global event
+	 * If no built-in driver is found, the {@see fxDataGetMetaDataInstance} global event
 	 * is raised to allow custom implementations to provide a metadata handler.
 	 *
 	 * @param \Prado\Data\TDbConnection $conn database connection.
@@ -105,7 +105,7 @@ abstract class TDbMetaData extends \Prado\TComponent
 			case 'interbase':
 				return new TFirebirdMetaData($conn);
 			default:
-				$instances = $conn->raiseEvent('fxGetMetaDataInstance', self::class, $conn);
+				$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);
 				if (empty($instances)) {
 					throw new TDbException('dbmetadata_invalid_database_driver', $driver);
 				}

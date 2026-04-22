@@ -1,5 +1,6 @@
 <?php
 
+require_once(__DIR__ . '/../../PradoUnit.php');
 
 abstract class MultipleFKSqliteRecord extends TActiveRecord
 {
@@ -171,7 +172,7 @@ class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function testParentChild()
 	{
-		$this->markTestSkipped('Needs fixing');
+		$this->markTestSkipped('Test exposes framework bug: PDO::quote() deprecated null handling');
 		/*
 				$obj = CategoryX::finder()->withChild_Categories()->withParent_Category()->findByPk(2);
 
@@ -188,17 +189,14 @@ class MultipleForeignKeyTest extends PHPUnit\Framework\TestCase
 
 	public function testLazyLoadingGetterSetter_hasMany()
 	{
-		$this->markTestSkipped('Needs fixing');
-		/*
-				$arr = Table2::finder()->findByPk(2);
+		$arr = Table2::finder()->findByPk(2);
 
-				$this->assertNotNull($arr->state2); //lazy load
-				$this->assertEquals(count($arr->state2), 1);
-				$this->assertEquals($arr->state2[0]->id, "1");
-				$this->assertNotNull($arr->state2[0]->object2);
-				$this->assertEquals($arr->state2[0]->object2->id, "2");
+		$this->assertNotNull($arr->state2); //lazy load
+		$this->assertEquals(count($arr->state2), 1);
+		$this->assertEquals($arr->state2[0]->id, "1");
+		$this->assertNotNull($arr->state2[0]->object2);
+		$this->assertEquals($arr->state2[0]->object2->id, "2");
 
-				$this->assertNotIdentical($arr, $arr->state2[0]->object2);
-		*/
+		$this->assertNotSame($arr, $arr->state2[0]->object2);
 	}
 }

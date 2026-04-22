@@ -1,6 +1,6 @@
 <?php
 
-
+require_once(__DIR__ . '/../../PradoUnit.php');
 use Prado\Data\SqlMap\TSqlMapManager;
 use Prado\Data\TDbConnection;
 use Prado\Prado;
@@ -8,6 +8,27 @@ use Prado\TApplication;
 
 class DynamicParameterTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $myMetaData = null;
+	
+	protected function getTestTables(): array
+	{
+		return ['dynamicparametertest1'];
+	}
+	
+	protected function setUp(): void
+	{
+		if (static::$myMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$myMetaData = new TMysqlMetaData($conn);;
+			}
+		}
+	}
+	
+	
+	//	------- Tests
 	protected function getMysqlSqlMapManager()
 	{
 		static $conn;
@@ -18,10 +39,8 @@ class DynamicParameterTest extends PHPUnit\Framework\TestCase
 		}
 
 		if ($conn === null) {
-			$conn = new TDbConnection('mysql:host=localhost;dbname=prado_unitest', 'prado_unitest', 'prado_unitest');
+			$conn = $this->setupConnection('prado_unitest');
 		}
-
-		$conn->setActive(true);
 
 		if ($sqlMapManager === null) {
 			$sqlMapManager = new TSqlMapManager($conn);

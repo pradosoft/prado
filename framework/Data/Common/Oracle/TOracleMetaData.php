@@ -393,6 +393,7 @@ class TOracleMetaData extends TDbMetaData
 		$rows = $command->query();
 		$names = [];
 		foreach ($rows as $row) {
+			$row = array_change_key_case($row, CASE_UPPER);
 			if ($schema === $this->getDefaultSchema() || $schema === '') {
 				$names[] = $row['TABLE_NAME'];
 			} else {

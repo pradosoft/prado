@@ -2,27 +2,45 @@
 
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
+	use PradoUnitDataConnectionTrait;
+	
+	protected static $pgMetaData = null;
+	
+	protected function getPradoUnitSetup(): ?string
 	{
-		if (!extension_loaded('pdo_pgsql')) {
-			$this->markTestSkipped(
-				'The pdo_pgsql extension is not available.'
-			);
-		}
+		return 'setupPgsqlConnection';
 	}
 
-	public function pgsql_meta_data()
+	protected function getTestTables(): array
 	{
-		$cred = getenv('SCRUTINIZER') ? 'scrutinizer' : 'prado_unitest';
-		$conn = new TDbConnection('pgsql:host=localhost;dbname=prado_unitest', $cred, $cred);
-		return new TPgsqlMetaData($conn);
+		return ['address'];
 	}
+
+	protected function setUp(): void
+	{
+		if (static::$pgMetaData === null) {
+			$conn = $this->setupConnection('prado_unitest');
+			if ($conn instanceof TDbConnection) {
+				static::$pgMetaData = new TPgsqlMetaData($conn);;
+			}
+		}
+	}
+	
+	public function getCommandBuilder($table)
+	{
+		return static::$pgMetaData->createCommandBuilder($table);
+	}
+	
+	
+	//	------- Tests
 
 	public function test_insert_command_using_named_array()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$address = [
 			'username' => 'Username',
 			'phone' => 121987,
@@ -44,7 +62,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_update_command()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$data = [
 			'phone' => 9809,
 			'int_fk1' => 1212,
@@ -56,7 +74,7 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_delete_command()
 	{
-		$builder = $this->pgsql_meta_data()->createCommandBuilder('address');
+		$builder = $this->getCommandBuilder('address');
 		$where = 'phone is NULL';
 		$delete = $builder->createDeleteCommand($where);
 		$sql = 'DELETE FROM public.address WHERE phone is NULL';
@@ -65,9 +83,8 @@ class CommandBuilderPgsqlTest extends PHPUnit\Framework\TestCase
 
 	public function test_select_limit()
 	{
-		$meta = $this->pgsql_meta_data();
-		$builder = $meta->createCommandBuilder('address');
-		$query = 'SELECT * FROM ' . $meta->getTableInfo('address')->getTableFullName();
+		$builder = $this->getCommandBuilder('address');
+		$query = 'SELECT * FROM ' . $builder->getTableInfo('address')->getTableFullName();
 
 		$limit = $builder->applyLimitOffset($query, 1);
 		$expect = $query . ' LIMIT 1';

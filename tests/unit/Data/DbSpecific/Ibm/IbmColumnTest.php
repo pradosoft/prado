@@ -1,41 +1,51 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 use Prado\Data\Common\Ibm\TIbmMetaData;
 use Prado\Data\Common\TDbTableColumn;
 
 class IbmColumnTest extends PHPUnit\Framework\TestCase
 {
+	use PradoUnitDataConnectionTrait;
+
+	protected static $ibmMetaData = null;
+
+	protected function getPradoUnitSetup(): ?string
+	{
+		return 'setupIbmConnection';
+	}
+
+	protected function getDatabaseName(): ?string
+	{
+		// Database name resolved inside setupIbmConnection via DB2_DATABASE env var.
+		return null;
+	}
+
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+
 	protected function setUp(): void
 	{
-		if (!extension_loaded('pdo_ibm')) {
-			$this->markTestSkipped('The pdo_ibm extension is not available.');
+		if (static::$ibmMetaData === null) {
+			$conn = $this->setUpConnection();
+			if ($conn instanceof TDbConnection) {
+				static::$ibmMetaData = new TIbmMetaData($conn);
+			}
 		}
 	}
 
-	public function create_meta_data()
+	public function create_meta_data(): TIbmMetaData
 	{
-		// DB2 uses OS-level authentication; the username must be an OS user on the DB2 host.
-		// Docker / CI: DB2_USER=db2inst1 (the DB2 instance owner created by the image).
-		// Local install: set DB2_USER/DB2_PASSWORD/DB2_DATABASE to match your environment.
-		$user     = getenv('DB2_USER')     ?: 'db2inst1';
-		$password = getenv('DB2_PASSWORD') ?: 'Prado_Unitest1';
-		$database = getenv('DB2_DATABASE') ?: 'pradount';
-		$conn = new TDbConnection(
-			'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=' . $database . ';HOSTNAME=localhost;PORT=50000;PROTOCOL=TCPIP',
-			$user,
-			$password
-		);
-		return new TIbmMetaData($conn);
+		return static::$ibmMetaData;
 	}
 
 	public function test_columns()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$table = $meta->getTableInfo('table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
-		}
+		$table = $meta->getTableInfo('table1');
 
 		// Schema: see tests/initdb_ibm.sql
 		$this->assertCount(14, $table->getColumns());
@@ -154,12 +164,8 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 	public function test_schema_name()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$schema = $meta->getDefaultSchema();
-			$table = $meta->getTableInfo($schema . '.table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
-		}
+		$schema = $meta->getDefaultSchema();
+		$table = $meta->getTableInfo($schema . '.table1');
 
 		$this->assertEquals(strtoupper($schema), $table->getSchemaName());
 		$this->assertEquals('TABLE1', $table->getTableName());
@@ -169,11 +175,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 	public function test_find_table_names()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$names = $meta->findTableNames();
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
-		}
+		$names = $meta->findTableNames();
 
 		$this->assertContains('table1', $names);
 		$this->assertContains('address', $names);
@@ -182,11 +184,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 	public function test_command_builder_insert()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
-		}
+		$builder = $meta->createCommandBuilder('table1');
 
 		$data = ['name' => 'test_insert', 'field1_smallint' => 1, 'field9_bigint' => 100];
 		$insert = $builder->createInsertCommand($data);
@@ -197,11 +195,7 @@ class IbmColumnTest extends PHPUnit\Framework\TestCase
 	public function test_select_limit()
 	{
 		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to IBM DB2: ' . $e->getMessage());
-		}
+		$builder = $meta->createCommandBuilder('table1');
 
 		$query = 'SELECT * FROM ' . $meta->getTableInfo('table1')->getTableFullName();
 

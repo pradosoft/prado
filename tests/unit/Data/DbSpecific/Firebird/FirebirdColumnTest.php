@@ -1,40 +1,44 @@
 <?php
 
+require_once(__DIR__ . '/../../../PradoUnit.php');
+
 use Prado\Data\Common\Firebird\TFirebirdMetaData;
 use Prado\Data\Common\TDbTableColumn;
 
 class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 {
-	protected function setUp(): void
+	use PradoUnitDataConnectionTrait;
+
+	protected static $fbMetaData = null;
+
+	protected function getPradoUnitSetup(): ?string
 	{
-		if (!extension_loaded('pdo_firebird')) {
-			$this->markTestSkipped('The pdo_firebird extension is not available.');
-		}
+		return 'setupFirebirdConnection';
 	}
 
-	public function create_meta_data()
+	protected function getDatabaseName(): ?string
 	{
-		// Database path is the server-side path (inside the Firebird server or container).
-		// Docker / CI (firebirdsql/firebird:4-jammy): /var/lib/firebird/data/prado_unitest.fdb
-		// Native Linux install:                       /var/lib/firebird/data/prado_unitest.fdb
-		// Windows:                                    C:\Firebird\data\prado_unitest.fdb
-		$dbPath = getenv('FIREBIRD_DB_PATH') ?: '/var/lib/firebird/data/prado_unitest.fdb';
-		$conn = new TDbConnection(
-			'firebird:dbname=localhost:' . $dbPath . ';charset=UTF8',
-			'SYSDBA',
-			'masterkey'
-		);
-		return new TFirebirdMetaData($conn);
+		return null;
+	}
+
+	protected function getTestTables(): array
+	{
+		return ['table1'];
+	}
+
+	protected function setUp(): void
+	{
+		if (static::$fbMetaData === null) {
+			$conn = $this->setUpConnection();
+			if ($conn instanceof TDbConnection) {
+				static::$fbMetaData = new TFirebirdMetaData($conn);
+			}
+		}
 	}
 
 	public function test_columns()
 	{
-		$meta = $this->create_meta_data();
-		try {
-			$table = $meta->getTableInfo('table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Firebird: ' . $e->getMessage());
-		}
+		$table = static::$fbMetaData->getTableInfo('table1');
 
 		// Schema: see tests/initdb_firebird.sql
 		// Firebird stores unquoted names as uppercase; TFirebirdMetaData lowercases them.
@@ -156,12 +160,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_find_table_names()
 	{
-		$meta = $this->create_meta_data();
-		try {
-			$names = $meta->findTableNames();
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Firebird: ' . $e->getMessage());
-		}
+		$names = static::$fbMetaData->findTableNames();
 
 		$this->assertContains('table1', $names);
 		$this->assertContains('address', $names);
@@ -169,12 +168,7 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_command_builder_insert()
 	{
-		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Firebird: ' . $e->getMessage());
-		}
+		$builder = static::$fbMetaData->createCommandBuilder('table1');
 
 		$data = ['name' => 'test_insert', 'field4_float' => 1.5, 'field5_double' => 2.5,
 			'field6_timestamp' => '2024-01-01 00:00:00', 'field7_time' => '00:00:00',
@@ -186,13 +180,8 @@ class FirebirdColumnTest extends PHPUnit\Framework\TestCase
 
 	public function test_select_limit()
 	{
-		$meta = $this->create_meta_data();
-		try {
-			$builder = $meta->createCommandBuilder('table1');
-			$fullName = $meta->getTableInfo('table1')->getTableFullName();
-		} catch (\Exception $e) {
-			$this->markTestSkipped('Cannot connect to Firebird: ' . $e->getMessage());
-		}
+		$builder = static::$fbMetaData->createCommandBuilder('table1');
+		$fullName = static::$fbMetaData->getTableInfo('table1')->getTableFullName();
 
 		$query = 'SELECT * FROM ' . $fullName;
 

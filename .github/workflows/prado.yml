@@ -147,7 +147,7 @@ jobs:
           -i ./tests/initdb_mssql.sql
 
       - name: Run SQL Server tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/MssqlColumnTest.php
+        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Mssql/
 
   db-firebird:
     name: Firebird
@@ -208,7 +208,7 @@ jobs:
           "
 
       - name: Run Firebird tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/FirebirdColumnTest.php
+        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Firebird/
 
   db-oracle:
     name: Oracle
@@ -281,7 +281,7 @@ jobs:
             bash -c 'source ~/.bash_profile && sqlplus -S prado_unitest/prado_unitest@//localhost/FREEPDB1 @/tmp/initdb_oracle.sql'
 
       - name: Run Oracle tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/OciColumnTest.php
+        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Oracle/
         env:
           ORACLE_SERVICE_NAME: FREEPDB1
 
@@ -337,7 +337,7 @@ jobs:
             su - db2inst1 -c "db2 connect to pradount && db2 -td@ -f /tmp/initdb.sql"
 
       - name: Run IBM DB2 tests
-        run: php vendor/bin/phpunit tests/unit/Data/DbCommon/IbmColumnTest.php
+        run: php vendor/bin/phpunit tests/unit/Data/DbSpecific/Ibm/
         env:
           DB2_USER: db2inst1
           DB2_PASSWORD: Prado_Unitest1
