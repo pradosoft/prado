@@ -58,6 +58,17 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 			}
 		}
 		static::$conn->createCommand('DELETE FROM upsert_test')->execute();
+		// pdo_firebird in autocommit mode always keeps an implicit transaction alive:
+		// after each statement it auto-commits and immediately starts the next one.
+		// Calling PDO::beginTransaction() while that implicit transaction is active
+		// raises "There is already an active transaction". Explicitly committing the
+		// empty post-DELETE transaction resets the internal handle to NULL so that
+		// explicit beginTransaction() calls in the test methods succeed.
+		try {
+			static::$conn->getPdoInstance()->commit();
+		} catch (\Exception $e) {
+			// No implicit transaction was active — safe to ignore.
+		}
 	}
 
 	public static function tearDownAfterClass(): void
@@ -124,11 +135,12 @@ class FirebirdInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$txn = self::$conn->beginTransaction();
 		$gw->insertOrIgnore(['username' => 'alice', 'score' => 10]);
 		$txn->rollback();
-		// Must contain bare alias references
+		// Must contain bare alias references (e.g. ") s ON")
 		$this->assertMatchesRegularExpression('/USING\s*\(.*\)\s+s\s+ON/si', $capturedSql);
-		// Must NOT contain 'AS t' or 'AS s'
-		$this->assertStringNotContainsStringIgnoringCase('AS t', $capturedSql);
-		$this->assertStringNotContainsStringIgnoringCase('AS s', $capturedSql);
+		// Must NOT contain AS-keyword aliases for t or s — use word-boundary regex
+		// to avoid false-positives on column aliases like "CAST(... AS score)".
+		$this->assertDoesNotMatchRegularExpression('/\bAS\s+t\b/i', $capturedSql);
+		$this->assertDoesNotMatchRegularExpression('/\)\s+AS\s+s\b/i', $capturedSql);
 	}
 
 	public function test_sql_has_no_dual_or_sysdummy_source(): void
