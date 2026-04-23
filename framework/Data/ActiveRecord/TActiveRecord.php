@@ -143,6 +143,35 @@ use ReflectionClass;
  * }
  * ```
  *
+ * Since v4.3.3, TActiveRecord supports {@see insertOrIgnore()} and {@see upsert()}
+ * methods for handling duplicate key conflicts:
+ * ```php
+ * class UserRecord extends TActiveRecord
+ * {
+ *     const TABLE = 'users';
+ *     public $user_id;
+ *     public $username;
+ *     public $email;
+ * }
+ *
+ * // Insert or ignore - silently ignores duplicate key conflicts
+ * $user = new UserRecord();
+ * $user->user_id = 1;
+ * $user->username = 'admin';
+ * $user->email = 'admin@example.com';
+ * $result = $user->insertOrIgnore(); // returns last insert id, true, or false if ignored
+ *
+ * // Upsert - insert or update on conflict (default: primary key)
+ * $user = new UserRecord();
+ * $user->user_id = 1;
+ * $user->username = 'admin';
+ * $user->email = 'newemail@example.com';
+ * $result = $user->upsert(); // updates email where user_id = 1
+ *
+ * // Upsert with custom conflict columns
+ * $result = $user->upsert(['email' => 'updated@example.com'], ['username']);
+ * ```
+ *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
  */
@@ -260,7 +289,7 @@ abstract class TActiveRecord extends \Prado\TComponent
 
 	/**
 	 * Magic method for writing properties.
-	 * This method is overriden to provide write access to the foreign objects via
+	 * This method is overridden to provide write access to the foreign objects via
 	 * the key names declared in the RELATIONS array.
 	 * @param string $name property name
 	 * @param mixed $value property value.
@@ -304,9 +333,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * Copies data from an array or another object.
-	 * @param mixed $data
-	 * @throws TActiveRecordException if data is not array or not object.
+	 * Copies data from an array or another object into the record.
+	 * If $data is an object, its public properties are extracted.
+	 * Each key-value pair is set using {@see setColumnValue()}.
+	 * @param mixed $data associative array or object with public properties.
+	 * @throws TActiveRecordException if data is not array or object.
 	 */
 	public function copyFrom($data)
 	{
@@ -321,7 +352,11 @@ abstract class TActiveRecord extends \Prado\TComponent
 		}
 	}
 
-
+	/*
+	 * Gets the database connection active for all ActiveRecord classes.
+	 * This static method returns the default connection from TActiveRecordManager.
+	 * @return \Prado\Data\TDbConnection current db connection.
+	 */
 	public static function getActiveDbConnection()
 	{
 		if (($db = self::getRecordManager()->getDbConnection()) !== null) {
@@ -471,6 +506,51 @@ abstract class TActiveRecord extends \Prado\TComponent
 			throw new TActiveRecordException('ar_delete_invalid', $this::class);
 		}
 
+		return false;
+	}
+
+	/**
+	 * Inserts the current record, silently ignoring if a duplicate key conflict occurs.
+	 * Fires the OnInsert event only when the row is actually inserted.
+	 * @return mixed last insert ID, true on ignore, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function insertOrIgnore(): mixed
+	{
+		$gateway = $this->getRecordGateway();
+		$param = new TActiveRecordChangeEventParameter();
+		$this->onInsert($param);
+		if ($param->getIsValid()) {
+			$result = $gateway->insertOrIgnore($this);
+			if ($result !== false) {
+				$this->_recordState = self::STATE_LOADED;
+				return $result;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Inserts or updates the current record.
+	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
+	 * (defaults to all non-PK columns). Fires the OnInsert event.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * @return mixed last insert ID, true on update, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function upsert(?array $updateData = null, ?array $conflictColumns = null): mixed
+	{
+		$gateway = $this->getRecordGateway();
+		$param = new TActiveRecordChangeEventParameter();
+		$this->onInsert($param);
+		if ($param->getIsValid()) {
+			$result = $gateway->upsert($this, $updateData, $conflictColumns);
+			if ($result !== false) {
+				$this->_recordState = self::STATE_LOADED;
+				return $result;
+			}
+		}
 		return false;
 	}
 
@@ -1054,8 +1134,9 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * Return record data as array
-	 * @return array of column name and column values
+	 * Returns record data as an associative array.
+	 * Keys are column names (lowercase) and values are the corresponding column values.
+	 * @return array associative array of column name => column value.
 	 * @since 3.2.4
 	 */
 	public function toArray()
@@ -1069,8 +1150,8 @@ abstract class TActiveRecord extends \Prado\TComponent
 	}
 
 	/**
-	 * Return record data as JSON
-	 * @return false|string json
+	 * Returns record data as a JSON string.
+	 * @return false|string JSON string, or false on failure.
 	 * @since 3.2.4
 	 */
 	public function toJSON()

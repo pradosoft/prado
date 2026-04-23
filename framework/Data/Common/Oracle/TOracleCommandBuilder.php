@@ -11,7 +11,7 @@
 namespace Prado\Data\Common\Oracle;
 
 use Prado\Data\Common\TDbCommandBuilder;
-use Prado\Prado;
+use Prado\Data\TDbCommand;
 
 /**
  * TOracleCommandBuilder provides specifics methods to create limit/offset query commands
@@ -22,6 +22,39 @@ use Prado\Prado;
  */
 class TOracleCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates an Oracle MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 * @since 4.3.3
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM DUAL', false);
+	}
+
+	/**
+	 * Creates an Oracle MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Oracle MERGE with USING (SELECT ... FROM DUAL) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 * @since 4.3.3
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM DUAL', false);
+	}
+
 	/**
 	 * Overrides parent implementation. Only column of type text or character (and its variants)
 	 * accepts the LIKE criteria.

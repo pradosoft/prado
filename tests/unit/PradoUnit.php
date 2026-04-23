@@ -864,11 +864,9 @@ class PradoUnit {
 			if (isset(static::$dbConnectionException[$driver])) {
 				$e = strtr("Duplicated Database Driver '{0}' Unavailable Error", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Database Driver '{0}' Unavailable Error:\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					$e = strtr("Database Driver '{0}' Unavailable Error [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
-				$e = $msg;
 				static::$dbConnectionException[$driver] = true;
 			}
 		} elseif (static::isNoDatabase($e)) {
@@ -876,22 +874,18 @@ class PradoUnit {
 			if (isset(static::$dbDatabaseException[$driver])) {
 				$e = strtr("Duplicated Database '{0}' Not Found Error (Connection OK)", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Database '{0}' Not Found Error (Connection OK):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					$e .= strtr("Database '{0}' Not Found Error (Connection OK) [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);;
 				}
-				$e = $msg;
 				static::$dbDatabaseException[$driver] = true;
 			}
 		} elseif (static::isNoTable($e)) {
 			if (isset(static::$dbTableException[$driver])) {
 				$e = strtr("Duplicated Table Not Found Error (driver: '{0}')", ['{0}' => $driver]);
 			} else {
-				$msg = strtr("Table Not Found Error (driver: '{0}'):\n-----\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				if (static::skipDatabaseTests()) {
-					$msg .= "\n(PRADO_UNITTEST_SKIP_DB=1)";
+					$e = strtr("Table Not Found Error (driver: '{0}') [PRADO_UNITTEST_SKIP_DB=1]:\n{1}", ['{0}' => $driver, '{1}' => $e->getMessage()]);
 				}
-				$e = $msg;
 				static::$dbTableException[$driver] = true;
 			}
 		}

@@ -69,3 +69,14 @@ GO
 INSERT INTO dbo.table1 (name) VALUES ('test');
 INSERT INTO dbo.address (username, phone, field2_date) VALUES ('wei', '1111111', '2024-01-01');
 GO
+
+IF OBJECT_ID('dbo.upsert_test', 'U') IS NOT NULL DROP TABLE dbo.upsert_test;
+GO
+
+-- MSSQL upsert uses MERGE ON the PK column; no IDENTITY needed.
+CREATE TABLE dbo.upsert_test (
+	username NVARCHAR(100) NOT NULL,
+	score    INT           NOT NULL DEFAULT 0,
+	CONSTRAINT pk_upsert_test PRIMARY KEY (username)
+);
+GO

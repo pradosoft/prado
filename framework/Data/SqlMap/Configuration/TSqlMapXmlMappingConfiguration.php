@@ -16,16 +16,60 @@ use Prado\Data\SqlMap\DataMapper\TSqlMapConfigurationException;
 use Prado\Data\SqlMap\Statements\TCachingStatement;
 use Prado\Data\SqlMap\Statements\TDeleteMappedStatement;
 use Prado\Data\SqlMap\Statements\TInsertMappedStatement;
+use Prado\Data\SqlMap\Statements\TInsertOrIgnoreMappedStatement;
 use Prado\Data\SqlMap\Statements\TMappedStatement;
 use Prado\Data\SqlMap\Statements\TSimpleDynamicSql;
 use Prado\Data\SqlMap\Statements\TStaticSql;
 use Prado\Data\SqlMap\Statements\TUpdateMappedStatement;
+use Prado\Data\SqlMap\Statements\TUpsertMappedStatement;
 use Prado\Prado;
 
 /**
- * Loads the statements, result maps, parameters maps from xml configuration.
+ * TSqlMapXmlMappingConfiguration loads statements, result maps, and parameter maps from XML mapping files.
  *
- * description
+ * This builder parses XML mapping files and registers them with the SqlMap manager.
+ * It handles loading of resultMap, parameterMap, select, insert, insertOrIgnore, upsert, update,
+ * delete, statement, and cacheModel elements from the XML configuration.
+ *
+ * The XML mapping file follows the IBATIS SQL Map format:
+ * ```xml
+ * <?xml version="1.0" encoding="UTF-8"?>
+ * <sqlMap>
+ *     <resultMap id="UserResult" class="UserRecord">
+ *         <result property="userId" column="user_id"/>
+ *         <result property="username" column="username"/>
+ *     </resultMap>
+ *
+ *     <select id="GetUser" resultMap="UserResult">
+ *         SELECT user_id, username FROM users WHERE user_id = #id#
+ *     </select>
+ *
+ *     <insert id="InsertUser" parameterClass="UserRecord">
+ *         INSERT INTO users (username) VALUES (#username#)
+ *     </insert>
+ *
+ *     <insertOrIgnore id="InsertUserIgnore" parameterClass="UserRecord">
+ *         INSERT OR IGNORE INTO users (username) VALUES (#username#)
+ *     </insertOrIgnore>
+ *
+ *     <upsert id="UpsertUser" parameterClass="UserRecord">
+ *         INSERT INTO users (user_id, username) VALUES (#userId#, #username#)
+ *         ON CONFLICT (user_id) DO UPDATE SET username = #username#
+ *     </upsert>
+ *
+ *     <update id="UpdateUser">
+ *         UPDATE users SET username = #username# WHERE user_id = #userId#
+ *     </update>
+ *
+ *     <delete id="DeleteUser">
+ *         DELETE FROM users WHERE user_id = #id#
+ *     </delete>
+ * </sqlMap>
+ * ```
+ *
+ * The configuration uses constants for parameter markers:
+ * - {@see SIMPLE_MARK} ($) for literal value substitution
+ * {@see INLINE_SYMBOL} (#) for parameterized queries (used with parameter maps)
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -59,13 +103,28 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 		$this->_manager = $xmlConfig->getManager();
 	}
 
+	/**
+	 * @return string the configured XML mapping file path.
+	 */
 	protected function getConfigFile()
 	{
 		return $this->_configFile;
 	}
 
 	/**
-	 * Configure an XML mapping.
+	 * Configures the XML mapping by loading and parsing the XML file.
+	 *
+	 * This method loads the XML mapping file and registers all defined elements
+	 * with the SqlMap manager:
+	 * - resultMap elements for mapping query results to objects
+	 * - parameterMap elements for mapping input parameters
+	 * - select, insert, insertOrIgnore, upsert, update, delete statements
+	 * - statement elements for generic statements
+	 * - procedure elements (not yet implemented)
+	 * - cacheModel elements for query caching
+	 *
+	 * Cache dependencies are automatically registered for cache invalidation.
+	 *
 	 * @param string $filename xml mapping filename.
 	 */
 	public function configure($filename)
@@ -105,6 +164,14 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 			$this->loadInsertTag($node);
 		}
 
+		foreach ($document->xpath('//insertOrIgnore') as $node) {
+			$this->loadInsertOrIgnoreTag($node);
+		}
+
+		foreach ($document->xpath('//upsert') as $node) {
+			$this->loadUpsertTag($node);
+		}
+
 		foreach ($document->xpath('//update') as $node) {
 			$this->loadUpdateTag($node);
 		}
@@ -125,7 +192,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load the result maps.
+	 * Loads the result map from XML node.
+	 * Handles inheritance from parent resultMaps if specified.
 	 * @param \SimpleXmlElement $node result map node.
 	 */
 	protected function loadResultMap($node)
@@ -209,8 +277,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load parameter map from xml.
-	 *
+	 * Loads parameter map from XML node.
+	 * Handles inheritance from parent parameterMaps if specified.
 	 * @param \SimpleXmlElement $node parameter map node.
 	 */
 	protected function loadParameterMap($node)
@@ -260,7 +328,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load statement mapping from xml configuration file.
+	 * Loads generic statement mapping from XML configuration file.
+	 * Processes SQL text, handles inheritance, applies inline parameters.
 	 * @param \SimpleXmlElement $node statement node.
 	 */
 	protected function loadStatementTag($node)
@@ -356,7 +425,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load select statement from xml mapping.
+	 * Loads select statement from XML mapping.
+	 * Supports optional cacheModel for query caching.
 	 * @param \SimpleXmlElement $node select node.
 	 */
 	protected function loadSelectTag($node)
@@ -374,7 +444,8 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load insert statement from xml mapping.
+	 * Loads insert statement from XML mapping.
+	 * Supports selectKey for auto-increment value retrieval.
 	 * @param \SimpleXmlElement $node insert node.
 	 */
 	protected function loadInsertTag($node)
@@ -386,6 +457,32 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
+	 * Load insertOrIgnore statement from xml mapping.
+	 * @param \SimpleXmlElement $node insertOrIgnore node.
+	 * @since 4.3.3
+	 */
+	protected function loadInsertOrIgnoreTag($node)
+	{
+		$insert = $this->createInsertOrIgnoreStatement($node);
+		$this->processSqlStatement($insert, $node);
+		$mappedStatement = new TInsertOrIgnoreMappedStatement($this->_manager, $insert);
+		$this->_manager->addMappedStatement($mappedStatement);
+	}
+
+	/**
+	 * Load upsert statement from xml mapping.
+	 * @param \SimpleXmlElement $node upsert node.
+	 * @since 4.3.3
+	 */
+	protected function loadUpsertTag($node)
+	{
+		$insert = $this->createUpsertStatement($node);
+		$this->processSqlStatement($insert, $node);
+		$mappedStatement = new TUpsertMappedStatement($this->_manager, $insert);
+		$this->_manager->addMappedStatement($mappedStatement);
+	}
+
+	/**
 	 * Create new insert statement from xml node.
 	 * @param \SimpleXmlElement $node insert node.
 	 * @return TSqlMapInsert insert statement.
@@ -393,6 +490,38 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	protected function createInsertStatement($node)
 	{
 		$insert = new TSqlMapInsert();
+		$this->setObjectPropFromNode($insert, $node);
+		if (isset($node->selectKey)) {
+			$this->loadSelectKeyTag($insert, $node->selectKey);
+		}
+		return $insert;
+	}
+
+	/**
+	 * Create new insertOrIgnore statement from xml node.
+	 * @param \SimpleXmlElement $node insertOrIgnore node.
+	 * @return TSqlMapInsertOrIgnore insertOrIgnore statement.
+	 * @since 4.3.3
+	 */
+	protected function createInsertOrIgnoreStatement($node)
+	{
+		$insert = new TSqlMapInsertOrIgnore();
+		$this->setObjectPropFromNode($insert, $node);
+		if (isset($node->selectKey)) {
+			$this->loadSelectKeyTag($insert, $node->selectKey);
+		}
+		return $insert;
+	}
+
+	/**
+	 * Create new upsert statement from xml node.
+	 * @param \SimpleXmlElement $node upsert node.
+	 * @return TSqlMapUpsert upsert statement.
+	 * @since 4.3.3
+	 */
+	protected function createUpsertStatement($node)
+	{
+		$insert = new TSqlMapUpsert();
 		$this->setObjectPropFromNode($insert, $node);
 		if (isset($node->selectKey)) {
 			$this->loadSelectKeyTag($insert, $node->selectKey);
@@ -431,7 +560,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load delete statement from xml mapping.
+	 * Loads delete statement from XML mapping.
 	 * @param \SimpleXmlElement $node delete node.
 	 */
 	protected function loadDeleteTag($node)
@@ -444,7 +573,7 @@ class TSqlMapXmlMappingConfiguration extends TSqlMapXmlConfigBuilder
 	}
 
 	/**
-	 * Load procedure statement from xml mapping.
+	 * Loads procedure statement from XML mapping.
 	 * @todo Implement loading procedure
 	 * @param \SimpleXmlElement $node procedure node
 	 */

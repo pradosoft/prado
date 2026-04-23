@@ -29,28 +29,40 @@ use Prado\Prado;
  *
  * Example usage:
  * ```php
- * //create a connection
+ * // Create a connection
  * $dsn = 'pgsql:host=localhost;dbname=test';
  * $conn = new TDbConnection($dsn, 'dbuser','dbpass');
  *
- * //create a table gateway for table/view named 'address'
+ * // Create a table gateway for table/view named 'address'
  * $table = new TTableGateway('address', $conn);
  *
- * //insert a new row, returns last insert id (if applicable)
+ * // Table Presence
+ * $hasTable = $table->getTableExists();
+ *
+ * // Insert a new row, returns last insert id (if applicable)
  * $id = $table->insert(array('name'=>'wei', 'phone'=>'111111'));
  *
  * $record1 = $table->findByPk($id); //find inserted record
  *
- * //finds all records, returns an iterator
+ * // Finds all records, returns an iterator
  * $records = $table->findAll();
  * print_r($records->readAll());
  *
- * //update the row
+ * // Update the row
  * $table->updateByPk($record1, $id);
+ * $table->update(array('name'=>'Updated Name'), 'id = ?', $id);
+ *
+ * // Delete a record by primary key
+ * $table->deleteByPk($id);
+ *
+ * // Delete multiple records by criteria
+ * $table->deleteAll('age > ? AND status = ?', 25, 'inactive');
  * ```
  *
  * All methods that may return more than one row of data will return an
  * TDbDataReader iterator.
+ *
+ * As of v4.3.3, use {@see getTableExists()} to check for the presence of the table.
  *
  * The OnCreateCommand event is raised when a command is prepared and parameter
  * binding is completed. The parameter object is a TDataGatewayEventParameter of which the
@@ -73,6 +85,10 @@ use Prado\Prado;
  *     var_dump($param); //TDataGatewayEventParameter object.
  * }
  * ```
+ *
+ * Since v4.3.3, TTableGateway supports insertion conflicts with:
+ * - {@see insertOrIgnore()}: Insert silently ignoring duplicate key conflicts
+ * - {@see upsert()}: Insert or update on conflict
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -128,6 +144,29 @@ class TTableGateway extends \Prado\TComponent
 	public function getTableName()
 	{
 		return $this->getTableInfo()->getTableName();
+	}
+
+	/**
+	 * Checks whether the table this gateway manages actually exists and is accessible
+	 * in the current database connection.
+	 *
+	 * Uses a lightweight probe query — `SELECT * FROM {table} WHERE 0=1` — rather than
+	 * driver-specific metadata tables, so the check works uniformly across all supported
+	 * drivers and returns no rows even on large tables.
+	 *
+	 * @return bool true if the table (or view) exists and is accessible, false otherwise.
+	 * @since 4.3.3
+	 */
+	public function getTableExists(): bool
+	{
+		$sql = 'SELECT * FROM ' . $this->getTableInfo()->getTableFullName() . ' WHERE 0=1';
+		try {
+			$this->getDbConnection()->createCommand($sql)->query()->close();
+
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 	/**
@@ -400,6 +439,32 @@ class TTableGateway extends \Prado\TComponent
 	public function insert($data)
 	{
 		return $this->getCommand()->insert($data);
+	}
+
+	/**
+	 * Inserts a new record, silently ignoring if a duplicate key conflict occurs.
+	 * @param array $data new record data.
+	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function insertOrIgnore(array $data): mixed
+	{
+		return $this->getCommand()->insertOrIgnore($data);
+	}
+
+	/**
+	 * Inserts or updates a record.
+	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns
+	 * (defaults to all non-PK columns).
+	 * @param array $data new record data.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * @return mixed last insert id, true on update, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function upsert(array $data, ?array $updateData = null, ?array $conflictColumns = null): mixed
+	{
+		return $this->getCommand()->upsert($data, $updateData, $conflictColumns);
 	}
 
 	/**

@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Firebird;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\TDbCommand;
 
 /**
  * TFirebirdCommandBuilder provides Firebird-specific LIMIT/OFFSET and last-insert-ID support.
@@ -28,6 +29,37 @@ use Prado\Data\Common\TDbCommandBuilder;
  */
 class TFirebirdCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates a Firebird MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
+	/**
+	 * Creates a Firebird MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses Firebird MERGE with USING (SELECT ... FROM RDB$DATABASE) and no AS keyword for aliases.
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM RDB$DATABASE', false);
+	}
+
 	/**
 	 * Overrides parent implementation. Retrieves last identity value (Firebird 3+).
 	 * @return null|int last inserted identity value, null if no identity column.

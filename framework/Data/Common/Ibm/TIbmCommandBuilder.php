@@ -11,6 +11,7 @@
 namespace Prado\Data\Common\Ibm;
 
 use Prado\Data\Common\TDbCommandBuilder;
+use Prado\Data\TDbCommand;
 
 /**
  * TIbmCommandBuilder provides DB2-specific LIMIT/OFFSET and last-insert-ID support.
@@ -27,6 +28,37 @@ use Prado\Data\Common\TDbCommandBuilder;
  */
 class TIbmCommandBuilder extends TDbCommandBuilder
 {
+	/**
+	 * Creates a DB2 MERGE ... WHEN NOT MATCHED THEN INSERT command (insertOrIgnore).
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @return TDbCommand insert-or-ignore MERGE command.
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns(null);
+		return $this->buildMergeStatement($data, [], $conflictColumns, 'FROM SYSIBM.SYSDUMMY1', true);
+	}
+
+	/**
+	 * Creates a DB2 MERGE ... WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT command.
+	 * Requires an active transaction; throws TDbException otherwise.
+	 * Uses DB2 MERGE with USING (SELECT ... FROM SYSIBM.SYSDUMMY1) AS s syntax.
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @return TDbCommand upsert MERGE command.
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		$this->requiresActiveTransaction();
+		$conflictColumns = $this->resolveConflictColumns($conflictColumns);
+		$updateData = $this->resolveUpdateData($data, $updateData, $conflictColumns);
+		return $this->buildMergeStatement($data, $updateData, $conflictColumns, 'FROM SYSIBM.SYSDUMMY1', true);
+	}
+
 	/**
 	 * Overrides parent implementation. Retrieves last identity value via DB2 function.
 	 * @return null|int last inserted identity value, null if no identity column.

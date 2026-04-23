@@ -13,10 +13,19 @@ namespace Prado\Data\Common;
 use PDO;
 use Traversable;
 use Prado\Data\TDbCommand;
+use Prado\Exceptions\TDbException;
 
 /**
  * TDbCommandBuilder provides basic methods to create query commands for tables
- * giving by {@see setTableInfo TableInfo} the property.
+ * given by {@see setTableInfo TableInfo}.
+ *
+ * This builder creates database-specific SQL commands for CRUD operations:
+ * - {@see createFindCommand()}: SELECT queries
+ * - {@see createInsertCommand()}: INSERT statements
+ * - {@see createUpdateCommand()}: UPDATE statements
+ * - {@see createDeleteCommand()}: DELETE statements
+ * - {@see createInsertOrIgnoreCommand()}: INSERT OR IGNORE (since 4.3.3)
+ * - {@see createUpsertCommand()}: INSERT...ON CONFLICT UPDATE (since 4.3.3)
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -308,14 +317,14 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Appends the $where condition to the string "SELECT * FROM tableName WHERE ".
-	 * The tableName is obtained from the {@see setTableInfo TableInfo} property.
-	 * @param string $where query condition
+	 * Creates a SELECT command for the table.
+	 * The table name is obtained from the {@see setTableInfo TableInfo} property.
+	 * @param string $where query condition.
 	 * @param array $parameters condition parameters.
-	 * @param array $ordering
-	 * @param int $limit
-	 * @param int $offset
-	 * @param string $select
+	 * @param array $ordering ORDER BY clause.
+	 * @param int $limit maximum rows.
+	 * @param int $offset row offset.
+	 * @param string $select columns to select.
 	 * @return TDbCommand query command.
 	 */
 	public function createFindCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1, $select = '*')
@@ -329,6 +338,15 @@ class TDbCommandBuilder extends \Prado\TComponent
 		return $this->applyCriterias($sql, $parameters, $ordering, $limit, $offset);
 	}
 
+	/**
+	 * Applies ordering, limit, and offset to the SQL and binds parameters.
+	 * @param string $sql SQL query.
+	 * @param array $parameters binding parameters.
+	 * @param array $ordering ORDER BY clause.
+	 * @param int $limit maximum rows.
+	 * @param int $offset row offset.
+	 * @return TDbCommand command with criteria applied.
+	 */
 	public function applyCriterias($sql, $parameters = [], $ordering = [], $limit = -1, $offset = -1)
 	{
 		if (count($ordering) > 0) {
@@ -343,12 +361,12 @@ class TDbCommandBuilder extends \Prado\TComponent
 	}
 
 	/**
-	 * Creates a count(*) command for the table described in {@see setTableInfo TableInfo}.
+	 * Creates a COUNT(*) command for the table.
 	 * @param string $where count condition.
 	 * @param array $parameters binding parameters.
-	 * @param array $ordering
-	 * @param int $limit
-	 * @param int $offset
+	 * @param array $ordering ORDER BY clause.
+	 * @param int $limit maximum rows.
+	 * @param int $offset row offset.
 	 * @return TDbCommand count command.
 	 */
 	public function createCountCommand($where = '1=1', $parameters = [], $ordering = [], $limit = -1, $offset = -1)
@@ -388,6 +406,137 @@ class TDbCommandBuilder extends \Prado\TComponent
 		$table = $this->getTableInfo()->getTableFullName();
 		[$fields, $bindings] = $this->getInsertFieldBindings($data);
 		$command = $this->createCommand("INSERT INTO {$table}({$fields}) VALUES ($bindings)");
+		$this->bindColumnValues($command, $data);
+		return $command;
+	}
+
+	/**
+	 * Creates an INSERT OR IGNORE command for the table.
+	 * Base implementation always throws TDbException; driver-specific subclasses must override.
+	 * @param array $data name-value pairs of data to be inserted.
+	 * @throws TDbException always, in the base implementation.
+	 * @return TDbCommand insert-or-ignore command.
+	 * @since 4.3.3
+	 */
+	public function createInsertOrIgnoreCommand(array $data): TDbCommand
+	{
+		throw new TDbException('dbcommandbuilder_insertorignore_not_supported');
+	}
+
+	/**
+	 * Creates an UPSERT (insert-or-update) command for the table.
+	 * Base implementation always throws TDbException; driver-specific subclasses must override.
+	 * @param array $data name-value pairs of data to insert.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns from $data.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key columns.
+	 * @throws TDbException always, in the base implementation.
+	 * @return TDbCommand upsert command.
+	 * @since 4.3.3
+	 */
+	public function createUpsertCommand(array $data, ?array $updateData = null, ?array $conflictColumns = null): TDbCommand
+	{
+		throw new TDbException('dbcommandbuilder_upsert_not_supported');
+	}
+
+	/**
+	 * Resolves the conflict columns, defaulting to the table's primary keys.
+	 * @param null|array $conflictColumns explicit conflict columns, or null to use primary keys.
+	 * @return array resolved conflict column names.
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictColumns(?array $conflictColumns): array
+	{
+		return $conflictColumns ?? $this->getTableInfo()->getPrimaryKeys();
+	}
+
+	/**
+	 * Resolves the update data for upsert, defaulting to all non-PK columns from $data.
+	 * @param array $data full insert data.
+	 * @param null|array $updateData explicit update data, or null to use all non-PK columns.
+	 * @param array $conflictColumns the resolved conflict columns (primary keys).
+	 * @return array resolved update data.
+	 * @since 4.3.3
+	 */
+	protected function resolveUpdateData(array $data, ?array $updateData, array $conflictColumns): array
+	{
+		return $updateData ?? array_diff_key($data, array_flip($conflictColumns));
+	}
+
+	/**
+	 * Checks that an active transaction exists on the current connection.
+	 * Called by MERGE-based drivers (MSSQL, Oracle, DB2, Firebird) before building MERGE statements.
+	 * @throws TDbException if no active transaction is found.
+	 * @since 4.3.3
+	 */
+	protected function requiresActiveTransaction(): void
+	{
+		if ($this->getDbConnection()->getCurrentTransaction() === null) {
+			throw new TDbException('dbcommandbuilder_upsert_requires_transaction', $this::class);
+		}
+	}
+
+	/**
+	 * Builds a MERGE INTO statement for MERGE-based drivers (MSSQL, Oracle, DB2, Firebird).
+	 *
+	 * The USING SELECT uses raw column names (from array_keys($data)) as aliases.
+	 * Table column references use getColumnName() (quoted) from the table metadata.
+	 * When $updateData is empty, the WHEN MATCHED branch is omitted (insertOrIgnore behaviour).
+	 *
+	 * @param array $data full row data (all columns).
+	 * @param array $updateData columns to update on match (empty = insertOrIgnore, no UPDATE branch).
+	 * @param array $conflictColumns primary/conflict key column names.
+	 * @param string $dualSource dual/dummy table source, e.g. 'FROM DUAL', 'FROM SYSIBM.SYSDUMMY1', '' for MSSQL.
+	 * @param bool $useAsAlias true to emit 'AS t'/'AS s'; false to emit bare 't'/'s' (Oracle, Firebird).
+	 * @return TDbCommand prepared MERGE command with bound parameters.
+	 * @since 4.3.3
+	 */
+	protected function buildMergeStatement(array $data, array $updateData, array $conflictColumns, string $dualSource, bool $useAsAlias): TDbCommand
+	{
+		$table = $this->getTableInfo()->getTableFullName();
+		$tableAlias = $useAsAlias ? 'AS t' : 't';
+		$sourceAlias = $useAsAlias ? 'AS s' : 's';
+
+		// Build USING SELECT: SELECT :col1 AS col1, :col2 AS col2, ... [FROM dual]
+		$usingParts = [];
+		foreach (array_keys($data) as $name) {
+			$usingParts[] = ':' . $name . ' AS ' . $name;
+		}
+		$usingSelect = 'SELECT ' . implode(', ', $usingParts);
+		if ($dualSource !== '') {
+			$usingSelect .= ' ' . $dualSource;
+		}
+
+		// Build ON clause: t.{pk_quoted} = s.pk AND ...
+		$onParts = [];
+		foreach ($conflictColumns as $pk) {
+			$quoted = $this->getTableInfo()->getColumn($pk)->getColumnName();
+			$onParts[] = 't.' . $quoted . ' = s.' . $pk;
+		}
+		$onClause = implode(' AND ', $onParts);
+
+		// Build MERGE statement
+		$sql = "MERGE INTO {$table} {$tableAlias} USING ({$usingSelect}) {$sourceAlias} ON ({$onClause})";
+
+		// WHEN MATCHED branch (omit for insertOrIgnore when $updateData is empty)
+		if (!empty($updateData)) {
+			$updateParts = [];
+			foreach (array_keys($updateData) as $name) {
+				$quoted = $this->getTableInfo()->getColumn($name)->getColumnName();
+				$updateParts[] = 't.' . $quoted . ' = s.' . $name;
+			}
+			$sql .= ' WHEN MATCHED THEN UPDATE SET ' . implode(', ', $updateParts);
+		}
+
+		// WHEN NOT MATCHED branch
+		$insertCols = [];
+		$insertVals = [];
+		foreach (array_keys($data) as $name) {
+			$insertCols[] = $this->getTableInfo()->getColumn($name)->getColumnName();
+			$insertVals[] = 's.' . $name;
+		}
+		$sql .= ' WHEN NOT MATCHED THEN INSERT (' . implode(', ', $insertCols) . ') VALUES (' . implode(', ', $insertVals) . ')';
+
+		$command = $this->createCommand($sql);
 		$this->bindColumnValues($command, $data);
 		return $command;
 	}

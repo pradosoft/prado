@@ -22,8 +22,41 @@ use Prado\Prado;
 use ReflectionClass;
 
 /**
- * TActiveRecordGateway excutes the SQL command queries and returns the data
- * record as arrays (for most finder methods).
+ * TActiveRecordGateway executes SQL command queries and returns the data as arrays for finder methods.
+ *
+ * This gateway acts as the bridge between TActiveRecord models and the underlying database.
+ * It handles all CRUD operations (Create, Read, Update, Delete) and provides methods for
+ * finding records by various criteria.
+ *
+ * Each TActiveRecord subclass has a corresponding gateway instance managed by TActiveRecordManager.
+ * The gateway uses TDataGatewayCommand to build and execute database-specific SQL commands.
+ *
+ * Example:
+ * ```php
+ * // Get the gateway from a record instance
+ * $user = new UserRecord();
+ * $gateway = $user->getRecordGateway();
+ *
+ * // Find a record by primary key
+ * $data = $gateway->findRecordByPK($user, ['username' => 'admin']);
+ *
+ * // Insert a new record
+ * $newUser = new UserRecord();
+ * $newUser->username = 'newuser';
+ * $newUser->email = 'new@example.com';
+ * $gateway->insert($newUser);
+ *
+ * // Update existing record
+ * $user->email = 'updated@example.com';
+ * $gateway->update($user);
+ *
+ * // Delete a record
+ * $gateway->delete($user);
+ * ```
+ *
+ * Since v4.3.3, TActiveRecordGateway supports insertion conflicts with:
+ * - {@see insertOrIgnore()}: Insert silently ignoring duplicate key conflicts
+ * - {@see upsert()}: Insert or update on conflict
  *
  * @author Wei Zhuo <weizho[at]gmail[dot]com>
  * @since 3.1
@@ -284,6 +317,15 @@ class TActiveRecordGateway extends \Prado\TComponent
 		return $this->getCommand($record)->findAllBySql($criteria);
 	}
 
+	/**
+	 * Returns the number of records matching the given index fields and values.
+	 * Uses SQL clause "(fields) IN (values)" for matching.
+	 * @param TActiveRecord $record active record finder instance.
+	 * @param TActiveRecordCriteria $criteria search criteria.
+	 * @param array $fields field names to match.
+	 * @param array $values matching field values.
+	 * @return int number of records.
+	 */
 	public function findRecordsByIndex(TActiveRecord $record, $criteria, $fields, $values)
 	{
 		return $this->getCommand($record)->findAllByIndex($criteria, $fields, $values);
@@ -357,6 +399,39 @@ class TActiveRecordGateway extends \Prado\TComponent
 			}
 		}
 		return $values;
+	}
+
+	/**
+	 * Insert a new record, silently ignoring if a duplicate key conflict occurs.
+	 * @param TActiveRecord $record new record.
+	 * @return mixed last insert id, true on ignore, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function insertOrIgnore(TActiveRecord $record): mixed
+	{
+		$result = $this->getCommand($record)->insertOrIgnore($this->getInsertValues($record));
+		if ($result) {
+			$this->updatePostInsert($record);
+		}
+		return $result;
+	}
+
+	/**
+	 * Insert or update a record.
+	 * On conflict with $conflictColumns (defaults to primary key), updates $updateData columns.
+	 * @param TActiveRecord $record record to insert or update.
+	 * @param null|array $updateData column=>value pairs to update on conflict; null = all non-PK columns.
+	 * @param null|array $conflictColumns conflict target columns; null = primary key.
+	 * @return mixed last insert id, true on update, or false on failure.
+	 * @since 4.3.3
+	 */
+	public function upsert(TActiveRecord $record, ?array $updateData = null, ?array $conflictColumns = null): mixed
+	{
+		$result = $this->getCommand($record)->upsert($this->getInsertValues($record), $updateData, $conflictColumns);
+		if ($result) {
+			$this->updatePostInsert($record);
+		}
+		return $result;
 	}
 
 	/**

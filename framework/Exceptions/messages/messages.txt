@@ -504,6 +504,9 @@ dbcommand_column_empty					= TDbCommand returned an empty result and could not o
 dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
 dbtransaction_transaction_inactive		= TDbTransaction is inactive.
 
+dbcommandbuilder_insertorignore_not_supported = insertOrIgnore() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.
+dbcommandbuilder_upsert_not_supported         = upsert() is not supported by the base TDbCommandBuilder. Use a driver-specific subclass.
+dbcommandbuilder_upsert_requires_transaction  = {0} requires an active transaction. Call getDbConnection()->beginTransaction() before invoking insertOrIgnore() or upsert() with this database driver.
 dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
 
 dbcommon_invalid_table_name				= Database table '{0}' not found. Error message: {1}.
