@@ -61,6 +61,51 @@ class TFirebirdCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
+	 * Children override this if there is something specific about the column Name.
+	 * @param string $columnName The name of the column to place in the sql.
+	 * @return string null if no change, or a string if there is a change.
+	 * @since 4.3.3
+	 */
+	protected function processMergeColumn(string $columnName): string
+	{
+		$castType = $this->getFirebirdCastType($columnName);
+		return 'CAST(:' . $columnName . ' AS ' . $castType . ') AS ' . $columnName;
+	}
+
+	/**
+	 * Builds a Firebird-compatible CAST type string for the named column.
+	 *
+	 * Firebird requires explicit type annotations in CAST() expressions. This helper
+	 * maps the column's DbType (and ColumnSize / NumericPrecision / NumericScale where
+	 * applicable) to the correct SQL type string.
+	 *
+	 * @param string $name logical column name (PHP array key from $data).
+	 * @return string SQL type string suitable for use in CAST(:name AS <type>).
+	 * @since 4.3.3
+	 */
+	private function getFirebirdCastType(string $name): string
+	{
+		$column = $this->getTableInfo()->getColumn($name);
+		if ($column === null) {
+			return 'VARCHAR(255)';
+		}
+
+		$dbType = strtoupper(trim($column->getDbType()));
+		$size = (int) $column->getColumnSize();
+		$prec = (int) $column->getNumericPrecision();
+		$scale = (int) $column->getNumericScale();
+
+		if (in_array($dbType, ['VARCHAR', 'CHAR'], true) && $size > 0) {
+			return $dbType . '(' . $size . ')';
+		}
+		if (in_array($dbType, ['DECIMAL', 'NUMERIC'], true) && $prec > 0) {
+			return $dbType . '(' . $prec . ($scale > 0 ? ',' . $scale : '') . ')';
+		}
+		// Fixed-length types and all others: return as-is.
+		return $dbType;
+	}
+
+	/**
 	 * Overrides parent implementation. Retrieves last identity value (Firebird 3+).
 	 * @return null|int last inserted identity value, null if no identity column.
 	 */
