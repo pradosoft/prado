@@ -613,7 +613,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 *   firebird — MON$ATTACHMENTS ⋈ RDB$CHARACTER_SETS; falls back to the
 	 *              resolved Charset property value if the MONITOR privilege is
 	 *              absent
-	 *   oci, mssql, sqlsrv, dblib, ibm — charset is configured at the DSN
+	 *   oci, sqlsrv, dblib, ibm — charset is configured at the DSN
 	 *              level and cannot be queried cheaply; returns the charset
 	 *              name as resolved for the driver from the Charset property
 	 *
@@ -714,7 +714,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			// pdo_firebird in autocommit mode always keeps an implicit transaction
 			// open. Commit it before starting an explicit one, otherwise PDO raises
 			// "There is already an active transaction".
-			if ($this->getDriverName() === self::DRIVER_FIREBIRD && $this->getAutoCommit()) {
+			if ($this->getDriverName() === self::DRIVER_FIREBIRD) {
 				try {
 					$this->_pdo->commit();
 				} catch (\Exception $e) {
@@ -912,7 +912,11 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		$this->setAttribute(PDO::ATTR_AUTOCOMMIT, TPropertyValue::ensureBoolean($value));
 	}
 
-	public function getHasAutoCommit()
+	/**
+	 * Tells if the Driver has the AutoCommit attribute
+	 * @since 4.3.3
+	 */
+	public function getHasAutoCommit(): bool
 	{
 		return $this->getDriverName() !== self::DRIVER_SQLITE;
 	}

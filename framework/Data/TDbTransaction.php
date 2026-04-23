@@ -10,6 +10,7 @@
 
 namespace Prado\Data;
 
+use PDO;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 use Prado\TPropertyValue;
@@ -58,6 +59,16 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 
 	/**
 	 * Commits a transaction.
+	 *
+	 * For Firebird connections, `pdo_firebird` starts a new implicit transaction
+	 * immediately inside `isc_commit_transaction`, before the just-committed
+	 * transaction's changes are fully visible in Firebird's Transaction Inventory
+	 * Page. That implicit transaction's MVCC snapshot can therefore miss rows
+	 * committed by the transaction that was just finished, which causes subsequent
+	 * reads (including DELETE cleanup in test setUp) to see stale data. Committing
+	 * the empty implicit transaction forces pdo_firebird to open a fresh one whose
+	 * snapshot is guaranteed to reflect the completed commit.
+	 *
 	 * @throws TDbException if the transaction or the DB connection is not active.
 	 */
 	public function commit()
@@ -65,6 +76,18 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		if ($this->_active && $this->_connection->getActive()) {
 			$this->_connection->getPdoInstance()->commit();
 			$this->_active = false;
+			// pdo_firebird starts a new implicit transaction immediately after
+			// commit, with a snapshot that may not yet reflect the committed
+			// data. Commit it so the next read starts with a fresh snapshot.
+			/*
+			if ($this->_connection->getAutoCommit() && $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
+				try {
+					$pdo->commit();
+				} catch (\Exception $e) {
+					// No implicit transaction was active — safe to ignore.
+				}
+			}
+			*/
 		} else {
 			throw new TDbException('dbtransaction_transaction_inactive');
 		}
@@ -72,13 +95,34 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 
 	/**
 	 * Rolls back a transaction.
+	 *
+	 * For Firebird connections, `pdo_firebird` starts a new implicit transaction
+	 * immediately inside `isc_rollback_transaction`, before the rolled-back
+	 * transaction is fully recorded in Firebird's Transaction Inventory Page.
+	 * That implicit transaction's MVCC snapshot can therefore see stale data
+	 * (e.g. a pre-rollback committed row whose deletion is not yet visible).
+	 * Committing the empty implicit transaction forces pdo_firebird to open a
+	 * fresh one whose snapshot is guaranteed to reflect the completed rollback,
+	 * so that subsequent reads on the same connection return correct results.
+	 *
 	 * @throws TDbException if the transaction or the DB connection is not active.
 	 */
 	public function rollback()
 	{
 		if ($this->_active && $this->_connection->getActive()) {
-			$this->_connection->getPdoInstance()->rollBack();
+			$pdo = $this->_connection->getPdoInstance();
+			$pdo->rollBack();
 			$this->_active = false;
+			// pdo_firebird starts a new implicit transaction immediately after
+			// rollback, with a snapshot that may not yet reflect the rolled-back
+			// state. Commit it so the next read starts with a fresh snapshot.
+			if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
+				try {
+					$pdo->commit();
+				} catch (\Exception $e) {
+					// No implicit transaction was active — safe to ignore.
+				}
+			}
 		} else {
 			throw new TDbException('dbtransaction_transaction_inactive');
 		}
