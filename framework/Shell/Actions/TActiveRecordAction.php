@@ -74,7 +74,7 @@ class TActiveRecordAction extends TShellAction
 					$command = $con->createCommand("SHOW TABLES");
 					break;
 				case TDbConnection::DRIVER_SQLITE: //sqlite 3
-				case TDbConnection::DRIVER_SQLITE: //sqlite 2
+				case TDbConnection::DRIVER_SQLITE2: //sqlite 2
 					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
 					break;
 				case TDbConnection::DRIVER_PGSQL:
