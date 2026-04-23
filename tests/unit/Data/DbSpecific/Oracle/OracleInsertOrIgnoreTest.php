@@ -129,8 +129,10 @@ class OracleInsertOrIgnoreTest extends PHPUnit\Framework\TestCase
 		$txn->rollback();
 
 		$this->assertMatchesRegularExpression('/USING\s*\(.*\)\s+s\s+ON/si', $capturedSql);
-		$this->assertStringNotContainsStringIgnoringCase('AS t', $capturedSql);
-		$this->assertStringNotContainsStringIgnoringCase('AS s', $capturedSql);
+		$this->assertDoesNotMatchRegularExpression('/\bAS\s+t\b/i', $capturedSql);
+		// Check the subquery alias specifically — 'AS s' cannot precede the ON clause.
+		// A plain 'AS s' substring check would false-positive on column aliases like 'AS score'.
+		$this->assertDoesNotMatchRegularExpression('/\)\s+AS\s+s\b/i', $capturedSql);
 	}
 
 	public function test_sql_has_no_rdb_or_sysdummy_source(): void
