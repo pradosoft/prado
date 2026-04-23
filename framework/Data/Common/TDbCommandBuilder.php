@@ -496,10 +496,10 @@ class TDbCommandBuilder extends \Prado\TComponent
 		$tableAlias = $useAsAlias ? 'AS t' : 't';
 		$sourceAlias = $useAsAlias ? 'AS s' : 's';
 
-		// Build USING SELECT: SELECT :col1 AS col1, :col2 AS col2, ... [FROM dual]
+		// To build: SELECT :col1 AS col1, :col2 AS col2, ... [FROM dual]
 		$usingParts = [];
 		foreach (array_keys($data) as $name) {
-			$usingParts[] = ':' . $name . ' AS ' . $name;
+			$usingParts[] = $this->processMergeColumn($name);
 		}
 		$usingSelect = 'SELECT ' . implode(', ', $usingParts);
 		if ($dualSource !== '') {
@@ -536,9 +536,34 @@ class TDbCommandBuilder extends \Prado\TComponent
 		}
 		$sql .= ' WHEN NOT MATCHED THEN INSERT (' . implode(', ', $insertCols) . ') VALUES (' . implode(', ', $insertVals) . ')';
 
+		if (($newSql = $this->postProcessMerge($sql)) !== null) {
+			$sql = $newSql;
+		}
 		$command = $this->createCommand($sql);
 		$this->bindColumnValues($command, $data);
 		return $command;
+	}
+
+	/**
+	 * Children override this if there is something specific about the column Name.
+	 * @param string $columnName The name of the column to place in the sql.
+	 * @return string null if no change, or a string if there is a change.
+	 * @since 4.3.3
+	 */
+	protected function processMergeColumn(string $columnName): string
+	{
+		return ':' . $columnName . ' AS ' . $columnName;
+	}
+
+	/**
+	 * Children override this if there is something specific about the sql, eg adding a ';' to the end for MSSql.
+	 * @param string $sql the sql to change before creating the command.
+	 * @return ?string null if no change, or a string if there is a change.
+	 * @since 4.3.3
+	 */
+	protected function postProcessMerge(string $sql): ?string
+	{
+		return null;
 	}
 
 	/**

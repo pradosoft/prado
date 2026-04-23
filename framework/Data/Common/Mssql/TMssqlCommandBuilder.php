@@ -55,6 +55,17 @@ class TMssqlCommandBuilder extends TDbCommandBuilder
 	}
 
 	/**
+	 * MSSql has a ';' at the end of a merge.
+	 * @param string $sql the sql to change before creating the command.
+	 * @return ?string null if no change, or a string if there is a change.
+	 * @since 4.3.3
+	 */
+	protected function postProcessMerge($sql): ?string
+	{
+		return $sql . ';';
+	}
+
+	/**
 	 * Overrides parent implementation. Uses "SELECT @@Identity".
 	 * @return null|int last insert id, null if none is found.
 	 */

@@ -92,15 +92,6 @@ public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_dr
 		$this->assertInstanceOf(\Prado\Data\Common\Pgsql\TPgsqlMetaData::class, $result);
 	}
 
-	public function test_getInstance_valid_mysql_driver()
-	{
-		$conn = $this->createMockConnection('mysqli');
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mysql\TMysqlMetaData::class, $result);
-	}
-
 	public function test_getInstance_valid_mysql_old_driver()
 	{
 		$conn = $this->createMockConnection('mysql');
@@ -126,15 +117,6 @@ public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_dr
 
 		$result = TDbMetaData::getInstance($conn);
 		$this->assertInstanceOf(\Prado\Data\Common\Sqlite\TSqliteMetaData::class, $result);
-	}
-
-	public function test_getInstance_valid_mssql_driver()
-	{
-		$conn = $this->createMockConnection('mssql');
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Mssql\TMssqlMetaData::class, $result);
 	}
 
 	public function test_getInstance_valid_sqlsrv_driver()
@@ -176,15 +158,6 @@ public function test_getInstance_raises_fxDataGetMetaDataInstance_for_unknown_dr
 	public function test_getInstance_valid_firebird_driver()
 	{
 		$conn = $this->createMockConnection('firebird');
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TDbMetaData::getInstance($conn);
-		$this->assertInstanceOf(\Prado\Data\Common\Firebird\TFirebirdMetaData::class, $result);
-	}
-
-	public function test_getInstance_valid_interbase_driver()
-	{
-		$conn = $this->createMockConnection('interbase');
 		$conn->expects($this->never())->method('raiseEvent');
 
 		$result = TDbMetaData::getInstance($conn);

@@ -12,6 +12,7 @@ namespace Prado\Shell\Actions;
 
 use Prado\Data\ActiveRecord\TActiveRecordConfig;
 use Prado\Data\ActiveRecord\TActiveRecordManager;
+use Prado\Data\TDbConnection;
 use Prado\Prado;
 use Prado\Shell\TShellAction;
 
@@ -69,30 +70,27 @@ class TActiveRecordAction extends TShellAction
 			$command = null;
 
 			switch ($con->getDriverName()) {
-				case 'mysqli':
-				case 'mysql':
+				case TDbConnection::DRIVER_MYSQL:
 					$command = $con->createCommand("SHOW TABLES");
 					break;
-				case 'sqlite': //sqlite 3
-				case 'sqlite2': //sqlite 2
+				case TDbConnection::DRIVER_SQLITE: //sqlite 3
+				case TDbConnection::DRIVER_SQLITE: //sqlite 2
 					$command = $con->createCommand("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name<>'sqlite_sequence'");
 					break;
-				case 'pgsql':
+				case TDbConnection::DRIVER_PGSQL:
 					$command = $con->createCommand("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
 					break;
-				case 'mssql': // Mssql driver on windows hosts
-				case 'sqlsrv': // sqlsrv driver on windows hosts
-				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+				case TDbConnection::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
+				case TDbConnection::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
 					$command = $con->createCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'");
 					break;
-				case 'oci':
+				case TDbConnection::DRIVER_OCI:
 					$command = $con->createCommand("SELECT table_name FROM user_tables");
 					break;
-				case 'ibm':
+				case TDbConnection::DRIVER_IBM:
 					$command = $con->createCommand("SELECT TABNAME FROM SYSCAT.TABLES WHERE TABSCHEMA = CURRENT SCHEMA AND TYPE = 'T' ORDER BY TABNAME");
 					break;
-				case 'firebird':
-				case 'interbase':
+				case TDbConnection::DRIVER_FIREBIRD:
 					$command = $con->createCommand("SELECT TRIM(RDB\$RELATION_NAME) AS tbl_name FROM RDB\$RELATIONS WHERE RDB\$SYSTEM_FLAG = 0 AND RDB\$VIEW_BLR IS NULL ORDER BY RDB\$RELATION_NAME");
 					break;
 				default:

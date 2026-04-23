@@ -10,6 +10,7 @@
 namespace Prado\Data\ActiveRecord\Scaffold\InputBuilder;
 
 use Prado\Data\Common\TDbTableColumn;
+use Prado\Data\TDbConnection;
 use Prado\Exceptions\TConfigurationException;
 
 /**
@@ -67,25 +68,23 @@ class TScaffoldInputBase
 		$connection->setActive(true); //must be connected before retrieving driver name!
 		$driver = $connection->getDriverName();
 		switch (strtolower($driver)) {
-			case 'sqlite': //sqlite 3
-			case 'sqlite2': //sqlite 2
+			case TDbConnection::DRIVER_SQLITE: //sqlite 3
+			case TDbConnection::DRIVER_SQLITE2: //sqlite 2
 				require_once(__DIR__ . '/TSqliteScaffoldInput.php');
 				return new TSqliteScaffoldInput();
-			case 'mysqli':
-			case 'mysql':
+			case TDbConnection::DRIVER_MYSQL:
 				require_once(__DIR__ . '/TMysqlScaffoldInput.php');
 				return new TMysqlScaffoldInput();
-			case 'pgsql':
+			case TDbConnection::DRIVER_PGSQL:
 				require_once(__DIR__ . '/TPgsqlScaffoldInput.php');
 				return new TPgsqlScaffoldInput();
-			case 'mssql':
+			case TDbConnection::DRIVER_SQLSRV:
 				require_once(__DIR__ . '/TMssqlScaffoldInput.php');
 				return new TMssqlScaffoldInput();
-			case 'ibm':
+			case TDbConnection::DRIVER_IBM:
 				require_once(__DIR__ . '/TIbmScaffoldInput.php');
 				return new TIbmScaffoldInput();
-			case 'firebird':
-			case 'interbase':
+			case TDbConnection::DRIVER_FIREBIRD:
 				require_once(__DIR__ . '/TFirebirdScaffoldInput.php');
 				return new TFirebirdScaffoldInput();
 			default:

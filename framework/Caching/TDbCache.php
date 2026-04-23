@@ -129,8 +129,11 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 	 */
 	public function init($config)
 	{
-		$this->getApplication()->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
-		$this->getApplication()->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		$app = $this->getApplication();
+		if ($app) {
+			$app->attachEventHandler('OnLoadStateComplete', [$this, 'doInitializeCache']);
+			$app->attachEventHandler('OnSaveState', [$this, 'doFlushCacheExpired']);
+		}
 		parent::init($config);
 	}
 
@@ -194,9 +197,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
 				$driver = $db->getDriverName();
-				if ($driver === 'mysql') {
+				if ($driver === TDbConnection::DRIVER_MYSQL) {
 					$blob = 'LONGBLOB';
-				} elseif ($driver === 'pgsql') {
+				} elseif ($driver === TDbConnection::DRIVER_PGSQL) {
 					$blob = 'BYTEA';
 				} else {
 					$blob = 'BLOB';
@@ -456,11 +459,11 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		}
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
-		if (in_array($driver, ['mysql', 'mysqli', 'sqlite', 'ibm', 'oci', 'sqlsrv', 'mssql', 'dblib', 'pgsql'])) {
+		if (in_array($driver, [TDbConnection::DRIVER_MYSQL, TDbConnection::DRIVER_PGSQL, TDbConnection::DRIVER_SQLITE, TDbConnection::DRIVER_SQLSRV, TDbConnection::DRIVER_DBLIB, TDbConnection::DRIVER_OCI, TDbConnection::DRIVER_IBM])) {
 			$expire = ($expire <= 0) ? 0 : time() + $expire;
-			if (in_array($driver, ['mysql', 'mysqli', 'sqlite'])) {
+			if (in_array($driver, [TDbConnection::DRIVER_MYSQL, TDbConnection::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
-			} elseif ($driver === 'pgsql') {
+			} elseif ($driver === TDbConnection::DRIVER_PGSQL) {
 				$sql = "INSERT INTO {$this->_cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
 					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
 			} else {

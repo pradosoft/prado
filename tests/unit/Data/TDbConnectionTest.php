@@ -310,7 +310,6 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		return [
 			// These drivers return silently; charset is handled via DSN (or not at all).
 			'firebird' => ['firebird'],
-			'mssql'    => ['mssql'],
 			'sqlsrv'   => ['sqlsrv'],
 			'dblib'    => ['dblib'],
 			'ibm'      => ['ibm'],
@@ -458,11 +457,8 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			'KOI8-R oci'       => ['KOI8-R',      'oci', 'CL8KOI8R'],
 			// --- sqlsrv charset names ---
 			'UTF-8 sqlsrv'     => ['UTF-8',      'sqlsrv', 'UTF-8'],
-			// --- mssql / dblib charset names ---
-			'UTF-8 mssql'      => ['UTF-8',      'mssql', 'UTF-8'],
-			'ISO-8859-1 mssql' => ['ISO-8859-1', 'mssql', 'ISO-8859-1'],
+			// --- dblib charset names ---
 			'ISO-8859-2 dblib' => ['ISO-8859-2', 'dblib', 'ISO-8859-2'],
-			'WIN-1252 mssql'   => ['WIN-1252',   'mssql', 'CP1252'],
 			'KOI8-R dblib'     => ['KOI8-R',     'dblib', 'KOI8-R'],
 			// --- IBM DB2: no table entry → pass-through ---
 			'UTF-8 ibm'        => ['UTF-8', 'ibm', 'UTF-8'],
@@ -570,9 +566,7 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 			// OCI: 'UTF-8' resolves to the OCI NLS name 'AL32UTF8'
 			'oci/UTF-8'        => ['oci',    'UTF-8',      'AL32UTF8'],
 			'oci/ISO-8859-1'   => ['oci',    'ISO-8859-1', 'WE8ISO8859P1'],
-			// MSSQL / sqlsrv / dblib: iconv-compatible names
-			'mssql/UTF-8'      => ['mssql',  'UTF-8',      'UTF-8'],
-			'mssql/ISO-8859-1' => ['mssql',  'ISO-8859-1', 'ISO-8859-1'],
+			// sqlsrv / dblib: iconv-compatible names
 			'sqlsrv/UTF-8'     => ['sqlsrv', 'UTF-8',      'UTF-8'],
 			'dblib/UTF-8'      => ['dblib',  'UTF-8',      'UTF-8'],
 			// IBM DB2 has no alias table entry → pass-through
@@ -691,12 +685,6 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 				'sqlsrv:Server=localhost;Database=test',
 				'UTF-8',
 				'sqlsrv:Server=localhost;Database=test;CharacterSet=UTF-8',
-			],
-			// mssql: UTF-8 → charset=UTF-8
-			'mssql/UTF-8' => [
-				'mssql:host=localhost;dbname=test',
-				'UTF-8',
-				'mssql:host=localhost;dbname=test;charset=UTF-8',
 			],
 			// dblib: ISO-8859-1 → charset=ISO-8859-1
 			'dblib/ISO-8859-1' => [

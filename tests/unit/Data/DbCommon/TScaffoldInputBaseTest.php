@@ -56,16 +56,6 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 		TScaffoldInputBase::createInputBuilder($record);
 	}
 
-	public function test_createInputBuilder_valid_mysql_driver()
-	{
-		$record = $this->createMockRecord('mysqli');
-		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TScaffoldInputBase::createInputBuilder($record);
-		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMysqlScaffoldInput::class, $result);
-	}
-
 	public function test_createInputBuilder_valid_mysql_old_driver()
 	{
 		$record = $this->createMockRecord('mysql');
@@ -106,16 +96,6 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TPgsqlScaffoldInput::class, $result);
 	}
 
-	public function test_createInputBuilder_valid_mssql_driver()
-	{
-		$record = $this->createMockRecord('mssql');
-		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TScaffoldInputBase::createInputBuilder($record);
-		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TMssqlScaffoldInput::class, $result);
-	}
-
 	public function test_createInputBuilder_valid_ibm_driver()
 	{
 		$record = $this->createMockRecord('ibm');
@@ -129,16 +109,6 @@ class TScaffoldInputBaseTest extends PHPUnit\Framework\TestCase
 	public function test_createInputBuilder_valid_firebird_driver()
 	{
 		$record = $this->createMockRecord('firebird');
-		$conn = $record->getDbConnection();
-		$conn->expects($this->never())->method('raiseEvent');
-
-		$result = TScaffoldInputBase::createInputBuilder($record);
-		$this->assertInstanceOf(\Prado\Data\ActiveRecord\Scaffold\InputBuilder\TFirebirdScaffoldInput::class, $result);
-	}
-
-	public function test_createInputBuilder_valid_interbase_driver()
-	{
-		$record = $this->createMockRecord('interbase');
 		$conn = $record->getDbConnection();
 		$conn->expects($this->never())->method('raiseEvent');
 

@@ -17,6 +17,7 @@ use Prado\Data\Common\Mysql\TMysqlMetaData;
 use Prado\Data\Common\Oracle\TOracleMetaData;
 use Prado\Data\Common\Pgsql\TPgsqlMetaData;
 use Prado\Data\Common\Sqlite\TSqliteMetaData;
+use Prado\Data\TDbConnection;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -80,29 +81,27 @@ abstract class TDbMetaData extends \Prado\TComponent
 	 * @throws TDbException if no metadata handler can be created for the driver.
 	 * @return TDbMetaData database-specific TDbMetaData.
 	 */
+	// cubrid, odbc
 	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
 		$driver = $conn->getDriverName();
 		switch (strtolower($driver)) {
-			case 'pgsql':
+			case TDbConnection::DRIVER_PGSQL:
 				return new TPgsqlMetaData($conn);
-			case 'mysqli':
-			case 'mysql':
+			case TDbConnection::DRIVER_MYSQL:
 				return new TMysqlMetaData($conn);
-			case 'sqlite': //sqlite 3
-			case 'sqlite2': //sqlite 2
+			case TDbConnection::DRIVER_SQLITE: //sqlite 3
+			case TDbConnection::DRIVER_SQLITE2: //sqlite 2
 				return new TSqliteMetaData($conn);
-			case 'mssql': // Mssql driver on windows hosts
-			case 'sqlsrv': // sqlsrv driver on windows hosts
-			case 'dblib': // dblib drivers on linux (and maybe others os) hosts
+			case TDbConnection::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
+			case TDbConnection::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
 				return new TMssqlMetaData($conn);
-			case 'oci':
+			case TDbConnection::DRIVER_OCI:
 				return new TOracleMetaData($conn);
-			case 'ibm':
+			case TDbConnection::DRIVER_IBM:
 				return new TIbmMetaData($conn);
-			case 'firebird':
-			case 'interbase':
+			case TDbConnection::DRIVER_FIREBIRD:
 				return new TFirebirdMetaData($conn);
 			default:
 				$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);

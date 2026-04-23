@@ -907,7 +907,9 @@ class PradoUnit {
 	 */
 	public static function isNoConnection($e): bool
 	{
-		return is_int(stripos((string) $e, 'No such file')) || is_int(stripos((string) $e, 'Connection refused')) || is_int(stripos((string) $e, 'failed to establish'));
+		return is_int(stripos((string) $e->getMessage(), 'No such file')) || 
+			   is_int(stripos((string) $e->getMessage(), 'Connection refused')) || 
+			   is_int(stripos((string) $e->getMessage(), 'failed to establish'));
 	}
 
 	/**
@@ -922,7 +924,7 @@ class PradoUnit {
 	 */
 	public static function isNoDatabase($e): bool
 	{
-		return is_int(stripos((string) $e, 'Unknown database'));
+		return is_int(stripos((string) $e->getMessage(), 'Unknown database'));
 	}
 
 	/**
@@ -938,6 +940,6 @@ class PradoUnit {
 	 */
 	public static function isNoTable($e): bool
 	{
-		return is_int(stripos((string) $e, 'Base table or view not found'));
+		return is_int(stripos((string) $e->getMessage(), 'Base table or view not found'));
 	}
 }

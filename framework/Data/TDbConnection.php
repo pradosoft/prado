@@ -105,6 +105,23 @@ use Prado\TPropertyValue;
  */
 class TDbConnection extends \Prado\TComponent implements IDataConnection
 {
+	public const DRIVER_MYSQL = 'mysql';		// MySQL / MariaDB
+	//public const DRIVER_MYSQL = 'mysqli';		// separate extension
+	public const DRIVER_PGSQL = 'pgsql';		// PostgreSQL (charset after connection is started)
+	public const DRIVER_SQLITE = 'sqlite';		// SQLite 3 (UTF-8, UTF-16, set charset without tables)
+	public const DRIVER_SQLITE2 = 'sqlite2';	// SQLite 2
+	//public const DRIVER_MSSQL = 'mssql'; 		// separate extension
+	public const DRIVER_SQLSRV = 'sqlsrv';		// Microsoft SQL Server
+	public const DRIVER_DBLIB = 'dblib';		// SQL Server / Sybase (via FreeTDS)
+	public const DRIVER_OCI = 'oci';			// Oracle
+	public const DRIVER_IBM = 'ibm';			// IBM DB2 (no charset)
+	public const DRIVER_FIREBIRD = 'firebird';	// Firebird
+	//public const DRIVER_INTERBASE = 'interbase';
+
+	//
+	public const DRIVER_CUBRID = 'cubrid';		// CUBRID database
+	public const DRIVER_ODBC = 'odbc';			// Generic ODBC (various databases)
+
 	/**
 	 *
 	 * @since 3.1.7
@@ -272,13 +289,13 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		$driver = $this->_pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
 		$charset = $this->resolveCharsetForDriver($this->_charset, $driver);
 		switch ($driver) {
-			case 'mysql':
+			case self::DRIVER_MYSQL:
 				$stmt = $this->_pdo->prepare('SET NAMES ?');
 				break;
-			case 'pgsql':
+			case self::DRIVER_PGSQL:
 				$stmt = $this->_pdo->prepare('SET client_encoding TO ?');
 				break;
-			case 'sqlite':
+			case self::DRIVER_SQLITE:
 				// PRAGMA encoding sets the internal storage encoding, but only takes
 				// effect before any tables are created.  PRAGMA does not support
 				// parameterised values, so PDO::quote is used to safely embed the
@@ -289,12 +306,11 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 					// Silently ignored.
 				}
 				return;
-			case 'firebird':
-			case 'mssql':
-			case 'sqlsrv':
-			case 'dblib':
-			case 'ibm':
-			case 'oci':
+			case self::DRIVER_FIREBIRD:
+			case self::DRIVER_SQLSRV:
+			case self::DRIVER_DBLIB:
+			case self::DRIVER_IBM:
+			case self::DRIVER_OCI:
 				// These drivers do not support runtime charset switching via SQL.
 				return;
 			default:
@@ -320,7 +336,7 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 * Override this method to add or change mappings for custom database configurations.
 	 *
 	 * @param string $charset the charset name as supplied by the caller (e.g. 'UTF-8')
-	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', 'oci')
+	 * @param string $driver  PDO driver name (e.g. 'mysql', 'pgsql', 'firebird', self::DRIVER_OCI)
 	 * @return string the charset name appropriate for $driver
 	 * @since 4.3.3
 	 */
@@ -334,104 +350,94 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 			//   are valid; unsupported values are passed through and silently ignored).
 			// Drivers oci/sqlsrv/mssql/dblib: DSN-parameter charset names.
 			'utf8' => [
-				'mysql' => 'utf8mb4',
-				'sqlite' => 'UTF-8',
-				'pgsql' => 'UTF8',
-				'firebird' => 'UTF8',
-				'oci' => 'AL32UTF8',
-				'sqlsrv' => 'UTF-8',
-				'mssql' => 'UTF-8',
-				'dblib' => 'UTF-8',
+				self::DRIVER_MYSQL => 'utf8mb4',
+				self::DRIVER_SQLITE => 'UTF-8',
+				self::DRIVER_PGSQL => 'UTF8',
+				self::DRIVER_FIREBIRD => 'UTF8',
+				self::DRIVER_OCI => 'AL32UTF8',
+				self::DRIVER_SQLSRV => 'UTF-8',
+				self::DRIVER_DBLIB => 'UTF-8',
 			],
 			'utf8mb4' => [
-				'mysql' => 'utf8mb4',
-				'sqlite' => 'UTF-8',
-				'pgsql' => 'UTF8',
-				'firebird' => 'UTF8',
-				'oci' => 'AL32UTF8',
-				'sqlsrv' => 'UTF-8',
-				'mssql' => 'UTF-8',
-				'dblib' => 'UTF-8',
+				self::DRIVER_MYSQL => 'utf8mb4',
+				self::DRIVER_SQLITE => 'UTF-8',
+				self::DRIVER_PGSQL => 'UTF8',
+				self::DRIVER_FIREBIRD => 'UTF8',
+				self::DRIVER_OCI => 'AL32UTF8',
+				self::DRIVER_SQLSRV => 'UTF-8',
+				self::DRIVER_DBLIB => 'UTF-8',
 			],
 			'utf16' => [
-				'mysql' => 'utf16',
-				'sqlite' => 'UTF-16',
-				'firebird' => 'UTF16BE',
-				'oci' => 'AL16UTF16',
+				self::DRIVER_MYSQL => 'utf16',
+				self::DRIVER_SQLITE => 'UTF-16',
+				self::DRIVER_FIREBIRD => 'UTF16BE',
+				self::DRIVER_OCI => 'AL16UTF16',
 			],
 			'latin1' => [
-				'mysql' => 'latin1',
+				self::DRIVER_MYSQL => 'latin1',
 				// sqlite: no PRAGMA encoding support for latin1 — pass-through and
 				// silently ignored; SQLite stores all text internally as UTF-8/UTF-16.
-				'pgsql' => 'LATIN1',
-				'firebird' => 'ISO8859_1',
-				'oci' => 'WE8ISO8859P1',
-				'mssql' => 'ISO-8859-1',
-				'dblib' => 'ISO-8859-1',
+				self::DRIVER_PGSQL => 'LATIN1',
+				self::DRIVER_FIREBIRD => 'ISO8859_1',
+				self::DRIVER_OCI => 'WE8ISO8859P1',
+				self::DRIVER_DBLIB => 'ISO-8859-1',
 			],
 			'iso88591' => 'latin1',
 			'latin2' => [
-				'mysql' => 'latin2',
-				'pgsql' => 'LATIN2',
-				'firebird' => 'ISO8859_2',
-				'oci' => 'EE8ISO8859P2',
-				'mssql' => 'ISO-8859-2',
-				'dblib' => 'ISO-8859-2',
+				self::DRIVER_MYSQL => 'latin2',
+				self::DRIVER_PGSQL => 'LATIN2',
+				self::DRIVER_FIREBIRD => 'ISO8859_2',
+				self::DRIVER_OCI => 'EE8ISO8859P2',
+				self::DRIVER_DBLIB => 'ISO-8859-2',
 			],
 			'iso88592' => 'latin2',
 			'ascii' => [
-				'mysql' => 'ascii',
-				'pgsql' => 'SQL_ASCII',
-				'firebird' => 'ASCII',
-				'oci' => 'US7ASCII',
-				'mssql' => 'ASCII',
-				'dblib' => 'ASCII',
+				self::DRIVER_MYSQL => 'ascii',
+				self::DRIVER_PGSQL => 'SQL_ASCII',
+				self::DRIVER_FIREBIRD => 'ASCII',
+				self::DRIVER_OCI => 'US7ASCII',
+				self::DRIVER_DBLIB => 'ASCII',
 			],
 			'win1250' => [
-				'mysql' => 'cp1250',
-				'pgsql' => 'WIN1250',
-				'firebird' => 'WIN1250',
-				'oci' => 'EE8MSWIN1250',
-				'mssql' => 'CP1250',
-				'dblib' => 'CP1250',
+				self::DRIVER_MYSQL => 'cp1250',
+				self::DRIVER_PGSQL => 'WIN1250',
+				self::DRIVER_FIREBIRD => 'WIN1250',
+				self::DRIVER_OCI => 'EE8MSWIN1250',
+				self::DRIVER_DBLIB => 'CP1250',
 			],
 			'windows1250' => 'win1250',
 			'cp1250' => 'win1250',
 			'win1251' => [
-				'mysql' => 'cp1251',
-				'pgsql' => 'WIN1251',
-				'firebird' => 'WIN1251',
-				'oci' => 'CL8MSWIN1251',
-				'mssql' => 'CP1251',
-				'dblib' => 'CP1251',
+				self::DRIVER_MYSQL => 'cp1251',
+				self::DRIVER_PGSQL => 'WIN1251',
+				self::DRIVER_FIREBIRD => 'WIN1251',
+				self::DRIVER_OCI => 'CL8MSWIN1251',
+				self::DRIVER_DBLIB => 'CP1251',
 			],
 			'windows1251' => 'win1251',
 			'cp1251' => 'win1251',
 			'win1252' => [
-				'mysql' => 'cp1252',
-				'pgsql' => 'WIN1252',
-				'firebird' => 'WIN1252',
-				'oci' => 'WE8MSWIN1252',
-				'mssql' => 'CP1252',
-				'dblib' => 'CP1252',
+				self::DRIVER_MYSQL => 'cp1252',
+				self::DRIVER_PGSQL => 'WIN1252',
+				self::DRIVER_FIREBIRD => 'WIN1252',
+				self::DRIVER_OCI => 'WE8MSWIN1252',
+				self::DRIVER_DBLIB => 'CP1252',
 			],
 			'windows1252' => 'win1252',
 			'cp1252' => 'win1252',
 			'koi8r' => [
-				'mysql' => 'koi8r',
-				'pgsql' => 'KOI8R',
-				'firebird' => 'KOI8R',
-				'oci' => 'CL8KOI8R',
-				'mssql' => 'KOI8-R',
-				'dblib' => 'KOI8-R',
+				self::DRIVER_MYSQL => 'koi8r',
+				self::DRIVER_PGSQL => 'KOI8R',
+				self::DRIVER_FIREBIRD => 'KOI8R',
+				self::DRIVER_OCI => 'CL8KOI8R',
+				self::DRIVER_DBLIB => 'KOI8-R',
 			],
 			'koi8u' => [
-				'mysql' => 'koi8u',
-				'pgsql' => 'KOI8U',
-				'firebird' => 'KOI8U',
-				'oci' => 'CL8KOI8U',
-				'mssql' => 'KOI8-U',
-				'dblib' => 'KOI8-U',
+				self::DRIVER_MYSQL => 'koi8u',
+				self::DRIVER_PGSQL => 'KOI8U',
+				self::DRIVER_FIREBIRD => 'KOI8U',
+				self::DRIVER_OCI => 'CL8KOI8U',
+				self::DRIVER_DBLIB => 'KOI8-U',
 			],
 		];
 
@@ -484,12 +490,11 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		// Maps each supported driver to [dsn_param_name, regex_detecting_existing_param].
 		// Drivers absent from this table (pgsql, sqlite, ibm) are returned unchanged.
 		$dsnCharsetParams = [
-			'mysql' => ['charset',      '/[;?]charset\s*=/i'],
-			'firebird' => ['charset',      '/[;?]charset\s*=/i'],
-			'oci' => ['charset',      '/[;?]charset\s*=/i'],
-			'sqlsrv' => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
-			'mssql' => ['charset',      '/[;?]charset\s*=/i'],
-			'dblib' => ['charset',      '/[;?]charset\s*=/i'],
+			self::DRIVER_MYSQL => ['charset',      '/[;?]charset\s*=/i'],
+			self::DRIVER_FIREBIRD => ['charset',      '/[;?]charset\s*=/i'],
+			self::DRIVER_OCI => ['charset',      '/[;?]charset\s*=/i'],
+			self::DRIVER_SQLSRV => ['CharacterSet', '/[;?]CharacterSet\s*=/i'],
+			self::DRIVER_DBLIB => ['charset',      '/[;?]charset\s*=/i'],
 		];
 
 		if (!isset($dsnCharsetParams[$driver])) {
@@ -581,14 +586,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	}
 
 	/**
-	 * If the connection is not active or
+	 * If the connection is not active or in the Databases that can change their
+	 * charset within the connection.
 	 * @return bool if the charset can change
 	 * @since 4.3.3
 	 */
 	public function getCanCharsetChange(): bool
 	{
 		$driver = $this->getDriverName();
-		return !$this->getActive() || in_array($driver, ['mysql', 'pgsql', 'sqlite']);
+		return !$this->getActive() || in_array($driver, [self::DRIVER_MYSQL, self::DRIVER_PGSQL, self::DRIVER_SQLITE]);
 	}
 
 	/**
@@ -626,13 +632,13 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 		$driver = $this->getDriverName();
 		try {
 			switch ($driver) {
-				case 'mysql':
+				case self::DRIVER_MYSQL:
 					return (string) $this->createCommand('SELECT @@character_set_connection')->queryScalar();
-				case 'pgsql':
+				case self::DRIVER_PGSQL:
 					return (string) $this->createCommand('SELECT pg_client_encoding()')->queryScalar();
-				case 'sqlite':
+				case self::DRIVER_SQLITE:
 					return (string) $this->createCommand('PRAGMA encoding')->queryScalar();
-				case 'firebird':
+				case self::DRIVER_FIREBIRD:
 					$result = $this->createCommand(
 						'SELECT TRIM(c.RDB$CHARACTER_SET_NAME)' .
 						'  FROM MON$ATTACHMENTS a' .
@@ -692,12 +698,29 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 
 	/**
 	 * Starts a transaction.
+	 *
+	 * For Firebird connections, `pdo_firebird` always keeps an implicit transaction
+	 * open in autocommit mode. Calling `beginTransaction()` while that implicit
+	 * transaction is active raises "There is already an active transaction". This
+	 * method commits the implicit transaction before starting the explicit one so
+	 * that callers do not need to be aware of this driver quirk.
+	 *
 	 * @throws TDbException if the connection is not active
 	 * @return TDbTransaction the transaction initiated
 	 */
 	public function beginTransaction()
 	{
 		if ($this->getActive()) {
+			// pdo_firebird in autocommit mode always keeps an implicit transaction
+			// open. Commit it before starting an explicit one, otherwise PDO raises
+			// "There is already an active transaction".
+			if ($this->getDriverName() === self::DRIVER_FIREBIRD && $this->getAutoCommit()) {
+				try {
+					$this->_pdo->commit();
+				} catch (\Exception $e) {
+					// No implicit transaction was active — safe to ignore.
+				}
+			}
 			$this->_pdo->beginTransaction();
 			return $this->_transaction = Prado::createComponent($this->getTransactionClass(), $this);
 		} else {
@@ -871,6 +894,9 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 */
 	public function getAutoCommit()
 	{
+		if (!$this->getHasAutoCommit()) {
+			return false;
+		}
 		return $this->getAttribute(PDO::ATTR_AUTOCOMMIT);
 	}
 
@@ -880,7 +906,15 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 */
 	public function setAutoCommit($value)
 	{
+		if (!$this->getHasAutoCommit()) {
+			return;
+		}
 		$this->setAttribute(PDO::ATTR_AUTOCOMMIT, TPropertyValue::ensureBoolean($value));
+	}
+
+	public function getHasAutoCommit()
+	{
+		return $this->getDriverName() !== self::DRIVER_SQLITE;
 	}
 
 	/**
@@ -977,10 +1011,14 @@ class TDbConnection extends \Prado\TComponent implements IDataConnection
 	 */
 	public function getAttribute($name)
 	{
-		if ($this->getActive()) {
-			return $this->_pdo->getAttribute($name);
+		if ($this->_pdo instanceof PDO) {
+			if ($this->getActive()) {
+				return $this->_pdo->getAttribute($name);
+			} else {
+				throw new TDbException('dbconnection_connection_inactive');
+			}
 		} else {
-			throw new TDbException('dbconnection_connection_inactive');
+			return $this->_attributes[$name] ?? null;
 		}
 	}
 
