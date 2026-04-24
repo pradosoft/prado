@@ -607,9 +607,7 @@ class TAssetManager extends \Prado\TModule
 	protected function copyFile($src, $dst, $options = [])
 	{
 		if (!is_dir($dst)) {
-			$dirMode = $this->getDirMode();
-			@mkdir($dst, $dirMode);
-			@chmod($dst, $dirMode);
+			@mkdir($dst, $this->getDirMode());
 		}
 		$dstFile = $dst . DIRECTORY_SEPARATOR . basename($src);
 
@@ -680,7 +678,6 @@ class TAssetManager extends \Prado\TModule
 
 		if (!is_dir($dst)) {
 			@mkdir($dst, $dirMode);
-			@chmod($dst, $dirMode);
 		}
 		if ($folder = @opendir($src)) {
 			while ($file = @readdir($folder)) {
