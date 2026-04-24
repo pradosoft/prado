@@ -16,13 +16,13 @@ namespace Prado;
  * TEnumerable is the base class for all enumerable types.
  * To define an enumerable type, extend TEnumerable and define string constants.
  * Each constant represents an enumerable value.
- * The constant name must be the same as the constant value.
+ * The constant name should usually be the same as the constant value.
  * For example,
  * ```php
  * class TTextAlign extends \Prado\TEnumerable
  * {
- *     const Left='Left';
- *     const Right='Right';
+ *     const Left = 'Left';
+ *     const Right = 'Right';
  * }
  * ```
  * Then, one can use the enumerable values such as TTextAlign::Left and
@@ -52,7 +52,7 @@ class TEnumerable implements \Iterator
 	 */
 	public function __construct()
 	{
-		$reflection = new \ReflectionClass($this);
+		$reflection = self::getReflectionClass();
 		$this->_enums = $reflection->getConstants();
 	}
 
@@ -105,14 +105,16 @@ class TEnumerable implements \Iterator
 	}
 
 	/**
-	 * Check if a constant exists in this enumerable type.
-	 *
+	 * Check if a constant exists in this enumerable type. The second parameter
+	 * is case sensitivity, defaulting to true. This is similar behavior to
+	 * {@see \ReflectionClass}. For example:
 	 * ```php
-	 * $hasBlue = TWebColors::valueOf('Blue');  // true
-	 * $hasblue = TWebColors::hasConstant('blue');  // false
-	 * $hasblue = TWebColors::valueOf('blue', false);  // true
+	 * $has_Left = TTextAlign::valueOf('Left');  // true
+	 * $hasNo_left = TTextAlign::hasConstant('left');  // false
+	 * $hasNo_left = TTextAlign::hasConstant('left', true);  // false
+	 * $has_left = TTextAlign::valueOf('left', false);  // true
 	 * ```
-	 *
+	 * Case Insensitivity iterates through all constants.
 	 * @param string $constant The constant name to check.
 	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
 	 * @return bool True if the constant exists, false otherwise.
@@ -135,18 +137,21 @@ class TEnumerable implements \Iterator
 	}
 
 	/**
-	 * Gets the constant value by name.
-	 *
+	 * Gets the constant value by name. The second parameter is case sensitivity,
+	 * defaulting to true. This is similar behavior to {@see \ReflectionClass}.
+	 * For example:
 	 * ```php
-	 * $value = TWebColors::valueOf('Blue');  // returns '#0000FF'
-	 * $value = TWebColors::valueOf('red', false);  // returns '#FF0000'
+	 * $value_Left = TTextAlign::valueOf('Left');  // returns 'Left'
+	 * $null = TTextAlign::valueOf('left');  // returns null
+	 * $null = TTextAlign::valueOf('left', true);  // returns null
+	 * $value_left = TTextAlign::valueOf('left', false);  // returns 'Left'
 	 * ```
-	 *
+	 * Case Insensitivity iterates through all constants.
 	 * @param string $constant The constant name to get.
 	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
-	 * @return false|string The constant value or false if not found.
+	 * @return ?string The constant value or null if not found.
 	 */
-	public static function valueOf($constant, bool $caseSensitive = true): string|false
+	public static function valueOf($constant, bool $caseSensitive = true): ?string
 	{
 		$ref = self::getReflectionClass();
 		if (($value = $ref->getConstant($constant)) !== false) {
@@ -160,7 +165,34 @@ class TEnumerable implements \Iterator
 				}
 			}
 		}
-		return false;
+		return null;
+	}
+
+	/**
+	 * Gets the constant name by value. The second parameter is case sensitivity,
+	 * defaulting to true. This is similar behavior to {@see \ReflectionClass}.
+	 * For example:
+	 * ```php
+	 * $constant_Left = TTextAlign::constantOf('Left');  // returns 'Left'
+	 * $null = TTextAlign::constantOf('left');  // returns null
+	 * $null = TTextAlign::constantOf('left', true);  // returns null
+	 * $constant_left = TTextAlign::constantOf('left', false);  // returns 'Left'
+	 * ```
+	 * Case Insensitivity iterates through all constants.
+	 * @param string $value The constant value to find.
+	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
+	 * @return ?string The constant name or null if not found.
+	 */
+	public static function constantOf($value, bool $caseSensitive = true): ?string
+	{
+		$cmp = $caseSensitive ? '\strcmp' : '\strcasecmp';
+		$ref = self::getReflectionClass();
+		foreach ($ref->getConstants() as $constant => $constValue) {
+			if ($cmp($value, $constValue) === 0) {
+				return $constant;
+			}
+		}
+		return null;
 	}
 
 	// ----- Private Helpers

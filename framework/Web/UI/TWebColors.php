@@ -19,6 +19,7 @@ namespace Prado\Web\UI;
  * @author Brad Anderson <belisoful@icloud.com>
  * @since 4.3.0
  * @see https://en.wikipedia.org/wiki/Web_colors  Web Colors
+ * @todo 4.4 TWebColors => TWebColor, singular - not plural #1072
  */
 class TWebColors extends \Prado\TEnumerable
 {
