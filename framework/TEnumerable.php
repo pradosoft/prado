@@ -34,7 +34,8 @@ namespace Prado;
  * ```php
  * $alignConstant = 'Left';
  * $value = TTextAlign::valueOf($alignConstant);  // returns 'Left'
- * $constant = TTextAlign::constantOf($value);  // returns 'Left'
+ * $constant = TTextAlign::constantOf($value);    // returns 'Left'
+ * $constant === $alignConstant;                  // true
  * $hasLeft = TTextAlign::hasConstant($alignConstant);  // true
  * ```
  *
