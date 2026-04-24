@@ -28,12 +28,14 @@ namespace Prado;
  * Then, one can use the enumerable values such as TTextAlign::Left and
  * TTextAlign::Right.
  *
- * As of 4.3.3, to access a constant value by variable or to check its presence
- * use {@see valueOf()} and {@see hasConstant()}.  For example:
+ * As of 4.3.3, to access a constant value by variable, check its presence,
+ * or get the constant name by value, use {@see valueOf()}, {@see hasConstant()},
+ * and {@see constantOf()}.  For example:
  * ```php
- * $align = 'Left';
- * $value = TTextAlign::valueOf($align);  // returns 'Left'
- * $hasLeft = TTextAlign::hasConstant($align);  // true
+ * $alignConstant = 'Left';
+ * $value = TTextAlign::valueOf($alignConstant);  // returns 'Left'
+ * $constant = TTextAlign::constantOf($value);  // returns 'Left'
+ * $hasLeft = TTextAlign::hasConstant($alignConstant);  // true
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
