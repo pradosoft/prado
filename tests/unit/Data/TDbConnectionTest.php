@@ -742,4 +742,386 @@ class TDbConnectionTest extends PHPUnit\Framework\TestCase
 		$this->assertTrue($conn->Active);
 		$conn->Active = false;
 	}
+
+	// -----------------------------------------------------------------------
+	// getDriverName() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetDriverNameParsesMysqlFromDsn(): void
+	{
+		$conn = new TDbConnection('mysql:host=localhost;dbname=test');
+		$this->assertSame('mysql', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesPgsqlFromDsn(): void
+	{
+		$conn = new TDbConnection('pgsql:host=localhost;dbname=test');
+		$this->assertSame('pgsql', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesSqliteFromDsn(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertSame('sqlite', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesFirebirdFromDsn(): void
+	{
+		$conn = new TDbConnection('firebird:dbname=localhost:/var/lib/firebird/test.fdb');
+		$this->assertSame('firebird', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesOciFromDsn(): void
+	{
+		$conn = new TDbConnection('oci:dbname=//localhost/orcl');
+		$this->assertSame('oci', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesIbmFromDsn(): void
+	{
+		$conn = new TDbConnection('ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE=test');
+		$this->assertSame('ibm', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesSqlsrvFromDsn(): void
+	{
+		$conn = new TDbConnection('sqlsrv:Server=localhost;Database=test');
+		$this->assertSame('sqlsrv', $conn->DriverName);
+	}
+
+	public function testGetDriverNameParsesDblibFromDsn(): void
+	{
+		$conn = new TDbConnection('dblib:host=localhost;dbname=test');
+		$this->assertSame('dblib', $conn->DriverName);
+	}
+
+	public function testGetDriverNameThrowsWhenNoColonInDsn(): void
+	{
+		$conn = new TDbConnection('invalid_dsn');
+		$this->expectException(TDbException::class);
+		$conn->DriverName;
+	}
+
+	public function testGetDriverNameReturnsActiveDriverName(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertSame('sqlite', $conn->DriverName);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// ConnectionString get/set tests
+	// -----------------------------------------------------------------------
+
+	public function testGetConnectionString(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertSame('sqlite:' . TEST_DB_FILE, $conn->ConnectionString);
+	}
+
+	public function testSetConnectionString(): void
+	{
+		$conn = new TDbConnection();
+		$conn->ConnectionString = 'sqlite:' . TEST_DB_FILE2;
+		$this->assertSame('sqlite:' . TEST_DB_FILE2, $conn->ConnectionString);
+	}
+
+	// -----------------------------------------------------------------------
+	// Username get/set tests
+	// -----------------------------------------------------------------------
+
+	public function testGetUsername(): void
+	{
+		$conn = new TDbConnection('sqlite:test', 'myuser', 'mypass');
+		$this->assertSame('myuser', $conn->Username);
+	}
+
+	public function testSetUsername(): void
+	{
+		$conn = new TDbConnection();
+		$conn->Username = 'newuser';
+		$this->assertSame('newuser', $conn->Username);
+	}
+
+	// -----------------------------------------------------------------------
+	// Password get/set tests
+	// -----------------------------------------------------------------------
+
+	public function testGetPassword(): void
+	{
+		$conn = new TDbConnection('sqlite:test', 'myuser', 'mypass');
+		$this->assertSame('mypass', $conn->Password);
+	}
+
+	public function testSetPassword(): void
+	{
+		$conn = new TDbConnection();
+		$conn->Password = 'newpass';
+		$this->assertSame('newpass', $conn->Password);
+	}
+
+	public function testSetPasswordCanBeEmpty(): void
+	{
+		$conn = new TDbConnection();
+		$conn->Password = '';
+		$this->assertSame('', $conn->Password);
+	}
+
+	// -----------------------------------------------------------------------
+	// getCurrentTransaction() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetCurrentTransactionReturnsNullWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertNull($conn->CurrentTransaction);
+	}
+
+	public function testGetCurrentTransactionReturnsNullWhenNoTransaction(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertNull($conn->CurrentTransaction);
+		$conn->Active = false;
+	}
+
+	public function testGetCurrentTransactionReturnsTransactionWhenActive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->beginTransaction();
+		$this->assertNotNull($conn->CurrentTransaction);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// commit() convenience method tests
+	// -----------------------------------------------------------------------
+
+	public function testCommitReturnsFalseWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertFalse($conn->commit());
+	}
+
+	public function testCommitReturnsFalseWhenNoActiveTransaction(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertFalse($conn->commit());
+		$conn->Active = false;
+	}
+
+	public function testCommitCommitsActiveTransaction(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->createCommand('INSERT INTO foo(id, name) VALUES (1, \'test\')')->execute();
+		$conn->beginTransaction();
+		$conn->createCommand('UPDATE foo SET name = \'updated\' WHERE id = 1')->execute();
+		$this->assertTrue($conn->commit());
+		$row = $conn->createCommand('SELECT name FROM foo WHERE id = 1')->queryScalar();
+		$this->assertSame('updated', $row);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// rollback() convenience method tests
+	// -----------------------------------------------------------------------
+
+	public function testRollbackReturnsFalseWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertFalse($conn->rollback());
+	}
+
+	public function testRollbackReturnsFalseWhenNoActiveTransaction(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertFalse($conn->rollback());
+		$conn->Active = false;
+	}
+
+	public function testRollbackRollsBackActiveTransaction(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->createCommand('INSERT INTO foo(id, name) VALUES (1, \'original\')')->execute();
+		$conn->beginTransaction();
+		$conn->createCommand('UPDATE foo SET name = \'changed\' WHERE id = 1')->execute();
+		$this->assertTrue($conn->rollback());
+		$row = $conn->createCommand('SELECT name FROM foo WHERE id = 1')->queryScalar();
+		$this->assertSame('original', $row);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getTransactionClass() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetTransactionClassReturnsDefault(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertSame(\Prado\Data\TDbTransaction::class, $conn->TransactionClass);
+	}
+
+	public function testSetTransactionClass(): void
+	{
+		$conn = new TDbConnection();
+		$conn->TransactionClass = \Prado\Data\TDbSerialTransaction::class;
+		$this->assertSame(\Prado\Data\TDbSerialTransaction::class, $conn->TransactionClass);
+	}
+
+	public function testSetTransactionClassAllowsNull(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->setTransactionClass('CustomTransactionClass');
+		$this->assertSame('CustomTransactionClass', $conn->TransactionClass);
+	}
+
+	// -----------------------------------------------------------------------
+	// getHasAutoCommit() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetHasAutoCommitReturnsTrueForSqlite(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertFalse($conn->HasAutoCommit);
+	}
+
+	public function testGetHasAutoCommitReturnsTrueForMysql(): void
+	{
+		$this->markTestSkipped('MySQL server not available');
+	}
+
+	// -----------------------------------------------------------------------
+	// getAutoCommit() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetAutoCommitReturnsValue(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$value = $conn->AutoCommit;
+		$this->assertIsBool($value);
+		$conn->Active = false;
+	}
+
+	public function testSetAutoCommitSetsValue(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->AutoCommit = false;
+		$this->assertFalse($conn->AutoCommit);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getAttribute() / setAttribute() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetAttributeReturnsPdoAttribute(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$driver = $conn->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$this->assertSame('sqlite', $driver);
+		$conn->Active = false;
+	}
+
+	public function testSetAttributeSetsPdoAttribute(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+		$this->assertSame(PDO::CASE_LOWER, $conn->getAttribute(PDO::ATTR_CASE));
+		$conn->Active = false;
+	}
+
+	public function testGetAttributeReturnsLazyAttributeWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->setAttribute(PDO::ATTR_PERSISTENT, true);
+		$this->assertTrue($conn->getAttribute(PDO::ATTR_PERSISTENT));
+	}
+
+	public function testSetAttributeStoresLazyAttributeWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$this->assertSame(PDO::ERRMODE_EXCEPTION, $conn->getAttribute(PDO::ATTR_ERRMODE));
+	}
+
+	public function testGetAttributeThrowsWhenInvalidForActiveConnection(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->expectException(\PDOException::class);
+		$conn->getAttribute(999999);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// getPdoInstance() tests
+	// -----------------------------------------------------------------------
+
+	public function testGetPdoInstanceReturnsNullWhenInactive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$this->assertNull($conn->PdoInstance);
+	}
+
+	public function testGetPdoInstanceReturnsPdoWhenActive(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$this->assertInstanceOf(PDO::class, $conn->PdoInstance);
+		$conn->Active = false;
+	}
+
+	// -----------------------------------------------------------------------
+	// Persistent connection tests
+	// -----------------------------------------------------------------------
+
+	public function testGetPersistent(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$value = $conn->Persistent;
+		$this->assertIsBool($value);
+		$conn->Active = false;
+	}
+
+	public function testSetPersistent(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$conn->Persistent = false;
+		$this->assertFalse($conn->Persistent);
+		$conn->Active = false;
+	}
+
+// -----------------------------------------------------------------------
+	// Server Version tests (driver-specific; SQLite returns string)
+	// -----------------------------------------------------------------------
+
+	public function testGetClientVersion(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$version = $conn->ClientVersion;
+		$this->assertIsString($version);
+		$conn->Active = false;
+	}
+
+	public function testGetServerVersion(): void
+	{
+		$conn = new TDbConnection('sqlite:' . TEST_DB_FILE);
+		$conn->Active = true;
+		$version = $conn->ServerVersion;
+		$this->assertIsString($version);
+		$conn->Active = false;
+	}
 }

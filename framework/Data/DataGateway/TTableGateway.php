@@ -162,7 +162,6 @@ class TTableGateway extends \Prado\TComponent
 		$sql = 'SELECT * FROM ' . $this->getTableInfo()->getTableFullName() . ' WHERE 0=1';
 		try {
 			$this->getDbConnection()->createCommand($sql)->query()->close();
-
 			return true;
 		} catch (\Exception $e) {
 			return false;

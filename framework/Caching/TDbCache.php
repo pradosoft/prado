@@ -13,6 +13,7 @@ namespace Prado\Caching;
 use Prado\Prado;
 use Prado\Data\TDataSourceConfig;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriver;
 use Prado\Data\TDbPropertiesTrait;
 use Prado\Exceptions\TConfigurationException;
 use Prado\TPropertyValue;
@@ -197,9 +198,9 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 				Prado::trace('Autocreate: ' . $this->_cacheTable, TDbCache::class);
 
 				$driver = $db->getDriverName();
-				if ($driver === TDbConnection::DRIVER_MYSQL) {
+				if ($driver === TDbDriver::DRIVER_MYSQL) {
 					$blob = 'LONGBLOB';
-				} elseif ($driver === TDbConnection::DRIVER_PGSQL) {
+				} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 					$blob = 'BYTEA';
 				} else {
 					$blob = 'BLOB';
@@ -459,11 +460,11 @@ class TDbCache extends TCache implements \Prado\Util\IDbModule
 		}
 		$db = $this->getDbConnection();
 		$driver = $db->getDriverName();
-		if (in_array($driver, [TDbConnection::DRIVER_MYSQL, TDbConnection::DRIVER_PGSQL, TDbConnection::DRIVER_SQLITE, TDbConnection::DRIVER_SQLSRV, TDbConnection::DRIVER_DBLIB, TDbConnection::DRIVER_OCI, TDbConnection::DRIVER_IBM])) {
+		if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_PGSQL, TDbDriver::DRIVER_SQLITE, TDbDriver::DRIVER_SQLSRV, TDbDriver::DRIVER_DBLIB, TDbDriver::DRIVER_OCI, TDbDriver::DRIVER_IBM])) {
 			$expire = ($expire <= 0) ? 0 : time() + $expire;
-			if (in_array($driver, [TDbConnection::DRIVER_MYSQL, TDbConnection::DRIVER_SQLITE])) {
+			if (in_array($driver, [TDbDriver::DRIVER_MYSQL, TDbDriver::DRIVER_SQLITE])) {
 				$sql = "REPLACE INTO {$this->_cacheTable} (itemkey,value,expire) VALUES (:key,:value,$expire)";
-			} elseif ($driver === TDbConnection::DRIVER_PGSQL) {
+			} elseif ($driver === TDbDriver::DRIVER_PGSQL) {
 				$sql = "INSERT INTO {$this->_cacheTable} (itemkey, value, expire) VALUES (:key, :value, :expire) " .
 					"ON CONFLICT (itemkey) DO UPDATE SET value = EXCLUDED.value, expire = EXCLUDED.expire";
 			} else {

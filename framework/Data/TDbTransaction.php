@@ -37,6 +37,12 @@ use Prado\TPropertyValue;
  * }
  * ```
  *
+ * Since 4.3.3, TDbTransaction supports serial transaction mode for drivers
+ * that always keep an implicit transaction alive (e.g. Firebird/pdo_firebird).
+ * In serial mode, the transaction remains active after commit or rollback
+ * and immediately begins a new explicit transaction. This provides seamless
+ * reuse of the transaction object without additional calls.
+ *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 3.0
  */
@@ -56,6 +62,27 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 		$this->setActive(true);
 		parent::__construct();
 	}
+	
+	
+	/**
+	 * Creates a command for execution.
+	 * @param string $sql SQL statement associated with the new command.
+	 * @throws TDbException if the connection is not active
+	 * @return TDbCommand the DB command
+	 * @since 4.3.3
+	 */
+	public function createCommand($sql)
+	{
+		return $this->getConnection()->createCommand($sql);
+	}
+
+	/**
+	 * @return TDbMetaData
+	 */
+	public function getDbMetaData()
+	{
+		return $this->getConnection()->getDbMetaData();
+	}
 
 	/**
 	 * Commits a transaction.
@@ -73,23 +100,26 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	 */
 	public function commit()
 	{
-		if ($this->_active && $this->_connection->getActive()) {
-			$this->_connection->getPdoInstance()->commit();
-			$this->_active = false;
+		$connection = $this->getConnection();
+		
+		if (!$this->getActive() || !$connection->getActive()) {
+			throw new TDbException('dbtransaction_transaction_inactive');
+		}
+		
+		$pdo = $connection->getPdoInstance();
+		$pdo->commit();
+
+		if ($this->isTransactionComplete()) {
 			// pdo_firebird starts a new implicit transaction immediately after
 			// commit, with a snapshot that may not yet reflect the committed
 			// data. Commit it so the next read starts with a fresh snapshot.
-			/*
-			if ($this->_connection->getAutoCommit() && $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
+			if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
 				try {
 					$pdo->commit();
 				} catch (\Exception $e) {
-					// No implicit transaction was active — safe to ignore.
 				}
 			}
-			*/
-		} else {
-			throw new TDbException('dbtransaction_transaction_inactive');
+			$this->setActive(false);
 		}
 	}
 
@@ -109,23 +139,38 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	 */
 	public function rollback()
 	{
-		if ($this->_active && $this->_connection->getActive()) {
-			$pdo = $this->_connection->getPdoInstance();
-			$pdo->rollBack();
-			$this->_active = false;
+		$connection = $this->getConnection();
+		
+		if (!$this->getActive() || !$connection->getActive()) {
+			throw new TDbException('dbtransaction_transaction_inactive');
+		}
+		
+		$pdo = $connection->getPdoInstance();
+		$pdo->rollBack();
+
+		if ($this->isTransactionComplete()) {
 			// pdo_firebird starts a new implicit transaction immediately after
 			// rollback, with a snapshot that may not yet reflect the rolled-back
 			// state. Commit it so the next read starts with a fresh snapshot.
-			if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'firebird') {
+			if (TDbDriverCapabilities::requiresPostTransactionFlush($pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) {
 				try {
 					$pdo->commit();
 				} catch (\Exception $e) {
-					// No implicit transaction was active — safe to ignore.
 				}
 			}
-		} else {
-			throw new TDbException('dbtransaction_transaction_inactive');
+			$this->setActive(false);
 		}
+	}
+
+	/**
+	 * Children should override this if the transaction is not complete after
+	 * rollback/commit, eg Serial.
+	 * @return bool should the transaction mark as no longer active.
+	 * @since 4.3.3
+	 */
+	public function isTransactionComplete(): bool
+	{
+		return true;
 	}
 
 	/**
@@ -147,8 +192,8 @@ class TDbTransaction extends \Prado\TComponent implements IDataTransaction
 	/**
 	 * @param bool $value whether this transaction is active
 	 */
-	protected function setActive($value)
+	protected function setActive(bool $value)
 	{
-		$this->_active = TPropertyValue::ensureBoolean($value);
+		$this->_active = $value;
 	}
 }

@@ -10,14 +10,8 @@
 
 namespace Prado\Data\Common;
 
-use Prado\Data\Common\Firebird\TFirebirdMetaData;
-use Prado\Data\Common\Ibm\TIbmMetaData;
-use Prado\Data\Common\Mssql\TMssqlMetaData;
-use Prado\Data\Common\Mysql\TMysqlMetaData;
-use Prado\Data\Common\Oracle\TOracleMetaData;
-use Prado\Data\Common\Pgsql\TPgsqlMetaData;
-use Prado\Data\Common\Sqlite\TSqliteMetaData;
 use Prado\Data\TDbConnection;
+use Prado\Data\TDbDriverCapabilities;
 use Prado\Exceptions\TDbException;
 use Prado\Prado;
 
@@ -85,35 +79,20 @@ abstract class TDbMetaData extends \Prado\TComponent
 	public static function getInstance($conn)
 	{
 		$conn->setActive(true); //must be connected before retrieving driver name
-		$driver = $conn->getDriverName();
-		switch (strtolower($driver)) {
-			case TDbConnection::DRIVER_PGSQL:
-				return new TPgsqlMetaData($conn);
-			case TDbConnection::DRIVER_MYSQL:
-				return new TMysqlMetaData($conn);
-			case TDbConnection::DRIVER_SQLITE: //sqlite 3
-			case TDbConnection::DRIVER_SQLITE2: //sqlite 2
-				return new TSqliteMetaData($conn);
-			case TDbConnection::DRIVER_SQLSRV: // sqlsrv driver on windows hosts
-			case TDbConnection::DRIVER_DBLIB: // dblib drivers on linux (and maybe others os) hosts
-				return new TMssqlMetaData($conn);
-			case TDbConnection::DRIVER_OCI:
-				return new TOracleMetaData($conn);
-			case TDbConnection::DRIVER_IBM:
-				return new TIbmMetaData($conn);
-			case TDbConnection::DRIVER_FIREBIRD:
-				return new TFirebirdMetaData($conn);
-			default:
-				$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);
-				if (empty($instances)) {
-					throw new TDbException('dbmetadata_invalid_database_driver', $driver);
-				}
-				$metaData = $instances[0];
-				if ($metaData instanceof static) {
-					throw new TDbException('dbmetadata_not_meta_data', $metaData::class, static::class);
-				}
-				return $metaData;
+		$driver = strtolower($conn->getDriverName());
+		$class = TDbDriverCapabilities::getMetaDataClass($driver);
+		if ($class !== null) {
+			return new $class($conn);
 		}
+		$instances = $conn->raiseEvent('fxDataGetMetaDataInstance', self::class, $conn);
+		if (empty($instances)) {
+			throw new TDbException('dbmetadata_invalid_database_driver', $driver);
+		}
+		$metaData = $instances[0];
+		if ($metaData instanceof static) {
+			throw new TDbException('dbmetadata_not_meta_data', $metaData::class, static::class);
+		}
+		return $metaData;
 	}
 
 	/**
