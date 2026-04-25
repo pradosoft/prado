@@ -30,13 +30,71 @@ use Prado\Prado;
 // $Id: TTarFileExtractor.php 3188 2012-07-12 12:13:23Z ctrlaltca $
 
 /**
- * TTarFileExtractor class
+ * Extracts files from TAR archives.
+ *
+ * Supported formats:
+ *  - Uncompressed tar     (.tar)
+ *  - Gzip-compressed tar  (.tar.gz, .tgz)   — requires the zlib extension
+ *  - Bzip2-compressed tar (.tar.bz2, .tbz2) — requires the bz2 extension
+ *  - LZMA-compressed tar  (.tar.xz, .txz)   — requires the `xz` or `xzdec` system command
+ *
+ * The format is detected from magic bytes. File extension is used as a fallback when
+ * bytes are unavailable, for example when passed a remote URL before the file is downloaded.
+ *
+ * Remote archives (http://, https://, and ftp://) are downloaded to a system temp file,
+ * extracted, and the temp file is deleted automatically on completion.
+ *
+ * Security — in strict mode (the default) extraction is aborted if any entry would escape
+ * the destination directory (Zip Slip Attack), or point a symlink or hard link outside it.
+ * With strict mode disabled those entries are skipped and recorded via {@see getSkippedFiles()}.
+ *
+ * Basic usage:
+ * ```php
+ * $extractor = new TTarFileExtractor('/path/to/archive.tar.gz');
+ * $extractor->extract('/destination/directory');
+ * ```
+ *
+ * Non-strict extraction (skip bad entries, continue):
+ * ```php
+ * $extractor = new TTarFileExtractor('https://example.com/release.tar.xz');
+ * $extractor->setStrict(false)->extract('/opt/app');
+ * if ($extractor->hasSkippedFiles()) {
+ *     foreach ($extractor->getSkippedFiles() as $entry) {
+ *         Prado::warning($entry['type'] . ': ' . $entry['filename'], self::class);
+ *     }
+ * }
+ * ```
  *
  * @author Vincent Blavet <vincent@phpconcept.net>
+ * @author Brad Anderson <belisoful@icloud.com> Zip Slip Safeguards, decompression
  * @since 3.0
  */
 class TTarFileExtractor
 {
+	/**
+	 * @var int Uncompressed tar archive
+	 * @since 4.3.3
+	 */
+	public const COMPRESSION_NONE = 0;
+
+	/**
+	 * @var int Gzip-compressed tar (.tar.gz, .tgz)
+	 * @since 4.3.3
+	 */
+	public const COMPRESSION_GZIP = 1;
+
+	/**
+	 * @var int Bzip2-compressed tar (.tar.bz2, .tbz2)
+	 * @since 4.3.3
+	 */
+	public const COMPRESSION_BZIP2 = 2;
+
+	/**
+	 * @var int LZMA-compressed tar (.tar.xz, .txz)
+	 * @since 4.3.3
+	 */
+	public const COMPRESSION_LZMA = 3;
+
 	/**
 	 * @var string Name of the Tar
 	 */
@@ -48,7 +106,13 @@ class TTarFileExtractor
 	private $_file = 0;
 
 	/**
-	 * @var string Local Tar name of a remote Tar (http:// or ftp://)
+	 * @var float the delay to wait for downloading url before the timeout, default 6 seconds
+	 * @since 4.3.3
+	 */
+	private $_urlTimeout = 6.0;
+
+	/**
+	 * @var string Local Tar name of a remote Tar (http://, https://, or ftp://)
 	 */
 	private $_temp_tarname = '';
 
@@ -56,6 +120,7 @@ class TTarFileExtractor
 	 * @var bool Whether to fail on security issues (zip slip, symlink/hardlink attacks).
 	 *            When true (default), extraction fails on any security issue.
 	 *            When false, security issues are logged but extraction continues.
+	 * @since 4.3.3
 	 */
 	private $_strict = true;
 
@@ -63,8 +128,21 @@ class TTarFileExtractor
 	 * @var array List of skipped files due to security issues when Strict is false.
 	 *            Each entry contains: type, filename, linkname (if symlink/hardlink),
 	 *            header copy, timestamp
+	 * @since 4.3.3
 	 */
 	private array $_skippedFiles = [];
+
+	/**
+	 * @var int Compression type detected for this archive for processing only
+	 * @since 4.3.3
+	 */
+	private $_compression = self::COMPRESSION_NONE;
+
+	/**
+	 * @var int Compression type detected for this archive (persists after extraction)
+	 * @since 4.3.3
+	 */
+	private $_detectedCompression = self::COMPRESSION_NONE;
 
 	/**
 	 * Archive_Tar Class constructor. This flavour of the constructor only
@@ -78,15 +156,21 @@ class TTarFileExtractor
 		$this->_tarname = $p_tarname;
 	}
 
+	/**
+	 * Destructor.
+	 * Cleans up temporary files and closes file handles.
+	 */
 	public function __destruct()
 	{
 		$this->_close();
-		// ----- Look for a local copy to delete
-		if ($this->_temp_tarname != '') {
-			@unlink($this->_temp_tarname);
-		}
 	}
 
+	/**
+	 * Extracts the archive to the specified path.
+	 *
+	 * @param string $p_path The path where to extract the archive. If empty, extracts to current directory.
+	 * @return bool True on success, false on error.
+	 */
 	public function extract($p_path = '')
 	{
 		return $this->extractModify($p_path, '');
@@ -98,6 +182,7 @@ class TTarFileExtractor
 	 * When not strict, security issues are logged but extraction continues.
 	 *
 	 * @return bool
+	 * @since 4.3.3
 	 */
 	public function getStrict(): bool
 	{
@@ -111,6 +196,7 @@ class TTarFileExtractor
 	 *
 	 * @param bool $value
 	 * @return static $this
+	 * @since 4.3.3
 	 */
 	public function setStrict(bool $value): static
 	{
@@ -122,6 +208,7 @@ class TTarFileExtractor
 	 * Returns whether any files were skipped due to security issues.
 	 *
 	 * @return bool True if files were skipped, false otherwise
+	 * @since 4.3.3
 	 */
 	public function hasSkippedFiles(): bool
 	{
@@ -137,6 +224,7 @@ class TTarFileExtractor
 	 *   - linkname: string|null The link target (for symlink/hardlink)
 	 *   - header: array Copy of the tar header entry
 	 *   - timestamp: float Unix timestamp when the file was skipped
+	 * @since 4.3.3
 	 */
 	public function getSkippedFiles(): array
 	{
@@ -147,11 +235,210 @@ class TTarFileExtractor
 	 * Clears the skipped files list.
 	 *
 	 * @return static $this
+	 * @since 4.3.3
 	 */
 	public function clearSkippedFiles(): static
 	{
 		$this->_skippedFiles = [];
 		return $this;
+	}
+
+	/**
+	 * Returns the 'http' and 'https' timeout time in seconds for fetching URLs.
+	 * @return float Timeout time for fetching URLs, default 6.0 seconds
+	 * @since 4.3.3
+	 */
+	public function getUrlTimeout(): float
+	{
+		return $this->_urlTimeout;
+	}
+
+	/**
+	 * Sets the 'http' and 'https' timeout time in seconds for fetching URLs.
+	 * @param float $value The timeout time for fetching URLs.
+	 * @return static $this
+	 * @since 4.3.3
+	 */
+	public function setUrlTimeout(float $value): static
+	{
+		$this->_urlTimeout = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the compression type of the archive.
+	 *
+	 * @return int One of the COMPRESSION_* constants
+	 * @since 4.3.3
+	 */
+	public function getCompression(): int
+	{
+		return $this->_detectedCompression;
+	}
+
+	/**
+	 * Detects compression type from file magic bytes and extension.
+	 *
+	 * For local files, magic bytes are checked first (most reliable).
+	 * For URLs, magic-byte detection is skipped entirely — the URL is never
+	 * opened here; extension-based detection is used instead, since at this
+	 * call site the URL has already been downloaded to a local temp file when
+	 * the file path is a URL (only unit tests call this method directly with
+	 * a URL string).
+	 *
+	 * @param string $tarname The tar archive filename or URL
+	 * @return int One of the COMPRESSION_* constants
+	 * @since 4.3.3
+	 */
+	private function _detectCompression(string $tarname): int
+	{
+		// Check magic bytes first (most reliable) — but only for local files.
+		// Skip fopen for remote URLs: attempting to open an unreachable URL
+		// would stall until the system timeout fires.
+		$isUrl = str_starts_with($tarname, 'http://')
+			|| str_starts_with($tarname, 'https://')
+			|| str_starts_with($tarname, 'ftp://');
+		$handle = $isUrl ? false : @fopen($tarname, 'rb');
+		if ($handle) {
+			$magic = fread($handle, 6);
+			fclose($handle);
+
+			if ($magic !== false && strlen($magic) >= 2) {
+				$bytes = array_values(unpack('C6', $magic));
+
+				// gzip: 0x1f 0x8b
+				if ($bytes[0] === 0x1f && $bytes[1] === 0x8b) {
+					if (function_exists('gzopen')) {
+						return self::COMPRESSION_GZIP;
+					}
+				}
+				// bzip2: 'BZ' (0x42 0x5a)
+				if ($bytes[0] === 0x42 && $bytes[1] === 0x5a) {
+					if (function_exists('bzopen')) {
+						return self::COMPRESSION_BZIP2;
+					}
+				}
+				// lzma/xz: 0xfd followed by "7zXZ\x00"
+				if ($bytes[0] === 0xfd && strlen($magic) >= 6) {
+					if ($magic === "\xfd\x37\x7a\x58\x5a\x00") {
+						// Check for xz command availability
+						$xzDec = trim(shell_exec('which xzdec'));
+						$xzCmd = trim(shell_exec('which xz'));
+						if ($xzDec || $xzCmd) {
+							return self::COMPRESSION_LZMA;
+						}
+					}
+				}
+			}
+		}
+
+		// Fallback to extension detection (with availability checks)
+		$lower = strtolower($tarname);
+		if (str_ends_with($lower, '.tar.gz') || str_ends_with($lower, '.tgz')) {
+			if (function_exists('gzopen')) {
+				return self::COMPRESSION_GZIP;
+			}
+		}
+		if (str_ends_with($lower, '.tar.bz2') || str_ends_with($lower, '.tbz2')) {
+			if (function_exists('bzopen')) {
+				return self::COMPRESSION_BZIP2;
+			}
+		}
+		if (str_ends_with($lower, '.tar.xz') || str_ends_with($lower, '.txz')) {
+			// Check for xz command availability
+			$xzDec = trim(shell_exec('which xzdec'));
+			$xzCmd = trim(shell_exec('which xz'));
+			if ($xzDec || $xzCmd) {
+				return self::COMPRESSION_LZMA;
+			}
+		}
+		return self::COMPRESSION_NONE;
+	}
+
+	/**
+	 * Opens a compressed file for reading, returning a stream handle.
+	 *
+	 * @param string $filename The file to open
+	 * @param int $compression The compression type (COMPRESSION_*)
+	 * @param bool $isTemporary
+	 * @return false|resource The stream handle, or false on failure
+	 * @since 4.3.3
+	 */
+	private function _openCompressedRead(string &$filename, int $compression, bool $isTemporary)
+	{
+		switch ($compression) {
+			case self::COMPRESSION_GZIP:
+				if (!function_exists('gzopen')) {
+					$this->_error('zlib extension is required for gzip compression');
+					return false;
+				}
+				$handle = @gzopen($filename, 'rb');
+				if ($handle === false) {
+					$this->_error('Unable to open gzip archive: ' . $filename);
+					return false;
+				}
+				return $handle;
+
+			case self::COMPRESSION_BZIP2:
+				if (!function_exists('bzopen')) {
+					$this->_error('bzip2 extension is required for bzip2 compression');
+					return false;
+				}
+				$handle = @bzopen($filename, 'r');
+				if ($handle === false) {
+					$this->_error('Unable to open bzip2 archive: ' . $filename);
+					return false;
+				}
+				return $handle;
+
+			case self::COMPRESSION_LZMA:
+				// Check for xz command availability
+				$xzDec = trim(shell_exec('which xzdec') ?: '');
+				$xzCmd = trim(shell_exec('which xz') ?: '');
+				if (!$xzDec && !$xzCmd) {
+					$this->_error('xz command is required for LZMA compression');
+					return false;
+				}
+				// For LZMA/XZ, decompress to a temp file first
+				$tempFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('lzma') . '.tar';
+
+				// xzdec writes to stdout with no flags required (filename only).
+				// xz uses -dc (decompress, stdout). Both redirect to the temp file.
+				$command = $xzDec
+					? escapeshellarg($xzDec) . ' ' . escapeshellarg($filename) . ' > ' . escapeshellarg($tempFile)
+					: escapeshellarg($xzCmd) . ' -dc ' . escapeshellarg($filename) . ' > ' . escapeshellarg($tempFile);
+
+				$output = [];
+				$returnVar = -1;
+				exec($command, $output, $returnVar);
+
+				if (!file_exists($tempFile)) {
+					if ($returnVar !== 0) {
+						$this->_error('Unable to decompress LZMA archive: decompression command failed');
+						return false;
+					}
+					$this->_error('Unable to decompress LZMA archive: temp file not created');
+					return false;
+				}
+
+				if ($isTemporary) {
+					// Delete the original downloaded/compressed file now that it has been
+					// decompressed. Update $filename (by reference) to point to the
+					// decompressed tar so _openRead() can update _temp_tarname accordingly.
+					@unlink($filename);
+					$filename = $tempFile;
+				}
+
+				$handle = @fopen($tempFile, 'rb');
+				if ($handle === false) {
+					$this->_error('Unable to open decompressed LZMA file: ' . $tempFile);
+					return false;
+				}
+				return $handle;
+
+			default:
+				return false;
+		}
 	}
 
 	/**
@@ -186,6 +473,13 @@ class TTarFileExtractor
 	 * @return bool               true on success, false on error.
 	 * @access public
 	 */
+	/**
+	 * Extracts the archive with optional path removal.
+	 *
+	 * @param string $p_path         The path where to extract the archive.
+	 * @param string $p_remove_path  Path to remove from extracted file paths.
+	 * @return bool True on success, false on error.
+	 */
 	protected function extractModify($p_path, $p_remove_path)
 	{
 		$v_result = true;
@@ -205,11 +499,23 @@ class TTarFileExtractor
 		return $v_result;
 	}
 
+	/**
+	 * Throws an exception with the specified message.
+	 *
+	 * @param string $p_message The error message.
+	 * @throws \Exception Always throws an exception with the given message.
+	 */
 	protected function _error($p_message)
 	{
 		throw new \Exception($p_message);
 	}
 
+	/**
+	 * Checks if the given file exists and is a regular file.
+	 *
+	 * @param null|string $p_filename The filename to check. If null, uses the internal tar name.
+	 * @return bool True if the file exists and is a regular file, false otherwise.
+	 */
 	private function _isArchive($p_filename = null)
 	{
 		if ($p_filename == null) {
@@ -219,13 +525,31 @@ class TTarFileExtractor
 		return @is_file($p_filename);
 	}
 
+	/**
+	 * Opens the tar file for reading, handling local and remote files.
+	 *
+	 * For remote URLs (http://, https://, ftp://), downloads the file to a temporary location.
+	 * Detects compression type and opens with the appropriate handler.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
 	private function _openRead()
 	{
-		if (strtolower(substr($this->_tarname, 0, 7)) == 'http://') {
+		$isTemporary = false;
+		// Determine the file to use (handle remote URLs)
+		if (str_starts_with($this->_tarname, 'http://') ||
+			str_starts_with($this->_tarname, 'https://') ||
+			str_starts_with($this->_tarname, 'ftp://')) {
 			// ----- Look if a local copy need to be done
 			if ($this->_temp_tarname == '') {
-				$this->_temp_tarname = uniqid('tar') . '.tmp';
-				if (!$v_file_from = @fopen($this->_tarname, 'rb')) {
+				$timeout = $this->getUrlTimeout();
+				$this->_temp_tarname = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('tar') . '.tmp';
+				// Use a short timeout so an unreachable URL fails fast instead of stalling
+				$ctx = stream_context_create([
+					'http' => ['timeout' => $timeout],
+					'https' => ['timeout' => $timeout],
+				]);
+				if (!$v_file_from = @fopen($this->_tarname, 'rb', false, $ctx)) {
 					$this->_error('Unable to open in read mode \''
 							  . $this->_tarname . '\'');
 					$this->_temp_tarname = '';
@@ -246,53 +570,66 @@ class TTarFileExtractor
 
 			// ----- File to open if the local copy
 			$v_filename = $this->_temp_tarname;
+			$isTemporary = true;
 		} else {
 			// ----- File to open if the normal Tar file
 			$v_filename = $this->_tarname;
 		}
 
-		$this->_file = @fopen($v_filename, "rb");
+		// Detect compression type
+		$this->_compression = $this->_detectCompression($v_filename);
+		$this->_detectedCompression = $this->_compression;
 
-		if ($this->_file == 0) {
-			$this->_error('Unable to open in read mode \'' . $v_filename . '\'');
-			return false;
+		// Open with appropriate handler
+		if ($this->_compression !== self::COMPRESSION_NONE) {
+			$this->_file = $this->_openCompressedRead($v_filename, $this->_compression, $isTemporary);
+			if ($this->_file === false) {
+				return false;
+			}
+			if ($isTemporary) {
+				$this->_temp_tarname = $v_filename;
+			}
+		} else {
+			$this->_file = @fopen($v_filename, 'rb');
+			if ($this->_file == 0) {
+				$this->_error('Unable to open in read mode \'' . $v_filename . '\'');
+				return false;
+			}
 		}
 
 		return true;
 	}
 
+	/**
+	 * Closes the file handle and cleans up temporary files.
+	 *
+	 * Handles closing for both regular file handles and compressed stream handles
+	 * (gzopen, bzopen). Also removes temporary files created for remote URL handling
+	 * and decompression processes.
+	 *
+	 * @return bool True on success.
+	 */
 	private function _close()
 	{
-		//if (isset($this->_file)) {
-		if (is_resource($this->_file)) {
-			@fclose($this->_file);
+		// Close the file handle (works for both regular and compressed streams)
+		if ($this->_file !== 0 && $this->_file !== false) {
+			if ($this->_compression === self::COMPRESSION_GZIP) {
+				@gzclose($this->_file);
+			} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
+				@bzclose($this->_file);
+			} else {
+				@fclose($this->_file);
+			}
 			$this->_file = 0;
 		}
 
-		// ----- Look if a local copy need to be erase
-		// Note that it might be interesting to keep the url for a time : ToDo
+		// Reset runtime compression state
+		$this->_compression = self::COMPRESSION_NONE;
+
 		if ($this->_temp_tarname != '') {
 			@unlink($this->_temp_tarname);
 			$this->_temp_tarname = '';
 		}
-
-		return true;
-	}
-
-	private function _cleanFile()
-	{
-		$this->_close();
-
-		// ----- Look for a local copy
-		if ($this->_temp_tarname != '') {
-			// ----- Remove the local copy but not the remote tarname
-			@unlink($this->_temp_tarname);
-			$this->_temp_tarname = '';
-		} else {
-			// ----- Remove the local tarname file
-			@unlink($this->_tarname);
-		}
-		$this->_tarname = '';
 
 		return true;
 	}
@@ -304,6 +641,7 @@ class TTarFileExtractor
 	 * @param string $filename The filename that was skipped
 	 * @param null|string $linkname The link target (for symlink/hardlink)
 	 * @param array $header Copy of the tar header entry
+	 * @since 4.3.3
 	 */
 	private function _addSkippedFile(string $type, string $filename, ?string $linkname, array $header): void
 	{
@@ -323,20 +661,37 @@ class TTarFileExtractor
 	private function _readBlock()
 	{
 		$v_block = null;
-		if (is_resource($this->_file)) {
-			$v_block = @fread($this->_file, 512);
+		if ($this->_file !== 0 && $this->_file !== false) {
+			if ($this->_compression === self::COMPRESSION_GZIP) {
+				$v_block = @gzread($this->_file, 512);
+			} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
+				$v_block = @bzread($this->_file, 512);
+			} else {
+				$v_block = @fread($this->_file, 512);
+			}
 		}
 		return $v_block;
 	}
 
 	private function _jumpBlock($p_len = null)
 	{
-		if (is_resource($this->_file)) {
-			if ($p_len === null) {
-				$p_len = 1;
-			}
+		if ($this->_file === 0 || $this->_file === false) {
+			return true;
+		}
 
-			@fseek($this->_file, @ftell($this->_file) + ($p_len * 512));
+		if ($p_len === null) {
+			$p_len = 1;
+		}
+
+		$bytesToSkip = $p_len * 512;
+
+		// Compressed streams don't support seeking, so read and discard
+		if ($this->_compression === self::COMPRESSION_GZIP) {
+			@gzread($this->_file, $bytesToSkip);
+		} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
+			@bzread($this->_file, $bytesToSkip);
+		} else {
+			@fseek($this->_file, @ftell($this->_file) + $bytesToSkip);
 		}
 		return true;
 	}
@@ -704,6 +1059,7 @@ class TTarFileExtractor
 	 * @param string $v_header_filename The constructed file path from tar entry
 	 * @param string $p_path The extraction destination path
 	 * @return bool True if path is contained, false if it escapes
+	 * @since 4.3.3
 	 */
 	private function _validatePathSecurity($v_header_filename, $p_path)
 	{
@@ -724,6 +1080,7 @@ class TTarFileExtractor
 	 * @param string $v_dir The directory where the symlink is being created
 	 * @param string $p_path The extraction destination path
 	 * @return bool True if target is safe, false if it escapes
+	 * @since 4.3.3
 	 */
 	private function _validateSymlinkTarget($v_linkname, $v_dir, $p_path)
 	{
@@ -757,6 +1114,7 @@ class TTarFileExtractor
 	 * @param string $v_dir The directory where the hard link is being created
 	 * @param string $p_path The extraction destination path
 	 * @return bool True if target is safe, false if it escapes
+	 * @since 4.3.3
 	 */
 	private function _validateHardLinkTarget($v_linkname, $v_dir, $p_path)
 	{

@@ -12,7 +12,7 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$this->testDir = sys_get_temp_dir() . '/prado_tar_test_' . uniqid();
 		$this->extractDir = $this->testDir . '/extract';
-		mkdir($this->extractDir, 0777, true);
+		mkdir($this->extractDir, 0o777, true);
 	}
 
 	protected function tearDown(): void
@@ -66,12 +66,12 @@ class TTarFileExtractorTest extends TestCase
 		$fp = fopen($tarFile, 'wb');
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
-		
+
 		unlink($tarFile);
 	}
 
@@ -79,14 +79,14 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/single.tar';
 		$this->createTar($tarFile, 'test.txt', 'Hello World');
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/test.txt');
 		$this->assertEquals('Hello World', file_get_contents($this->extractDir . '/test.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -94,16 +94,16 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/multiple.tar';
 		$this->createTarWithMultiple($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/file1.txt');
 		$this->assertFileExists($this->extractDir . '/file2.txt');
 		$this->assertEquals('Content 1', file_get_contents($this->extractDir . '/file1.txt'));
 		$this->assertEquals('Content 2', file_get_contents($this->extractDir . '/file2.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -111,27 +111,27 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/with_dir.tar';
 		$this->createTarWithDirectory($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/subdir');
 		$this->assertFileExists($this->extractDir . '/subdir/nested.txt');
 		$this->assertEquals('Nested content', file_get_contents($this->extractDir . '/subdir/nested.txt'));
-		
+
 		unlink($tarFile);
 	}
 
 	public function testExtractNonExistentTarThrowsException()
 	{
 		$tarFile = $this->testDir . '/nonexistent.tar';
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Unable to open in read mode');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
@@ -140,15 +140,15 @@ class TTarFileExtractorTest extends TestCase
 		$tarFile = $this->testDir . '/timestamp.tar';
 		$expectedMtime = time() - 3600;
 		$this->createTarWithMtime($tarFile, 'timed.txt', 'Timestamp content', $expectedMtime);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/timed.txt');
 		$actualMtime = filemtime($this->extractDir . '/timed.txt');
 		$this->assertEquals($expectedMtime, $actualMtime);
-		
+
 		unlink($tarFile);
 	}
 
@@ -156,13 +156,14 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/corrupted.tar';
 		$fp = fopen($tarFile, 'wb');
-		
-		$header = pack("a100a8a8a8a12a12a8", 
-			"corrupted.txt", 
-			"0000644", 
-			"0000000", 
-			"0000000", 
-			sprintf("%011o", 5), 
+
+		$header = pack(
+			"a100a8a8a8a12a12a8",
+			"corrupted.txt",
+			"0000644",
+			"0000000",
+			"0000000",
+			sprintf("%011o", 5),
 			sprintf("%011o", time()),
 			"        "
 		);
@@ -176,23 +177,23 @@ class TTarFileExtractorTest extends TestCase
 		$header .= pack("a155", "");
 		$header .= pack("a12", "");
 		$header = str_pad($header, 512, "\0");
-		
+
 		$checksum = 0;
 		for ($i = 0; $i < 512; $i++) {
 			$checksum += ord($header[$i]);
 		}
 		$header = substr($header, 0, 148) . sprintf("%06o ", $checksum + 1) . substr($header, 155);
-		
+
 		fwrite($fp, $header);
 		fwrite($fp, str_repeat("\0", 512));
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Invalid checksum');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
@@ -204,12 +205,12 @@ class TTarFileExtractorTest extends TestCase
 		fwrite($fp, $header);
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
-		
+
 		unlink($tarFile);
 	}
 
@@ -217,14 +218,14 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/special.tar';
 		$this->createTar($tarFile, 'file with spaces.txt', 'Special content');
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/file with spaces.txt');
 		$this->assertEquals('Special content', file_get_contents($this->extractDir . '/file with spaces.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -233,14 +234,14 @@ class TTarFileExtractorTest extends TestCase
 		$tarFile = $this->testDir . '/blocks.tar';
 		$content = str_repeat('A', 1536);
 		$this->createTar($tarFile, 'large.txt', $content);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/large.txt');
 		$this->assertEquals($content, file_get_contents($this->extractDir . '/large.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -249,14 +250,14 @@ class TTarFileExtractorTest extends TestCase
 		$tarFile = $this->testDir . '/binary.tar';
 		$binaryContent = pack("c*", 0x00, 0x01, 0x02, 0xFF, 0xFE, 0xFD);
 		$this->createTar($tarFile, 'binary.dat', $binaryContent);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/binary.dat');
 		$this->assertEquals($binaryContent, file_get_contents($this->extractDir . '/binary.dat'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -264,7 +265,7 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/safe_symlink.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$content = 'Target content';
 		$header = $this->createTarHeader('target.txt', strlen($content), '0');
 		fwrite($fp, $header);
@@ -273,22 +274,22 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		$linkHeader = $this->createTarHeader('link.txt', 0, '2', 'target.txt');
 		fwrite($fp, $linkHeader);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/target.txt');
 		$this->assertFileExists($this->extractDir . '/link.txt');
 		$this->assertTrue(is_link($this->extractDir . '/link.txt'));
 		$this->assertEquals('target.txt', readlink($this->extractDir . '/link.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -296,25 +297,25 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/relative_symlink.tar';
 		$fp = fopen($tarFile, 'wb');
-		
-		mkdir($this->extractDir . '/subdir', 0777, true);
-		mkdir($this->extractDir . '/subdir/linktarget', 0777, true);
+
+		mkdir($this->extractDir . '/subdir', 0o777, true);
+		mkdir($this->extractDir . '/subdir/linktarget', 0o777, true);
 		file_put_contents($this->extractDir . '/subdir/linktarget/file.txt', 'Content');
-		
+
 		$linkHeader = $this->createTarHeader('subdir/mylink', 0, '2', 'linktarget/file.txt');
 		fwrite($fp, $linkHeader);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/subdir/mylink');
 		$this->assertTrue(is_link($this->extractDir . '/subdir/mylink'));
 		$this->assertEquals('linktarget/file.txt', readlink($this->extractDir . '/subdir/mylink'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -322,7 +323,7 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/safe_hardlink.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$content = 'Original content';
 		$header = $this->createTarHeader('original.txt', strlen($content), '0');
 		fwrite($fp, $header);
@@ -331,21 +332,21 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		$linkHeader = $this->createTarHeader('hardlink.txt', 0, '1', 'original.txt');
 		fwrite($fp, $linkHeader);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/original.txt');
 		$this->assertFileExists($this->extractDir . '/hardlink.txt');
 		$this->assertEquals($content, file_get_contents($this->extractDir . '/hardlink.txt'));
-		
+
 		unlink($tarFile);
 	}
 
@@ -354,7 +355,7 @@ class TTarFileExtractorTest extends TestCase
 		$tarFile = $this->testDir . '/zipslip.tar';
 		$content = 'Malicious content';
 		$filename = "subdir/../../../malicious.txt";
-		
+
 		$fp = fopen($tarFile, 'wb');
 		$header = $this->createTarHeader($filename, strlen($content), '0');
 		fwrite($fp, $header);
@@ -365,12 +366,12 @@ class TTarFileExtractorTest extends TestCase
 		}
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Zip Slip path traversal attempt detected');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
@@ -378,18 +379,18 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/symlink_absolute.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("mylink", 0, '2', '/etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Symlink target outside extraction directory');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
@@ -397,18 +398,18 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/hardlink_absolute.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("mylink", 0, '1', '/etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Hard link target outside extraction directory');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
@@ -416,40 +417,41 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/symlink_traversal.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("subdir/../../../mylink", 0, '2', '../../etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessageMatches('/(Zip Slip path traversal|Symlink target outside)/');
-		
+
 		$extractor->extract($this->extractDir);
 	}
 
 	private function createTarHeader(
-		string $filename, 
-		int $size, 
-		string $typeflag = '0', 
+		string $filename,
+		int $size,
+		string $typeflag = '0',
 		string $linkname = ''
 	): string {
 		$mtime = sprintf("%011o", time());
 		$size_oct = sprintf("%011o", $size);
-		
-		$header = pack("a100a8a8a8a12a12a8", 
-			$filename, 
-			"0000644", 
-			"0000000", 
-			"0000000", 
+
+		$header = pack(
+			"a100a8a8a8a12a12a8",
+			$filename,
+			"0000644",
+			"0000000",
+			"0000000",
 			$size_oct,
 			$mtime,
 			"        "
 		);
-		
+
 		$header .= pack("a1", $typeflag);
 		$header .= pack("a100", $linkname);
 		$header .= pack("a6", "ustar");
@@ -459,9 +461,9 @@ class TTarFileExtractorTest extends TestCase
 		$header .= pack("a8a8", "", "");
 		$header .= pack("a155", "");
 		$header .= pack("a12", "");
-		
+
 		$header = str_pad($header, 512, "\0");
-		
+
 		$checksum = 0;
 		for ($i = 0; $i < 148; $i++) {
 			$checksum += ord($header[$i]);
@@ -472,17 +474,17 @@ class TTarFileExtractorTest extends TestCase
 		for ($i = 156; $i < 512; $i++) {
 			$checksum += ord($header[$i]);
 		}
-		
+
 		$checksumStr = sprintf("%06o\0 ", $checksum);
 		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-		
+
 		return $header;
 	}
 
 	private function createTar(string $tarFile, string $filename, string $content, string $prefix = ''): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$fullFilename = $prefix . $filename;
 		$header = $this->createTarHeader($fullFilename, strlen($content), '0');
 		fwrite($fp, $header);
@@ -491,29 +493,30 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
-		
+
 		fclose($fp);
 	}
 
 	private function createTarWithMtime(string $tarFile, string $filename, string $content, int $mtime): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$size_oct = sprintf("%011o", strlen($content));
 		$mtime_oct = sprintf("%011o", $mtime);
-		
-		$header = pack("a100a8a8a8a12a12a8", 
-			$filename, 
-			"0000644", 
-			"0000000", 
-			"0000000", 
+
+		$header = pack(
+			"a100a8a8a8a12a12a8",
+			$filename,
+			"0000644",
+			"0000000",
+			"0000000",
 			$size_oct,
 			$mtime_oct,
 			"        "
 		);
-		
+
 		$header .= pack("a1", "0");
 		$header .= pack("a100", "");
 		$header .= pack("a6", "ustar");
@@ -523,9 +526,9 @@ class TTarFileExtractorTest extends TestCase
 		$header .= pack("a8a8", "", "");
 		$header .= pack("a155", "");
 		$header .= pack("a12", "");
-		
+
 		$header = str_pad($header, 512, "\0");
-		
+
 		$checksum = 0;
 		for ($i = 0; $i < 148; $i++) {
 			$checksum += ord($header[$i]);
@@ -536,31 +539,31 @@ class TTarFileExtractorTest extends TestCase
 		for ($i = 156; $i < 512; $i++) {
 			$checksum += ord($header[$i]);
 		}
-		
+
 		$checksumStr = sprintf("%06o\0 ", $checksum);
 		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-		
+
 		fwrite($fp, $header);
 		fwrite($fp, $content);
 		$padding = 512 - (strlen($content) % 512);
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
-		
+
 		fclose($fp);
 	}
 
 	private function createTarWithMultiple(string $tarFile): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$entries = [
 			['name' => 'file1.txt', 'content' => 'Content 1'],
 			['name' => 'file2.txt', 'content' => 'Content 2'],
 		];
-		
+
 		foreach ($entries as $entry) {
 			$header = $this->createTarHeader($entry['name'], strlen($entry['content']), '0');
 			fwrite($fp, $header);
@@ -570,19 +573,19 @@ class TTarFileExtractorTest extends TestCase
 				fwrite($fp, str_repeat("\0", $padding));
 			}
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
-		
+
 		fclose($fp);
 	}
 
 	private function createTarWithDirectory(string $tarFile): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$dirHeader = $this->createTarHeader("subdir/", 0, '5');
 		fwrite($fp, $dirHeader);
-		
+
 		$nestedContent = 'Nested content';
 		$fileHeader = $this->createTarHeader("subdir/nested.txt", strlen($nestedContent), '0');
 		fwrite($fp, $fileHeader);
@@ -591,9 +594,9 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
-		
+
 		fclose($fp);
 	}
 
@@ -623,12 +626,12 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/safe.tar';
 		$this->createTar($tarFile, 'safe.txt', 'Safe content');
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->extract($this->extractDir);
-		
+
 		$this->assertFalse($extractor->hasSkippedFiles());
-		
+
 		unlink($tarFile);
 	}
 
@@ -636,12 +639,12 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/safe.tar';
 		$this->createTar($tarFile, 'safe.txt', 'Safe content');
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->extract($this->extractDir);
-		
+
 		$this->assertEquals([], $extractor->getSkippedFiles());
-		
+
 		unlink($tarFile);
 	}
 
@@ -657,13 +660,13 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/zipslip.tar';
 		$this->createZipSlipTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$this->assertTrue($extractor->getStrict());
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Zip Slip path traversal attempt detected');
-		
+
 		try {
 			$extractor->extract($this->extractDir);
 		} finally {
@@ -675,12 +678,12 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/zipslip.tar';
 		$this->createZipSlipTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
@@ -690,7 +693,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertNull($skipped[0]['linkname']);
 		$this->assertIsArray($skipped[0]['header']);
 		$this->assertArrayHasKey('timestamp', $skipped[0]);
-		
+
 		unlink($tarFile);
 	}
 
@@ -698,13 +701,13 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/symlink.tar';
 		$this->createSymlinkOutsideTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$this->assertTrue($extractor->getStrict());
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Symlink target outside extraction directory');
-		
+
 		try {
 			$extractor->extract($this->extractDir);
 		} finally {
@@ -716,12 +719,12 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/symlink.tar';
 		$this->createSymlinkOutsideTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
@@ -729,7 +732,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertEquals('symlink', $skipped[0]['type']);
 		$this->assertStringContainsString('mylink', $skipped[0]['filename']);
 		$this->assertEquals('/etc/passwd', $skipped[0]['linkname']);
-		
+
 		unlink($tarFile);
 	}
 
@@ -737,13 +740,13 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/hardlink.tar';
 		$this->createHardLinkOutsideTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$this->assertTrue($extractor->getStrict());
-		
+
 		$this->expectException(\Exception::class);
 		$this->expectExceptionMessage('Hard link target outside extraction directory');
-		
+
 		try {
 			$extractor->extract($this->extractDir);
 		} finally {
@@ -755,12 +758,12 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/hardlink.tar';
 		$this->createHardLinkOutsideTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
@@ -768,7 +771,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertEquals('hardlink', $skipped[0]['type']);
 		$this->assertStringContainsString('mylink', $skipped[0]['filename']);
 		$this->assertEquals('/etc/passwd', $skipped[0]['linkname']);
-		
+
 		unlink($tarFile);
 	}
 
@@ -776,7 +779,7 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/multi_malicious.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$content1 = 'Safe content';
 		$header1 = $this->createTarHeader('safe.txt', strlen($content1), '0');
 		fwrite($fp, $header1);
@@ -785,7 +788,7 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding1 < 512) {
 			fwrite($fp, str_repeat("\0", $padding1));
 		}
-		
+
 		$content2 = 'Malicious!';
 		$header2 = $this->createTarHeader("subdir/../../../malicious.txt", strlen($content2), '0');
 		fwrite($fp, $header2);
@@ -794,10 +797,10 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding2 < 512) {
 			fwrite($fp, str_repeat("\0", $padding2));
 		}
-		
+
 		$header3 = $this->createTarHeader("link_outside", 0, '2', '/etc/passwd');
 		fwrite($fp, $header3);
-		
+
 		$content4 = 'Another safe';
 		$header4 = $this->createTarHeader('safe2.txt', strlen($content4), '0');
 		fwrite($fp, $header4);
@@ -806,24 +809,24 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding4 < 512) {
 			fwrite($fp, str_repeat("\0", $padding4));
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/safe.txt');
 		$this->assertFileExists($this->extractDir . '/safe2.txt');
 		$this->assertFileDoesNotExist($this->extractDir . '/malicious.txt');
-		
+
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
 		$this->assertCount(2, $skipped);
-		
+
 		unlink($tarFile);
 	}
 
@@ -831,17 +834,17 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/zipslip.tar';
 		$this->createZipSlipTar($tarFile);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
 		$extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($extractor->hasSkippedFiles());
-		
+
 		$extractor->clearSkippedFiles();
 		$this->assertFalse($extractor->hasSkippedFiles());
 		$this->assertEquals([], $extractor->getSkippedFiles());
-		
+
 		unlink($tarFile);
 	}
 
@@ -849,24 +852,24 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/symlink_rel.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("subdir/mylink", 0, '2', '../../../etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('symlink', $skipped[0]['type']);
-		
+
 		unlink($tarFile);
 	}
 
@@ -874,31 +877,31 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/hardlink_rel.tar';
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("subdir/mylink", 0, '1', '../../../etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
-		
+
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
-		
+
 		$result = $extractor->extract($this->extractDir);
-		
+
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
 		$skipped = $extractor->getSkippedFiles();
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('hardlink', $skipped[0]['type']);
-		
+
 		unlink($tarFile);
 	}
 
 	private function createZipSlipTar(string $tarFile): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$content = 'Malicious content';
 		$filename = "subdir/../../../malicious.txt";
 		$header = $this->createTarHeader($filename, strlen($content), '0');
@@ -908,7 +911,7 @@ class TTarFileExtractorTest extends TestCase
 		if ($padding < 512) {
 			fwrite($fp, str_repeat("\0", $padding));
 		}
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
 	}
@@ -916,10 +919,10 @@ class TTarFileExtractorTest extends TestCase
 	private function createSymlinkOutsideTar(string $tarFile): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("mylink", 0, '2', '/etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
 	}
@@ -927,11 +930,56 @@ class TTarFileExtractorTest extends TestCase
 	private function createHardLinkOutsideTar(string $tarFile): void
 	{
 		$fp = fopen($tarFile, 'wb');
-		
+
 		$header = $this->createTarHeader("mylink", 0, '1', '/etc/passwd');
 		fwrite($fp, $header);
-		
+
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
+	}
+
+	public function testGetUrlTimeoutDefaultValue()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$this->assertEquals(6.0, $extractor->getUrlTimeout());
+	}
+
+	public function testSetUrlTimeout()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$result = $extractor->setUrlTimeout(10.5);
+		$this->assertSame($extractor, $result);
+		$this->assertEquals(10.5, $extractor->getUrlTimeout());
+	}
+
+	public function testSetUrlTimeoutToZero()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$extractor->setUrlTimeout(0.0);
+		$this->assertEquals(0.0, $extractor->getUrlTimeout());
+	}
+
+	public function testSetUrlTimeoutToSmallValue()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$extractor->setUrlTimeout(0.1);
+		$this->assertEquals(0.1, $extractor->getUrlTimeout());
+	}
+
+	public function testSetUrlTimeoutToLargeValue()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$extractor->setUrlTimeout(30.0);
+		$this->assertEquals(30.0, $extractor->getUrlTimeout());
+	}
+
+	public function testSetUrlTimeoutChainedCalls()
+	{
+		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
+		$this->assertTrue($extractor->getStrict());
+		$extractor->setUrlTimeout(15.0)
+			->setStrict(false);
+		$this->assertEquals(15.0, $extractor->getUrlTimeout());
+		$this->assertFalse($extractor->getStrict());
 	}
 }
