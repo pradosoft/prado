@@ -541,6 +541,7 @@ return [
 'TTemplateManager' => 'Prado\Web\UI\TTemplateManager',
 'TTheme' => 'Prado\Web\UI\TTheme',
 'TThemeManager' => 'Prado\Web\UI\TThemeManager',
+'TWebColor' => 'Prado\Web\UI\TWebColor',
 'TWebColors' => 'Prado\Web\UI\TWebColors',
 'IDataSource' => 'Prado\Web\UI\WebControls\IDataSource',
 'IItemDataRenderer' => 'Prado\Web\UI\WebControls\IItemDataRenderer',

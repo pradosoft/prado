@@ -205,6 +205,7 @@ class TPropertyValue
 	 *	 for allow web colors to translate into their # hex color.
 	 * @param null|float|int $blue The blue color. Default null for (A) or (B)
 	 * @return string The valid # hex color.
+	 * @since 4.3.0
 	 */
 	public static function ensureHexColor($value, $green = true, $blue = null)
 	{
@@ -234,7 +235,7 @@ class TPropertyValue
 		if ($green && $len > 0 && $value[0] !== '#') {
 			static $colors;
 			if (!$colors) {
-				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColors::class);
+				$reflect = new \ReflectionClass(\Prado\Web\UI\TWebColor::class);
 				$colors = $reflect->getConstants();
 				$colors = array_change_key_case($colors);
 			}
