@@ -164,6 +164,9 @@ class TPropertyValueTest extends PHPUnit\Framework\TestCase
 		} catch(TInvalidDataValueException $e) {
 		}
 		
+		// $enums = Class, look at class constant
+		self::assertEquals('CLASS_FILE_EXT', TPropertyValue::ensureEnum('CLASS_FILE_EXT', \Prado\Prado::class));
+		
 		// more than one $enum param no function.
 		self::assertEquals('Off', TPropertyValue::ensureEnum('Off', 'Off', 'Debug', 'Normal', 'Performance'));
 		self::assertEquals('Debug', TPropertyValue::ensureEnum('Debug', 'Off', 'Debug', 'Normal', 'Performance'));

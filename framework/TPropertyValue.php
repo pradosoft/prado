@@ -156,6 +156,9 @@ class TPropertyValue
 	{
 		static $types = [];
 		if (func_num_args() === 2 && is_string($enums)) {
+			if ($enums instanceof TEnumerable) {
+				return $enums::hasConstant($value);
+			}
 			if (!isset($types[$enums])) {
 				$types[$enums] = new \ReflectionClass($enums);
 			}
