@@ -10,6 +10,8 @@
 
 namespace Prado;
 
+use Prado\Util\Traits\TConstantReflectionTrait;
+
 /**
  * TEnumerable class.
  *
@@ -40,12 +42,13 @@ namespace Prado;
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Brad Anderson <belisoful@icloud.com>
+ * @see \Prado\Util\Traits\TConstantReflectionTrait
  * @since 3.0
  */
 class TEnumerable implements \Iterator
 {
-	private static $_types = [];
+	use TConstantReflectionTrait;
+
 	private $_enums = [];
 
 	/**
@@ -105,112 +108,5 @@ class TEnumerable implements \Iterator
 	public function valid(): bool
 	{
 		return $this->current() !== false;
-	}
-
-	/**
-	 * Check if a constant exists in this enumerable type. The second parameter
-	 * is case sensitivity, defaulting to true. This is similar behavior to
-	 * {@see \ReflectionClass}. For example:
-	 * ```php
-	 * $has_Left = TTextAlign::valueOf('Left');  // true
-	 * $hasNo_left = TTextAlign::hasConstant('left');  // false
-	 * $hasNo_left = TTextAlign::hasConstant('left', true);  // false
-	 * $has_left = TTextAlign::valueOf('left', false);  // true
-	 * ```
-	 * Case Insensitivity iterates through all constants.
-	 * @param string $constant The constant name to check.
-	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
-	 * @return bool True if the constant exists, false otherwise.
-	 */
-	public static function hasConstant($constant, bool $caseSensitive = true): bool
-	{
-		$ref = self::getReflectionClass();
-		if ($ref->hasConstant($constant)) {
-			return true;
-		}
-		if (!$caseSensitive) {
-			$consts = $ref->getConstants();
-			foreach ($consts as $name => $value) {
-				if (strcasecmp($name, $constant) === 0) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Gets the constant value by name. The second parameter is case sensitivity,
-	 * defaulting to true. This is similar behavior to {@see \ReflectionClass}.
-	 * For example:
-	 * ```php
-	 * $value_Left = TTextAlign::valueOf('Left');  // returns 'Left'
-	 * $null = TTextAlign::valueOf('left');  // returns null
-	 * $null = TTextAlign::valueOf('left', true);  // returns null
-	 * $value_left = TTextAlign::valueOf('left', false);  // returns 'Left'
-	 * ```
-	 * Case Insensitivity iterates through all constants.
-	 * @param string $constant The constant name to get.
-	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
-	 * @return ?string The constant value or null if not found.
-	 */
-	public static function valueOfConstant($constant, bool $caseSensitive = true): ?string
-	{
-		$ref = self::getReflectionClass();
-		if (($value = $ref->getConstant($constant)) !== false) {
-			return $value;
-		}
-		if (!$caseSensitive) {
-			$consts = $ref->getConstants();
-			foreach ($consts as $name => $value) {
-				if (strcasecmp($name, $constant) === 0) {
-					return $value;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the constant name by value. The second parameter is case sensitivity,
-	 * defaulting to true. This is similar behavior to {@see \ReflectionClass}.
-	 * For example:
-	 * ```php
-	 * $constant_Left = TTextAlign::constantOf('Left');  // returns 'Left'
-	 * $null = TTextAlign::constantOf('left');  // returns null
-	 * $null = TTextAlign::constantOf('left', true);  // returns null
-	 * $constant_left = TTextAlign::constantOf('left', false);  // returns 'Left'
-	 * ```
-	 * Case Insensitivity iterates through all constants.
-	 * @param string $value The constant value to find.
-	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
-	 * @return ?string The constant name or null if not found.
-	 */
-	public static function constantOf($value, bool $caseSensitive = true): ?string
-	{
-		$cmp = $caseSensitive ? '\strcmp' : '\strcasecmp';
-		$ref = self::getReflectionClass();
-		foreach ($ref->getConstants() as $constant => $constValue) {
-			if ($cmp($value, $constValue) === 0) {
-				return $constant;
-			}
-		}
-		return null;
-	}
-
-	// ----- Private Helpers
-
-	/**
-	 * Gets or creates the ReflectionClass for the current enumerable class.
-	 * Uses a static cache to store ReflectionClass instances per class.
-	 * @return \ReflectionClass The reflection class instance.
-	 */
-	private static function getReflectionClass(): \ReflectionClass
-	{
-		$class = static::class;
-		if (!isset(self::$_types[$class])) {
-			self::$_types[$class] = new \ReflectionClass($class);
-		}
-		return self::$_types[$class];
 	}
 }

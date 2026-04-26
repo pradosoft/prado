@@ -27,9 +27,22 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 		return $className;
 	}
 
+	private static function createEnumerableClassLowerValue(array $constants): string
+	{
+		$consts = [];
+		foreach ($constants as $name => $value) {
+			$consts[] = "const $name = '$value';";
+		}
+		$className = 'TestEnum' . uniqid();
+		$code = "class $className extends \\Prado\\TEnumerable { " . implode(' ', $consts) . " }";
+		eval($code);
+		return $className;
+	}
+
 	public function testConstructor()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left1', 'Right' => 'Right2', 'Center' => 'Center3']);
+
 		$enum = new $className();
 
 		self::assertInstanceOf(TEnumerable::class, $enum);
@@ -106,7 +119,7 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 
 	public function testIteratorKey()
 	{
-		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
+		$className = $this->createEnumerableClass(['Left' => 'LeftValue', 'Right' => 'RightValue']);
 		$enum = new $className();
 
 		self::assertEquals('Left', $enum->key());
@@ -128,11 +141,10 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 
 	public function testHasConstantCaseInsensitive()
 	{
-		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
+		$className = $this->createEnumerableClass(['Left' => 'LeftValue', 'Right' => 'RightValue']);
 
 		self::assertTrue($className::hasConstant('Left', false));
 		self::assertTrue($className::hasConstant('left', false));
-		// Note: The $caseSensitive parameter exists but is not currently used by ReflectionClass::hasConstant
 		self::assertTrue($className::hasConstant('LEFT', false));
 	}
 
@@ -142,33 +154,138 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 		self::assertFalse(TEnumerable::hasConstant('NonExistent'));
 	}
 
-	public function testvalueOfConstant()
+	public function testHasConstantWithPrefixFilter()
 	{
-		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'InnerRight' => 'InnerRightValue',
+			'OuterLeft' => 'OuterLeftValue',
+		]);
 
-		self::assertEquals('Left', $className::valueOfConstant('Left'));
-		self::assertEquals('Right', $className::valueOfConstant('Right'));
+		self::assertTrue($className::hasConstant('InnerLeft'));
+		self::assertTrue($className::hasConstant('InnerRight'));
+		self::assertTrue($className::hasConstant('OuterLeft'));
+		self::assertFalse($className::hasConstant('Center'));
+	}
+
+	public function testHasConstantWithPrefixFilterCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'InnerRight' => 'InnerRightValue',
+		]);
+
+		self::assertTrue($className::hasConstant('innerleft', false));
+		self::assertTrue($className::hasConstant('INNERRIGHT', false));
+		self::assertFalse($className::hasConstant('innerleft', true));
+	}
+
+	public function testHasConstantWithSuffixFilterStar()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'OuterLeft' => 'OuterLeftValue',
+		]);
+
+		self::assertTrue($className::hasConstant('InnerLeft'));
+		self::assertTrue($className::hasConstant('OuterLeft'));
+		self::assertFalse($className::hasConstant('InnerRight'));
+	}
+
+	public function testHasConstantWithSuffixFilterDash()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'OuterLeft' => 'OuterLeftValue',
+		]);
+
+		self::assertTrue($className::hasConstant('InnerLeft'));
+		self::assertTrue($className::hasConstant('OuterLeft'));
+	}
+
+	public function testHasConstantWithSuffixFilterCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+		]);
+
+		self::assertTrue($className::hasConstant('innerleft', false));
+		self::assertFalse($className::hasConstant('innerleft', true));
+	}
+
+	public function testHasConstantWithEmptyAffix()
+	{
+		$className = $this->createEnumerableClass([
+			'Left' => 'Left',
+		]);
+
+		self::assertTrue($className::hasConstant('Left'));
+	}
+
+	public function testValueOfConstant()
+	{
+		$className = $this->createEnumerableClass(['Left' => 'Left1', 'Right' => 'Right2']);
+
+		self::assertEquals('Left1', $className::valueOfConstant('Left'));
+		self::assertEquals('Right2', $className::valueOfConstant('Right'));
 		self::assertNull($className::valueOfConstant('Center'));
 		self::assertNull($className::valueOfConstant('left'));
 		self::assertNull($className::valueOfConstant('LEFT'));
 	}
 
-	public function testvalueOfConstantCaseInsensitive()
+	public function testValueOfConstantCaseInsensitive()
 	{
-		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
+		$className = $this->createEnumerableClass(['Left' => 'Left1', 'Right' => 'Right2']);
 
-		self::assertEquals('Left', $className::valueOfConstant('Left', false));
-		self::assertEquals('Left', $className::valueOfConstant('left', false));
-		self::assertEquals('Left', $className::valueOfConstant('LEFT', false));
-		self::assertEquals('Right', $className::valueOfConstant('RIGHT', false));
+		self::assertEquals('Left1', $className::valueOfConstant('Left', false));
+		self::assertEquals('Left1', $className::valueOfConstant('left', false));
+		self::assertEquals('Left1', $className::valueOfConstant('LEFT', false));
+		self::assertEquals('Right2', $className::valueOfConstant('RIGHT', false));
 	}
 
-	public function testvalueOfConstantNotFound()
+	public function testValueOfConstantNotFound()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
 		self::assertNull($className::valueOfConstant('Center'));
 		self::assertNull($className::valueOfConstant('Center', false));
+	}
+
+	public function testValueOfConstantWithPrefixFilter()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'InnerRight' => 'InnerRightValue',
+			'OuterLeft' => 'OuterLeftValue',
+		]);
+
+		self::assertEquals('InnerLeftValue', $className::valueOfConstant('InnerLeft', 'Inner'));
+		self::assertEquals('OuterLeftValue', $className::valueOfConstant('OuterLeft', 'Out'));
+		self::assertNull($className::valueOfConstant('Center', 'Inner'));
+	}
+
+	public function testValueOfConstantWithSuffixFilter()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'OuterLeft' => 'OuterLeftValue',
+			'InnerRight' => 'InnerRightValue',
+		]);
+
+		self::assertEquals('InnerLeftValue', $className::valueOfConstant('InnerLeft', '*Left'));
+		self::assertEquals('InnerRightValue', $className::valueOfConstant('InnerRight', '*Right'));
+		self::assertNull($className::valueOfConstant('InnerLeft', '*Right'));
+	}
+
+	public function testValueOfConstantWithPrefixFilterCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'innerRight' => 'innerRightValue',
+		]);
+
+		self::assertEquals('InnerLeftValue', $className::valueOfConstant('innerLeft', false));
+		self::assertNull($className::valueOfConstant('innerLeft', true));
 	}
 
 	public function testAccessConstantValueViaVariable()
@@ -206,39 +323,123 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertEquals('Left', $className::constantOf('Left'));
-		self::assertEquals('Right', $className::constantOf('Right'));
-		self::assertNull($className::constantOf('Center'));
-		self::assertNull($className::constantOf('left'));
-		self::assertNull($className::constantOf('LEFT'));
+		self::assertEquals('Left', $className::constantOfValue('Left'));
+		self::assertEquals('Right', $className::constantOfValue('Right'));
+		self::assertNull($className::constantOfValue('Center'));
+		self::assertNull($className::constantOfValue('left'));
+		self::assertNull($className::constantOfValue('LEFT'));
 	}
 
 	public function testConstantOfCaseInsensitive()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertEquals('Left', $className::constantOf('Left', false));
-		self::assertEquals('Left', $className::constantOf('left', false));
-		self::assertEquals('Left', $className::constantOf('LEFT', false));
-		self::assertEquals('Right', $className::constantOf('RIGHT', false));
+		self::assertEquals('Left', $className::constantOfValue('Left', false));
+		self::assertEquals('Left', $className::constantOfValue('left', false));
+		self::assertEquals('Left', $className::constantOfValue('LEFT', false));
+		self::assertEquals('Right', $className::constantOfValue('RIGHT', false));
 	}
 
 	public function testConstantOfNotFound()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertNull($className::constantOf('Center'));
-		self::assertNull($className::constantOf('Center', false));
+		self::assertNull($className::constantOfValue('Center'));
+		self::assertNull($className::constantOfValue('Center', false));
 	}
 
 	public function testConstantOfWithDifferentNameAndValue()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'LeftValue', 'Right' => 'RightValue']);
 
-		self::assertEquals('Left', $className::constantOf('LeftValue'));
-		self::assertEquals('Right', $className::constantOf('RightValue'));
-		self::assertNull($className::constantOf('Left'));
-		self::assertNull($className::constantOf('leftvalue', true));
-		self::assertEquals('Left', $className::constantOf('leftvalue', false));
+		self::assertEquals('Left', $className::constantOfValue('LeftValue'));
+		self::assertEquals('Right', $className::constantOfValue('RightValue'));
+		self::assertNull($className::constantOfValue('Left'));
+		self::assertNull($className::constantOfValue('leftvalue', true));
+		self::assertEquals('Left', $className::constantOfValue('leftvalue', false));
+	}
+
+	public function testConstantOfWithPrefixFilter()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftVal',
+			'InnerRight' => 'InnerRightVal',
+			'OuterLeft' => 'OuterLeftVal',
+		]);
+
+		self::assertEquals('InnerLeft', $className::constantOfValue('InnerLeftVal', 'Inner'));
+		self::assertEquals('OuterLeft', $className::constantOfValue('OuterLeftVal', 'Out'));
+		self::assertNull($className::constantOfValue('InnerLeftVal', 'Out'));
+	}
+
+	public function testConstantOfWithSuffixFilter()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftVal',
+			'OuterLeft' => 'OuterLeftVal',
+			'InnerRight' => 'InnerRightVal',
+		]);
+
+		self::assertEquals('InnerLeft', $className::constantOfValue('InnerLeftVal', '*Left'));
+		self::assertEquals('InnerRight', $className::constantOfValue('InnerRightVal', '*Right'));
+		self::assertNull($className::constantOfValue('InnerLeftVal', '*Right'));
+	}
+
+	public function testConstantOfWithPrefixFilterCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftVal',
+			'innerRight' => 'innerRightVal',
+		]);
+
+		self::assertEquals('InnerLeft', $className::constantOfValue('InnerLeftVal', 'inner', false));
+		self::assertNull($className::constantOfValue('InnerLeftVal', 'inner', true));
+	}
+
+	public function testHasConstantWithMultipleMatchesCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeft',
+			'innerRight' => 'innerRight',
+			'INNERBOTH' => 'INNERBOTH',
+		]);
+
+		self::assertTrue($className::hasConstant('innerleft', false));
+		self::assertTrue($className::hasConstant('INNERBOTH', false));
+		self::assertFalse($className::hasConstant('innerleft', true));
+	}
+
+	public function testValueOfConstantWithMultipleMatchesCaseInsensitive()
+	{
+		$className = $this->createEnumerableClass([
+			'InnerLeft' => 'InnerLeftValue',
+			'innerRight' => 'innerRightValue',
+		]);
+
+		self::assertEquals('InnerLeftValue', $className::valueOfConstant('innerleft', false));
+	}
+
+	public function testEmptyConstantsClass()
+	{
+		$className = $this->createEnumerableClass([]);
+
+		self::assertFalse($className::hasConstant('anything'));
+		self::assertNull($className::valueOfConstant('anything'));
+		self::assertNull($className::constantOfValue('anything'));
+	}
+
+	public function testDefaultParameters()
+	{
+		$className = $this->createEnumerableClass(['Left' => 'Left']);
+
+		self::assertTrue($className::hasConstant('Left'));
+		self::assertTrue($className::hasConstant('Left', true));
+		self::assertTrue($className::hasConstant('Left', true, true));
+		self::assertEquals('Left', $className::valueOfConstant('Left'));
+		self::assertEquals('Left', $className::valueOfConstant('Left', true));
+		self::assertEquals('Left', $className::valueOfConstant('Left', true, true));
+		self::assertEquals('Left', $className::constantOfValue('Left'));
+		self::assertEquals('Left', $className::constantOfValue('Left', true));
+		self::assertEquals('Left', $className::constantOfValue('Left', true, true));
 	}
 }
