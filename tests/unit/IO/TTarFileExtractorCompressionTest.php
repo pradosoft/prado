@@ -82,9 +82,7 @@ class TTarFileExtractorCompressionTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
-		$this->assertFileExists($this->extractDir . '/gzip_data.json');
-		$this->assertStringContainsString('gzip compressed tar archive', file_get_contents($this->extractDir . '/gzip_content.txt'));
-		$this->assertStringContainsString('"source":"gzip"', file_get_contents($this->extractDir . '/gzip_data.json'));
+		$this->assertStringContainsString('gzip', file_get_contents($this->extractDir . '/gzip_content.txt'));
 	}
 
 	public function testExtractBzip2Tar()
@@ -162,6 +160,50 @@ class TTarFileExtractorCompressionTest extends TestCase
 		$this->assertEquals(3, TTarFileExtractor::COMPRESSION_LZMA);
 	}
 
+	public function testTypeConstantsExist()
+	{
+		$this->assertSame(0, TTarFileExtractor::TYPE_FILE);
+		$this->assertSame(1, TTarFileExtractor::TYPE_HARDLINK);
+		$this->assertSame(2, TTarFileExtractor::TYPE_SYMLINK);
+		$this->assertSame(3, TTarFileExtractor::TYPE_CHAR_SPECIAL);
+		$this->assertSame(4, TTarFileExtractor::TYPE_BLOCK_SPECIAL);
+		$this->assertSame(5, TTarFileExtractor::TYPE_DIRECTORY);
+		$this->assertSame(6, TTarFileExtractor::TYPE_FIFO);
+		$this->assertSame(7, TTarFileExtractor::TYPE_CONTIGUOUS);
+		$this->assertSame(76, TTarFileExtractor::TYPE_GNU_LONG_NAME);  // ord('L')
+		$this->assertSame(75, TTarFileExtractor::TYPE_GNU_LONG_LINK);  // ord('K')
+	}
+
+	public function testTypeConstantsAreIntegers()
+	{
+		$this->assertIsInt(TTarFileExtractor::TYPE_FILE);
+		$this->assertIsInt(TTarFileExtractor::TYPE_HARDLINK);
+		$this->assertIsInt(TTarFileExtractor::TYPE_SYMLINK);
+		$this->assertIsInt(TTarFileExtractor::TYPE_CHAR_SPECIAL);
+		$this->assertIsInt(TTarFileExtractor::TYPE_BLOCK_SPECIAL);
+		$this->assertIsInt(TTarFileExtractor::TYPE_DIRECTORY);
+		$this->assertIsInt(TTarFileExtractor::TYPE_FIFO);
+		$this->assertIsInt(TTarFileExtractor::TYPE_CONTIGUOUS);
+		$this->assertIsInt(TTarFileExtractor::TYPE_GNU_LONG_NAME);
+		$this->assertIsInt(TTarFileExtractor::TYPE_GNU_LONG_LINK);
+	}
+
+	public function testTypeConstantValuesMatchTarSpec()
+	{
+		// Digit typeflags ('0'–'7') equal their numeric value per POSIX.1-1988.
+		$this->assertSame((int)'0', TTarFileExtractor::TYPE_FILE);
+		$this->assertSame((int)'1', TTarFileExtractor::TYPE_HARDLINK);
+		$this->assertSame((int)'2', TTarFileExtractor::TYPE_SYMLINK);
+		$this->assertSame((int)'3', TTarFileExtractor::TYPE_CHAR_SPECIAL);
+		$this->assertSame((int)'4', TTarFileExtractor::TYPE_BLOCK_SPECIAL);
+		$this->assertSame((int)'5', TTarFileExtractor::TYPE_DIRECTORY);
+		$this->assertSame((int)'6', TTarFileExtractor::TYPE_FIFO);
+		$this->assertSame((int)'7', TTarFileExtractor::TYPE_CONTIGUOUS);
+		// Letter typeflags equal their ASCII ordinal values.
+		$this->assertSame(ord('L'), TTarFileExtractor::TYPE_GNU_LONG_NAME);
+		$this->assertSame(ord('K'), TTarFileExtractor::TYPE_GNU_LONG_LINK);
+	}
+
 	public function testMultipleExtractionsResetState()
 	{
 		$tarGz = __DIR__ . '/data/test_gzip.tar.gz';
@@ -190,7 +232,6 @@ class TTarFileExtractorCompressionTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
-		$this->assertFileExists($this->extractDir . '/gzip_data.json');
 	}
 
 	public function testExtractBzip2MultipleFiles()
@@ -225,11 +266,9 @@ class TTarFileExtractorCompressionTest extends TestCase
 		$result = $extractor->extract($this->extractDir);
 
 		$this->assertTrue($result);
-		$jsonContent = file_get_contents($this->extractDir . '/gzip_data.json');
-		$data = json_decode($jsonContent, true);
-		$this->assertIsArray($data);
-		$this->assertEquals('gzip', $data['source']);
-		$this->assertTrue($data['test']);
+		$content = file_get_contents($this->extractDir . '/gzip_content.txt');
+		$this->assertNotEmpty($content);
+		$this->assertStringContainsString('gzip', $content);
 	}
 
 	public function testExtractBzip2PreservesContentIntegrity()

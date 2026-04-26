@@ -99,7 +99,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		string $filename,
 		int $size,
 		string $typeflag = '0',
-		string $linkname = ''
+		string $linkpath = ''
 	): string {
 		$mtime = sprintf("%011o", time());
 		$size_oct = sprintf("%011o", $size);
@@ -116,7 +116,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		);
 
 		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", $linkname);
+		$header .= pack("a100", $linkpath);
 		$header .= pack("a6", "ustar");
 		$header .= pack("a2", "00");
 		$header .= pack("a32", "root");
@@ -329,7 +329,7 @@ class TTarFileExtractorUrlTest extends TestCase
 	}
 
 	// ---------------------------------------------------------------------------
-	// Full extract via pre-injected _temp_tarname (simulates completed download)
+	// Full extract via pre-injected _temp_tarpath (simulates completed download)
 	// ---------------------------------------------------------------------------
 
 	public function testHttpUrlDownloadAndExtract()
@@ -340,7 +340,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('http://example.com/test.tar');
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tarFile);
 
@@ -359,7 +359,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('https://example.com/test.tar');
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tarFile);
 
@@ -369,17 +369,21 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertFileExists($this->extractDir . '/https_test.txt');
 		$this->assertEquals('https content', file_get_contents($this->extractDir . '/https_test.txt'));
 	}
+	
+	// ---------------------------------------------------------------------------
+	//   -----  HTTP/S URL Begin NoRetain 
 
-	public function testHttpUrlExtractWithGzipCompression()
+	public function testHttpUrlExtractWithGzipCompression_NoRetain()
 	{
 		// Copy the test archive so _close() doesn't delete the shared test fixture.
 		$tempArchive = sys_get_temp_dir() . '/prado_url_gzip_' . uniqid() . '.tar.gz';
 		copy(__DIR__ . '/data/test_gzip.tar.gz', $tempArchive);
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
-
+		$extractor->setRetainTempFile(false);
+		
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tempArchive);
 
@@ -388,19 +392,19 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $extractor->getCompression());
-		// The temp download file must be cleaned up after extraction.
-		$this->assertFileDoesNotExist($tempArchive);
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded gz file should be deleted after decompression');
 	}
 
-	public function testHttpsUrlExtractWithGzipCompression()
+	public function testHttpsUrlExtractWithGzipCompression_NoRetain()
 	{
 		$tempArchive = sys_get_temp_dir() . '/prado_url_gzip_' . uniqid() . '.tar.gz';
 		copy(__DIR__ . '/data/test_gzip.tar.gz', $tempArchive);
 
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
+		$extractor->setRetainTempFile(false);
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tempArchive);
 
@@ -409,18 +413,19 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $extractor->getCompression());
-		$this->assertFileDoesNotExist($tempArchive);
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded GZ file should be deleted after decompression');
 	}
 
-	public function testHttpUrlExtractWithBzip2Compression()
+	public function testHttpUrlExtractWithBzip2Compression_NoRetain()
 	{
 		$tempArchive = sys_get_temp_dir() . '/prado_url_bzip2_' . uniqid() . '.tar.bz2';
 		copy(__DIR__ . '/data/test_bzip2.tar.bz2', $tempArchive);
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.bz2');
+		$extractor->setRetainTempFile(false);
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tempArchive);
 
@@ -429,18 +434,19 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/bzip2_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $extractor->getCompression());
-		$this->assertFileDoesNotExist($tempArchive);
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded bz2 file should be deleted after decompression');
 	}
 
-	public function testHttpsUrlExtractWithBzip2Compression()
+	public function testHttpsUrlExtractWithBzip2Compression_NoRetain()
 	{
 		$tempArchive = sys_get_temp_dir() . '/prado_url_bzip2_' . uniqid() . '.tar.bz2';
 		copy(__DIR__ . '/data/test_bzip2.tar.bz2', $tempArchive);
 
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.bz2');
+		$extractor->setRetainTempFile(false);
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tempArchive);
 
@@ -449,10 +455,10 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/bzip2_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $extractor->getCompression());
-		$this->assertFileDoesNotExist($tempArchive);
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded XZ file should be deleted after decompression');
 	}
 
-	public function testHttpUrlExtractWithLzmaCompressionReplacesTempFile()
+	public function testHttpUrlExtractWithLzmaCompressionReplacesTempFile_NoRetain()
 	{
 		// Copy to a temp file that simulates a completed URL download.
 		// Using a copy prevents _openCompressedRead from deleting the real test fixture.
@@ -460,31 +466,33 @@ class TTarFileExtractorUrlTest extends TestCase
 		copy(__DIR__ . '/data/test_xz.tar.xz', $tempXzFile);
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar.xz');
+		$extractor->setRetainTempFile(false);
 
 		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarname');
+		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
 		$tempTarnameProperty->setAccessible(true);
 		$tempTarnameProperty->setValue($extractor, $tempXzFile);
 
 		$result = $extractor->extract($this->extractDir);
 
+		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		$this->assertNotEquals($tempXzFile, $newTempXzFile);
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
-
-		// The original downloaded XZ file must be deleted immediately after decompression.
-		$this->assertFileDoesNotExist($tempXzFile, 'Downloaded XZ file should be deleted after decompression');
+		$this->assertFileDoesNotExist($newTempXzFile, 'Downloaded XZ file should be deleted after decompression');
 	}
 
-	public function testHttpsUrlExtractWithLzmaCompressionReplacesTempFile()
+	public function testHttpsUrlExtractWithLzmaCompressionReplacesTempFile_NoRetain()
 	{
 		$tempXzFile = sys_get_temp_dir() . '/prado_url_xz_' . uniqid() . '.tar.xz';
 		copy(__DIR__ . '/data/test_xz.tar.xz', $tempXzFile);
 
 		$extractor = new TTarFileExtractor('https://example.com/test.tar.xz');
+		$extractor->setRetainTempFile(false);
 
 		$reflection = new \ReflectionClass($extractor);
-		$tempTarnameProperty = $reflection->getProperty('_temp_tarname');
+		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
 		$tempTarnameProperty->setAccessible(true);
 		$tempTarnameProperty->setValue($extractor, $tempXzFile);
 
@@ -493,9 +501,162 @@ class TTarFileExtractorUrlTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
-
 		$this->assertFileDoesNotExist($tempXzFile, 'Downloaded XZ file should be deleted after decompression');
 	}
+	
+	
+	//	-------  HTTP/S extractions - End NoRetain - Begin Retain
+	
+	public function testHttpUrlExtractWithGzipCompression_Retain()
+	{
+		// Copy the test archive so _close() doesn't delete the shared test fixture.
+		$tempArchive = sys_get_temp_dir() . '/prado_url_gzip_' . uniqid() . '.tar.gz';
+		copy(__DIR__ . '/data/test_gzip.tar.gz', $tempArchive);
+	
+		$extractor = new TTarFileExtractor('http://example.com/test.tar.gz');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$property = $reflection->getProperty('_temp_tarpath');
+		$property->setAccessible(true);
+		$property->setValue($extractor, $tempArchive);
+	
+		$result = $extractor->extract($this->extractDir);
+	
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $extractor->getCompression());
+		$this->assertFileExists($tempArchive);
+		$extractor = null;
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded gz file should be deleted after decompression');
+	}
+	
+	public function testHttpsUrlExtractWithGzipCompression_Retain()
+	{
+		$tempArchive = sys_get_temp_dir() . '/prado_url_gzip_' . uniqid() . '.tar.gz';
+		copy(__DIR__ . '/data/test_gzip.tar.gz', $tempArchive);
+	
+		$extractor = new TTarFileExtractor('https://example.com/test.tar.gz');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$property = $reflection->getProperty('_temp_tarpath');
+		$property->setAccessible(true);
+		$property->setValue($extractor, $tempArchive);
+	
+		$result = $extractor->extract($this->extractDir);
+	
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/gzip_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_GZIP, $extractor->getCompression());
+		$this->assertFileExists($tempArchive);
+		$extractor = null;
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded GZ file should be deleted after decompression');
+	}
+	
+	public function testHttpUrlExtractWithBzip2Compression_Retain()
+	{
+		$tempArchive = sys_get_temp_dir() . '/prado_url_bzip2_' . uniqid() . '.tar.bz2';
+		copy(__DIR__ . '/data/test_bzip2.tar.bz2', $tempArchive);
+	
+		$extractor = new TTarFileExtractor('http://example.com/test.tar.bz2');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$property = $reflection->getProperty('_temp_tarpath');
+		$property->setAccessible(true);
+		$property->setValue($extractor, $tempArchive);
+	
+		$result = $extractor->extract($this->extractDir);
+	
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/bzip2_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $extractor->getCompression());
+		$this->assertFileExists($tempArchive);
+		$extractor = null;
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded bz2 file should be deleted after decompression');
+	}
+	
+	public function testHttpsUrlExtractWithBzip2Compression_Retain()
+	{
+		$tempArchive = sys_get_temp_dir() . '/prado_url_bzip2_' . uniqid() . '.tar.bz2';
+		copy(__DIR__ . '/data/test_bzip2.tar.bz2', $tempArchive);
+	
+		$extractor = new TTarFileExtractor('https://example.com/test.tar.bz2');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$property = $reflection->getProperty('_temp_tarpath');
+		$property->setAccessible(true);
+		$property->setValue($extractor, $tempArchive);
+	
+		$result = $extractor->extract($this->extractDir);
+	
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/bzip2_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_BZIP2, $extractor->getCompression());
+		$this->assertFileExists($tempArchive);
+		$extractor = null;
+		$this->assertFileDoesNotExist($tempArchive, 'Downloaded bz2 file should be deleted after decompression');
+	}
+	
+	public function testHttpUrlExtractWithLzmaCompressionReplacesTempFile_Retain()
+	{
+		// Copy to a temp file that simulates a completed URL download.
+		// Using a copy prevents _openCompressedRead from deleting the real test fixture.
+		$tempXzFile = sys_get_temp_dir() . '/prado_url_xz_' . uniqid() . '.tar.xz';
+		copy(__DIR__ . '/data/test_xz.tar.xz', $tempXzFile);
+	
+		$extractor = new TTarFileExtractor('http://example.com/test.tar.xz');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
+		$tempTarnameProperty->setAccessible(true);
+		$tempTarnameProperty->setValue($extractor, $tempXzFile);
+	
+		$result = $extractor->extract($this->extractDir);
+		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		
+		$this->assertNotEquals($tempXzFile, $newTempXzFile);
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/xz_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
+		$this->assertFileDoesNotExist($tempXzFile, 'Downloaded XZ file should be deleted after decompression');
+		$this->assertFileExists($newTempXzFile);
+		$extractor = null;
+		$this->assertFileDoesNotExist($newTempXzFile, 'Downloaded XZ file should be deleted after decompression');
+	}
+	
+	public function testHttpsUrlExtractWithLzmaCompressionReplacesTempFile_Retain()
+	{
+		$tempXzFile = sys_get_temp_dir() . '/prado_url_xz_' . uniqid() . '.tar.xz';
+		copy(__DIR__ . '/data/test_xz.tar.xz', $tempXzFile);
+	
+		$extractor = new TTarFileExtractor('https://example.com/test.tar.xz');
+		$extractor->setRetainTempFile(true);
+	
+		$reflection = new \ReflectionClass($extractor);
+		$tempTarnameProperty = $reflection->getProperty('_temp_tarpath');
+		$tempTarnameProperty->setAccessible(true);
+		$tempTarnameProperty->setValue($extractor, $tempXzFile);
+	
+		$result = $extractor->extract($this->extractDir);
+		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
+		
+		$this->assertNotEquals($tempXzFile, $newTempXzFile);
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/xz_content.txt');
+		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
+	
+		$this->assertFileDoesNotExist($tempXzFile, 'Downloaded XZ file should be deleted after decompression');
+		$this->assertFileExists($newTempXzFile);
+		$extractor = null;
+		$this->assertFileDoesNotExist($newTempXzFile, 'Downloaded XZ file should be deleted after decompression');
+	}
+	
+	// ---  End HTTP/S extractions - Retain
+	// ---------------------------------------------------------------------------
 
 	public function testHttpUrlExtractMultipleFiles()
 	{
@@ -518,7 +679,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('http://example.com/multi.tar');
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tarFile);
 
@@ -553,7 +714,7 @@ class TTarFileExtractorUrlTest extends TestCase
 		$extractor = new TTarFileExtractor('https://example.com/multi.tar');
 
 		$reflection = new \ReflectionClass($extractor);
-		$property = $reflection->getProperty('_temp_tarname');
+		$property = $reflection->getProperty('_temp_tarpath');
 		$property->setAccessible(true);
 		$property->setValue($extractor, $tarFile);
 

@@ -238,7 +238,7 @@ class TTarFileExtractorZipSlipTest extends TestCase
 		string $filename, 
 		int $size, 
 		string $typeflag = '0', 
-		string $linkname = ''
+		string $linkpath = ''
 	): string {
 		$mtime = sprintf("%011o", time());
 		$size_oct = sprintf("%011o", $size);
@@ -254,7 +254,7 @@ class TTarFileExtractorZipSlipTest extends TestCase
 		);
 		
 		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", $linkname);
+		$header .= pack("a100", $linkpath);
 		$header .= pack("a6", "ustar");
 		$header .= pack("a2", "00");
 		$header .= pack("a32", "root");
@@ -335,11 +335,11 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/symlink_absolute.tar';
 		$filename = "mylink";
-		$linkname = "/etc/passwd";
+		$linkpath = "/etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
-		$header = $this->createTarHeader($filename, 0, '2', $linkname);
+		$header = $this->createTarHeader($filename, 0, '2', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));
@@ -353,11 +353,11 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/symlink_relative.tar';
 		$filename = "subdir/../../../mylink";
-		$linkname = "../../etc/passwd";
+		$linkpath = "../../etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
-		$header = $this->createTarHeader($filename, 0, '2', $linkname);
+		$header = $this->createTarHeader($filename, 0, '2', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));
@@ -371,11 +371,11 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/hardlink_absolute.tar';
 		$filename = "mylink";
-		$linkname = "/etc/passwd";
+		$linkpath = "/etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
-		$header = $this->createTarHeader($filename, 0, '1', $linkname);
+		$header = $this->createTarHeader($filename, 0, '1', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));
@@ -389,11 +389,11 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/hardlink_relative.tar';
 		$filename = "subdir/../../../mylink";
-		$linkname = "../../etc/passwd";
+		$linkpath = "../../etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
-		$header = $this->createTarHeader($filename, 0, '1', $linkname);
+		$header = $this->createTarHeader($filename, 0, '1', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));
@@ -407,14 +407,14 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/symlink_inside.tar';
 		$filename = "subdir/mylink";
-		$linkname = "/etc/passwd";
+		$linkpath = "/etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
 		$dirHeader = $this->createTarHeader("subdir/", 0, '5');
 		fwrite($fp, $dirHeader);
 		
-		$header = $this->createTarHeader($filename, 0, '2', $linkname);
+		$header = $this->createTarHeader($filename, 0, '2', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));
@@ -428,14 +428,14 @@ class TTarFileExtractorZipSlipTest extends TestCase
 	{
 		$tarFile = $this->extractDir . '/hardlink_inside.tar';
 		$filename = "subdir/mylink";
-		$linkname = "/etc/passwd";
+		$linkpath = "/etc/passwd";
 		
 		$fp = fopen($tarFile, 'wb');
 		
 		$dirHeader = $this->createTarHeader("subdir/", 0, '5');
 		fwrite($fp, $dirHeader);
 		
-		$header = $this->createTarHeader($filename, 0, '1', $linkname);
+		$header = $this->createTarHeader($filename, 0, '1', $linkpath);
 		fwrite($fp, $header);
 		
 		fwrite($fp, str_repeat("\0", 1024));

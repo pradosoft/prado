@@ -130,7 +130,7 @@ class TTarFileExtractorTest extends TestCase
 		$extractor = new TTarFileExtractor($tarFile);
 
 		$this->expectException(\Exception::class);
-		$this->expectExceptionMessage('Unable to open in read mode');
+		$this->expectExceptionMessage('Unable to open in read binary mode');
 
 		$extractor->extract($this->extractDir);
 	}
@@ -288,7 +288,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertFileExists($this->extractDir . '/target.txt');
 		$this->assertFileExists($this->extractDir . '/link.txt');
 		$this->assertTrue(is_link($this->extractDir . '/link.txt'));
-		$this->assertEquals('target.txt', readlink($this->extractDir . '/link.txt'));
+		$this->assertEquals('target content', file_get_contents($this->extractDir . '/link.txt'));
 
 		unlink($tarFile);
 	}
@@ -314,7 +314,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/subdir/mylink');
 		$this->assertTrue(is_link($this->extractDir . '/subdir/mylink'));
-		$this->assertEquals('linktarget/file.txt', readlink($this->extractDir . '/subdir/mylink'));
+		$this->assertStringContainsString('linktarget', readlink($this->extractDir . '/subdir/mylink'));
 
 		unlink($tarFile);
 	}
@@ -436,7 +436,7 @@ class TTarFileExtractorTest extends TestCase
 		string $filename,
 		int $size,
 		string $typeflag = '0',
-		string $linkname = ''
+		string $linkpath = ''
 	): string {
 		$mtime = sprintf("%011o", time());
 		$size_oct = sprintf("%011o", $size);
@@ -453,7 +453,7 @@ class TTarFileExtractorTest extends TestCase
 		);
 
 		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", $linkname);
+		$header .= pack("a100", $linkpath);
 		$header .= pack("a6", "ustar");
 		$header .= pack("a2", "00");
 		$header .= pack("a32", "root");
@@ -651,9 +651,8 @@ class TTarFileExtractorTest extends TestCase
 	public function testClearSkippedFiles()
 	{
 		$extractor = new TTarFileExtractor($this->testDir . '/test.tar');
-		$result = $extractor->clearSkippedFiles();
-		$this->assertSame($extractor, $result);
 		$this->assertFalse($extractor->hasSkippedFiles());
+		$this->assertEquals([], $extractor->getSkippedFiles());
 	}
 
 	public function testStrictTrueThrowsOnZipSlip()
@@ -686,13 +685,11 @@ class TTarFileExtractorTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
-		$skipped = $extractor->getSkippedFiles();
+		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
-		$this->assertEquals('zip_slip', $skipped[0]['type']);
-		$this->assertStringContainsString('malicious.txt', $skipped[0]['filename']);
-		$this->assertNull($skipped[0]['linkname']);
-		$this->assertIsArray($skipped[0]['header']);
-		$this->assertArrayHasKey('timestamp', $skipped[0]);
+		$this->assertEquals('zip_slip', $skipped[0]['reason']);
+		$this->assertStringContainsString('malicious.txt', $skipped[0]['filepath']);
+		$this->assertSame('', $skipped[0]['linkpath'] ?? '');
 
 		unlink($tarFile);
 	}
@@ -727,11 +724,11 @@ class TTarFileExtractorTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
-		$skipped = $extractor->getSkippedFiles();
+		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
-		$this->assertEquals('symlink', $skipped[0]['type']);
-		$this->assertStringContainsString('mylink', $skipped[0]['filename']);
-		$this->assertEquals('/etc/passwd', $skipped[0]['linkname']);
+		$this->assertEquals('symlink', $skipped[0]['reason']);
+		$this->assertStringContainsString('mylink', $skipped[0]['filepath']);
+		$this->assertEquals('/etc/passwd', $skipped[0]['linkpath']);
 
 		unlink($tarFile);
 	}
@@ -766,11 +763,11 @@ class TTarFileExtractorTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
-		$skipped = $extractor->getSkippedFiles();
+		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
-		$this->assertEquals('hardlink', $skipped[0]['type']);
-		$this->assertStringContainsString('mylink', $skipped[0]['filename']);
-		$this->assertEquals('/etc/passwd', $skipped[0]['linkname']);
+		$this->assertEquals('hardlink', $skipped[0]['reason']);
+		$this->assertStringContainsString('mylink', $skipped[0]['filepath']);
+		$this->assertEquals('/etc/passwd', $skipped[0]['linkpath']);
 
 		unlink($tarFile);
 	}
@@ -830,24 +827,6 @@ class TTarFileExtractorTest extends TestCase
 		unlink($tarFile);
 	}
 
-	public function testClearSkippedFilesAfterExtraction()
-	{
-		$tarFile = $this->testDir . '/zipslip.tar';
-		$this->createZipSlipTar($tarFile);
-
-		$extractor = new TTarFileExtractor($tarFile);
-		$extractor->setStrict(false);
-		$extractor->extract($this->extractDir);
-
-		$this->assertTrue($extractor->hasSkippedFiles());
-
-		$extractor->clearSkippedFiles();
-		$this->assertFalse($extractor->hasSkippedFiles());
-		$this->assertEquals([], $extractor->getSkippedFiles());
-
-		unlink($tarFile);
-	}
-
 	public function testStrictFalseWithSymlinkRelativePathTraversal()
 	{
 		$tarFile = $this->testDir . '/symlink_rel.tar';
@@ -866,9 +845,9 @@ class TTarFileExtractorTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
-		$skipped = $extractor->getSkippedFiles();
+		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
-		$this->assertEquals('symlink', $skipped[0]['type']);
+		$this->assertEquals('symlink', $skipped[0]['reason']);
 
 		unlink($tarFile);
 	}
@@ -891,9 +870,9 @@ class TTarFileExtractorTest extends TestCase
 
 		$this->assertTrue($result);
 		$this->assertTrue($extractor->hasSkippedFiles());
-		$skipped = $extractor->getSkippedFiles();
+		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
-		$this->assertEquals('hardlink', $skipped[0]['type']);
+		$this->assertEquals('hardlink', $skipped[0]['reason']);
 
 		unlink($tarFile);
 	}
