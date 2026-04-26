@@ -12,6 +12,19 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public static $app = null;
 	public static $assetDir = null;
 
+	public static $class = null;
+	
+	protected function getTestClass(): string
+	{
+		return TAssetManager::class;
+	}
+	
+	protected function newAssetManager(...$arg)
+	{
+		$class = $this->getTestClass();
+		return new $class(...$arg);
+	}
+
 	protected function setUp(): void
 	{
 		// Fake environment variables needed to determine path
@@ -49,6 +62,8 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		}
 		// Define an alias to asset directory
 		prado::setPathofAlias('AssetAlias', self::$assetDir);
+			
+		self::$class = $this->getTestClass();
 	}
 
 	private function removeDirectory($dir)
@@ -81,7 +96,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testInit()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 
 		$manager->init(null);
 
@@ -101,7 +116,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetBasePath()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		// First try, invalid directory
 		try {
 			$manager->setBasePath('invalid');
@@ -125,7 +140,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testSetBaseUrl()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/assets/');
 		self::assertEquals("/assets", $manager->getBaseUrl());
 
@@ -139,7 +154,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishFilePath()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -161,7 +176,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishFilePathWithDirectory()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -177,7 +192,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishTarFile()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -201,7 +216,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsEnabled()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setLinkAssets(true);
 		$manager->init(null);
@@ -215,7 +230,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsDisabledCopyInstead()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setLinkAssets(false);
 		$manager->init(null);
@@ -230,7 +245,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsFallbackOnFailure()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setLinkAssets(true);
 		$manager->init(null);
@@ -244,7 +259,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testForceCopyDirectory()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setForceCopy(true);
 		$manager->init(null);
@@ -259,7 +274,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testForceCopyOverridesTimestamp()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setForceCopy(true);
 		$manager->init(null);
@@ -281,7 +296,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAppendTimestampTrue()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAppendTimestamp(true);
 		$manager->init(null);
@@ -295,7 +310,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAppendTimestampFalse()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAppendTimestamp(false);
 		$manager->init(null);
@@ -308,7 +323,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testTimestampVar()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 
 		self::assertEquals('v', $manager->getTimestampVar());
 
@@ -330,7 +345,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHashCallbackCustom()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setHashCallback(function ($path) {
 			return 'customhash_' . md5($path);
@@ -345,7 +360,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHashCallbackWithFile()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setHashCallback(function ($path) {
 			return is_file($path) ? 'file_hash' : 'dir_hash';
@@ -360,7 +375,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHashCallbackWithDirectory()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setHashCallback(function ($path) {
 			return is_file($path) ? 'file_hash' : 'dir_hash';
@@ -375,7 +390,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testBeforeCopyCancelsCopy()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function ($from, $to) {
 			return false;
@@ -393,7 +408,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public function testBeforeCopyAllowsCopy()
 	{
 		$allowedFiles = [];
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function ($from, $to) use (&$allowedFiles) {
 			$allowedFiles[] = basename(dirname($from)) . '/' . basename($from);
@@ -410,7 +425,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public function testAfterCopyCallback()
 	{
 		$copiedFiles = [];
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAfterCopy(function ($from, $to) use (&$copiedFiles) {
 			$copiedFiles[] = basename($to);
@@ -428,7 +443,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 		$beforeCalled = false;
 		$afterCalled = false;
 
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function ($from, $to) use (&$beforeCalled) {
 			$beforeCalled = true;
@@ -448,7 +463,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testOnlyPattern()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['app.js']);
 		$manager->init(null);
@@ -462,7 +477,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testExceptPattern()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setExcept(['*.css', '*.png']);
 		$manager->init(null);
@@ -478,7 +493,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testCaseInsensitivePattern()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(false);
 		$manager->setOnly(['APP.JS']);
@@ -493,7 +508,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHiddenDirectoriesExcluded()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -510,7 +525,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testEmptyPatterns()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(null);
 		$manager->setExcept(null);
@@ -527,7 +542,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAssetMapSimple()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAssetMap([
 			'jquery.js' => '/js/jquery.min.js'
@@ -540,7 +555,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAssetMapWithSourcePath()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAssetMap([
 			'jquery.js' => '/js/jquery.min.js'
@@ -553,7 +568,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAssetMapSuffixMatch()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAssetMap([
 			'app.min.js' => '/js/app.js'
@@ -566,7 +581,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testAssetMapNotFound()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAssetMap([
 			'jquery.js' => '/js/jquery.min.js'
@@ -579,7 +594,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testFileMode()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setFileMode(0644);
 		$manager->init(null);
@@ -595,7 +610,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testDirMode()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setDirMode(0755);
 		$manager->init(null);
@@ -611,7 +626,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishOptionsArray()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -631,7 +646,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testOnlyPatternNotMatching()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['nonexistent.js']);
 		$manager->init(null);
@@ -645,7 +660,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testOnlyPatternMultiple()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['app.js', 'style.css', 'logo.png']);
 		$manager->init(null);
@@ -662,7 +677,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testExceptPatternNotMatching()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setExcept(['nonexistent.css']);
 		$manager->init(null);
@@ -676,7 +691,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testExceptPatternMultiple()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setExcept(['*.css', '*.png', '*.js']);
 		$manager->init(null);
@@ -692,7 +707,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testOnlyAndExceptCombined()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['*.js', '*.css']);
 		$manager->setExcept(['app.js']);
@@ -707,7 +722,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testCaseSensitivePattern()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(true);
 		$manager->setOnly(['app.JS']);
@@ -722,7 +737,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testCaseSensitivePatternMatching()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(true);
 		$manager->setOnly(['app.js']);
@@ -737,7 +752,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testCaseSensitiveExcept()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(true);
 		$manager->setExcept(['APP.JS']);
@@ -752,7 +767,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveAssetWithExactMatch()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setAssetMap([
 			'jquery.js' => '/js/jquery.min.js',
 			'app.js' => '/js/bundle.js'
@@ -768,7 +783,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveAssetNoSourcePath()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setAssetMap([
 			'custom.js' => '/dist/custom.min.js'
 		]);
@@ -780,7 +795,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testResolveAssetWithPrefixMatch()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setAssetMap([
 			'jquery.min.js' => '/js/jquery.min.js',
 			'*.min.js' => '/dist/min.js'
@@ -793,7 +808,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetPublished()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -806,7 +821,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetPublishedPathNotPublished()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -817,7 +832,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetPublishedUrlNotPublished()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -829,7 +844,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public function testBeforeCopyWithDirectory()
 	{
 		$calledFiles = [];
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function ($from, $to) use (&$calledFiles) {
 			$calledFiles[] = basename($from);
@@ -847,7 +862,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public function testAfterCopyWithDirectory()
 	{
 		$calledFiles = [];
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAfterCopy(function ($from, $to) use (&$calledFiles) {
 			$calledFiles[] = basename($to);
@@ -864,7 +879,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testBeforeCopyReturnsFalseForFile()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function ($from, $to) {
 			if (strpos($from, 'app.js') !== false) {
@@ -884,94 +899,94 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testGetLinkAssetsDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertFalse($manager->getLinkAssets());
 	}
 
 	public function testGetForceCopyDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertFalse($manager->getForceCopy());
 	}
 
 	public function testGetAppendTimestampDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertFalse($manager->getAppendTimestamp());
 	}
 
 	public function testGetHashCallbackDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getHashCallback());
 	}
 
 	public function testGetBeforeCopyDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getBeforeCopy());
 	}
 
 	public function testGetAfterCopyDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getAfterCopy());
 	}
 
 	public function testGetAssetMapDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertEquals([], $manager->getAssetMap());
 	}
 
 	public function testGetOnlyDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getOnly());
 	}
 
 	public function testGetExceptDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getExcept());
 	}
 
 	public function testGetCaseSensitiveDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertTrue($manager->getCaseSensitive());
 	}
 
 	public function testGetFileModeDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		self::assertNull($manager->getFileMode());
 	}
 
 	public function testGetDirModeDefault()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->init(null);
 		self::assertEquals(Prado::getDefaultDirPermissions(), $manager->getDirMode());
 	}
 
 	public function testSetOnlyEmptyArray()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setOnly([]);
 		self::assertEquals([], $manager->getOnly());
 	}
 
 	public function testSetExceptEmptyArray()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setExcept([]);
 		self::assertEquals([], $manager->getExcept());
 	}
 
 	public function testPublishFilePathWithOptionsOverridesProperty()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['nonexistent.js']);
 		$manager->init(null);
@@ -987,7 +1002,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishFilePathWithExceptOptionOverridesProperty()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setExcept(['*.js']);
 		$manager->init(null);
@@ -1003,7 +1018,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	
 	public function testPublishFilePathWithCaseSensitiveOptionOverridesProperty()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(true);
 		$manager->init(null);
@@ -1020,7 +1035,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishFilePathWithCaseInsensitiveOptionOverridesProperty()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setCaseSensitive(true);
 		$manager->init(null);
@@ -1037,7 +1052,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testPublishFilePathWithBeforeCopyOptionOverridesProperty()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setBeforeCopy(function () { return false; });
 		$manager->init(null);
@@ -1054,7 +1069,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 	public function testPublishFilePathWithAfterCopyOption()
 	{
 		$afterCalled = false;
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -1068,7 +1083,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testHiddenFilesIncludedWhenNotExcluded()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -1081,7 +1096,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testMultiplePatternsWithGlob()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setOnly(['*.js', '*.css']);
 		$manager->init(null);
@@ -1097,12 +1112,12 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testLinkAssetsHashDiffers()
 	{
-		$manager1 = new TAssetManager();
+		$manager1 = $this->newAssetManager();
 		$manager1->setBaseUrl('/');
 		$manager1->setLinkAssets(false);
 		$manager1->init(null);
 
-		$manager2 = new TAssetManager();
+		$manager2 = $this->newAssetManager();
 		$manager2->setBaseUrl('/');
 		$manager2->setLinkAssets(true);
 		$manager2->init(null);
@@ -1116,7 +1131,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testCopyDirectoryCreatesDestination()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->init(null);
 
@@ -1130,7 +1145,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testForceCopyWithDirectoryPublishing()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setForceCopy(true);
 		$manager->init(null);
@@ -1153,7 +1168,7 @@ class TAssetManagerTest extends PHPUnit\Framework\TestCase
 
 	public function testTimestampVarWithEmptyString()
 	{
-		$manager = new TAssetManager();
+		$manager = $this->newAssetManager();
 		$manager->setBaseUrl('/');
 		$manager->setAppendTimestamp(true);
 		$manager->setTimestampVar('');
