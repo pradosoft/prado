@@ -142,33 +142,33 @@ class TEnumerableTest extends PHPUnit\Framework\TestCase
 		self::assertFalse(TEnumerable::hasConstant('NonExistent'));
 	}
 
-	public function testValueOf()
+	public function testvalueOfConstant()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertEquals('Left', $className::valueOf('Left'));
-		self::assertEquals('Right', $className::valueOf('Right'));
-		self::assertNull($className::valueOf('Center'));
-		self::assertNull($className::valueOf('left'));
-		self::assertNull($className::valueOf('LEFT'));
+		self::assertEquals('Left', $className::valueOfConstant('Left'));
+		self::assertEquals('Right', $className::valueOfConstant('Right'));
+		self::assertNull($className::valueOfConstant('Center'));
+		self::assertNull($className::valueOfConstant('left'));
+		self::assertNull($className::valueOfConstant('LEFT'));
 	}
 
-	public function testValueOfCaseInsensitive()
+	public function testvalueOfConstantCaseInsensitive()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertEquals('Left', $className::valueOf('Left', false));
-		self::assertEquals('Left', $className::valueOf('left', false));
-		self::assertEquals('Left', $className::valueOf('LEFT', false));
-		self::assertEquals('Right', $className::valueOf('RIGHT', false));
+		self::assertEquals('Left', $className::valueOfConstant('Left', false));
+		self::assertEquals('Left', $className::valueOfConstant('left', false));
+		self::assertEquals('Left', $className::valueOfConstant('LEFT', false));
+		self::assertEquals('Right', $className::valueOfConstant('RIGHT', false));
 	}
 
-	public function testValueOfNotFound()
+	public function testvalueOfConstantNotFound()
 	{
 		$className = $this->createEnumerableClass(['Left' => 'Left', 'Right' => 'Right']);
 
-		self::assertNull($className::valueOf('Center'));
-		self::assertNull($className::valueOf('Center', false));
+		self::assertNull($className::valueOfConstant('Center'));
+		self::assertNull($className::valueOfConstant('Center', false));
 	}
 
 	public function testAccessConstantValueViaVariable()

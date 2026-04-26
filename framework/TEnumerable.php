@@ -154,7 +154,7 @@ class TEnumerable implements \Iterator
 	 * @param bool $caseSensitive Whether to perform case-sensitive check. Default is true.
 	 * @return ?string The constant value or null if not found.
 	 */
-	public static function valueOf($constant, bool $caseSensitive = true): ?string
+	public static function valueOfConstant($constant, bool $caseSensitive = true): ?string
 	{
 		$ref = self::getReflectionClass();
 		if (($value = $ref->getConstant($constant)) !== false) {
