@@ -530,6 +530,7 @@ return [
 'TEventContent' => 'Prado\Web\UI\TEventContent',
 'TForm' => 'Prado\Web\UI\TForm',
 'THtmlWriter' => 'Prado\Web\UI\THtmlWriter',
+'TModuleView' => 'Prado\Web\UI\TModuleView',
 'TPage' => 'Prado\Web\UI\TPage',
 'TPageStateFormatter' => 'Prado\Web\UI\TPageStateFormatter',
 'TPageStatePersister' => 'Prado\Web\UI\TPageStatePersister',
