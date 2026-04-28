@@ -10,6 +10,8 @@
 
 namespace Prado\Web\UI\WebControls;
 
+use Prado\TPropertyValue;
+
 /**
  * TExpression class
  *
@@ -44,6 +46,8 @@ class TExpression extends \Prado\Web\UI\TControl
 	 */
 	public function setExpression($value)
 	{
+		$value = TPropertyValue::ensureString($value);
+		$value = html_entity_decode($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
 		$this->_exp = $value;
 	}
 
@@ -53,8 +57,9 @@ class TExpression extends \Prado\Web\UI\TControl
 	 */
 	public function render($writer)
 	{
-		if ($this->_exp !== '') {
-			$writer->write($this->evaluateExpression($this->_exp));
+		$expression = $this->getExpression();
+		if ($expression !== '') {
+			$writer->write($this->evaluateExpression($expression));
 		}
 	}
 }
