@@ -1024,9 +1024,11 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	 * This method can be overridden for controls who want to have their controls.
 	 * Do not call this method directly. Instead, call {@see ensureChildControls}
 	 * to ensure child controls are created only once.
+	 * @method dyCreateChildControls() for the behaviors to process children.
 	 */
 	public function createChildControls()
 	{
+		$this->dyCreateChildControls();
 	}
 
 	/**
@@ -1211,6 +1213,8 @@ class TControl extends \Prado\TApplicationComponent implements IRenderable, IBin
 	}
 
 	/**
+	 * @todo v4.4 param $inTemplate for whether or not its for template or for creating control
+	 *					This can be used by TModuleView.
 	 * @return bool whether body contents are allowed for this control. Defaults to true.
 	 */
 	public function getAllowChildControls()

@@ -49,6 +49,7 @@ class TTemplatedWizardStep extends TWizardStep implements \Prado\Web\UI\INamingC
 		if ($this->_contentTemplate) {
 			$this->_contentTemplate->instantiateIn($this);
 		}
+		parent::createChildControls();
 	}
 
 	/**
