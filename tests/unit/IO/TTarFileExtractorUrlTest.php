@@ -1,5 +1,6 @@
 <?php
 
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
 
@@ -37,111 +38,6 @@ class TTarFileExtractorUrlTest extends TestCase
 			}
 		}
 		rmdir($dir);
-	}
-
-	private function createTarWithMtime(string $tarFile, string $filename, string $content, int $mtime): void
-	{
-		$fp = fopen($tarFile, 'wb');
-
-		$size_oct = sprintf("%011o", strlen($content));
-		$mtime_oct = sprintf("%011o", $mtime);
-
-		$header = pack(
-			"a100a8a8a8a12a12a8",
-			$filename,
-			"0000644",
-			"0000000",
-			"0000000",
-			$size_oct,
-			$mtime_oct,
-			"        "
-		);
-
-		$header .= pack("a1", "0");
-		$header .= pack("a100", "");
-		$header .= pack("a6", "ustar");
-		$header .= pack("a2", "00");
-		$header .= pack("a32", "root");
-		$header .= pack("a32", "root");
-		$header .= pack("a8a8", "", "");
-		$header .= pack("a155", "");
-		$header .= pack("a12", "");
-
-		$header = str_pad($header, 512, "\0");
-
-		$checksum = 0;
-		for ($i = 0; $i < 148; $i++) {
-			$checksum += ord($header[$i]);
-		}
-		for ($i = 148; $i < 156; $i++) {
-			$checksum += ord(' ');
-		}
-		for ($i = 156; $i < 512; $i++) {
-			$checksum += ord($header[$i]);
-		}
-
-		$checksumStr = sprintf("%06o\0 ", $checksum);
-		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-
-		fclose($fp);
-	}
-
-	private function createTarHeader(
-		string $filename,
-		int $size,
-		string $typeflag = '0',
-		string $linkpath = ''
-	): string {
-		$mtime = sprintf("%011o", time());
-		$size_oct = sprintf("%011o", $size);
-
-		$header = pack(
-			"a100a8a8a8a12a12a8",
-			$filename,
-			"0000644",
-			"0000000",
-			"0000000",
-			$size_oct,
-			$mtime,
-			"        "
-		);
-
-		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", $linkpath);
-		$header .= pack("a6", "ustar");
-		$header .= pack("a2", "00");
-		$header .= pack("a32", "root");
-		$header .= pack("a32", "root");
-		$header .= pack("a8a8", "", "");
-		$header .= pack("a155", "");
-		$header .= pack("a12", "");
-
-		$header = str_pad($header, 512, "\0");
-
-		$checksum = 0;
-		for ($i = 0; $i < 148; $i++) {
-			$checksum += ord($header[$i]);
-		}
-		for ($i = 148; $i < 156; $i++) {
-			$checksum += ord(' ');
-		}
-		for ($i = 156; $i < 512; $i++) {
-			$checksum += ord($header[$i]);
-		}
-
-		$checksumStr = sprintf("%06o\0 ", $checksum);
-		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-
-		return $header;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -316,7 +212,7 @@ class TTarFileExtractorUrlTest extends TestCase
 	{
 		// A plain .tar file has no compression magic bytes; detection returns NONE.
 		$tarFile = $this->testDir . '/local.tar';
-		$this->createTarWithMtime($tarFile, 'test.txt', 'test content', time() - 3600);
+		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('test.txt', 'test content', '0', '', 0644, 0, 0, time() - 3600)]);
 
 		$reflection = new \ReflectionClass(TTarFileExtractor::class);
 		$method = $reflection->getMethod('_detectCompression');
@@ -335,7 +231,7 @@ class TTarFileExtractorUrlTest extends TestCase
 	public function testHttpUrlDownloadAndExtract()
 	{
 		$tarFile = $this->testDir . '/test.tar';
-		$this->createTarWithMtime($tarFile, 'test.txt', 'test content', time() - 3600);
+		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('test.txt', 'test content', '0', '', 0644, 0, 0, time() - 3600)]);
 
 		$extractor = new TTarFileExtractor('http://example.com/test.tar');
 
@@ -354,7 +250,7 @@ class TTarFileExtractorUrlTest extends TestCase
 	public function testHttpsUrlDownloadAndExtract()
 	{
 		$tarFile = $this->testDir . '/test.tar';
-		$this->createTarWithMtime($tarFile, 'https_test.txt', 'https content', time() - 3600);
+		TarTestHelper::writeTar($tarFile, [TarTestHelper::entry('https_test.txt', 'https content', '0', '', 0644, 0, 0, time() - 3600)]);
 
 		$extractor = new TTarFileExtractor('https://example.com/test.tar');
 
@@ -475,12 +371,14 @@ class TTarFileExtractorUrlTest extends TestCase
 
 		$result = $extractor->extract($this->extractDir);
 
+		// After no-retain extraction _temp_tarpath is cleared to null by clearTempFile().
 		$newTempXzFile = $tempTarnameProperty->getValue($extractor);
-		$this->assertNotEquals($tempXzFile, $newTempXzFile);
+		$this->assertNull($newTempXzFile, 'Temp path should be null after no-retain extraction');
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/xz_content.txt');
 		$this->assertEquals(TTarFileExtractor::COMPRESSION_LZMA, $extractor->getCompression());
-		$this->assertFileDoesNotExist($newTempXzFile, 'Downloaded XZ file should be deleted after decompression');
+		// The original XZ file must have been deleted during decompression.
+		$this->assertFileDoesNotExist($tempXzFile, 'Source XZ file should be deleted during decompression');
 	}
 
 	public function testHttpsUrlExtractWithLzmaCompressionReplacesTempFile_NoRetain()
@@ -661,20 +559,10 @@ class TTarFileExtractorUrlTest extends TestCase
 	public function testHttpUrlExtractMultipleFiles()
 	{
 		$tarFile = $this->testDir . '/multi.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header1 = $this->createTarHeader('file1.txt', 5);
-		fwrite($fp, $header1);
-		fwrite($fp, "test1");
-		fwrite($fp, str_repeat("\0", 512 - 5));
-
-		$header2 = $this->createTarHeader('file2.txt', 6);
-		fwrite($fp, $header2);
-		fwrite($fp, "test22");
-		fwrite($fp, str_repeat("\0", 512 - 6));
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('file1.txt', 'test1'),
+			TarTestHelper::entry('file2.txt', 'test22'),
+		]);
 
 		$extractor = new TTarFileExtractor('http://example.com/multi.tar');
 
@@ -695,21 +583,10 @@ class TTarFileExtractorUrlTest extends TestCase
 	public function testHttpsUrlExtractMultipleFiles()
 	{
 		$tarFile = $this->testDir . '/multi_https.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		// Content lengths must match the declared sizes exactly.
-		$header1 = $this->createTarHeader('https_file1.txt', 6);
-		fwrite($fp, $header1);
-		fwrite($fp, "https1");
-		fwrite($fp, str_repeat("\0", 512 - 6));
-
-		$header2 = $this->createTarHeader('https_file2.txt', 7);
-		fwrite($fp, $header2);
-		fwrite($fp, "https22");
-		fwrite($fp, str_repeat("\0", 512 - 7));
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('https_file1.txt', 'https1'),
+			TarTestHelper::entry('https_file2.txt', 'https22'),
+		]);
 
 		$extractor = new TTarFileExtractor('https://example.com/multi.tar');
 

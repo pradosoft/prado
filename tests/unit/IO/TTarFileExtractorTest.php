@@ -1,5 +1,6 @@
 <?php
 
+
 use PHPUnit\Framework\TestCase;
 use Prado\IO\TTarFileExtractor;
 
@@ -78,7 +79,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractSingleFile()
 	{
 		$tarFile = $this->testDir . '/single.tar';
-		$this->createTar($tarFile, 'test.txt', 'Hello World');
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('test.txt', 'Hello World'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -93,7 +96,10 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractMultipleFiles()
 	{
 		$tarFile = $this->testDir . '/multiple.tar';
-		$this->createTarWithMultiple($tarFile);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('file1.txt', 'Content 1'),
+			TarTestHelper::entry('file2.txt', 'Content 2'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -110,7 +116,10 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractDirectory()
 	{
 		$tarFile = $this->testDir . '/with_dir.tar';
-		$this->createTarWithDirectory($tarFile);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/nested.txt', 'Nested content'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -139,7 +148,9 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/timestamp.tar';
 		$expectedMtime = time() - 3600;
-		$this->createTarWithMtime($tarFile, 'timed.txt', 'Timestamp content', $expectedMtime);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('timed.txt', 'Timestamp content', '0', '', 0644, 0, 0, $expectedMtime),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -201,8 +212,7 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/empty_name.tar';
 		$fp = fopen($tarFile, 'wb');
-		$header = $this->createTarHeader('', 10, '0');
-		fwrite($fp, $header);
+		fwrite($fp, TarTestHelper::header('', 10, '0'));
 		fwrite($fp, str_repeat("\0", 1024));
 		fclose($fp);
 
@@ -217,7 +227,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractWithSpecialCharactersInFilename()
 	{
 		$tarFile = $this->testDir . '/special.tar';
-		$this->createTar($tarFile, 'file with spaces.txt', 'Special content');
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('file with spaces.txt', 'Special content'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -233,7 +245,9 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/blocks.tar';
 		$content = str_repeat('A', 1536);
-		$this->createTar($tarFile, 'large.txt', $content);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('large.txt', $content),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -249,7 +263,9 @@ class TTarFileExtractorTest extends TestCase
 	{
 		$tarFile = $this->testDir . '/binary.tar';
 		$binaryContent = pack("c*", 0x00, 0x01, 0x02, 0xFF, 0xFE, 0xFD);
-		$this->createTar($tarFile, 'binary.dat', $binaryContent);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('binary.dat', $binaryContent),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -264,22 +280,10 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractSymlinkWithinDestination()
 	{
 		$tarFile = $this->testDir . '/safe_symlink.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$content = 'Target content';
-		$header = $this->createTarHeader('target.txt', strlen($content), '0');
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		$linkHeader = $this->createTarHeader('link.txt', 0, '2', 'target.txt');
-		fwrite($fp, $linkHeader);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('target.txt', 'Target content'),
+			TarTestHelper::entry('link.txt', '', '2', 'target.txt'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -288,7 +292,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertFileExists($this->extractDir . '/target.txt');
 		$this->assertFileExists($this->extractDir . '/link.txt');
 		$this->assertTrue(is_link($this->extractDir . '/link.txt'));
-		$this->assertEquals('target content', file_get_contents($this->extractDir . '/link.txt'));
+		$this->assertEquals('Target content', file_get_contents($this->extractDir . '/link.txt'));
 
 		unlink($tarFile);
 	}
@@ -296,17 +300,14 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractSymlinkWithRelativePathWithinDestination()
 	{
 		$tarFile = $this->testDir . '/relative_symlink.tar';
-		$fp = fopen($tarFile, 'wb');
 
 		mkdir($this->extractDir . '/subdir', 0o777, true);
 		mkdir($this->extractDir . '/subdir/linktarget', 0o777, true);
 		file_put_contents($this->extractDir . '/subdir/linktarget/file.txt', 'Content');
 
-		$linkHeader = $this->createTarHeader('subdir/mylink', 0, '2', 'linktarget/file.txt');
-		fwrite($fp, $linkHeader);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/mylink', '', '2', 'linktarget/file.txt'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -322,22 +323,10 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractHardLinkWithinDestination()
 	{
 		$tarFile = $this->testDir . '/safe_hardlink.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$content = 'Original content';
-		$header = $this->createTarHeader('original.txt', strlen($content), '0');
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		$linkHeader = $this->createTarHeader('hardlink.txt', 0, '1', 'original.txt');
-		fwrite($fp, $linkHeader);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('original.txt', 'Original content'),
+			TarTestHelper::entry('hardlink.txt', '', '1', 'original.txt'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$result = $extractor->extract($this->extractDir);
@@ -345,7 +334,7 @@ class TTarFileExtractorTest extends TestCase
 		$this->assertTrue($result);
 		$this->assertFileExists($this->extractDir . '/original.txt');
 		$this->assertFileExists($this->extractDir . '/hardlink.txt');
-		$this->assertEquals($content, file_get_contents($this->extractDir . '/hardlink.txt'));
+		$this->assertEquals('Original content', file_get_contents($this->extractDir . '/hardlink.txt'));
 
 		unlink($tarFile);
 	}
@@ -353,19 +342,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractBlockedZipSlipPathTraversal()
 	{
 		$tarFile = $this->testDir . '/zipslip.tar';
-		$content = 'Malicious content';
-		$filename = "subdir/../../../malicious.txt";
-
-		$fp = fopen($tarFile, 'wb');
-		$header = $this->createTarHeader($filename, strlen($content), '0');
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("subdir/../../../malicious.txt", 'Malicious content'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 
@@ -378,13 +357,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractBlockedSymlinkWithAbsolutePath()
 	{
 		$tarFile = $this->testDir . '/symlink_absolute.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("mylink", 0, '2', '/etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("mylink", '', '2', '/etc/passwd'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 
@@ -397,13 +372,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractBlockedHardLinkWithAbsolutePath()
 	{
 		$tarFile = $this->testDir . '/hardlink_absolute.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("mylink", 0, '1', '/etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("mylink", '', '1', '/etc/passwd'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 
@@ -416,13 +387,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testExtractBlockedSymlinkWithRelativePathTraversal()
 	{
 		$tarFile = $this->testDir . '/symlink_traversal.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("subdir/../../../mylink", 0, '2', '../../etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("subdir/../../../mylink", '', '2', '../../etc/passwd'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 
@@ -430,174 +397,6 @@ class TTarFileExtractorTest extends TestCase
 		$this->expectExceptionMessageMatches('/(Zip Slip path traversal|Symlink target outside)/');
 
 		$extractor->extract($this->extractDir);
-	}
-
-	private function createTarHeader(
-		string $filename,
-		int $size,
-		string $typeflag = '0',
-		string $linkpath = ''
-	): string {
-		$mtime = sprintf("%011o", time());
-		$size_oct = sprintf("%011o", $size);
-
-		$header = pack(
-			"a100a8a8a8a12a12a8",
-			$filename,
-			"0000644",
-			"0000000",
-			"0000000",
-			$size_oct,
-			$mtime,
-			"        "
-		);
-
-		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", $linkpath);
-		$header .= pack("a6", "ustar");
-		$header .= pack("a2", "00");
-		$header .= pack("a32", "root");
-		$header .= pack("a32", "root");
-		$header .= pack("a8a8", "", "");
-		$header .= pack("a155", "");
-		$header .= pack("a12", "");
-
-		$header = str_pad($header, 512, "\0");
-
-		$checksum = 0;
-		for ($i = 0; $i < 148; $i++) {
-			$checksum += ord($header[$i]);
-		}
-		for ($i = 148; $i < 156; $i++) {
-			$checksum += ord(' ');
-		}
-		for ($i = 156; $i < 512; $i++) {
-			$checksum += ord($header[$i]);
-		}
-
-		$checksumStr = sprintf("%06o\0 ", $checksum);
-		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-
-		return $header;
-	}
-
-	private function createTar(string $tarFile, string $filename, string $content, string $prefix = ''): void
-	{
-		$fp = fopen($tarFile, 'wb');
-
-		$fullFilename = $prefix . $filename;
-		$header = $this->createTarHeader($fullFilename, strlen($content), '0');
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-
-		fclose($fp);
-	}
-
-	private function createTarWithMtime(string $tarFile, string $filename, string $content, int $mtime): void
-	{
-		$fp = fopen($tarFile, 'wb');
-
-		$size_oct = sprintf("%011o", strlen($content));
-		$mtime_oct = sprintf("%011o", $mtime);
-
-		$header = pack(
-			"a100a8a8a8a12a12a8",
-			$filename,
-			"0000644",
-			"0000000",
-			"0000000",
-			$size_oct,
-			$mtime_oct,
-			"        "
-		);
-
-		$header .= pack("a1", "0");
-		$header .= pack("a100", "");
-		$header .= pack("a6", "ustar");
-		$header .= pack("a2", "00");
-		$header .= pack("a32", "root");
-		$header .= pack("a32", "root");
-		$header .= pack("a8a8", "", "");
-		$header .= pack("a155", "");
-		$header .= pack("a12", "");
-
-		$header = str_pad($header, 512, "\0");
-
-		$checksum = 0;
-		for ($i = 0; $i < 148; $i++) {
-			$checksum += ord($header[$i]);
-		}
-		for ($i = 148; $i < 156; $i++) {
-			$checksum += ord(' ');
-		}
-		for ($i = 156; $i < 512; $i++) {
-			$checksum += ord($header[$i]);
-		}
-
-		$checksumStr = sprintf("%06o\0 ", $checksum);
-		$header = substr($header, 0, 148) . $checksumStr . substr($header, 156);
-
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-
-		fclose($fp);
-	}
-
-	private function createTarWithMultiple(string $tarFile): void
-	{
-		$fp = fopen($tarFile, 'wb');
-
-		$entries = [
-			['name' => 'file1.txt', 'content' => 'Content 1'],
-			['name' => 'file2.txt', 'content' => 'Content 2'],
-		];
-
-		foreach ($entries as $entry) {
-			$header = $this->createTarHeader($entry['name'], strlen($entry['content']), '0');
-			fwrite($fp, $header);
-			fwrite($fp, $entry['content']);
-			$padding = 512 - (strlen($entry['content']) % 512);
-			if ($padding < 512) {
-				fwrite($fp, str_repeat("\0", $padding));
-			}
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-
-		fclose($fp);
-	}
-
-	private function createTarWithDirectory(string $tarFile): void
-	{
-		$fp = fopen($tarFile, 'wb');
-
-		$dirHeader = $this->createTarHeader("subdir/", 0, '5');
-		fwrite($fp, $dirHeader);
-
-		$nestedContent = 'Nested content';
-		$fileHeader = $this->createTarHeader("subdir/nested.txt", strlen($nestedContent), '0');
-		fwrite($fp, $fileHeader);
-		fwrite($fp, $nestedContent);
-		$padding = 512 - (strlen($nestedContent) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-
-		fclose($fp);
 	}
 
 	public function testGetStrictDefaultValue()
@@ -625,7 +424,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testHasSkippedFilesDefaultFalse()
 	{
 		$tarFile = $this->testDir . '/safe.tar';
-		$this->createTar($tarFile, 'safe.txt', 'Safe content');
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('safe.txt', 'Safe content'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->extract($this->extractDir);
@@ -638,7 +439,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testGetSkippedFilesDefaultEmpty()
 	{
 		$tarFile = $this->testDir . '/safe.tar';
-		$this->createTar($tarFile, 'safe.txt', 'Safe content');
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('safe.txt', 'Safe content'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->extract($this->extractDir);
@@ -766,6 +569,7 @@ class TTarFileExtractorTest extends TestCase
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('hardlink', $skipped[0]['reason']);
+		$this->assertEquals('linkpath_above_root', $skipped[0]['security']);
 		$this->assertStringContainsString('mylink', $skipped[0]['filepath']);
 		$this->assertEquals('/etc/passwd', $skipped[0]['linkpath']);
 
@@ -775,40 +579,12 @@ class TTarFileExtractorTest extends TestCase
 	public function testStrictFalseWithMultipleSecurityIssues()
 	{
 		$tarFile = $this->testDir . '/multi_malicious.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$content1 = 'Safe content';
-		$header1 = $this->createTarHeader('safe.txt', strlen($content1), '0');
-		fwrite($fp, $header1);
-		fwrite($fp, $content1);
-		$padding1 = 512 - (strlen($content1) % 512);
-		if ($padding1 < 512) {
-			fwrite($fp, str_repeat("\0", $padding1));
-		}
-
-		$content2 = 'Malicious!';
-		$header2 = $this->createTarHeader("subdir/../../../malicious.txt", strlen($content2), '0');
-		fwrite($fp, $header2);
-		fwrite($fp, $content2);
-		$padding2 = 512 - (strlen($content2) % 512);
-		if ($padding2 < 512) {
-			fwrite($fp, str_repeat("\0", $padding2));
-		}
-
-		$header3 = $this->createTarHeader("link_outside", 0, '2', '/etc/passwd');
-		fwrite($fp, $header3);
-
-		$content4 = 'Another safe';
-		$header4 = $this->createTarHeader('safe2.txt', strlen($content4), '0');
-		fwrite($fp, $header4);
-		fwrite($fp, $content4);
-		$padding4 = 512 - (strlen($content4) % 512);
-		if ($padding4 < 512) {
-			fwrite($fp, str_repeat("\0", $padding4));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('safe.txt', 'Safe content'),
+			TarTestHelper::entry("subdir/../../../malicious.txt", 'Malicious!'),
+			TarTestHelper::entry("link_outside", '', '2', '/etc/passwd'),
+			TarTestHelper::entry('safe2.txt', 'Another safe'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
@@ -830,13 +606,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testStrictFalseWithSymlinkRelativePathTraversal()
 	{
 		$tarFile = $this->testDir . '/symlink_rel.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("subdir/mylink", 0, '2', '../../../etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("subdir/mylink", '', '2', '../../../etc/passwd'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
@@ -848,6 +620,7 @@ class TTarFileExtractorTest extends TestCase
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('symlink', $skipped[0]['reason']);
+		$this->assertEquals('linkpath_above_root', $skipped[0]['security']);
 
 		unlink($tarFile);
 	}
@@ -855,13 +628,9 @@ class TTarFileExtractorTest extends TestCase
 	public function testStrictFalseWithHardLinkRelativePathTraversal()
 	{
 		$tarFile = $this->testDir . '/hardlink_rel.tar';
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("subdir/mylink", 0, '1', '../../../etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("subdir/mylink", '', '1', '../../../etc/passwd'),
+		]);
 
 		$extractor = new TTarFileExtractor($tarFile);
 		$extractor->setStrict(false);
@@ -873,48 +642,30 @@ class TTarFileExtractorTest extends TestCase
 		$skipped = array_values($extractor->getSkippedFiles());
 		$this->assertCount(1, $skipped);
 		$this->assertEquals('hardlink', $skipped[0]['reason']);
+		$this->assertEquals('linkpath_above_root', $skipped[0]['security']);
 
 		unlink($tarFile);
 	}
 
 	private function createZipSlipTar(string $tarFile): void
 	{
-		$fp = fopen($tarFile, 'wb');
-
-		$content = 'Malicious content';
-		$filename = "subdir/../../../malicious.txt";
-		$header = $this->createTarHeader($filename, strlen($content), '0');
-		fwrite($fp, $header);
-		fwrite($fp, $content);
-		$padding = 512 - (strlen($content) % 512);
-		if ($padding < 512) {
-			fwrite($fp, str_repeat("\0", $padding));
-		}
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("subdir/../../../malicious.txt", 'Malicious content'),
+		]);
 	}
 
 	private function createSymlinkOutsideTar(string $tarFile): void
 	{
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("mylink", 0, '2', '/etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("mylink", '', '2', '/etc/passwd'),
+		]);
 	}
 
 	private function createHardLinkOutsideTar(string $tarFile): void
 	{
-		$fp = fopen($tarFile, 'wb');
-
-		$header = $this->createTarHeader("mylink", 0, '1', '/etc/passwd');
-		fwrite($fp, $header);
-
-		fwrite($fp, str_repeat("\0", 1024));
-		fclose($fp);
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry("mylink", '', '1', '/etc/passwd'),
+		]);
 	}
 
 	public function testGetUrlTimeoutDefaultValue()
@@ -960,5 +711,895 @@ class TTarFileExtractorTest extends TestCase
 			->setStrict(false);
 		$this->assertEquals(15.0, $extractor->getUrlTimeout());
 		$this->assertFalse($extractor->getStrict());
+	}
+
+	// =========================================================================
+	// getExceptionClass / setExceptionClass / _error dispatch
+	// =========================================================================
+
+	public function testExceptionClassDefault()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$this->assertSame('\Exception', $extractor->getExceptionClass());
+	}
+
+	public function testSetExceptionClassStores()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setExceptionClass('\RuntimeException');
+		$this->assertSame('\RuntimeException', $extractor->getExceptionClass());
+	}
+
+	public function testSetExceptionClassChaining()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$result = $extractor->setExceptionClass('\LogicException');
+		$this->assertSame($extractor, $result);
+	}
+
+	public function testSetExceptionClassEmptyStringIsStored()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setExceptionClass('\RuntimeException');
+		$extractor->setExceptionClass('');
+		// Empty string is stored as-is; _error falls back to \Exception at throw time.
+		$this->assertSame(TTarFileExtractor::DEFAULT_EXCEPTION_CLASS, $extractor->getExceptionClass());
+	}
+
+	public function testErrorThrowsConfiguredExceptionClass()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setExceptionClass('\RuntimeException');
+
+		$method = new \ReflectionMethod($extractor, '_error');
+		$method->setAccessible(true);
+
+		$this->expectException(\RuntimeException::class);
+		$this->expectExceptionMessage('test error message');
+		$method->invoke($extractor, 'test error message');
+	}
+
+	public function testErrorFallsBackToExceptionForUnknownClass()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setExceptionClass('\NoSuchClassDefinedAnywhere');
+
+		$method = new \ReflectionMethod($extractor, '_error');
+		$method->setAccessible(true);
+
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('fallback message');
+		$method->invoke($extractor, 'fallback message');
+	}
+
+	public function testErrorFallsBackToExceptionForEmptyClass()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setExceptionClass('');
+
+		$method = new \ReflectionMethod($extractor, '_error');
+		$method->setAccessible(true);
+
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('empty class fallback');
+		$method->invoke($extractor, 'empty class fallback');
+	}
+
+	public function testErrorDefaultClassIsException()
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+
+		$method = new \ReflectionMethod($extractor, '_error');
+		$method->setAccessible(true);
+
+		$this->expectException(\Exception::class);
+		$this->expectExceptionMessage('default exception');
+		$method->invoke($extractor, 'default exception');
+	}
+
+	// =========================================================================
+	// _normalizePath
+	// =========================================================================
+
+	private function normalizePath(string $path): ?string
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$method = new \ReflectionMethod($extractor, '_normalizePath');
+		$method->setAccessible(true);
+		return $method->invoke($extractor, $path);
+	}
+
+	/**
+	 * @dataProvider normalizePathValidProvider
+	 */
+	public function testNormalizePath(string $input, ?string $expected): void
+	{
+		$this->assertSame($expected, $this->normalizePath($input));
+	}
+
+	public static function normalizePathValidProvider(): array
+	{
+		return [
+			// Empty / current dir
+			[''          , '.'],
+			['.'         , '.'],
+			['./'        , '.'],
+			['././.'     , '.'],
+
+			// Simple relative
+			['foo'       , 'foo'],
+			['foo/bar'   , 'foo/bar'],
+			['foo//bar'  , 'foo/bar'],
+			['foo/./bar' , 'foo/bar'],
+
+			// Relative with ..
+			['foo/..'        , '.'],
+			['foo/bar/..'    , 'foo'],
+			['foo/bar/../baz', 'foo/baz'],
+			['a/b/c/../../d' , 'a/d'],
+
+			// Leading ..
+			['..'            , '..'],
+			['../'           , '..'],
+			['../a'          , '../a'],
+			['../a/..'       , '..'],
+			['../../a'       , '../../a'],
+			['a/../../b'     , '../b'],
+			['a/b/../../../c', '../c'],
+
+			// Absolute basics
+			['/'             , '/'],
+			['//'            , '/'],
+			['/.'            , '/'],
+			['/././'         , '/'],
+			['/foo'          , '/foo'],
+			['/foo/bar'      , '/foo/bar'],
+			['/foo//bar'     , '/foo/bar'],
+			['/foo/./bar'    , '/foo/bar'],
+
+			// Absolute with ..
+			['/foo/..'          , '/'],
+			['/foo/bar/..'      , '/foo'],
+			['/foo/bar/../baz'  , '/foo/baz'],
+			['/a/b/c/../../d'   , '/a/d'],
+
+			// Preserve names that merely contain dots
+			['file..txt'        , 'file..txt'],
+			['a.../b'           , 'a.../b'],
+			['..hidden/file'    , '..hidden/file'],
+		];
+	}
+
+	/**
+	 * @dataProvider normalizePathTraversalAboveRootProvider
+	 */
+	public function testNormalizePathRejectsTraversalAboveAbsoluteRoot(string $input): void
+	{
+		$this->assertNull($this->normalizePath($input));
+	}
+
+	public static function normalizePathTraversalAboveRootProvider(): array
+	{
+		return [
+			['/..'],
+			['/../'],
+			['/../../a'],
+			['/foo/../../bar'],
+			['/a/b/../../../c'],
+		];
+	}
+
+	// =========================================================================
+	// getConflictModeFunction — built-in CONFLICT_* constants
+	// =========================================================================
+
+	/** @return array<string,array{int,string}> */
+	public static function conflictModeCallableProvider(): array
+	{
+		return [
+			'CONFLICT_ERROR'     => [TTarFileExtractor::CONFLICT_ERROR,     'resolveConflictError'],
+			'CONFLICT_SKIP'      => [TTarFileExtractor::CONFLICT_SKIP,      'resolveConflictSkipTar'],
+			'CONFLICT_OVERWRITE' => [TTarFileExtractor::CONFLICT_OVERWRITE, 'resolveConflictOverwriteExisting'],
+			'CONFLICT_NEWER'     => [TTarFileExtractor::CONFLICT_NEWER,     'resolveConflictNewer'],
+			'CONFLICT_OLDER'     => [TTarFileExtractor::CONFLICT_OLDER,     'resolveConflictOlder'],
+		];
+	}
+
+	/**
+	 * @dataProvider conflictModeCallableProvider
+	 */
+	public function testGetConflictModeFunctionReturnsBuiltInMethod(int $mode, string $methodName): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setConflictMode($mode);
+
+		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
+		$fn->setAccessible(true);
+		$callable = $fn->invoke($extractor);
+
+		$this->assertIsArray($callable);
+		$this->assertSame($extractor, $callable[0]);
+		$this->assertSame($methodName, $callable[1]);
+	}
+
+	public function testGetConflictModeFunctionForUserCallableReturnsWrappedClosure(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$userCallable = static function (array $entry, string $path, ?string &$reason): bool {
+			return true;
+		};
+		$extractor->setConflictMode($userCallable);
+
+		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
+		$fn->setAccessible(true);
+		$callable = $fn->invoke($extractor);
+
+		$this->assertInstanceOf(\Closure::class, $callable);
+	}
+
+	public function testGetConflictModeFunctionForUnknownValueFallsBackToOverwrite(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setConflictMode(999); // not a valid CONFLICT_* constant, not callable
+
+		$fn = new \ReflectionMethod($extractor, 'getConflictModeFunction');
+		$fn->setAccessible(true);
+		$callable = $fn->invoke($extractor);
+
+		$this->assertIsArray($callable);
+		$this->assertSame('resolveConflictOverwriteExisting', $callable[1]);
+	}
+
+	// =========================================================================
+	// Callable conflict mode — functional extraction tests
+	// =========================================================================
+
+	/** Create a tar with one pre-existing file + one archive entry for the same path. */
+	private function createConflictTar(string $tarFile, string $archiveContent = 'archive'): void
+	{
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('existing.txt', $archiveContent, '0', '', 0o644, 0, 0, time() - 100),
+		]);
+	}
+
+	public function testCallableConflictModeSkipWithDefaultReason(): void
+	{
+		$tarFile = $this->testDir . '/callable_skip.tar';
+		$this->createConflictTar($tarFile);
+
+		// Pre-create the file so a conflict exists.
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(false);
+		// Callable always returns false (skip), leaves $reason unset → default reason applied.
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			return false;
+		});
+
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		// Original content must be preserved.
+		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+
+		// The skipped entry should appear in the extract manifest with the default reason.
+		$skipped = array_values($extractor->getSkippedFiles());
+		$this->assertCount(1, $skipped);
+		$this->assertSame(TTarFileExtractor::REASON_CONFLICT_CALLABLE_SKIP, $skipped[0]['reason']);
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeSkipWithCustomReason(): void
+	{
+		$tarFile = $this->testDir . '/callable_custom.tar';
+		$this->createConflictTar($tarFile);
+
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(false);
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			$reason = 'my_custom_skip';
+			return false;
+		});
+
+		$extractor->extract($this->extractDir);
+
+		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+
+		$skipped = array_values($extractor->getSkippedFiles());
+		$this->assertCount(1, $skipped);
+		$this->assertSame('my_custom_skip', $skipped[0]['reason']);
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeOverwrite(): void
+	{
+		$tarFile = $this->testDir . '/callable_overwrite.tar';
+		$this->createConflictTar($tarFile, 'from archive');
+
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(false);
+		// Callable returns true → always overwrite.
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			return true;
+		});
+
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('from archive', file_get_contents($this->extractDir . '/existing.txt'));
+		$this->assertFalse($extractor->hasSkippedFiles());
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeReceivesCorrectArguments(): void
+	{
+		$tarFile = $this->testDir . '/callable_args.tar';
+		$archiveMtime = time() - 500;
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('myfile.txt', 'content', '0', '', 0o644, 0, 0, $archiveMtime),
+		]);
+
+		file_put_contents($this->extractDir . '/myfile.txt', 'existing');
+
+		$capturedEntry = null;
+		$capturedPath  = null;
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(false);
+		$extractor->setConflictMode(function (array $entry, string $path, ?string &$reason) use (&$capturedEntry, &$capturedPath): bool {
+			$capturedEntry = $entry;
+			$capturedPath  = $path;
+			return false;
+		});
+
+		$extractor->extract($this->extractDir);
+
+		$this->assertIsArray($capturedEntry);
+		$this->assertSame('myfile.txt', $capturedEntry['filepath']);
+		$this->assertSame($archiveMtime, (int) $capturedEntry['mtime']);
+		$this->assertStringContainsString('myfile.txt', $capturedPath);
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeTypeErrorSkip(): void
+	{
+		$tarFile = $this->testDir . '/callable_typeerror.tar';
+		$this->createConflictTar($tarFile);
+
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(false);
+		// Callable that throws TypeError (incompatible signature simulation).
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			throw new \TypeError('bad type');
+		});
+
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		// File must not be overwritten.
+		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+
+		$skipped = array_values($extractor->getSkippedFiles());
+		$this->assertCount(1, $skipped);
+		$this->assertSame(TTarFileExtractor::REASON_CONFLICT_CALLABLE_ERROR_SKIP, $skipped[0]['reason']);
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeAtomicSkip(): void
+	{
+		$tarFile = $this->testDir . '/callable_atomic_skip.tar';
+		$this->createConflictTar($tarFile, 'archive content');
+
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(true);
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			return false;
+		});
+
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+
+		$skipped = array_values($extractor->getSkippedFiles());
+		$this->assertCount(1, $skipped);
+		$this->assertSame(TTarFileExtractor::REASON_CONFLICT_CALLABLE_SKIP, $skipped[0]['reason']);
+
+		unlink($tarFile);
+	}
+
+	public function testCallableConflictModeAtomicOverwrite(): void
+	{
+		$tarFile = $this->testDir . '/callable_atomic_overwrite.tar';
+		$this->createConflictTar($tarFile, 'from archive');
+
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(true);
+		$extractor->setConflictMode(static function (array $entry, string $path, ?string &$reason): bool {
+			return true;
+		});
+
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('from archive', file_get_contents($this->extractDir . '/existing.txt'));
+
+		unlink($tarFile);
+	}
+
+	// =========================================================================
+	// getConflictMode default
+	// =========================================================================
+
+	public function testConflictModeDefaultIsOverwrite(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$this->assertSame(TTarFileExtractor::DEFAULT_CONFLICT_MODE, $extractor->getConflictMode());
+		$this->assertSame(TTarFileExtractor::CONFLICT_OVERWRITE, $extractor->getConflictMode());
+	}
+
+	public function testSetConflictModeChaining(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$result = $extractor->setConflictMode(TTarFileExtractor::CONFLICT_SKIP);
+		$this->assertSame($extractor, $result);
+		$this->assertSame(TTarFileExtractor::CONFLICT_SKIP, $extractor->getConflictMode());
+	}
+
+	public function testSetConflictModeAcceptsClosure(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$fn = static fn(): bool => true;
+		$extractor->setConflictMode($fn);
+		$this->assertSame($fn, $extractor->getConflictMode());
+	}
+
+	// =========================================================================
+	// atomic default
+	// =========================================================================
+
+	public function testAtomicDefaultIsFalse(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$this->assertFalse($extractor->getAtomic());
+	}
+
+	// =========================================================================
+	// restoreOnFailure — property tests
+	// =========================================================================
+
+	public function testRestoreOnFailureDefaultIsTrue(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$this->assertTrue($extractor->getRestoreOnFailure());
+	}
+
+	public function testSetRestoreOnFailureReturnsSelf(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$result = $extractor->setRestoreOnFailure(false);
+		$this->assertSame($extractor, $result);
+	}
+
+	public function testSetRestoreOnFailureFalse(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setRestoreOnFailure(false);
+		$this->assertFalse($extractor->getRestoreOnFailure());
+	}
+
+	public function testSetRestoreOnFailureTrue(): void
+	{
+		$extractor = new TTarFileExtractor('/dev/null');
+		$extractor->setRestoreOnFailure(false);
+		$extractor->setRestoreOnFailure(true);
+		$this->assertTrue($extractor->getRestoreOnFailure());
+	}
+
+	// =========================================================================
+	// restoreOnFailure — helpers
+	// =========================================================================
+
+	/**
+	 * Build a tar with the given normal entries followed by a zip-slip trap entry
+	 * (`../trap.txt`).  In strict mode (the default) processing the trap entry
+	 * causes an exception, which lets the restore-on-failure path run.
+	 */
+	private function createTarWithZipSlipTrap(string $tarFile, array $normalEntries): void
+	{
+		$entries = $normalEntries;
+		$entries[] = TarTestHelper::entry('../trap.txt', 'evil', '0', '', 0o644, 0, 0, time());
+		TarTestHelper::writeTar($tarFile, $entries);
+	}
+
+	/**
+	 * Run an extraction expected to throw, capturing the throw so that further
+	 * assertions can still run after it.
+	 */
+	private function extractExpectingException(TTarFileExtractor $extractor, string $dir): void
+	{
+		$threw = false;
+		try {
+			$extractor->extract($dir);
+		} catch (\Exception $e) {
+			$threw = true;
+		}
+		$this->assertTrue($threw, 'Expected extraction to throw an exception due to the zip-slip trap entry');
+	}
+
+	// =========================================================================
+	// restoreOnFailure — successful extraction tests
+	// =========================================================================
+
+	public function testRestoreOnFailureSuccessNewFile(): void
+	{
+		$tarFile = $this->testDir . '/restore_new.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('hello.txt', 'hello world'),
+		]);
+
+		// Defaults: atomic=false, restoreOnFailure=true.
+		$extractor = new TTarFileExtractor($tarFile);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertFileExists($this->extractDir . '/hello.txt');
+		$this->assertSame('hello world', file_get_contents($this->extractDir . '/hello.txt'));
+	}
+
+	public function testRestoreOnFailureSuccessMultipleNewFiles(): void
+	{
+		$tarFile = $this->testDir . '/restore_multi_new.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('a.txt', 'aaa'),
+			TarTestHelper::entry('b.txt', 'bbb'),
+			TarTestHelper::entry('c.txt', 'ccc'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('aaa', file_get_contents($this->extractDir . '/a.txt'));
+		$this->assertSame('bbb', file_get_contents($this->extractDir . '/b.txt'));
+		$this->assertSame('ccc', file_get_contents($this->extractDir . '/c.txt'));
+	}
+
+	public function testRestoreOnFailureSuccessPreexistingFileOverwritten(): void
+	{
+		$tarFile = $this->testDir . '/restore_overwrite.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('data.txt', 'from archive'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('from archive', file_get_contents($this->extractDir . '/data.txt'));
+	}
+
+	public function testRestoreOnFailureSuccessBackupDirCleaned(): void
+	{
+		// Use a subclass that redirects temp I/O to a known directory so we can
+		// assert the backup directory is fully cleaned up after a successful extraction.
+		$tempDir = $this->testDir . '/temp';
+		mkdir($tempDir, 0o777, true);
+
+		$tarFile = $this->testDir . '/restore_clean.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('data.txt', 'new content'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'old content');
+
+		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('new content', file_get_contents($this->extractDir . '/data.txt'));
+		// The backup directory and its contents must be fully removed on success.
+		$remaining = array_diff(scandir($tempDir), ['.', '..']);
+		$this->assertEmpty($remaining, 'Restore backup directory was not cleaned up after successful extraction');
+	}
+
+	public function testRestoreOnFailureSuccessWithDirectoryEntries(): void
+	{
+		$tarFile = $this->testDir . '/restore_dirs.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('subdir/', '', '5'),
+			TarTestHelper::entry('subdir/file.txt', 'dir content'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertDirectoryExists($this->extractDir . '/subdir');
+		$this->assertSame('dir content', file_get_contents($this->extractDir . '/subdir/file.txt'));
+	}
+
+	// =========================================================================
+	// restoreOnFailure — failure tests (zip-slip entry triggers exception)
+	// =========================================================================
+
+	public function testRestoreOnFailureRestoresPreexistingFileOnException(): void
+	{
+		// tar: data.txt (normal), ../trap.txt (zip-slip — triggers exception in strict mode).
+		$tarFile = $this->testDir . '/restore_exception.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('data.txt', 'from archive'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Pre-existing file must be restored to its original content.
+		$this->assertFileExists($this->extractDir . '/data.txt');
+		$this->assertSame('original', file_get_contents($this->extractDir . '/data.txt'));
+	}
+
+	public function testRestoreOnFailureRemovesNewFileOnException(): void
+	{
+		// tar: newfile.txt (no pre-existing at dest), ../trap.txt.
+		$tarFile = $this->testDir . '/restore_remove.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('newfile.txt', 'written by extraction'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// The newly-written file must be removed during cleanup.
+		$this->assertFileDoesNotExist($this->extractDir . '/newfile.txt');
+	}
+
+	public function testRestoreOnFailureMultiplePreexistingFilesAllRestored(): void
+	{
+		$tarFile = $this->testDir . '/restore_multi.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('file_a.txt', 'new a'),
+			TarTestHelper::entry('file_b.txt', 'new b'),
+		]);
+		file_put_contents($this->extractDir . '/file_a.txt', 'old a');
+		file_put_contents($this->extractDir . '/file_b.txt', 'old b');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Both pre-existing files must be restored.
+		$this->assertSame('old a', file_get_contents($this->extractDir . '/file_a.txt'));
+		$this->assertSame('old b', file_get_contents($this->extractDir . '/file_b.txt'));
+	}
+
+	public function testRestoreOnFailureMixedNewAndPreexistingOnFailure(): void
+	{
+		// existing.txt is pre-existing; brand_new.txt is not.
+		$tarFile = $this->testDir . '/restore_mixed.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('existing.txt', 'new existing'),
+			TarTestHelper::entry('brand_new.txt', 'new content'),
+		]);
+		file_put_contents($this->extractDir . '/existing.txt', 'original existing');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Pre-existing file must be restored to its original content.
+		$this->assertSame('original existing', file_get_contents($this->extractDir . '/existing.txt'));
+		// Newly-written file must be removed.
+		$this->assertFileDoesNotExist($this->extractDir . '/brand_new.txt');
+	}
+
+	public function testRestoreOnFailureBackupDirRemovedOnFailure(): void
+	{
+		$tempDir = $this->testDir . '/temp';
+		mkdir($tempDir, 0o777, true);
+
+		$tarFile = $this->testDir . '/restore_cleanup.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('data.txt', 'content'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Backup directory must be removed even after a failed extraction.
+		$remaining = array_diff(scandir($tempDir), ['.', '..']);
+		$this->assertEmpty($remaining, 'Restore backup directory was not cleaned up after failed extraction');
+	}
+
+	public function testRestoreOnFailureExceptionIsRethrown(): void
+	{
+		// Only the zip-slip trap entry — no normal entries before it.
+		$tarFile = $this->testDir . '/restore_rethrow.tar';
+		$this->createTarWithZipSlipTrap($tarFile, []);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->expectException(\Exception::class);
+		$extractor->extract($this->extractDir);
+	}
+
+	public function testRestoreOnFailureManifestPopulatedOnFailure(): void
+	{
+		$tarFile = $this->testDir . '/restore_manifest.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('file.txt', 'content'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Even on failure the partial manifest must be populated.
+		$manifest = $extractor->getExtractManifest();
+		$this->assertNotNull($manifest);
+		$this->assertArrayHasKey('file.txt', $manifest);
+	}
+
+	// =========================================================================
+	// restoreOnFailure = false — disabled tests
+	// =========================================================================
+
+	public function testRestoreOnFailureDisabledDoesNotRestoreOnFailure(): void
+	{
+		$tarFile = $this->testDir . '/restore_disabled.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('data.txt', 'from archive'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setRestoreOnFailure(false);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Without restore-on-failure the file written by partial extraction is NOT restored.
+		$this->assertSame('from archive', file_get_contents($this->extractDir . '/data.txt'));
+	}
+
+	public function testRestoreOnFailureDisabledDoesNotRemoveNewFilesOnFailure(): void
+	{
+		$tarFile = $this->testDir . '/restore_disabled_new.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('newfile.txt', 'written'),
+		]);
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setRestoreOnFailure(false);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Without restore-on-failure, newly-written files are NOT removed on failure.
+		$this->assertFileExists($this->extractDir . '/newfile.txt');
+	}
+
+	// =========================================================================
+	// restoreOnFailure — conflict-mode interactions
+	// =========================================================================
+
+	public function testRestoreOnFailureConflictSkipPreservesOriginalOnSuccess(): void
+	{
+		// A conflict-skipped entry must not trigger the pre-write hook, so the
+		// original file must remain untouched and nothing lands in the backup dir.
+		$tempDir = $this->testDir . '/temp';
+		mkdir($tempDir, 0o777, true);
+
+		$tarFile = $this->testDir . '/restore_skip.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('existing.txt', 'from archive'),
+		]);
+		file_put_contents($this->extractDir . '/existing.txt', 'original');
+
+		$extractor = new TTarRestoreTestExtractor($tarFile, $tempDir);
+		$extractor->setConflictMode(TTarFileExtractor::CONFLICT_SKIP);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('original', file_get_contents($this->extractDir . '/existing.txt'));
+		$this->assertTrue($extractor->hasSkippedFiles());
+		// Pre-write hook was never called for the skipped entry, so no backup files exist.
+		$remaining = array_diff(scandir($tempDir), ['.', '..']);
+		$this->assertEmpty($remaining, 'Backup directory unexpectedly created for a conflict-skipped entry');
+	}
+
+	public function testRestoreOnFailureConflictSkippedFileUnaffectedByFailure(): void
+	{
+		// A file that is conflict-skipped is not backed up.  A subsequent exception
+		// (from the zip-slip trap) must not affect it — it stays as its original.
+		$tarFile = $this->testDir . '/restore_conflict_failure.tar';
+		$this->createTarWithZipSlipTrap($tarFile, [
+			TarTestHelper::entry('skipped.txt', 'new version'),
+		]);
+		file_put_contents($this->extractDir . '/skipped.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setConflictMode(TTarFileExtractor::CONFLICT_SKIP);
+		$this->extractExpectingException($extractor, $this->extractDir);
+
+		// Conflict-skipped → hook not called → no backup → original intact.
+		$this->assertSame('original', file_get_contents($this->extractDir . '/skipped.txt'));
+	}
+
+	// =========================================================================
+	// restoreOnFailure — atomic mode is unaffected
+	// =========================================================================
+
+	public function testRestoreOnFailureDoesNotAffectAtomicModeSuccess(): void
+	{
+		$tarFile = $this->testDir . '/restore_atomic.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('data.txt', 'atomic content'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(true);   // atomic mode; restoreOnFailure has no bearing
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('atomic content', file_get_contents($this->extractDir . '/data.txt'));
+	}
+
+	public function testRestoreOnFailureFalseDoesNotAffectAtomicModeSuccess(): void
+	{
+		// Even with restoreOnFailure=false, atomic mode must still work correctly.
+		$tarFile = $this->testDir . '/restore_atomic_disabled.tar';
+		TarTestHelper::writeTar($tarFile, [
+			TarTestHelper::entry('data.txt', 'atomic content'),
+		]);
+		file_put_contents($this->extractDir . '/data.txt', 'original');
+
+		$extractor = new TTarFileExtractor($tarFile);
+		$extractor->setAtomic(true);
+		$extractor->setRestoreOnFailure(false);
+		$result = $extractor->extract($this->extractDir);
+
+		$this->assertTrue($result);
+		$this->assertSame('atomic content', file_get_contents($this->extractDir . '/data.txt'));
+	}
+}
+
+/**
+ * TTarFileExtractor subclass that redirects all temporary I/O (staging dirs,
+ * local temp files) to a controlled directory supplied by the test.  This lets
+ * tests verify that backup / staging directories are created and properly cleaned
+ * up without depending on the real system temp directory.
+ *
+ * @since 4.3.3
+ */
+class TTarRestoreTestExtractor extends TTarFileExtractor
+{
+	private string $controlledTempDir;
+
+	public function __construct(string $tarpath, string $tempDir)
+	{
+		parent::__construct($tarpath);
+		$this->controlledTempDir = $tempDir;
+	}
+
+	protected function _staging_temp_directory(): string
+	{
+		return $this->controlledTempDir;
+	}
+
+	protected function _local_temp_directory(): string
+	{
+		return $this->controlledTempDir;
 	}
 }

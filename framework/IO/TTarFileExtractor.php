@@ -8,26 +8,7 @@
 
 namespace Prado\IO;
 
-use Prado\Prado;
-
-/* vim: set ts=4 sw=4: */
-// +----------------------------------------------------------------------+
-// | PHP Version 4                                                        |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2003 The PHP Group                                |
-// +----------------------------------------------------------------------+
-// | This source file is subject to version 3.0 of the PHP license,       |
-// | that is bundled with this package in the file LICENSE, and is        |
-// | available through the world-wide-web at the following url:           |
-// | http://www.php.net/license/3_0.txt.                                  |
-// | If you did not receive a copy of the PHP license and are unable to   |
-// | obtain it through the world-wide-web, please send a note to          |
-// | license@php.net so we can mail you a copy immediately.               |
-// +----------------------------------------------------------------------+
-// | Author: Vincent Blavet <vincent@phpconcept.net>                      |
-// +----------------------------------------------------------------------+
-//
-// $Id: TTarFileExtractor.php 3188 2012-07-12 12:13:23Z ctrlaltca $
+define('PRADO_TAR_DIR_DEFAULT', true);
 
 /**
  * TTarFileExtractor class
@@ -46,45 +27,313 @@ use Prado\Prado;
  * Remote archives (http://, https://, and ftp://) are downloaded to a system temp file,
  * extracted, and the temp file is deleted automatically on completion.
  *
- * Security — in strict mode (the default) extraction is aborted if any entry would escape
- * the destination directory (Zip Slip Attack), or point a symlink or hard link outside it.
- * With strict mode disabled those entries are skipped and recorded via {@see getSkippedFiles()}.
+ * **Non-atomic extraction with restore (default)**
  *
- * Basic usage:
+ * By default ({@see getAtomic()} is false) files are written directly to the destination.
+ * When {@see getRestoreOnFailure()} is true (also the default), any pre-existing file that
+ * would be overwritten is first renamed to a private backup directory; on success the
+ * backups are discarded, and on failure any newly-written files are removed and the
+ * originals are restored from backup.  Use {@see setRestoreOnFailure(false)} to disable
+ * this safety net (faster, but partial extractions are permanent on failure).
+ *
+ * **Atomic extraction (opt-in)**
+ *
+ * When {@see getAtomic()} is true, the archive is first extracted into a private staging
+ * directory under the system temp directory, then files are moved into the real destination
+ * one by one.  A failure at any point leaves the destination directory in its original
+ * state — either the staging phase failed before anything was written to the destination,
+ * or the move phase restores any files it already overwrote.  Use {@see setAtomic(true)}
+ * to enable this mode (stronger guarantee, but uses extra disk space for staging).
+ * Note: {@see getRestoreOnFailure()} has no bearing on atomic extraction; the atomic mode
+ * maintains its own independent backup mechanism during the merge phase.
+ *
+ * **Permission overrides**
+ *
+ * {@see setDirModeOverride()} replaces the UNIX mode applied to every extracted
+ * directory, overriding whatever the archive stored.  When null (the default)
+ * the archive's own mode is used; {@see getDirModeOverride()} provides a
+ * {@see \Prado\Prado::getDefaultDirPermissions()} fallback for intermediate parent
+ * directories that have no archive entry.  {@see setFileModeOverride()} does the
+ * same for regular files.
+ *
+ * **Conflict modes**
+ *
+ * When a destination file already exists the behaviour is controlled by
+ * {@see getConflictMode()} / {@see setConflictMode()}.  Choose from the five
+ * `CONFLICT_*` constants:
+ *  - `CONFLICT_OVERWRITE` (default) — always replace the existing file.
+ *  - `CONFLICT_ERROR`    — abort with an exception on the first conflict.
+ *  - `CONFLICT_SKIP`     — silently skip entries that conflict.
+ *  - `CONFLICT_NEWER`    — keep whichever copy (archive or existing) is newer.
+ *  - `CONFLICT_OLDER`    — keep whichever copy (archive or existing) is older.
+ *
+ * Conflict modes apply identically in both atomic and non-atomic modes.
+ * Directory entries are never considered a conflict.
+ *
+ * **Security**
+ *
+ * In strict mode (the default) extraction is aborted if any entry would escape the
+ * destination directory (Zip Slip Attack), or point a symlink or hard link outside it.
+ * With strict mode disabled those entries are skipped and recorded via
+ * {@see getSkippedFiles()}.  A manifest scan ({@see getManifest()}) always annotates
+ * entries that would be skipped with a `reason` key, regardless of strict mode.
+ * Security violations additionally carry a `security` key (e.g. `'zip_slip_attack'`,
+ * `'is_device'`, `'linkpath_above_root'`), which is absent on conflict-based skips,
+ * making it easy to distinguish the two categories.
+ *
+ * **Basic usage**
  * ```php
  * $extractor = new TTarFileExtractor('/path/to/archive.tar.gz');
  * $extractor->extract('/destination/directory');
  * ```
  *
- * Non-strict extraction (skip bad entries, continue):
- * ```php
- * $extractor = new TTarFileExtractor('https://example.com/release.tar.xz');
- * $extractor->setStrict(false)->extract('/opt/app');
- * if ($extractor->hasSkippedFiles()) {
- *     foreach ($extractor->getSkippedFiles() as $entry) {
- *         Prado::warning($entry['type'] . ': ' . $entry['filepath'], self::class);
- *     }
- * }
- * ```
- *
- * By default, RetainTempFile is false. When it RetainTempFile is false, the temporary file
- * for url download or .xz extraction is unlinked after being extracted. The file is
- * downloaded in {@see extract()}. When RetainTempFile is true, the temporary file remains
- * after initial extraction for multiple extractions; and the temporary file unlinked
- * at the TTarFileExtractor object's destructor.
- *
  * @author Vincent Blavet <vincent@phpconcept.net>
- * @author Brad Anderson <belisoful@icloud.com> Zip Slip Safeguards, decompression, rollbackOnFail, Manifest
+ * @author Brad Anderson <belisoful@icloud.com> v4.3.3 - Zip Slip Defense, Manifest
+ *			Inspection, Atomic Extraction-Restore, file conflict resolution, gz/bzip2/xz
+ *			decompression, honors tar file and directory modes, callable conflict mode.
  * @since 3.0
- * @todo v4.4 set RetainTempFile default to true. currently mimicking existing function as false.
- *			  set RollbackOnFailure default to true. currently mimicking existing function as false.
  */
-/*
-Todo:
-	- set file permissions, set directory permissions after
-*/
 class TTarFileExtractor
 {
+	// =========================================================================
+	// TAR typeflag constants (POSIX.1-1988 §3.1.1 + GNU extensions).
+	// Digit-based typeflags ('0'–'7') map directly to their integer value.
+	// Letter-based typeflags are stored as their ASCII/ord value so that every
+	// 		constant is an unambiguous integer.
+	// =========================================================================
+
+	/**
+	 * @var int Tar Type Constant - Regular file (typeflag '0'; also covers the empty-string old-format entry)
+	 * @since 4.3.3
+	 */
+	public const TYPE_FILE = 0;
+
+	/**
+	 * @var int Tar Type Constant - Hard link (typeflag '1')
+	 * @since 4.3.3
+	 */
+	public const TYPE_HARDLINK = 1;
+
+	/**
+	 * @var int Tar Type Constant - Symbolic link (typeflag '2')
+	 * @since 4.3.3
+	 */
+	public const TYPE_SYMLINK = 2;
+
+	/**
+	 * @var int Tar Type Constant - Character special device (typeflag '3')
+	 * @since 4.3.3
+	 */
+	public const TYPE_CHAR_SPECIAL = 3;
+
+	/**
+	 * @var int Tar Type Constant - Block special device (typeflag '4')
+	 * @since 4.3.3
+	 */
+	public const TYPE_BLOCK_SPECIAL = 4;
+
+	/**
+	 * @var int Tar Type Constant - Directory (typeflag '5')
+	 * @since 4.3.3
+	 */
+	public const TYPE_DIRECTORY = 5;
+
+	/**
+	 * @var int Tar Type Constant - FIFO special file (typeflag '6')
+	 * @since 4.3.3
+	 */
+	public const TYPE_FIFO = 6;
+
+	/**
+	 * @var int Tar Type Constant - Contiguous file (typeflag '7')
+	 * @since 4.3.3
+	 */
+	public const TYPE_CONTIGUOUS = 7;
+
+	/**
+	 * @var int GNU long-filepath extension (typeflag 'L', ASCII 76).
+	 * Used internally by {@see _readLongHeader()} — not a real file entry.
+	 * @since 4.3.3
+	 */
+	public const TYPE_GNU_LONG_NAME = 76;   // ord('L')
+
+	/**
+	 * @var int GNU long-linkpath extension (typeflag 'K', ASCII 75).
+	 * @since 4.3.3
+	 */
+	public const TYPE_GNU_LONG_LINK = 75;   // ord('K')
+
+	// =========================================================================
+	// Conflict-mode constants
+	// =========================================================================
+
+	/**
+	 * Abort extraction (throw) when an entry would overwrite an existing file.
+	 * Directory entries are never considered a conflict.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_ERROR = 0;
+
+	/**
+	 * Silently skip any entry whose destination file already exists.
+	 * The skipped entry is recorded in the extraction manifest with
+	 * `reason = 'conflict_skip'`.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_SKIP = 1;
+
+	/**
+	 * Always overwrite existing destination files with archive entries.
+	 * This is the default conflict mode and matches historical behaviour.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_OVERWRITE = 2;
+
+	/**
+	 * When a destination file already exists, keep whichever copy — archive
+	 * entry or existing file — has the **newer** modification time.  If the
+	 * existing file is newer the archive entry is skipped and recorded with
+	 * `reason = 'conflict_existing_newer'`.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_NEWER = 3;
+
+	/**
+	 * When a destination file already exists, keep whichever copy — archive
+	 * entry or existing file — has the **older** modification time.  If the
+	 * existing file is older the archive entry is skipped and recorded with
+	 * `reason = 'conflict_existing_older'`.
+	 * @since 4.3.3
+	 */
+	public const CONFLICT_OLDER = 4;
+
+	// =========================================================================
+	// Reason constants
+	// =========================================================================
+
+	/**
+	 * Skip reason: a tar entry whose stored path contains `../` sequences that would
+	 * write files outside the extraction root (Zip Slip attack).
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_ZIP_SLIP = 'zip_slip';
+
+	/**
+	 * Skip reason: the tar entry is a character special, block special, or FIFO
+	 * device file.  Device files cannot be safely extracted.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_DEVICE = 'device';
+
+	/**
+	 * Skip reason: the tar entry is a symbolic link whose target resolves outside
+	 * the extraction root.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_SYMLINK = 'symlink';
+
+	/**
+	 * Skip reason: the tar entry is a hard link whose target resolves outside the
+	 * extraction root.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_HARDLINK = 'hardlink';
+
+	/**
+	 * Skip reason: the destination file already exists and the active conflict mode
+	 * is {@see CONFLICT_SKIP}.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_CONFLICT_SKIP = 'conflict_skip';
+
+	/**
+	 * Skip reason: the destination file already exists, the active conflict mode is
+	 * {@see CONFLICT_NEWER}, and the existing file is newer than (or the same age
+	 * as) the archive entry — so the existing file is kept.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_CONFLICT_EXISTING_NEWER = 'conflict_existing_newer';
+
+	/**
+	 * Skip reason: the destination file already exists, the active conflict mode is
+	 * {@see CONFLICT_OLDER}, and the existing file is older than (or the same age
+	 * as) the archive entry — so the existing file is kept.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_CONFLICT_EXISTING_OLDER = 'conflict_existing_older';
+
+	/**
+	 * Skip reason: the active conflict mode is a user-supplied callable that returned
+	 * a falsy value without setting `$reason`.  The extractor uses this constant as
+	 * the default skip reason in that case.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_CONFLICT_CALLABLE_SKIP = 'conflict_callable_skip';
+
+	/**
+	 * Skip reason: the active conflict mode is a user-supplied callable that threw a
+	 * `\TypeError` (e.g. the callable has an incompatible signature).  The entry is
+	 * skipped and this constant is recorded as the reason.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const REASON_CONFLICT_CALLABLE_ERROR_SKIP = 'conflict_callable_error_skip';
+
+	// =========================================================================
+	// Security constants
+	// =========================================================================
+
+	/**
+	 * Security-violation type recorded in the manifest `security` field when an
+	 * entry is skipped because its stored path would escape the extraction root
+	 * (Zip Slip attack).
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const SECURITY_ZIP_SLIP_ATTACK = 'zip_slip_attack';
+
+	/**
+	 * Security-violation type recorded in the manifest `security` field when an
+	 * entry is skipped because it is a device or FIFO special file.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const SECURITY_IS_DEVICE = 'is_device';
+
+	/**
+	 * Security-violation type recorded in the manifest `security` field when an
+	 * entry is skipped because its symlink or hard-link target path resolves above
+	 * the extraction root.
+	 *
+	 * @var string
+	 * @since 4.3.3
+	 */
+	public const SECURITY_LINKPATH_OUTSIDE_DESTINATION = 'linkpath_above_root';
+
+
+	// =========================================================================
+	// Compression constants
+	// =========================================================================
+
 	/**
 	 * @var int Uncompressed tar archive
 	 * @since 4.3.3
@@ -109,169 +358,252 @@ class TTarFileExtractor
 	 */
 	public const COMPRESSION_LZMA = 3;
 
-	// ---------------------------------------------------------------------------
-	// TAR typeflag constants (POSIX.1-1988 §3.1.1 + GNU extensions).
-	// Digit-based typeflags ('0'–'7') map directly to their integer value.
-	// Letter-based typeflags are stored as their ASCII/ord value so that every
-	// constant is an unambiguous integer.
-	// ---------------------------------------------------------------------------
-
-	/** @var int Regular file (typeflag '0'; also covers the empty-string old-format entry) */
-	public const TYPE_FILE = 0;
-
-	/** @var int Hard link (typeflag '1') */
-	public const TYPE_HARDLINK = 1;
-
-	/** @var int Symbolic link (typeflag '2') */
-	public const TYPE_SYMLINK = 2;
-
-	/** @var int Character special device (typeflag '3') */
-	public const TYPE_CHAR_SPECIAL = 3;
-
-	/** @var int Block special device (typeflag '4') */
-	public const TYPE_BLOCK_SPECIAL = 4;
-
-	/** @var int Directory (typeflag '5') */
-	public const TYPE_DIRECTORY = 5;
-
-	/** @var int FIFO special file (typeflag '6') */
-	public const TYPE_FIFO = 6;
-
-	/** @var int Contiguous file (typeflag '7') */
-	public const TYPE_CONTIGUOUS = 7;
+	// =========================================================================
+	// Staging / working-mode constants
+	// =========================================================================
 
 	/**
-	 * @var int GNU long-filepath extension (typeflag 'L', ASCII 76).
-	 * Used internally by {@see _readLongHeader()} — not a real file entry.
+	 * UNIX mode applied to directories during extraction before final permissions
+	 * are set by the deferred-chmod pass.  Also used for the atomic staging root
+	 * and any intermediate parent directories created by {@see _dirCheck()}.
+	 * Owner+group can read, write, and traverse; world has no access.
+	 *
+	 * @var int
 	 * @since 4.3.3
 	 */
-	public const TYPE_GNU_LONG_NAME = 76;   // ord('L')
+	public const STAGING_DIR_MODE = 0o755;
 
 	/**
-	 * @var int GNU long-linkpath extension (typeflag 'K', ASCII 75).
+	 * UNIX mode applied to regular files written into the atomic staging
+	 * directory while the merge is in progress.  The final permission (from the
+	 * archive or {@see setFileModeOverride()}) is applied by {@see _mergeStaging()}
+	 * after the file is moved to the real destination.
+	 * Owner+group can read and write; world has no access; no execution.
+	 *
+	 * @var int
 	 * @since 4.3.3
 	 */
-	public const TYPE_GNU_LONG_LINK = 75;   // ord('K')
+	public const STAGING_FILE_MODE = 0o644;
 
 	/**
-	 * @var string Name of the Tar
-	 */
-	private $_tarname = '';
-
-	/**
-	 * @var null|resource file descriptor
-	 */
-	private $_file = 0;
-
-	/**
-	 * @var float the delay to wait for downloading url before the timeout, default 6 seconds
+	 * UNIX mode applied to extracted directories when none is specified. Within PRADO,
+	 * {@see \Prado\Prado::getDefaultDirPermissions()} will be used instead and this
+	 * constant is unused.
+	 *
+	 * @var int
 	 * @since 4.3.3
 	 */
-	private $_urlTimeout = 6.0;
+	public const DEFAULT_DIR_MODE = 0o755;
 
 	/**
-	 * This flag determines if the temporary cache file (url downloads or .xz extractions)
-	 * should be retained after an extraction.
-	 *   - When true, the temporary file is unlinked at instance destruction.
-	 *   - When false, the temporary file is unlinked after extraction.
-	 * @var bool Caching Temp File until destruct; or unlink after extraction when false.
+	 * The default conflict mode for when there is a conflict between existing files and
+	 * files being extracted.
+	 *
+	 * @var int
 	 * @since 4.3.3
 	 */
-	private $_retainTempFile = false;
+	public const DEFAULT_CONFLICT_MODE = self::CONFLICT_OVERWRITE;
 
 	/**
-	 * @var ?string Local Tar path of a remote Tar (http://, https://, or ftp://)
-	 */
-	private $_temp_tarpath;
-
-	/**
-	 * @var bool Whether to fail on security issues (zip slip, symlink/hardlink attacks).
-	 *            When true (default), extraction fails on any security issue.
-	 *            When false, security issues are logged but extraction continues.
+	 * The default thrown exception class.
+	 *
+	 * @var string
 	 * @since 4.3.3
 	 */
-	private $_strict = true;
+	public const DEFAULT_EXCEPTION_CLASS = '\Exception';
+
+	// =========================================================================
+	// Properties
+	// =========================================================================
 
 	/**
-	 * @var array List of skipped files due to security issues when Strict is false.
-	 *            Each entry contains: type, filepath, linkpath (if symlink/hardlink),
-	 *            header copy, timestamp
+	 * @var string Name / URL of the tar archive.
+	 */
+	private string $_tarpath = '';
+
+	/**
+	 * @var ?resource Active file handle (null when closed).
+	 */
+	private $_file;
+
+	/**
+	 * @var float Timeout in seconds for remote URL downloads. Default 6 s.
 	 * @since 4.3.3
 	 */
-	//private array $_skippedFiles = [];
+	private float $_urlTimeout = 6.0;
 
 	/**
-	 * @var int Compression type detected for this archive for processing only
+	 * When true the temp file created for a URL download or LZMA decompression
+	 * is retained until the object is destroyed instead of being deleted after
+	 * each extraction.  Useful when scanning before extracting the same archive.
+	 * @var bool
 	 * @since 4.3.3
 	 */
-	private $_compression = self::COMPRESSION_NONE;
+	private bool $_retainTempFile = false;
 
 	/**
-	 * @var int Compression type detected for this archive (persists after extraction)
+	 * @var ?string Absolute path to the local copy of a remote or LZMA archive.
+	 */
+	private ?string $_temp_tarpath = null;
+
+	/**
+	 * @var bool Abort (throw) on security issues when true; skip and record when false.
 	 * @since 4.3.3
 	 */
-	private $_detectedCompression = self::COMPRESSION_NONE;
+	private bool $_strict = true;
 
 	/**
-	 * @var null|array<string,array> Map of relative tar paths to their entry metadata.
-	 * Keys are relative paths; directory keys always end with {@see DIRECTORY_SEPARATOR}.
-	 * Null means the map has not yet been populated (either by extraction or by scan).
+	 * @var int Compression type in use for the currently-open file handle.
+	 * @since 4.3.3
+	 */
+	private int $_workingCompression = self::COMPRESSION_NONE;
+
+	/**
+	 * @var int Compression type detected for this archive (persists after extraction).
+	 * @since 4.3.3
+	 */
+	private int $_compression = self::COMPRESSION_NONE;
+
+	/**
+	 * @var ?array<string,array> Clean manifest (no extraction fields).  Null until populated.
 	 * @since 4.3.3
 	 */
 	private ?array $_tarManifest = null;
 
 	/**
-	 *   /\
-	 *   ||
+	 * @var ?array<string,array> Full extraction manifest including extracted/extractedPath/reason.
 	 * @since 4.3.3
 	 */
 	private ?array $_tarExtractManifest = null;
 
 	/**
-	 * @var bool Whether a failed extraction should unwind (remove) all entries
-	 * that were successfully written before the failure occurred.
-	 * Default false — matches pre-existing behaviour of leaving a partial extraction
-	 * in place. Set to true to get a clean destination directory on failure.
+	 * When true, extraction uses a private staging directory so that the destination
+	 * is left untouched on failure.  When false (the default), files are written
+	 * directly to the destination; {@see $_restoreOnFailure} controls whether a
+	 * lightweight backup-and-restore safety net is applied in that case.
+	 * @var bool
 	 * @since 4.3.3
 	 */
-	private bool $_rollbackOnFailure = false;
+	private bool $_atomic = false;
 
 	/**
-	 * Archive_Tar Class constructor. This flavour of the constructor only
-	 * declare a new Archive_Tar object, identifying it by the name of the
-	 * tar file.
-	 *
-	 * @param string $p_tarname The name of the tar archive to create
+	 * When true (the default) and {@see $_atomic} is false, pre-existing destination
+	 * files that would be overwritten are first renamed to a private backup directory
+	 * before writing the archive entry.  On success the backups are discarded; on
+	 * failure any newly-written files are removed and the originals are restored.
+	 * Has no effect when {@see $_atomic} is true (atomic mode manages its own backup).
+	 * @var bool
+	 * @since 4.3.3
 	 */
-	public function __construct($p_tarname)
+	private bool $_restoreOnFailure = true;
+
+	/**
+	 * Controls how existing destination files are handled during extraction.
+	 * One of the CONFLICT_* constants.  This may be a callable as well.
+	 * Default CONFLICT_OVERWRITE.
+	 * @var mixed
+	 * @since 4.3.3
+	 */
+	private mixed $_conflictMode = null;
+
+	/**
+	 * When non-null, overrides the UNIX permission bits applied to every
+	 * directory created or updated during extraction, regardless of the
+	 * mode stored in the archive entry.
+	 * When null, the archive's stored mode is used; {@see getDirModeOverride()}
+	 * falls back to {@see \Prado\Prado::getDefaultDirPermissions()} when the
+	 * Prado class is available (used for intermediate parent directories
+	 * that have no archive entry of their own).
+	 * @var ?int
+	 * @since 4.3.3
+	 */
+	private ?int $_dirModeOverride = null;
+
+	/**
+	 * When non-null, overrides the UNIX permission bits applied to every
+	 * file written during extraction, regardless of the mode stored in the
+	 * archive entry.  When null, the archive's stored mode is used.
+	 * @var ?int
+	 * @since 4.3.3
+	 */
+	private ?int $_fileModeOverride = null;
+
+	/**
+	 * Fully-qualified class name of the exception thrown by {@see _error()}.
+	 * When null, {@see DEFAULT_EXCEPTION_CLASS} (`\Exception`) is used.
+	 * The class must be constructable with a single string message argument.
+	 *
+	 * @var ?string
+	 * @since 4.3.3
+	 */
+	private ?string $_exceptionClass = null;
+
+	// =========================================================================
+	// Construction / Destruction
+	// =========================================================================
+
+	/**
+	 * @param string $p_tarpath Path or URL of the tar archive to operate on.
+	 */
+	public function __construct(string $p_tarpath)
 	{
-		$this->_tarname = $p_tarname;
+		$this->setTarPath($p_tarpath);
 	}
 
 	/**
-	 * Destructor.
-	 * Cleans up temporary files and closes file handles.
+	 * Closes any open file handle and cleans up temporary files.
 	 */
 	public function __destruct()
 	{
 		$this->_completeTarFile();
 	}
 
+	// =========================================================================
+	// Public API — Extraction
+	// =========================================================================
+
 	/**
-	 * Extracts the archive to the specified path.
+	 * Extracts the archive to the specified directory.
 	 *
-	 * @param string $p_destPath The path where to extract the archive. If empty, extracts to current directory.
+	 * @param string $p_destPath Destination directory.  Defaults to the current
+	 *                            working directory when empty.
 	 * @return bool True on success, false on error.
 	 */
-	public function extract($p_destPath = '')
+	public function extract(string $p_destPath = ''): bool
 	{
 		return $this->extractModify($p_destPath);
 	}
 
+	// =========================================================================
+	// Public API — Extraction Settings
+	// =========================================================================
+
+	/**
+	 * Returns the path or URL of the tar archive this extractor operates on.
+	 *
+	 * @return string Local file path or remote URL (http/https/ftp).
+	 * @since 4.3.3
+	 */
+	public function getTarPath(): string
+	{
+		return $this->_tarpath;
+	}
+
+	/**
+	 * Internally sets the tarpath of the extractor.
+	 *
+	 * @param string $value
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	protected function setTarPath(string $value): static
+	{
+		$this->_tarpath = $value;
+		return $this;
+	}
+
 	/**
 	 * Returns whether strict mode is enabled.
-	 * When strict, extraction fails on any security issue (zip slip, symlink/hardlink attacks).
-	 * When not strict, security issues are logged but extraction continues.
 	 *
 	 * @return bool
 	 * @since 4.3.3
@@ -282,9 +614,9 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Sets whether strict mode is enabled.
-	 * When strict (true, default), extraction fails on any security issue.
-	 * When not strict (false), security issues are logged but extraction continues.
+	 * Enables or disables strict mode.
+	 * In strict mode (default) any security violation aborts extraction with an
+	 * exception.  When disabled, violations are skipped and recorded instead.
 	 *
 	 * @param bool $value
 	 * @return static $this For method chaining.
@@ -297,9 +629,372 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns whether any files were skipped due to security issues.
+	 * Returns whether atomic extraction is enabled (default false).
 	 *
-	 * @return bool True if files were skipped, false otherwise
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	public function getAtomic(): bool
+	{
+		return $this->_atomic;
+	}
+
+	/**
+	 * Enables or disables atomic extraction.
+	 *
+	 * When false (the default) files are written directly to the destination.
+	 * If {@see getRestoreOnFailure()} is also true (the default), pre-existing
+	 * files are backed up before overwriting and restored on failure.
+	 *
+	 * When true, files are staged in a private temp directory first; the
+	 * destination is modified only during the final merge phase, which backs up
+	 * any overwritten files so they can be restored on failure.  Atomic mode
+	 * provides a stronger all-or-nothing guarantee at the cost of extra I/O and
+	 * temporary disk space.
+	 *
+	 * Note: {@see getRestoreOnFailure()} has no bearing on atomic extraction.
+	 *
+	 * @param bool $value
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setAtomic(bool $value): static
+	{
+		$this->_atomic = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns whether the non-atomic extractor restores the destination on failure
+	 * (default true).
+	 *
+	 * When true and {@see getAtomic()} is false, any pre-existing file that would be
+	 * overwritten is renamed to a private backup directory before the archive entry is
+	 * written.  On success the backups are discarded; on failure any newly-written
+	 * files are removed and the originals are restored.  Has no effect when
+	 * {@see getAtomic()} is true.
+	 *
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	public function getRestoreOnFailure(): bool
+	{
+		return $this->_restoreOnFailure;
+	}
+
+	/**
+	 * Enables or disables the non-atomic restore-on-failure safety net.
+	 *
+	 * When true (the default), the non-atomic extractor backs up pre-existing
+	 * destination files before overwriting them and restores them if extraction
+	 * fails.  Set to false to disable this behaviour (faster, but a partial
+	 * extraction cannot be rolled back).  Has no effect when {@see getAtomic()}
+	 * is true.
+	 *
+	 * @param bool $value
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setRestoreOnFailure(bool $value): static
+	{
+		$this->_restoreOnFailure = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the active conflict mode (one of the `CONFLICT_*` constants).
+	 *
+	 * @return mixed
+	 * @since 4.3.3
+	 */
+	public function getConflictMode(): mixed
+	{
+		return $this->_conflictMode ?? self::DEFAULT_CONFLICT_MODE;
+	}
+
+	/**
+	 * Sets how extraction handles a destination file that already exists.
+	 *
+	 * Accepts either one of the five `CONFLICT_*` integer constants or any PHP
+	 * callable with the signature:
+	 *   `function(array $entry, string $extractedPath, ?string &$reason): bool`
+	 * A callable must return `true` to overwrite the existing file or `false` to
+	 * skip the entry.  When returning `false` it may set `$reason` to a custom
+	 * string; if left empty the extractor records {@see REASON_CONFLICT_CALLABLE_SKIP}.
+	 * A `\TypeError` thrown inside the callable causes the entry to be skipped with
+	 * {@see REASON_CONFLICT_CALLABLE_ERROR_SKIP}.
+	 *
+	 * @param mixed $value One of `CONFLICT_ERROR`, `CONFLICT_SKIP`,
+	 *                     `CONFLICT_OVERWRITE`, `CONFLICT_NEWER`, `CONFLICT_OLDER`,
+	 *                     or a PHP callable.
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setConflictMode(mixed $value): static
+	{
+		$this->_conflictMode = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the directory-permission override, or a fallback when none is set.
+	 *
+	 * Resolution order:
+	 *  1. The value set via {@see setDirModeOverride()} if non-null.
+	 *  2. {@see \Prado\Prado::getDefaultDirPermissions()} when the Prado class is
+	 *     available (using the fully-qualified name so this method remains portable
+	 *     independent of any `use` import).
+	 *  3. `null` — callers that need a concrete mode should use `?? 0o755`.
+	 *
+	 * This method serves as the single authority for intermediate parent directories
+	 * (those with no explicit archive entry), replacing direct calls to
+	 * `Prado::getDefaultDirPermissions()` throughout the extractor.
+	 *
+	 * @return ?int UNIX permission bits, or null when no default is available.
+	 * @since 4.3.3
+	 */
+	public function getDirModeOverride(): ?int
+	{
+		if ($this->_dirModeOverride !== null) {
+			return $this->_dirModeOverride;
+		}
+		if (defined('PRADO_TAR_DIR_DEFAULT') && constant('PRADO_TAR_DIR_DEFAULT') && class_exists('\Prado\Prado')) {
+			return \Prado\Prado::getDefaultDirPermissions();
+		}
+		return null;
+	}
+
+	/**
+	 * Sets a directory-permission override applied to every directory created or
+	 * updated during extraction.  Pass `null` to restore default behaviour (use the
+	 * archive's stored mode, falling back to {@see \Prado\Prado::getDefaultDirPermissions()}).
+	 *
+	 * @param ?int $value UNIX permission bits (e.g. `0o755`), or null to clear.
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setDirModeOverride(?int $value): static
+	{
+		$this->_dirModeOverride = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the file-permission override, or null when none is set (meaning the
+	 * archive's stored mode is used).
+	 *
+	 * @return ?int UNIX permission bits, or null.
+	 * @since 4.3.3
+	 */
+	public function getFileModeOverride(): ?int
+	{
+		return $this->_fileModeOverride;
+	}
+
+	/**
+	 * Sets a file-permission override applied to every regular file written during
+	 * extraction.  Pass `null` to restore default behaviour (use the archive's
+	 * stored mode).
+	 *
+	 * @param ?int $value UNIX permission bits (e.g. `0o644`), or null to clear.
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setFileModeOverride(?int $value): static
+	{
+		$this->_fileModeOverride = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the fully-qualified exception class name used by {@see _error()}.
+	 *
+	 * @return string
+	 * @since 4.3.3
+	 */
+	public function getExceptionClass(): string
+	{
+		return $this->_exceptionClass ?? self::DEFAULT_EXCEPTION_CLASS;
+	}
+
+	/**
+	 * Sets the exception class thrown by {@see _error()}.  The class must exist
+	 * and be constructable with a single string message argument (i.e. extend
+	 * `\Exception` or implement `\Throwable` with a compatible constructor).
+	 * Invalid values are stored as-is; {@see _error()} validates at throw time
+	 * and falls back to `\Exception` when the stored value is unusable.
+	 *
+	 * @param ?string $value Fully-qualified class name, e.g. `\RuntimeException`.
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	public function setExceptionClass(?string $value): static
+	{
+		if (empty($value)) {
+			$this->_exceptionClass = null;
+		} else {
+			$this->_exceptionClass = $value;
+		}
+		return $this;
+	}
+
+	// =========================================================================
+	// Protected — Conflict Resolution
+	// =========================================================================
+
+	/**
+	 * Returns a callable that implements the active conflict-resolution strategy.
+	 *
+	 * The returned callable has the signature:
+	 *   `function(array $entry, string $extractedPath, ?string &$reason): bool`
+	 * where returning `true` means "overwrite / write the entry" and `false` means
+	 * "skip the entry" (with `$reason` set to the appropriate `REASON_CONFLICT_*`
+	 * constant).
+	 *
+	 * For the five built-in {@see CONFLICT_*} constants the method returns one of
+	 * the `resolveConflict*()` methods on this instance.  When {@see getConflictMode()}
+	 * returns a PHP callable instead of a constant, that callable is wrapped so that:
+	 *  - A truthy return → overwrite (reason stays null).
+	 *  - A falsy return with an empty `$reason` → skip with
+	 *    `REASON_CONFLICT_CALLABLE_SKIP`.
+	 *  - A `\TypeError` thrown inside the callable → skip with
+	 *    `REASON_CONFLICT_CALLABLE_ERROR_SKIP`.
+	 * An unrecognised non-callable value falls back to
+	 * {@see resolveConflictOverwriteExisting()} (always overwrite).
+	 *
+	 * @return callable(array,string,?string&):bool
+	 * @since 4.3.3
+	 */
+	protected function getConflictModeFunction(): callable
+	{
+		$conflictMode = $this->getConflictMode();
+		return match (true) {
+			$conflictMode === self::CONFLICT_ERROR => [$this, 'resolveConflictError'],
+			$conflictMode === self::CONFLICT_SKIP => [$this, 'resolveConflictSkipTar'],
+			$conflictMode === self::CONFLICT_OVERWRITE => [$this, 'resolveConflictOverwriteExisting'],
+			$conflictMode === self::CONFLICT_NEWER => [$this, 'resolveConflictNewer'],
+			$conflictMode === self::CONFLICT_OLDER => [$this, 'resolveConflictOlder'],
+			is_callable($conflictMode) => function (array $entry, string $extractedPath, ?string &$reason) use ($conflictMode): bool {
+				try {
+					$result = (bool) $conflictMode($entry, $extractedPath, $reason);
+					if (!$result && empty($reason)) {
+						$reason = self::REASON_CONFLICT_CALLABLE_SKIP;
+					}
+				} catch (\TypeError $e) {
+					$result = false;
+					$reason = self::REASON_CONFLICT_CALLABLE_ERROR_SKIP;
+				}
+				return $result;
+			},
+			default => [$this, 'resolveConflictOverwriteExisting'],
+		};
+	}
+
+	/**
+	 * Conflict resolver for {@see CONFLICT_ERROR}: aborts extraction with an exception.
+	 * Never returns normally; always throws via {@see _error()}.
+	 *
+	 * @param array   $entry         Archive entry metadata.
+	 * @param string  $extractedPath Absolute destination path that already exists.
+	 * @param ?string &$reason       Not used; the method throws before setting it.
+	 * @return bool Never returns.
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictError(array $entry, string $extractedPath, ?string &$reason): bool
+	{
+		$this->_error("Conflict: '$extractedPath' already exists");
+	}
+
+	/**
+	 * Conflict resolver for {@see CONFLICT_SKIP}: always skips the archive entry.
+	 * Sets `$reason` to {@see REASON_CONFLICT_SKIP} and returns false.
+	 *
+	 * @param array   $entry         Archive entry metadata.
+	 * @param string  $extractedPath Absolute destination path.
+	 * @param ?string &$reason       Receives {@see REASON_CONFLICT_SKIP}.
+	 * @return bool Always false (skip extraction).
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictSkipTar(array $entry, string $extractedPath, ?string &$reason): bool
+	{
+		$reason = self::REASON_CONFLICT_SKIP;
+		return false;
+	}
+
+	/**
+	 * Conflict resolver for {@see CONFLICT_OVERWRITE}: always overwrites.
+	 *
+	 * @param array   $entry         Archive entry metadata.
+	 * @param string  $extractedPath Absolute destination path.
+	 * @param ?string &$reason       Not modified.
+	 * @return bool Always true (overwrite with extraction).
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictOverwriteExisting(array $entry, string $extractedPath, ?string &$reason): bool
+	{
+		return true;
+	}
+
+	/**
+	 * Conflict resolver for {@see CONFLICT_NEWER}: keeps the newer copy.
+	 *
+	 * If the archive entry is strictly newer than the existing file, it overwrites.
+	 * Otherwise the existing file is kept and `$reason` is set to
+	 * {@see REASON_CONFLICT_EXISTING_NEWER}.
+	 *
+	 * @param array   $entry         Archive entry metadata (must contain 'mtime').
+	 * @param string  $extractedPath Absolute destination path.
+	 * @param ?string &$reason       Receives {@see REASON_CONFLICT_EXISTING_NEWER} when skipping.
+	 * @return bool True to overwrite with extraction, false to skip the extraction.
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictNewer(array $entry, string $extractedPath, ?string &$reason): bool
+	{
+		// The newer copy "wins" and is kept.  If the archive entry is strictly newer,
+		// overwrite the existing file; otherwise leave the existing file in place.
+		$existingMtime = (int) @filemtime($extractedPath);
+		$archiveMtime = (int) ($entry['mtime'] ?? 0);
+		$overwrite = $archiveMtime > $existingMtime;
+		if (!$overwrite) {
+			$reason = self::REASON_CONFLICT_EXISTING_NEWER;
+		}
+		return $overwrite;
+	}
+
+	/**
+	 * Conflict resolver for {@see CONFLICT_OLDER}: keeps the older copy.
+	 *
+	 * If the archive entry is strictly older than the existing file, it overwrites.
+	 * Otherwise the existing file is kept and `$reason` is set to
+	 * {@see REASON_CONFLICT_EXISTING_OLDER}.
+	 *
+	 * @param array   $entry         Archive entry metadata (must contain 'mtime').
+	 * @param string  $extractedPath Absolute destination path.
+	 * @param ?string &$reason       Receives {@see REASON_CONFLICT_EXISTING_OLDER} when skipping.
+	 * @return bool True to overwrite with extraction, false to skip the extraction.
+	 * @since 4.3.3
+	 */
+	protected function resolveConflictOlder(array $entry, string $extractedPath, ?string &$reason): bool
+	{
+		// The older copy "wins" and is kept.  If the archive entry is strictly older,
+		// overwrite the existing file; otherwise leave the existing file in place.
+		$existingMtime = (int) @filemtime($extractedPath);
+		$archiveMtime = (int) ($entry['mtime'] ?? 0);
+		$overwrite = $archiveMtime < $existingMtime;
+		if (!$overwrite) {
+			$reason = self::REASON_CONFLICT_EXISTING_OLDER;
+		}
+		return $overwrite;
+	}
+
+	// =========================================================================
+	// Public API — Skipped / Security
+	// =========================================================================
+
+	/**
+	 * Returns whether any entries were skipped during the last extraction.
+	 *
+	 * @return bool
 	 * @since 4.3.3
 	 */
 	public function hasSkippedFiles(): bool
@@ -308,37 +1003,27 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the list of files skipped due to security issues. It filters
-	 * {@see getExtractManifest()} for a `reason` to not extract the files.
-	 * @return array This is a filtered array from {@see getExtractManifest}
-	 * @see getExtractManifest
+	 * Returns the extraction-manifest entries that were skipped.
+	 * Each entry contains at minimum `reason`, `filepath`, and `typeflag` keys.
+	 *
+	 * @return array Filtered subset of {@see getExtractManifest()}.
 	 * @since 4.3.3
 	 */
 	public function getSkippedFiles(): array
 	{
-		return array_filter($this->getExtractManifest() ?? [], function ($entry) {
+		return array_filter($this->getExtractManifest() ?? [], static function (array $entry): bool {
 			return isset($entry['reason']);
 		});
 	}
 
-	/**
-	 * Clears all skipped files records from the extraction manifest.
-	 * @return static $this For method chaining.
-	 * @since 4.3.3
-	 */
-	public function clearSkippedFiles(): static
-	{
-		if ($this->_tarExtractManifest !== null) {
-			$this->_tarExtractManifest = array_filter($this->_tarExtractManifest, function ($entry) {
-				return !isset($entry['reason']);
-			});
-		}
-		return $this;
-	}
+	// =========================================================================
+	// Public API — URL / Temp File Settings
+	// =========================================================================
 
 	/**
-	 * Returns the 'http' and 'https' timeout time in seconds for fetching URLs.
-	 * @return float Timeout time for fetching URLs, default 6.0 seconds.
+	 * Returns the HTTP/HTTPS timeout in seconds used when downloading remote archives.
+	 *
+	 * @return float Default 6.0 seconds.
 	 * @since 4.3.3
 	 */
 	public function getUrlTimeout(): float
@@ -347,8 +1032,9 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Sets the 'http' and 'https' timeout time in seconds for fetching URLs.
-	 * @param float $value The timeout time for fetching URLs.
+	 * Sets the HTTP/HTTPS timeout in seconds for downloading remote archives.
+	 *
+	 * @param float $value
 	 * @return static $this For method chaining.
 	 * @since 4.3.3
 	 */
@@ -359,11 +1045,10 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Whether or not to retain the temporary tar file after extraction until the
-	 * object is destructed.  When this is false, then the temporary file will be
-	 * unlinked after extraction, otherwise the temporary tar file is retained until
-	 * the object is destructed.
-	 * @return bool Retain the temp tar file after extraction.
+	 * Returns whether the temp file for a URL or LZMA archive is retained
+	 * across multiple operations until the object is destroyed.
+	 *
+	 * @return bool
 	 * @since 4.3.3
 	 */
 	public function getRetainTempFile(): bool
@@ -372,11 +1057,10 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Whether or not to retain the temporary tar file after extraction until the
-	 * object is destructed.  When this is false, then the temporary file will be
-	 * unlinked after extraction, otherwise the temporary tar file is retained until
-	 * the object is destructed.
-	 * @param bool $value The new value to retain the temp tar file after extraction.
+	 * Sets whether the temp file for a URL or LZMA archive is retained across
+	 * multiple operations (useful for scan-then-extract workflows).
+	 *
+	 * @param bool $value
 	 * @return static $this For method chaining.
 	 * @since 4.3.3
 	 */
@@ -387,8 +1071,9 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * The temporary tar file path used by url download and .xz decompression
-	 * @return ?string The file path of the temporary tar file path.
+	 * Returns the path of the currently-active temporary tar file, or null if none.
+	 *
+	 * @return ?string
 	 * @since 4.3.3
 	 */
 	public function getTempPath(): ?string
@@ -397,49 +1082,156 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns the compression type of the archive.
+	 * Sets the path of the currently-active temporary tar file.
+	 * Pass `null` to clear it (no temp file in use).
 	 *
-	 * @return int One of the COMPRESSION_* constants
-	 * @since 4.3.3
-	 */
-	public function getCompression(): int
-	{
-		return $this->_detectedCompression;
-	}
-
-	// ---------------------------------------------------------------------------
-	// Tar path map API
-	// ---------------------------------------------------------------------------
-
-	/**
-	 * Returns whether extraction failures should unwind (remove) already-extracted entries.
-	 *
-	 * @return bool
-	 * @since 4.3.3
-	 */
-	public function getRollbackOnFailure(): bool
-	{
-		return $this->_rollbackOnFailure;
-	}
-
-	/**
-	 * Sets whether a failed extraction should unwind (remove) the entries it already wrote.
-	 * Default is false — pre-existing behaviour leaves any partial extraction in place.
-	 *
-	 * @param bool $value
+	 * @param ?string $value Absolute path to the temp file, or null to clear.
 	 * @return static $this For method chaining.
 	 * @since 4.3.3
 	 */
-	public function setRollbackOnFailure(bool $value): static
+	protected function setTempPath(?string $value): static
 	{
-		$this->_rollbackOnFailure = $value;
+		$this->_temp_tarpath = $value;
 		return $this;
 	}
 
 	/**
-	 * Returns an ordered array of the relative entry paths contained in the archive.
-	 * Directory paths appear before file paths and always end with {@see DIRECTORY_SEPARATOR}.
-	 * If the archive has not been extracted yet, it is scanned without extracting.
+	 * Deletes the current temporary tar file and clears the internal path.
+	 *
+	 * A temp file exists when the archive was downloaded from a remote URL or
+	 * decompressed from LZMA (.tar.xz).  It can be retained across a
+	 * scan-then-extract workflow via {@see setRetainTempFile()}, but any temp file
+	 * is always removed by the destructor regardless.
+	 *
+	 * Return convention (matches historical `unlink()` semantics):
+	 *  - `true`  — file was deleted successfully.
+	 *  - `false` — `unlink()` failed; the file may still exist.
+	 *  - `null`  — no temp file was present; nothing to delete.
+	 *
+	 * @return ?bool True on success, false if unlink failed, null if no file existed.
+	 * @since 4.3.3
+	 */
+	public function clearTempFile(): ?bool
+	{
+		$temp_tarpath = $this->getTempPath();
+		if ($temp_tarpath !== null) {
+			if (!@unlink($temp_tarpath)) {
+				return false;
+			}
+			$this->setTempPath(null);
+			return true;
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the detected file compression type for this archive.
+	 *
+	 * @return int One of the COMPRESSION_* constants.
+	 * @since 4.3.3
+	 */
+	public function getCompression(): int
+	{
+		return $this->_compression;
+	}
+
+	/**
+	 * Internally sets the value of the detected file compression type if there is one.
+	 *
+	 * @param int $value
+	 * @return static $this For method chaining.
+	 * @since 4.3.3
+	 */
+	protected function setCompression(int $value): static
+	{
+		$this->_compression = $value;
+		return $this;
+	}
+
+	// =========================================================================
+	// Public API — Manifest
+	// =========================================================================
+
+
+	/**
+	 * Returns the full extraction manifest including `extracted`, `extractedPath`,
+	 * `reason`, and `security` fields.  Populated after {@see extract()}; null before.
+	 * Returns the full metadata map for every entry in the archive.
+	 *
+	 * Keys are normalised relative paths; directory keys always end with
+	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
+	 *
+	 * Each value array contains at minimum:
+	 *  - `path`          string   Canonical map key (matches the array key).
+	 *  - `name`          string   Entry basename.
+	 *  - `type`          string   'file', 'directory', 'symlink', 'hardlink',
+	 *                            'char_device', 'block_device', or 'fifo'.
+	 *  - `typeflag`      int      One of the TYPE_* constants.
+	 *  - `filename`      string   Raw relative path stored in the archive.
+	 *  - `filepath`      string   Working relative path (after prefix removal).
+	 *  - `size`          int      Stored size in bytes.
+	 *  - `mtime`         int      Modification time (Unix epoch).
+	 *  - `mode`          int      UNIX permission bits.
+	 *  - `uid`           int      Numeric user ID.
+	 *  - `gid`           int      Numeric group ID.
+	 *  - `uname`         string   Symbolic user name.
+	 *  - `gname`         string   Symbolic group name.
+	 *  - `linkpath`      string   Symlink / hard-link target (empty for other types).
+	 *  - `checksum`      int      Stored header checksum.
+	 *  - `filesafe`      bool     True when the path contains no traversal sequences.
+	 *  - `device`        bool     True for character / block special device entries.
+	 *  - `extracted`     bool     Was the entry extracted.
+	 *  - `extractedPath` string   Path of the extracted file, directory, or link.
+	 *  - `reason`        string   Present only when the entry would be skipped during
+	 *                         extraction (e.g. 'zip_slip', 'device', 'symlink',
+	 *                         'hardlink', 'conflict_skip', 'conflict_existing_newer',
+	 *                         'conflict_existing_older').
+	 *  - `security`      string   Present only for entries skipped due to a security
+	 *                         policy violation: 'zip_slip_attack', 'is_device', or
+	 *						   'linkpath_above_root'.  Absent for conflict-based skips,
+	 *                         allowing callers to distinguish the two categories.
+	 *
+	 *
+	 * @return ?array<string,array>
+	 * @since 4.3.3
+	 */
+	public function getExtractManifest(): ?array
+	{
+		return $this->_tarExtractManifest;
+	}
+
+	/**
+	 * Internally sets the extracted manifest after an extraction.
+	 * When building just the Manifest, there is no extraction manifest.
+	 *
+	 * @since 4.3.3
+	 * @param ?array<string,array> $value
+	 * @return static
+	 */
+	protected function setExtractManifest(?array $value): static
+	{
+		$this->_tarExtractManifest = $value;
+		return $this;
+	}
+
+	/**
+	 * Returns the extraction manifest entry for the given path, including
+	 * `extracted`, `extractedPath`, `reason`, and `security` fields.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?array
+	 * @since 4.3.3
+	 */
+	public function getExtractManifestInfo(string $path): ?array
+	{
+		$key = $this->_findExtractManifestKey($path);
+		return $key !== null ? ($this->_tarExtractManifest[$key] ?? null) : null;
+	}
+
+	/**
+	 * Returns an ordered list of relative entry paths contained in the archive.
+	 * Directories appear before files and always end with {@see DIRECTORY_SEPARATOR}.
+	 * Triggers a lazy scan when the archive has not yet been extracted.
 	 *
 	 * @return string[]
 	 * @since 4.3.3
@@ -450,11 +1242,9 @@ class TTarFileExtractor
 	}
 
 	/**
-	 * Returns an ordered array of the relative entry paths contained in the archive.
-	 * Directory paths appear before file paths and always end with {@see DIRECTORY_SEPARATOR}.
-	 * If the archive has not been extracted yet, it is scanned without extracting.
+	 * Returns whether the manifest has been populated (by extraction or scan).
 	 *
-	 * @return bool if the
+	 * @return bool
 	 * @since 4.3.3
 	 */
 	protected function hasManifest(): bool
@@ -464,125 +1254,102 @@ class TTarFileExtractor
 
 	/**
 	 * Returns the full metadata map for every entry in the archive.
-	 * Keys are relative paths (directories end with {@see DIRECTORY_SEPARATOR}).
-	 * Directory entries always precede file entries within the map.
 	 *
-	 * Each value array contains:
-	 *  - path         string  Map key (normalised relative path)
-	 *  - name         string  File basename
-	 *  - device       bool    Is a TYPE_CHAR_SPECIAL or TYPE_BLOCK_SPECIAL
-	 *  - filepath     string  Raw relative path in the archive
-	 *  - timestamp    float   metrics
-	 *  - size         int     Stored file size in bytes
-	 *  - mtime        int     Modification timestamp (Unix epoch)
-	 *  - mode         int     UNIX permission bits
-	 *  - uid          int     Numeric user ID
-	 *  - gid          int     Numeric group ID
-	 *  - uname        string  Symbolic user name
-	 *  - gname        string  Symbolic group name
-	 *  - linkpath     string  Symlink / hard-link target (empty for regular entries)
-	 *  - typeflag     int     TYPE_* constant value (TYPE_FILE, TYPE_DIRECTORY, etc.)
-	 *  - checksum     int     Stored header checksum
-	 *  - safe         bool    True if the path contains no break-out path sequences
-	 *  - device       bool    True if the entry is a character or block special device file
-	 *  - extracted    bool    True if the entry was written to disk
-	 *  - reason       bool    Only present when there is a reason to not extract. like Zip Slip attacks.
+	 * Keys are normalised relative paths; directory keys always end with
+	 * {@see DIRECTORY_SEPARATOR}.  Directory entries precede file entries.
 	 *
-	 * On extraction:
-	 *  - extractedPath string Absolute path where the entry was written (empty if not extracted)
+	 * Each value array contains at minimum:
+	 *  - `path`      string   Canonical map key (matches the array key).
+	 *  - `name`      string   Entry basename.
+	 *  - `type`      string   'file', 'directory', 'symlink', 'hardlink',
+	 *                         'char_device', 'block_device', or 'fifo'.
+	 *  - `typeflag`  int      One of the TYPE_* constants.
+	 *  - `filename`  string   Raw relative path stored in the archive.
+	 *  - `filepath`  string   Working relative path (after prefix removal).
+	 *  - `size`      int      Stored size in bytes.
+	 *  - `mtime`     int      Modification time (Unix epoch).
+	 *  - `mode`      int      UNIX permission bits.
+	 *  - `uid`       int      Numeric user ID.
+	 *  - `gid`       int      Numeric group ID.
+	 *  - `uname`     string   Symbolic user name.
+	 *  - `gname`     string   Symbolic group name.
+	 *  - `linkpath`  string   Symlink / hard-link target (empty for other types).
+	 *  - `checksum`  int      Stored header checksum.
+	 *  - `filesafe`  bool     True when the path contains no traversal sequences.
+	 *  - `device`    bool     True for character / block special device entries.
+	 *  - `reason`    string   Present only when the entry would be skipped during
+	 *                         extraction (e.g. 'zip_slip', 'device', 'symlink',
+	 *                         'hardlink', 'conflict_skip', 'conflict_existing_newer',
+	 *                         'conflict_existing_older').
+	 *  - `security`  string   Present only for entries skipped due to a security
+	 *                         policy violation: 'zip_slip_attack', 'is_device',
+	 *                         or 'linkpath_above_root'.  Absent for conflict-based
+	 *						   skips, allowing callers to distinguish the two
+	 *						   categories.
 	 *
-	 * If the map has not been populated by a prior extraction, the archive is scanned
-	 * without extracting any files.
+	 * If the archive has not been extracted yet, a scan-only pass is performed.
 	 *
 	 * @return array<string,array>
 	 * @since 4.3.3
 	 */
 	public function getManifest(): array
 	{
-		if ($this->_tarManifest !== null) {
-			return $this->_tarManifest;
-		}
+		if (!$this->hasManifest() && $this->_openRead()) {
+			// Retain the temp file (URL download / LZMA) so a following
+			// extract() can reuse it without re-downloading.
+			if ($this->getTempPath() !== null) {
+				$this->setRetainTempFile(true);
+			}
 
-		$v_result = true;
-		$extractionManifest = [];
-
-if ($v_result = $this->_openRead()) {
+			$extractionManifest = [];
 			$v_exception = null;
 			try {
-				$v_result = $this->_extractList(
-					null,
-					$extractionManifest, 
-					"list",
-					null,
-					null
-				);
+				$this->_extractList(null, $extractionManifest, null, null);
 			} catch (\Exception $e) {
-				$v_result = false;
 				$v_exception = $e;
 			}
+
 			$this->_close();
-		
-			// Sort map: directories before files, both groups alphabetical.
-			$this->_sortManifest($extractionManifest);
-			
-			// DEBUG
-			file_put_contents('/tmp/prado_tar_debug.log', "After _extractList: " . count($extractionManifest) . " entries\nKeys: " . json_encode(array_keys($extractionManifest)) . "\n", FILE_APPEND);
-		
-			// Re-throw after cleanup so callers still see the exception.
+
 			if ($v_exception !== null) {
 				throw $v_exception;
 			}
 
-			if ($this->_tarManifest === null) {
-				$this->setManifest($extractionManifest);
-			}
+			$this->_sortManifest($extractionManifest);
+			$this->setManifest($extractionManifest);
 		}
+
 		return $this->_tarManifest ?? [];
 	}
 
 	/**
-	 * These are the files that were processed by tar extraction.  If there was
-	 * an error and {@see getStrict} is true, only the entries prior to the error
-	 * will be in this array.
-	 * For a full Manifest of the tar, use {@see getManifest()}.
-	 * The format of each entry is the same as for {@see getManifest()}
-	 * @return ?array The files processed by the {@see extract} to completion or error.
-	 * @since 4.3.3
-	 */
-	public function getExtractManifest(): ?array
-	{
-		return $this->_tarExtractManifest;
-	}
-
-	/**
-	 * Sets the tar manifest. it removes any extraction fields.
-	 * @since 4.3.3
+	 * Populates the manifest from an extraction or scan manifest, stripping
+	 * extraction-specific fields (`extracted`, `extractedPath`).
+	 *
 	 * @param mixed $manifest
+	 * @since 4.3.3
 	 */
-	protected function setManifest($manifest)
+	protected function setManifest($manifest): void
 	{
 		$this->_tarManifest = [];
 		if (!is_array($manifest)) {
 			return;
 		}
 		foreach ($manifest as $path => $entry) {
-			// Remove extraction-specific fields to create clean base manifest
-			$cleanEntry = $entry;
-			unset($cleanEntry['extracted']);
-			unset($cleanEntry['extractedPath']);
-			unset($cleanEntry['reason']);
-			$this->_tarManifest[$path] = $cleanEntry;
+			$clean = $entry;
+			// Strip extraction-only fields; keep 'reason' so callers can inspect
+			// which entries would be skipped (zip_slip, device, symlink, hardlink).
+			unset($clean['extracted'], $clean['extractedPath']);
+			$this->_tarManifest[$path] = $clean;
 		}
-		// DEBUG: log what happened
-		file_put_contents('/tmp/prado_tar_debug.log', "setManifest called with " . count($manifest) . " entries, keys: " . json_encode(array_keys($manifest)) . "\n", FILE_APPEND);
 	}
 
 	/**
-	 * Returns the full metadata array for a single archive entry, or null if not found.
-	 * See {@see getManifest()} for the structure of the returned array.
+	 * Returns the clean manifest entry for the given path, or null if not found.
+	 * The returned array does not include `extracted`, `extractedPath`, or `reason`.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|array
+	 * @param string $path Relative archive path.
+	 * @return ?array
 	 * @since 4.3.3
 	 */
 	public function getManifestInfo(string $path): ?array
@@ -592,43 +1359,26 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the extraction metadata for a single archive entry.
-	 * Unlike getManifestInfo(), this includes 'extracted', 'extractedPath', and 'reason' fields.
+	 * Returns a single field from the clean manifest entry for the given path.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|array
-	 * @since 4.3.3
-	 */
-	public function getExtractManifestInfo(string $path): ?array
-	{
-		$key = $this->_findExtractManifestKey($path);
-		if ($key === null) {
-			return null;
-		}
-		return $this->_tarExtractManifest[$key] ?? null;
-	}
-
-	/**
-	 * Returns the full metadata array for a single archive entry, or null if not found.
-	 * See {@see getManifest()} for the structure of the returned array.
-	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @param string $key
-	 * @return mixed
+	 * @param string $path Relative archive path.
+	 * @param string $key  Field name.
+	 * @return mixed Field value, or null if the path or field is not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestValue(string $path, string $key): mixed
 	{
-		$path = $this->_findManifestKey($path);
-		return $path !== null ? $this->_tarManifest[$path][$key] ?? null : null;
+		$found = $this->_findManifestKey($path);
+		return $found !== null ? ($this->_tarManifest[$found][$key] ?? null) : null;
 	}
 
 	/**
-	 * Returns the entry type for the given archive path.
+	 * Returns the entry type string ('file', 'directory', 'symlink', etc.)
+	 * for the given archive path, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|string One of 'file', 'directory', 'symlink', 'hardlink',
-	 *                     'char_device', 'block_device', 'fifo', or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?string 'file', 'directory', 'symlink', 'hardlink', 'char_device',
+	 *                 'block_device', 'fifo', or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestType(string $path): ?string
@@ -637,11 +1387,10 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the entry type flag for the given archive path.
-	 * This will be a TYPE_* constant value (TYPE_FILE, TYPE_DIRECTORY, etc).
+	 * Returns the TYPE_* constant value for the given archive path, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int One of TYPE_FILE, TYPE_DIRECTORY, TYPE_HARDLINK, TYPE_SYMLINK, etc
+	 * @param string $path Relative archive path.
+	 * @return ?int One of the `TYPE_*` constants, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestTypeFlag(string $path): ?int
@@ -650,11 +1399,11 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the stored size (in bytes) of the given archive entry.
-	 * Note: tar archives do not store a separate creation time; use {@see getManifestMtime()}.
+	 * Returns the stored size in bytes for the given archive entry, or null if not found.
+	 * TAR archives do not store a creation time; use {@see getManifestMtime()}.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int Size in bytes, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?int Size in bytes, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestSize(string $path): ?int
@@ -663,11 +1412,11 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the modification timestamp of the given archive entry (Unix epoch seconds).
-	 * TAR archives store only mtime; there is no separate creation-time field.
+	 * Returns the modification timestamp (Unix epoch) for the given archive entry,
+	 * or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int Unix timestamp, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?int Unix timestamp, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestMtime(string $path): ?int
@@ -676,10 +1425,11 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the UNIX permission bits (mode) of the given archive entry.
+	 * Returns the UNIX permission bits (mode) for the given archive entry,
+	 * or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int Mode, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?int UNIX permission bits (e.g. 0644), or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestMode(string $path): ?int
@@ -688,10 +1438,10 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the numeric user ID of the given archive entry.
+	 * Returns the numeric user ID for the given archive entry, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int UID, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?int Numeric UID, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestUid(string $path): ?int
@@ -700,10 +1450,10 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the numeric group ID of the given archive entry.
+	 * Returns the numeric group ID for the given archive entry, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|int GID, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?int Numeric GID, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestGid(string $path): ?int
@@ -712,10 +1462,10 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the symbolic user name of the given archive entry.
+	 * Returns the symbolic user name for the given archive entry, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|string User name, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?string Symbolic user name, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestUname(string $path): ?string
@@ -724,10 +1474,10 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the symbolic group name of the given archive entry.
+	 * Returns the symbolic group name for the given archive entry, or null if not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|string Group name, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?string Symbolic group name, or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestGname(string $path): ?string
@@ -736,10 +1486,11 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns the link target of the given archive entry (symlinks and hard links only).
+	 * Returns the symlink / hard-link target for the given archive entry.
+	 * Returns an empty string for non-link entries, null if the path is not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|string Link target, empty string for non-link entries, or null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?string Link target string (may be empty for non-link entries), or null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestLinkPath(string $path): ?string
@@ -748,12 +1499,12 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Returns whether the given archive entry path is safe from path-traversal attacks.
-	 * A path is considered safe when it contains no '..' components, does not start
-	 * with '/' or a Windows drive letter, and cannot escape the extraction root.
+	 * Returns whether the given archive path is free of traversal sequences.
+	 * True = safe, false = contains '..', absolute, or Windows drive-letter prefix.
+	 * Returns null if the path is not found.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|bool True if safe, false if a traversal sequence was found, null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?bool True if safe, false if unsafe, null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestIsSafe(string $path): ?bool
@@ -762,24 +1513,42 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
+	 * Returns the skip-reason string stored for the given archive path, or null if none.
+	 * A non-null value means the entry would be (or was) skipped during extraction.
+	 * The value is one of the `REASON_*` constants.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|bool True if safe, false if a traversal sequence was found, null if not found.
+	 * @param string $path Relative archive path.
+	 * @return ?string One of the `REASON_*` constants, or null if the entry is safe.
 	 * @since 4.3.3
 	 */
-	public function getManifestUnsafeReason(string $path): ?bool
+	public function getManifestUnsafeReason(string $path): ?string
 	{
 		return $this->getManifestValue($path, 'reason');
 	}
 
 	/**
-	 * Returns whether the given archive entry is a character or block special device file
-	 * ({@see TYPE_CHAR_SPECIAL} or {@see TYPE_BLOCK_SPECIAL}).
-	 * A device file may still be at a path-safe location ({@see getManifestIsSafe()} reports
-	 * the path safety independently).
+	 * Returns the security-violation type for the given archive path, or null if the
+	 * entry is safe (or not found).  A non-null return means the entry was (or would
+	 * be) skipped specifically due to a security policy, not merely a conflict.
 	 *
-	 * @param string $path Relative path as it appears in the archive.
-	 * @return null|bool True if the entry is a device file, false otherwise, null if not found.
+	 * Possible return values: 'zip_slip_attack', 'is_device', 'linkpath_above_root'.
+	 * Returns null for safe entries and for conflict-based skips.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?string
+	 * @since 4.3.3
+	 */
+	public function getManifestSecurity(string $path): ?string
+	{
+		return $this->getManifestValue($path, 'security');
+	}
+
+	/**
+	 * Returns whether the given archive entry is a device or FIFO special file.
+	 * Returns null if the path is not found.
+	 *
+	 * @param string $path Relative archive path.
+	 * @return ?bool True if the entry is a character/block device or FIFO, null if not found.
 	 * @since 4.3.3
 	 */
 	public function getManifestIsDevice(string $path): ?bool
@@ -787,63 +1556,1370 @@ if ($v_result = $this->_openRead()) {
 		return $this->getManifestValue($path, 'device');
 	}
 
+	// =========================================================================
+	// Protected — Core Extraction
+	// =========================================================================
+
 	/**
-	 * Detects compression type from file magic bytes and extension.
+	 * Extracts the archive to $p_destPath, optionally stripping a path prefix.
 	 *
-	 * For local files, magic bytes are checked first (most reliable).
-	 * For URLs, magic-byte detection is skipped entirely — the URL is never
-	 * opened here; extension-based detection is used instead, since at this
-	 * call site the URL has already been downloaded to a local temp file when
-	 * the file path is a URL (only unit tests call this method directly with
-	 * a URL string).
+	 * @param string  $p_destPath      Destination directory.
+	 * @param ?string $p_remove_path   Path prefix to strip from each entry's path.
+	 * @return bool True on success.
+	 */
+	protected function extractModify(string $p_destPath, ?string $p_remove_path = null): bool
+	{
+		if (!empty($p_destPath)) {
+			
+			$p_checkPath = rtrim($p_destPath, '/');
+			
+			// Pre-check: fail fast if the destination is not writable before any staging I/O.
+			if (is_dir($p_checkPath)) {
+				if (!is_writable($p_checkPath)) {
+					$this->_error("Atomic extraction destination '$p_checkPath' is not writable");
+					return false;
+				}
+			} else {
+				$parentDir = dirname($p_checkPath);
+				if (!is_dir($parentDir)) {
+					$this->_error("Atomic extraction destination parent '$parentDir' does not exist");
+					return false;
+				}
+				if (!is_writable($parentDir)) {
+					$this->_error("Atomic extraction destination parent '$parentDir' is not writable");
+					return false;
+				}
+			}
+			
+			if ($this->getAtomic()) {
+				return $this->_extractAtomic($p_destPath, $p_remove_path);
+			}
+			if ($this->getRestoreOnFailure()) {
+				return $this->_extractDirectWithRestore($p_destPath, $p_remove_path);
+			}
+		}
+		return $this->_extractDirect($p_destPath, $p_remove_path);
+	}
+
+	/**
+	 * Core archive-reading loop.  Reads every entry from the open file handle,
+	 * recording metadata and (when $p_destPath is non-null) writing files to disk.
 	 *
-	 * @param string $tarname The tar archive filepath or URL
-	 * @return int One of the COMPRESSION_* constants
+	 * @param ?string    $p_destPath           Destination root; null triggers scan/list mode.
+	 * @param array      &$p_manifest          Receives per-entry metadata.
+	 * @param null|array $p_file_list          Allow list of paths; null = all entries.
+	 * @param ?string    $p_remove_path_prefix Path prefix to strip from stored paths.
+	 * @param mixed      $conflictMode         CONFLICT_* constant; null = uses {@see getConflictMode()}.
+	 * @param bool       $applyPermissions     When false, skip chmod/touch on files and dirs.
+	 *                                         Pass false for staging extractions; permissions
+	 *                                         will be applied during the merge phase instead.
+	 * @param ?callable  $preWriteHook         Optional hook called just before writing each
+	 *                                         non-directory entry (after conflict checks pass).
+	 *                                         Signature: `function(string $extractedPath, bool $preexisted): void`.
+	 *                                         Used by {@see _extractDirectWithRestore()} to back up
+	 *                                         pre-existing files before they are overwritten.
+	 *                                         The hook may throw to abort the extraction.
+	 * @return bool True on success.
+	 * @since 4.3.3
+	 */
+	protected function _extractList(
+		?string $p_destPath,
+		array &$p_manifest,
+		?array $p_file_list,
+		?string $p_remove_path_prefix,
+		mixed $conflictMode = null,
+		bool $applyPermissions = true,
+		?callable $preWriteHook = null
+	): bool {
+		$conflictMode ??= $this->getConflictMode();
+
+		// ------------------------------------------------------------------
+		// Closure: record one entry into the manifest.
+		// $security is set to the violation type string ('zip_slip_attack', 'is_device',
+		// 'linkpath_above_root') for entries skipped due to a security policy,
+		// letting callers distinguish security violations from conflict skips.
+		// ------------------------------------------------------------------
+		$recordEntryDetail = function (array $fileInfo, ?string $extractedPath, ?string $reason = null, ?string $security = null) use (&$p_manifest): void {
+			if (!is_array($p_manifest)) {
+				return;
+			}
+
+			$normKey = $fileInfo['filepath_norm'] ?? rtrim($fileInfo['filepath'] ?? '', '/\\');
+			if (($fileInfo['typeflag'] ?? 0) === self::TYPE_DIRECTORY) {
+				$mapKey = rtrim((string) $normKey, '/\\') . DIRECTORY_SEPARATOR;
+			} else {
+				$mapKey = (string) $normKey;
+			}
+
+			$fileInfo['path'] = $mapKey;
+
+			if ($extractedPath !== null) {
+				$fileInfo['extracted'] = true;
+				$fileInfo['extractedPath'] = $extractedPath;
+			}
+			if ($reason !== null) {
+				$fileInfo['reason'] = $reason;
+			}
+			if ($security !== null) {
+				$fileInfo['security'] = $security;
+			}
+
+			$p_manifest[$mapKey] = $fileInfo;
+		};
+
+		// ------------------------------------------------------------------
+		// Normalise destination path.
+		// ------------------------------------------------------------------
+		$directoryModes = [];
+
+		if ($p_destPath !== null && $p_destPath !== '') {
+			$p_destPath = $this->_translateWinPath($p_destPath, false);
+			if ($p_destPath !== './' && $p_destPath !== '/') {
+				$p_destPath = rtrim($p_destPath, '/');
+			}
+		}
+
+		if ($p_remove_path_prefix) {
+			$p_remove_path_prefix = $this->_translateWinPath($p_remove_path_prefix);
+			if (!str_ends_with($p_remove_path_prefix, '/')) {
+				$p_remove_path_prefix .= '/';
+			}
+			$p_remove_path_prefix_length = strlen($p_remove_path_prefix);
+		} else {
+			$p_remove_path_prefix_length = 0;
+		}
+
+		clearstatcache();
+
+		// ------------------------------------------------------------------
+		// Main loop: read one 512-byte header at a time.
+		// ------------------------------------------------------------------
+		while (($v_binary_data = $this->_readBlock()) !== null
+				&& $v_binary_data !== false
+				&& strlen($v_binary_data) !== 0) {
+
+			$v_header = [];
+			if (!$this->_readHeader($v_binary_data, $v_header)) {
+				return false;
+			}
+			if (empty($v_header['filepath'])) {
+				continue;
+			}
+			if ($this->processLongHeader($v_header)) {
+				return false;
+			}
+
+			// Decide whether this entry should be extracted.
+			$v_extract_file = !empty($p_destPath);
+
+			if ($v_extract_file && is_array($p_file_list)) {
+				$v_extract_file = false;
+				foreach ($p_file_list as $allowedPath) {
+					if (str_ends_with($allowedPath, '/')) {
+						if (str_starts_with($v_header['filepath'], $allowedPath)) {
+							$v_extract_file = true;
+							break;
+						}
+					} elseif ($allowedPath === $v_header['filepath']) {
+						$v_extract_file = true;
+						break;
+					}
+				}
+			}
+
+			// Strip path prefix.
+			if ($p_remove_path_prefix && str_starts_with($v_header['filepath'], $p_remove_path_prefix)) {
+				$v_header['filepath'] = substr($v_header['filepath'], $p_remove_path_prefix_length);
+				$v_header['filepath_norm'] = $this->_normalizePath($v_header['filepath']);
+				$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($v_header['filepath_norm'] ?? ''));
+			}
+
+			$typeFlag = $v_header['typeflag'];
+
+			// ---------------------------------------------------------------
+			// Scan / list mode — annotate entries that would be skipped.
+			// ---------------------------------------------------------------
+			if (!$v_extract_file) {
+				// Path traversal.
+				if (!($v_header['filesafe'] ?? true)) {
+					$recordEntryDetail($v_header, null, self::REASON_ZIP_SLIP, self::SECURITY_ZIP_SLIP_ATTACK);
+					if (($v_header['size'] ?? 0) > 0) {
+						$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+					}
+					continue;
+				}
+				// Device / special files.
+				if (in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL, self::TYPE_FIFO], true)) {
+					$recordEntryDetail($v_header, null, self::REASON_DEVICE, self::SECURITY_IS_DEVICE);
+					if (($v_header['size'] ?? 0) > 0) {
+						$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+					}
+					continue;
+				}
+				// Unsafe symlink / hardlink targets.
+				if ($typeFlag === self::TYPE_SYMLINK || $typeFlag === self::TYPE_HARDLINK) {
+					$linkpath = trim($v_header['linkpath'] ?? '');
+					$linksafe = $v_header['linksafe'] ?? $this->_isRelativePathSafe($this->_normalizePath($linkpath) ?? '');
+					if (!$linksafe || str_starts_with($linkpath, '/')) {
+						$reason = ($typeFlag === self::TYPE_SYMLINK) ? self::REASON_SYMLINK : self::REASON_HARDLINK;
+						$recordEntryDetail($v_header, null, $reason, self::SECURITY_LINKPATH_OUTSIDE_DESTINATION);
+						continue;
+					}
+				}
+				// Normal scan: record metadata, skip data blocks.
+				$recordEntryDetail($v_header, null);
+				if (($v_header['size'] ?? 0) > 0
+					&& !in_array($typeFlag, [self::TYPE_DIRECTORY, self::TYPE_SYMLINK, self::TYPE_HARDLINK], true)) {
+					$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+				}
+				continue;
+			}	// end of List Mode - loop back to block processing.
+
+			$extractedPath = $p_destPath . '/' . ltrim($v_header['filepath'], '/');
+
+			// ---------------------------------------------------------------
+			// Extraction mode — validate path security (Zip Slip).
+			// ---------------------------------------------------------------
+			if (!$this->_validatePathSecurity($extractedPath, $p_destPath)) {
+				$message = "Zip Slip path traversal attempt detected: '$extractedPath'";
+				if ($this->getStrict()) {
+					$this->_error($message);
+					return false;
+				}
+				$recordEntryDetail($v_header, null, self::REASON_ZIP_SLIP, self::SECURITY_ZIP_SLIP_ATTACK);
+				if (($v_header['size'] ?? 0) > 0) {
+					$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+				}
+				continue;
+			}
+
+			// Device / special files.
+			if (in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL, self::TYPE_FIFO], true)) {
+				$message = "Special file type cannot be extracted: '$extractedPath'";
+				if ($this->getStrict()) {
+					$this->_error($message);
+					return false;
+				}
+				$recordEntryDetail($v_header, null, self::REASON_DEVICE, self::SECURITY_IS_DEVICE);
+				if (($v_header['size'] ?? 0) > 0) {
+					$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+				}
+				continue;
+			}
+
+			// Snapshot pre-existence before _dirCheck creates the directory.
+			$v_preexisted = @file_exists($extractedPath);
+
+			// ---------------------------------------------------------------
+			// Conflict resolution (non-directory entries only).
+			// Directories are always created or re-used — never a conflict.
+			// ---------------------------------------------------------------
+			$v_skip_conflict = false;
+			$v_conflict_reason = null;
+
+			if ($typeFlag !== self::TYPE_DIRECTORY && $v_preexisted && $conflictMode !== null) {
+				$conflictModeFunction = $this->getConflictModeFunction();
+				$v_skip_conflict = !$conflictModeFunction($v_header, $extractedPath, $v_conflict_reason);
+			}
+
+			if ($v_skip_conflict) {
+				$recordEntryDetail($v_header, null, $v_conflict_reason);
+				if (!in_array($typeFlag, [self::TYPE_DIRECTORY, self::TYPE_SYMLINK, self::TYPE_HARDLINK], true)
+					&& ($v_header['size'] ?? 0) > 0) {
+					$this->_jumpBlock((int) ceil($v_header['size'] / 512));
+				}
+				continue;
+			}
+
+			// ---------------------------------------------------------------
+			// Ensure parent directory exists.
+			// For TYPE_DIRECTORY entries we only create *parent* directories here;
+			// the directory itself is created below with STAGING_DIR_MODE so that
+			// files can be written into it before the deferred-chmod loop applies
+			// the final (potentially restrictive) permission.
+			//
+			// Always pass STAGING_DIR_MODE as the working mode so that any intermediate
+			// parent directories — whether they are archive entries whose final mode
+			// will be applied by the deferred loop, or implicit parents with no archive
+			// entry — remain owner+group traversable but are not world-accessible.
+			// ---------------------------------------------------------------
+			if (!$v_preexisted || $typeFlag === self::TYPE_DIRECTORY) {
+				if (!$this->_dirCheck(dirname($extractedPath), self::STAGING_DIR_MODE)) {
+					$this->_error("Unable to create path for '$extractedPath'");
+					return false;
+				}
+			}
+
+			// Pre-write hook: invoked once per non-directory entry that will be written,
+			// after all conflict checks pass.  Used by _extractDirectWithRestore() to
+			// back up pre-existing files before they are overwritten.  The hook may
+			// throw to abort the extraction (caught by the caller).
+			if ($preWriteHook !== null && $typeFlag !== self::TYPE_DIRECTORY) {
+				$preWriteHook((string) $extractedPath, $v_preexisted);
+			}
+
+			// ---------------------------------------------------------------
+			// Write — directory.
+			// ---------------------------------------------------------------
+			if ($typeFlag === self::TYPE_DIRECTORY) {
+				$v_created = !$v_preexisted;
+				if (!@file_exists($extractedPath)) {
+					// Create with STAGING_DIR_MODE (owner+group only) so files can
+					// be written into the directory before final permissions are applied.
+					// The override (or tar mode) is applied by the deferred $directoryModes
+					// loop below, which is only executed when $applyPermissions is true.
+					if (!@mkdir($extractedPath, self::STAGING_DIR_MODE)) {
+						$this->_error("Unable to create directory {$extractedPath}");
+						return false;
+					}
+					$v_created = true;
+				}
+				// Defer applying directory permissions until after extraction so the
+				// directory remains writable while we write files into it.
+				// getDirModeOverride() resolves in priority order: explicit override →
+				// Prado::getDefaultDirPermissions() fallback → null (use tar-stored mode).
+				$v_tarDirMode = (int) ($v_header['mode'] ?? 0);
+
+				$v_effDirMode = $this->getDirModeOverride() ?? $v_tarDirMode;
+				if ($v_effDirMode > 0) {
+					$directoryModes[$extractedPath] = $v_effDirMode;
+				}
+				$recordEntryDetail($v_header, $extractedPath);
+
+				// ---------------------------------------------------------------
+				// Write — symlink / hard link.
+				// ---------------------------------------------------------------
+			} elseif ($typeFlag === self::TYPE_SYMLINK || $typeFlag === self::TYPE_HARDLINK) {
+				$isSymLink = ($typeFlag === self::TYPE_SYMLINK);
+				$linkType = $isSymLink ? 'Symlink' : 'Hard link';
+				$linkMethod = $isSymLink ? 'symlink' : 'link';
+
+				if ($p_remove_path_prefix && str_starts_with($v_header['linkpath'], $p_remove_path_prefix)) {
+					$v_header['linkpath'] = substr($v_header['linkpath'], $p_remove_path_prefix_length);
+					$v_header['linkpath_norm'] = $this->_normalizePath($v_header['linkpath']);
+					$v_header['linksafe'] = $this->_isRelativePathSafe($v_header['linkpath_norm']);
+				}
+
+				$v_linkpath = trim($v_header['linkpath'] ?? '');
+				if (!$this->_validateLinkTarget($v_linkpath, dirname($extractedPath), $p_destPath)) {
+					$message = "$linkType target outside extraction directory: $v_linkpath";
+					if ($this->getStrict()) {
+						$this->_error($message);
+						return false;
+					}
+					$v_linkViolation = $isSymLink ? self::REASON_SYMLINK : self::REASON_HARDLINK;
+					$recordEntryDetail($v_header, null, $v_linkViolation, self::SECURITY_LINKPATH_OUTSIDE_DESTINATION);
+					continue;
+				}
+
+				// Symlinks are created with the path stored in the archive (relative or absolute)
+				// so that a relative symlink can be safely moved to the final destination
+				// during atomic merge without pointing into the staging directory.
+				// Hard links require a resolvable absolute path so that link() can locate
+				// the target inode.
+				if ($isSymLink) {
+					$v_resolvedLinkpath = $v_linkpath;
+				} else {
+					$v_resolvedLinkpath = $v_linkpath;
+					if (!str_starts_with($v_resolvedLinkpath, '/')) {
+						$v_resolvedLinkpath = dirname($extractedPath) . '/' . $v_resolvedLinkpath;
+					}
+				}
+
+				// Remove existing link/file at destination before creating new one.
+				if ($v_preexisted && (file_exists($extractedPath) || is_link($extractedPath))) {
+					@unlink($extractedPath);
+				}
+
+				if (!@$linkMethod($v_resolvedLinkpath, $extractedPath)) {
+					$this->_error('Unable to create ' . strtolower($linkType) . ": $extractedPath");
+					return false;
+				}
+				$recordEntryDetail($v_header, $extractedPath);
+
+				// ---------------------------------------------------------------
+				// Write — regular file (also TYPE_CONTIGUOUS).
+				// ---------------------------------------------------------------
+			} else {
+				$v_dest_file = @fopen($extractedPath, 'wb');
+				if ($v_dest_file === false) {
+					$this->_error("Error while opening {$extractedPath} in write binary mode");
+					return false;
+				}
+
+				$n = (int) floor($v_header['size'] / 512);
+				for ($i = 0; $i < $n; $i++) {
+					$v_content = $this->_readBlock();
+					fwrite($v_dest_file, $v_content, 512);
+				}
+				if (($v_header['size'] % 512) !== 0) {
+					$v_content = $this->_readBlock();
+					fwrite($v_dest_file, $v_content, ($v_header['size'] % 512));
+				}
+				@fclose($v_dest_file);
+
+				// Apply mtime and permissions (skipped for staging extractions;
+				// _mergeStaging applies them to the final destination).
+				if ($applyPermissions) {
+					@touch($extractedPath, $v_header['mtime']);
+					$v_tarFileMode = (int) ($v_header['mode'] ?? 0);
+					$v_effFileMode = $this->getFileModeOverride() ?? $v_tarFileMode;
+					if ($v_effFileMode > 0) {
+						@chmod($extractedPath, $v_effFileMode);
+					}
+				} else {
+					// Staging extraction: restrict file to owner+group (STAGING_FILE_MODE) so that
+					// world cannot read sensitive content while the merge is in progress.
+					@chmod($extractedPath, self::STAGING_FILE_MODE);
+				}
+
+				// Verify extracted size.
+				clearstatcache();
+				if (filesize($extractedPath) !== $v_header['size']) {
+					$this->_error(
+						"Extracted file $extractedPath has incorrect size "
+						. filesize($extractedPath) . ' (' . $v_header['size'] . ' expected). '
+						. 'Archive may be corrupted.'
+					);
+					return false;
+				}
+
+				$recordEntryDetail($v_header, $extractedPath);
+			}
+		} // end while
+
+		// Apply deferred directory permissions (after all files are in place).
+		// Skipped for staging extractions; _mergeStaging applies them to the final destination.
+		if ($applyPermissions) {
+			foreach ($directoryModes as $dirPath => $mode) {
+				@chmod($dirPath, $mode);
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Extracts the archive directly into the destination directory with inline
+	 * conflict resolution.
+	 *
+	 * When {@see getRestoreOnFailure()} is true and `$p_destPath` is non-empty,
+	 * delegates to {@see _extractDirectWithRestore()} which backs up pre-existing
+	 * files and restores them on failure.  Otherwise extracts with no rollback.
+	 *
+	 * @param string  $p_destPath
+	 * @param ?string $p_remove_path
+	 * @return bool
+	 */
+	private function _extractDirect(string $p_destPath, ?string $p_remove_path): bool
+	{
+		$extractionManifest = [];
+		$v_result = true;
+
+		if (!($v_result = $this->_openRead())) {
+			return false;
+		}
+
+		$v_exception = null;
+		try {
+			$v_result = $this->_extractList(
+				$p_destPath !== '' ? $p_destPath : null,
+				$extractionManifest,
+				null,
+				$p_remove_path
+			);
+		} catch (\Exception $e) {
+			$v_result = false;
+			$v_exception = $e;
+		}
+
+		$this->_sortManifest($extractionManifest);
+		$this->setExtractManifest($extractionManifest);
+
+		$this->_close();
+
+		if ($v_exception !== null) {
+			throw $v_exception;
+		}
+
+		if ($this->_tarManifest === null) {
+			$this->setManifest($extractionManifest);
+		}
+
+		return $v_result;
+	}
+
+	/**
+	 * Non-atomic extraction with restore-on-failure.
+	 *
+	 * Files are written directly to `$p_destPath`, but before each non-directory
+	 * entry is overwritten its pre-existing destination file (if any) is renamed
+	 * into a private backup directory created under {@see _staging_temp_directory()}.
+	 *
+	 * On success:  all backup files are deleted and the backup directory removed.
+	 * On failure:  every file written during this extraction is removed, every
+	 *              backed-up original is renamed back to its destination path, and
+	 *              the backup directory is removed.
+	 *
+	 * This provides a lightweight rollback that avoids the extra staging I/O of
+	 * {@see _extractAtomic()}.  The backup directory name is produced by
+	 * {@see _staging_backup_dir_name()}.
+	 *
+	 * @param string  $p_destPath    Non-empty destination directory.
+	 * @param ?string $p_remove_path Path prefix to strip from archive entries.
+	 * @return bool True on success.
+	 */
+	private function _extractDirectWithRestore(string $p_destPath, ?string $p_remove_path): bool
+	{
+		// Create a private backup directory under the system temp dir.
+		$restoreDir = rtrim($p_destPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $this->_staging_backup_dir_name();
+		if (!@mkdir($restoreDir, self::STAGING_DIR_MODE, true)) {
+			$this->_error("Unable to create restore backup directory '$restoreDir'");
+			return false;
+		}
+
+		$extractionManifest = [];
+		// $backups:  destPath => backupPath  — pre-existing files renamed before overwrite.
+		// $written:  destPath => true         — paths that the extraction attempted to write.
+		$backups = [];
+		$written = [];
+
+		// Pre-write hook: called once for each non-directory entry just before it is
+		// written, after all conflict checks pass.  Backs up any pre-existing file to
+		// $restoreDir and records the write attempt in $written so the failure path
+		// knows what to clean up.
+		$preWriteHook = function (string $extractedPath, bool $preexisted) use ($restoreDir, &$backups, &$written): void {
+			if (file_exists($extractedPath) || is_link($extractedPath)) {
+				// Rename the pre-existing file/link to the backup directory.
+				$backupPath = $restoreDir . DIRECTORY_SEPARATOR . uniqid('', true);
+				if (!@rename($extractedPath, $backupPath)) {
+					$this->_error("Unable to backup '$extractedPath' before overwrite (restore-on-failure)");
+				}
+				$backups[$extractedPath] = $backupPath;
+			}
+			// Track every path we are about to write, regardless of pre-existence.
+			$written[$extractedPath] = true;
+		};
+
+		if (!$this->_openRead()) {
+			@rmdir($restoreDir);
+			return false;
+		}
+
+		$v_exception = null;
+		$v_result = false;
+		try {
+			$v_result = $this->_extractList(
+				$p_destPath,
+				$extractionManifest,
+				null,
+				$p_remove_path,
+				null,      // conflictMode: use getConflictMode()
+				true,      // applyPermissions
+				$preWriteHook
+			);
+		} catch (\Exception $e) {
+			$v_result = false;
+			$v_exception = $e;
+		}
+
+		$this->_close();
+
+		if ($v_result && $v_exception === null) {
+			// Success: discard all backups and clean up the backup directory.
+			foreach ($backups as $backupPath) {
+				if (file_exists($backupPath) || is_link($backupPath)) {
+					@unlink($backupPath);
+				}
+			}
+		} else {
+			// Failure: remove newly-written files and restore original backups.
+			foreach ($written as $writtenPath => $unused) {
+				// Only unlink files that were not also backed up; for backed-up paths,
+				// the rename below will atomically replace whatever was written.
+				if (!isset($backups[$writtenPath]) && (file_exists($writtenPath) || is_link($writtenPath))) {
+					@unlink($writtenPath);
+				}
+			}
+			foreach ($backups as $origPath => $backupPath) {
+				if (file_exists($backupPath) || is_link($backupPath)) {
+					@rename($backupPath, $origPath);
+				}
+			}
+		}
+
+		// Remove the (now-empty) backup directory.
+		if (is_dir($restoreDir)) {
+			@rmdir($restoreDir);
+		}
+
+		$this->_sortManifest($extractionManifest);
+		$this->setExtractManifest($extractionManifest);
+
+		if ($this->_tarManifest === null) {
+			$this->setManifest($extractionManifest);
+		}
+
+		if ($v_exception !== null) {
+			throw $v_exception;
+		}
+
+		return $v_result;
+	}
+
+	// =========================================================================
+	// Private — Atomic Extraction
+	// =========================================================================
+
+	/**
+	 * Extracts the archive atomically: files land in a private staging directory
+	 * first, then are moved into the real destination with conflict resolution.
+	 * If extraction into staging fails the destination is untouched.  If the
+	 * merge phase fails, any files already overwritten are restored from backups.
+	 *
+	 * @param string  $p_destPath
+	 * @param ?string $p_remove_path
+	 * @return bool
+	 */
+	private function _extractAtomic(string $p_destPath, ?string $p_remove_path): bool
+	{
+		// Create the staging directory under the system temp dir for portability.
+		$stagingDir = $this->_staging_dir();
+		if (!@mkdir($stagingDir, self::STAGING_DIR_MODE, true)) {
+			$this->_error("Unable to create atomic staging directory '$stagingDir'");
+			return false;
+		}
+
+		$stagingManifest = [];
+
+		if (!$this->_openRead()) {
+			$this->_removeDirectory($stagingDir);
+			return false;
+		}
+
+		$v_exception = null;
+		try {
+			// Phase 1: extract everything into staging (fresh dir — no conflicts).
+			// Permissions are not applied to staging; _mergeStaging applies them to the
+			// final destination, and symlinks keep their original relative paths so they
+			// remain valid after being moved out of the staging directory.
+			$v_result = $this->_extractList(
+				$stagingDir,
+				$stagingManifest,
+				null,
+				$p_remove_path,
+				self::CONFLICT_OVERWRITE,  // staging is always fresh
+				false                      // $applyPermissions: handled by _mergeStaging
+			);
+		} catch (\Exception $e) {
+			$v_result = false;
+			$v_exception = $e;
+		}
+
+		$this->_close();
+
+		if (!$v_result || $v_exception !== null) {
+			$this->_removeDirectory($stagingDir);
+			if ($v_exception !== null) {
+				throw $v_exception;
+			}
+			return false;
+		}
+
+		// Allow subclasses (e.g. test doubles) to inspect the staging directory
+		// while it still exists — before the merge moves files to the destination
+		// and before cleanup deletes the staging tree.
+		$this->_onStagingReady($stagingDir, $stagingManifest);
+
+		// Phase 2: merge staging → destination, applying conflict mode.
+		$backups = [];
+		try {
+			$this->_mergeStaging($stagingDir, $p_destPath, $stagingManifest, $backups);
+		} catch (\Exception $e) {
+			// Restore overwritten files from backups.
+			foreach ($backups as $origPath => $backupPath) {
+				if (file_exists($backupPath)) {
+					@rename($backupPath, $origPath);
+				}
+			}
+			$this->_removeDirectory($stagingDir);
+			$this->_sortManifest($stagingManifest);
+			$this->setExtractManifest($stagingManifest);
+			if ($this->_tarManifest === null) {
+				$this->setManifest($stagingManifest);
+			}
+			throw $e;
+		}
+
+		// Success: clean up staging and backups.
+		$this->_removeDirectory($stagingDir);
+		foreach ($backups as $backupPath) {
+			if (file_exists($backupPath)) {
+				@unlink($backupPath);
+			}
+		}
+
+		$this->_sortManifest($stagingManifest);
+		$this->setExtractManifest($stagingManifest);
+		if ($this->_tarManifest === null) {
+			$this->setManifest($stagingManifest);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Merges files from $stagingDir into $destDir, applying the active conflict mode.
+	 * Files that are overwritten have their originals backed up in $backups for rollback.
+	 * On completion $manifest entries have their extractedPath updated to point into $destDir.
+	 *
+	 * @param string  $stagingDir
+	 * @param string  $destDir
+	 * @param array  &$manifest
+	 * @param array  &$backups   Map of original-path => backup-path for rollback.
+	 */
+	private function _mergeStaging(
+		string $stagingDir,
+		string $destDir,
+		array &$manifest,
+		array &$backups
+	): void {
+		$this->_dirCheck($destDir);
+
+		$stagingDir = rtrim($stagingDir, '/');
+		$stagingDirLen = strlen($stagingDir);
+
+		// Directory permissions are applied after all files have been moved so that
+		// directories remain writable/traversable during the merge phase.
+		$deferredDirModes = [];
+
+		$conflictMode = $this->getConflictMode();
+
+		// For CONFLICT_ERROR pre-scan every file before touching anything.
+		if ($conflictMode === self::CONFLICT_ERROR) {
+			foreach ($manifest as $entry) {
+				if (($entry['typeflag'] ?? 0) === self::TYPE_DIRECTORY) {
+					continue;
+				}
+				if (!isset($entry['extractedPath'])) {
+					continue;
+				}
+				$relPath = substr($entry['extractedPath'], $stagingDirLen);
+				$destPath = $destDir . $relPath;
+				if (file_exists($destPath) || is_link($destPath)) {
+					$this->_error("Conflict: '$destPath' already exists (CONFLICT_ERROR mode)");
+				}
+			}
+		}
+
+		// --- Merge directories first (already sorted before files in manifest). ---
+		foreach ($manifest as $mapKey => $entry) {
+			if (($entry['typeflag'] ?? 0) !== self::TYPE_DIRECTORY) {
+				continue;
+			}
+			if (!isset($entry['extractedPath'])) {
+				continue;
+			}
+			$relPath = substr($entry['extractedPath'], $stagingDirLen);
+			$destPath = $destDir . $relPath;
+			// Use STAGING_DIR_MODE (owner+group only); deferred chmod below applies the final mode.
+			$this->_dirCheck($destPath, self::STAGING_DIR_MODE);
+
+			// Defer directory chmod — applying restrictive modes before files are moved
+			// in would prevent traversal of the directory during the merge phase.
+			// getDirModeOverride() resolves in priority order: explicit override →
+			// Prado::getDefaultDirPermissions() fallback → null (use tar-stored mode).
+			$v_tarDirMode = (int) ($entry['mode'] ?? 0);
+			$v_effDirMode = $this->getDirModeOverride() ?? $v_tarDirMode;
+			if ($v_effDirMode > 0) {
+				$deferredDirModes[$destPath] = $v_effDirMode;
+			}
+
+			$manifest[$mapKey]['extractedPath'] = $destPath;
+			$manifest[$mapKey]['extracted'] = true;
+		}
+
+		$conflictModeFunction = $this->getConflictModeFunction();
+
+		// --- Merge files, symlinks, hardlinks. ---
+		foreach ($manifest as $mapKey => $entry) {
+			$typeFlag = $entry['typeflag'] ?? self::TYPE_FILE;
+			if ($typeFlag === self::TYPE_DIRECTORY) {
+				continue;
+			}
+			if (!isset($entry['extractedPath'])) {
+				continue;
+			}
+
+			$stagingPath = $entry['extractedPath'];
+			$relPath = substr($stagingPath, $stagingDirLen);
+			$destPath = $destDir . $relPath;
+
+			$exists = file_exists($destPath) || is_link($destPath);
+			$shouldWrite = true;
+
+			if ($exists) {
+				$v_conflict_reason = null;
+				$shouldWrite = $conflictModeFunction($entry, $destPath, $v_conflict_reason);
+				if (!$shouldWrite) {
+					$manifest[$mapKey]['reason'] = $v_conflict_reason;
+					unset($manifest[$mapKey]['extracted'], $manifest[$mapKey]['extractedPath']);
+				}
+			}
+
+			if (!$shouldWrite) {
+				if (file_exists($stagingPath) || is_link($stagingPath)) {
+					@unlink($stagingPath);
+				}
+				continue;
+			}
+
+			// Backup existing file so we can restore it on merge failure.
+			if ($exists) {
+				$backupPath = $destPath . $this->_staging_backup_dir_name();
+				if (!@rename($destPath, $backupPath)) {
+					$this->_error("Unable to backup '$destPath' for atomic replace");
+				}
+				$backups[$destPath] = $backupPath;
+			}
+
+			// Ensure the parent directory exists in the destination.
+			// Use STAGING_DIR_MODE (owner+group only); archive-entry dirs are already
+			// in $deferredDirModes and will receive their final mode below.
+			$this->_dirCheck(dirname($destPath), self::STAGING_DIR_MODE);
+
+			// Hard link entries: re-create the link relationship in the destination
+			// rather than moving the staging copy.  On the same filesystem rename()
+			// would preserve the shared inode anyway, but on a cross-filesystem move
+			// a plain copy loses it.  Using link() is the only semantically correct
+			// path in both cases.
+			$moved = false;
+			if ($typeFlag === self::TYPE_HARDLINK) {
+				$rawLinkpath = trim($entry['linkpath'] ?? '');
+				if ($rawLinkpath !== '') {
+					$linkTargetDest = $destDir . '/' . ltrim($rawLinkpath, '/');
+					if (file_exists($linkTargetDest) && @link($linkTargetDest, $destPath)) {
+						@unlink($stagingPath);  // best-effort cleanup of the staging copy
+						$moved = true;
+					}
+				}
+			}
+			if (!$moved && !$this->_moveFile($stagingPath, $destPath)) {
+				$this->_error("Unable to move '$stagingPath' to '$destPath'");
+			}
+
+			// Apply mtime and mode to the moved file.
+			@touch($destPath, (int) ($entry['mtime'] ?? 0));
+			$v_tarFileMode = (int) ($entry['mode'] ?? 0);
+			$v_effFileMode = $this->getFileModeOverride() ?? $v_tarFileMode;
+			if ($v_effFileMode > 0) {
+				@chmod($destPath, $v_effFileMode);
+			}
+
+			$manifest[$mapKey]['extractedPath'] = $destPath;
+			$manifest[$mapKey]['extracted'] = true;
+		}
+
+		// Apply deferred directory permissions now that all files have been moved in.
+		foreach ($deferredDirModes as $dirPath => $mode) {
+			@chmod($dirPath, $mode);
+		}
+	}
+	
+	/**
+	 * Returns the full absolute path for a new atomic staging directory.
+	 *
+	 * Combines {@see _staging_temp_directory()} and {@see _staging_dir_name()} to
+	 * produce a unique, non-existent path under the system temp directory.  Called
+	 * once per atomic extraction to allocate the staging root.
+	 *
+	 * @return string Absolute path for the staging directory (not yet created).
+	 * @since 4.3.3
+	 */
+	protected function _staging_dir(): string
+	{
+		return $this->_staging_temp_directory() . DIRECTORY_SEPARATOR . $this->_staging_dir_name();
+	}
+
+	/**
+	 * Returns the base directory under which staging directories are created.
+	 *
+	 * Defaults to {@see sys_get_temp_dir()}.  Override in a subclass or test
+	 * double to redirect staging I/O to a controlled location.
+	 *
+	 * @return string Absolute path to the staging parent directory.
+	 * @since 4.3.3
+	 */
+	protected function _staging_temp_directory(): string
+	{
+		return sys_get_temp_dir();
+	}
+
+	/**
+	 * Returns a unique name for a new atomic staging directory.
+	 *
+	 * Each call returns a different name so that concurrent or successive
+	 * extractions do not collide.  The name is prefixed with `.prado_tar_stage_`
+	 * and suffixed with `.tmp` to aid cleanup scripts.
+	 *
+	 * @return string Unique directory name (relative, no separators).
+	 * @since 4.3.3
+	 */
+	protected function _staging_dir_name(): string
+	{
+		return uniqid('.prado_tar_stage_', true) . '.tmp';
+	}
+
+	/**
+	 * Returns a unique backup-directory name used during the atomic merge phase
+	 * and during non-atomic restore-on-failure backups.
+	 *
+	 * In atomic mode ({@see _mergeStaging()}) the name is appended to each
+	 * destination file path to create a sibling backup path.  In non-atomic
+	 * restore mode ({@see _extractDirectWithRestore()}) a single directory with
+	 * this name is created under {@see _staging_temp_directory()} to hold all
+	 * backed-up originals.  Each call returns a different value to prevent
+	 * collisions between concurrent operations.
+	 *
+	 * @return string Unique backup identifier / directory name.
+	 * @since 4.3.3
+	 */
+	protected function _staging_backup_dir_name(): string
+	{
+		return '.~staging_bkp_' . uniqid('', true) . '~';
+	}
+
+	/**
+	 * Called after phase-1 (staging extraction) completes successfully and before
+	 * phase-2 (_mergeStaging) begins.  The staging directory still contains all
+	 * extracted files with their staging permissions (STAGING_DIR_MODE /
+	 * STAGING_FILE_MODE) and has not yet been cleaned up.
+	 *
+	 * The default implementation is a no-op.  Override in a subclass or test
+	 * double to inspect staging contents, assert permissions, or inject faults.
+	 *
+	 * @param string $stagingDir      Absolute path to the staging directory root.
+	 * @param array  $stagingManifest Manifest populated by phase-1 extraction.
+	 * @since 4.3.3
+	 */
+	protected function _onStagingReady(string $stagingDir, array $stagingManifest): void
+	{
+	}
+
+	/**
+	 * Moves a file from $from to $to.
+	 * Tries rename() first (same-filesystem, atomic); falls back to copy+unlink
+	 * or symlink recreation for cross-filesystem moves.
+	 *
+	 * @param string $from
+	 * @param string $to
+	 * @return bool
+	 */
+	private function _moveFile(string $from, string $to): bool
+	{
+		if (@rename($from, $to)) {
+			return true;
+		}
+		// Cross-filesystem fallback: re-create symlinks, copy regular files.
+		if (is_link($from)) {
+			$target = @readlink($from);
+			if ($target !== false && @symlink($target, $to)) {
+				@unlink($from);
+				return true;
+			}
+			return false;
+		}
+		if (@copy($from, $to)) {
+			@unlink($from);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Recursively removes a directory and all its contents.
+	 *
+	 * @param string $dir
+	 */
+	private function _removeDirectory(string $dir): void
+	{
+		if (!is_dir($dir)) {
+			return;
+		}
+		$items = @scandir($dir);
+		if ($items === false) {
+			return;
+		}
+		foreach ($items as $item) {
+			if ($item === '.' || $item === '..') {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $item;
+			if (is_link($path) || is_file($path)) {
+				@unlink($path);
+			} elseif (is_dir($path)) {
+				$this->_removeDirectory($path);
+			}
+		}
+		@rmdir($dir);
+	}
+
+	// =========================================================================
+	// Private — Archive I/O
+	// =========================================================================
+
+	/**
+	 * Throws an exception with the given message, using the configured exception
+	 * class ({@see getExceptionClass()}).  Falls back to `\Exception` when the
+	 * stored class is empty, does not exist, or cannot be instantiated with a
+	 * single string argument.
+	 *
+	 * @param string $p_message
+	 * @throws \Exception
+	 */
+	protected function _error(string $p_message): never
+	{
+		$cls = $this->getExceptionClass();
+		if (!empty($cls) && $cls !== '\Exception' && $cls !== 'Exception') {
+			if (class_exists($cls)) {
+				try {
+					throw new $cls($p_message);
+				} catch (\TypeError) {
+					// Class exists but constructor is incompatible; fall through.
+				}
+			}
+		}
+		throw new \Exception($p_message);
+	}
+
+	/**
+	 * Opens the archive for reading, downloading remote URLs to a temp file first.
+	 * Detects compression and sets the appropriate stream handle.
+	 *
+	 * @return bool True on success.
+	 */
+	private function _openRead(): bool
+	{
+		$isTemporary = false;
+
+		$v_filepath = $this->getTarPath();
+		if (str_starts_with($v_filepath, 'http://')
+			|| str_starts_with($v_filepath, 'https://')
+			|| str_starts_with($v_filepath, 'ftp://')) {
+
+			$v_temppath = $this->getTempPath();
+			if ($v_temppath === null) {
+				$v_temppath = $this->_new_local_temppath('tar');
+
+				$ctx = stream_context_create([
+					'http' => ['timeout' => $timeout = $this->getUrlTimeout()],
+					'https' => ['timeout' => $timeout],
+				]);
+				$v_file_from = @fopen($v_filepath, 'rb', false, $ctx);
+				if (!$v_file_from) {
+					$this->_error("Unable to open in read mode '{$v_filepath}'");
+					return false;
+				}
+				$v_file_to = @fopen($v_temppath, 'wb');
+				if (!$v_file_to) {
+					@fclose($v_file_from);
+					$this->_error("Unable to open in write mode '{$v_temppath}'");
+					return false;
+				}
+				while ($v_data = @fread($v_file_from, 1024)) {
+					@fwrite($v_file_to, $v_data);
+				}
+				@fclose($v_file_from);
+				@fclose($v_file_to);
+				$this->setTempPath($v_temppath);
+			}
+			$v_filepath = $v_temppath;
+			$isTemporary = true;
+		}
+
+		$this->setCompression($this->_detectCompression($v_filepath));
+
+		$fileHandle = $this->_openFile($v_filepath, $this->getCompression(), $isTemporary);
+		if ($fileHandle === false) {
+			return false;
+		}
+		if (is_string($fileHandle)) {
+			$this->_error($fileHandle);
+			return false;
+		}
+
+		$this->_file = $fileHandle;
+		if ($isTemporary) {
+			$this->setTempPath($v_filepath);
+		}
+
+		return true;
+	}
+	
+	/**
+	 * Returns a full absolute path for a new unique temporary file.
+	 *
+	 * Combines {@see _local_temp_directory()} and {@see _local_temp_file()} to produce
+	 * a path that does not yet exist on disk.  Used when a local copy of a remote or
+	 * LZMA-compressed archive must be written to disk before extraction.
+	 *
+	 * @param string $prefix Optional filename prefix (e.g. `'tar'`, `'lzma'`).
+	 * @return string Absolute path for a new temp file (not yet created).
+	 * @since 4.3.3
+	 */
+	protected function _new_local_temppath(string $prefix = ''): string
+	{
+		return $this->_local_temp_directory() . DIRECTORY_SEPARATOR . $this->_local_temp_file($prefix);
+	}
+
+	/**
+	 * Returns the directory under which local temporary files are created.
+	 *
+	 * Defaults to {@see sys_get_temp_dir()}.  Override in a subclass or test
+	 * double to redirect temporary file I/O to a controlled location.
+	 *
+	 * @return string Absolute path to the local temp file parent directory.
+	 * @since 4.3.3
+	 */
+	protected function _local_temp_directory(): string
+	{
+		return sys_get_temp_dir();
+	}
+
+	/**
+	 * Returns a unique filename (relative, no separators) for a new temporary file.
+	 *
+	 * Each call returns a different name.  The name is suffixed with `.tmp` to
+	 * aid cleanup scripts and to make the file type obvious.
+	 *
+	 * @param string $prefix Optional filename prefix (e.g. `'tar'`, `'lzma'`).
+	 * @return string Unique filename (relative, no directory separators).
+	 * @since 4.3.3
+	 */
+	protected function _local_temp_file(string $prefix = ''): string
+	{
+		return uniqid($prefix, true) . '.tmp';
+	}
+
+	/**
+	 * Opens a (possibly compressed) file for reading and returns the stream handle.
+	 * Returns a string error message on failure, false if the handle could not be created.
+	 *
+	 * @param string $filepath     Path to the file; updated in place for LZMA decompression.
+	 * @param int    $compression  One of the COMPRESSION_* constants.
+	 * @param bool   $isTemporary  True when $filepath is a downloaded/decompressed temp file.
+	 * @return false|resource|string
+	 */
+	private function _openFile(string &$filepath, int $compression, bool $isTemporary)
+	{
+		switch ($compression) {
+			case self::COMPRESSION_NONE:
+				$handle = @fopen($filepath, 'rb');
+				if ($handle === false) {
+					return "Unable to open in read binary mode '$filepath'";
+				}
+				break;
+
+			case self::COMPRESSION_GZIP:
+				if (!function_exists('gzopen')) {
+					return 'zlib extension is required for gzip compression';
+				}
+				$handle = @gzopen($filepath, 'rb');
+				if ($handle === false) {
+					return "Unable to open gzip in read binary mode '$filepath'";
+				}
+				break;
+
+			case self::COMPRESSION_BZIP2:
+				if (!function_exists('bzopen')) {
+					return 'bzip2 extension is required for bzip2 compression';
+				}
+				$handle = @bzopen($filepath, 'r');
+				if ($handle === false) {
+					return "Unable to open bzip2 in read binary mode '$filepath'";
+				}
+				break;
+
+			case self::COMPRESSION_LZMA:
+				$xzDec = trim(shell_exec('which xzdec') ?: '');
+				$xzCmd = trim(shell_exec('which xz') ?: '');
+				if (!$xzDec && !$xzCmd) {
+					return 'xz command is required for LZMA compression';
+				}
+				$tempFile = $this->_new_local_temppath('lzma');
+				$command = $xzDec
+					? escapeshellarg($xzDec) . ' ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile)
+					: escapeshellarg($xzCmd) . ' -dc ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile);
+
+				$output = [];
+				$returnVar = -1;
+				exec($command, $output, $returnVar);
+
+				if (!file_exists($tempFile)) {
+					return $returnVar !== 0
+						? "Unable to decompress LZMA archive: command failed (exit $returnVar)"
+						: "Unable to decompress LZMA archive: temp file not created '$tempFile'";
+				}
+
+				if ($isTemporary) {
+					@unlink($filepath);
+					$filepath = $tempFile;
+				}
+
+				$handle = @fopen($tempFile, 'rb');
+				if ($handle === false) {
+					return "Unable to open decompressed LZMA in read binary mode '$filepath'";
+				}
+				break;
+
+			default:
+				return false;
+		}
+
+		$this->_workingCompression = $compression;
+		return $handle;
+	}
+
+	/**
+	 * Closes the active file handle and optionally deletes the temp file.
+	 *
+	 * @param bool $forceClearTemp Delete temp file regardless of retainTempFile setting.
+	 * @return bool
+	 */
+	private function _close(bool $forceClearTemp = false): bool
+	{
+		$result = false;
+
+		if ($this->_file !== null) {
+			if ($this->_workingCompression === self::COMPRESSION_GZIP) {
+				$result = @gzclose($this->_file);
+			} elseif ($this->_workingCompression === self::COMPRESSION_BZIP2) {
+				$result = @bzclose($this->_file);
+			} else {
+				$result = @fclose($this->_file);
+			}
+			$this->_file = null;
+		}
+
+		if ($forceClearTemp || !$this->getRetainTempFile()) {
+			$this->clearTempFile();
+		}
+
+		$this->_workingCompression = self::COMPRESSION_NONE;
+
+		return $result;
+	}
+
+	/**
+	 * Closes the file handle, clears temp files, and blanks the tarname.
+	 * Called from the destructor.
+	 *
+	 * @return bool
+	 */
+	private function _completeTarFile(): bool
+	{
+		$result = $this->_close(true);
+		$this->setTarPath('');
+		return $result;
+	}
+
+	/**
+	 * Reads one 512-byte block from the archive.
+	 *
+	 * @return null|false|string The block data, null at end-of-file, false on no handle.
+	 */
+	private function _readBlock()
+	{
+		if ($this->_file === null) {
+			return false;
+		}
+
+		if ($this->_workingCompression === self::COMPRESSION_GZIP) {
+			$v_block = @gzread($this->_file, 512);
+		} elseif ($this->_workingCompression === self::COMPRESSION_BZIP2) {
+			$v_block = @bzread($this->_file, 512);
+		} else {
+			$v_block = @fread($this->_file, 512);
+		}
+
+		if ($v_block === '' || $v_block === null) {
+			return null;
+		}
+		return $v_block;
+	}
+
+	/**
+	 * Skips $p_len data blocks (512 bytes each) in the archive stream.
+	 *
+	 * @param ?int $p_len Number of blocks to skip (default 1).
+	 * @return bool
+	 */
+	private function _jumpBlock(?int $p_len = null): bool
+	{
+		if ($this->_file === null) {
+			return true;
+		}
+
+		$p_len ??= 1;
+		$bytesToSkip = $p_len * 512;
+
+		if ($bytesToSkip <= 0) {
+			return true;
+		}
+
+		if ($this->_workingCompression === self::COMPRESSION_GZIP) {
+			@gzread($this->_file, $bytesToSkip);
+		} elseif ($this->_workingCompression === self::COMPRESSION_BZIP2) {
+			@bzread($this->_file, $bytesToSkip);
+		} else {
+			@fseek($this->_file, @ftell($this->_file) + $bytesToSkip);
+		}
+
+		return true;
+	}
+
+	// =========================================================================
+	// Private — Compression Detection
+	// =========================================================================
+
+	/**
+	 * Detects the compression format of $tarname using magic bytes (local files)
+	 * or file-extension heuristics (URLs / unavailable files).
+	 *
+	 * @param string $tarname Archive path or URL.
+	 * @return int One of the COMPRESSION_* constants.
 	 * @since 4.3.3
 	 */
 	private function _detectCompression(string $tarname): int
 	{
-		// Check magic bytes first (most reliable) — but only for local files.
-		// Skip fopen for remote URLs: attempting to open an unreachable URL
-		// would stall until the system timeout fires.
 		$isUrl = str_starts_with($tarname, 'http://')
 			|| str_starts_with($tarname, 'https://')
 			|| str_starts_with($tarname, 'ftp://');
 		$handle = $isUrl ? false : @fopen($tarname, 'rb');
+
 		if ($handle) {
 			$magic = fread($handle, 6);
 			fclose($handle);
 
 			if ($magic !== false && strlen($magic) >= 2) {
-				$bytes = array_values(unpack('C6', $magic));
+				$bytes = array_values(unpack('C6', str_pad($magic, 6, "\x00")));
 
-				// gzip: 0x1f 0x8b
-				if ($bytes[0] === 0x1f && $bytes[1] === 0x8b) {
-					if (function_exists('gzopen')) {
-						return self::COMPRESSION_GZIP;
-					}
+				if ($bytes[0] === 0x1f && $bytes[1] === 0x8b && function_exists('gzopen')) {
+					return self::COMPRESSION_GZIP;
 				}
-				// bzip2: 'BZ' (0x42 0x5a)
-				if ($bytes[0] === 0x42 && $bytes[1] === 0x5a) {
-					if (function_exists('bzopen')) {
-						return self::COMPRESSION_BZIP2;
-					}
+				if ($bytes[0] === 0x42 && $bytes[1] === 0x5a && function_exists('bzopen')) {
+					return self::COMPRESSION_BZIP2;
 				}
-				// lzma/xz: 0xfd followed by "7zXZ\x00"
-				if ($bytes[0] === 0xfd && strlen($magic) >= 6) {
-					if ($magic === "\xfd\x37\x7a\x58\x5a\x00") {
-						// Check for xz command availability
-						$xzDec = trim(shell_exec('which xzdec'));
-						$xzCmd = trim(shell_exec('which xz'));
-						if ($xzDec || $xzCmd) {
-							return self::COMPRESSION_LZMA;
-						}
+				if ($bytes[0] === 0xfd && strlen($magic) >= 6 && $magic === "\xfd\x37\x7a\x58\x5a\x00") {
+					$xzDec = trim(shell_exec('which xzdec') ?: '');
+					$xzCmd = trim(shell_exec('which xz') ?: '');
+					if ($xzDec || $xzCmd) {
+						return self::COMPRESSION_LZMA;
 					}
 				}
 			}
 		}
 
-		// Fallback to extension detection (with availability checks)
 		$lower = strtolower($tarname);
 		if (str_ends_with($lower, '.tar.gz') || str_ends_with($lower, '.tgz')) {
 			if (function_exists('gzopen')) {
@@ -856,456 +2932,72 @@ if ($v_result = $this->_openRead()) {
 			}
 		}
 		if (str_ends_with($lower, '.tar.xz') || str_ends_with($lower, '.txz')) {
-			// Check for xz command availability
-			$xzDec = trim(shell_exec('which xzdec'));
-			$xzCmd = trim(shell_exec('which xz'));
+			$xzDec = trim(shell_exec('which xzdec') ?: '');
+			$xzCmd = trim(shell_exec('which xz') ?: '');
 			if ($xzDec || $xzCmd) {
 				return self::COMPRESSION_LZMA;
 			}
 		}
+
 		return self::COMPRESSION_NONE;
 	}
 
+	// =========================================================================
+	// Private — TAR Parsing
+	// =========================================================================
+
 	/**
-	 * Opens a compressed file for reading, returning a stream handle.
+	 * Reads and parses a 512-byte tar header block into $v_header.
 	 *
-	 * @param string $filepath The file to open
-	 * @param int $compression The compression type (COMPRESSION_*)
-	 * @param bool $isTemporary
-	 * @return false|resource|string The stream handle; string error or false on failure
-	 * @since 4.3.3
+	 * @param string $v_binary_data 512-byte header block.
+	 * @param array  &$v_header     Receives parsed fields.
+	 * @return bool True on success; false on checksum mismatch or format error.
 	 */
-	private function _openFile(string &$filepath, int $compression, bool $isTemporary)
+	private function _readHeader(string $v_binary_data, array &$v_header): bool
 	{
-		$handle = false;
-		switch ($compression) {
-			case self::COMPRESSION_NONE:
-				$handle = @fopen($filepath, 'rb');
-				if ($handle === false) {
-					return 'Unable to open in read binary mode \'' . $filepath . '\'';
-				}
-				break;
-			case self::COMPRESSION_GZIP:
-				if (!function_exists('gzopen')) {
-					return 'zlib extension is required for gzip compression';
-				}
-				$handle = @gzopen($filepath, 'rb');
-				if ($handle === false) {
-					return 'Unable to open gzip in read binary mode \'' . $filepath . '\'';
-				}
-				break;
-			case self::COMPRESSION_BZIP2:
-				if (!function_exists('bzopen')) {
-					return 'bzip2 extension is required for bzip2 compression';
-				}
-				$handle = @bzopen($filepath, 'r');
-				if ($handle === false) {
-					return 'Unable to open bzip2 in read binary mode \'' . $filepath . '\'';
-				}
-				break;
-			case self::COMPRESSION_LZMA:
-				// Check for xz command availability
-				$xzDec = trim(shell_exec('which xzdec') ?: '');
-				$xzCmd = trim(shell_exec('which xz') ?: '');
-				if (!$xzDec && !$xzCmd) {
-					return 'xz command is required for LZMA compression';
-				}
-				// For LZMA/XZ, decompress to a temp file first
-				$tempFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('lzma') . '.tar';
-
-				// xzdec writes to stdout with no flags required (filepath only).
-				// xz uses -dc (decompress, stdout). Both redirect to the temp file.
-				$command = $xzDec
-					? escapeshellarg($xzDec) . ' ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile)
-					: escapeshellarg($xzCmd) . ' -dc ' . escapeshellarg($filepath) . ' > ' . escapeshellarg($tempFile);
-
-				$output = [];
-				$returnVar = -1;
-				exec($command, $output, $returnVar);
-
-				if (!file_exists($tempFile)) {
-					if ($returnVar !== 0) {
-						return 'Unable to decompress LZMA archive: decompression command failed, return code \'' . $returnVar . '\'';
-					}
-					return 'Unable to decompress LZMA archive: temp file not created \'' . $tempFile . '\'';
-				}
-
-				if ($isTemporary) {
-					// Delete the original downloaded/compressed file now that it has been
-					// decompressed. Update $filepath (by reference) to point to the
-					// decompressed tar so _openRead() can update _temp_tarpath accordingly.
-					@unlink($filepath);
-					$filepath = $tempFile;
-				}
-
-				$handle = @fopen($tempFile, 'rb');
-				if ($handle === false) {
-					return 'Unable to open decompressed LZMA in read binary mode \'' . $filepath . '\'';
-				}
-				break;
-		}
-		$this->_compression = $compression;
-		return $handle;
-	}
-
-	/**
-	 * This method extract all the content of the archive in the directory
-	 * indicated by $p_destPath. When relevant the memorized path of the
-	 * files/dir can be modified by removing the $p_remove_path path at the
-	 * beginning of the file/dir path.
-	 * While extracting a file, if the directory path does not exists it is
-	 * created.
-	 * While extracting a file, if the file already exists it is replaced
-	 * without looking for last modification date.
-	 * While extracting a file, if the file already exists and is write
-	 * protected, the extraction is aborted.
-	 * While extracting a file, if a directory with the same name already
-	 * exists, the extraction is aborted.
-	 * While extracting a directory, if a file with the same name already
-	 * exists, the extraction is aborted.
-	 * While extracting a file/directory if the destination directory exist
-	 * and is write protected, or does not exist but can not be created,
-	 * the extraction is aborted.
-	 * If after extraction an extracted file does not show the correct
-	 * stored file size, the extraction is aborted.
-	 * When the extraction is aborted, a PEAR error text is set and false
-	 * is returned.
-	 *
-	 * @param string $p_destPath        The path of the directory where the
-	 *                                files/dir need to by extracted.
-	 * @param ?string $p_remove_path   Part of the memorized path that can be
-	 *                                removed if present at the beginning of
-	 *                                the file/dir path.
-	 * @return bool                   true on success, false on error.
-	 * @access public
-	 */
-	/**
-	 * Extracts the archive with optional path removal.
-	 *
-	 * @param string $p_destPath	 The path where to extract the archive.
-	 * @param string $p_remove_path  Path to remove from extracted file paths.
-	 * @return bool True on success, false on error.
-	 */
-	protected function extractModify($p_destPath, $p_remove_path = null)
-	{
-		$v_result = true;
-		$extractionManifest = [];
-
-		if ($v_result = $this->_openRead()) {
-			$v_exception = null;
-			try {
-				$v_result = $this->_extractList(
-					$p_destPath,
-					$extractionManifest,
-					"complete",
-					null,
-					$p_remove_path
-				);
-			} catch (\Exception $e) {
-				$v_result = false;
-				$v_exception = $e;
-			}
-
-			// Sort map: directories before files, both groups alphabetical.
-			$this->_sortManifest($extractionManifest);
-			$this->_tarExtractManifest = $extractionManifest;
-
-			if (!$v_result && $this->getRollbackOnFailure()) {
-				$this->_rollbackExtraction($extractionManifest);
-			}
-
-			$this->_close();
-
-			// Re-throw after cleanup so callers still see the exception.
-			if ($v_exception !== null) {
-				throw $v_exception;
-			}
-
-			if ($this->_tarManifest === null) {
-				$this->setManifest($extractionManifest);
-			}
-		}
-
-		return $v_result;
-	}
-
-	/**
-	 * Throws an exception with the specified message.
-	 *
-	 * @param string $p_message The error message.
-	 * @throws \Exception Always throws an exception with the given message.
-	 */
-	protected function _error($p_message)
-	{
-		throw new \Exception($p_message);
-	}
-
-	/**
-	 * Checks if the given file exists and is a regular file.
-	 *
-	 * @param null|string $p_filepath The filepath to check. If null, uses the internal tar name.
-	 * @return bool True if the file exists and is a regular file, false otherwise.
-	 */
-	private function _isArchive($p_filepath = null)
-	{
-		if ($p_filepath == null) {
-			$p_filepath = $this->_tarname;
-		}
-		clearstatcache();
-		return @is_file($p_filepath);
-	}
-
-	/**
-	 * Opens the tar file for reading, handling local and remote files.
-	 *
-	 * For remote URLs (http://, https://, ftp://), downloads the file to a temporary location.
-	 * Detects compression type and opens with the appropriate handler.
-	 *
-	 * @return bool True on success, false on failure.
-	 */
-	private function _openRead()
-	{
-		$isTemporary = false;
-		// Determine the file to use (handle remote URLs)
-		if (str_starts_with($this->_tarname, 'http://') ||
-			str_starts_with($this->_tarname, 'https://') ||
-			str_starts_with($this->_tarname, 'ftp://')) {
-			// ----- Look if a local copy need to be done
-			if ($this->_temp_tarpath === null) {
-				$timeout = $this->getUrlTimeout();
-				$this->_temp_tarpath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('tar') . '.tmp';
-				// Use a short timeout so an unreachable URL fails fast instead of stalling
-				$ctx = stream_context_create([
-					'http' => ['timeout' => $timeout],
-					'https' => ['timeout' => $timeout],
-				]);
-				if (!$v_file_from = @fopen($this->_tarname, 'rb', false, $ctx)) {
-					$this->_error('Unable to open in read mode \''
-							  . $this->_tarname . '\'');
-					$this->_temp_tarpath = null;
-					return false;
-				}
-				if (!$v_file_to = @fopen($this->_temp_tarpath, 'wb')) {
-					$this->_error('Unable to open in write mode \''
-							  . $this->_temp_tarpath . '\'');
-					$this->_temp_tarpath = null;
-					return false;
-				}
-				while ($v_data = @fread($v_file_from, 1024)) {
-					@fwrite($v_file_to, $v_data);
-				}
-				@fclose($v_file_from);
-				@fclose($v_file_to);
-			}
-
-			// ----- File to open if the local copy
-			$v_filepath = $this->_temp_tarpath;
-			$isTemporary = true;
-		} else {
-			// ----- File to open if the normal Tar file
-			$v_filepath = $this->_tarname;
-		}
-
-		// Detect compression type
-		$this->_detectedCompression = $this->_detectCompression($v_filepath);
-
-		$fileHandle = $this->_openFile($v_filepath, $this->_detectedCompression, $isTemporary);
-		if ($fileHandle === false) {
-			return false;
-		} elseif (is_string($fileHandle)) {
-			$this->_error($fileHandle);
-			return false;
-		}
-		$this->_file = $fileHandle;
-		if ($isTemporary) {
-			$this->_temp_tarpath = $v_filepath;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Closes the file handle.
-	 *
-	 * Handles closing for both regular file handles and compressed stream handles
-	 * (gzopen, bzopen). This keeps the temporary url download (or decompressed .xz)
-	 * file.  The downloaded file or .xz decompression is kept in the cache until
-	 * this object is destroyed.
-	 *
-	 * @param bool $forceClearTemp
-	 * @return bool True on success, false on failure.
-	 */
-	private function _close(bool $forceClearTemp = false)
-	{
-		$result = false;
-
-		// Close the file handle
-		if ($this->_file !== 0 && $this->_file !== false) {
-			if ($this->_compression === self::COMPRESSION_GZIP) {
-				$result = @gzclose($this->_file);
-			} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
-				$result = @bzclose($this->_file);
-			} else {
-				$result = @fclose($this->_file);
-			}
-			$this->_file = 0;
-		}
-
-		if ($forceClearTemp || !$this->getRetainTempFile()) {
-			$this->clearTempFile();
-		}
-
-		// Reset runtime compression state
-		$this->_compression = self::COMPRESSION_NONE;
-
-		return $result;
-	}
-
-	/**
-	 * The temporary tar file path used by url download and .xz decompression
-	 * @return ?bool If there was an error.
-	 */
-	public function clearTempFile(): ?bool
-	{
-		if ($this->_temp_tarpath !== null) {
-			if (!@unlink($this->_temp_tarpath)) {
-				return true;	// an error unlinking
-			}
-			$this->_temp_tarpath = null;
-			return false;
-		}
-		return null;
-	}
-
-	/**
-	 * Closes the file handle, cleans up temporary files, and blanks the tarname.
-	 * Typically called in destruct.
-	 * @return bool True on success, false on failure.
-	 */
-	private function _completeTarFile()
-	{
-		$result = $this->_close(true);
-		$this->_tarname = '';
-		return $result;
-	}
-
-	/**
-	 * Reads a 512-byte block from the archive file.
-	 *
-	 * @return null|string The 512-byte block data, or null if no data read.
-	 */
-	private function _readBlock()
-	{
-		$v_block = false;
-		if ($this->_file !== 0 && $this->_file !== false) {
-			if ($this->_compression === self::COMPRESSION_GZIP) {
-				$v_block = @gzread($this->_file, 512);
-			} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
-				$v_block = @bzread($this->_file, 512);
-			} else {
-				$v_block = @fread($this->_file, 512);
-			}
-			// Return null when at end of file, not empty string
-			if ($v_block === '' || $v_block === null) {
-				return null;
-			}
-		}
-		return $v_block;
-	}
-
-	/**
-	 * Skips the specified number of 512-byte blocks by seeking or reading past them.
-	 *
-	 * @param null|int $p_len Number of blocks to skip. Defaults to 1 if null.
-	 * @return bool True on success.
-	 */
-	private function _jumpBlock($p_len = null)
-	{
-		if ($this->_file === 0 || $this->_file === false) {
-			return true;
-		}
-
-		if ($p_len === null) {
-			$p_len = 1;
-		}
-
-		$bytesToSkip = $p_len * 512;
-
-		// Skip reading when there are no bytes to skip
-		if ($bytesToSkip <= 0) {
-			return true;
-		}
-
-		// Compressed streams don't support seeking, so read and discard
-		if ($this->_compression === self::COMPRESSION_GZIP) {
-			@gzread($this->_file, $bytesToSkip);
-		} elseif ($this->_compression === self::COMPRESSION_BZIP2) {
-			@bzread($this->_file, $bytesToSkip);
-		} else {
-			@fseek($this->_file, @ftell($this->_file) + $bytesToSkip);
-		}
-		return true;
-	}
-
-	/**
-	 * Reads and parses a tar header block into an associative array.
-	 *
-	 * @param string $v_binary_data The raw 512-byte header block.
-	 * @param array &$v_header Parsed header data (passed by reference).
-	 * @return bool True on success, false on error or end-of-archive.
-	 */
-	private function _readHeader($v_binary_data, &$v_header)
-	{
-		if (strlen($v_binary_data) == 0) {
+		if (strlen($v_binary_data) === 0) {
 			$v_header['filepath'] = '';
 			return true;
 		}
-
-		if (strlen($v_binary_data) != 512) {
+		if (strlen($v_binary_data) !== 512) {
 			$v_header['filepath'] = '';
 			$this->_error('Invalid block size : ' . strlen($v_binary_data));
 			return false;
 		}
 
-		// ----- Calculate the checksum
+		// Compute unsigned-sum checksum (bytes 148-155 treated as spaces).
 		$v_checksum = 0;
-		// ..... First part of the header
 		for ($i = 0; $i < 148; $i++) {
-			$v_checksum += ord(substr($v_binary_data, $i, 1));
+			$v_checksum += ord($v_binary_data[$i]);
 		}
-		// ..... Ignore the checksum value and replace it by ' ' (space)
-		for ($i = 148; $i < 156; $i++) {
-			$v_checksum += ord(' ');
-		}
-		// ..... Last part of the header
+		$v_checksum += 8 * 32; // 8 space bytes
 		for ($i = 156; $i < 512; $i++) {
-			$v_checksum += ord(substr($v_binary_data, $i, 1));
+			$v_checksum += ord($v_binary_data[$i]);
 		}
 
 		$v_data = unpack(
-			"a100filepath/a8mode/a8uid/a8gid/a12size/a12mtime/"
-						 . "a8checksum/a1typeflag/a100linkpath/a6magic/a2version/"
-						 . "a32uname/a32gname/a8devmajor/a8devminor",
+			'a100filepath/a8mode/a8uid/a8gid/a12size/a12mtime/'
+			. 'a8checksum/a1typeflag/a100linkpath/a6magic/a2version/'
+			. 'a32uname/a32gname/a8devmajor/a8devminor',
 			$v_binary_data
 		);
 
-		// ----- Extract the checksum
 		$v_header['checksum'] = OctDec(trim($v_data['checksum']));
-		if ($v_header['checksum'] != $v_checksum) {
+		if ($v_header['checksum'] !== $v_checksum) {
 			$v_header['filepath'] = '';
-
-			// ----- Look for last block (empty block)
-			if (($v_checksum == 256) && ($v_header['checksum'] == 0)) {
+			// Last two 512-byte blocks are all-NUL (end-of-archive marker).
+			if ($v_checksum === 256 && $v_header['checksum'] === 0) {
 				return true;
 			}
-
-			$this->_error('Invalid checksum for file "' . $v_data['filepath']
-						  . '" : ' . $v_checksum . ' calculated, '
-						  . $v_header['checksum'] . ' expected');
+			$this->_error(
+				'Invalid checksum for file "' . $v_data['filepath']
+				. '" : ' . $v_checksum . ' calculated, '
+				. $v_header['checksum'] . ' expected'
+			);
 			return false;
 		}
 
-		// ----- Extract the properties
+		// Decode typeflag.
 		$rawTypeflag = str_replace("\x00", '', $v_data['typeflag']);
 		if ($rawTypeflag === '') {
 			$typeFlag = self::TYPE_FILE;
@@ -1314,36 +3006,30 @@ if ($v_result = $this->_openRead()) {
 		} else {
 			$typeFlag = ord($rawTypeflag[0]);
 		}
+
 		$filepath = trim($v_data['filepath']);
 		$linkpath = trim($v_data['linkpath']);
 		$filenorm = $this->_normalizePath($filepath);
-		$v_header['tarpath'] = $filepath;	// retain the original
-		$v_header['filepath'] = $filepath;	// working tar path
+
+		$v_header['tarpath'] = $filepath;
+		$v_header['filepath'] = $filepath;
 		$v_header['filepath_norm'] = $filenorm;
-		$v_header['filesafe'] = $this->_isRelativePathSafe($filenorm);
-		$v_header['filename'] = basename($filepath);
+		$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($filenorm ?? ''));
+		$v_header['name'] = basename($filepath);
+		$v_header['filename'] = $filepath;
 		$v_header['mode'] = OctDec(trim($v_data['mode']));
 		$v_header['uid'] = OctDec(trim($v_data['uid']));
 		$v_header['gid'] = OctDec(trim($v_data['gid']));
 		$v_header['size'] = OctDec(trim($v_data['size']));
 		$v_header['mtime'] = OctDec(trim($v_data['mtime']));
-		$v_header['tarlink'] = $linkpath;	// retain the original
-		$v_header['linkpath'] = $linkpath;	// working tar link path
+		$v_header['tarlink'] = $linkpath;
+		$v_header['linkpath'] = $linkpath;
 		$v_header['uname'] = trim($v_data['uname']);
 		$v_header['gname'] = trim($v_data['gname']);
-		$v_header['device'] = in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL]);
+		$v_header['typeflag'] = $typeFlag;
+		$v_header['device'] = in_array($typeFlag, [self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL], true);
 
-		// Convert the raw 1-char typeflag string to an integer constant.
-		// The `a1` unpack format may return "\x00" for a null/empty typeflag field.
-		$rawTypeflag = str_replace("\x00", '', $v_data['typeflag']);
-		if ($rawTypeflag === '') {
-			$v_header['typeflag'] = self::TYPE_FILE;   // old-format regular file
-		} elseif ($rawTypeflag >= '0' && $rawTypeflag <= '9') {
-			$v_header['typeflag'] = (int) $rawTypeflag; // POSIX digit typeflag
-		} else {
-			$v_header['typeflag'] = ord($rawTypeflag[0]); // GNU letter typeflag (L, K, …)
-		}
-		switch ($v_header['typeflag']) {
+		switch ($typeFlag) {
 			case self::TYPE_DIRECTORY:
 				$v_header['size'] = 0;
 				break;
@@ -1351,11 +3037,10 @@ if ($v_result = $this->_openRead()) {
 			case self::TYPE_HARDLINK:
 				$linknorm = $this->_normalizePath($linkpath);
 				$v_header['linkpath_norm'] = $linknorm;
-				$v_header['linksafe'] = $this->_isRelativePathSafe($linknorm);
+				$v_header['linksafe'] = $this->_isRelativePathSafe((string) ($linknorm ?? ''));
 				break;
 		}
 
-		// Add derived fields for clean archive entry
 		$v_header['type'] = match ($typeFlag) {
 			self::TYPE_DIRECTORY => 'directory',
 			self::TYPE_SYMLINK => 'symlink',
@@ -1363,7 +3048,6 @@ if ($v_result = $this->_openRead()) {
 			self::TYPE_CHAR_SPECIAL => 'char_device',
 			self::TYPE_BLOCK_SPECIAL => 'block_device',
 			self::TYPE_FIFO => 'fifo',
-			self::TYPE_CONTIGUOUS => 'file',
 			default => 'file',
 		};
 
@@ -1371,71 +3055,232 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Reads a GNU long-name or long-link data block and sets the specified header field.
+	 * Reads a GNU long-name ('L') or long-link ('K') data block, then reads the
+	 * following real entry header and stores the long name in $v_header[$field].
 	 *
-	 * @param array  $v_header Parsed header; updated in place.
-	 * @param string $field    Header key to set: 'filepath' (TYPE_GNU_LONG_NAME)
-	 *                         or 'linkpath' (TYPE_GNU_LONG_LINK).
-	 * @return bool True on success, false on read error.
+	 * @param array  &$v_header
+	 * @param string $field     'filepath' or 'linkpath'.
+	 * @return bool True on success.
 	 */
-	private function _readLongHeader(&$v_header, string $field = 'filepath')
+	private function _readLongHeader(array &$v_header, string $field = 'filepath'): bool
 	{
 		$v_data = '';
-		$n = floor($v_header['size'] / 512);
+		$n = (int) floor($v_header['size'] / 512);
 		for ($i = 0; $i < $n; $i++) {
-			$v_content = $this->_readBlock();
-			$v_data .= $v_content;
+			$v_data .= $this->_readBlock();
 		}
-		if (($v_header['size'] % 512) != 0) {
-			$v_content = $this->_readBlock();
-			$v_data .= $v_content;
+		if (($v_header['size'] % 512) !== 0) {
+			$v_data .= $this->_readBlock();
 		}
 
-		// ----- Read the next header
 		$v_binary_data = $this->_readBlock();
-
 		if (!$this->_readHeader($v_binary_data, $v_header)) {
 			return false;
 		}
 
-		// GNU long blocks use a null terminator; strip it and any null padding.
 		$v_header[$field] = rtrim($v_data, "\x00");
+
+		if ($field === 'filepath') {
+			$filenorm = $this->_normalizePath($v_header['filepath']);
+			$v_header['filepath_norm'] = $filenorm;
+			$v_header['filesafe'] = $this->_isRelativePathSafe((string) ($filenorm ?? ''));
+			$v_header['name'] = basename($v_header['filepath']);
+			$v_header['filename'] = $v_header['filepath'];
+		}
 
 		return true;
 	}
 
-	// ---------------------------------------------------------------------------
-	// Tar manifest helpers
-	// ---------------------------------------------------------------------------
+	/**
+	 * Handles GNU long-name ('L') and long-link ('K') extension headers.
+	 * Mutates $v_header in place.
+	 *
+	 * @param array &$v_header
+	 * @return bool True if a fatal read error occurred (caller should abort).
+	 */
+	protected function processLongHeader(array &$v_header): bool
+	{
+		$typeFlag = $v_header['typeflag'];
 
+		if ($typeFlag === self::TYPE_GNU_LONG_NAME) {
+			if (!$this->_readLongHeader($v_header, 'filepath')) {
+				return true;
+			}
+		} elseif ($typeFlag === self::TYPE_GNU_LONG_LINK) {
+			if (!$this->_readLongHeader($v_header, 'linkpath')) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// =========================================================================
+	// Private — Path Security
+	// =========================================================================
 
 	/**
-	 * Locates the canonical map key for the given path query, handling optional
-	 * trailing separators and triggering a lazy scan when needed.
+	 * Returns true when $path contains no traversal sequences that could escape
+	 * a containing directory (no '..', no leading '/', no Windows drive letter).
 	 *
-	 * @param string $path Relative path to look up.
-	 * @return null|string The matching map key, or null if not found.
+	 * @param string $path
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	private function _isRelativePathSafe(string $path): bool
+	{
+		if ($path === '') {
+			return false;
+		}
+		if ($path[0] === '/' || $path[0] === '\\') {
+			return false;
+		}
+		if (strlen($path) >= 3 && $path[1] === ':') {
+			return false;
+		}
+		foreach (preg_split('/[\/\\\\]/', $path) as $part) {
+			if ($part === '..') {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true when $v_filepath is contained within $p_destPath after
+	 * normalisation.  Prevents Zip Slip attacks.
+	 * Returns true unconditionally when $p_destPath is null (scan mode).
+	 *
+	 * @param ?string $v_filepath
+	 * @param ?string $p_destPath
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	private function _validatePathSecurity(?string $v_filepath, ?string $p_destPath): bool
+	{
+		if ($p_destPath === null || $p_destPath === '') {
+			return true;
+		}
+
+		$normalizedFilePath = $this->_normalizePath($v_filepath);
+		$normalizedDestPath = $this->_normalizePath($p_destPath);
+
+		if ($normalizedFilePath === null || $normalizedDestPath === null) {
+			return false;
+		}
+
+		return str_starts_with($normalizedFilePath . '/', $normalizedDestPath . '/');
+	}
+
+	/**
+	 * Returns true when $v_linkpath, resolved relative to $v_dir, is contained
+	 * within $p_destPath.
+	 *
+	 * @param string  $v_linkpath  Link target (absolute or relative).
+	 * @param string  $v_dir       Directory where the link file lives.
+	 * @param ?string $p_destPath  Extraction root.
+	 * @return bool
+	 * @since 4.3.3
+	 */
+	private function _validateLinkTarget(string $v_linkpath, string $v_dir, ?string $p_destPath): bool
+	{
+		if ($v_linkpath === '') {
+			return false;
+		}
+		if (!str_starts_with($v_linkpath, '/')) {
+			$v_linkpath = $v_dir . '/' . $v_linkpath;
+		}
+		return $this->_validatePathSecurity($v_linkpath, $p_destPath);
+	}
+
+	/**
+	 * Resolves '.' and '..' sequences in $path without touching the filesystem.
+	 * Returns null when the path tries to escape its root (e.g. '/../').
+	 *
+	 * @param ?string $path
+	 * @return ?string
+	 */
+	protected function _normalizePath(?string $path): ?string
+	{
+		if ($path === null) {
+			return null;
+		}
+
+		$isAbsolute = str_starts_with($path, '/');
+		$parts = explode('/', $path);
+		$stack = [];
+
+		foreach ($parts as $part) {
+			if ($part === '' || $part === '.') {
+				continue;
+			}
+			if ($part !== '..') {
+				$stack[] = $part;
+				continue;
+			}
+			if (!empty($stack) && end($stack) !== '..') {
+				array_pop($stack);
+			} else {
+				if ($isAbsolute) {
+					return null;
+				}
+				$stack[] = '..';
+			}
+		}
+
+		$result = implode('/', $stack);
+		if ($isAbsolute) {
+			$result = '/' . $result;
+		}
+
+		return $result === '' ? ($isAbsolute ? '/' : '.') : $result;
+	}
+
+	/**
+	 * Normalises path separators and removes Windows drive letters.
+	 *
+	 * @param string $p_destPath
+	 * @param bool   $p_remove_disk_letter
+	 * @return string
+	 */
+	protected function _translateWinPath(string $p_destPath, bool $p_remove_disk_letter = true): string
+	{
+		if (strncasecmp(PHP_OS, 'WIN', 3) !== 0) {
+			return $p_destPath;
+		}
+		if ($p_remove_disk_letter && ($v_position = strpos($p_destPath, ':')) !== false) {
+			$p_destPath = substr($p_destPath, $v_position + 1);
+		}
+		return str_replace('\\', '/', $p_destPath);
+	}
+
+	// =========================================================================
+	// Private — Manifest Helpers
+	// =========================================================================
+
+	/**
+	 * Finds the canonical key for $path in the clean manifest, triggering a lazy
+	 * scan if the manifest has not yet been populated.
+	 *
+	 * @param string $path
+	 * @return ?string The matching key, or null if not found.
 	 * @since 4.3.3
 	 */
 	private function _findManifestKey(string $path): ?string
 	{
-		// Ensure the map is populated (lazy scan if necessary).
 		if ($this->_tarManifest === null) {
 			$this->getManifest();
 		}
 		if ($this->_tarManifest === null) {
 			return null;
 		}
-		// Direct lookup (works for file keys and already-normalised directory keys).
 		if (isset($this->_tarManifest[$path])) {
 			return $path;
 		}
-		// Try as a directory (with trailing DIRECTORY_SEPARATOR).
 		$withSep = rtrim($path, '/\\') . DIRECTORY_SEPARATOR;
 		if (isset($this->_tarManifest[$withSep])) {
 			return $withSep;
 		}
-		// Try without any trailing separator.
 		$withoutSep = rtrim($path, '/\\');
 		if ($withoutSep !== $path && isset($this->_tarManifest[$withoutSep])) {
 			return $withoutSep;
@@ -1444,8 +3289,11 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Locates the key in extraction manifest.
+	 * Finds the canonical key for $path in the extraction manifest.
+	 *
 	 * @param string $path
+	 * @return ?string
+	 * @since 4.3.3
 	 */
 	private function _findExtractManifestKey(string $path): ?string
 	{
@@ -1467,146 +3315,15 @@ if ($v_result = $this->_openRead()) {
 	}
 
 	/**
-	 * Records or updates a single entry in the tar path info map.
+	 * Sorts $manifest so that directory entries precede file entries.
+	 * Within each group keys are sorted alphabetically.
 	 *
-	 * @param array  $header       	The parsed tar header.
-	 * @param array $v_header
+	 * @param array &$manifest
 	 * @since 4.3.3
-	 */
-	/*private function _recordTarManifestEntry(
-		array $header
-	): void {
-		$this->_recordInfoEntry($header, null, false);
-	}
-	*/
-	/**
-	 * Records or updates a single entry in the tar path info map.
-	 *
-	 * @param array  $header       	  The parsed tar header.
-	 * @param ?string $extractedPath  Absolute path where the entry was written (empty if not written).
-	 * @param ?string $reason   	  Whether the entry was successfully written to disk.
-	 * @since 4.3.3
-	 */
-	/*private function _recordExtractEntry(
-		array $header,
-		?string $extractedPath,
-		?string $reason = null
-	): void {
-		$this->_recordInfoEntry($header, $extractedPath, $reason);
-	}*/
-
-	/**
-	 * Records or updates a single entry in the tar path info map.
-	 *
-	 * @param array  $header       	  The parsed tar header.
-	 * @param ?string $extractedPath  Absolute path where the entry was written (empty if not written).
-	 * @param ?string $reason   	  Whether the entry was successfully written to disk.
-	 * @since 4.3.3
-	 */
-	/* private function _recordInfoEntry(
-		array $header,
-		?string $extractedPath,
-		false|?string $reason = null,
-	): void {
-		$isExtracting = $reason !== false;
-		if ($isExtracting && $this->_tarExtractManifest === null) {
-			$this->_tarExtractManifest = [];
-		} elseif (!$isExtracting && $this->_tarManifest === null) {
-			$this->_tarManifest = [];
-		}
-		$type = match ($header['typeflag'] ?? self::TYPE_FILE) {
-			self::TYPE_DIRECTORY     => 'directory',
-			self::TYPE_SYMLINK       => 'symlink',
-			self::TYPE_HARDLINK      => 'hardlink',
-			self::TYPE_CHAR_SPECIAL  => 'char_device',
-			self::TYPE_BLOCK_SPECIAL => 'block_device',
-			self::TYPE_FIFO          => 'fifo',
-			default                  => 'file',
-		};
-
-		$mapKey = ($type === 'directory')
-			? rtrim($relativePath, '/\\') . DIRECTORY_SEPARATOR
-			: rtrim($relativePath, '/\\');
-		$normalizedPath = $this->_normalizePath($relativePath, false);
-		$normalizedPath = $this->_normalizePath($relativePath, false);
-		$entry = [
-			'path'          => $mapKey,
-			'name'          => basename(rtrim($relativePath, '/\\')),
-			'type'          => $type,
-			'filepath'      => $header['filepath'],
-			'size'          => (int)($header['size'] ?? 0),
-			'mtime'         => (int)($header['mtime'] ?? 0),
-			'mode'          => (int)($header['mode'] ?? 0),
-			'uid'           => (int)($header['uid'] ?? 0),
-			'gid'           => (int)($header['gid'] ?? 0),
-			'uname'         => (string)($header['uname'] ?? ''),
-			'gname'         => (string)($header['gname'] ?? ''),
-			'linkpath'      => (string)($header['linkpath'] ?? ''),
-			'typeflag'      => (int)($header['typeflag'] ?? self::TYPE_FILE),
-			'checksum'      => (int)($header['checksum'] ?? 0),
-			'filesafe'          => $safe,
-			'device'        => in_array(
-				$header['typeflag'] ?? self::TYPE_FILE,
-				[self::TYPE_CHAR_SPECIAL, self::TYPE_BLOCK_SPECIAL],
-				true
-			),
-			'timestamp'		=> microtime(true),
-		];
-		if (is_string($reason)) {
-			$entry['reason'] = $reason;
-		}
-		if ($isExtracting) {
-			if ($extractedPath !== null) {
-				$entry['extracted'] = $extractedPath !== null,
-				$entry['extractedPath'] = $extractedPath;
-			}
-			$this->_tarExtractManifest[$mapKey] = $entry;
-			if (!$safe) {
-				//Prado::warning(
-				//	"{$type} detected and skipped: {$filepath}" . ($linkpath !== null ? " (target: {$linkpath})" : ''),
-				//	'Prado\IO\TTarFileExtractor'
-				//);
-			}
-		} else {
-			$this->_tarManifest[$mapKey] = $entry;
-		}
-	}
-	*/
-
-	/**
-	 * Sorts $_tarManifest so that directory entries precede file entries.
-	 * Within each group the keys are sorted alphabetically.
-	 * @return bool was there an error. false if ok.
-	 * @since 4.3.3
-	 */
-	private function processLongHeader(array &$v_header): bool
-	{
-		$typeFlag = $v_header['typeflag'];
-
-		// Handle GNU long-filepath and long-linkpath extensions.
-		if ($typeFlag === self::TYPE_GNU_LONG_NAME) {
-			if (!$this->_readLongHeader($v_header, 'filepath')) {
-				return true;
-			}
-		} elseif ($typeFlag === self::TYPE_GNU_LONG_LINK) {
-			if (!$this->_readLongHeader($v_header, 'linkpath')) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Sorts $_tarManifest so that directory entries precede file entries.
-	 * Within each group the keys are sorted alphabetically.
-	 *
-	 * @since 4.3.3
-	 * @param array $manifest
 	 */
 	private function _sortManifest(array &$manifest): void
 	{
 		if (empty($manifest)) {
-			$manifest = [];
 			return;
 		}
 		uksort($manifest, static function (string $a, string $b): int {
@@ -1619,575 +3336,41 @@ if ($v_result = $this->_openRead()) {
 		});
 	}
 
+	// =========================================================================
+	// Private — Filesystem Helpers
+	// =========================================================================
+
 	/**
-	 * Scans the archive and populates {@see getManifest()} without extracting any files.
-	 * If a temporary file is created during this scan (URL download or LZMA decompression)
-	 * {@see getRetainTempFile()} is automatically set to true so that a subsequent
-	 * {@see extract()} call can reuse it without downloading or decompressing again.
+	 * Ensures that $p_dir exists, creating it (and any missing parents) if needed.
 	 *
-	 * @since 4.3.3
-	 * @param mixed $p_destPath
-	 * @param mixed $p_manifest
-	 * @param mixed $p_mode
-	 * @param mixed $p_file_list
-	 * @param mixed $p_remove_path_prefix
-	 * @return bool True on success, false on failure.
+	 * @param string   $p_dir
+	 * @param null|int $workingMode  Mode to use when creating a new directory.  Pass
+	 *                               `0o755` (or another traversable mode) when a
+	 *                               deferred-chmod mechanism will apply the final mode
+	 *                               later; omit to use {@see getDirModeOverride()}.
+	 *                               This is used for intermediate parent directories
+	 *                               that have no explicit archive entry.
+	 * @return bool True when the directory exists or was successfully created.
 	 */
-	/*protected function _scanTarManifest(): bool
+	protected function _dirCheck(string $p_dir, ?int $workingMode = null): bool
 	{
-		if (!$this->_openRead()) {
-			return false;
-		}
-
-		// Keep any temp file (URL download or LZMA decompression) so that a
-		// following extract() can reuse it without repeating the work.
-		if ($this->_temp_tarpath !== null) {
-			$this->_retainTempFile = true;
-		}
-
-		$this->_tarManifest = [];
-
-		while (strlen($v_binary_data = $this->_readBlock()) != 0) {
-			$v_header = [];
-			if (!$this->_readHeader($v_binary_data, $v_header)) {
-				$this->_close();
-				return false;
-			}
-
-			if ($v_header['filepath'] == '') {
-				continue;
-			}
-
-			if ($this->processLongHeader($v_header)) {
-				$this->_close();
-				return false;
-			}
-			$typeFlag = $v_header['typeflag'];
-
-			$this->_recordTarManifestEntry($v_header);
-
-			// Skip the data blocks — no content is extracted during a scan.
-			if ($typeFlag !== self::TYPE_DIRECTORY && ($v_header['size'] ?? 0) > 0) {
-				$this->_jumpBlock((int)ceil($v_header['size'] / 512));
-			}
-		}
-
-		$this->_close();
-		$this->_sortManifest(false);
-
-		return true;
-	} */
-
-	/**
-	 * Extracts or lists files from the archive based on the extraction mode.
-	 *
-	 * @param ?string $p_destPath The destination path.
-	 * @param array &$p_manifest List of extracted file details (passed by reference).
-	 * @param string $p_mode Extraction mode: "complete", "partial", or "list".
-	 * @param array|int $p_file_list List of files to extract, or 0/null for all.
-	 * @param string $p_remove_path_prefix Path prefix to remove from extracted file paths.
-	 * @return bool True on success, false on error.
-	 * @since 4.3.3
-	 */
-	protected function _extractList(
-		$p_destPath,
-		&$p_manifest,
-		$p_mode,
-		$p_file_list,
-		$p_remove_path_prefix
-	) {
-		$recordEntryDetail = function ($fileInfo, $extractedPath, $reason) use (&$p_manifest) {
-
-			if (!is_array($p_manifest)) {
-				return;
-			}
-
-			// Use normalized path as key - clean and uniform
-			$mapKey = $fileInfo['filepath_norm'] ?? $fileInfo['filepath'] ?? '';
-
-			// Add fail-safe field to indicate entry is safe for extraction
-			$fileInfo['fail-safe'] = $fileInfo['filesafe'] ?? true;
-
-			// Add extraction-specific fields
-			if ($extractedPath !== null) {
-				$fileInfo['extracted'] = true;
-				$fileInfo['extractedPath'] = $extractedPath;
-			}
-
-			if (is_string($reason)) {
-				$fileInfo['created'] = false;
-				$fileInfo['reason'] = $reason;
-			} elseif (is_bool($reason)) {
-				$fileInfo['created'] = $reason;
-			}
-
-			$p_manifest[$mapKey] = $fileInfo;
-		}; // end function $recordEntryDetail
-
-		$directoryModes = [];
-		if ($p_destPath) {
-			$p_destPath = $this->_translateWinPath($p_destPath, false);
-			if ($p_destPath == '' || (str_starts_with($p_destPath, '/') && str_starts_with($p_destPath, "../") && strpos($p_destPath, ':') !== false)) {
-				$p_destPath = "./" . $p_destPath;
-			}
-			if ($p_destPath !== './' && $p_destPath !== '/') {
-				$p_destPath = rtrim($p_destPath, '/');
-			}
-		}
-		$v_result = true;
-
-		if ($p_remove_path_prefix) {
-			$p_remove_path_prefix = $this->_translateWinPath($p_remove_path_prefix);
-
-			// ----- Look for path to remove format (should end by /)
-			if (!empty($p_remove_path_prefix) && !str_ends_with($p_remove_path_prefix, '/')) {
-				$p_remove_path_prefix .= '/';
-			}
-			$p_remove_path_prefix_length = strlen($p_remove_path_prefix);
-		} else {
-			$p_remove_path_prefix_length = 0;
-		}
-
-		switch ($p_mode) {
-			case "complete":
-			case "partial":
-			case "list":
-				break;
-			default:
-				$this->_error('Invalid extract mode (' . $p_mode . ')');
-				return false;
-		}
-
-		clearstatcache();
-
-		while (($v_binary_data = $this->_readBlock()) !== null && $v_binary_data !== false && strlen($v_binary_data) != 0) {
-			if (!$this->_readHeader($v_binary_data, $v_header)) {
-				return false;
-			}
-
-			if (empty($v_header['filepath'])) {
-				continue;
-			}
-
-			if ($this->processLongHeader($v_header)) {
-				return false;
-			}
-
-			// Determine which files to extract
-			$v_extract_file = $p_destPath !== null;
-			
-			if ($v_extract_file && is_array($p_file_list)) {
-				// ----- By default no untar if the file is not found in file list
-				$v_extract_file = false;
-				foreach ($p_file_list as $allowedPath) {
-					// ----- Look if it is a directory
-					if (str_ends_with($allowedPath, '/')) {
-						// ----- Look if the directory is in the filepath
-						if (str_starts_with($v_header['filepath'], $allowedPath)) {
-							$v_extract_file = true;
-							break;
-						}
-					}
-
-					// ----- It is a file, so compare the file names
-					elseif ($allowedPath == $v_header['filepath']) {
-						$v_extract_file = true;
-						break;
-					}
-				}
-			}
-
-			// ----- Look if this file need to be extracted
-			//if ($v_extract_file) {
-
-			// remove path prefix
-			if ($p_remove_path_prefix && str_starts_with($v_header['filepath'], $p_remove_path_prefix)) {
-				$v_header['filepath'] = substr($v_header['filepath'], $p_remove_path_prefix_length);
-				$v_header['filepath_norm'] = $this->_normalizePath($v_header['filepath']);
-				$v_header['filesafe'] = $this->_isRelativePathSafe($v_header['filepath_norm']);
-			}
-
-			// calculate extracted path for the file
-			$extractedPath = null;
-			if ($p_destPath) {
-				$extractedPath = $p_destPath . '/' . ltrim($v_header['filepath'], '/');
-			}
-
-			// ----- Validate path doesn't escape destination (Zip Slip prevention)
-			if (!$this->_validatePathSecurity($extractedPath, $p_destPath)) {
-				$message = 'Zip Slip path traversal attempt detected: \'' . $extractedPath . '\'';
-				if ($this->_strict) {
-					$this->_error($message);
-					return false;
-				}
-				$recordEntryDetail($v_header, null, 'zip_slip');
-				$this->_jumpBlock(ceil(($v_header['size'] / 512)));
-				continue;
-			}
-
-			$typeFlag = $v_header['typeflag'];
-
-			// ----- Device and special file types cannot be extracted in PHP
-			if ($typeFlag === self::TYPE_CHAR_SPECIAL
-				|| $typeFlag === self::TYPE_BLOCK_SPECIAL
-				|| $typeFlag === self::TYPE_FIFO) {
-				$message = 'Special file type cannot be extracted: \'' . $extractedPath . '\'';
-				if ($this->_strict) {
-					$this->_error($message);
-					return false;
-				}
-				$recordEntryDetail($v_header, null, 'device');
-				if (($v_header['size'] ?? 0) > 0) {
-					$this->_jumpBlock(ceil(($v_header['size'] / 512)));
-				}
-				continue;
-			}
-
-			if ($v_extract_file) {
-				if (file_exists($extractedPath)) {
-					if (@is_dir($extractedPath) && ($typeFlag === self::TYPE_FILE)) {
-						$this->_error('File \'' . $extractedPath . '\' already exists as a directory');
-						return false;
-					}
-					if ($this->_isArchive($extractedPath) && ($typeFlag === self::TYPE_DIRECTORY)) {
-						$this->_error('Directory \'' . $extractedPath . '\' already exists as a file');
-						return false;
-					}
-					if (!is_writable($extractedPath)) {
-						$this->_error('File \'' . $extractedPath . '\' already exists and is write protected');
-						return false;
-					}
-					if (filemtime($extractedPath) > $v_header['mtime']) {
-						// To be completed : An error or silent no replace ?
-						// @todo: error, skip, newest, oldest, replace all, or callback
-					}
-
-				} elseif (!$this->_dirCheck(($typeFlag === self::TYPE_DIRECTORY
-												? $extractedPath : dirname($extractedPath)))) {
-					// ----- Check the directory availability and create it if necessary
-
-					$this->_error('Unable to create path for \'' . $extractedPath . '\'');
-					return false;
-				}
-			}
-
-			//if ($v_extract_file) {
-				if ($typeFlag === self::TYPE_DIRECTORY) {
-					$v_created = false;
-					if ($v_extract_file && !@file_exists($extractedPath)) {
-						if (!@mkdir($extractedPath, Prado::getDefaultDirPermissions())) {
-							$this->_error('Unable to create directory {'
-						  	. $extractedPath . '}');
-							return false;
-						}
-						chmod($extractedPath, Prado::getDefaultDirPermissions());
-						$v_created = true;
-						$directoryModes[$extractedPath] = $v_header['mode'];
-					}
-					$recordEntryDetail($v_header, $extractedPath, $v_created);
-				} elseif ($typeFlag === self::TYPE_SYMLINK || $typeFlag === self::TYPE_HARDLINK) {
-					// ----- Symlink (typeflag = "2"),  Hard link (typeflag = "1")
-					if ($isSymLink = ($typeFlag === self::TYPE_SYMLINK)) {
-						$linkType = 'Symlink';
-						$linkMethod = 'symlink';
-					} else {
-						$linkType = 'Hard link';
-						$linkMethod = 'link';
-					}
-	
-					if ($p_remove_path_prefix && str_starts_with($v_header['linkpath'], $p_remove_path_prefix)) {
-						$v_header['linkpath'] = substr($v_header['linkpath'], $p_remove_path_prefix_length);
-						$v_header['linkpath_norm'] = $this->_normalizePath($v_header['linkpath']);
-						$v_header['linksafe'] = $this->_isRelativePathSafe($v_header['linkpath_norm']);
-					}
-	
-					$v_linkpath = trim($v_header['linkpath'] ?? '');
-					if (!$this->_validateLinkTarget($v_linkpath, dirname($extractedPath), $p_destPath)) {
-						$message = $linkType . ' target outside extraction directory: ' . $v_linkpath;
-						if ($this->_strict) {
-							$this->_error($message);
-							return false;
-						}
-						$recordEntryDetail($v_header, null, $isSymLink ? 'symlink' : 'hardlink');
-						continue;
-					}
-					$v_resolvedLinkpath = $v_linkpath;
-					if (!str_starts_with($v_resolvedLinkpath, '/')) {
-						$v_resolvedLinkpath = dirname($extractedPath) . '/' . $v_resolvedLinkpath;
-					}
-					if ($v_extract_file && !@$linkMethod($v_resolvedLinkpath, $extractedPath)) {
-						$this->_error('Unable to create ' . strtolower($linkType) . ': ' . $extractedPath);
-						return false;
-					}
-					$recordEntryDetail($v_header, $extractedPath, $v_extract_file);
-				} else {
-					if ($v_extract_file) {
-						if (($v_dest_file = @fopen($extractedPath, "wb")) == 0) {
-							$this->_error('Error while opening {' . $extractedPath
-								. '} in write binary mode');
-							return false;
-						}
-						$n = floor($v_header['size'] / 512);
-						for ($i = 0; $i < $n; $i++) {
-							$v_content = $this->_readBlock();
-							fwrite($v_dest_file, $v_content, 512);
-						}
-						if (($v_header['size'] % 512) != 0) {
-							$v_content = $this->_readBlock();
-							fwrite($v_dest_file, $v_content, ($v_header['size'] % 512));
-						}
-	
-						@fclose($v_dest_file);
-	
-						// ----- Change the file mode, mtime
-						@touch($extractedPath, $v_header['mtime']);
-						
-						// ----- Check the file size
-						clearstatcache();
-						if (filesize($extractedPath) != $v_header['size']) {
-							$this->_error('Extracted file ' . $extractedPath
-							. ' does not have the correct file size \''
-							. filesize($extractedPath)
-							. '\' (' . $v_header['size']
-							. ' expected). Archive may be corrupted.');
-							return false;
-						}
-					}
-	
-					// @todo File mod, To be completed
-					//chmod($v_header[filepath], DecOct($v_header[mode]));
-					$recordEntryDetail($v_header, $extractedPath, $v_extract_file);
-	
-				}
-			//} else {
-			//	$this->_jumpBlock(ceil(($v_header['size'] / 512)));
-			//}
-		} // end while (strlen($v_binary_data = $this->_readBlock()) != 0);
-
-		foreach ($directoryModes as $dirPath => $mode) {
-			// @todo
-			//chmod($dirPath, $mode);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Removes entries that were successfully written during the current extraction.
-	 * Called when extraction fails and {@see getRollbackOnFailure()} is true.
-	 * Files and links are removed first; directories are removed last (deepest first)
-	 * and only when they are empty.
-	 *
-	 * @since 4.3.3
-	 * @param ?array $rollback
-	 */
-	private function _rollbackExtraction(?array $rollback): void
-	{
-		if (empty($rollback)) {
-			return;
-		}
-
-		$files = [];
-		$dirs = [];
-		foreach ($rollback as $info) {
-			if (!isset($info['extractedPath'])) {
-				continue;
-			}
-			if ($info['typeflag'] === self::TYPE_DIRECTORY) {
-				$dirs[] = $info['extractedPath'];
-			} else {
-				$files[] = $info['extractedPath'];
-			}
-		}
-
-		// Remove regular files, symlinks, and hard links.
-		foreach ($files as $filePath) {
-			if (file_exists($filePath) || is_link($filePath)) {
-				@unlink($filePath);
-			}
-		}
-
-		// Remove directories deepest-first (reverse-sorted path strings put
-		// deeper paths earlier when child paths are always longer than parents).
-		rsort($dirs);
-		foreach ($dirs as $dirPath) {
-			if (!is_dir($dirPath)) {
-				continue;
-			}
-			$items = @scandir($dirPath);
-			if ($items !== false && count($items) <= 2) { // only '.' and '..'
-				@rmdir($dirPath);
-			}
-		}
-	}
-
-	/**
-	 * Returns true when a relative path contains no traversal sequences.
-	 * Checks: no '..' components, no leading '/', no Windows drive letter.
-	 *
-	 * @param string $path Relative path to test.
-	 * @return bool
-	 * @since 4.3.3
-	 */
-	private function _isRelativePathSafe(string $path): bool
-	{
-		if (empty($path)) {
-			return false;
-		}
-		// Absolute path (Unix or Windows UNC)
-		if ($path[0] === '/' || $path[0] === '\\') {
-			return false;
-		}
-		// Windows drive letter (e.g. "C:\"...)
-		if (strlen($path) >= 3 && $path[1] === ':') {
-			return false;
-		}
-		// Any '..' path component
-		foreach (preg_split('/[\/\\\\]/', $path) as $part) {
-			if ($part === '..') {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Validates that the extracted path doesn't escape the destination directory.
-	 * Prevents Zip Slip attacks via path traversal sequences like ../
-	 *
-	 * @param string $v_filepath The constructed file path from tar entry
-	 * @param string $p_destPath The extraction destination path
-	 * @return bool True if path is contained, false if it escapes
-	 * @since 4.3.3
-	 */
-	private function _validatePathSecurity($v_filepath, $p_destPath)
-	{
-		$normalizedFilePath = $this->_normalizePath($v_filepath);
-		$normalizedDestPath = $this->_normalizePath($p_destPath);
-
-		if (strpos($normalizedFilePath . '/', $normalizedDestPath . '/') !== 0) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Validates that a hard link target is within the extraction directory.
-	 *
-	 * @param string $v_linkpath The hard link target (file that already exists)
-	 * @param string $v_dir The directory where the hard link is being created
-	 * @param string $p_destPath The extraction destination path
-	 * @return bool True if target is safe, false if it escapes
-	 * @since 4.3.3
-	 */
-	private function _validateLinkTarget($v_linkpath, $v_dir, $p_destPath)
-	{
-		if ($v_linkpath === '') {
-			return false;
-		}
-
-		if (!str_starts_with($v_linkpath, '/')) {
-			$v_linkpath = $v_dir . '/' . $v_linkpath;
-		}
-		return $this->_validatePathSecurity($v_linkpath, $p_destPath);
-	}
-
-	/**
-	 * Normalizes a path for comparison by resolving . and .. sequences.
-	 *
-	 * @param string $path The path to normalize
-	 * @return ?string The normalized path, null if path escapes root
-	 */
-	protected function _normalizePath($path)
-	{
-		if ($path === null) {
-			return null;
-		}
-		$isAbsolute = str_starts_with($path, '/');
-		$parts = explode('/', $path);
-		$stack = [];
-
-		foreach ($parts as $part) {
-			if ($part === '' || $part === '.') {
-				continue;
-			}
-
-			if ($part !== '..') {
-				$stack[] = $part;
-				continue;
-			}
-			if (!empty($stack) && end($stack) !== '..') {
-				array_pop($stack);
-			} else {
-				if ($isAbsolute) {
-					return null; // above root
-				}
-				$stack[] = '..';
-			}
-		}
-
-		$result = implode('/', $stack);
-
-		if ($isAbsolute) {
-			$result = '/' . $result;
-		}
-
-		return $result === '' ? ($isAbsolute ? '/' : '.') : $result;
-	}
-
-	/**
-	 * Check if a directory exists and create it (including parent
-	 * dirs) if not.
-	 *
-	 * @param string $p_dir directory to check
-	 *
-	 * @return bool true if the directory exists or was created
-	 */
-	protected function _dirCheck($p_dir): bool
-	{
-		if ((@is_dir($p_dir)) || ($p_dir == '')) {
+		if (@is_dir($p_dir) || $p_dir === '') {
 			return true;
 		}
 
 		$p_parent_dir = dirname($p_dir);
-
-		if (($p_parent_dir != $p_dir) && ($p_parent_dir != '') && (!$this->_dirCheck($p_parent_dir))) {
+		if ($p_parent_dir !== $p_dir && $p_parent_dir !== '' && !$this->_dirCheck($p_parent_dir, $workingMode)) {
 			return false;
 		}
 
-		if (!@mkdir($p_dir, Prado::getDefaultDirPermissions())) {
+		$v_dirMode = $workingMode ?? $this->getDirModeOverride() ?? static::DEFAULT_DIR_MODE;
+		if (!@mkdir($p_dir, $v_dirMode)) {
 			$this->_error("Unable to create directory '$p_dir'");
 			return false;
 		}
-		chmod($p_dir, Prado::getDefaultDirPermissions());
+		@chmod($p_dir, $v_dirMode);
 
 		return true;
 	}
 
-	/**
-	 * Translates Windows path separators and removes disk letters from paths.
-	 *
-	 * On Windows, removes the disk letter (e.g., "C:") and converts backslashes
-	 * to forward slashes for consistent path handling across platforms.
-	 *
-	 * @param string $p_destPath The path to translate.
-	 * @param bool $p_remove_disk_letter Whether to remove the disk letter (default true).
-	 * @return string The translated path.
-	 * @since 4.3.3
-	 */
-	protected function _translateWinPath($p_destPath, $p_remove_disk_letter = true)
-	{
-		if (strncasecmp(PHP_OS, 'WIN', 3) !== 0) {
-			return $p_destPath;
-		}
-
-		// ----- Look for disk letter
-		if ($p_remove_disk_letter && ($v_position = strpos($p_destPath, ':') !== false)) {
-			$p_destPath = substr($p_destPath, $v_position + 1);
-		}
-
-		// ----- Change potential windows directory separator
-		return str_replace('\\', '/', $p_destPath);
-	}
 }
