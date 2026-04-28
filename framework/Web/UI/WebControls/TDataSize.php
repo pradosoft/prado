@@ -11,10 +11,11 @@
 namespace Prado\Web\UI\WebControls;
 
 use Prado\Exceptions\TInvalidDataValueException;
-use Prado\Prado;
-use Prado\TPropertyValue;
 use Prado\I18N\core\CultureInfo;
 use Prado\I18N\core\CultureInfoUnits;
+use Prado\I18N\TI18NControlTrait;
+use Prado\Prado;
+use Prado\TPropertyValue;
 
 /**
  * TDataSize class
@@ -50,6 +51,8 @@ use Prado\I18N\core\CultureInfoUnits;
  */
 class TDataSize extends TLabel
 {
+	use TI18NControlTrait;
+
 	/**
 	 * renders the size in the closes base, bytes, kilobytes, megabytes,
 	 * gigabytes, terabytes, petabytes, exabytes, zettabytes, yottabytes, ronnabyte,
@@ -70,12 +73,12 @@ class TDataSize extends TLabel
 
 		$sf = ($size >= 1000) ? 3 : 2;
 		$size = round($size, (int) ceil($sf - ($size == 0 ? 0 : log10($size))));
-		$culture = $this->getLocalizedInfo();
+		$cultureInfo = $this->getCultureInfo();
 
 		$contents = null;
 		if ($abbr) {
-			if ($culture) {
-				$sizeString = $culture->formatNumber($size);
+			if ($cultureInfo) {
+				$sizeString = $cultureInfo->formatNumber($size);
 			} else {
 				$sizeString = number_format($size, 2, '.', ',');
 			}
@@ -89,15 +92,16 @@ class TDataSize extends TLabel
 				$contents = $sizeString . ' ' . Prado::localize($binary[$orderOfMagnitude]);
 			}
 		} else {
-			if ($culture && $marketingSize) {
+			if ($cultureInfo && $marketingSize) {
 				$unitType = $this->unitFromMagnitude($orderOfMagnitude);
 				if ($unitType) {
-					$contents = $culture->formatUnit($size, $unitType);
+					$sizeUnitStr = $cultureInfo->formatUnit($size, $unitType);
+					$contents = $this->convertToCharset($sizeUnitStr);
 				}
 			}
 			if (!$contents) {
-				if ($culture) {
-					$sizeString = $culture->formatNumber($size);
+				if ($cultureInfo) {
+					$sizeString = $cultureInfo->formatNumber($size);
 				} else {
 					$sizeString = number_format($size, 2, '.', ',');
 				}
@@ -172,49 +176,6 @@ class TDataSize extends TLabel
 	}
 
 	/**
-	 * @return string the current culture, falls back to application if culture is not set.
-	 * @since 4.3.3
-	 */
-	protected function getCurrentCulture()
-	{
-		$app = $this->getApplication()->getGlobalization(false);
-		return $this->getCulture() == '' ?
-				($app ? $app->getCulture() : 'en') : $this->getCulture();
-	}
-
-	/**
-	 * @return \Prado\I18N\core\CultureInfo date time format information for the current culture.
-	 * @since 4.3.3
-	 */
-	protected function getLocalizedInfo()
-	{
-		//expensive operations
-		$culture = $this->getCurrentCulture();
-		$info = new CultureInfo($culture);
-		return $info;
-	}
-
-	/**
-	 * Gets the current culture.
-	 * @return string current culture, e.g. en_AU.
-	 * @since 4.3.3
-	 */
-	public function getCulture()
-	{
-		return $this->getViewState('Culture', '');
-	}
-
-	/**
-	 * Sets the culture/language for the date picker.
-	 * @param string $value a culture string, e.g. en_AU.
-	 * @since 4.3.3
-	 */
-	public function setCulture($value)
-	{
-		$this->setViewState('Culture', $value, '');
-	}
-
-	/**
 	 * For the Decimal (marketing) versions of TDataSize,
 	 * this takes the number magnitude and returns the ICU unit.
 	 * @param int $magnitude the magnitude of the unit (per 1000, decimal).
@@ -252,6 +213,4 @@ class TDataSize extends TLabel
 		}
 		return null;
 	}
-
-
 }
