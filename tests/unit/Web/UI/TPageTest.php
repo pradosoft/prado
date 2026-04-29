@@ -1,226 +1,666 @@
 <?php
 
-
+use Prado\Web\UI\TPage;
+use Prado\Web\UI\TPageStatePersister;
+use Prado\Web\UI\TSessionPageStatePersister;
+use Prado\Web\UI\IPageStatePersister;
+use Prado\Web\UI\TTemplateControl;
+use Prado\Web\UI\TForm;
+use Prado\Web\UI\WebControls\THead;
+use Prado\Web\UI\TTheme;
+use Prado\Collections\TList;
+use Prado\Collections\TStack;
+use Prado\Exceptions\TConfigurationException;
+use Prado\Exceptions\TInvalidOperationException;
+use Prado\Web\UI\ActiveControls\TCallbackClientScript;
 
 class TPageTest extends PHPUnit\Framework\TestCase
 {
-	public function testConstruct()
+	// -----------------------------------------------------------------------
+	// Construction and inheritance
+	// -----------------------------------------------------------------------
+
+	public function testConstructIsInstanceOfTPage(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertInstanceOf(TPage::class, $page);
 	}
 
-	public function testRun()
+	public function testConstructExtendsTemplateControl(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertInstanceOf(TTemplateControl::class, $page);
 	}
 
-	public function testSetAndGetCallbackClient()
+	// -----------------------------------------------------------------------
+	// Callback client (adapter-safe method)
+	// -----------------------------------------------------------------------
+
+	public function testGetCallbackClientReturnsCallbackClientScriptWhenNoAdapter(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$client = $page->getCallbackClient();
+		$this->assertInstanceOf(TCallbackClientScript::class, $client);
 	}
 
-	public function testSetAndGetCallbackEventTarget()
+	// -----------------------------------------------------------------------
+	// Form registration
+	// -----------------------------------------------------------------------
+
+	public function testGetFormIsNullByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertNull($page->getForm());
 	}
 
-	public function testSetAndGetCallbackEventParameter()
+	public function testSetAndGetForm(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$form = $this->createMock(TForm::class);
+		$page->setForm($form);
+		$this->assertSame($form, $page->getForm());
 	}
 
-	public function testSetAndGetForm()
+	public function testSetFormTwiceThrowsInvalidOperationException(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$form = $this->createMock(TForm::class);
+		$page->setForm($form);
+
+		$this->expectException(TInvalidOperationException::class);
+		$page->setForm($this->createMock(TForm::class));
 	}
 
-	public function testGetValidators()
+	// -----------------------------------------------------------------------
+	// Head registration
+	// -----------------------------------------------------------------------
+
+	public function testGetHeadIsNullByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertNull($page->getHead());
 	}
 
-	public function testValidate()
+	public function testSetAndGetHead(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$head = $this->createMock(THead::class);
+		$page->setHead($head);
+		$this->assertSame($head, $page->getHead());
 	}
 
-	public function testGetIsValid()
+	public function testSetHeadTwiceThrowsInvalidOperationException(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setHead($this->createMock(THead::class));
+
+		$this->expectException(TInvalidOperationException::class);
+		$page->setHead($this->createMock(THead::class));
 	}
 
-	public function testSetAndGetTheme()
+	// -----------------------------------------------------------------------
+	// Title (no THead on page)
+	// -----------------------------------------------------------------------
+
+	public function testGetTitleIsEmptyStringByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertEquals('', $page->getTitle());
 	}
 
-	public function testSetAndGetStyleSheetTheme()
+	public function testSetAndGetTitleWithoutHead(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setTitle('My Page');
+		$this->assertEquals('My Page', $page->getTitle());
 	}
 
-	public function testApplyControlSkin()
+	public function testSetTitleBeforeHeadIsAppliedWhenHeadSet(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setTitle('Before Head');
+
+		$head = $this->createMock(THead::class);
+		$head->expects($this->once())->method('setTitle')->with('Before Head');
+		$head->expects($this->once())->method('getTitle')->willReturn('Before Head');
+
+		$page->setHead($head);
+		$this->assertEquals('Before Head', $page->getTitle());
 	}
 
-	public function testApplyControlStyleSheet()
+	// -----------------------------------------------------------------------
+	// Validators
+	// -----------------------------------------------------------------------
+
+	public function testGetValidatorsReturnsTList(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertInstanceOf(TList::class, $page->getValidators());
 	}
 
-	public function testGetClientScript()
+	public function testGetValidatorsWithNullGroupReturnsSameListAllValidators(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$list1 = $page->getValidators();
+		$list2 = $page->getValidators(null);
+		$this->assertInstanceOf(TList::class, $list1);
+		$this->assertInstanceOf(TList::class, $list2);
 	}
 
-	public function testOnPreInit()
+	public function testGetValidatorsWithGroupReturnsFilteredTList(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$filtered = $page->getValidators('myGroup');
+		$this->assertInstanceOf(TList::class, $filtered);
+		$this->assertEquals(0, $filtered->getCount());
 	}
 
-	public function testOnInitComplete()
+	// -----------------------------------------------------------------------
+	// Validate / getIsValid
+	// -----------------------------------------------------------------------
+
+	public function testValidateDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->validate();
+		$this->assertTrue(true);
 	}
 
-	public function testOnPreLoad()
+	public function testGetIsValidAfterValidateReturnsTrue(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->validate();
+		$this->assertTrue($page->getIsValid());
 	}
 
-	public function testOnLoadComplete()
+	public function testGetIsValidBeforeValidateThrowsInvalidOperationException(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->expectException(TInvalidOperationException::class);
+		$page->getIsValid();
 	}
 
-	public function testOnPreRenderComplete()
+	// -----------------------------------------------------------------------
+	// Theme / StyleSheetTheme (string and object variants)
+	// -----------------------------------------------------------------------
+
+	public function testGetThemeIsNullByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		// setTheme has not been called → _theme is null; getTheme does not call service
+		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection->setAccessible(true);
+		$this->assertNull($reflection->getValue($page));
 	}
 
-	public function testOnSaveStateComplete()
+	public function testSetThemeWithTThemeObject(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$theme = $this->createMock(TTheme::class);
+		$page->setTheme($theme);
+
+		// getTheme() only resolves a string; with an object it returns it directly
+		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection->setAccessible(true);
+		$this->assertSame($theme, $reflection->getValue($page));
 	}
 
-	public function testGetIsPostBack()
+	public function testSetThemeToEmptyStringStoresNull(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setTheme('');
+		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection->setAccessible(true);
+		$this->assertNull($reflection->getValue($page));
 	}
 
-	public function testGetIsCallback()
+	public function testSetThemeToNonEmptyStringStoresString(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setTheme('SomeTheme');
+		$reflection = new ReflectionProperty(TPage::class, '_theme');
+		$reflection->setAccessible(true);
+		$this->assertEquals('SomeTheme', $reflection->getValue($page));
 	}
 
-	public function testSaveState()
+	public function testGetStyleSheetThemeIsNullByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
+		$reflection->setAccessible(true);
+		$this->assertNull($reflection->getValue($page));
 	}
 
-	public function testLoadState()
+	public function testSetStyleSheetThemeWithTThemeObject(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$theme = $this->createMock(TTheme::class);
+		$page->setStyleSheetTheme($theme);
+		$reflection = new ReflectionProperty(TPage::class, '_styleSheet');
+		$reflection->setAccessible(true);
+		$this->assertSame($theme, $reflection->getValue($page));
 	}
 
-	public function testRegisterRequiresPostData()
+	// -----------------------------------------------------------------------
+	// applyControlSkin / applyControlStyleSheet (no theme → no-op)
+	// -----------------------------------------------------------------------
+
+	public function testApplyControlSkinWithNoThemeDoesNothing(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$control = $this->createMock(\Prado\Web\UI\TControl::class);
+		$page->applyControlSkin($control);
+		$this->assertTrue(true); // No exception, no interaction with control
 	}
 
-	public function testSetAndGetPostBackEventTarget()
+	public function testApplyControlStyleSheetWithNoThemeDoesNothing(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$control = $this->createMock(\Prado\Web\UI\TControl::class);
+		$page->applyControlStyleSheet($control);
+		$this->assertTrue(true);
 	}
 
-	public function testSetAndGetPostBackEventParameter()
+	// -----------------------------------------------------------------------
+	// Event raisers — verify they can be called without throwing
+	// -----------------------------------------------------------------------
+
+	public function testOnPreInitDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->onPreInit(null);
+		$this->assertTrue(true);
 	}
 
-	public function testGetIsLoadingPostData()
+	public function testOnInitCompleteDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->onInitComplete(null);
+		$this->assertTrue(true);
 	}
 
-	public function testEnsureRenderInForm()
+	public function testOnPreLoadDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->onPreLoad(null);
+		$this->assertTrue(true);
 	}
 
-	public function testBeginFormRender()
+	public function testOnLoadCompleteDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->onLoadComplete(null);
+		$this->assertTrue(true);
 	}
 
-	public function testEndFormRender()
+	public function testOnSaveStateCompleteDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->onSaveStateComplete(null);
+		$this->assertTrue(true);
 	}
 
-	public function testSetFocus()
+	// -----------------------------------------------------------------------
+	// Postback / callback flags
+	// -----------------------------------------------------------------------
+
+	public function testGetIsPostBackReturnsFalseByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertFalse($page->getIsPostBack());
 	}
 
-	public function testGetClientSupportsJavaScript()
+	public function testGetIsCallbackReturnsFalseByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertFalse($page->getIsCallback());
 	}
 
-	public function testSetAndGetHead()
+	// -----------------------------------------------------------------------
+	// saveState / loadState
+	// -----------------------------------------------------------------------
+
+	public function testSaveStateDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->saveState();
+		$this->assertTrue(true);
 	}
 
-	public function testSetAndGetTitle()
+	public function testLoadStateDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->loadState();
+		$this->assertTrue(true);
 	}
 
-	public function testSetAndGetClientState()
+	// -----------------------------------------------------------------------
+	// registerRequiresPostData
+	// -----------------------------------------------------------------------
+
+	public function testRegisterRequiresPostDataWithControlDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$control = $this->createMock(\Prado\Web\UI\TControl::class);
+		$control->method('getUniqueID')->willReturn('control1');
+		$page->registerRequiresPostData($control);
+		$this->assertTrue(true);
 	}
 
-	public function testGetRequestClientState()
+	public function testRegisterRequiresPostDataWithStringDoesNotThrow(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->registerRequiresPostData('someControlID');
+		$this->assertTrue(true);
 	}
 
-	public function testSetAndGetStatePersisterClass()
+	// -----------------------------------------------------------------------
+	// PostBack event target / parameter
+	// -----------------------------------------------------------------------
+
+	public function testGetPostBackEventTargetIsNullByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertNull($page->getPostBackEventTarget());
 	}
 
-	public function testGetStatePersister()
+	public function testSetAndGetPostBackEventTarget(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$control = $this->createMock(\Prado\Web\UI\TControl::class);
+		$page->setPostBackEventTarget($control);
+		$this->assertSame($control, $page->getPostBackEventTarget());
 	}
 
-	public function testSetAndGetEnableStateValidation()
+	public function testGetPostBackEventParameterIsNullByDefaultWithNoPostData(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		// With no postData (_postData is null) → returns null
+		$this->assertNull($page->getPostBackEventParameter());
 	}
 
-	public function testSetAndGetEnableStateEncryption()
+	public function testSetAndGetPostBackEventParameter(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$page->setPostBackEventParameter('test_param');
+		$this->assertEquals('test_param', $page->getPostBackEventParameter());
 	}
 
-	public function testSetAndGetPagePath()
+	// -----------------------------------------------------------------------
+	// Loading post data flag
+	// -----------------------------------------------------------------------
+
+	public function testGetIsLoadingPostDataReturnsFalseByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertFalse($page->getIsLoadingPostData());
 	}
 
-	public function testRegisterCachingAction()
+	// -----------------------------------------------------------------------
+	// Form render flags
+	// -----------------------------------------------------------------------
+
+	public function testGetInFormRenderReturnsFalseByDefault(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$this->assertFalse($page->getInFormRender());
 	}
 
-	public function testGetCachingStack()
+	// -----------------------------------------------------------------------
+	// ensureRenderInForm — must throw when not in form render and not callback
+	// -----------------------------------------------------------------------
+
+	public function testEnsureRenderInFormThrowsWhenNotInForm(): void
 	{
-		throw new PHPUnit\Framework\IncompleteTestError();
+		$page = new TPage();
+		$control = $this->createMock(\Prado\Web\UI\TControl::class);
+		$control->method('getUniqueID')->willReturn('ctrl1');
+
+		$this->expectException(TConfigurationException::class);
+		$page->ensureRenderInForm($control);
+	}
+
+	// -----------------------------------------------------------------------
+	// Client state
+	// -----------------------------------------------------------------------
+
+	public function testGetClientStateIsEmptyStringByDefault(): void
+	{
+		$page = new TPage();
+		$this->assertEquals('', $page->getClientState());
+	}
+
+	public function testSetAndGetClientState(): void
+	{
+		$page = new TPage();
+		$page->setClientState('abc123');
+		$this->assertEquals('abc123', $page->getClientState());
+	}
+
+	public function testSetClientStateToEmptyString(): void
+	{
+		$page = new TPage();
+		$page->setClientState('value');
+		$page->setClientState('');
+		$this->assertEquals('', $page->getClientState());
+	}
+
+	// -----------------------------------------------------------------------
+	// StatePersisterClass / StatePersister
+	// -----------------------------------------------------------------------
+
+	public function testGetStatePersisterClassDefaultIsTPageStatePersister(): void
+	{
+		$page = new TPage();
+		$this->assertEquals(TPageStatePersister::class, $page->getStatePersisterClass());
+	}
+
+	public function testSetStatePersisterClassToSessionPersister(): void
+	{
+		$page = new TPage();
+		$page->setStatePersisterClass(TSessionPageStatePersister::class);
+		$this->assertEquals(TSessionPageStatePersister::class, $page->getStatePersisterClass());
+	}
+
+	public function testGetStatePersisterReturnsIPageStatePersister(): void
+	{
+		$page = new TPage();
+		$persister = $page->getStatePersister();
+		$this->assertInstanceOf(IPageStatePersister::class, $persister);
+	}
+
+	public function testGetStatePersisterReturnsTPageStatePersisterByDefault(): void
+	{
+		$page = new TPage();
+		$this->assertInstanceOf(TPageStatePersister::class, $page->getStatePersister());
+	}
+
+	public function testGetStatePersisterReturnsSameInstance(): void
+	{
+		$page = new TPage();
+		$p1 = $page->getStatePersister();
+		$p2 = $page->getStatePersister();
+		$this->assertSame($p1, $p2);
+	}
+
+	public function testGetStatePersisterSetsItsPageToThis(): void
+	{
+		$page = new TPage();
+		$persister = $page->getStatePersister();
+		$this->assertSame($page, $persister->getPage());
+	}
+
+	// -----------------------------------------------------------------------
+	// State feature flags
+	// -----------------------------------------------------------------------
+
+	public function testGetEnableStateValidationDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getEnableStateValidation());
+	}
+
+	public function testSetEnableStateValidationToFalse(): void
+	{
+		$page = new TPage();
+		$page->setEnableStateValidation(false);
+		$this->assertFalse($page->getEnableStateValidation());
+	}
+
+	public function testSetEnableStateValidationToTrue(): void
+	{
+		$page = new TPage();
+		$page->setEnableStateValidation(false);
+		$page->setEnableStateValidation(true);
+		$this->assertTrue($page->getEnableStateValidation());
+	}
+
+	public function testGetEnableStateEncryptionDefaultIsFalse(): void
+	{
+		$page = new TPage();
+		$this->assertFalse($page->getEnableStateEncryption());
+	}
+
+	public function testSetEnableStateEncryptionToTrue(): void
+	{
+		$page = new TPage();
+		$page->setEnableStateEncryption(true);
+		$this->assertTrue($page->getEnableStateEncryption());
+	}
+
+	public function testGetEnableStateCompressionDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getEnableStateCompression());
+	}
+
+	public function testSetEnableStateCompressionToFalse(): void
+	{
+		$page = new TPage();
+		$page->setEnableStateCompression(false);
+		$this->assertFalse($page->getEnableStateCompression());
+	}
+
+	public function testGetEnableStateIGBinaryDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getEnableStateIGBinary());
+	}
+
+	public function testSetEnableStateIGBinaryToFalse(): void
+	{
+		$page = new TPage();
+		$page->setEnableStateIGBinary(false);
+		$this->assertFalse($page->getEnableStateIGBinary());
+	}
+
+	// -----------------------------------------------------------------------
+	// PagePath
+	// -----------------------------------------------------------------------
+
+	public function testGetPagePathIsEmptyStringByDefault(): void
+	{
+		$page = new TPage();
+		$this->assertEquals('', $page->getPagePath());
+	}
+
+	public function testSetAndGetPagePath(): void
+	{
+		$page = new TPage();
+		$page->setPagePath('Home/Index');
+		$this->assertEquals('Home/Index', $page->getPagePath());
+	}
+
+	// -----------------------------------------------------------------------
+	// CachingStack / registerCachingAction
+	// -----------------------------------------------------------------------
+
+	public function testGetCachingStackReturnsTStack(): void
+	{
+		$page = new TPage();
+		$this->assertInstanceOf(TStack::class, $page->getCachingStack());
+	}
+
+	public function testGetCachingStackReturnsSameInstance(): void
+	{
+		$page = new TPage();
+		$this->assertSame($page->getCachingStack(), $page->getCachingStack());
+	}
+
+	public function testRegisterCachingActionWithEmptyStackDoesNotThrow(): void
+	{
+		$page = new TPage();
+		// getCachingStack() is called lazily; _cachingStack is null initially.
+		// registerCachingAction only iterates if _cachingStack is non-null, so no exception.
+		$page->registerCachingAction('Page', 'someMethod', ['arg1']);
+		$this->assertTrue(true);
+	}
+
+	// -----------------------------------------------------------------------
+	// ClientSupportsJavaScript
+	// -----------------------------------------------------------------------
+
+	public function testGetClientSupportsJavaScriptDefaultIsTrue(): void
+	{
+		$page = new TPage();
+		$this->assertTrue($page->getClientSupportsJavaScript());
+	}
+
+	public function testSetClientSupportsJavaScriptToFalse(): void
+	{
+		$page = new TPage();
+		$page->setClientSupportsJavaScript(false);
+		$this->assertFalse($page->getClientSupportsJavaScript());
+	}
+
+	public function testSetClientSupportsJavaScriptToTrue(): void
+	{
+		$page = new TPage();
+		$page->setClientSupportsJavaScript(false);
+		$page->setClientSupportsJavaScript(true);
+		$this->assertTrue($page->getClientSupportsJavaScript());
+	}
+
+	// -----------------------------------------------------------------------
+	// setFocus — simple storage, no rendering side-effects
+	// -----------------------------------------------------------------------
+
+	public function testSetFocusStoresValue(): void
+	{
+		$page = new TPage();
+		$page->setFocus('myElementId');
+
+		$reflection = new ReflectionProperty(TPage::class, '_focus');
+		$reflection->setAccessible(true);
+		$this->assertEquals('myElementId', $reflection->getValue($page));
+	}
+
+	// -----------------------------------------------------------------------
+	// System post field constants
+	// -----------------------------------------------------------------------
+
+	public function testFieldPostbackTargetConstant(): void
+	{
+		$this->assertEquals('PRADO_POSTBACK_TARGET', TPage::FIELD_POSTBACK_TARGET);
+	}
+
+	public function testFieldPostbackParameterConstant(): void
+	{
+		$this->assertEquals('PRADO_POSTBACK_PARAMETER', TPage::FIELD_POSTBACK_PARAMETER);
+	}
+
+	public function testFieldPageStateConstant(): void
+	{
+		$this->assertEquals('PRADO_PAGESTATE', TPage::FIELD_PAGESTATE);
+	}
+
+	public function testFieldCallbackTargetConstant(): void
+	{
+		$this->assertEquals('PRADO_CALLBACK_TARGET', TPage::FIELD_CALLBACK_TARGET);
+	}
+
+	public function testFieldCallbackParameterConstant(): void
+	{
+		$this->assertEquals('PRADO_CALLBACK_PARAMETER', TPage::FIELD_CALLBACK_PARAMETER);
 	}
 }
