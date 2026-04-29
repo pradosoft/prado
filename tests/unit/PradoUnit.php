@@ -10,7 +10,7 @@
  
  // No Namespace for unit tests, separate from the system
  require_once('PradoUnitDataConnectionTrait.php');
- 
+ require_once('IO/TarTestHelper.php');
  /**
   * PradoUnit class
   *
